@@ -31,7 +31,7 @@ If you only want to understand the proposal:
    - [`examples/quasi-existent-future.synthetic.poai.json`](examples/quasi-existent-future.synthetic.poai.json)
    - [`examples/quasi-existent-future.synthetic.successor.poai.json`](examples/quasi-existent-future.synthetic.successor.poai.json)
 
-For implementation, continue with [`DATA_MODEL.md`](DATA_MODEL.md) and the machine-readable schema.
+For implementation, continue with [`DATA_MODEL.md`](DATA_MODEL.md), [`MACHINE_LAYER.md`](MACHINE_LAYER.md) and the machine-readable schema.
 
 ## Machine layer v0.0.1
 
