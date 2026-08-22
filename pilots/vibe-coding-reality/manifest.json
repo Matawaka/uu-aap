@@ -1,0 +1,291 @@
+{
+  "protocol": "UU-AAP",
+  "protocol_version": "0.1",
+  "profile": "T",
+  "work": {
+    "title": "Вайбкодинг реальности",
+    "alternate_title": "Vibe Coding Reality",
+    "work_id": "urn:uu-aap:work:vibe-coding-reality:000001",
+    "edition_id": "2026.08-pilot",
+    "language": "ru",
+    "publication_date": "2026-08-22",
+    "edition_completed_date": "2026-08-08",
+    "genre": "intellectual_nonfiction",
+    "structure": {
+      "parts": 10,
+      "chapters": 22,
+      "epilogue": true
+    },
+    "distribution_intent": "free_distribution",
+    "identifiers": [
+      {
+        "type": "uu_aap_local",
+        "value": "UU-BOOK-000001"
+      }
+    ],
+    "notes": "This pilot manifest publishes provenance for the completed manuscript/edition history. A canonical PDF or EPUB artifact is not yet cryptographically bound in this T-profile record.",
+    "publication_date_basis": "First public UU-AAP provenance declaration for this edition; manuscript completion is separately recorded as 2026-08-08."
+  },
+  "actors": [
+    {
+      "actor_id": "human:matawaka",
+      "actor_type": "human",
+      "name": "Matawaka",
+      "identifier": "https://github.com/Matawaka",
+      "public_identity_scope": "GitHub identity used for the public pilot; legal identity is not asserted by UU-AAP."
+    },
+    {
+      "actor_id": "ai:augmented-mind",
+      "actor_type": "ai_system",
+      "name": "Усиленный Ум / OpenAI ChatGPT-assisted workflow",
+      "identifier": null,
+      "identity_note": "The work developed across multiple AI-assisted sessions. Exact underlying model/version continuity was not preserved for every session."
+    }
+  ],
+  "responsibility": [
+    {
+      "actor_id": "human:matawaka",
+      "scope": "intent_governance",
+      "status": "accepted",
+      "limitations": "The human author set the book's direction, recurring questions and publication intent; AI expanded and challenged candidate formulations."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "concept_selection",
+      "status": "accepted",
+      "limitations": "AI proposed and co-developed alternatives, but inclusion, rejection and continued development of core concepts remained under human selection."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "structure_approval",
+      "status": "accepted",
+      "limitations": "The final architecture of ten parts, twenty-two chapters and an epilogue was approved through iterative human–AI development."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "source_selection",
+      "status": "limited",
+      "limitations": "Research and source discovery were AI-assisted in parts of the project; this pilot does not claim a complete public source ledger for every factual statement."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "factual_verification",
+      "status": "limited",
+      "limitations": "The work is primarily conceptual nonfiction. No independent line-by-line factual audit of the complete manuscript is claimed in this pilot."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "editorial_approval",
+      "status": "accepted",
+      "limitations": "The accountable human retained final authority over what remained in the completed manuscript."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "publication_authorization",
+      "status": "accepted",
+      "limitations": "This manifest records authorization to expose the work as the first UU-AAP/T pilot. It does not assert store distribution or ISBN registration."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "legal_compliance",
+      "status": "unknown",
+      "limitations": "No independent legal review is claimed."
+    },
+    {
+      "actor_id": "human:matawaka",
+      "scope": "technical_binding",
+      "status": "declined",
+      "limitations": "Artifact binding is intentionally deferred because this pilot is profile T rather than V and no canonical PDF/EPUB file is bound yet."
+    }
+  ],
+  "ai_participation": [
+    {
+      "actor_id": "ai:augmented-mind",
+      "provider": "OpenAI",
+      "system": "ChatGPT-assisted Augmented Mind workflow",
+      "version": null,
+      "roles": [
+        "concepts",
+        "research",
+        "structure",
+        "drafting",
+        "editing"
+      ],
+      "direct_incorporation": true,
+      "tool_access": true,
+      "materiality": "substantial",
+      "notes": "AI participation was material across ideation, comparison of alternatives, structural development, drafting and revision. The manifest deliberately does not translate that participation into a percentage of authorship."
+    }
+  ],
+  "provenance": {
+    "dimensions": [
+      {
+        "dimension": "intent",
+        "governance": "human",
+        "summary": "The human author initiated the project direction and repeatedly redirected the inquiry through questions, critiques and requested continuations."
+      },
+      {
+        "dimension": "concepts",
+        "governance": "human_with_ai_augmentation",
+        "summary": "Named concepts were introduced, selected and evolved through iterative dialogue; the pilot distinguishes known origins from co-development and uncertainty."
+      },
+      {
+        "dimension": "structure",
+        "governance": "human_approval_of_iterative_ai_assistance",
+        "summary": "The manuscript converged on ten parts, twenty-two chapters and an epilogue."
+      },
+      {
+        "dimension": "drafting",
+        "governance": "human_selection_and_revision",
+        "summary": "AI produced candidate prose and expansions that were iteratively retained, rejected, reframed or extended by the human author."
+      },
+      {
+        "dimension": "verification",
+        "governance": "mixed",
+        "summary": "Some research and checking were AI/tool assisted; no complete independent factual audit is asserted."
+      }
+    ],
+    "concepts": [
+      {
+        "concept_id": "concept:vibe-coding-reality",
+        "label": "Вайбкодинг реальности",
+        "origin_class": "human_originated",
+        "decision_note": "The human author established the project concept/title; its operational meaning was then developed through repeated human–AI iteration.",
+        "epistemic_status": "asserted",
+        "evidence_refs": [
+          "evidence:project-dialogue-history",
+          "evidence:master-manuscript-1-13",
+          "evidence:master-manuscript-14-22-epilogue"
+        ]
+      },
+      {
+        "concept_id": "concept:augmented-mind",
+        "label": "Усиленный Ум",
+        "origin_class": "human_originated",
+        "decision_note": "Used by the author as the framing term for AI as cognitive augmentation rather than autonomous replacement.",
+        "epistemic_status": "asserted",
+        "evidence_refs": [
+          "evidence:master-manuscript-1-13",
+          "evidence:project-dialogue-history"
+        ]
+      },
+      {
+        "concept_id": "concept:non-annihilation",
+        "label": "Принцип неаннигиляции",
+        "origin_class": "co_developed",
+        "decision_note": "The principle was developed as a constraint against destroying functions or systems that can instead be transformed, and became Part VIII of the manuscript.",
+        "epistemic_status": "asserted",
+        "evidence_refs": [
+          "evidence:master-manuscript-14-22-epilogue"
+        ]
+      },
+      {
+        "concept_id": "concept:reversible-versions-of-reality",
+        "label": "Политика обратимых версий реальности",
+        "origin_class": "co_developed",
+        "decision_note": "The book develops reversibility, staged experimentation and explicit commit points as an alternative to one-shot utopian redesign.",
+        "epistemic_status": "asserted",
+        "evidence_refs": [
+          "evidence:master-manuscript-14-22-epilogue"
+        ]
+      },
+      {
+        "concept_id": "concept:world-that-can-change-its-mind",
+        "label": "Мир, который может передумать",
+        "origin_class": "co_developed",
+        "decision_note": "The epilogue consolidates the book's thesis that mature systems must be able to revise models without erasing causal memory.",
+        "epistemic_status": "asserted",
+        "evidence_refs": [
+          "evidence:master-manuscript-14-22-epilogue"
+        ]
+      }
+    ],
+    "decision_trace": [
+      {
+        "decision_id": "decision:structure-final",
+        "summary": "The manuscript was consolidated into Parts I–X, Chapters 1–22 and an epilogue rather than preserving earlier, more fragmented outlines.",
+        "evidence_class": "E1",
+        "evidence_refs": [
+          "evidence:master-manuscript-1-13",
+          "evidence:master-manuscript-14-22-epilogue"
+        ]
+      },
+      {
+        "decision_id": "decision:non-utopian-framing",
+        "summary": "The final chapters explicitly reject treating natural-language intent as sufficient authority to rewrite social reality and instead require feedback, reversibility, scoped responsibility and preserved disagreement.",
+        "evidence_class": "E1",
+        "evidence_refs": [
+          "evidence:master-manuscript-14-22-epilogue"
+        ]
+      },
+      {
+        "decision_id": "decision:ai-as-augmentation",
+        "summary": "AI was treated as an amplifier for search, comparison, drafting and critique while the human author retained governing authority over the work's direction and final selection.",
+        "evidence_class": "E0",
+        "evidence_refs": [
+          "evidence:project-dialogue-history"
+        ]
+      },
+      {
+        "decision_id": "decision:pilot-profile-t",
+        "summary": "The first public provenance record intentionally uses profile T. It exposes process and responsibility without pretending to provide cryptographic artifact binding before a canonical ebook file is selected.",
+        "evidence_class": "E1",
+        "evidence_refs": [
+          "https://github.com/Matawaka/uu-aap"
+        ]
+      }
+    ],
+    "evidence_catalog": [
+      {
+        "evidence_id": "evidence:master-manuscript-1-13",
+        "description": "Master manuscript, chapters 1–13, dated 2026-08-08.",
+        "availability": "private_project_archive"
+      },
+      {
+        "evidence_id": "evidence:master-manuscript-14-22-epilogue",
+        "description": "Master manuscript, chapters 14–22 and epilogue, dated 2026-08-08.",
+        "availability": "private_project_archive"
+      },
+      {
+        "evidence_id": "evidence:project-dialogue-history",
+        "description": "Iterative human–AI project conversations and revision history.",
+        "availability": "private_selective_disclosure"
+      }
+    ]
+  },
+  "verification": {
+    "source_verification": "mixed",
+    "artifact_sha256": null,
+    "signature": null,
+    "c2pa": null,
+    "transparency_record": {
+      "type": "git_repository",
+      "url": "https://github.com/Matawaka/uu-aap",
+      "status": "manifest_publication_pending_commit_at_time_of_generation"
+    },
+    "review": null,
+    "notes": "This T-profile pilot verifies disclosure structure and process traceability, not the truth of every claim in the book and not the byte identity of a final ebook artifact."
+  },
+  "privacy": {
+    "redactions_present": true,
+    "full_prompt_log_public": false,
+    "categories": [
+      "personal",
+      "unpublished_research",
+      "copyright"
+    ],
+    "notes": "Private conversations and complete prompt histories are not published by default. Evidence may be selectively disclosed where needed for a concrete review or dispute."
+  },
+  "contestability": {
+    "channel_available": true,
+    "channel": "https://github.com/Matawaka/uu-aap/discussions/8",
+    "open_disputes": 0,
+    "appeal_available": false,
+    "notes": "The public discussion and Issues provide a challenge channel. A formal independent book-specific appeal body has not yet been established."
+  },
+  "versioning": {
+    "manifest_id": "urn:uu-aap:manifest:vibe-coding-reality:2026.08-pilot:1",
+    "previous_manifest": null,
+    "change_summary": "Initial UU-AAP/T pilot manifest for «Вайбкодинг реальности»."
+  }
+}
