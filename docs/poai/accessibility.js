@@ -65,8 +65,18 @@
     input.addEventListener('blur', () => label.classList.remove('focus-proxy'));
   }
 
+  function loadReviewCueModule() {
+    if (document.querySelector('script[data-poai-review-cues]')) return;
+    const script = document.createElement('script');
+    script.src = 'review-cues.js';
+    script.dataset.poaiReviewCues = 'true';
+    script.defer = true;
+    document.body.append(script);
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     setupFileFocusProxy();
+    loadReviewCueModule();
   });
 })();
