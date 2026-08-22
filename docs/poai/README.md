@@ -1,6 +1,6 @@
 # PoAI Level 3 — Human Interface
 
-**Status:** experimental interface proposal  
+**Status:** pre-alpha experimental human interface  
 **Protocol basis:** PoAI Genesis v0.0 · Machine Layer v0.0.1  
 **Canonical predecessor:** [`poai-genesis-v0.0.1`](https://github.com/Matawaka/uu-aap/tree/poai-genesis-v0.0.1) at commit `4f9d1929ba19df9512855001c285d688af8ec6fa`
 
@@ -24,8 +24,11 @@ The interface exposes:
 - availability separately from consideration;
 - authority scopes;
 - outcome/intervention/successor state;
+- intervention causal status when recorded;
 - evidence and artifact-binding state;
 - explicit reminders that `proof != truth`.
+
+Display-only labels may humanize protocol enum tokens for readability. The raw JSON and downloaded artifact retain the original machine values.
 
 ## Privacy model
 
@@ -59,6 +62,36 @@ The builder starts a PoAI/T record as **E0 self-declaration**. Where the UI cann
 
 Generated JSON should be extended with actual resources, evidence, constraints, alternatives, authority evidence and successor records as applicable.
 
+## Accessibility boundary
+
+The pre-alpha interface uses native controls, visible focus treatment and ARIA tab/tabpanel semantics. The Verifier and Record Builder tabs support `ArrowLeft`, `ArrowRight`, `Home` and `End` keyboard navigation in addition to normal `Tab` navigation.
+
+The hidden file input receives a visible focus proxy on its `Choose a .json file` label so keyboard focus is not invisible.
+
+The stylesheet supports system light/dark preference through `prefers-color-scheme`. Full assistive-technology conformance testing is not yet claimed.
+
+## Language policy for alpha
+
+The first Level 3 alpha is **English-first**. Machine protocol values remain language-neutral tokens. EN/RU localization is intentionally deferred to a later usability iteration so translation work does not create parallel protocol semantics before the first alpha checkpoint.
+
+A future bilingual UI should map both languages to the same underlying protocol terms and values.
+
+## Known pre-alpha limitations
+
+The current interface does not provide or claim:
+
+- cryptographic signing or PoAI/V canonical binding;
+- signature or C2PA verification;
+- causal inference;
+- legal-responsibility determination;
+- server-side storage, collaboration or identity verification;
+- complete JSON Schema validation in the browser;
+- final accessibility certification;
+- bilingual EN/RU interface;
+- institutional CURA/ONUS/APPEAL workflows.
+
+These limits are deliberate and must not be interpreted as protocol guarantees.
+
 ## Tests
 
 From repository root:
@@ -66,6 +99,7 @@ From repository root:
 ```bash
 node --check docs/poai/validator.js
 node --check docs/poai/app.js
+node --check docs/poai/accessibility.js
 node docs/poai/test-validator.js
 ```
 
