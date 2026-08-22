@@ -169,6 +169,49 @@ jobs:
           print('Live execute grant declaration boundary preserved')
           PY
 
+      - name: Verify published live grant authority path
+        run: |
+          node --check proposals/poai/authority/live/test-live-published-grant-authority.js
+          node proposals/poai/authority/live/test-live-published-grant-authority.js \
+            /tmp/live-authority-verification.json \
+            /tmp/live-published-grant-check.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('proposals/poai/authority/schema/authority-verification-result.schema.json').read_text(encoding='utf-8'))
+          result = json.loads(Path('/tmp/live-authority-verification.json').read_text(encoding='utf-8'))
+          check = json.loads(Path('/tmp/live-published-grant-check.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(result)
+
+          claims = result['claims']
+          assert result['status'] == 'established'
+          assert result['errors'] == []
+          assert claims['root_declared'] is True
+          assert claims['root_evidence_observed'] is True
+          assert claims['root_accepted_by_policy'] is True
+          assert claims['issuer_entitlement_chain_valid'] is True
+          assert claims['materialization_authority_established'] is True
+          assert claims['policy_control_authority_established'] is False
+          assert check['claims']['grant_publication_observed'] is True
+          assert check['claims']['cryptographic_grant_signature_verified'] is False
+          for key in [
+              'legal_identity_verified',
+              'legal_authority_established',
+              'universal_authority_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]:
+              assert claims[key] is False, key
+          print('Published live execute authority established without policy-control leakage')
+          PY
+
       - name: Preserve assurance boundaries
         run: |
           python - <<'PY'
