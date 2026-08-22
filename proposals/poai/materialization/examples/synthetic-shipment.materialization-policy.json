@@ -18,7 +18,14 @@
     "require_verified_authority": true,
     "require_issuer_entitlement": true,
     "required_target": "github:Matawaka/uu-aap",
-    "allowed_delegation_modes": ["non_delegable"]
+    "allowed_delegation_modes": ["non_delegable"],
+    "root_acceptance_rule": {
+      "accepted_root_ids": ["urn:poai:authority-root:github-matawaka-uu-aap:1"],
+      "allowed_root_modes": ["self_governed_resource"],
+      "require_root_evidence": true,
+      "allowed_evidence_types": ["github_repository_control_publication"],
+      "exact_scope_match": true
+    }
   },
   "conflict_rule": {
     "mode": "single_head_no_unresolved_conflict"
@@ -36,5 +43,5 @@
     "universal_canonicality_established": false,
     "poai_v_conformance_established": false
   },
-  "notes": "Synthetic policy used only to exercise the PoAI Materialization Boundary. It is not evidence of real Matawaka materialization authority."
+  "notes": "Synthetic policy used to exercise the PoAI Materialization and Authority Root boundaries. Root evidence in machine tests is synthetic; live repository acceptance is tracked separately."
 }

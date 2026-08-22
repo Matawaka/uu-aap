@@ -39,23 +39,25 @@ Before materialization, the test constructs a candidate whose decision-time stat
 
 Later outcome information remains in the successor outcome/versioning layer. This prevents later explanatory edits from becoming silent rewrites of decision-time state.
 
-The synthetic materialization authority used by the positive vector is test data only. It does not reuse or upgrade the real Level 4.0e `poai.successor.materialization.propose` evidence.
+## Authority Root integration
 
-## Authority-root successor work
+The authority prerequisite is now derived through the machine layer in [`../authority/`](../authority/README.md), implementing [`../AUTHORITY_ROOTS.md`](../AUTHORITY_ROOTS.md).
 
-The next semantic boundary is defined in [`../AUTHORITY_ROOTS.md`](../AUTHORITY_ROOTS.md).
+The positive path is:
 
-It replaces the synthetic positive-vector prerequisite:
+```text
+synthetic repository-control evidence
+  -> PoAIAuthorityRoot
+  -> policy Root Acceptance Rule
+  -> PoAIAuthorityGrant
+  -> PoAIAuthorityVerificationResult
+  -> Materialization authority_evaluation
+  -> PoAIMaterializationEvent
+```
 
-`issuer_entitlement_verified = true`
+The Materialization test no longer creates `issuer_entitlement_verified = true` or `authority_verified = true` as unexplained prerequisites. Those booleans are projections of a machine-generated authority verification result whose provenance references are carried into `authority_evaluation.evidence_refs` and the optional root/grant/verification refs.
 
-with an explicit authority provenance model:
-
-`Authority Root -> Root Acceptance -> Issuer Entitlement -> Authority Grant -> Materialization Authority`.
-
-The first planned machine experiment is tracked in [Issue #109](https://github.com/Matawaka/uu-aap/issues/109), with live repository-scoped acceptance in [Issue #110](https://github.com/Matawaka/uu-aap/issues/110).
-
-Until that work is implemented, the materialization positive vector MUST be understood as testing the Materialization Boundary **assuming** authority prerequisites, not proving those prerequisites.
+The current repository-control evidence is still synthetic test input. Real repository-scoped publication and acceptance are tracked in [Issue #110](https://github.com/Matawaka/uu-aap/issues/110).
 
 ## Required authority distinction
 
@@ -69,9 +71,13 @@ The previously field-tested scope:
 
 MUST NOT satisfy that requirement.
 
+The Authority Root layer additionally keeps:
+
+`poai.successor.materialization.execute != poai.materialization.policy.control`.
+
 ## Negative vectors
 
-The test rejects at least:
+The Materialization test rejects at least:
 
 1. `proposal_scope_used_as_execute_scope`;
 2. `candidate_digest_substitution`;
@@ -84,18 +90,23 @@ The test rejects at least:
 9. `decision_boundary_rewritten_in_successor`;
 10. `materialization_claims_truth_certified`.
 
+Authority-origin attacks are tested independently in `../authority/test-authority.js`.
+
 ## Run
 
 From repository root:
 
 ```bash
-node --check proposals/poai/materialization/tools/materialization-core.js
+node proposals/poai/authority/test-authority.js \
+  /tmp/authority-grant.json \
+  /tmp/authority-verification.json
+
 node proposals/poai/materialization/test-materialization.js \
   /tmp/materialization-event.json \
   /tmp/materialization-candidate.json
 ```
 
-The generated event and candidate are then schema-validated in CI. The event and policy are also required to remain outside the Genesis decision-record schema.
+Generated authority, materialization and candidate artifacts are schema-validated in CI. Authority and Materialization artifacts are required to remain outside the Genesis decision-record schema.
 
 ## Assurance boundary
 

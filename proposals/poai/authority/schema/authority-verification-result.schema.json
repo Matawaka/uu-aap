@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/poai/authority/schema/authority-verification-result.schema.json",
+  "title": "PoAI Authority Verification Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "verification_id", "verified_at", "policy", "root", "grant_path", "subject", "required_scope", "target", "status", "checks", "claims"],
+  "properties": {
+    "artifact_type": {"const": "PoAIAuthorityVerificationResult"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "verification_id": {"type": "string", "pattern": "^urn:poai:authority-verification:"},
+    "verified_at": {"type": "string", "format": "date-time"},
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_id", "policy_version", "digest"],
+      "properties": {
+        "policy_id": {"type": "string", "minLength": 1},
+        "policy_version": {"type": "integer", "minimum": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "root": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_id", "root_version", "digest"],
+      "properties": {
+        "root_id": {"type": "string", "minLength": 1},
+        "root_version": {"type": "integer", "minimum": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "grant_path": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "subject": {"$ref": "#/$defs/actorRef"},
+    "required_scope": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "status": {"enum": ["established", "not_established"]},
+    "checks": {"type": "object", "minProperties": 1, "additionalProperties": {"type": "boolean"}},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_declared", "root_evidence_observed", "root_accepted_by_policy", "issuer_entitlement_chain_valid", "materialization_authority_established", "policy_control_authority_established", "legal_identity_verified", "legal_authority_established", "universal_authority_established", "universal_canonicality_established", "truth_certified", "causal_proof_certified", "legal_responsibility_determined", "moral_correctness_established", "legal_effect_established", "poai_v_conformance_established"],
+      "properties": {
+        "root_declared": {"type": "boolean"},
+        "root_evidence_observed": {"type": "boolean"},
+        "root_accepted_by_policy": {"type": "boolean"},
+        "issuer_entitlement_chain_valid": {"type": "boolean"},
+        "materialization_authority_established": {"type": "boolean"},
+        "policy_control_authority_established": {"type": "boolean"},
+        "legal_identity_verified": {"const": false},
+        "legal_authority_established": {"const": false},
+        "universal_authority_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    },
+    "errors": {"type": "array", "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "actorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "key_ref"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "key_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

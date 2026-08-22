@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const Core = require('./tools/materialization-core.js');
+const Authority = require('../authority/tools/authority-core.js');
 
 function read(rel) { return JSON.parse(fs.readFileSync(path.resolve(__dirname, rel), 'utf8')); }
 function write(file, value) { fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
@@ -14,18 +15,48 @@ function assert(cond, msg) { if (!cond) throw new Error(msg); }
   const source = read('../examples/quasi-existent-future.synthetic.poai.json');
   const successorTemplate = read('../examples/quasi-existent-future.synthetic.successor.poai.json');
   const candidate = Core.normalizedSuccessorCandidate(source, successorTemplate);
-  const authority = {
-    subject: 'key:synthetic-materializer',
-    scope: Core.EXECUTE_SCOPE,
-    target: policy.authority_verification_rule.required_target,
-    valid_from: '2026-07-01T00:00:00Z',
-    valid_until: '2026-08-01T00:00:00Z',
-    delegation_mode: 'non_delegable',
-    delegated_from: null,
-    issuer_entitlement_verified: true,
-    authority_verified: true,
-    evidence_refs: ['urn:poai:authority-evidence:synthetic-materializer', 'urn:poai:issuer-entitlement:synthetic-policy-root']
+
+  const root = read('../authority/examples/self-governed-uu-aap.authority-root.json');
+  const controller = {
+    id: root.controller_rule.controller_id,
+    key_ref: root.controller_rule.controller_key_ref
   };
+  const materializer = { id: 'actor:synthetic-materializer', key_ref: 'key:synthetic-materializer' };
+  const rootEvidence = {
+    observed: true,
+    evidence_type: 'github_repository_control_publication',
+    target: 'github:Matawaka/uu-aap',
+    refs: ['urn:poai:root-evidence:synthetic-github-control']
+  };
+  const authorityGrant = await Authority.buildGrant({
+    root,
+    issuer: controller,
+    subject: materializer,
+    actionScope: Authority.EXECUTE_SCOPE,
+    target: policy.authority_verification_rule.required_target,
+    governanceScope: policy.canonicality_scope,
+    validFrom: '2026-07-01T00:00:00Z',
+    validUntil: '2026-08-01T00:00:00Z',
+    delegationMode: 'non_delegable',
+    remainingDepth: 0,
+    policyRef: policy.policy_id,
+    issuedAt: '2026-07-01T00:10:00Z'
+  });
+  const authorityResult = await Authority.verifyAuthority({
+    root,
+    grants: [authorityGrant],
+    policy,
+    rootEvidence,
+    subject: materializer,
+    requiredScope: Authority.EXECUTE_SCOPE,
+    target: policy.authority_verification_rule.required_target,
+    at: '2026-07-16T12:00:00Z'
+  });
+  assert(authorityResult.errors.length === 0, `authority prerequisite failed: ${authorityResult.errors.join(', ')}`);
+  assert(authorityResult.claims.issuer_entitlement_chain_valid === true, 'issuer entitlement must be machine-derived');
+  assert(authorityResult.claims.materialization_authority_established === true, 'materialization authority must be machine-derived');
+  const authority = Authority.materializationAuthorityView(authorityResult, authorityGrant);
+
   const event = await Core.buildMaterializationEvent({
     source, candidate, policy,
     successorProposalRef: 'urn:poai:successor-proposal:synthetic-shipment-r2',
@@ -39,6 +70,7 @@ function assert(cond, msg) { if (!cond) throw new Error(msg); }
   assert(positiveErrors.length === 0, `positive vector failed: ${positiveErrors.join(', ')}`);
   assert(event.declared_disposition === 'materialized', 'positive vector should materialize');
   assert(event.canonicality_claim.status === 'materialized', 'positive vector should establish policy-relative materialized status');
+  assert(event.authority_evaluation.evidence_refs.includes(authorityResult.verification_id), 'materialization event must reference authority verification provenance');
   assert(event.claims.truth_certified === false, 'materialization must not certify truth');
   assert(event.claims.poai_v_conformance_established === false, 'materialization must not establish PoAI/V');
 
@@ -48,7 +80,7 @@ function assert(cond, msg) { if (!cond) throw new Error(msg); }
     ['policy_version_substitution', e => { e.materialization_policy.policy_version = 2; }],
     ['authority_outside_validity_window', e => { e.authority_evaluation.valid_until = '2026-07-15T00:00:00Z'; }],
     ['authority_target_mismatch', e => { e.authority_evaluation.target = 'github:Other/example'; }],
-    ['non_delegable_authority_redelegated', e => { e.authority_evaluation.delegated_from = 'urn:poai:authority-evidence:upstream'; }],
+    ['non_delegable_authority_redelegated', e => { e.authority_evaluation.delegated_from = 'urn:poai:authority-grant:upstream'; }],
     ['active_stay_ignored', e => { e.contest_or_stay.active_stay = true; e.contest_or_stay.refs = ['urn:poai:appeal:synthetic']; }],
     ['single_head_conflict_silently_selected', e => { e.conflict_state.status = 'unresolved'; e.conflict_state.candidate_refs = [candidate.record_id, 'urn:poai:record:synthetic-shipment:delay-risk:2b']; }],
     ['materialization_claims_truth_certified', e => { e.claims.truth_certified = true; }]
@@ -76,5 +108,5 @@ function assert(cond, msg) { if (!cond) throw new Error(msg); }
   const outCandidate = process.argv[3] || '/tmp/materialization-candidate.json';
   write(outEvent, event);
   write(outCandidate, candidate);
-  console.log(`materialization tests passed; event=${outEvent}; candidate=${outCandidate}`);
+  console.log(`materialization tests passed; authority=${authorityResult.verification_id}; event=${outEvent}; candidate=${outCandidate}`);
 })().catch((error) => { console.error(error.stack || error); process.exit(1); });

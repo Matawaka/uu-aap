@@ -14,7 +14,26 @@
     "successor_proposal_ref": {"type": "string", "minLength": 1},
     "candidate_successor": {"$ref": "#/$defs/boundArtifact"},
     "materialization_policy": {"type": "object", "additionalProperties": false, "required": ["policy_id", "policy_version", "digest"], "properties": {"policy_id": {"type": "string", "minLength": 1}, "policy_version": {"type": "integer", "minimum": 1}, "digest": {"$ref": "#/$defs/digest"}}},
-    "authority_evaluation": {"type": "object", "additionalProperties": false, "required": ["subject", "scope", "target", "valid_from", "valid_until", "delegation_mode", "delegated_from", "issuer_entitlement_verified", "authority_verified", "evidence_refs"], "properties": {"subject": {"type": "string", "minLength": 1}, "scope": {"type": "string", "minLength": 1}, "target": {"type": "string", "minLength": 1}, "valid_from": {"type": "string", "format": "date-time"}, "valid_until": {"type": ["string", "null"], "format": "date-time"}, "delegation_mode": {"enum": ["non_delegable", "delegable"]}, "delegated_from": {"type": ["string", "null"]}, "issuer_entitlement_verified": {"type": "boolean"}, "authority_verified": {"type": "boolean"}, "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}}}},
+    "authority_evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject", "scope", "target", "valid_from", "valid_until", "delegation_mode", "delegated_from", "issuer_entitlement_verified", "authority_verified", "evidence_refs"],
+      "properties": {
+        "subject": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "valid_from": {"type": "string", "format": "date-time"},
+        "valid_until": {"type": ["string", "null"], "format": "date-time"},
+        "delegation_mode": {"enum": ["non_delegable", "delegable"]},
+        "delegated_from": {"type": ["string", "null"]},
+        "issuer_entitlement_verified": {"type": "boolean"},
+        "authority_verified": {"type": "boolean"},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "authority_verification_ref": {"type": "string", "pattern": "^urn:poai:authority-verification:"},
+        "root_ref": {"type": "string", "pattern": "^urn:poai:authority-root:"},
+        "grant_ref": {"type": "string", "pattern": "^urn:poai:authority-grant:"}
+      }
+    },
     "contest_or_stay": {"type": "object", "additionalProperties": false, "required": ["active_stay", "refs"], "properties": {"active_stay": {"type": "boolean"}, "refs": {"type": "array", "items": {"type": "string"}}}},
     "conflict_state": {"type": "object", "additionalProperties": false, "required": ["status", "candidate_refs"], "properties": {"status": {"enum": ["none", "unresolved", "resolved"]}, "candidate_refs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}}},
     "preservation_check": {"type": "object", "additionalProperties": false, "required": ["decision_boundary_unchanged", "future_target_unchanged", "availability_unchanged", "consideration_unchanged", "authority_mapping_unchanged"], "properties": {"decision_boundary_unchanged": {"type": "boolean"}, "future_target_unchanged": {"type": "boolean"}, "availability_unchanged": {"type": "boolean"}, "consideration_unchanged": {"type": "boolean"}, "authority_mapping_unchanged": {"type": "boolean"}}},

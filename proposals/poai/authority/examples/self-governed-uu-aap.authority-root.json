@@ -1,0 +1,51 @@
+{
+  "artifact_type": "PoAIAuthorityRoot",
+  "artifact_version": "0.1-experimental",
+  "root_id": "urn:poai:authority-root:github-matawaka-uu-aap:1",
+  "root_version": 1,
+  "root_mode": "self_governed_resource",
+  "governance_scope": "github:Matawaka/uu-aap",
+  "target": "github:Matawaka/uu-aap",
+  "accepted_actions": [
+    "poai.successor.materialization.execute",
+    "poai.materialization.policy.control"
+  ],
+  "controller_rule": {
+    "mode": "single_controller",
+    "controller_id": "github:Matawaka",
+    "controller_key_ref": "key:synthetic-uu-aap-controller"
+  },
+  "root_evidence_rule": {
+    "mode": "repository_control_publication",
+    "resource": "github:Matawaka/uu-aap",
+    "accepted_evidence_types": [
+      "github_repository_control_publication"
+    ]
+  },
+  "effective_from": "2026-07-01T00:00:00Z",
+  "effective_until": null,
+  "delegation_policy": {
+    "mode": "delegable",
+    "max_depth": 2
+  },
+  "policy_control_rule": {
+    "required_scope": "poai.materialization.policy.control"
+  },
+  "transition": {
+    "status": "genesis",
+    "previous_root_ref": null,
+    "authorized_by_previous_controller": null,
+    "authorization_evidence_refs": []
+  },
+  "claims": {
+    "legal_identity_verified": false,
+    "legal_authority_established": false,
+    "universal_authority_established": false,
+    "truth_certified": false,
+    "causal_proof_certified": false,
+    "legal_responsibility_determined": false,
+    "moral_correctness_established": false,
+    "poai_v_conformance_established": false
+  },
+  "notes": "Synthetic machine-test root. Repository-control evidence is supplied by the test harness; live publication and account-control acceptance are tracked separately in Issue #110."
+}
