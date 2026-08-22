@@ -126,6 +126,8 @@ Profiles describe evidence strength. They do not rank intelligence, truth, moral
 
 PoAI Genesis is deliberately contestable.
 
+**Primary RFC discussion:** [RFC: PoAI Genesis — Proof of Available Intelligence v0.0 — Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10)
+
 Useful challenges include:
 
 - an availability dimension that cannot be implemented;
@@ -135,7 +137,7 @@ Useful challenges include:
 - a dangling or ambiguous authority relation;
 - a case the schema cannot represent without inventing certainty.
 
-Use the repository Issues for concrete defects and the existing public Discussion for broader design alternatives.
+Use Discussion #10 for broad PoAI design alternatives and the repository Issues for concrete defects or implementation proposals.
 
 ## Language
 
