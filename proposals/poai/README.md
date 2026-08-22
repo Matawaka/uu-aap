@@ -50,6 +50,27 @@ The first executable layer contains:
 
 The schema revision is **0.0.1**. The conceptual protocol remains **Genesis v0.0** while the machine model is being tested.
 
+## Materialization and authority provenance
+
+The successor-development line now separates two additional boundaries:
+
+- [`MATERIALIZATION.md`](MATERIALIZATION.md) — when a proposed successor may become policy-recognized within a declared canonicality scope;
+- [`AUTHORITY_ROOTS.md`](AUTHORITY_ROOTS.md) — how issuer entitlement and materialization authority may be traced to an explicit policy-accepted Authority Root without turning signatures, account control or identity evidence into universal authority.
+
+The materialization machine implementation lives in [`materialization/`](materialization/README.md).
+
+The authority model keeps this chain explicit:
+
+`root acceptance -> issuer entitlement -> authority grant -> materialization authority -> policy-relative materialization`
+
+while preserving:
+
+`authority root acceptance != universal legitimacy`
+
+and:
+
+`materialization != truth`.
+
 ## Level 3 — Human Interface
 
 The experimental human-facing layer lives in [`docs/poai/`](../../docs/poai/README.md) and is publicly deployed at:
