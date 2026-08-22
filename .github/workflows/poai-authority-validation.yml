@@ -212,6 +212,58 @@ jobs:
           print('Published live execute authority established without policy-control leakage')
           PY
 
+      - name: Consume live authority in materialization dry-run
+        run: |
+          node --check proposals/poai/materialization/live/test-live-authority-consumption.js
+          node proposals/poai/materialization/live/test-live-authority-consumption.js \
+            /tmp/live-authority-verification.json \
+            /tmp/live-materialization-event.json \
+            /tmp/live-materialization-consumption.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          event_schema = json.loads(Path('proposals/poai/materialization/schema/materialization-event.schema.json').read_text(encoding='utf-8'))
+          event = json.loads(Path('/tmp/live-materialization-event.json').read_text(encoding='utf-8'))
+          check = json.loads(Path('/tmp/live-materialization-consumption.json').read_text(encoding='utf-8'))
+          Draft202012Validator(event_schema, format_checker=FormatChecker()).validate(event)
+
+          assert event['declared_disposition'] == 'materialized'
+          assert event['canonicality_claim']['status'] == 'materialized'
+          assert event['claims']['policy_evaluation_passed'] is True
+          assert event['claims']['policy_relative_canonicality_established'] is True
+          assert event['authority_evaluation']['issuer_entitlement_verified'] is True
+          assert event['authority_evaluation']['authority_verified'] is True
+          assert check['mode'] == 'dry_run_ci_only'
+          assert check['claims']['live_authority_result_consumed'] is True
+          assert check['claims']['issuer_entitlement_from_live_result'] is True
+          assert check['claims']['materialization_authority_from_live_result'] is True
+          assert check['claims']['exact_action_target_time_policy_scope_preserved'] is True
+          assert check['claims']['dry_run_policy_evaluation_passed'] is True
+          assert check['claims']['persistent_materialization_event_published'] is False
+          assert check['claims']['successor_record_published'] is False
+          assert check['claims']['repository_mutation_performed'] is False
+          assert check['claims']['automatic_browser_action_performed'] is False
+          for key in [
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]:
+              assert check['claims'][key] is False, key
+          print('Live authority consumed by materialization dry-run; no persistent action performed')
+          PY
+
+          if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json /tmp/live-materialization-event.json; then
+            echo "ERROR: live dry-run Materialization Event was incorrectly accepted as a Genesis PoAI record"; exit 1
+          else
+            echo "Expected separation confirmed: live dry-run Materialization Event is not a Genesis PoAI record"
+          fi
+
       - name: Preserve assurance boundaries
         run: |
           python - <<'PY'
