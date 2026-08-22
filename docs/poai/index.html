@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="PoAI Level 3 — browser-only verifier and record builder for Proof of Available Intelligence records.">
-  <title>PoAI Level 3 — Web Verifier & Record Builder</title>
+  <meta name="description" content="PoAI Level 3.1 — browser-only verifier and record builder with EN/RU presentation for Proof of Available Intelligence records.">
+  <title>PoAI Level 3.1 — Web Verifier & Record Builder</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -25,9 +25,9 @@
       <span>Your selected file is read by JavaScript in this browser. This interface does not send the record to a PoAI server. Browser validation is a usability layer; repository JSON Schema + Python semantic validation remain the machine-layer reference.</span>
     </section>
 
-    <section class="notice alpha-scope" aria-label="Alpha scope and limitations">
-      <strong>Pre-alpha scope: English-first human interface.</strong>
-      <span>Displayed labels may be simplified for readability, but raw protocol values remain unchanged. This interface does not certify factual truth, legal responsibility, causal proof, signatures or C2PA. EN/RU localization is deferred to a later usability iteration.</span>
+    <section class="notice alpha-scope" aria-label="Level 3.1 scope and limitations">
+      <strong>Level 3.1 successor scope: bilingual EN/RU presentation.</strong>
+      <span>Displayed labels may be translated or simplified for readability, but raw protocol values remain unchanged. Language selection affects presentation only and does not change validation results, Builder JSON or downloaded artifacts. This interface does not certify factual truth, legal responsibility, causal proof, signatures or C2PA.</span>
     </section>
 
     <nav class="tabs" aria-label="PoAI Level 3 tools">
@@ -105,12 +105,13 @@
     </section>
 
     <footer>
-      <p>PoAI Genesis v0.0 · Machine Layer v0.0.1 · Level 3 experimental human interface.</p>
+      <p>PoAI Genesis v0.0 · Machine Layer v0.0.1 · Level 3.1 successor human interface.</p>
       <p><a href="https://github.com/Matawaka/uu-aap/discussions/10">PoAI Genesis RFC Discussion #10</a> · <a href="https://github.com/Matawaka/uu-aap/tree/main/proposals/poai">Protocol files</a></p>
     </footer>
   </main>
 
   <script src="validator.js"></script>
+  <script src="i18n.js"></script>
   <script src="app.js"></script>
   <script src="accessibility.js"></script>
 </body>
