@@ -46,6 +46,7 @@ jobs:
       - name: Validate Level 3 browser interface
         run: |
           node --check docs/poai/validator.js
+          node --check docs/poai/i18n.js
           node --check docs/poai/app.js
           node --check docs/poai/accessibility.js
           node docs/poai/test-validator.js
