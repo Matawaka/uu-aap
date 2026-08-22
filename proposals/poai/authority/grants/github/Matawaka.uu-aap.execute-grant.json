@@ -1,0 +1,45 @@
+{
+  "artifact_type": "PoAIAuthorityGrant",
+  "artifact_version": "0.1-experimental",
+  "grant_id": "urn:poai:authority-grant:5b19ddbadafdd943",
+  "issued_at": "2026-08-22T22:04:00Z",
+  "root_ref": {
+    "root_id": "urn:poai:authority-root:github-matawaka-uu-aap:live",
+    "root_version": 1,
+    "digest": {
+      "canonicalization": "RFC8785-JCS",
+      "digest_algorithm": "SHA-256",
+      "digest_encoding": "hex",
+      "value": "cbc28f90591526a3fc180322410d5ad4a1a6ba6ff52806e0f8b3e4411336d79f"
+    }
+  },
+  "parent_grant_ref": null,
+  "issuer": {
+    "id": "github:Matawaka",
+    "key_ref": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A"
+  },
+  "subject": {
+    "id": "urn:poai:actor:materializer:github-matawaka-uu-aap",
+    "key_ref": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A"
+  },
+  "action_scope": "poai.successor.materialization.execute",
+  "target": "github:Matawaka/uu-aap",
+  "governance_scope": "github:Matawaka/uu-aap",
+  "valid_from": "2026-08-22T22:04:00Z",
+  "valid_until": null,
+  "delegation": {
+    "mode": "non_delegable",
+    "remaining_depth": 0
+  },
+  "policy_ref": "urn:poai:materialization-policy:github-matawaka-uu-aap-live:1",
+  "evidence_refs": [
+    "https://raw.githubusercontent.com/Matawaka/uu-aap/027bcfe354643fb15eb32d5c5c6e6313ab6b7dcb/proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json",
+    "https://raw.githubusercontent.com/Matawaka/uu-aap/5bde80e83ae6f6d19edf3bd996c35633d1603795/proposals/poai/materialization/policies/github/Matawaka.uu-aap.materialization-policy.json"
+  ],
+  "claims": {
+    "legal_identity_verified": false,
+    "universal_authority_established": false,
+    "truth_certified": false,
+    "poai_v_conformance_established": false
+  }
+}
