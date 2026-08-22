@@ -40,19 +40,23 @@ Core research invariants:
 
 `review context != decision context`
 
-`review finding != historical fact at the original Decision Boundary`
+`review evidence cutoff != decision knowledge cutoff`
+
+`multiple reviews may coexist without rewriting the reviewed record`
+
+`disagreement is a relation, not a canonical overwrite`
 
 and:
 
 `validity != completeness != truth`
 
-The current Level 3.1d implementation generates an experimental browser-local `PoAIReviewSidecar`. It deliberately remains outside the Genesis PoAI record schema and carries no scalar completeness/trust/intelligence score.
+The current Level 3.1d experiment generates a browser-local `PoAIReviewSidecar` v0.0.2 with a separate review evidence horizon and optional relations (`responds_to`, `supports`, `challenges`) to other review artifacts. It deliberately remains outside the Genesis PoAI record schema, leaves reviewer authority unknown, establishes no canonical verdict and carries no scalar completeness/trust/intelligence score.
 
 Tracking / review:
 
 - Review Context RFC: Issue #34;
-- sidecar implementation: Issue #35;
-- machine contract boundary: Issue #36;
+- completed first sidecar implementation/live acceptance: Issues #35/#36/#39;
 - conflicting review plurality: Issue #37;
 - review-time horizon / hindsight protection: Issue #38;
-- live acceptance checklist: Issue #39.
+- plurality + horizon implementation: Issue #42;
+- plurality + horizon live acceptance: Issue #43.
