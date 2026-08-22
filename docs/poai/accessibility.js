@@ -70,7 +70,8 @@
     ['PoAIBindingReceipt', 'binding-receipt.js', 'binding-receipt'],
     ['PoAISignatureEnvelope', 'signature-envelope.js', 'signature-envelope'],
     ['PoAIKeyContinuity', 'key-continuity.js', 'key-continuity'],
-    ['PoAIIdentityEvidence', 'identity-evidence.js', 'identity-evidence']
+    ['PoAIIdentityEvidence', 'identity-evidence.js', 'identity-evidence'],
+    ['PoAIAuthorityEvidence', 'authority-evidence.js', 'authority-evidence']
   ];
 
   function loadModule(index) {
