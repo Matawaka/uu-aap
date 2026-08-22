@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/poai/authority/schema/authority-grant.schema.json",
+  "title": "PoAI Authority Grant",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "grant_id", "issued_at", "root_ref", "parent_grant_ref", "issuer", "subject", "action_scope", "target", "governance_scope", "valid_from", "valid_until", "delegation", "policy_ref", "evidence_refs", "claims"],
+  "properties": {
+    "artifact_type": {"const": "PoAIAuthorityGrant"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "grant_id": {"type": "string", "pattern": "^urn:poai:authority-grant:"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "root_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["root_id", "root_version", "digest"],
+      "properties": {
+        "root_id": {"type": "string", "minLength": 1},
+        "root_version": {"type": "integer", "minimum": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "parent_grant_ref": {"type": ["string", "null"]},
+    "issuer": {"$ref": "#/$defs/actorRef"},
+    "subject": {"$ref": "#/$defs/actorRef"},
+    "action_scope": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "governance_scope": {"type": "string", "minLength": 1},
+    "valid_from": {"type": "string", "format": "date-time"},
+    "valid_until": {"type": ["string", "null"], "format": "date-time"},
+    "delegation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "remaining_depth"],
+      "properties": {
+        "mode": {"enum": ["non_delegable", "delegable"]},
+        "remaining_depth": {"type": "integer", "minimum": 0}
+      }
+    },
+    "policy_ref": {"type": "string", "minLength": 1},
+    "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legal_identity_verified", "universal_authority_established", "truth_certified", "poai_v_conformance_established"],
+      "properties": {
+        "legal_identity_verified": {"const": false},
+        "universal_authority_established": {"const": false},
+        "truth_certified": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "actorRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "key_ref"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "key_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  }
+}
