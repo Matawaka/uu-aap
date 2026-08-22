@@ -128,8 +128,8 @@
         authority_status: 'unknown'
       },
       preservation_requirements: {
-        decision_boundary: 'must_remain_unchanged',
-        knowledge_cutoff: 'must_remain_unchanged',
+        original_decision_boundary: 'must_remain_unchanged',
+        original_knowledge_cutoff: 'must_remain_unchanged',
         decision_time_future_target_epistemic_status: 'must_remain_unchanged'
       },
       review_cues: {
@@ -182,7 +182,7 @@
     if (proposedOutcome && proposedOutcome.status === 'not_realized_after_intervention' && interventions.length === 0) errors.push('not_realized_after_intervention requires intervention provenance.');
     if (proposedOutcome && proposedOutcome.causal_status === 'associated_not_proven' && interventions.length === 0) errors.push('associated_not_proven requires intervention provenance.');
     if (!sidecar.proposer || sidecar.proposer.authority_status !== 'unknown') errors.push('Proposer authority must remain unknown in this experiment.');
-    if (!sidecar.preservation_requirements || sidecar.preservation_requirements.decision_boundary !== 'must_remain_unchanged' || sidecar.preservation_requirements.knowledge_cutoff !== 'must_remain_unchanged' || sidecar.preservation_requirements.decision_time_future_target_epistemic_status !== 'must_remain_unchanged') errors.push('Preservation requirements are incomplete.');
+    if (!sidecar.preservation_requirements || sidecar.preservation_requirements.original_decision_boundary !== 'must_remain_unchanged' || sidecar.preservation_requirements.original_knowledge_cutoff !== 'must_remain_unchanged' || sidecar.preservation_requirements.decision_time_future_target_epistemic_status !== 'must_remain_unchanged') errors.push('Preservation requirements are incomplete.');
     if (!CONTRADICTION_STATES.has(sidecar.contradiction_state)) errors.push('contradiction_state is invalid.');
     if (sidecar.contradiction_state === 'present' && (!Array.isArray(sidecar.conflicting_outcome_observation_refs) || sidecar.conflicting_outcome_observation_refs.length === 0)) errors.push('Contradiction state present requires conflicting observation refs.');
     if (deepHasProhibitedKey(sidecar)) errors.push('Successor proposal contains a prohibited earlier-context or scalar-score key.');
