@@ -82,5 +82,27 @@ The first Level 3.1e experiment generates a browser-local `PoAIAppealRequestSide
 Tracking / review:
 
 - Appeal / Contest RFC: Issue #45;
-- implementation: Issue #46;
+- completed implementation: Issue #46 / PR #48;
 - live acceptance: Issue #47.
+
+### Adjudication / Resolution Sidecar
+
+[`ADJUDICATION_ARTIFACT.md`](ADJUDICATION_ARTIFACT.md)
+
+Explores a declared resolution of an Appeal Request as a separate provenance artifact rather than a mutation of the appeal, review, or original decision.
+
+Core research invariants:
+
+`appeal request != adjudication decision != executed effect != observed outcome`
+
+and:
+
+`adjudication context != appeal context != review context != decision context`
+
+The first Level 3.1f experiment generates a browser-local `PoAIAdjudicationSidecar`. It references a root decision and required Appeal Request, keeps adjudicator authority/jurisdiction unknown, records a declared disposition and optional directives, and explicitly does not establish implementation, execution, legal effect, truth, causality, or observed outcome.
+
+Tracking / review:
+
+- Adjudication RFC: Issue #49;
+- implementation: Issue #50;
+- live acceptance: Issue #51.
