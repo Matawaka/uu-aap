@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/ccrp/schema/context-admission-result.c4.schema.json",
+  "title": "CCRP/C4 Context Admission Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "ccrp_version",
+    "conformance_level",
+    "result_id",
+    "evaluated_at",
+    "operation_ref",
+    "coordination_state_ref",
+    "presented_lease_ref",
+    "decision",
+    "reason_codes",
+    "checks",
+    "source_artifacts_preserved",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CCRPContextAdmissionResult"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "ccrp_version": {"const": "0.1"},
+    "conformance_level": {"const": "CCRP/C4"},
+    "result_id": {"type": "string", "pattern": "^urn:ccrp:context-admission-result:"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "operation_ref": {"type": "string", "pattern": "^urn:ccrp:operation:"},
+    "coordination_state_ref": {"type": "string", "pattern": "^urn:ccrp:coordination-state:"},
+    "presented_lease_ref": {"type": "string", "pattern": "^urn:ccrp:lease:"},
+    "decision": {"enum": ["context_admitted", "not_admitted"]},
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "coordination_state_active",
+        "context_exact",
+        "intent_exact",
+        "owner_exact",
+        "lease_ref_exact",
+        "lease_owner_exact",
+        "epoch_current",
+        "fencing_token_current",
+        "operation_scope_contained",
+        "target_scope_contained",
+        "revision_current"
+      ],
+      "properties": {
+        "coordination_state_active": {"type": "boolean"},
+        "context_exact": {"type": "boolean"},
+        "intent_exact": {"type": "boolean"},
+        "owner_exact": {"type": "boolean"},
+        "lease_ref_exact": {"type": "boolean"},
+        "lease_owner_exact": {"type": "boolean"},
+        "epoch_current": {"type": "boolean"},
+        "fencing_token_current": {"type": "boolean"},
+        "operation_scope_contained": {"type": "boolean"},
+        "target_scope_contained": {"type": "boolean"},
+        "revision_current": {"type": "boolean"}
+      }
+    },
+    "source_artifacts_preserved": {"const": true},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_admission_established",
+        "current_execution_owner_established",
+        "lease_established",
+        "execution_admitted",
+        "materialization_permitted",
+        "canonical_state_established",
+        "poai_authority_established",
+        "historical_provenance_preserved",
+        "policy_relative_canonicality_established",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_responsibility_determined",
+        "moral_correctness_established",
+        "legal_authority_established",
+        "legal_effect_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "context_admission_established": {"type": "boolean"},
+        "current_execution_owner_established": {"type": "boolean"},
+        "lease_established": {"type": "boolean"},
+        "execution_admitted": {"const": false},
+        "materialization_permitted": {"const": false},
+        "canonical_state_established": {"const": false},
+        "poai_authority_established": {"const": false},
+        "historical_provenance_preserved": {"const": true},
+        "policy_relative_canonicality_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "legal_authority_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "context_admitted"}}},
+      "then": {
+        "properties": {
+          "reason_codes": {"maxItems": 0},
+          "claims": {
+            "properties": {
+              "context_admission_established": {"const": true},
+              "current_execution_owner_established": {"const": true},
+              "lease_established": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"decision": {"const": "not_admitted"}}},
+      "then": {
+        "properties": {
+          "reason_codes": {"minItems": 1},
+          "claims": {
+            "properties": {
+              "context_admission_established": {"const": false}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

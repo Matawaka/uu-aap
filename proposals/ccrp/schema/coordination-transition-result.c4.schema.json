@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/ccrp/schema/coordination-transition-result.c4.schema.json",
+  "title": "CCRP/C4 Coordination Transition Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "ccrp_version",
+    "conformance_level",
+    "result_id",
+    "transition_ref",
+    "transition_type",
+    "evaluated_at",
+    "decision",
+    "reason_codes",
+    "previous_state_ref",
+    "next_state",
+    "successor_lease",
+    "source_artifacts_preserved",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CCRPCoordinationTransitionResult"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "ccrp_version": {"const": "0.1"},
+    "conformance_level": {"const": "CCRP/C4"},
+    "result_id": {"type": "string", "pattern": "^urn:ccrp:coordination-transition-result:"},
+    "transition_ref": {"type": "string", "pattern": "^urn:ccrp:coordination-transition:"},
+    "transition_type": {"enum": ["pause", "resume", "handoff"]},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "decision": {"enum": ["accepted", "rejected", "hold"]},
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "previous_state_ref": {"type": "string", "pattern": "^urn:ccrp:coordination-state:"},
+    "next_state": {
+      "type": "object",
+      "required": ["artifact_type", "conformance_level", "state_id", "context_id", "coordination_status", "epoch", "fencing_token", "claims"],
+      "properties": {
+        "artifact_type": {"const": "CCRPCoordinationState"},
+        "conformance_level": {"const": "CCRP/C4"},
+        "state_id": {"type": "string", "pattern": "^urn:ccrp:coordination-state:"},
+        "context_id": {"type": "string", "pattern": "^urn:ccrp:context:"},
+        "coordination_status": {"enum": ["active", "paused"]},
+        "epoch": {"type": "integer", "minimum": 1},
+        "fencing_token": {"type": "integer", "minimum": 1},
+        "claims": {"type": "object"}
+      }
+    },
+    "successor_lease": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["artifact_type", "conformance_level", "lease_id", "epoch", "fencing_token", "status", "context_ref", "claims"],
+          "properties": {
+            "artifact_type": {"const": "CCRPExecutionLease"},
+            "conformance_level": {"const": "CCRP/C2"},
+            "lease_id": {"type": "string", "pattern": "^urn:ccrp:lease:"},
+            "epoch": {"type": "integer", "minimum": 1},
+            "fencing_token": {"type": "integer", "minimum": 1},
+            "status": {"const": "active"},
+            "context_ref": {"type": "object"},
+            "claims": {"type": "object"}
+          }
+        }
+      ]
+    },
+    "source_artifacts_preserved": {"const": true},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "transition_checked",
+        "pause_barrier_established",
+        "resume_established",
+        "handoff_established",
+        "successor_epoch_established",
+        "current_execution_owner_established",
+        "context_admission_established",
+        "execution_admitted",
+        "materialization_permitted",
+        "canonical_state_established",
+        "poai_authority_established",
+        "policy_relative_canonicality_established",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_responsibility_determined",
+        "moral_correctness_established",
+        "legal_authority_established",
+        "legal_effect_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "transition_checked": {"const": true},
+        "pause_barrier_established": {"type": "boolean"},
+        "resume_established": {"type": "boolean"},
+        "handoff_established": {"type": "boolean"},
+        "successor_epoch_established": {"type": "boolean"},
+        "current_execution_owner_established": {"type": "boolean"},
+        "context_admission_established": {"const": false},
+        "execution_admitted": {"const": false},
+        "materialization_permitted": {"const": false},
+        "canonical_state_established": {"const": false},
+        "poai_authority_established": {"const": false},
+        "policy_relative_canonicality_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "legal_authority_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  }
+}

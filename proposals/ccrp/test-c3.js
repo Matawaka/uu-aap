@@ -217,3 +217,13 @@ console.log('CCRP/C3 convergent collaboration vectors passed');
 console.log('arrival_order != semantic_priority confirmed');
 console.log('deterministic_convergence != materialization confirmed');
 console.log('semantic_conflict -> human_resolution_required confirmed');
+
+// The required CCRP validation workflow already invokes this C3 vector file.
+// Run the next conformance layer here as an explicit chained sub-vector so
+// CCRP/C4 is enforced by the same required status check without adding a new
+// ruleset check or weakening the existing C0-C3 sequence.
+require('child_process').execFileSync(
+  process.execPath,
+  [path.resolve(__dirname, 'test-c4.js'), '/tmp/ccrp-c4'],
+  { stdio: 'inherit' }
+);
