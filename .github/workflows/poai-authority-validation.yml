@@ -53,6 +53,7 @@ jobs:
               (Path('proposals/poai/authority/schema/authority-root.schema.json'), Path('proposals/poai/authority/examples/self-governed-uu-aap.authority-root.json')),
               (Path('proposals/poai/authority/schema/authority-root.schema.json'), Path('proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json')),
               (Path('proposals/poai/authority/schema/authority-grant.schema.json'), Path('/tmp/authority-grant.json')),
+              (Path('proposals/poai/authority/schema/authority-grant.schema.json'), Path('proposals/poai/authority/grants/github/Matawaka.uu-aap.execute-grant.json')),
               (Path('proposals/poai/authority/schema/authority-verification-result.schema.json'), Path('/tmp/authority-verification.json')),
           ]
           for schema_path, instance_path in pairs:
@@ -67,6 +68,7 @@ jobs:
           for artifact in \
             proposals/poai/authority/examples/self-governed-uu-aap.authority-root.json \
             proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json \
+            proposals/poai/authority/grants/github/Matawaka.uu-aap.execute-grant.json \
             /tmp/authority-grant.json \
             /tmp/authority-verification.json
           do
@@ -130,6 +132,41 @@ jobs:
           ]:
               assert claims[key] is False, key
           print('Live Root publication/acceptance boundary preserved')
+          PY
+
+      - name: Validate live execute grant declaration
+        run: |
+          node --check proposals/poai/authority/live/test-live-grant-declaration.js
+          node proposals/poai/authority/live/test-live-grant-declaration.js \
+            /tmp/live-grant-declaration.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/live-grant-declaration.json').read_text(encoding='utf-8'))
+          claims = result['claims']
+          assert claims['grant_declared'] is True
+          assert claims['grant_root_binding_valid'] is True
+          assert claims['grant_policy_binding_valid'] is True
+          assert claims['grant_scope_contained'] is True
+          assert claims['grant_publication_observed'] is False
+          assert claims['issuer_entitlement_chain_valid'] is False
+          assert claims['materialization_authority_established'] is False
+          assert claims['policy_control_authority_established'] is False
+          for key in [
+              'legal_identity_verified',
+              'legal_authority_established',
+              'universal_authority_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]:
+              assert claims[key] is False, key
+          print('Live execute grant declaration boundary preserved')
           PY
 
       - name: Preserve assurance boundaries
