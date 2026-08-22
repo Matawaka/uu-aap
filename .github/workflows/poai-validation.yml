@@ -1,0 +1,45 @@
+name: PoAI Genesis validation
+
+on:
+  pull_request:
+    paths:
+      - "proposals/poai/**"
+      - ".github/workflows/poai-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "proposals/poai/**"
+      - ".github/workflows/poai-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate public examples
+        run: |
+          python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            proposals/poai/examples/vibe-coding-reality.poai.json \
+            proposals/poai/examples/quasi-existent-future.synthetic.poai.json \
+            proposals/poai/examples/quasi-existent-future.synthetic.successor.poai.json
+
+      - name: Run interoperability vectors
+        run: |
+          python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            --test-vectors proposals/poai/test-vectors
