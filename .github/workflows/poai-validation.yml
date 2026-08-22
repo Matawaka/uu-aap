@@ -52,4 +52,7 @@ jobs:
           node --check docs/poai/app.js
           node --check docs/poai/accessibility.js
           node docs/poai/test-validator.js
-          node docs/poai/test-builder.js
+          node docs/poai/test-builder.js /tmp/deeper-builder.poai.json
+          python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            /tmp/deeper-builder.poai.json
