@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/ccrp/schema/coordination-transition.c4.schema.json",
+  "title": "CCRP/C4 Coordination Transition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "ccrp_version",
+    "conformance_level",
+    "transition_id",
+    "transition_type",
+    "context_id",
+    "intent_ref",
+    "from_owner",
+    "to_owner",
+    "previous_epoch",
+    "previous_fencing_token",
+    "previous_lease_ref",
+    "execution_lineage_id",
+    "observed_current_revision",
+    "operation_scope",
+    "target_scope",
+    "requested_at",
+    "reason"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CCRPCoordinationTransition"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "ccrp_version": {"const": "0.1"},
+    "conformance_level": {"const": "CCRP/C4"},
+    "transition_id": {"type": "string", "pattern": "^urn:ccrp:coordination-transition:"},
+    "transition_type": {"enum": ["pause", "resume", "handoff"]},
+    "context_id": {"type": "string", "pattern": "^urn:ccrp:context:"},
+    "intent_ref": {"$ref": "#/$defs/intent"},
+    "from_owner": {"$ref": "#/$defs/owner"},
+    "to_owner": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/owner"}]},
+    "previous_epoch": {"type": "integer", "minimum": 1},
+    "previous_fencing_token": {"type": "integer", "minimum": 1},
+    "previous_lease_ref": {"type": "string", "pattern": "^urn:ccrp:lease:"},
+    "execution_lineage_id": {"type": "string", "pattern": "^urn:ccrp:execution-lineage:"},
+    "observed_current_revision": {"type": "string", "minLength": 1},
+    "operation_scope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "target_scope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "requested_at": {"type": "string", "format": "date-time"},
+    "reason": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "owner": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "session_id"],
+      "properties": {
+        "actor_id": {"type": "string", "minLength": 1},
+        "session_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent_id", "intent_revision", "intent_digest"],
+      "properties": {
+        "intent_id": {"type": "string", "pattern": "^urn:ccrp:intent:"},
+        "intent_revision": {"type": "integer", "minimum": 1},
+        "intent_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"transition_type": {"const": "pause"}}},
+      "then": {"properties": {"to_owner": {"const": null}}}
+    },
+    {
+      "if": {"properties": {"transition_type": {"enum": ["resume", "handoff"]}}},
+      "then": {"properties": {"to_owner": {"$ref": "#/$defs/owner"}}}
+    }
+  ]
+}
