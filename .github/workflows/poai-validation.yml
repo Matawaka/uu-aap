@@ -48,6 +48,7 @@ jobs:
         run: |
           node --check docs/poai/validator.js
           node --check docs/poai/i18n.js
+          node --check docs/poai/dynamic-i18n.js
           node --check docs/poai/builder-core.js
           node --check docs/poai/builder-ui.js
           node --check docs/poai/app.js
@@ -66,6 +67,7 @@ jobs:
           node --check docs/poai/identity-evidence.js
           node --check docs/poai/authority-evidence.js
           node docs/poai/test-validator.js
+          node docs/poai/test-dynamic-i18n.js
           node docs/poai/test-builder.js /tmp/deeper-builder.poai.json
           node docs/poai/test-review-cues.js
           node docs/poai/test-review-sidecar.js /tmp/review-sidecar.json
