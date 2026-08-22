@@ -1,0 +1,124 @@
+name: PoAI Authority Root validation
+
+on:
+  pull_request:
+    paths:
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - "proposals/poai/AUTHORITY_ROOTS.md"
+      - ".github/workflows/poai-authority-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - "proposals/poai/AUTHORITY_ROOTS.md"
+      - ".github/workflows/poai-authority-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  authority-root:
+    name: Authority Root / issuer entitlement
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Run authority semantic vectors
+        run: |
+          node --check proposals/poai/authority/tools/authority-core.js
+          node --check proposals/poai/authority/test-authority.js
+          node proposals/poai/authority/test-authority.js \
+            /tmp/authority-grant.json \
+            /tmp/authority-verification.json
+
+      - name: Validate authority schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          pairs = [
+              (Path('proposals/poai/authority/schema/authority-root.schema.json'), Path('proposals/poai/authority/examples/self-governed-uu-aap.authority-root.json')),
+              (Path('proposals/poai/authority/schema/authority-grant.schema.json'), Path('/tmp/authority-grant.json')),
+              (Path('proposals/poai/authority/schema/authority-verification-result.schema.json'), Path('/tmp/authority-verification.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Confirm authority artifacts are outside Genesis records
+        run: |
+          for artifact in \
+            proposals/poai/authority/examples/self-governed-uu-aap.authority-root.json \
+            /tmp/authority-grant.json \
+            /tmp/authority-verification.json
+          do
+            if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json "$artifact"; then
+              echo "ERROR: authority artifact was incorrectly accepted as a Genesis PoAI record: $artifact"; exit 1
+            else
+              echo "Expected separation confirmed: $artifact"
+            fi
+          done
+
+      - name: Confirm authority result feeds materialization
+        run: |
+          node --check proposals/poai/materialization/test-materialization.js
+          node proposals/poai/materialization/test-materialization.js \
+            /tmp/materialization-event.json \
+            /tmp/materialization-candidate.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          pairs = [
+              (Path('proposals/poai/materialization/schema/materialization-policy.schema.json'), Path('proposals/poai/materialization/examples/synthetic-shipment.materialization-policy.json')),
+              (Path('proposals/poai/materialization/schema/materialization-event.schema.json'), Path('/tmp/materialization-event.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Preserve assurance boundaries
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          result = json.loads(Path('/tmp/authority-verification.json').read_text())
+          assert result['claims']['issuer_entitlement_chain_valid'] is True
+          assert result['claims']['materialization_authority_established'] is True
+          for key in [
+              'legal_identity_verified',
+              'legal_authority_established',
+              'universal_authority_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]:
+              assert result['claims'][key] is False, key
+          print('Authority assurance boundary preserved')
+          PY
