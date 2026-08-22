@@ -61,6 +61,17 @@
     };
   }
 
+  function syncSectionHelp() {
+    const ru = document.documentElement.lang === 'ru';
+    const notes = document.querySelectorAll('.builder-section > .footnote');
+    if (notes[0]) notes[0].innerHTML = ru
+      ? 'В первом инкременте — один ресурс. Каждое измерение доступности остаётся <code>unknown</code>, пока вы явно не укажете иное.'
+      : 'One resource in this first increment. Every availability dimension defaults to <code>unknown</code> unless you explicitly state otherwise.';
+    if (notes[1]) notes[1].textContent = ru
+      ? 'Выбор E1–E4 является вашим утверждением; конструктор не подтверждает этот класс доказательств.'
+      : 'Selecting E1–E4 is a claim you make; the Builder does not verify that class.';
+  }
+
   function install() {
     const original = $('buildBtn');
     if (!original || !window.PoAIBuilder) return;
@@ -75,6 +86,9 @@
       const verifierTab = document.querySelector('[data-tab="verifier"]');
       if (verifierTab) verifierTab.click();
     });
+
+    syncSectionHelp();
+    new MutationObserver(syncSectionHelp).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   }
 
   document.addEventListener('DOMContentLoaded', install);
