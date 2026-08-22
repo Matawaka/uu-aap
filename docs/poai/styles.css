@@ -31,6 +31,9 @@ h3 { margin: 20px 0 10px; font-size: 15px; }
 .lede { max-width: 820px; font-size: 18px; color: var(--muted); }
 .principles { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .principles span, .badge { border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; background: var(--surface-2); font-size: 12px; font-weight: 650; }
+.language-switch { display: flex; gap: 6px; margin-top: 20px; }
+.language-switch button { min-width: 46px; padding: 7px 10px; }
+.language-switch button.active { background: var(--accent); color: white; border-color: var(--accent); }
 .notice { margin: 24px 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); display: grid; gap: 4px; }
 .notice span, .summary, .muted, .footnote { color: var(--muted); }
 .alpha-scope { margin-top: -12px; }
