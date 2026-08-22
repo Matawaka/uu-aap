@@ -1,0 +1,17 @@
+name: Implementation feedback
+description: Report schema, C2PA, EPUB/PDF or tooling issues
+body:
+  - type: textarea
+    id: environment
+    attributes:
+      label: Implementation context
+  - type: textarea
+    id: issue
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected interoperable behavior
