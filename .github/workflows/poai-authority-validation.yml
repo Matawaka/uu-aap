@@ -2,11 +2,6 @@ name: PoAI Authority Root validation
 
 on:
   pull_request:
-    paths:
-      - "proposals/poai/authority/**"
-      - "proposals/poai/materialization/**"
-      - "proposals/poai/AUTHORITY_ROOTS.md"
-      - ".github/workflows/poai-authority-validation.yml"
   push:
     branches:
       - main
@@ -16,12 +11,16 @@ on:
       - "proposals/poai/AUTHORITY_ROOTS.md"
       - ".github/workflows/poai-authority-validation.yml"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   authority-root:
-    name: Authority Root / issuer entitlement
+    name: PoAI Authority Root validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
