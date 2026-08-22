@@ -17,8 +17,8 @@
     ['.principles span:nth-child(4)', 'proof ≠ truth', 'доказательство ≠ истина'],
     ['main > .notice:first-of-type strong', 'Local-first experimental interface.', 'Экспериментальный интерфейс local-first.'],
     ['main > .notice:first-of-type span', 'Your selected file is read by JavaScript in this browser. This interface does not send the record to a PoAI server. Browser validation is a usability layer; repository JSON Schema + Python semantic validation remain the machine-layer reference.', 'Выбранный файл читается JavaScript только в этом браузере. Интерфейс не отправляет запись на сервер PoAI. Браузерная проверка — слой удобства; эталоном машинного уровня остаются JSON Schema репозитория и семантическая проверка Python.'],
-    ['.alpha-scope strong', 'Pre-alpha scope: English-first human interface.', 'Граница Alpha v0.1: двуязычный слой представления EN/RU.'],
-    ['.alpha-scope span', 'Displayed labels may be simplified for readability, but raw protocol values remain unchanged. This interface does not certify factual truth, legal responsibility, causal proof, signatures or C2PA. EN/RU localization is deferred to a later usability iteration.', 'Отображаемые подписи могут упрощаться для чтения, но исходные значения протокола не меняются. Интерфейс не подтверждает фактическую истину, юридическую ответственность, причинность, подписи или C2PA. Переключение языка влияет только на представление.'],
+    ['.alpha-scope strong', 'Level 3.1 successor scope: bilingual EN/RU presentation.', 'Граница Level 3.1: двуязычное представление EN/RU.'],
+    ['.alpha-scope span', 'Displayed labels may be translated or simplified for readability, but raw protocol values remain unchanged. Language selection affects presentation only and does not change validation results, Builder JSON or downloaded artifacts. This interface does not certify factual truth, legal responsibility, causal proof, signatures or C2PA.', 'Отображаемые подписи могут переводиться или упрощаться для чтения, но исходные значения протокола остаются неизменными. Выбор языка влияет только на представление и не меняет результат проверки, JSON конструктора или скачиваемые артефакты. Интерфейс не подтверждает фактическую истину, юридическую ответственность, причинность, подписи или C2PA.'],
     ['[data-tab="verifier"]', 'Verifier', 'Верификатор'],
     ['[data-tab="builder"]', 'Record Builder', 'Конструктор записи'],
     ['[data-panel="verifier"] .panel:first-child .eyebrow', 'Input', 'Ввод'],
@@ -40,14 +40,13 @@
     ['.visualizer .grid.two article:nth-child(1) h3', 'Intelligence resources', 'Ресурсы интеллекта'],
     ['.visualizer .grid.two article:nth-child(2) h3', 'Authority', 'Полномочия'],
     ['.visualizer > article.card h3', 'Evidence & contestability', 'Доказательства и оспариваемость'],
-    ['#resourceTable + *', '', ''],
     ['[data-panel="builder"] .eyebrow', 'Guided authoring', 'Пошаговое создание'],
     ['[data-panel="builder"] h2', 'Start a PoAI/T record', 'Создать запись PoAI/T'],
     ['[data-panel="builder"] .panel-head .badge', 'Starts at E0 self-declaration', 'Начинается с E0 self-declaration'],
     ['[data-panel="builder"] > .panel > .summary', 'The builder intentionally defaults uncertain fields to unknown. It does not upgrade evidence, authority or availability merely because a field can be filled in.', 'Конструктор намеренно оставляет неопределённые поля как unknown. Сам факт заполнения поля не повышает уровень доказательств, полномочий или доступности.'],
     ['#buildBtn', 'Generate draft and validate', 'Создать черновик и проверить'],
     ['[data-panel="builder"] .footnote', 'Generated records are drafts. Add actual intelligence resources, evidence references, authority facts, alternatives, constraints and successor semantics before making stronger claims.', 'Созданные записи являются черновиками. Перед более сильными утверждениями добавьте реальные ресурсы интеллекта, ссылки на доказательства, факты полномочий, альтернативы, ограничения и семантику преемников.'],
-    ['footer p:first-child', 'PoAI Genesis v0.0 · Machine Layer v0.0.1 · Level 3 experimental human interface.', 'PoAI Genesis v0.0 · Machine Layer v0.0.1 · экспериментальный human interface Level 3.1.']
+    ['footer p:first-child', 'PoAI Genesis v0.0 · Machine Layer v0.0.1 · Level 3.1 successor human interface.', 'PoAI Genesis v0.0 · Machine Layer v0.0.1 · human interface Level 3.1 — линия-преемник.']
   ];
 
   const labelMap = {
@@ -102,7 +101,7 @@
 
   function setText(selector, en, ru) {
     const element = document.querySelector(selector);
-    if (element && (en || ru)) element.textContent = choose(en, ru);
+    if (element) element.textContent = choose(en, ru);
   }
 
   function translateStatic() {
@@ -121,9 +120,7 @@
     builderLabels.forEach(([selector, enLabel, ruLabel, enPlaceholder, ruPlaceholder]) => {
       const input = document.querySelector(selector);
       const label = input && input.closest('label');
-      if (label) {
-        Array.from(label.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).forEach((node) => { node.textContent = choose(enLabel, ruLabel); });
-      }
+      if (label) Array.from(label.childNodes).filter((node) => node.nodeType === Node.TEXT_NODE).forEach((node) => { node.textContent = choose(enLabel, ruLabel); });
       if (input && (enPlaceholder || ruPlaceholder)) input.placeholder = choose(enPlaceholder, ruPlaceholder);
     });
 
@@ -149,6 +146,11 @@
   }
 
   function translateBadges() {
+    const status = document.getElementById('statusBadge');
+    if (status) {
+      if (status.textContent === 'WAITING' || status.textContent === 'ОЖИДАНИЕ') status.textContent = language === 'ru' ? 'ОЖИДАНИЕ' : 'WAITING';
+      if (status.textContent === 'INVALID JSON' || status.textContent === 'НЕКОРРЕКТНЫЙ JSON') status.textContent = language === 'ru' ? 'НЕКОРРЕКТНЫЙ JSON' : 'INVALID JSON';
+    }
     const privacy = document.getElementById('privacyBadge');
     if (privacy) privacy.textContent = language === 'ru' ? 'Назначение загрузки: только этот браузер' : 'Upload destination: this browser only';
     const truth = document.getElementById('truthBadge');
