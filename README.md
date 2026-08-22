@@ -29,6 +29,22 @@ UU-AAP adds that layer.
 
 The pilot intentionally does **not** claim profile V yet: no canonical PDF/EPUB artifact has been selected and cryptographically bound. This makes the example useful for testing whether the protocol can represent incomplete but honest provenance rather than forcing a false appearance of completeness.
 
+## Research proposals
+
+### Proof of Available Intelligence (PoAI) — Genesis
+
+PoAI is an adjacent, non-normative research proposal exploring a broader question:
+
+> **What relevant human, machine, institutional or documentary intelligence was actually available to a specific decision before it became history?**
+
+PoAI does **not** change UU-AAP v0.1 conformance. It is being developed under [`proposals/poai/`](proposals/poai/) so the boundary between authorship governance and decision-level available intelligence remains inspectable.
+
+- [PoAI start page / Quick Start](proposals/poai/README.md)
+- [Краткий путеводитель на русском](proposals/poai/README.ru.md)
+- [Genesis principles](proposals/poai/PRINCIPLES.md)
+- [Machine-readable schema](proposals/poai/schema/poai-record.schema.json)
+- [Test vectors](proposals/poai/test-vectors/)
+
 ## Join the public review
 
 - **Broad design discussion:** [What should accountable AI-augmented authorship mean? — Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8)
