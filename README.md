@@ -42,6 +42,7 @@ PoAI does **not** change UU-AAP v0.1 conformance. It is being developed under [`
 - [PoAI start page / Quick Start](proposals/poai/README.md)
 - [Краткий путеводитель на русском](proposals/poai/README.ru.md)
 - [Genesis principles](proposals/poai/PRINCIPLES.md)
+- [Machine layer](proposals/poai/MACHINE_LAYER.md)
 - [Machine-readable schema](proposals/poai/schema/poai-record.schema.json)
 - [Test vectors](proposals/poai/test-vectors/)
 
