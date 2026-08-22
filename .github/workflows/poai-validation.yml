@@ -63,6 +63,7 @@ jobs:
           node --check docs/poai/binding-receipt.js
           node --check docs/poai/signature-envelope.js
           node --check docs/poai/key-continuity.js
+          node --check docs/poai/identity-evidence.js
           node docs/poai/test-validator.js
           node docs/poai/test-builder.js /tmp/deeper-builder.poai.json
           node docs/poai/test-review-cues.js
@@ -76,6 +77,7 @@ jobs:
           node docs/poai/test-binding-receipt.js /tmp/binding-receipt.json
           node docs/poai/test-signature-envelope.js /tmp/signature-envelope.json
           node docs/poai/test-key-continuity.js /tmp/key-continuity-envelope.json
+          node docs/poai/test-identity-evidence.js /tmp/identity-evidence.json
           python proposals/poai/tools/validate_poai.py \
             --schema proposals/poai/schema/poai-record.schema.json \
             /tmp/deeper-builder.poai.json
@@ -158,4 +160,12 @@ jobs:
             echo "ERROR: experimental Key Continuity Envelope was incorrectly accepted as a Genesis PoAI record"; exit 1
           else
             echo "Expected separation confirmed: Key Continuity Envelope is outside the Genesis PoAI record schema"
+          fi
+
+      - name: Confirm Identity Evidence Envelope is not a Genesis PoAI record
+        run: |
+          if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json /tmp/identity-evidence.json; then
+            echo "ERROR: experimental Identity Evidence Envelope was incorrectly accepted as a Genesis PoAI record"; exit 1
+          else
+            echo "Expected separation confirmed: Identity Evidence Envelope is outside the Genesis PoAI record schema"
           fi
