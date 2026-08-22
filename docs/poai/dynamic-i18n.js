@@ -16,6 +16,8 @@
     ['DIGEST ONLY · NOT A SIGNATURE', 'ТОЛЬКО ДАЙДЖЕСТ · НЕ ПОДПИСЬ'],
     ['Compute SHA-256', 'Вычислить SHA-256'],
     ['Download Binding Receipt', 'Скачать квитанцию привязки'],
+    ['RFC 8785 JCS → UTF-8 → SHA-256. A digest does not establish identity, authority, truth, or PoAI/V.', 'RFC 8785 JCS → UTF-8 → SHA-256. Дайджест не устанавливает идентичность, полномочия, истинность или PoAI/V.'],
+    ['Load or paste JSON above.', 'Загрузите или вставьте JSON выше.'],
 
     // Level 4.0b.
     ['Ed25519 signature binding', 'Привязка подписью Ed25519'],
@@ -24,6 +26,8 @@
     ['Verify signature', 'Проверить подпись'],
     ['Download Signature Envelope', 'Скачать конверт подписи'],
     ['Load Signature Envelope', 'Загрузить конверт подписи'],
+    ['RFC 8785 + SHA-256 → domain-separated statement → Ed25519. A valid signature does not prove identity, authority, truth, or PoAI/V.', 'RFC 8785 + SHA-256 → доменно-разделённое утверждение → Ed25519. Валидная подпись не доказывает идентичность, полномочия, истинность или PoAI/V.'],
+    ['The private key remains only in this tab memory and is not included in the downloaded envelope.', 'Закрытый ключ остаётся только в памяти этой вкладки и не включается в скачиваемый конверт.'],
 
     // Level 4.0c.
     ['Persistent local signer key', 'Постоянный локальный ключ подписанта'],
@@ -34,6 +38,7 @@
     ['Download Continuity Envelope', 'Скачать конверт непрерывности'],
     ['Load Continuity Envelope', 'Загрузить конверт непрерывности'],
     ['Rotate local key', 'Ротировать локальный ключ'],
+    ['A non-exportable Ed25519 private CryptoKey is stored in IndexedDB for this origin. Same-key continuity over time does not prove identity or authority.', 'Неэкспортируемый закрытый CryptoKey Ed25519 хранится в IndexedDB для этого источника (origin). Непрерывность одного и того же ключа во времени не доказывает идентичность или полномочия.'],
 
     // Level 4.0d.
     ['Signed identity evidence', 'Подписанное доказательство идентификатора'],
@@ -47,6 +52,7 @@
     ['Check publication', 'Проверить публикацию'],
     ['Download Identity Evidence', 'Скачать доказательство идентификатора'],
     ['Load Identity Evidence', 'Загрузить доказательство идентификатора'],
+    ['Binds the persistent key to a claimed external identifier. Public publication can provide observable account/repository-control evidence, but does not prove human/legal identity or create authority.', 'Связывает постоянный ключ с заявленным внешним идентификатором. Публичная публикация может дать наблюдаемое доказательство контроля аккаунта/репозитория, но не доказывает человеческую или юридическую идентичность и не создаёт полномочий.'],
 
     // Level 4.0e.
     ['Scoped authority evidence', 'Ограниченное доказательство полномочия'],
@@ -63,7 +69,8 @@
     ['Create signed authority evidence', 'Создать подписанное доказательство полномочия'],
     ['Verify evidence', 'Проверить доказательство'],
     ['Download Authority Evidence', 'Скачать доказательство полномочия'],
-    ['Load Authority Evidence', 'Загрузить доказательство полномочия']
+    ['Load Authority Evidence', 'Загрузить доказательство полномочия'],
+    ['Records a signed claim about a specific authority scope, target and validity window. Signature and publication show that evidence exists, but do not prove issuer entitlement or create materialization authority.', 'Фиксирует подписанное утверждение о конкретной области полномочия, целевом ресурсе и сроке действия. Подпись и публикация показывают существование доказательства, но не подтверждают право выдающей стороны предоставлять полномочие и не создают полномочие материализации.']
   ];
 
   // Earlier modules intentionally mixed protocol jargon with translated UI text.
@@ -171,6 +178,16 @@
     };
     if (language === 'en' && reverseTime[canonical]) return reverseTime[canonical];
 
+    const keyEn = canonical.match(/^Key\s+(.+)$/);
+    if (keyEn && language === 'ru') return `Ключ ${keyEn[1]}`;
+    const keyRu = canonical.match(/^Ключ\s+(.+)$/);
+    if (keyRu && language === 'en') return `Key ${keyRu[1]}`;
+
+    const epochEn = canonical.match(/^epoch\s+(\d+)$/i);
+    if (epochEn && language === 'ru') return `эпоха ${epochEn[1]}`;
+    const epochRu = canonical.match(/^эпоха\s+(\d+)$/i);
+    if (epochRu && language === 'en') return `epoch ${epochRu[1]}`;
+
     return language === 'ru' ? (statusEnToRu.get(canonical) || canonical) : canonical;
   }
 
@@ -198,6 +215,13 @@
     });
   }
 
+  function translateHelperElement(element, language) {
+    if (!element || element.children.length) return;
+    let next = translateExactText(element.textContent, language);
+    next = translateStatusText(next, language);
+    if (next !== element.textContent) element.textContent = next;
+  }
+
   function apply(languageValue) {
     if (typeof document === 'undefined') return;
     const language = languageValue || currentLanguage();
@@ -207,10 +231,8 @@
     });
     document.querySelectorAll('.form-grid label').forEach((label) => translateLabelTextNodes(label, language));
 
-    document.querySelectorAll('.summary').forEach((element) => {
-      if (element.children.length) return;
-      const next = translateStatusText(element.textContent, language);
-      if (next !== element.textContent) element.textContent = next;
+    document.querySelectorAll('.summary, .footnote, .panel > p').forEach((element) => {
+      translateHelperElement(element, language);
     });
   }
 
