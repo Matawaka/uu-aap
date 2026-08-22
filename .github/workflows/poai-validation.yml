@@ -54,10 +54,12 @@ jobs:
           node --check docs/poai/accessibility.js
           node --check docs/poai/review-cues.js
           node --check docs/poai/review-sidecar.js
+          node --check docs/poai/appeal-sidecar.js
           node docs/poai/test-validator.js
           node docs/poai/test-builder.js /tmp/deeper-builder.poai.json
           node docs/poai/test-review-cues.js
           node docs/poai/test-review-sidecar.js /tmp/review-sidecar.json
+          node docs/poai/test-appeal-sidecar.js /tmp/appeal-sidecar.json
           python proposals/poai/tools/validate_poai.py \
             --schema proposals/poai/schema/poai-record.schema.json \
             /tmp/deeper-builder.poai.json
@@ -71,4 +73,15 @@ jobs:
             exit 1
           else
             echo "Expected separation confirmed: Review Sidecar is outside the Genesis PoAI record schema"
+          fi
+
+      - name: Confirm Appeal Request Sidecar is not a Genesis PoAI record
+        run: |
+          if python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            /tmp/appeal-sidecar.json; then
+            echo "ERROR: experimental Appeal Request Sidecar was incorrectly accepted as a Genesis PoAI record"
+            exit 1
+          else
+            echo "Expected separation confirmed: Appeal Request Sidecar is outside the Genesis PoAI record schema"
           fi

@@ -58,5 +58,29 @@ Tracking / review:
 - completed first sidecar implementation/live acceptance: Issues #35/#36/#39;
 - conflicting review plurality: Issue #37;
 - review-time horizon / hindsight protection: Issue #38;
-- plurality + horizon implementation: Issue #42;
+- completed plurality + horizon implementation: Issue #42 / PR #44;
 - plurality + horizon live acceptance: Issue #43.
+
+### Appeal / Contest Request Sidecar
+
+[`APPEAL_ARTIFACT.md`](APPEAL_ARTIFACT.md)
+
+Explores the act of contesting a decision or a later review as a separate provenance-bearing request rather than a mutation of the object being challenged.
+
+Core research invariants:
+
+`appeal request != adjudication != reversal`
+
+`appeal context != review context != decision context`
+
+and:
+
+`requested effect != established effect`
+
+The first Level 3.1e experiment generates a browser-local `PoAIAppealRequestSidecar`. It can target the root decision record or a specific Review Sidecar while retaining an explicit root `decision_record_id`. Appellant standing/authority remain unknown, requested actions establish no effect, and appeal-time evidence remains in a separate appeal horizon.
+
+Tracking / review:
+
+- Appeal / Contest RFC: Issue #45;
+- implementation: Issue #46;
+- live acceptance: Issue #47.
