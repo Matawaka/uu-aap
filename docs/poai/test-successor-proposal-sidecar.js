@@ -48,8 +48,8 @@ assert.strictEqual(proposal.proposed_successor.proposed_outcome.status, 'not_rea
 assert.strictEqual(proposal.proposed_successor.proposed_outcome.causal_status, 'associated_not_proven');
 assert.deepStrictEqual(proposal.proposed_successor.proposed_outcome.intervention_refs, ['intervention:synthetic-reroute-expedite']);
 assert.strictEqual(proposal.proposer.authority_status, 'unknown');
-assert.strictEqual(proposal.preservation_requirements.decision_boundary, 'must_remain_unchanged');
-assert.strictEqual(proposal.preservation_requirements.knowledge_cutoff, 'must_remain_unchanged');
+assert.strictEqual(proposal.preservation_requirements.original_decision_boundary, 'must_remain_unchanged');
+assert.strictEqual(proposal.preservation_requirements.original_knowledge_cutoff, 'must_remain_unchanged');
 assert.strictEqual(proposal.preservation_requirements.decision_time_future_target_epistemic_status, 'must_remain_unchanged');
 assert.strictEqual(proposal.review_cues.source_record_validated, true);
 assert.strictEqual(proposal.review_cues.outcome_observations_present, true);
