@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/poai/materialization/schema/materialization-policy.schema.json",
+  "title": "PoAI Materialization Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "policy_id", "policy_version", "canonicality_scope", "applies_to", "required_authority_scope", "candidate_binding_rule", "authority_verification_rule", "conflict_rule", "appeal_or_stay_rule", "effective_from", "effective_until", "supersedes_policy", "claims"],
+  "properties": {
+    "artifact_type": {"const": "PoAIMaterializationPolicy"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "policy_id": {"type": "string", "pattern": "^urn:poai:materialization-policy:"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "canonicality_scope": {"type": "string", "minLength": 1},
+    "applies_to": {"type": "object", "additionalProperties": false, "required": ["target", "source_record_prefix"], "properties": {"target": {"type": "string", "minLength": 1}, "source_record_prefix": {"type": "string", "minLength": 1}}},
+    "required_authority_scope": {"const": "poai.successor.materialization.execute"},
+    "candidate_binding_rule": {"type": "object", "additionalProperties": false, "required": ["canonicalization", "digest_algorithm", "digest_encoding"], "properties": {"canonicalization": {"const": "RFC8785-JCS"}, "digest_algorithm": {"const": "SHA-256"}, "digest_encoding": {"const": "hex"}}},
+    "authority_verification_rule": {"type": "object", "additionalProperties": false, "required": ["require_verified_authority", "require_issuer_entitlement", "required_target", "allowed_delegation_modes"], "properties": {"require_verified_authority": {"const": true}, "require_issuer_entitlement": {"const": true}, "required_target": {"type": "string", "minLength": 1}, "allowed_delegation_modes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["non_delegable", "delegable"]}}}},
+    "conflict_rule": {"type": "object", "additionalProperties": false, "required": ["mode"], "properties": {"mode": {"enum": ["single_head_no_unresolved_conflict", "allow_multiple_heads", "defer_on_conflict"]}}},
+    "appeal_or_stay_rule": {"type": "object", "additionalProperties": false, "required": ["active_stay_blocks_materialization"], "properties": {"active_stay_blocks_materialization": {"type": "boolean"}}},
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"type": ["string", "null"], "format": "date-time"},
+    "supersedes_policy": {"type": ["string", "null"]},
+    "claims": {"type": "object", "additionalProperties": false, "required": ["truth_certified", "causal_proof_certified", "legal_responsibility_determined", "universal_canonicality_established", "poai_v_conformance_established"], "properties": {"truth_certified": {"const": false}, "causal_proof_certified": {"const": false}, "legal_responsibility_determined": {"const": false}, "universal_canonicality_established": {"const": false}, "poai_v_conformance_established": {"const": false}}},
+    "notes": {"type": ["string", "null"]}
+  }
+}

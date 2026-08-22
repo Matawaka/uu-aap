@@ -44,6 +44,45 @@ jobs:
             --schema proposals/poai/schema/poai-record.schema.json \
             --test-vectors proposals/poai/test-vectors
 
+      - name: Validate materialization machine layer
+        run: |
+          node --check proposals/poai/materialization/tools/materialization-core.js
+          node --check proposals/poai/materialization/test-materialization.js
+          node proposals/poai/materialization/test-materialization.js \
+            /tmp/materialization-event.json \
+            /tmp/materialization-candidate.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          pairs = [
+              (Path('proposals/poai/materialization/schema/materialization-policy.schema.json'), Path('proposals/poai/materialization/examples/synthetic-shipment.materialization-policy.json')),
+              (Path('proposals/poai/materialization/schema/materialization-event.schema.json'), Path('/tmp/materialization-event.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+          python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            /tmp/materialization-candidate.json
+
+      - name: Confirm materialization artifacts are not Genesis PoAI records
+        run: |
+          if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json proposals/poai/materialization/examples/synthetic-shipment.materialization-policy.json; then
+            echo "ERROR: Materialization Policy was incorrectly accepted as a Genesis PoAI record"; exit 1
+          else
+            echo "Expected separation confirmed: Materialization Policy is outside the Genesis PoAI record schema"
+          fi
+          if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json /tmp/materialization-event.json; then
+            echo "ERROR: Materialization Event was incorrectly accepted as a Genesis PoAI record"; exit 1
+          else
+            echo "Expected separation confirmed: Materialization Event is outside the Genesis PoAI record schema"
+          fi
+
       - name: Validate browser interface and experimental artifacts
         run: |
           node --check docs/poai/validator.js

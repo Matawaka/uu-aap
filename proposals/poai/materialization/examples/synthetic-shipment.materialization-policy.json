@@ -1,0 +1,40 @@
+{
+  "artifact_type": "PoAIMaterializationPolicy",
+  "artifact_version": "0.1-experimental",
+  "policy_id": "urn:poai:materialization-policy:synthetic-shipment-single-head:1",
+  "policy_version": 1,
+  "canonicality_scope": "github:Matawaka/uu-aap",
+  "applies_to": {
+    "target": "github:Matawaka/uu-aap",
+    "source_record_prefix": "urn:poai:record:synthetic-shipment:"
+  },
+  "required_authority_scope": "poai.successor.materialization.execute",
+  "candidate_binding_rule": {
+    "canonicalization": "RFC8785-JCS",
+    "digest_algorithm": "SHA-256",
+    "digest_encoding": "hex"
+  },
+  "authority_verification_rule": {
+    "require_verified_authority": true,
+    "require_issuer_entitlement": true,
+    "required_target": "github:Matawaka/uu-aap",
+    "allowed_delegation_modes": ["non_delegable"]
+  },
+  "conflict_rule": {
+    "mode": "single_head_no_unresolved_conflict"
+  },
+  "appeal_or_stay_rule": {
+    "active_stay_blocks_materialization": true
+  },
+  "effective_from": "2026-07-01T00:00:00Z",
+  "effective_until": null,
+  "supersedes_policy": null,
+  "claims": {
+    "truth_certified": false,
+    "causal_proof_certified": false,
+    "legal_responsibility_determined": false,
+    "universal_canonicality_established": false,
+    "poai_v_conformance_established": false
+  },
+  "notes": "Synthetic policy used only to exercise the PoAI Materialization Boundary. It is not evidence of real Matawaka materialization authority."
+}
