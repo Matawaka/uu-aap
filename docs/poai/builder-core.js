@@ -44,11 +44,13 @@
   }
 
   function legacyResource(source) {
+    const legacyType = pick(source.resourceType, RESOURCE_TYPES, 'human_judgment');
+    const defaultActorRef = legacyType === 'human_judgment';
     return {
       label: source.resourceLabel,
-      type: source.resourceType,
+      type: legacyType,
       notes: source.resourceNotes,
-      actorRef: source.resourceActorRef !== false,
+      actorRef: source.resourceActorRef === true ? true : source.resourceActorRef === false ? false : defaultActorRef,
       availabilityOverall: source.availabilityOverall,
       availability: {
         identity: source.availabilityIdentity,
