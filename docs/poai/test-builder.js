@@ -38,7 +38,7 @@ function baseInput() {
     futureEpistemicStatus: 'probable',
     futureProbability: '0.72',
     outcomeStatus: 'not_yet_observable',
-    contestabilityChannel: 'https://github.com/Matawaka/uu-aap/issues/24',
+    contestabilityChannel: 'https://github.com/Matawaka/uu-aap/issues/27',
     appealAvailable: false
   };
 }
@@ -83,9 +83,85 @@ const withIntervention = buildRecord({
 assert.strictEqual(validatePoAI(withIntervention).valid, true);
 assert.strictEqual(withIntervention.outcome.intervention.causal_status, 'associated_not_proven');
 
-const en = buildRecord({ ...baseInput(), uiLanguage: 'en' });
-const ru = buildRecord({ ...baseInput(), uiLanguage: 'ru' });
-assert.deepStrictEqual(en, ru, 'UI language must not affect machine record output');
+function augmentedAntInput() {
+  const unknownDimensions = {
+    identity: 'unknown', discoverability: 'unknown', reachability: 'unknown', authorization: 'unknown',
+    temporalFit: 'unknown', contextSufficiency: 'unknown', executionCapability: 'unknown', delivery: 'unknown'
+  };
+  return {
+    label: 'Respond to a threat visible from an augmented vantage point',
+    actorName: 'Augmented observer',
+    subjectId: 'decision:test:augmented-ant',
+    recordId: 'urn:poai:record:test:augmented-ant:1',
+    authorityStatus: 'limited',
+    authorityScopes: ['observe', 'recommend', 'decide'],
+    resources: [
+      {
+        label: 'Human evaluative contribution',
+        type: 'human_judgment',
+        actorRef: true,
+        availabilityOverall: 'available',
+        availability: { ...unknownDimensions, identity: 'available', reachability: 'available', temporalFit: 'available' },
+        considerationStatus: 'relied_upon',
+        considerationSummary: 'The human integrated the available signals into an evaluative recommendation.',
+        evidenceClass: 'E0', evidenceType: 'self_declaration', evidenceAvailability: 'builder_session'
+      },
+      {
+        label: 'AI augmentation system',
+        type: 'ai_system',
+        actorRef: false,
+        availabilityOverall: 'available',
+        availability: { ...unknownDimensions, identity: 'available', authorization: 'available', delivery: 'available' },
+        considerationStatus: 'relied_upon',
+        evidenceClass: 'E0', evidenceType: 'self_declaration', evidenceAvailability: 'builder_session'
+      },
+      {
+        label: 'Threat forecasting model',
+        type: 'forecasting_model',
+        actorRef: false,
+        availabilityOverall: 'partially_available',
+        availability: { ...unknownDimensions, identity: 'available', temporalFit: 'available', contextSufficiency: 'partial' },
+        considerationStatus: 'considered',
+        evidenceClass: 'E0', evidenceType: 'self_declaration', evidenceAvailability: 'builder_session'
+      },
+      {
+        label: 'Colony expert group',
+        type: 'expert_group',
+        actorRef: false,
+        availabilityOverall: 'unknown',
+        availability: unknownDimensions,
+        considerationStatus: 'invoked',
+        evidenceClass: 'E0', evidenceType: 'self_declaration', evidenceAvailability: 'builder_session'
+      }
+    ],
+    futureEnabled: true,
+    futureLabel: 'Threat reaches the colony before adaptation',
+    futureEpistemicStatus: 'probable',
+    futureProbability: 0.64,
+    outcomeStatus: 'not_yet_observable',
+    contestabilityChannel: 'https://github.com/Matawaka/uu-aap/issues/27'
+  };
+}
 
-if (process.argv[2]) fs.writeFileSync(process.argv[2], JSON.stringify(record, null, 2));
-console.log('PoAI deeper Builder tests passed.');
+const augmentedAnt = buildRecord(augmentedAntInput());
+const augmentedValidation = validatePoAI(augmentedAnt);
+assert.strictEqual(augmentedValidation.valid, true, JSON.stringify(augmentedValidation.errors, null, 2));
+assert.strictEqual(augmentedAnt.intelligence_resources.length, 4);
+assert.strictEqual(augmentedAnt.availability.length, 4);
+assert.strictEqual(augmentedAnt.consideration.length, 4);
+assert.strictEqual(augmentedAnt.evidence.length, 4);
+assert.deepStrictEqual(augmentedAnt.intelligence_resources.map((item) => item.resource_type), ['human_judgment', 'ai_system', 'forecasting_model', 'expert_group']);
+assert.strictEqual(augmentedAnt.intelligence_resources[0].actor_refs.length, 1);
+assert.strictEqual(augmentedAnt.intelligence_resources[1].actor_refs.length, 0);
+assert.strictEqual(augmentedAnt.intelligence_resources[2].actor_refs.length, 0);
+assert.strictEqual(augmentedAnt.intelligence_resources[3].actor_refs.length, 0);
+assert.strictEqual(augmentedAnt.authority.length, 1, 'resource composition must not create authority relations');
+assert.strictEqual(augmentedAnt.authority[0].status, 'limited');
+assert.deepStrictEqual(augmentedAnt.authority[0].scopes, ['observe', 'recommend', 'decide']);
+
+const en = buildRecord({ ...augmentedAntInput(), uiLanguage: 'en' });
+const ru = buildRecord({ ...augmentedAntInput(), uiLanguage: 'ru' });
+assert.deepStrictEqual(en, ru, 'UI language must not affect compositional machine record output');
+
+if (process.argv[2]) fs.writeFileSync(process.argv[2], JSON.stringify(augmentedAnt, null, 2));
+console.log('PoAI compositional Builder tests passed.');
