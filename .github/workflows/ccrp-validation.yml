@@ -77,11 +77,88 @@ jobs:
           node --check proposals/ccrp/test-c0.js
           node proposals/ccrp/test-c0.js
 
+      - name: Validate CCRP C1 operation intent schema vectors
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('proposals/ccrp/schema/operation-intent.c1.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          fixture_paths = [
+              Path('proposals/ccrp/examples/c1-chat-a-exclusive.operation-intent.json'),
+              Path('proposals/ccrp/examples/c1-chat-b-exclusive.operation-intent.json'),
+          ]
+          fixtures = []
+          for fixture_path in fixture_paths:
+              fixture = json.loads(fixture_path.read_text(encoding='utf-8'))
+              validator.validate(fixture)
+              fixtures.append(fixture)
+              print(f'VALID CCRP/C1 operation intent: {fixture_path}')
+
+          missing_idempotency = copy.deepcopy(fixtures[0])
+          del missing_idempotency['idempotency_key']
+          assert list(validator.iter_errors(missing_idempotency)), 'missing idempotency key must be rejected'
+
+          premature_admission = copy.deepcopy(fixtures[0])
+          premature_admission['claims']['execution_admitted'] = True
+          assert list(validator.iter_errors(premature_admission)), 'C1 operation intent must not establish execution admission'
+
+          malformed_context = copy.deepcopy(fixtures[0])
+          malformed_context['context_ref']['context_id'] = 'not-a-ccrp-context'
+          assert list(validator.iter_errors(malformed_context)), 'malformed context ref must be rejected'
+
+          print('CCRP/C1 negative operation-intent schema vectors rejected as expected')
+          PY
+
+      - name: Run CCRP C1 collision vectors
+        run: |
+          node --check proposals/ccrp/test-c1.js
+          node proposals/ccrp/test-c1.js /tmp/ccrp-c1
+
+      - name: Validate CCRP C1 collision result schema vectors
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('proposals/ccrp/schema/collision-result.c1.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          expected = {
+              'exclusive.collision-result.json': 'exclusive_operation_collision',
+              'stale.collision-result.json': 'stale_base',
+              'duplicate.collision-result.json': 'duplicate_operation',
+              'wrongContext.collision-result.json': 'wrong_context',
+              'noCollision.collision-result.json': 'no_collision',
+          }
+          for name, collision_type in expected.items():
+              path = Path('/tmp/ccrp-c1') / name
+              result = json.loads(path.read_text(encoding='utf-8'))
+              validator.validate(result)
+              assert result['collision_type'] == collision_type
+              assert result['source_intents_preserved'] is True
+              assert result['claims']['collision_checked'] is True
+              assert result['claims']['collision_resolved'] is False
+              assert result['claims']['execution_admitted'] is False
+              assert result['claims']['materialization_permitted'] is False
+              print(f'VALID CCRP/C1 collision result: {collision_type}')
+          PY
+
       - name: Confirm CCRP artifacts are outside Genesis records
         run: |
           for artifact in \
             proposals/ccrp/examples/c0-same-actor-chat-a.work-context.json \
-            proposals/ccrp/examples/c0-same-actor-chat-b.work-context.json
+            proposals/ccrp/examples/c0-same-actor-chat-b.work-context.json \
+            proposals/ccrp/examples/c1-chat-a-exclusive.operation-intent.json \
+            proposals/ccrp/examples/c1-chat-b-exclusive.operation-intent.json \
+            /tmp/ccrp-c1/exclusive.collision-result.json \
+            /tmp/ccrp-c1/stale.collision-result.json \
+            /tmp/ccrp-c1/duplicate.collision-result.json \
+            /tmp/ccrp-c1/wrongContext.collision-result.json \
+            /tmp/ccrp-c1/noCollision.collision-result.json
           do
             if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json "$artifact"; then
               echo "ERROR: CCRP artifact was incorrectly accepted as a Genesis PoAI record: $artifact"; exit 1
@@ -121,4 +198,36 @@ jobs:
                   assert artifact['claims'][claim] is False, f'{path}: {claim}'
 
           print('CCRP/C0 assurance boundary preserved')
+          PY
+
+      - name: Preserve CCRP C1 assurance boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          false_claims = [
+              'collision_resolved',
+              'execution_admitted',
+              'current_execution_owner_established',
+              'lease_established',
+              'materialization_permitted',
+              'canonical_state_established',
+              'poai_authority_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]
+
+          for path in sorted(Path('/tmp/ccrp-c1').glob('*.collision-result.json')):
+              artifact = json.loads(path.read_text(encoding='utf-8'))
+              assert artifact['claims']['collision_checked'] is True
+              for claim in false_claims:
+                  assert artifact['claims'][claim] is False, f'{path}: {claim}'
+
+          print('CCRP/C1 detects collisions without resolving or admitting execution')
           PY
