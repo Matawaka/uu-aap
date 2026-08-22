@@ -29,10 +29,29 @@ UU-AAP adds that layer.
 
 The pilot intentionally does **not** claim profile V yet: no canonical PDF/EPUB artifact has been selected and cryptographically bound. This makes the example useful for testing whether the protocol can represent incomplete but honest provenance rather than forcing a false appearance of completeness.
 
+## Research proposals
+
+### Proof of Available Intelligence (PoAI) — Genesis
+
+PoAI is an adjacent, non-normative research proposal exploring a broader question:
+
+> **What relevant human, machine, institutional or documentary intelligence was actually available to a specific decision before it became history?**
+
+PoAI does **not** change UU-AAP v0.1 conformance. It is being developed under [`proposals/poai/`](proposals/poai/) so the boundary between authorship governance and decision-level available intelligence remains inspectable.
+
+- [PoAI start page / Quick Start](proposals/poai/README.md)
+- [PoAI Genesis RFC — Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10)
+- [Краткий путеводитель на русском](proposals/poai/README.ru.md)
+- [Genesis principles](proposals/poai/PRINCIPLES.md)
+- [Machine layer](proposals/poai/MACHINE_LAYER.md)
+- [Machine-readable schema](proposals/poai/schema/poai-record.schema.json)
+- [Test vectors](proposals/poai/test-vectors/)
+
 ## Join the public review
 
-- **Broad design discussion:** [What should accountable AI-augmented authorship mean? — Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8)
-- **Main RFC:** [UU-AAP v0.1 Public Review — Issue #1](https://github.com/Matawaka/uu-aap/issues/1)
+- **UU-AAP broad design discussion:** [What should accountable AI-augmented authorship mean? — Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8)
+- **PoAI Genesis RFC:** [Proof of Available Intelligence v0.0 — Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10)
+- **Main UU-AAP RFC:** [UU-AAP v0.1 Public Review — Issue #1](https://github.com/Matawaka/uu-aap/issues/1)
 - **Concrete failure cases and proposals:** [Open Issues](https://github.com/Matawaka/uu-aap/issues)
 
 Agreement is not required. Concrete counterexamples, privacy risks, implementation failures and competing models are especially valuable at this stage.
@@ -78,7 +97,7 @@ UU-AAP is intended to reuse established infrastructure where practical, especial
 
 This draft is intentionally contestable. Please submit concrete failure cases: privacy harms, coercive uses, ambiguous responsibility, unverifiable claims, interoperability failures, accessibility problems, or unnecessary implementation burden.
 
-For broad questions and competing design models, use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8). For a concrete protocol defect or proposed normative change, open an Issue.
+For broad UU-AAP questions and competing design models, use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8). For PoAI Genesis, use [Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10). For a concrete protocol defect or proposed normative change, open an Issue.
 
 **Initial proposer/editor:** [Matawaka](https://github.com/Matawaka)  
 This attribution identifies the initial public proposer; it does not grant unilateral authority over future protocol meaning.

@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/poai/schema/poai-record.schema.json",
+  "title": "PoAI Genesis Record",
+  "description": "Experimental structural schema, machine-layer revision 0.0.1. Semantic invariants are validated separately.",
+  "type": "object",
+  "required": [
+    "protocol",
+    "protocol_version",
+    "profile",
+    "record_id",
+    "subject",
+    "decision_boundary",
+    "actors",
+    "intelligence_resources",
+    "availability",
+    "consideration",
+    "authority",
+    "constraints",
+    "uncertainty",
+    "evidence",
+    "artifact_binding",
+    "contestability",
+    "outcome",
+    "links",
+    "versioning"
+  ],
+  "properties": {
+    "protocol": {"const": "PoAI"},
+    "protocol_version": {"enum": ["0.0", "0.0.1"]},
+    "profile": {"enum": ["D", "T", "V", "R"]},
+    "record_id": {"type": "string", "minLength": 1},
+    "subject": {
+      "type": "object",
+      "required": ["type", "id", "label"],
+      "properties": {
+        "type": {"enum": ["decision", "claim", "action", "artifact", "future_event", "other"]},
+        "id": {"type": "string", "minLength": 1},
+        "label": {"type": "string", "minLength": 1},
+        "description": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "decision_boundary": {
+      "type": "object",
+      "required": ["opened_at", "closed_at", "knowledge_cutoff", "precision", "status"],
+      "properties": {
+        "opened_at": {"type": ["string", "null"]},
+        "closed_at": {"type": ["string", "null"]},
+        "knowledge_cutoff": {"type": ["string", "null"]},
+        "precision": {"enum": ["instant", "minute", "hour", "date_only", "month_only", "approximate", "unknown"]},
+        "timezone": {"type": ["string", "null"]},
+        "status": {"enum": ["live_record", "historical_reconstruction", "mixed"]},
+        "notes": {"type": ["string", "null"]}
+      },
+      "additionalProperties": true
+    },
+    "future_target": {
+      "anyOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "required": ["future_target_id", "label", "epistemic_status"],
+          "properties": {
+            "future_target_id": {"type": "string"},
+            "label": {"type": "string"},
+            "epistemic_status": {"enum": ["asserted", "probable", "provisional", "speculative", "disputed", "unknown", "not_verified", "unavailable"]},
+            "probability": {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+          },
+          "additionalProperties": true
+        }
+      ]
+    },
+    "actors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["actor_id", "actor_type", "name"],
+        "properties": {
+          "actor_id": {"type": "string"},
+          "actor_type": {"enum": ["human", "organization", "ai_system", "automated_system", "reviewer", "other"]},
+          "name": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "intelligence_resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["resource_id", "resource_type", "label"],
+        "properties": {
+          "resource_id": {"type": "string"},
+          "resource_type": {"enum": ["human_judgment", "ai_system", "expert_group", "document", "dataset", "retrieval_service", "forecasting_model", "simulation", "institutional_process", "other"]},
+          "label": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "availability": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/availability"}
+    },
+    "consideration": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["consideration_id", "resource_id", "status", "evidence_class", "evidence_refs"],
+        "properties": {
+          "consideration_id": {"type": "string"},
+          "resource_id": {"type": "string"},
+          "status": {"enum": ["not_invoked", "invoked", "output_received", "considered", "relied_upon", "rejected", "not_used", "unknown"]},
+          "evidence_class": {"enum": ["E0", "E1", "E2", "E3", "E4"]},
+          "evidence_refs": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    },
+    "alternatives": {
+      "type": "array",
+      "items": {"type": "object"},
+      "default": []
+    },
+    "authority": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["actor_id", "scopes", "status"],
+        "properties": {
+          "actor_id": {"type": "string"},
+          "scopes": {
+            "type": "array",
+            "items": {"enum": ["observe", "request_analysis", "recommend", "decide", "approve", "block", "execute", "review", "appeal"]}
+          },
+          "status": {"enum": ["accepted", "shared", "limited", "declined", "unknown"]}
+        },
+        "additionalProperties": true
+      }
+    },
+    "constraints": {"type": "array", "items": {"type": "object"}},
+    "uncertainty": {"type": "array", "items": {"type": "object"}},
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["evidence_id", "class", "type", "availability"],
+        "properties": {
+          "evidence_id": {"type": "string"},
+          "class": {"enum": ["E0", "E1", "E2", "E3", "E4"]},
+          "type": {"type": "string"},
+          "availability": {"type": "string"}
+        },
+        "additionalProperties": true
+      }
+    },
+    "artifact_binding": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["not_bound", "hash_bound", "signed", "content_credential", "other"]},
+        "sha256": {"type": ["string", "null"], "pattern": "^[A-Fa-f0-9]{64}$"}
+      },
+      "additionalProperties": true
+    },
+    "contestability": {
+      "type": "object",
+      "required": ["channel_available", "appeal_available"],
+      "properties": {
+        "channel_available": {"type": "boolean"},
+        "appeal_available": {"type": "boolean"}
+      },
+      "additionalProperties": true
+    },
+    "outcome": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["not_yet_observable", "realized", "not_realized_without_intervention", "not_realized_after_intervention", "indeterminate", "not_applicable"]}
+      },
+      "additionalProperties": true
+    },
+    "links": {"type": "object"},
+    "versioning": {
+      "type": "object",
+      "required": ["record_version", "previous_record", "successor_record", "change_summary"],
+      "properties": {
+        "record_version": {"type": "integer", "minimum": 1},
+        "previous_record": {"type": ["string", "null"]},
+        "successor_record": {"type": ["string", "null"]},
+        "change_summary": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "availability": {
+      "type": "object",
+      "required": ["availability_id", "resource_id", "subject_id", "dimensions", "overall_status", "evidence_class", "evidence_refs"],
+      "properties": {
+        "availability_id": {"type": "string"},
+        "resource_id": {"type": "string"},
+        "subject_id": {"type": "string"},
+        "dimensions": {
+          "type": "object",
+          "required": ["identity", "discoverability", "reachability", "authorization", "temporal_fit", "context_sufficiency", "execution_capability", "delivery"],
+          "properties": {
+            "identity": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]},
+            "discoverability": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]},
+            "reachability": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]},
+            "authorization": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]},
+            "temporal_fit": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]},
+            "context_sufficiency": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]},
+            "execution_capability": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]},
+            "delivery": {"enum": ["available", "unavailable", "partial", "unknown", "not_applicable"]}
+          },
+          "additionalProperties": false
+        },
+        "overall_status": {"enum": ["available", "partially_available", "unavailable", "unknown"]},
+        "evidence_class": {"enum": ["E0", "E1", "E2", "E3", "E4"]},
+        "evidence_refs": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,285 @@
+{
+  "protocol": "PoAI",
+  "protocol_version": "0.0",
+  "profile": "T",
+  "record_id": "urn:poai:record:vibe-coding-reality:ai-as-augmentation:1",
+  "subject": {
+    "type": "decision",
+    "id": "decision:ai-as-augmentation",
+    "label": "AI as augmentation under human governing authority",
+    "description": "Use an OpenAI ChatGPT-assisted workflow materially for concept development, research assistance, structure, drafting and editing while retaining human governing authority over direction, concept selection, editorial approval and publication authorization."
+  },
+  "decision_boundary": {
+    "opened_at": null,
+    "closed_at": "2026-08-08",
+    "knowledge_cutoff": "2026-08-08",
+    "precision": "date_only",
+    "timezone": null,
+    "status": "historical_reconstruction",
+    "notes": "The existing UU-AAP pilot records the completed manuscript date as 2026-08-08 but does not establish an exact opening timestamp for this decision. No earlier timestamp is invented here."
+  },
+  "future_target": null,
+  "actors": [
+    {
+      "actor_id": "human:matawaka",
+      "actor_type": "human",
+      "name": "Matawaka",
+      "identifier": "https://github.com/Matawaka",
+      "notes": "Public GitHub identity used by the existing UU-AAP pilot; legal identity is not asserted by this PoAI example."
+    },
+    {
+      "actor_id": "ai:augmented-mind",
+      "actor_type": "ai_system",
+      "name": "Усиленный Ум / OpenAI ChatGPT-assisted workflow",
+      "identifier": null,
+      "notes": "Technical participant. Recording the AI system does not assign moral or legal personhood."
+    }
+  ],
+  "intelligence_resources": [
+    {
+      "resource_id": "resource:human-governing-judgment",
+      "resource_type": "human_judgment",
+      "label": "Human governing judgment",
+      "provider": null,
+      "version": null,
+      "capability_claims": [
+        "intent_governance",
+        "concept_selection",
+        "structure_approval",
+        "editorial_approval",
+        "publication_authorization"
+      ],
+      "identity_status": "known_public_pseudonymous_identity",
+      "actor_refs": [
+        "human:matawaka"
+      ],
+      "notes": "The existing UU-AAP/T manifest records accepted human responsibility in these scopes."
+    },
+    {
+      "resource_id": "resource:chatgpt-assisted-workflow",
+      "resource_type": "ai_system",
+      "label": "OpenAI ChatGPT-assisted Augmented Mind workflow",
+      "provider": "OpenAI",
+      "version": null,
+      "capability_claims": [
+        "concept_generation",
+        "research_assistance",
+        "comparison",
+        "structure_assistance",
+        "drafting",
+        "editing",
+        "critique"
+      ],
+      "identity_status": "partially_known",
+      "actor_refs": [
+        "ai:augmented-mind"
+      ],
+      "notes": "The existing UU-AAP pilot confirms material ChatGPT-assisted use but states that exact underlying model/version continuity was not preserved for every historical session."
+    }
+  ],
+  "availability": [
+    {
+      "availability_id": "availability:human-governing-judgment",
+      "resource_id": "resource:human-governing-judgment",
+      "subject_id": "decision:ai-as-augmentation",
+      "dimensions": {
+        "identity": "available",
+        "discoverability": "not_applicable",
+        "reachability": "available",
+        "authorization": "available",
+        "temporal_fit": "available",
+        "context_sufficiency": "available",
+        "execution_capability": "available",
+        "delivery": "not_applicable"
+      },
+      "overall_status": "available",
+      "evidence_class": "E1",
+      "evidence_refs": [
+        "evidence:uu-aap-pilot-manifest",
+        "evidence:uu-aap-pilot-readme"
+      ],
+      "notes": "This claim is limited to governing judgment and authority scopes recorded by the existing UU-AAP pilot."
+    },
+    {
+      "availability_id": "availability:chatgpt-assisted-workflow",
+      "resource_id": "resource:chatgpt-assisted-workflow",
+      "subject_id": "decision:ai-as-augmentation",
+      "dimensions": {
+        "identity": "partial",
+        "discoverability": "available",
+        "reachability": "available",
+        "authorization": "available",
+        "temporal_fit": "available",
+        "context_sufficiency": "partial",
+        "execution_capability": "available",
+        "delivery": "available"
+      },
+      "overall_status": "partially_available",
+      "evidence_class": "E1",
+      "evidence_refs": [
+        "evidence:uu-aap-pilot-manifest",
+        "evidence:project-dialogue-history"
+      ],
+      "notes": "Practical use is evidenced at project level, while exact model identity and complete context history are not publicly reconstructable. `partially_available` reflects incomplete evidence across dimensions, not a claim that the workflow itself was only partially used."
+    }
+  ],
+  "consideration": [
+    {
+      "consideration_id": "consideration:human-governing-judgment",
+      "resource_id": "resource:human-governing-judgment",
+      "status": "relied_upon",
+      "summary": "The human author repeatedly set direction, selected and rejected formulations, approved structure and retained final editorial and publication authority.",
+      "evidence_class": "E1",
+      "evidence_refs": [
+        "evidence:uu-aap-pilot-manifest",
+        "evidence:uu-aap-pilot-readme"
+      ]
+    },
+    {
+      "consideration_id": "consideration:chatgpt-assisted-workflow",
+      "resource_id": "resource:chatgpt-assisted-workflow",
+      "status": "relied_upon",
+      "summary": "AI participation was material across ideation, research assistance, structural development, drafting and editing, with outputs iteratively retained, rejected, reframed or extended under human selection.",
+      "evidence_class": "E1",
+      "evidence_refs": [
+        "evidence:uu-aap-pilot-manifest",
+        "evidence:project-dialogue-history"
+      ]
+    }
+  ],
+  "alternatives": [],
+  "authority": [
+    {
+      "actor_id": "human:matawaka",
+      "scopes": [
+        "observe",
+        "request_analysis",
+        "recommend",
+        "decide",
+        "approve"
+      ],
+      "status": "accepted",
+      "notes": "Mapped from UU-AAP responsibility for intent governance, concept selection, structure approval, editorial approval and publication authorization."
+    },
+    {
+      "actor_id": "ai:augmented-mind",
+      "scopes": [
+        "recommend"
+      ],
+      "status": "limited",
+      "notes": "The AI workflow generated and transformed candidate material but is not recorded as holding final decision, approval or publication authority."
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_id": "constraint:model-version-history",
+      "type": "missing_metadata",
+      "applies_to": [
+        "resource:chatgpt-assisted-workflow"
+      ],
+      "effect": "Exact underlying model/version continuity cannot be responsibly reconstructed for every historical session.",
+      "status": "active_at_reconstruction"
+    },
+    {
+      "constraint_id": "constraint:private-dialogue-history",
+      "type": "privacy",
+      "applies_to": [
+        "resource:chatgpt-assisted-workflow",
+        "decision:ai-as-augmentation"
+      ],
+      "effect": "Complete historical prompt and conversation logs are not public and are not required for this traceable example.",
+      "status": "active_at_reconstruction"
+    },
+    {
+      "constraint_id": "constraint:alternative-set-not-established",
+      "type": "missing_metadata",
+      "applies_to": [
+        "decision:ai-as-augmentation"
+      ],
+      "effect": "The available public provenance does not establish a discrete, evidence-backed set of material alternatives that can be safely represented as formally considered and rejected.",
+      "status": "active_at_reconstruction"
+    }
+  ],
+  "uncertainty": [
+    {
+      "uncertainty_id": "uncertainty:model-version",
+      "target": "resource:chatgpt-assisted-workflow",
+      "status": "unknown",
+      "statement": "Exact model/version continuity is unknown for some historical sessions."
+    },
+    {
+      "uncertainty_id": "uncertainty:decision-opened-at",
+      "target": "decision:ai-as-augmentation",
+      "status": "unknown",
+      "statement": "The exact time at which the augmentation-governance decision first formed is not established by the public pilot evidence."
+    },
+    {
+      "uncertainty_id": "uncertainty:formal-alternative-set",
+      "target": "decision:ai-as-augmentation",
+      "status": "not_verified",
+      "statement": "No formal set of alternative governance models is asserted as having been considered because the existing public evidence does not support that stronger claim."
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "evidence:uu-aap-pilot-manifest",
+      "class": "E1",
+      "type": "public_artifact",
+      "location": "pilots/vibe-coding-reality/manifest.json",
+      "availability": "public",
+      "notes": "Existing UU-AAP/T machine-readable provenance record for «Вайбкодинг реальности»."
+    },
+    {
+      "evidence_id": "evidence:uu-aap-pilot-readme",
+      "class": "E1",
+      "type": "public_artifact",
+      "location": "pilots/vibe-coding-reality/README.md",
+      "availability": "public",
+      "notes": "Existing public explanation of accountability, AI participation, limitations and pilot status."
+    },
+    {
+      "evidence_id": "evidence:project-dialogue-history",
+      "class": "E1",
+      "type": "private_project_archive",
+      "location": null,
+      "availability": "private_selective_disclosure",
+      "notes": "Iterative human–AI project conversations and revision history, inherited as an evidence category from the UU-AAP pilot."
+    }
+  ],
+  "artifact_binding": {
+    "status": "not_bound",
+    "sha256": null,
+    "signature": null,
+    "c2pa": null,
+    "notes": "This PoAI Genesis example is profile T. It does not claim PoAI/V cryptographic binding. The referenced UU-AAP pilot is also currently profile T and does not yet bind a canonical PDF/EPUB artifact."
+  },
+  "contestability": {
+    "channel_available": true,
+    "channel": "https://github.com/Matawaka/uu-aap/issues",
+    "discussion_channel": "https://github.com/Matawaka/uu-aap/discussions/8",
+    "open_disputes": 0,
+    "appeal_available": false,
+    "notes": "Repository Issues and the existing public discussion provide a challenge channel. No independent PoAI appeal body exists in Genesis v0.0."
+  },
+  "outcome": {
+    "status": "not_applicable",
+    "observed_at": null,
+    "intervention": null,
+    "successor_record": null,
+    "notes": "This example describes an authorship-governance decision rather than a future-event prediction."
+  },
+  "links": {
+    "uu_aap_manifest": "pilots/vibe-coding-reality/manifest.json",
+    "uu_aap_pilot": "pilots/vibe-coding-reality/README.md",
+    "related_decisions": [
+      "decision:ai-as-augmentation"
+    ],
+    "external": []
+  },
+  "versioning": {
+    "record_version": 1,
+    "previous_record": null,
+    "successor_record": null,
+    "change_summary": "Initial PoAI Genesis v0.0 historical reconstruction example derived conservatively from the existing UU-AAP/T pilot for «Вайбкодинг реальности»."
+  }
+}
