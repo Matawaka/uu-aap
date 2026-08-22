@@ -57,6 +57,7 @@ jobs:
           node --check docs/poai/appeal-sidecar.js
           node --check docs/poai/adjudication-sidecar.js
           node --check docs/poai/execution-sidecar.js
+          node --check docs/poai/execution-verification-sidecar.js
           node docs/poai/test-validator.js
           node docs/poai/test-builder.js /tmp/deeper-builder.poai.json
           node docs/poai/test-review-cues.js
@@ -64,6 +65,7 @@ jobs:
           node docs/poai/test-appeal-sidecar.js /tmp/appeal-sidecar.json
           node docs/poai/test-adjudication-sidecar.js /tmp/adjudication-sidecar.json
           node docs/poai/test-execution-sidecar.js /tmp/execution-sidecar.json
+          node docs/poai/test-execution-verification-sidecar.js /tmp/execution-verification-sidecar.json
           python proposals/poai/tools/validate_poai.py \
             --schema proposals/poai/schema/poai-record.schema.json \
             /tmp/deeper-builder.poai.json
@@ -98,4 +100,12 @@ jobs:
             echo "ERROR: experimental Execution Sidecar was incorrectly accepted as a Genesis PoAI record"; exit 1
           else
             echo "Expected separation confirmed: Execution Sidecar is outside the Genesis PoAI record schema"
+          fi
+
+      - name: Confirm Execution Verification Sidecar is not a Genesis PoAI record
+        run: |
+          if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json /tmp/execution-verification-sidecar.json; then
+            echo "ERROR: experimental Execution Verification Sidecar was incorrectly accepted as a Genesis PoAI record"; exit 1
+          else
+            echo "Expected separation confirmed: Execution Verification Sidecar is outside the Genesis PoAI record schema"
           fi
