@@ -150,3 +150,25 @@ Tracking / review:
 - Execution Verification RFC: Issue #60;
 - implementation: Issue #61;
 - live acceptance: Issue #62.
+
+### Observed Outcome Sidecar
+
+[`OUTCOME_ARTIFACT.md`](OUTCOME_ARTIFACT.md)
+
+Explores later observation of the real-world outcome as a separate provenance artifact rather than treating an Execution Verification report as the outcome itself.
+
+Core research invariants:
+
+`verification report != outcome observation != causal attribution != responsibility`
+
+and:
+
+`observed outcome report != truth certification`
+
+The first Level 3.1i experiment generates a browser-local `PoAIObservedOutcomeSidecar`. It reuses the frozen Genesis outcome vocabulary exactly, keeps observer authority and independence unknown, records a separate observation evidence horizon and causal status, and explicitly does not establish certified truth, causal proof, responsibility, legal effect, authority, independence, canonical outcome or canonical verdict. `not_realized_after_intervention` requires intervention/execution provenance but does not prove causality.
+
+Tracking / review:
+
+- Observed Outcome RFC: Issue #64;
+- implementation: Issue #65;
+- live acceptance: Issue #66.
