@@ -14,7 +14,29 @@
     "applies_to": {"type": "object", "additionalProperties": false, "required": ["target", "source_record_prefix"], "properties": {"target": {"type": "string", "minLength": 1}, "source_record_prefix": {"type": "string", "minLength": 1}}},
     "required_authority_scope": {"const": "poai.successor.materialization.execute"},
     "candidate_binding_rule": {"type": "object", "additionalProperties": false, "required": ["canonicalization", "digest_algorithm", "digest_encoding"], "properties": {"canonicalization": {"const": "RFC8785-JCS"}, "digest_algorithm": {"const": "SHA-256"}, "digest_encoding": {"const": "hex"}}},
-    "authority_verification_rule": {"type": "object", "additionalProperties": false, "required": ["require_verified_authority", "require_issuer_entitlement", "required_target", "allowed_delegation_modes"], "properties": {"require_verified_authority": {"const": true}, "require_issuer_entitlement": {"const": true}, "required_target": {"type": "string", "minLength": 1}, "allowed_delegation_modes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["non_delegable", "delegable"]}}}},
+    "authority_verification_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["require_verified_authority", "require_issuer_entitlement", "required_target", "allowed_delegation_modes", "root_acceptance_rule"],
+      "properties": {
+        "require_verified_authority": {"const": true},
+        "require_issuer_entitlement": {"const": true},
+        "required_target": {"type": "string", "minLength": 1},
+        "allowed_delegation_modes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["non_delegable", "delegable"]}},
+        "root_acceptance_rule": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["accepted_root_ids", "allowed_root_modes", "require_root_evidence", "allowed_evidence_types", "exact_scope_match"],
+          "properties": {
+            "accepted_root_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^urn:poai:authority-root:"}},
+            "allowed_root_modes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["self_governed_resource", "institutional_charter", "contractual_root", "registry_root", "statutory_root", "quorum_root"]}},
+            "require_root_evidence": {"type": "boolean"},
+            "allowed_evidence_types": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "exact_scope_match": {"type": "boolean"}
+          }
+        }
+      }
+    },
     "conflict_rule": {"type": "object", "additionalProperties": false, "required": ["mode"], "properties": {"mode": {"enum": ["single_head_no_unresolved_conflict", "allow_multiple_heads", "defer_on_conflict"]}}},
     "appeal_or_stay_rule": {"type": "object", "additionalProperties": false, "required": ["active_stay_blocks_materialization"], "properties": {"active_stay_blocks_materialization": {"type": "boolean"}}},
     "effective_from": {"type": "string", "format": "date-time"},
