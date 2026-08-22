@@ -5,10 +5,18 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
 
-  function asArray(value) { return Array.isArray(value) ? value : []; }
+  const PURPOSES = Object.freeze({
+    generic: { en: 'General review', ru: 'Общий обзор' },
+    operational: { en: 'Operational decision trace', ru: 'Операционное решение' },
+    future_intervention: { en: 'Future Target / intervention trace', ru: 'Future Target / вмешательство' },
+    historical: { en: 'Historical reconstruction', ru: 'Историческая реконструкция' },
+    publication: { en: 'Publication / accountability', ru: 'Публикация / подотчётность' }
+  });
 
-  function evaluateReviewCues(record) {
-    if (!record || typeof record !== 'object') return [];
+  function asArray(value) { return Array.isArray(value) ? value : []; }
+  function purposeKey(value) { return Object.prototype.hasOwnProperty.call(PURPOSES, value) ? value : 'generic'; }
+
+  function evaluateCoreCues(record) {
     const cues = [];
     const add = (code, en, ru, meta) => cues.push({ code, en, ru, meta: meta || null });
 
@@ -49,12 +57,6 @@
       { count: invokedWithoutAvailability }
     );
 
-    if (!record.future_target) add(
-      'future_target_not_declared',
-      'Future Target is not declared; this may be intentional for this decision.',
-      'Future Target не заявлен; для этого решения это может быть намеренно.'
-    );
-
     const evidence = asArray(record.evidence);
     const e0Count = evidence.filter((item) => item && item.class === 'E0').length;
     if (e0Count) add(
@@ -64,13 +66,85 @@
       { count: e0Count }
     );
 
-    if (!record.artifact_binding || record.artifact_binding.status === 'not_bound' || record.artifact_binding.status === 'unknown') add(
-      'artifact_not_bound',
-      'Artifact binding is not established.',
-      'Привязка артефакта не установлена.'
-    );
+    return cues;
+  }
+
+  function evaluatePurposeCues(record, purpose) {
+    const cues = [];
+    const add = (code, en, ru, meta) => cues.push({ code, en, ru, meta: meta || null, purpose });
+    const bindingMissing = !record.artifact_binding || ['not_bound', 'unknown'].includes(record.artifact_binding.status);
+    const contestabilityMissing = !record.contestability || !record.contestability.channel_available || !record.contestability.channel;
+
+    if (purpose === 'generic') {
+      if (!record.future_target) add(
+        'future_target_not_declared',
+        'Future Target is not declared; this may be intentional for this decision.',
+        'Future Target не заявлен; для этого решения это может быть намеренно.'
+      );
+      if (bindingMissing) add('artifact_not_bound', 'Artifact binding is not established.', 'Привязка артефакта не установлена.');
+    }
+
+    if (purpose === 'operational') {
+      if (!record.decision_boundary || !record.decision_boundary.knowledge_cutoff) add(
+        'operational_knowledge_cutoff_expected',
+        'Operational review expects an explicit Knowledge Cutoff.',
+        'Для операционной проверки ожидается явно заданная Граница знания.'
+      );
+      if (!asArray(record.consideration).some((item) => item && ['considered', 'relied_upon', 'rejected'].includes(item.status))) add(
+        'operational_consideration_trace_expected',
+        'Operational review expects at least one resource to have an explicit considered, relied-upon, or rejected state.',
+        'Для операционной проверки ожидается хотя бы один ресурс с явным состоянием considered, relied_upon или rejected.'
+      );
+    }
+
+    if (purpose === 'future_intervention') {
+      if (!record.future_target) add(
+        'future_target_expected_for_purpose',
+        'This review purpose expects a declared Future Target.',
+        'Для этой цели проверки ожидается заявленный Future Target.'
+      );
+      const outcome = record.outcome || {};
+      if (!outcome.status || outcome.status === 'not_applicable') add(
+        'future_outcome_trace_expected',
+        'Future/intervention review expects an outcome tracking state, even if it is not yet observable.',
+        'Для проверки будущего/вмешательства ожидается состояние отслеживания исхода, даже если он ещё не наблюдаем.'
+      );
+      if (contestabilityMissing) add(
+        'future_contestability_channel_expected',
+        'Future/intervention review expects an explicit contestability channel where feasible.',
+        'Для проверки будущего/вмешательства по возможности ожидается явный канал оспаривания.'
+      );
+    }
+
+    if (purpose === 'historical') {
+      const boundaryStatus = record.decision_boundary && record.decision_boundary.status;
+      if (!['historical_reconstruction', 'mixed'].includes(boundaryStatus)) add(
+        'historical_boundary_status_expected',
+        'Historical review expects the Decision Boundary to be marked historical_reconstruction or mixed.',
+        'Для исторической проверки ожидается статус Decision Boundary historical_reconstruction или mixed.'
+      );
+    }
+
+    if (purpose === 'publication') {
+      if (bindingMissing) add(
+        'publication_artifact_binding_expected',
+        'Publication/accountability review expects artifact binding when the canonical artifact is available.',
+        'Для проверки публикации/подотчётности ожидается привязка артефакта, когда канонический артефакт доступен.'
+      );
+      if (contestabilityMissing) add(
+        'publication_contestability_channel_expected',
+        'Publication/accountability review expects an explicit contestability channel.',
+        'Для проверки публикации/подотчётности ожидается явный канал оспаривания.'
+      );
+    }
 
     return cues;
+  }
+
+  function evaluateReviewCues(record, requestedPurpose) {
+    if (!record || typeof record !== 'object') return [];
+    const purpose = purposeKey(requestedPurpose);
+    return [...evaluateCoreCues(record), ...evaluatePurposeCues(record, purpose)];
   }
 
   function injectStyles() {
@@ -80,10 +154,13 @@
     style.textContent = `
       .review-cues-panel { margin-top: 18px; }
       .review-cues-head { display:flex; gap:12px; align-items:flex-start; justify-content:space-between; }
+      .review-purpose-row { display:grid; grid-template-columns:minmax(180px, 320px) 1fr; gap:12px; align-items:end; margin:14px 0; }
+      .review-purpose-row label { display:grid; gap:5px; font-weight:650; }
       .review-cues-list { display:grid; gap:8px; margin:14px 0 0; padding:0; list-style:none; }
       .review-cue { border-left:3px solid var(--warn); background:var(--surface-2); border-radius:8px; padding:10px 12px; }
       .review-cue code { margin-right:8px; }
       .review-cues-note { color:var(--muted); margin:6px 0 0; }
+      @media (max-width:820px) { .review-purpose-row { grid-template-columns:1fr; } }
     `;
     document.head.append(style);
   }
@@ -103,6 +180,7 @@
   }
 
   function currentLanguage() { return document.documentElement.lang === 'ru' ? 'ru' : 'en'; }
+  let currentPurpose = 'generic';
 
   function renderCues(cues) {
     const panel = ensurePanel();
@@ -113,8 +191,8 @@
     head.className = 'review-cues-head';
     const title = document.createElement('div');
     title.innerHTML = lang === 'ru'
-      ? '<p class="eyebrow">Проверка полноты</p><h2>Подсказки для рецензирования</h2>'
-      : '<p class="eyebrow">Completeness review</p><h2>Review cues</h2>';
+      ? '<p class="eyebrow">Проверка достаточности</p><h2>Подсказки для рецензирования</h2>'
+      : '<p class="eyebrow">Purpose-relative review</p><h2>Review cues</h2>';
     const badge = document.createElement('span');
     badge.className = 'badge neutral';
     badge.textContent = lang === 'ru' ? 'Не влияет на PASS' : 'Does not affect PASS';
@@ -124,14 +202,41 @@
     const note = document.createElement('p');
     note.className = 'review-cues-note';
     note.textContent = lang === 'ru'
-      ? 'Это не ошибки, не оценка и не подтверждение истины. Подсказки лишь показывают неизвестные или неустановленные отношения в валидной записи.'
-      : 'These are not errors, a score, or truth certification. They only surface unknown or unestablished relations in an otherwise valid record.';
+      ? 'Это не ошибки, не оценка и не подтверждение истины. Цель проверки хранится только в интерфейсе и не изменяет PoAI JSON.'
+      : 'These are not errors, a score, or truth certification. Review purpose is interface-local and does not modify the PoAI JSON.';
     panel.append(note);
+
+    const purposeRow = document.createElement('div');
+    purposeRow.className = 'review-purpose-row';
+    const purposeLabel = document.createElement('label');
+    const labelText = document.createElement('span');
+    labelText.textContent = lang === 'ru' ? 'Цель проверки' : 'Review purpose';
+    const select = document.createElement('select');
+    select.id = 'reviewPurpose';
+    Object.entries(PURPOSES).forEach(([key, labels]) => {
+      const option = document.createElement('option');
+      option.value = key;
+      option.textContent = labels[lang];
+      option.selected = key === currentPurpose;
+      select.append(option);
+    });
+    select.addEventListener('change', () => {
+      currentPurpose = purposeKey(select.value);
+      syncFromValidatedInput();
+    });
+    purposeLabel.append(labelText, select);
+    const purposeHelp = document.createElement('p');
+    purposeHelp.className = 'review-cues-note';
+    purposeHelp.textContent = lang === 'ru'
+      ? 'Одна и та же валидная запись может иметь разные ожидаемые элементы для разных целей рассмотрения.'
+      : 'The same valid record can have different expected elements for different review purposes.';
+    purposeRow.append(purposeLabel, purposeHelp);
+    panel.append(purposeRow);
 
     if (!cues.length) {
       const empty = document.createElement('p');
       empty.className = 'muted';
-      empty.textContent = lang === 'ru' ? 'Общих подсказок для этой записи нет.' : 'No generic review cues for this record.';
+      empty.textContent = lang === 'ru' ? 'Для выбранной цели дополнительных подсказок нет.' : 'No additional cues for the selected review purpose.';
       panel.append(empty);
     } else {
       const list = document.createElement('ul');
@@ -160,7 +265,7 @@
     const status = document.getElementById('statusBadge');
     const input = document.getElementById('jsonInput');
     if (!status || !input || !status.classList.contains('good')) { hidePanel(); return; }
-    try { renderCues(evaluateReviewCues(JSON.parse(input.value))); }
+    try { renderCues(evaluateReviewCues(JSON.parse(input.value), currentPurpose)); }
     catch (_) { hidePanel(); }
   }
 
@@ -186,5 +291,5 @@
     else initBrowser();
   }
 
-  return Object.freeze({ evaluateReviewCues });
+  return Object.freeze({ PURPOSES, evaluateReviewCues, purposeKey });
 });
