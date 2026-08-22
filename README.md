@@ -40,6 +40,8 @@ PoAI is an adjacent, non-normative research proposal exploring a broader questio
 PoAI does **not** change UU-AAP v0.1 conformance. It is being developed under [`proposals/poai/`](proposals/poai/) so the boundary between authorship governance and decision-level available intelligence remains inspectable.
 
 - [PoAI start page / Quick Start](proposals/poai/README.md)
+- [PoAI Level 3 — public Web Verifier & Record Builder](https://matawaka.github.io/uu-aap/poai/)
+- [Level 3 alpha v0.1 checkpoint notes](docs/poai/ALPHA-v0.1.md)
 - [PoAI Genesis RFC — Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10)
 - [Краткий путеводитель на русском](proposals/poai/README.ru.md)
 - [Genesis principles](proposals/poai/PRINCIPLES.md)

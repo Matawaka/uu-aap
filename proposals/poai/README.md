@@ -31,6 +31,7 @@ If you only want to understand the proposal:
 4. Open the synthetic future-event pair:
    - [`examples/quasi-existent-future.synthetic.poai.json`](examples/quasi-existent-future.synthetic.poai.json)
    - [`examples/quasi-existent-future.synthetic.successor.poai.json`](examples/quasi-existent-future.synthetic.successor.poai.json)
+5. Try the public Level 3 interface: https://matawaka.github.io/uu-aap/poai/
 
 For implementation, continue with [`DATA_MODEL.md`](DATA_MODEL.md), [`MACHINE_LAYER.md`](MACHINE_LAYER.md) and the machine-readable schema.
 
@@ -51,15 +52,22 @@ The schema revision is **0.0.1**. The conceptual protocol remains **Genesis v0.0
 
 ## Level 3 — Human Interface
 
-The experimental human-facing layer lives in [`docs/poai/`](../../docs/poai/README.md).
+The experimental human-facing layer lives in [`docs/poai/`](../../docs/poai/README.md) and is publicly deployed at:
 
-Its first MVP provides:
+https://matawaka.github.io/uu-aap/poai/
+
+The first alpha checkpoint is documented in [`docs/poai/ALPHA-v0.1.md`](../../docs/poai/ALPHA-v0.1.md) and is intended to be bound by tag `poai-level3-alpha-v0.1` after the completed usability audit in [Issue #14](https://github.com/Matawaka/uu-aap/issues/14).
+
+Its first public layer provides:
 
 - a browser-only PoAI JSON verifier;
 - a human-readable Decision Boundary / Future Target / resources / authority / outcome view;
 - explicit `Truth certified? NO` and artifact-binding state;
 - a guided PoAI/T Record Builder that begins at **E0 self-declaration** and defaults uncertain facts to `unknown`;
-- no server upload endpoint and no external JavaScript dependencies;
+- visible intervention causal status distinct from outcome status;
+- display-only humanization of protocol enum tokens while raw JSON remains unchanged;
+- browser-local file processing, no server upload endpoint and no external JavaScript dependencies;
+- mobile/dark-mode/keyboard accessibility support tested in the first public usability audit;
 - Node smoke tests against the existing PoAI valid/invalid vectors.
 
 The browser validator is a usability mirror of core semantic invariants. JSON Schema + the Python validator remain the machine-layer reference.
@@ -96,6 +104,7 @@ Run the Level 3 browser-validator parity smoke test:
 ```bash
 node --check docs/poai/validator.js
 node --check docs/poai/app.js
+node --check docs/poai/accessibility.js
 node docs/poai/test-validator.js
 ```
 
