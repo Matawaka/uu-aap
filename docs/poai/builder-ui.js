@@ -61,9 +61,16 @@
     };
   }
 
+  function isolateSectionHelp() {
+    document.querySelectorAll('.builder-section > .footnote').forEach((node) => {
+      node.classList.remove('footnote');
+      node.classList.add('muted', 'builder-section-help');
+    });
+  }
+
   function syncSectionHelp() {
     const ru = document.documentElement.lang === 'ru';
-    const notes = document.querySelectorAll('.builder-section > .footnote');
+    const notes = document.querySelectorAll('.builder-section-help');
     if (notes[0]) notes[0].innerHTML = ru
       ? 'В первом инкременте — один ресурс. Каждое измерение доступности остаётся <code>unknown</code>, пока вы явно не укажете иное.'
       : 'One resource in this first increment. Every availability dimension defaults to <code>unknown</code> unless you explicitly state otherwise.';
@@ -76,6 +83,9 @@
     const original = $('buildBtn');
     if (!original || !window.PoAIBuilder) return;
 
+    isolateSectionHelp();
+    syncSectionHelp();
+
     const replacement = original.cloneNode(true);
     original.replaceWith(replacement);
 
@@ -87,8 +97,7 @@
       if (verifierTab) verifierTab.click();
     });
 
-    syncSectionHelp();
-    new MutationObserver(syncSectionHelp).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+    document.addEventListener('poai:languagechange', syncSectionHelp);
   }
 
   document.addEventListener('DOMContentLoaded', install);
