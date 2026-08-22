@@ -71,7 +71,8 @@
     ['PoAISignatureEnvelope', 'signature-envelope.js', 'signature-envelope'],
     ['PoAIKeyContinuity', 'key-continuity.js', 'key-continuity'],
     ['PoAIIdentityEvidence', 'identity-evidence.js', 'identity-evidence'],
-    ['PoAIAuthorityEvidence', 'authority-evidence.js', 'authority-evidence']
+    ['PoAIAuthorityEvidence', 'authority-evidence.js', 'authority-evidence'],
+    ['PoAIDynamicI18n', 'dynamic-i18n.js', 'dynamic-i18n']
   ];
 
   function loadModule(index) {
