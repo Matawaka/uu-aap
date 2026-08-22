@@ -1,0 +1,125 @@
+name: PoAI CCRP pre-materialization validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    paths:
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/poai-ccrp-pre-materialization.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pre-materialization:
+    name: PoAI CCRP pre-materialization validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Generate live PoAI authority verification input
+        run: |
+          node --check proposals/poai/authority/live/test-live-published-grant-authority.js
+          node proposals/poai/authority/live/test-live-published-grant-authority.js \
+            /tmp/live-authority-verification.json \
+            /tmp/live-published-grant-check.json
+
+      - name: Run PoAI CCRP pre-materialization vectors
+        run: |
+          node --check proposals/ccrp/tools/pre-materialization-gate.js
+          node --check proposals/ccrp/test-pre-materialization.js
+          node proposals/ccrp/test-pre-materialization.js \
+            /tmp/live-authority-verification.json \
+            /tmp/poai-ccrp-pre-materialization-result.json \
+            /tmp/poai-ccrp-pre-materialization-check.json
+
+      - name: Validate pre-materialization result schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('proposals/ccrp/schema/pre-materialization-result.v0.1.schema.json').read_text(encoding='utf-8'))
+          result = json.loads(Path('/tmp/poai-ccrp-pre-materialization-result.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(result)
+
+          assert result['decision'] == 'permitted'
+          assert result['reason_codes'] == []
+          assert result['claims']['poai_authority_input_established'] is True
+          assert result['claims']['ccrp_execution_admission_input_established'] is True
+          assert result['claims']['pre_materialization_permit_established'] is True
+          assert result['claims']['materialization_permitted'] is True
+          assert result['claims']['materialization_event_recorded'] is False
+          assert result['claims']['successor_record_published'] is False
+          assert result['claims']['repository_mutation_performed'] is False
+          assert result['claims']['automatic_browser_action_performed'] is False
+          assert result['claims']['canonical_state_established'] is False
+          assert result['claims']['policy_relative_canonicality_established'] is False
+          assert result['claims']['universal_canonicality_established'] is False
+          assert result['claims']['poai_v_conformance_established'] is False
+          print('VALID PoAI + CCRP pre-materialization result')
+          PY
+
+      - name: Preserve integration assurance boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          check = json.loads(Path('/tmp/poai-ccrp-pre-materialization-check.json').read_text(encoding='utf-8'))
+          claims = check['claims']
+          assert claims['independent_poai_authority_consumed'] is True
+          assert claims['independent_ccrp_admission_consumed'] is True
+          assert claims['exact_action_target_policy_fence_bound'] is True
+          assert claims['pre_materialization_permit_established'] is True
+          for key in [
+              'persistent_materialization_event_published',
+              'successor_record_published',
+              'repository_mutation_performed',
+              'automatic_browser_action_performed',
+              'policy_relative_canonicality_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_authority_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]:
+              assert claims[key] is False, key
+          assert len(check['negative_vectors']) >= 6
+          assert all(vector['decision'] == 'not_permitted' for vector in check['negative_vectors'])
+          print('Pre-materialization permit remains distinct from materialization/canonicality')
+          PY
+
+      - name: Confirm bridge artifact is outside Genesis records
+        run: |
+          if python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            /tmp/poai-ccrp-pre-materialization-result.json; then
+            echo "ERROR: pre-materialization result was incorrectly accepted as a Genesis PoAI record"; exit 1
+          else
+            echo "Expected separation confirmed: pre-materialization result is not a Genesis PoAI record"
+          fi
+
+      - name: Confirm test performed no working-tree mutation
+        run: git diff --exit-code
