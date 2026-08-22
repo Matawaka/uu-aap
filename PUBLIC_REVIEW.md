@@ -5,6 +5,12 @@
 
 This is a Request for Comment, not a request for endorsement.
 
+## Live review channels
+
+- **Broad design discussion:** [Discussion #8 — What should accountable AI-augmented authorship mean?](https://github.com/Matawaka/uu-aap/discussions/8)
+- **Main RFC:** [Issue #1 — UU-AAP v0.1 Public Review](https://github.com/Matawaka/uu-aap/issues/1)
+- **Concrete defects and change proposals:** [Repository Issues](https://github.com/Matawaka/uu-aap/issues)
+
 ## What the project asks reviewers to do
 
 Try to break the protocol.
@@ -22,7 +28,9 @@ Useful criticism includes:
 
 ## How to submit
 
-Prefer one GitHub Issue per concrete problem. Use Discussions for broader philosophy, use cases and design alternatives.
+Use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8) for broad philosophy, use cases, countermodels and open-ended design alternatives.
+
+Prefer one GitHub Issue per concrete protocol problem or normative change.
 
 For a normative change, include:
 
