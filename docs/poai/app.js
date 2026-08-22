@@ -24,9 +24,20 @@
     versioning: { record_version: 1, previous_record: null, successor_record: null, change_summary: 'Embedded Level 3 demo.' }
   };
 
+  const enumLabels = Object.freeze({
+    associated_not_proven: 'Associated, not proven'
+  });
+
   function pretty(value) { return JSON.stringify(value, null, 2); }
   function text(value, fallback) { return value === null || value === undefined || value === '' ? (fallback || '—') : String(value); }
   function escapeText(value) { return text(value); }
+  function enumText(value) {
+    const raw = text(value);
+    if (raw === '—') return raw;
+    if (enumLabels[raw]) return enumLabels[raw];
+    const spaced = raw.replace(/_/g, ' ');
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  }
 
   function setRecord(record) {
     state.record = record;
@@ -90,7 +101,7 @@
     if (!result.warnings.length) $('warnings').append(emptyNode('No browser-level warnings.'));
 
     $('truthBadge').textContent = 'Truth certified? NO';
-    $('bindingBadge').textContent = `Cryptographically bound? ${text(result.summary.artifact_binding, 'unknown')}`;
+    $('bindingBadge').textContent = `Cryptographically bound? ${enumText(result.summary.artifact_binding || 'unknown')}`;
     $('privacyBadge').textContent = 'Upload destination: this browser only';
 
     renderVisualization(record);
@@ -125,11 +136,11 @@
     kv($('decisionCard'), 'Opened', boundary.opened_at);
     kv($('decisionCard'), 'Knowledge cutoff', boundary.knowledge_cutoff);
     kv($('decisionCard'), 'Closed', boundary.closed_at);
-    kv($('decisionCard'), 'Boundary status', boundary.status);
+    kv($('decisionCard'), 'Boundary status', enumText(boundary.status));
 
     if (record.future_target) {
       kv($('futureCard'), 'Future Target', record.future_target.label);
-      kv($('futureCard'), 'Epistemic status', record.future_target.epistemic_status);
+      kv($('futureCard'), 'Epistemic status', enumText(record.future_target.epistemic_status));
       kv($('futureCard'), 'Probability', record.future_target.probability);
     } else {
       $('futureCard').append(emptyNode('No Future Target in this record.'));
@@ -139,15 +150,15 @@
     renderAuthority(record);
     const outcome = record.outcome || {};
     const intervention = outcome.intervention || null;
-    kv($('outcomeCard'), 'Outcome status', outcome.status);
+    kv($('outcomeCard'), 'Outcome status', enumText(outcome.status));
     kv($('outcomeCard'), 'Observed at', outcome.observed_at);
     kv($('outcomeCard'), 'Intervention', intervention ? 'present' : 'none');
-    kv($('outcomeCard'), 'Causal status', intervention && intervention.causal_status);
+    kv($('outcomeCard'), 'Causal status', enumText(intervention && intervention.causal_status));
     kv($('outcomeCard'), 'Successor', outcome.successor_record);
 
     const evidence = Array.isArray(record.evidence) ? record.evidence : [];
     kv($('evidenceCard'), 'Evidence items', evidence.length);
-    kv($('evidenceCard'), 'Artifact binding', record.artifact_binding && record.artifact_binding.status);
+    kv($('evidenceCard'), 'Artifact binding', enumText(record.artifact_binding && record.artifact_binding.status));
     kv($('evidenceCard'), 'Contestability channel', record.contestability && record.contestability.channel_available ? 'available' : 'not confirmed');
   }
 
@@ -161,7 +172,7 @@
       const claim = availability.find((item) => item.resource_id === resource.resource_id);
       const considered = consideration.find((item) => item.resource_id === resource.resource_id);
       const row = document.createElement('div'); row.className = 'table-row';
-      [resource.label, resource.resource_type, claim && claim.overall_status, considered && considered.status].forEach((value) => {
+      [resource.label, resource.resource_type, enumText(claim && claim.overall_status), enumText(considered && considered.status)].forEach((value) => {
         const cell = document.createElement('span'); cell.textContent = text(value); row.append(cell);
       });
       table.append(row);
@@ -176,7 +187,7 @@
     authority.forEach((item) => {
       const actor = actors.get(item.actor_id) || {};
       const row = document.createElement('div'); row.className = 'table-row authority';
-      [actor.name || item.actor_id, (item.scopes || []).join(', '), item.status].forEach((value) => {
+      [actor.name || item.actor_id, (item.scopes || []).join(', '), enumText(item.status)].forEach((value) => {
         const cell = document.createElement('span'); cell.textContent = text(value); row.append(cell);
       });
       table.append(row);
