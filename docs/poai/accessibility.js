@@ -58,12 +58,30 @@
     input.addEventListener('blur', () => label.classList.remove('focus-proxy'));
   }
 
+  function loadBindingReceiptModule() {
+    if (globalThis.PoAIBindingReceipt || document.querySelector('script[data-poai-binding-receipt]')) return;
+    const script = document.createElement('script');
+    script.src = 'binding-receipt.js';
+    script.dataset.poaiBindingReceipt = 'true';
+    script.defer = true;
+    document.body.append(script);
+  }
+
   function loadSuccessorProposalSidecarModule() {
-    if (globalThis.PoAISuccessorProposalSidecar || document.querySelector('script[data-poai-successor-proposal-sidecar]')) return;
+    if (globalThis.PoAISuccessorProposalSidecar) {
+      loadBindingReceiptModule();
+      return;
+    }
+    const existing = document.querySelector('script[data-poai-successor-proposal-sidecar]');
+    if (existing) {
+      existing.addEventListener('load', loadBindingReceiptModule, { once: true });
+      return;
+    }
     const script = document.createElement('script');
     script.src = 'successor-proposal-sidecar.js';
     script.dataset.poaiSuccessorProposalSidecar = 'true';
     script.defer = true;
+    script.addEventListener('load', loadBindingReceiptModule, { once: true });
     document.body.append(script);
   }
 
