@@ -1,0 +1,137 @@
+{
+  "artifact_type": "PoAIAuthorityEvidenceEnvelope",
+  "artifact_version": "0.0.1-experimental",
+  "authority_evidence_id": "urn:poai:authority-evidence:75c5f3c795e5e620",
+  "created_at": "2026-08-22T19:53:45.243Z",
+  "issuer_claim": {
+    "namespace": "github",
+    "identifier": "Matawaka",
+    "canonical_identifier": "github:Matawaka",
+    "account_url": "https://github.com/Matawaka",
+    "display_name": "Dmitrii Kuznetsov",
+    "claim_status": "self_asserted"
+  },
+  "subject_key": {
+    "key_id": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+    "jwk_thumbprint_algorithm": "RFC7638-SHA-256",
+    "jwk_thumbprint": "6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+    "relationship_to_issuer_key": "same_key_first_scenario"
+  },
+  "authority_claim": {
+    "scope": "poai.successor.materialization.propose",
+    "target": "github:Matawaka/uu-aap",
+    "valid_from": "2026-08-22T19:50:00.000Z",
+    "valid_until": "2026-08-23T18:52:00.000Z",
+    "delegation_mode": "non_delegable",
+    "claim_status": "self_asserted_not_verified"
+  },
+  "verification_method": {
+    "key_format": "JWK",
+    "public_key_jwk": {
+      "kty": "OKP",
+      "crv": "Ed25519",
+      "x": "s_TMiroebttfxlFkdWH4LENbyJ1nPblO1TT7mT7ut2o"
+    },
+    "jwk_thumbprint_algorithm": "RFC7638-SHA-256",
+    "jwk_thumbprint": "6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+    "key_id": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+    "issuer_identity_status": "claimed_not_verified",
+    "issuer_entitlement_status": "unknown",
+    "authority_status": "claimed_not_verified",
+    "materialization_authority_status": "unknown"
+  },
+  "key_continuity": {
+    "key_id": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+    "continuity_status": "locally_established",
+    "continuity_epoch": 2,
+    "previous_key_thumbprint": "uU-A6noWS-i_IZRMuxBzms7XQc0jAlL9zIYYYIF51Bc",
+    "private_key_extractable": false
+  },
+  "issuer_evidence": {
+    "identity_evidence_ref": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/proposals/poai/identity-evidence/github/Matawaka.poai-identity.json",
+    "issuer_entitlement_status": "unknown"
+  },
+  "expected_publication": {
+    "method": "github_repository_publication",
+    "url": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/proposals/poai/authority-evidence/github/Matawaka.poai-authority.json",
+    "github_owner": "Matawaka",
+    "github_repository": "uu-aap",
+    "git_ref": "main",
+    "repository_path": "proposals/poai/authority-evidence/github/Matawaka.poai-authority.json",
+    "comparison": "RFC8785-JCS-canonical-equality"
+  },
+  "signed_statement": {
+    "domain": "urn:poai:authority-claim:v0.1",
+    "signature_profile": "PoAI-Ed25519-JCS-AuthorityEvidence-v0.1",
+    "created_at": "2026-08-22T19:53:45.243Z",
+    "purpose": "record_scoped_authority_evidence_without_verifying_authority",
+    "issuer_claim": {
+      "namespace": "github",
+      "identifier": "Matawaka",
+      "canonical_identifier": "github:Matawaka",
+      "account_url": "https://github.com/Matawaka",
+      "display_name": "Dmitrii Kuznetsov",
+      "claim_status": "self_asserted"
+    },
+    "issuer_key": {
+      "algorithm": "Ed25519",
+      "key_id": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+      "jwk_thumbprint_algorithm": "RFC7638-SHA-256",
+      "jwk_thumbprint": "6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+      "public_key_jwk": {
+        "kty": "OKP",
+        "crv": "Ed25519",
+        "x": "s_TMiroebttfxlFkdWH4LENbyJ1nPblO1TT7mT7ut2o"
+      }
+    },
+    "subject_key": {
+      "key_id": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+      "jwk_thumbprint_algorithm": "RFC7638-SHA-256",
+      "jwk_thumbprint": "6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+      "relationship_to_issuer_key": "same_key_first_scenario"
+    },
+    "authority_claim": {
+      "scope": "poai.successor.materialization.propose",
+      "target": "github:Matawaka/uu-aap",
+      "valid_from": "2026-08-22T19:50:00.000Z",
+      "valid_until": "2026-08-23T18:52:00.000Z",
+      "delegation_mode": "non_delegable",
+      "claim_status": "self_asserted_not_verified"
+    },
+    "issuer_evidence": {
+      "identity_evidence_ref": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/proposals/poai/identity-evidence/github/Matawaka.poai-identity.json",
+      "issuer_entitlement_status": "unknown"
+    },
+    "expected_publication": {
+      "method": "github_repository_publication",
+      "url": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/proposals/poai/authority-evidence/github/Matawaka.poai-authority.json",
+      "github_owner": "Matawaka",
+      "github_repository": "uu-aap",
+      "git_ref": "main",
+      "repository_path": "proposals/poai/authority-evidence/github/Matawaka.poai-authority.json",
+      "comparison": "RFC8785-JCS-canonical-equality"
+    }
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "encoding": "base64url",
+    "value": "-Mibm0ibqee_4LOjnsvy0oJVYLwAlRO2KxZ0aaUnNtUiVYoFe-3IrVTHISYw1104gVWHNRaY9lZgBEnWRhuaBQ"
+  },
+  "claims": {
+    "signature_present": true,
+    "local_key_continuity_established": true,
+    "signed_authority_claim_present": true,
+    "authority_evidence_established": false,
+    "issuer_entitlement_verified": false,
+    "authority_verified": false,
+    "signer_authority_verified": false,
+    "materialization_authority_verified": false,
+    "human_identity_verified": false,
+    "truth_certified": false,
+    "responsibility_determined": false,
+    "legal_effect_established": false,
+    "canonical_successor_established": false,
+    "poai_v_conformance_established": false
+  },
+  "notes": "Experimental scoped authority evidence. A valid signature, matching publication, active time window or explicit scope does not establish issuer entitlement, verified authority, materialization authority, legal effect, canonical successor status, or PoAI/V."
+}
