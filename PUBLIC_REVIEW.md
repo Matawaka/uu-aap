@@ -11,6 +11,16 @@ This is a Request for Comment, not a request for endorsement.
 - **Main RFC:** [Issue #1 — UU-AAP v0.1 Public Review](https://github.com/Matawaka/uu-aap/issues/1)
 - **Concrete defects and change proposals:** [Repository Issues](https://github.com/Matawaka/uu-aap/issues)
 
+## First real-work test
+
+The public draft now includes **Pilot 001 — «Вайбкодинг реальности»**, a UU-AAP/T manifest for a completed long-form work developed through substantial human–AI collaboration.
+
+- [Pilot overview](pilots/vibe-coding-reality/README.md)
+- [Manifest JSON](pilots/vibe-coding-reality/manifest.json)
+- [Evidence and limitations](pilots/vibe-coding-reality/EVIDENCE.md)
+
+Reviewers are encouraged to test the protocol against the pilot rather than only against the abstract schema. In particular: does the pilot disclose enough to be useful, does it overclaim human control anywhere, and are the `limited`, `unknown` and private-evidence states represented fairly?
+
 ## What the project asks reviewers to do
 
 Try to break the protocol.
@@ -65,6 +75,7 @@ For a normative change, include:
 10. What dispute/appeal object is missing?
 11. What would make the protocol coercive in workplaces or education?
 12. Which fields would prevent adoption by independent authors?
+13. Does Pilot 001 demonstrate meaningful human governance without overstating what the available evidence can prove?
 
 ## Expected output of the review
 
