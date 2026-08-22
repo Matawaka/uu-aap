@@ -104,5 +104,27 @@ The first Level 3.1f experiment generates a browser-local `PoAIAdjudicationSidec
 Tracking / review:
 
 - Adjudication RFC: Issue #49;
-- implementation: Issue #50;
+- completed implementation: Issue #50 / PR #54;
 - live acceptance: Issue #51.
+
+### Execution / Compliance Sidecar
+
+[`EXECUTION_ARTIFACT.md`](EXECUTION_ARTIFACT.md)
+
+Explores a later execution/compliance report as a separate provenance artifact rather than treating an adjudication directive as proof that the directive was actually carried out.
+
+Core research invariants:
+
+`adjudication directive != execution report != verified execution != observed outcome`
+
+and:
+
+`execution context != adjudication context != appeal context != review context != decision context`
+
+The first Level 3.1g experiment generates a browser-local `PoAIExecutionSidecar`. It references the root decision and required Adjudication, keeps executor authority unknown, records a declared execution status, and explicitly does not establish verified execution/compliance, observed outcome, legal effect, truth, causality, authority, responsibility, or a canonical verdict.
+
+Tracking / review:
+
+- Execution / Compliance RFC: Issue #55;
+- implementation: Issue #56;
+- live acceptance: Issue #57.
