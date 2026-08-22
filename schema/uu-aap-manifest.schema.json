@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/schema/uu-aap-manifest.schema.json",
+  "title": "UU-AAP Manifest 0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "protocol_version",
+    "profile",
+    "work",
+    "actors",
+    "responsibility",
+    "ai_participation",
+    "provenance",
+    "verification",
+    "privacy",
+    "contestability",
+    "versioning"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP"},
+    "protocol_version": {"const": "0.1"},
+    "profile": {"enum": ["D", "T", "V", "R"]},
+    "work": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["title", "work_id", "edition_id", "language", "publication_date"],
+      "properties": {
+        "title": {"type": "string", "minLength": 1},
+        "work_id": {"type": "string", "minLength": 1},
+        "edition_id": {"type": "string", "minLength": 1},
+        "language": {"type": "string", "minLength": 2},
+        "publication_date": {"type": "string", "format": "date"},
+        "identifiers": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "actors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["actor_id", "actor_type", "name"],
+        "properties": {
+          "actor_id": {"type": "string", "minLength": 1},
+          "actor_type": {"enum": ["human", "organization", "ai_system", "service", "pseudonymous_reviewer", "other"]},
+          "name": {"type": "string", "minLength": 1},
+          "identifier": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "responsibility": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["actor_id", "scope", "status"],
+        "properties": {
+          "actor_id": {"type": "string"},
+          "scope": {"enum": ["intent_governance", "concept_selection", "structure_approval", "source_selection", "factual_verification", "editorial_approval", "publication_authorization", "legal_compliance", "technical_binding", "review_attestation", "other"]},
+          "status": {"enum": ["accepted", "shared", "limited", "declined", "unknown"]},
+          "limitations": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "ai_participation": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true,
+        "required": ["actor_id", "roles", "direct_incorporation", "materiality"],
+        "properties": {
+          "actor_id": {"type": "string"},
+          "provider": {"type": ["string", "null"]},
+          "system": {"type": "string"},
+          "version": {"type": ["string", "null"]},
+          "roles": {"type": "array", "minItems": 1, "items": {"enum": ["intent", "concepts", "research", "structure", "drafting", "editing", "verification", "visuals", "translation", "publication", "other"]}},
+          "direct_incorporation": {"type": "boolean"},
+          "tool_access": {"type": ["boolean", "null"]},
+          "materiality": {"enum": ["minor", "material", "substantial", "unknown"]},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "dimensions": {"type": "array", "items": {"type": "object"}},
+        "concepts": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["concept_id", "label", "origin_class"],
+            "properties": {
+              "concept_id": {"type": "string"},
+              "label": {"type": "string"},
+              "origin_class": {"enum": ["human_originated", "ai_suggested", "co_developed", "source_derived", "collective_human", "unknown"]},
+              "decision_note": {"type": "string"},
+              "epistemic_status": {"enum": ["asserted", "provisional", "speculative", "disputed", "unknown", "not_verified"]},
+              "evidence_refs": {"type": "array", "items": {"type": "string"}}
+            }
+          }
+        },
+        "decision_trace": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["source_verification"],
+      "properties": {
+        "source_verification": {"enum": ["not_applicable", "author_reviewed", "independent_review", "automated_only", "mixed", "not_verified"]},
+        "artifact_sha256": {"type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$"},
+        "signature": {"type": ["object", "null"]},
+        "c2pa": {"type": ["object", "null"]},
+        "transparency_record": {"type": ["object", "null"]},
+        "review": {"type": ["object", "null"]}
+      }
+    },
+    "privacy": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["redactions_present", "full_prompt_log_public"],
+      "properties": {
+        "redactions_present": {"type": "boolean"},
+        "full_prompt_log_public": {"type": "boolean"},
+        "categories": {"type": "array", "items": {"enum": ["personal", "business_confidential", "unpublished_research", "security", "copyright", "contractual", "source_protection", "contributor_safety", "other"]}}
+      }
+    },
+    "contestability": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["channel_available"],
+      "properties": {
+        "channel_available": {"type": "boolean"},
+        "channel": {"type": ["string", "null"]},
+        "open_disputes": {"type": "integer", "minimum": 0},
+        "appeal_available": {"type": "boolean"}
+      }
+    },
+    "versioning": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["manifest_id"],
+      "properties": {
+        "manifest_id": {"type": "string", "minLength": 1},
+        "previous_manifest": {"type": ["string", "null"]},
+        "change_summary": {"type": "string"}
+      }
+    }
+  }
+}
