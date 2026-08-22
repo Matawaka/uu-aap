@@ -65,12 +65,30 @@
     input.addEventListener('blur', () => label.classList.remove('focus-proxy'));
   }
 
+  function loadAppealSidecarModule() {
+    if (globalThis.PoAIAppealSidecar || document.querySelector('script[data-poai-appeal-sidecar]')) return;
+    const script = document.createElement('script');
+    script.src = 'appeal-sidecar.js';
+    script.dataset.poaiAppealSidecar = 'true';
+    script.defer = true;
+    document.body.append(script);
+  }
+
   function loadReviewSidecarModule() {
-    if (document.querySelector('script[data-poai-review-sidecar]')) return;
+    if (globalThis.PoAIReviewSidecar) {
+      loadAppealSidecarModule();
+      return;
+    }
+    const existing = document.querySelector('script[data-poai-review-sidecar]');
+    if (existing) {
+      existing.addEventListener('load', loadAppealSidecarModule, { once: true });
+      return;
+    }
     const script = document.createElement('script');
     script.src = 'review-sidecar.js';
     script.dataset.poaiReviewSidecar = 'true';
     script.defer = true;
+    script.addEventListener('load', loadAppealSidecarModule, { once: true });
     document.body.append(script);
   }
 
