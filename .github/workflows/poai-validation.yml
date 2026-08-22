@@ -44,7 +44,7 @@ jobs:
             --schema proposals/poai/schema/poai-record.schema.json \
             --test-vectors proposals/poai/test-vectors
 
-      - name: Validate Level 3 browser interface
+      - name: Validate browser interface and experimental artifacts
         run: |
           node --check docs/poai/validator.js
           node --check docs/poai/i18n.js
@@ -60,6 +60,7 @@ jobs:
           node --check docs/poai/execution-verification-sidecar.js
           node --check docs/poai/outcome-sidecar.js
           node --check docs/poai/successor-proposal-sidecar.js
+          node --check docs/poai/binding-receipt.js
           node docs/poai/test-validator.js
           node docs/poai/test-builder.js /tmp/deeper-builder.poai.json
           node docs/poai/test-review-cues.js
@@ -70,6 +71,7 @@ jobs:
           node docs/poai/test-execution-verification-sidecar.js /tmp/execution-verification-sidecar.json
           node docs/poai/test-outcome-sidecar.js /tmp/outcome-sidecar.json
           node docs/poai/test-successor-proposal-sidecar.js /tmp/successor-proposal-sidecar.json
+          node docs/poai/test-binding-receipt.js /tmp/binding-receipt.json
           python proposals/poai/tools/validate_poai.py \
             --schema proposals/poai/schema/poai-record.schema.json \
             /tmp/deeper-builder.poai.json
@@ -128,4 +130,12 @@ jobs:
             echo "ERROR: experimental Successor Proposal Sidecar was incorrectly accepted as a Genesis PoAI record"; exit 1
           else
             echo "Expected separation confirmed: Successor Proposal Sidecar is outside the Genesis PoAI record schema"
+          fi
+
+      - name: Confirm Binding Receipt is not a Genesis PoAI record
+        run: |
+          if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json /tmp/binding-receipt.json; then
+            echo "ERROR: experimental Binding Receipt was incorrectly accepted as a Genesis PoAI record"; exit 1
+          else
+            echo "Expected separation confirmed: Binding Receipt is outside the Genesis PoAI record schema"
           fi
