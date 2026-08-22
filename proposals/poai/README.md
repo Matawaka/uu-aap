@@ -1,7 +1,8 @@
 # Proof of Available Intelligence (PoAI)
 
 **Genesis Proposal v0.0 · Machine Layer draft v0.0.1**  
-**Status:** experimental research proposal; **not** part of UU-AAP v0.1 conformance.
+**Status:** experimental research proposal; **not** part of UU-AAP v0.1 conformance.  
+**Canonical checkpoint:** [`poai-genesis-v0.0.1`](https://github.com/Matawaka/uu-aap/tree/poai-genesis-v0.0.1) → commit `4f9d1929ba19df9512855001c285d688af8ec6fa`
 
 > **What relevant intelligence was actually available to this decision before it became history?**
 
@@ -33,6 +34,10 @@ If you only want to understand the proposal:
 
 For implementation, continue with [`DATA_MODEL.md`](DATA_MODEL.md), [`MACHINE_LAYER.md`](MACHINE_LAYER.md) and the machine-readable schema.
 
+## Canonical checkpoint
+
+`poai-genesis-v0.0.1` freezes the public Genesis/Machine-Layer state immediately before Level 3 human-interface development. Level 3 is a successor development line; the checkpoint is not to be rewritten as the interface evolves.
+
 ## Machine layer v0.0.1
 
 The first executable layer contains:
@@ -43,6 +48,21 @@ The first executable layer contains:
 - two example families covering authorship governance and a Future Target with a successor outcome.
 
 The schema revision is **0.0.1**. The conceptual protocol remains **Genesis v0.0** while the machine model is being tested.
+
+## Level 3 — Human Interface
+
+The experimental human-facing layer lives in [`docs/poai/`](../../docs/poai/README.md).
+
+Its first MVP provides:
+
+- a browser-only PoAI JSON verifier;
+- a human-readable Decision Boundary / Future Target / resources / authority / outcome view;
+- explicit `Truth certified? NO` and artifact-binding state;
+- a guided PoAI/T Record Builder that begins at **E0 self-declaration** and defaults uncertain facts to `unknown`;
+- no server upload endpoint and no external JavaScript dependencies;
+- Node smoke tests against the existing PoAI valid/invalid vectors.
+
+The browser validator is a usability mirror of core semantic invariants. JSON Schema + the Python validator remain the machine-layer reference.
 
 ## Quick Start
 
@@ -69,6 +89,14 @@ Run the machine test vectors:
 ```bash
 python proposals/poai/tools/validate_poai.py \
   --test-vectors proposals/poai/test-vectors
+```
+
+Run the Level 3 browser-validator parity smoke test:
+
+```bash
+node --check docs/poai/validator.js
+node --check docs/poai/app.js
+node docs/poai/test-validator.js
 ```
 
 ## What the validator checks

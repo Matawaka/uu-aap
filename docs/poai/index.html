@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PoAI Level 3 — browser-only verifier and record builder for Proof of Available Intelligence records.">
+  <title>PoAI Level 3 — Web Verifier & Record Builder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <p class="eyebrow">Proof of Available Intelligence · Level 3</p>
+      <h1>Web Verifier &amp; Record Builder</h1>
+      <p class="lede">Inspect a PoAI record as a decision-time intelligence horizon: availability, consideration, authority, evidence, Future Target and outcome — without uploading your JSON to a server.</p>
+      <div class="principles" aria-label="Core distinctions">
+        <span>availability ≠ use</span><span>use ≠ authority</span><span>authority ≠ responsibility</span><span>proof ≠ truth</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="notice" aria-label="Privacy and scope">
+      <strong>Local-first experimental interface.</strong>
+      <span>Your selected file is read by JavaScript in this browser. This interface does not send the record to a PoAI server. Browser validation is a usability layer; repository JSON Schema + Python semantic validation remain the machine-layer reference.</span>
+    </section>
+
+    <nav class="tabs" aria-label="PoAI Level 3 tools">
+      <button type="button" data-tab="verifier" class="active">Verifier</button>
+      <button type="button" data-tab="builder">Record Builder</button>
+    </nav>
+
+    <section data-panel="verifier">
+      <div class="grid two">
+        <section class="panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">Input</p><h2>PoAI JSON</h2></div>
+            <span id="privacyBadge" class="badge neutral">Upload destination: this browser only</span>
+          </div>
+          <label class="file-label" for="fileInput">Choose a .json file</label>
+          <input id="fileInput" type="file" accept="application/json,.json">
+          <textarea id="jsonInput" spellcheck="false" aria-label="PoAI JSON input"></textarea>
+          <div class="actions">
+            <button id="validateBtn" type="button" class="primary">Validate</button>
+            <button id="demoBtn" type="button">Load demo</button>
+            <button id="downloadBtn" type="button">Download current JSON</button>
+            <button id="clearBtn" type="button">Clear</button>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head">
+            <div><p class="eyebrow">Browser validation</p><h2>Result</h2></div>
+            <span id="statusBadge" class="badge">WAITING</span>
+          </div>
+          <p id="summaryLine" class="summary">Paste or load a PoAI JSON record.</p>
+          <div class="claims">
+            <span id="truthBadge" class="badge caution">Truth certified? NO</span>
+            <span id="bindingBadge" class="badge neutral">Cryptographically bound? unknown</span>
+          </div>
+          <h3>Errors</h3>
+          <div id="issues" class="issue-list"></div>
+          <h3>Warnings</h3>
+          <div id="warnings" class="issue-list"></div>
+        </section>
+      </div>
+
+      <section class="panel visualizer">
+        <div class="panel-head"><div><p class="eyebrow">Human-readable view</p><h2>Decision intelligence map</h2></div></div>
+        <div class="grid three">
+          <article class="card"><h3>Decision Boundary</h3><div id="decisionCard"></div></article>
+          <article class="card"><h3>Future Target</h3><div id="futureCard"></div></article>
+          <article class="card"><h3>Outcome &amp; successor</h3><div id="outcomeCard"></div></article>
+        </div>
+        <div class="grid two lower">
+          <article class="card"><h3>Intelligence resources</h3><div class="table-head"><span>Resource</span><span>Type</span><span>Availability</span><span>Consideration</span></div><div id="resourceTable" class="table"></div></article>
+          <article class="card"><h3>Authority</h3><div class="table-head authority"><span>Actor</span><span>Scopes</span><span>Status</span></div><div id="authorityTable" class="table"></div></article>
+        </div>
+        <article class="card lower"><h3>Evidence &amp; contestability</h3><div id="evidenceCard"></div></article>
+      </section>
+    </section>
+
+    <section data-panel="builder" hidden>
+      <section class="panel builder">
+        <div class="panel-head"><div><p class="eyebrow">Guided authoring</p><h2>Start a PoAI/T record</h2></div><span class="badge caution">Starts at E0 self-declaration</span></div>
+        <p class="summary">The builder intentionally defaults uncertain fields to <code>unknown</code>. It does not upgrade evidence, authority or availability merely because a field can be filled in.</p>
+        <div class="form-grid">
+          <label>Decision label<input id="builderLabel" placeholder="Approve publication of canonical artifact"></label>
+          <label>Human actor<input id="builderActor" placeholder="Decision-maker name or disclosed role"></label>
+          <label>Subject ID<input id="builderSubjectId" placeholder="decision:canonical-publication"></label>
+          <label>Record ID<input id="builderRecordId" placeholder="urn:poai:record:canonical-publication:1"></label>
+          <label class="wide">Description<textarea id="builderDescription" placeholder="What decision is being bounded and why?"></textarea></label>
+          <label>Opened at<input id="builderOpened" type="datetime-local"></label>
+          <label>Knowledge cutoff<input id="builderCutoff" type="datetime-local"></label>
+          <label>Closed at<input id="builderClosed" type="datetime-local"></label>
+        </div>
+        <div class="actions"><button id="buildBtn" type="button" class="primary">Generate draft and validate</button></div>
+        <p class="footnote">Generated records are drafts. Add actual intelligence resources, evidence references, authority facts, alternatives, constraints and successor semantics before making stronger claims.</p>
+      </section>
+    </section>
+
+    <footer>
+      <p>PoAI Genesis v0.0 · Machine Layer v0.0.1 · Level 3 experimental human interface.</p>
+      <p><a href="https://github.com/Matawaka/uu-aap/discussions/10">PoAI Genesis RFC Discussion #10</a> · <a href="https://github.com/Matawaka/uu-aap/tree/main/proposals/poai">Protocol files</a></p>
+    </footer>
+  </main>
+
+  <script src="validator.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
