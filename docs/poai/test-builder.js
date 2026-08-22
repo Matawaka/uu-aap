@@ -1,4 +1,5 @@
 const assert = require('assert');
+const fs = require('fs');
 const { buildRecord } = require('./builder-core.js');
 const { validatePoAI } = require('./validator.js');
 
@@ -86,4 +87,5 @@ const en = buildRecord({ ...baseInput(), uiLanguage: 'en' });
 const ru = buildRecord({ ...baseInput(), uiLanguage: 'ru' });
 assert.deepStrictEqual(en, ru, 'UI language must not affect machine record output');
 
+if (process.argv[2]) fs.writeFileSync(process.argv[2], JSON.stringify(record, null, 2));
 console.log('PoAI deeper Builder tests passed.');
