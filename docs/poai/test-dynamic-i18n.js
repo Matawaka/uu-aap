@@ -43,6 +43,62 @@ assert.equal(
   'Ссылка на доказательство идентификатора выдающей стороны (необязательно)'
 );
 
+const hybridCases = [
+  ['DIGEST ONLY · НЕ ПОДПИСЬ', 'ТОЛЬКО ДАЙДЖЕСТ · НЕ ПОДПИСЬ', 'DIGEST ONLY · NOT A SIGNATURE'],
+  ['Скачать Binding Receipt', 'Скачать квитанцию привязки', 'Download Binding Receipt'],
+  ['Подпись Ed25519', 'Привязка подписью Ed25519', 'Ed25519 signature binding'],
+  ['EPHEMERAL KEY · НЕ IDENTITY', 'ВРЕМЕННЫЙ КЛЮЧ · НЕ ИДЕНТИЧНОСТЬ', 'EPHEMERAL KEY · NOT IDENTITY'],
+  ['Скачать Signature Envelope', 'Скачать конверт подписи', 'Download Signature Envelope'],
+  ['Загрузить Signature Envelope', 'Загрузить конверт подписи', 'Load Signature Envelope'],
+  ['Постоянный локальный ключ', 'Постоянный локальный ключ подписанта', 'Persistent local signer key'],
+  ['LOCAL CONTINUITY · НЕ IDENTITY', 'ЛОКАЛЬНАЯ НЕПРЕРЫВНОСТЬ · НЕ ИДЕНТИЧНОСТЬ', 'LOCAL CONTINUITY · NOT IDENTITY'],
+  ['Проверить continuity signature', 'Проверить подпись непрерывности', 'Verify continuity signature'],
+  ['Скачать Continuity Envelope', 'Скачать конверт непрерывности', 'Download Continuity Envelope'],
+  ['Загрузить Continuity Envelope', 'Загрузить конверт непрерывности', 'Load Continuity Envelope'],
+  ['Скачать Review Sidecar', 'Скачать сопроводительный артефакт проверки', 'Download Review Sidecar'],
+  ['Не влияет на PASS', 'Не влияет на результат проверки (PASS)', 'Does not affect PASS']
+];
+hybridCases.forEach(([source, ru, en]) => {
+  assert.equal(i18n.translateExactText(source, 'ru'), ru);
+  assert.equal(i18n.translateExactText(source, 'en'), en);
+});
+
+assert.equal(
+  i18n.translateExactText(
+    'RFC 8785 JCS → UTF-8 → SHA-256. Привязка не подтверждает личность, полномочие, истинность или PoAI/V.',
+    'ru'
+  ),
+  'RFC 8785 JCS → UTF-8 → SHA-256. Дайджест не устанавливает идентичность, полномочия, истинность или PoAI/V.'
+);
+assert.equal(
+  i18n.translateExactText(
+    'RFC 8785 + SHA-256 → domain-separated statement → Ed25519. Корректная подпись не доказывает личность, полномочие, истинность или PoAI/V.',
+    'ru'
+  ),
+  'RFC 8785 + SHA-256 → доменно-разделённое утверждение → Ed25519. Валидная подпись не доказывает идентичность, полномочия, истинность или PoAI/V.'
+);
+assert.equal(
+  i18n.translateExactText(
+    'Non-exportable Ed25519 private key хранится как CryptoKey в IndexedDB этого origin. Совпадение ключа во времени не доказывает личность или полномочия.',
+    'ru'
+  ),
+  'Неэкспортируемый закрытый CryptoKey Ed25519 хранится в IndexedDB для этого источника (origin). Непрерывность одного и того же ключа во времени не доказывает идентичность или полномочия.'
+);
+assert.equal(
+  i18n.translateExactText(
+    'Связывает persistent key с заявленным внешним идентификатором. Публичная публикация может дать наблюдаемое evidence контроля аккаунта/репозитория, но не доказывает человеческую или юридическую личность и не создаёт полномочия.',
+    'ru'
+  ),
+  'Связывает постоянный ключ с заявленным внешним идентификатором. Публичная публикация может дать наблюдаемое доказательство контроля аккаунта/репозитория, но не доказывает человеческую или юридическую идентичность и не создаёт полномочий.'
+);
+assert.equal(
+  i18n.translateExactText(
+    'Фиксирует подписанное утверждение о конкретном полномочии, цели и сроке. Подпись и публикация показывают существование evidence, но не доказывают право issuer выдавать полномочие и не создают materialization authority.',
+    'ru'
+  ),
+  'Фиксирует подписанное утверждение о конкретной области полномочия, целевом ресурсе и сроке действия. Подпись и публикация показывают существование доказательства, но не подтверждают право выдающей стороны предоставлять полномочие и не создают полномочие материализации.'
+);
+
 assert.equal(
   i18n.translateExactText(
     'RFC 8785 JCS → UTF-8 → SHA-256. A digest does not establish identity, authority, truth, or PoAI/V.',
