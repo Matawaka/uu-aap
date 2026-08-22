@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/ccrp/schema/execution-admission-result.c2.schema.json",
+  "title": "CCRP/C2 Execution Admission Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "ccrp_version",
+    "conformance_level",
+    "result_id",
+    "evaluated_at",
+    "operation_ref",
+    "presented_lease_ref",
+    "current_lease_ref",
+    "collision_result_ref",
+    "current_revision",
+    "current_epoch",
+    "current_fencing_token",
+    "decision",
+    "reason_codes",
+    "checks",
+    "source_artifacts_preserved",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CCRPExecutionAdmissionResult"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "ccrp_version": {"const": "0.1"},
+    "conformance_level": {"const": "CCRP/C2"},
+    "result_id": {"type": "string", "pattern": "^urn:ccrp:execution-admission-result:"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "operation_ref": {"type": "string", "pattern": "^urn:ccrp:operation:"},
+    "presented_lease_ref": {"type": "string", "pattern": "^urn:ccrp:lease:"},
+    "current_lease_ref": {"type": "string", "pattern": "^urn:ccrp:lease:"},
+    "collision_result_ref": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^urn:ccrp:collision-result:"}
+      ]
+    },
+    "current_revision": {"type": "string", "minLength": 1},
+    "current_epoch": {"type": "integer", "minimum": 1},
+    "current_fencing_token": {"type": "integer", "minimum": 1},
+    "decision": {"enum": ["admitted", "not_admitted"]},
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "presented_lease_binds_operation",
+        "current_lease_binds_operation",
+        "same_execution_lineage",
+        "epoch_current",
+        "fencing_token_current",
+        "presented_lease_active",
+        "current_lease_active",
+        "presented_lease_unexpired",
+        "current_lease_unexpired",
+        "action_in_scope",
+        "target_in_scope",
+        "collision_clear",
+        "revision_current"
+      ],
+      "properties": {
+        "presented_lease_binds_operation": {"type": "boolean"},
+        "current_lease_binds_operation": {"type": "boolean"},
+        "same_execution_lineage": {"type": "boolean"},
+        "epoch_current": {"type": "boolean"},
+        "fencing_token_current": {"type": "boolean"},
+        "presented_lease_active": {"type": "boolean"},
+        "current_lease_active": {"type": "boolean"},
+        "presented_lease_unexpired": {"type": "boolean"},
+        "current_lease_unexpired": {"type": "boolean"},
+        "action_in_scope": {"type": "boolean"},
+        "target_in_scope": {"type": "boolean"},
+        "collision_clear": {"type": "boolean"},
+        "revision_current": {"type": "boolean"}
+      }
+    },
+    "source_artifacts_preserved": {"const": true},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_admitted",
+        "current_execution_owner_established",
+        "lease_established",
+        "materialization_permitted",
+        "canonical_state_established",
+        "poai_authority_established",
+        "historical_provenance_preserved",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_responsibility_determined",
+        "moral_correctness_established",
+        "legal_effect_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "execution_admitted": {"type": "boolean"},
+        "current_execution_owner_established": {"type": "boolean"},
+        "lease_established": {"type": "boolean"},
+        "materialization_permitted": {"const": false},
+        "canonical_state_established": {"const": false},
+        "poai_authority_established": {"const": false},
+        "historical_provenance_preserved": {"const": true},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "admitted"}}},
+      "then": {
+        "properties": {
+          "reason_codes": {"maxItems": 0},
+          "claims": {
+            "properties": {
+              "execution_admitted": {"const": true},
+              "current_execution_owner_established": {"const": true},
+              "lease_established": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"decision": {"const": "not_admitted"}}},
+      "then": {
+        "properties": {
+          "reason_codes": {"minItems": 1},
+          "claims": {
+            "properties": {
+              "execution_admitted": {"const": false}
+            }
+          }
+        }
+      }
+    }
+  ]
+}

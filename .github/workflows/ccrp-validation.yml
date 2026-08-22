@@ -147,6 +147,85 @@ jobs:
               print(f'VALID CCRP/C1 collision result: {collision_type}')
           PY
 
+      - name: Validate CCRP C2 execution lease schema vectors
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('proposals/ccrp/schema/execution-lease.c2.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          fixture_paths = [
+              Path('proposals/ccrp/examples/c2-chat-a-superseded.execution-lease.json'),
+              Path('proposals/ccrp/examples/c2-chat-b-current.execution-lease.json'),
+          ]
+          fixtures = []
+          for fixture_path in fixture_paths:
+              fixture = json.loads(fixture_path.read_text(encoding='utf-8'))
+              validator.validate(fixture)
+              fixtures.append(fixture)
+              print(f'VALID CCRP/C2 execution lease: {fixture_path}')
+
+          bad_epoch = copy.deepcopy(fixtures[1])
+          bad_epoch['epoch'] = 0
+          assert list(validator.iter_errors(bad_epoch)), 'C2 lease epoch must be positive'
+
+          active_without_owner = copy.deepcopy(fixtures[1])
+          active_without_owner['claims']['current_execution_owner_established'] = False
+          assert list(validator.iter_errors(active_without_owner)), 'active lease must identify current execution owner'
+
+          superseded_still_owner = copy.deepcopy(fixtures[0])
+          superseded_still_owner['claims']['current_execution_owner_established'] = True
+          assert list(validator.iter_errors(superseded_still_owner)), 'superseded lease must not retain current ownership'
+
+          print('CCRP/C2 negative lease schema vectors rejected as expected')
+          PY
+
+      - name: Run CCRP C2 execution fencing vectors
+        run: |
+          node --check proposals/ccrp/tools/ccrp-c2.js
+          node --check proposals/ccrp/test-c2.js
+          node proposals/ccrp/test-c2.js /tmp/ccrp-c2
+
+      - name: Validate CCRP C2 execution admission result schema vectors
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('proposals/ccrp/schema/execution-admission-result.c2.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          expected = {
+              'admitted.execution-admission-result.json': 'admitted',
+              'staleExecutor.execution-admission-result.json': 'not_admitted',
+              'wrongSession.execution-admission-result.json': 'not_admitted',
+              'expired.execution-admission-result.json': 'not_admitted',
+              'outOfScope.execution-admission-result.json': 'not_admitted',
+              'blockingCollision.execution-admission-result.json': 'not_admitted',
+              'staleRevision.execution-admission-result.json': 'not_admitted',
+          }
+          for name, decision in expected.items():
+              path = Path('/tmp/ccrp-c2') / name
+              result = json.loads(path.read_text(encoding='utf-8'))
+              validator.validate(result)
+              assert result['decision'] == decision
+              assert result['source_artifacts_preserved'] is True
+              assert result['claims']['historical_provenance_preserved'] is True
+              assert result['claims']['materialization_permitted'] is False
+              assert result['claims']['canonical_state_established'] is False
+              assert result['claims']['poai_authority_established'] is False
+              if decision == 'admitted':
+                  assert result['claims']['execution_admitted'] is True
+                  assert result['claims']['current_execution_owner_established'] is True
+                  assert result['claims']['lease_established'] is True
+              else:
+                  assert result['claims']['execution_admitted'] is False
+              print(f'VALID CCRP/C2 execution admission result: {name} -> {decision}')
+          PY
+
       - name: Confirm CCRP artifacts are outside Genesis records
         run: |
           for artifact in \
@@ -154,11 +233,20 @@ jobs:
             proposals/ccrp/examples/c0-same-actor-chat-b.work-context.json \
             proposals/ccrp/examples/c1-chat-a-exclusive.operation-intent.json \
             proposals/ccrp/examples/c1-chat-b-exclusive.operation-intent.json \
+            proposals/ccrp/examples/c2-chat-a-superseded.execution-lease.json \
+            proposals/ccrp/examples/c2-chat-b-current.execution-lease.json \
             /tmp/ccrp-c1/exclusive.collision-result.json \
             /tmp/ccrp-c1/stale.collision-result.json \
             /tmp/ccrp-c1/duplicate.collision-result.json \
             /tmp/ccrp-c1/wrongContext.collision-result.json \
-            /tmp/ccrp-c1/noCollision.collision-result.json
+            /tmp/ccrp-c1/noCollision.collision-result.json \
+            /tmp/ccrp-c2/admitted.execution-admission-result.json \
+            /tmp/ccrp-c2/staleExecutor.execution-admission-result.json \
+            /tmp/ccrp-c2/wrongSession.execution-admission-result.json \
+            /tmp/ccrp-c2/expired.execution-admission-result.json \
+            /tmp/ccrp-c2/outOfScope.execution-admission-result.json \
+            /tmp/ccrp-c2/blockingCollision.execution-admission-result.json \
+            /tmp/ccrp-c2/staleRevision.execution-admission-result.json
           do
             if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json "$artifact"; then
               echo "ERROR: CCRP artifact was incorrectly accepted as a Genesis PoAI record: $artifact"; exit 1
@@ -230,4 +318,45 @@ jobs:
                   assert artifact['claims'][claim] is False, f'{path}: {claim}'
 
           print('CCRP/C1 detects collisions without resolving or admitting execution')
+          PY
+
+      - name: Preserve CCRP C2 assurance boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          false_claims = [
+              'materialization_permitted',
+              'canonical_state_established',
+              'poai_authority_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]
+
+          results = {}
+          for path in sorted(Path('/tmp/ccrp-c2').glob('*.execution-admission-result.json')):
+              artifact = json.loads(path.read_text(encoding='utf-8'))
+              results[path.name] = artifact
+              assert artifact['claims']['historical_provenance_preserved'] is True
+              for claim in false_claims:
+                  assert artifact['claims'][claim] is False, f'{path}: {claim}'
+
+          admitted = results['admitted.execution-admission-result.json']
+          assert admitted['claims']['execution_admitted'] is True
+          assert admitted['claims']['current_execution_owner_established'] is True
+          assert admitted['claims']['lease_established'] is True
+
+          stale = results['staleExecutor.execution-admission-result.json']
+          assert stale['claims']['execution_admitted'] is False
+          assert 'stale_epoch' in stale['reason_codes']
+          assert 'stale_fencing_token' in stale['reason_codes']
+          assert stale['claims']['current_execution_owner_established'] is True
+
+          print('CCRP/C2 admits only the current fenced executor and preserves stronger boundaries')
           PY
