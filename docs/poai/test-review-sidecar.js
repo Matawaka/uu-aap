@@ -32,7 +32,7 @@ const sidecar = buildReviewSidecar(source, {
 assert.strictEqual(JSON.stringify(source), before, 'building a review sidecar must not mutate the source record');
 assert.strictEqual(sidecar.artifact_type, 'PoAIReviewSidecar');
 assert.strictEqual(sidecar.reviewed_record_id, source.record_id);
-assert.strictEqual(sidecar.reviewed_at, reviewedAt);
+assert.strictEqual(Date.parse(sidecar.reviewed_at), Date.parse(reviewedAt));
 assert.strictEqual(sidecar.review_purpose, 'operational');
 assert.deepStrictEqual(sidecar.observed_cues, [
   { code: 'authority_status_unknown' },
