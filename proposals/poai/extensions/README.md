@@ -196,3 +196,26 @@ Tracking / review:
 - Successor Proposal RFC: Issue #69;
 - implementation: Issue #70;
 - live acceptance: Issue #71.
+
+### Level 4.0a Deterministic Binding
+
+[`VERIFIABLE_BINDING.md`](VERIFIABLE_BINDING.md)
+
+Begins the Level 3 → Level 4 transition by making JSON artifacts reproducibly bindable before introducing signatures, signer identity or materialization authority.
+
+Core research invariants:
+
+`canonical bytes != digest != signature != signer identity != signer authority != materialization authority != canonical successor`
+
+and:
+
+`cryptographic verification != truth certification`
+
+The first Level 4.0a experiment generates a browser-local `PoAIBindingReceipt` using an RFC 8785-compatible JCS canonical form, UTF-8 bytes and SHA-256. It deliberately contains no signature or signer, establishes no authority/truth/responsibility/legal effect/canonical successor, is not PoAI/V, and remains outside the Genesis decision-record schema.
+
+Tracking / review:
+
+- Level 4 RFC: Issue #73;
+- deterministic binding implementation: Issue #74;
+- Level 3.1 checkpoint readiness: Issue #75;
+- live acceptance: Issue #76.
