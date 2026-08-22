@@ -1,7 +1,8 @@
 # Proof of Available Intelligence (PoAI)
 
 **Genesis Proposal v0.0 · Machine Layer draft v0.0.1**  
-**Status:** experimental research proposal; **not** part of UU-AAP v0.1 conformance.
+**Status:** experimental research proposal; **not** part of UU-AAP v0.1 conformance.  
+**Canonical checkpoint:** [`poai-genesis-v0.0.1`](https://github.com/Matawaka/uu-aap/tree/poai-genesis-v0.0.1) → commit `4f9d1929ba19df9512855001c285d688af8ec6fa`
 
 > **What relevant intelligence was actually available to this decision before it became history?**
 
@@ -32,6 +33,10 @@ If you only want to understand the proposal:
    - [`examples/quasi-existent-future.synthetic.successor.poai.json`](examples/quasi-existent-future.synthetic.successor.poai.json)
 
 For implementation, continue with [`DATA_MODEL.md`](DATA_MODEL.md), [`MACHINE_LAYER.md`](MACHINE_LAYER.md) and the machine-readable schema.
+
+## Canonical checkpoint
+
+`poai-genesis-v0.0.1` freezes the public Genesis/Machine-Layer state immediately before Level 3 human-interface development. Level 3 is a successor development line; the checkpoint is not to be rewritten as the interface evolves.
 
 ## Machine layer v0.0.1
 
