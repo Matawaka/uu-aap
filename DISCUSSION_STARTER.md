@@ -1,5 +1,9 @@
 # Discussion: What should accountable AI-augmented authorship mean?
 
+**Live discussion:** https://github.com/Matawaka/uu-aap/discussions/8
+
+This file preserves the initial public discussion prompt as part of the protocol's own provenance history.
+
 Hello. I am publishing UU-AAP v0.1 as an open proposal, not as a finished answer.
 
 The project starts from one assumption: the useful question is not “How many words did AI type?” but “Who governed the meaning, who selected and rejected alternatives, what evidence exists, where does uncertainty remain, and who accepts responsibility for which decisions?”
