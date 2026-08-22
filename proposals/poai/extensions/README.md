@@ -172,3 +172,27 @@ Tracking / review:
 - Observed Outcome RFC: Issue #64;
 - implementation: Issue #65;
 - live acceptance: Issue #66.
+
+### Successor Proposal Sidecar
+
+[`SUCCESSOR_PROPOSAL_ARTIFACT.md`](SUCCESSOR_PROPOSAL_ARTIFACT.md)
+
+Explores the transition from later outcome observations to a candidate append-only successor without automatically materializing or canonicalizing a new PoAI decision record.
+
+Core research invariants:
+
+`outcome observation != successor proposal != successor record != canonical successor`
+
+`later evidence != earlier knowledge`
+
+and:
+
+`proposal readiness cues != authority to publish successor`
+
+The first Level 3.1j experiment generates a browser-local `PoAISuccessorProposalSidecar`. It references the source decision version and one or more Outcome Observation IDs, proposes the next record id/version and Genesis outcome status, preserves the original Decision Boundary, Knowledge Cutoff and decision-time Future Target epistemic status by explicit requirement, keeps proposer authority unknown, exposes non-scalar review cues, and establishes no successor, canonical outcome, truth, causal proof, responsibility or legal effect.
+
+Tracking / review:
+
+- Successor Proposal RFC: Issue #69;
+- implementation: Issue #70;
+- live acceptance: Issue #71.
