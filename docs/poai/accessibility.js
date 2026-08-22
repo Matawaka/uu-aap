@@ -58,12 +58,30 @@
     input.addEventListener('blur', () => label.classList.remove('focus-proxy'));
   }
 
+  function loadSignatureEnvelopeModule() {
+    if (globalThis.PoAISignatureEnvelope || document.querySelector('script[data-poai-signature-envelope]')) return;
+    const script = document.createElement('script');
+    script.src = 'signature-envelope.js';
+    script.dataset.poaiSignatureEnvelope = 'true';
+    script.defer = true;
+    document.body.append(script);
+  }
+
   function loadBindingReceiptModule() {
-    if (globalThis.PoAIBindingReceipt || document.querySelector('script[data-poai-binding-receipt]')) return;
+    if (globalThis.PoAIBindingReceipt) {
+      loadSignatureEnvelopeModule();
+      return;
+    }
+    const existing = document.querySelector('script[data-poai-binding-receipt]');
+    if (existing) {
+      existing.addEventListener('load', loadSignatureEnvelopeModule, { once: true });
+      return;
+    }
     const script = document.createElement('script');
     script.src = 'binding-receipt.js';
     script.dataset.poaiBindingReceipt = 'true';
     script.defer = true;
+    script.addEventListener('load', loadSignatureEnvelopeModule, { once: true });
     document.body.append(script);
   }
 
