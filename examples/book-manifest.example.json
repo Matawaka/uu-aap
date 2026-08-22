@@ -1,0 +1,67 @@
+{
+  "protocol": "UU-AAP",
+  "protocol_version": "0.1",
+  "profile": "T",
+  "work": {
+    "title": "Example Book: Reality as a Versioned System",
+    "work_id": "urn:uu-aap:book:000001",
+    "edition_id": "2026.1",
+    "language": "en",
+    "publication_date": "2026-08-22",
+    "identifiers": []
+  },
+  "actors": [
+    {"actor_id": "actor:author", "actor_type": "human", "name": "Example Author", "identifier": "https://example.org/author"},
+    {"actor_id": "actor:ai:1", "actor_type": "ai_system", "name": "Example language model", "identifier": null},
+    {"actor_id": "actor:publisher", "actor_type": "organization", "name": "Example Publisher", "identifier": null}
+  ],
+  "responsibility": [
+    {"actor_id": "actor:author", "scope": "intent_governance", "status": "accepted", "limitations": null},
+    {"actor_id": "actor:author", "scope": "concept_selection", "status": "accepted", "limitations": null},
+    {"actor_id": "actor:author", "scope": "factual_verification", "status": "limited", "limitations": "Claims checked against cited sources; no independent fact checker."},
+    {"actor_id": "actor:author", "scope": "editorial_approval", "status": "accepted", "limitations": null},
+    {"actor_id": "actor:publisher", "scope": "publication_authorization", "status": "accepted", "limitations": null}
+  ],
+  "ai_participation": [
+    {
+      "actor_id": "actor:ai:1",
+      "provider": "Example Provider",
+      "system": "Large language model",
+      "version": null,
+      "roles": ["research", "concepts", "structure", "drafting", "editing"],
+      "direct_incorporation": true,
+      "tool_access": false,
+      "materiality": "substantial",
+      "notes": "AI proposed alternatives; human author selected, rejected, revised and verified material before publication."
+    }
+  ],
+  "provenance": {
+    "dimensions": [
+      {"dimension": "intent", "governance": "human"},
+      {"dimension": "concepts", "governance": "human_with_ai_augmentation"},
+      {"dimension": "drafting", "governance": "human_selection"}
+    ],
+    "concepts": [
+      {
+        "concept_id": "concept:versioned-reality",
+        "label": "Versioned Reality",
+        "origin_class": "co_developed",
+        "decision_note": "The concept emerged through iterative human–AI discussion and was retained after human review.",
+        "epistemic_status": "asserted",
+        "evidence_refs": ["evidence:concept-note-001"]
+      }
+    ],
+    "decision_trace": [
+      {
+        "decision_id": "decision:001",
+        "summary": "Three structures were compared; the author rejected a chronological structure and selected a conceptual progression.",
+        "evidence_class": "E1",
+        "epistemic_status": "asserted"
+      }
+    ]
+  },
+  "verification": {"source_verification": "author_reviewed", "artifact_sha256": null, "signature": null, "c2pa": null, "transparency_record": null, "review": null},
+  "privacy": {"redactions_present": true, "full_prompt_log_public": false, "categories": ["personal"]},
+  "contestability": {"channel_available": true, "channel": "https://github.com/Matawaka/uu-aap/issues", "open_disputes": 0, "appeal_available": false},
+  "versioning": {"manifest_id": "urn:uu-aap:manifest:000001:2026.1", "previous_manifest": null, "change_summary": "Initial public edition."}
+}
