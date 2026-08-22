@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="PoAI Level 3.1 — browser-only verifier and record builder with EN/RU presentation for Proof of Available Intelligence records.">
+  <meta name="description" content="PoAI Level 3.1 — browser-only verifier and deeper record builder with EN/RU presentation for Proof of Available Intelligence records.">
   <title>PoAI Level 3.1 — Web Verifier & Record Builder</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -89,6 +89,7 @@
       <section class="panel builder">
         <div class="panel-head"><div><p class="eyebrow">Guided authoring</p><h2>Start a PoAI/T record</h2></div><span class="badge caution">Starts at E0 self-declaration</span></div>
         <p class="summary">The builder intentionally defaults uncertain fields to <code>unknown</code>. It does not upgrade evidence, authority or availability merely because a field can be filled in.</p>
+
         <div class="form-grid">
           <label>Decision label<input id="builderLabel" placeholder="Approve publication of canonical artifact"></label>
           <label>Human actor<input id="builderActor" placeholder="Decision-maker name or disclosed role"></label>
@@ -98,9 +99,90 @@
           <label>Opened at<input id="builderOpened" type="datetime-local"></label>
           <label>Knowledge cutoff<input id="builderCutoff" type="datetime-local"></label>
           <label>Closed at<input id="builderClosed" type="datetime-local"></label>
+          <label><span class="en-only">Boundary status</span><span class="ru-only">Статус границы</span>
+            <select id="builderBoundaryStatus"><option value="live_record">live_record</option><option value="historical_reconstruction">historical_reconstruction</option><option value="mixed">mixed</option></select>
+          </label>
         </div>
+
+        <details class="builder-section" open>
+          <summary><span class="en-only">1. Intelligence resource, availability & consideration</span><span class="ru-only">1. Ресурс интеллекта, доступность и рассмотрение</span></summary>
+          <p class="footnote"><span class="en-only">One resource in this first increment. Every availability dimension defaults to <code>unknown</code> unless you explicitly state otherwise.</span><span class="ru-only">В первом инкременте — один ресурс. Каждое измерение доступности остаётся <code>unknown</code>, пока вы явно не укажете иное.</span></p>
+          <div class="form-grid compact">
+            <label><span class="en-only">Resource label</span><span class="ru-only">Название ресурса</span><input id="builderResourceLabel" placeholder="Shipment delay forecast"></label>
+            <label><span class="en-only">Resource type</span><span class="ru-only">Тип ресурса</span>
+              <select id="builderResourceType"><option value="human_judgment">human_judgment</option><option value="ai_system">ai_system</option><option value="expert_group">expert_group</option><option value="document">document</option><option value="dataset">dataset</option><option value="retrieval_service">retrieval_service</option><option value="forecasting_model">forecasting_model</option><option value="simulation">simulation</option><option value="institutional_process">institutional_process</option><option value="other">other</option></select>
+            </label>
+            <label class="wide"><span class="en-only">Resource notes</span><span class="ru-only">Примечание к ресурсу</span><input id="builderResourceNotes"></label>
+            <label><span class="en-only">Overall availability</span><span class="ru-only">Общая доступность</span><select id="builderAvailabilityOverall"><option value="unknown">unknown</option><option value="available">available</option><option value="partially_available">partially_available</option><option value="unavailable">unavailable</option></select></label>
+            <label><span class="en-only">Consideration state</span><span class="ru-only">Статус рассмотрения</span><select id="builderConsiderationStatus"><option value="unknown">unknown</option><option value="not_invoked">not_invoked</option><option value="invoked">invoked</option><option value="output_received">output_received</option><option value="considered">considered</option><option value="relied_upon">relied_upon</option><option value="rejected">rejected</option><option value="not_used">not_used</option></select></label>
+            <label class="wide"><span class="en-only">Consideration summary</span><span class="ru-only">Краткое описание рассмотрения</span><input id="builderConsiderationSummary"></label>
+          </div>
+          <div class="dimension-grid">
+            <label>identity<select id="builderAvailabilityIdentity"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+            <label>discoverability<select id="builderAvailabilityDiscoverability"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+            <label>reachability<select id="builderAvailabilityReachability"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+            <label>authorization<select id="builderAvailabilityAuthorization"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+            <label>temporal_fit<select id="builderAvailabilityTemporalFit"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+            <label>context_sufficiency<select id="builderAvailabilityContextSufficiency"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+            <label>execution_capability<select id="builderAvailabilityExecutionCapability"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+            <label>delivery<select id="builderAvailabilityDelivery"><option value="unknown">unknown</option><option value="available">available</option><option value="partial">partial</option><option value="unavailable">unavailable</option><option value="not_applicable">not_applicable</option></select></label>
+          </div>
+        </details>
+
+        <details class="builder-section">
+          <summary><span class="en-only">2. Evidence, authority, alternative & constraint</span><span class="ru-only">2. Доказательства, полномочия, альтернатива и ограничение</span></summary>
+          <p class="footnote"><span class="en-only">Selecting E1–E4 is a claim you make; the Builder does not verify that class.</span><span class="ru-only">Выбор E1–E4 является вашим утверждением; конструктор не подтверждает этот класс доказательств.</span></p>
+          <div class="form-grid compact">
+            <label><span class="en-only">Evidence class</span><span class="ru-only">Класс доказательств</span><select id="builderEvidenceClass"><option value="E0">E0</option><option value="E1">E1</option><option value="E2">E2</option><option value="E3">E3</option><option value="E4">E4</option></select></label>
+            <label><span class="en-only">Evidence type</span><span class="ru-only">Тип доказательства</span><input id="builderEvidenceType" value="self_declaration"></label>
+            <label><span class="en-only">Evidence availability</span><span class="ru-only">Доступность доказательства</span><input id="builderEvidenceAvailability" value="builder_session"></label>
+            <label><span class="en-only">Evidence location / reference</span><span class="ru-only">Местоположение / ссылка на доказательство</span><input id="builderEvidenceLocation"></label>
+            <label class="wide"><span class="en-only">Evidence notes</span><span class="ru-only">Примечание к доказательству</span><input id="builderEvidenceNotes"></label>
+            <label><span class="en-only">Authority status</span><span class="ru-only">Статус полномочий</span><select id="builderAuthorityStatus"><option value="unknown">unknown</option><option value="accepted">accepted</option><option value="shared">shared</option><option value="limited">limited</option><option value="declined">declined</option></select></label>
+            <label class="wide"><span class="en-only">Alternative considered</span><span class="ru-only">Рассмотренная альтернатива</span><input id="builderAlternativeLabel"></label>
+            <label class="wide"><span class="en-only">Constraint</span><span class="ru-only">Ограничение</span><input id="builderConstraintLabel"></label>
+          </div>
+          <fieldset class="scope-fieldset"><legend><span class="en-only">Authority scopes</span><span class="ru-only">Области полномочий</span></legend><div class="scope-grid">
+            <label><input type="checkbox" name="builderScope" value="observe" checked>observe</label>
+            <label><input type="checkbox" name="builderScope" value="request_analysis">request_analysis</label>
+            <label><input type="checkbox" name="builderScope" value="recommend">recommend</label>
+            <label><input type="checkbox" name="builderScope" value="decide">decide</label>
+            <label><input type="checkbox" name="builderScope" value="approve">approve</label>
+            <label><input type="checkbox" name="builderScope" value="block">block</label>
+            <label><input type="checkbox" name="builderScope" value="execute">execute</label>
+            <label><input type="checkbox" name="builderScope" value="review">review</label>
+            <label><input type="checkbox" name="builderScope" value="appeal">appeal</label>
+          </div></fieldset>
+        </details>
+
+        <details class="builder-section">
+          <summary><span class="en-only">3. Future Target, outcome, intervention & successor</span><span class="ru-only">3. Future Target, исход, вмешательство и преемник</span></summary>
+          <div class="form-grid compact">
+            <label class="check-label wide"><input id="builderFutureEnabled" type="checkbox"><span class="en-only">This decision has a Future Target</span><span class="ru-only">У решения есть Future Target</span></label>
+            <label class="wide"><span class="en-only">Future Target label</span><span class="ru-only">Название Future Target</span><input id="builderFutureLabel"></label>
+            <label><span class="en-only">Epistemic status</span><span class="ru-only">Эпистемический статус</span><select id="builderFutureEpistemicStatus"><option value="unknown">unknown</option><option value="asserted">asserted</option><option value="probable">probable</option><option value="provisional">provisional</option><option value="speculative">speculative</option><option value="disputed">disputed</option><option value="not_verified">not_verified</option><option value="unavailable">unavailable</option></select></label>
+            <label><span class="en-only">Probability (0–1)</span><span class="ru-only">Вероятность (0–1)</span><input id="builderFutureProbability" type="number" min="0" max="1" step="0.01"></label>
+            <label><span class="en-only">Outcome status</span><span class="ru-only">Статус исхода</span><select id="builderOutcomeStatus"><option value="">automatic</option><option value="not_yet_observable">not_yet_observable</option><option value="realized">realized</option><option value="not_realized_without_intervention">not_realized_without_intervention</option><option value="not_realized_after_intervention">not_realized_after_intervention</option><option value="indeterminate">indeterminate</option><option value="not_applicable">not_applicable</option></select></label>
+            <label><span class="en-only">Observed at</span><span class="ru-only">Наблюдалось</span><input id="builderOutcomeObservedAt" type="datetime-local"></label>
+            <label class="check-label wide"><input id="builderInterventionPresent" type="checkbox"><span class="en-only">Record an intervention object</span><span class="ru-only">Зафиксировать объект вмешательства</span></label>
+            <label class="wide"><span class="en-only">Intervention description</span><span class="ru-only">Описание вмешательства</span><input id="builderInterventionDescription"></label>
+            <label><span class="en-only">Causal status</span><span class="ru-only">Статус причинности</span><select id="builderCausalStatus"><option value="unknown">unknown</option><option value="associated_not_proven">associated_not_proven</option><option value="asserted">asserted</option></select></label>
+            <label><span class="en-only">Successor record ID</span><span class="ru-only">ID записи-преемника</span><input id="builderSuccessorRecord"></label>
+            <label class="wide"><span class="en-only">Outcome notes</span><span class="ru-only">Примечание к исходу</span><input id="builderOutcomeNotes"></label>
+          </div>
+        </details>
+
+        <details class="builder-section">
+          <summary><span class="en-only">4. Contestability</span><span class="ru-only">4. Оспариваемость</span></summary>
+          <div class="form-grid compact">
+            <label class="wide"><span class="en-only">Contestability channel</span><span class="ru-only">Канал оспаривания</span><input id="builderContestabilityChannel" value="https://github.com/Matawaka/uu-aap/issues"></label>
+            <label class="check-label"><input id="builderAppealAvailable" type="checkbox"><span class="en-only">Appeal available</span><span class="ru-only">Апелляция доступна</span></label>
+            <label class="wide"><span class="en-only">Contestability notes</span><span class="ru-only">Примечание об оспариваемости</span><input id="builderContestabilityNotes"></label>
+          </div>
+        </details>
+
         <div class="actions"><button id="buildBtn" type="button" class="primary">Generate draft and validate</button></div>
-        <p class="footnote">Generated records are drafts. Add actual intelligence resources, evidence references, authority facts, alternatives, constraints and successor semantics before making stronger claims.</p>
+        <p class="footnote">Generated records are drafts. Filling a field records a declaration; it does not independently prove availability, authority, evidence strength, causality or truth.</p>
       </section>
     </section>
 
@@ -112,7 +194,9 @@
 
   <script src="validator.js"></script>
   <script src="i18n.js"></script>
+  <script src="builder-core.js"></script>
   <script src="app.js"></script>
+  <script src="builder-ui.js"></script>
   <script src="accessibility.js"></script>
 </body>
 </html>
