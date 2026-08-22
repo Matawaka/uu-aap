@@ -19,6 +19,14 @@ Content provenance standards can bind declarations to digital artifacts. Publish
 
 UU-AAP adds that layer.
 
+## Join the public review
+
+- **Broad design discussion:** [What should accountable AI-augmented authorship mean? — Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8)
+- **Main RFC:** [UU-AAP v0.1 Public Review — Issue #1](https://github.com/Matawaka/uu-aap/issues/1)
+- **Concrete failure cases and proposals:** [Open Issues](https://github.com/Matawaka/uu-aap/issues)
+
+Agreement is not required. Concrete counterexamples, privacy risks, implementation failures and competing models are especially valuable at this stage.
+
 ## Read in this order
 
 1. [`PRINCIPLES.md`](PRINCIPLES.md) — non-negotiable design principles.
@@ -59,6 +67,8 @@ UU-AAP is intended to reuse established infrastructure where practical, especial
 ## Public review
 
 This draft is intentionally contestable. Please submit concrete failure cases: privacy harms, coercive uses, ambiguous responsibility, unverifiable claims, interoperability failures, accessibility problems, or unnecessary implementation burden.
+
+For broad questions and competing design models, use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8). For a concrete protocol defect or proposed normative change, open an Issue.
 
 **Initial proposer/editor:** [Matawaka](https://github.com/Matawaka)  
 This attribution identifies the initial public proposer; it does not grant unilateral authority over future protocol meaning.
