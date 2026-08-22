@@ -1,19 +1,20 @@
 # Repository integrity status
 
-## Public Draft v0.1 — pre-release note
+## Public Draft v0.1
 
-The SHA-256 table generated for the local pre-publication candidate is **not canonical for the GitHub publication**.
+The canonical integrity anchor for the first public release is the **Git tag `v0.1` pointing to one specific Git commit and tree**.
 
-During publication, some text and JSON files were serialized through the GitHub API. Their semantic content is the same candidate material, but byte-level formatting can differ from the local snapshot. Publishing the old hash table as if it described the remote repository would therefore create a false integrity claim.
+UU-AAP v0.1 intentionally does not publish a hand-maintained flat SHA-256 table for every repository file. A manually copied hash table can become stale during publication and would create a stronger-looking integrity claim than the process actually supports.
 
-For the current public-review stage:
+For v0.1:
 
-- Git commit history is the authoritative version history of the repository;
-- each GitHub blob/commit provides content-addressed integrity inside Git;
-- no v0.1 release hash set is claimed yet;
-- a canonical SHA-256 manifest SHOULD be generated only after the review candidate is frozen and tagged;
-- that release manifest SHOULD itself be signed or bound to a future UU-AAP/V record.
+- the Git commit referenced by tag `v0.1` is the authoritative repository snapshot;
+- the commit recursively identifies the exact Git tree and blobs that form the release;
+- the tag SHOULD be protected against update and deletion with a GitHub tag ruleset;
+- later edits on `main` do not redefine what `v0.1` means;
+- a future release MAY add a separate signed SHA-256 artifact manifest for distribution files such as PDF and EPUB;
+- a book-level UU-AAP/V record SHOULD bind the actual distributed ebook artifact, rather than infer artifact identity from this protocol-repository tag.
 
-This correction intentionally preserves the fact that a pre-publication hash snapshot existed while withdrawing it as a claim about the published repository.
+This replaces an earlier local pre-publication hash candidate that was withdrawn because API serialization changed byte-level formatting of some files before publication.
 
-**Epistemic status:** `corrected / not_applicable_to_remote_bytes`
+**Epistemic status:** `asserted / git-tag-anchored`
