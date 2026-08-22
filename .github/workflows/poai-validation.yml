@@ -35,7 +35,8 @@ jobs:
             --schema proposals/poai/schema/poai-record.schema.json \
             proposals/poai/examples/vibe-coding-reality.poai.json \
             proposals/poai/examples/quasi-existent-future.synthetic.poai.json \
-            proposals/poai/examples/quasi-existent-future.synthetic.successor.poai.json
+            proposals/poai/examples/quasi-existent-future.synthetic.successor.poai.json \
+            proposals/poai/examples/augmented-observer.synthetic.poai.json
 
       - name: Run interoperability vectors
         run: |
