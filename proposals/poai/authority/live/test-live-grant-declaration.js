@@ -15,6 +15,10 @@ function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
 }
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
@@ -52,7 +56,29 @@ function ms(value) {
     issued_at_not_after_valid_from: ms(grant.issued_at) <= ms(grant.valid_from)
   };
 
-  assert(Object.values(checks).every(Boolean), `live grant declaration failed: ${JSON.stringify({ checks, grantErrors })}`);
+  const wrongDigestPolicy = clone(policy);
+  wrongDigestPolicy.authority_verification_rule.root_acceptance_rule.accepted_root_digests = ['0'.repeat(64)];
+  const rejected = await Authority.verifyAuthority({
+    root,
+    grants: [grant],
+    policy: wrongDigestPolicy,
+    rootEvidence: {
+      observed: true,
+      evidence_type: 'github_repository_control_publication',
+      target: TARGET,
+      refs: ['urn:poai:root-evidence:live-negative-digest-vector']
+    },
+    subject: grant.subject,
+    requiredScope: grant.action_scope,
+    target: TARGET,
+    at: grant.valid_from
+  });
+
+  checks.wrong_policy_root_digest_rejected = rejected.errors.includes('unaccepted_root_digest') && rejected.checks.root_digest_accepted === false;
+  checks.wrong_policy_cannot_establish_entitlement = rejected.claims.root_accepted_by_policy === false && rejected.claims.issuer_entitlement_chain_valid === false;
+  checks.wrong_policy_cannot_establish_materialization_authority = rejected.status === 'not_established' && rejected.claims.materialization_authority_established === false;
+
+  assert(Object.values(checks).every(Boolean), `live grant declaration failed: ${JSON.stringify({ checks, grantErrors, rejectedErrors: rejected.errors })}`);
 
   const result = {
     check_type: 'PoAILiveGrantDeclarationCheck',

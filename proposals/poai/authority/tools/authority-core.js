@@ -170,9 +170,13 @@ async function verifyAuthority({ root, grants, policy, rootEvidence, subject, re
   if (!checks.root_time_active) errors.push('root_outside_validity_window');
 
   const rule = rootRule(policy) || {};
+  const rootDigest = await digestJson(root);
   checks.root_declared = Boolean(root && root.root_id);
   checks.root_id_accepted = asArray(rule.accepted_root_ids).includes(root && root.root_id);
   if (!checks.root_id_accepted) errors.push('unaccepted_root');
+  const acceptedRootDigests = asArray(rule.accepted_root_digests);
+  checks.root_digest_accepted = acceptedRootDigests.length === 0 || acceptedRootDigests.includes(rootDigest);
+  if (!checks.root_digest_accepted) errors.push('unaccepted_root_digest');
   checks.root_mode_accepted = asArray(rule.allowed_root_modes).includes(root && root.root_mode);
   if (!checks.root_mode_accepted) errors.push('unaccepted_root_mode');
   checks.root_evidence_observed = Boolean(rootEvidence && rootEvidence.observed === true);
@@ -185,7 +189,7 @@ async function verifyAuthority({ root, grants, policy, rootEvidence, subject, re
   if (!checks.root_target_matches_policy) errors.push('root_target_policy_mismatch');
   checks.root_scope_matches_policy = rule.exact_scope_match !== true || (root.governance_scope === policy.canonicality_scope && root.governance_scope === target);
   if (!checks.root_scope_matches_policy) errors.push('root_scope_policy_mismatch');
-  const rootAccepted = [checks.root_structure_valid, checks.root_time_active, checks.root_id_accepted, checks.root_mode_accepted, checks.root_target_matches_policy, checks.root_scope_matches_policy].every(Boolean) && (rule.require_root_evidence !== true || (checks.root_evidence_observed && checks.root_evidence_type_accepted && checks.root_evidence_target_matches));
+  const rootAccepted = [checks.root_structure_valid, checks.root_time_active, checks.root_id_accepted, checks.root_digest_accepted, checks.root_mode_accepted, checks.root_target_matches_policy, checks.root_scope_matches_policy].every(Boolean) && (rule.require_root_evidence !== true || (checks.root_evidence_observed && checks.root_evidence_type_accepted && checks.root_evidence_target_matches));
   checks.root_accepted_by_policy = rootAccepted;
 
   const grantList = asArray(grants);
@@ -199,7 +203,6 @@ async function verifyAuthority({ root, grants, policy, rootEvidence, subject, re
   }
   if (!terminal) errors.push('required_authority_grant_not_found');
 
-  const rootDigest = await digestJson(root);
   const pathIds = [];
   const visiting = new Set();
   const visited = new Set();
