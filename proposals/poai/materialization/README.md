@@ -41,6 +41,22 @@ Later outcome information remains in the successor outcome/versioning layer. Thi
 
 The synthetic materialization authority used by the positive vector is test data only. It does not reuse or upgrade the real Level 4.0e `poai.successor.materialization.propose` evidence.
 
+## Authority-root successor work
+
+The next semantic boundary is defined in [`../AUTHORITY_ROOTS.md`](../AUTHORITY_ROOTS.md).
+
+It replaces the synthetic positive-vector prerequisite:
+
+`issuer_entitlement_verified = true`
+
+with an explicit authority provenance model:
+
+`Authority Root -> Root Acceptance -> Issuer Entitlement -> Authority Grant -> Materialization Authority`.
+
+The first planned machine experiment is tracked in [Issue #109](https://github.com/Matawaka/uu-aap/issues/109), with live repository-scoped acceptance in [Issue #110](https://github.com/Matawaka/uu-aap/issues/110).
+
+Until that work is implemented, the materialization positive vector MUST be understood as testing the Materialization Boundary **assuming** authority prerequisites, not proving those prerequisites.
+
 ## Required authority distinction
 
 The policy requires:
