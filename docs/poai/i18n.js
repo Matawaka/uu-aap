@@ -17,8 +17,8 @@
     ['.principles span:nth-child(4)', 'proof ≠ truth', 'доказательство ≠ истина'],
     ['main > .notice:first-of-type strong', 'Local-first experimental interface.', 'Экспериментальный интерфейс local-first.'],
     ['main > .notice:first-of-type span', 'Your selected file is read by JavaScript in this browser. This interface does not send the record to a PoAI server. Browser validation is a usability layer; repository JSON Schema + Python semantic validation remain the machine-layer reference.', 'Выбранный файл читается JavaScript только в этом браузере. Интерфейс не отправляет запись на сервер PoAI. Браузерная проверка — слой удобства; эталоном машинного уровня остаются JSON Schema репозитория и семантическая проверка Python.'],
-    ['.alpha-scope strong', 'Level 3.1 successor scope: bilingual EN/RU presentation.', 'Граница Level 3.1: двуязычное представление EN/RU.'],
-    ['.alpha-scope span', 'Displayed labels may be translated or simplified for readability, but raw protocol values remain unchanged. Language selection affects presentation only and does not change validation results, Builder JSON or downloaded artifacts. This interface does not certify factual truth, legal responsibility, causal proof, signatures or C2PA.', 'Отображаемые подписи могут переводиться или упрощаться для чтения, но исходные значения протокола остаются неизменными. Выбор языка влияет только на представление и не меняет результат проверки, JSON конструктора или скачиваемые артефакты. Интерфейс не подтверждает фактическую истину, юридическую ответственность, причинность, подписи или C2PA.'],
+    ['.alpha-scope strong', 'Level 3.1 successor scope: bilingual compositional intelligence authoring.', 'Граница Level 3.1: двуязычное композиционное описание доступного интеллекта.'],
+    ['.alpha-scope span', 'Displayed labels may be translated or simplified for readability, but raw protocol values remain unchanged. Multiple resources preserve human, AI, model, data and collective provenance separately from authority. Language selection affects presentation only and does not change validation results, Builder JSON or downloaded artifacts.', 'Подписи могут переводиться или упрощаться для чтения, но исходные значения протокола остаются неизменными. Несколько ресурсов позволяют раздельно сохранять вклад человека, ИИ, моделей, данных и коллективных источников, не смешивая их с полномочиями. Выбор языка не меняет проверку, JSON конструктора или скачиваемые артефакты.'],
     ['[data-tab="verifier"]', 'Verifier', 'Верификатор'],
     ['[data-tab="builder"]', 'Record Builder', 'Конструктор записи'],
     ['[data-panel="verifier"] .panel:first-child .eyebrow', 'Input', 'Ввод'],
@@ -88,8 +88,27 @@
     'Probable': 'Вероятно'
   };
 
+  const resourceTypeMap = {
+    human_judgment: { en: 'Human evaluative contribution', ru: 'Оценочный вклад человека' },
+    ai_system: { en: 'AI system', ru: 'ИИ-система' },
+    expert_group: { en: 'Expert group', ru: 'Экспертная группа' },
+    document: { en: 'Document', ru: 'Документ' },
+    dataset: { en: 'Dataset', ru: 'Набор данных' },
+    retrieval_service: { en: 'Retrieval service', ru: 'Сервис поиска / извлечения' },
+    forecasting_model: { en: 'Forecasting model', ru: 'Прогностическая модель' },
+    simulation: { en: 'Simulation', ru: 'Симуляция' },
+    institutional_process: { en: 'Institutional process', ru: 'Институциональный процесс' },
+    other: { en: 'Other', ru: 'Другое' }
+  };
+
   const reverseLabelMap = Object.fromEntries(Object.entries(labelMap).map(([en, ru]) => [ru, en]));
   const reverseEnumMap = Object.fromEntries(Object.entries(enumMap).map(([en, ru]) => [ru, en]));
+  const reverseResourceTypeMap = {};
+  Object.entries(resourceTypeMap).forEach(([raw, labels]) => {
+    reverseResourceTypeMap[raw] = raw;
+    reverseResourceTypeMap[labels.en] = raw;
+    reverseResourceTypeMap[labels.ru] = raw;
+  });
 
   function choose(en, ru) { return language === 'ru' ? ru : en; }
   function canonicalLabel(value) { return reverseLabelMap[value] || value; }
@@ -97,6 +116,11 @@
   function enumText(value) {
     const canonical = canonicalEnum(String(value || ''));
     return language === 'ru' ? (enumMap[canonical] || canonical) : canonical;
+  }
+  function resourceTypeText(value) {
+    const raw = reverseResourceTypeMap[String(value || '')] || String(value || '');
+    const labels = resourceTypeMap[raw];
+    return labels ? labels[language] : raw;
   }
 
   function setText(selector, en, ru) {
@@ -189,6 +213,11 @@
 
     document.querySelectorAll('#resourceTable .table-row').forEach((row) => {
       const cells = row.querySelectorAll('span');
+      if (cells[1]) {
+        const raw = reverseResourceTypeMap[cells[1].textContent] || cells[1].textContent;
+        cells[1].textContent = resourceTypeText(raw);
+        if (resourceTypeMap[raw]) cells[1].title = `machine: ${raw}`;
+      }
       if (cells[2]) cells[2].textContent = enumText(cells[2].textContent);
       if (cells[3]) cells[3].textContent = enumText(cells[3].textContent);
     });
@@ -257,6 +286,7 @@
     getLanguage: () => language,
     setLanguage,
     enumText,
+    resourceTypeText,
     apply: applyAll
   });
 

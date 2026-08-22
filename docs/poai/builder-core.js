@@ -43,6 +43,102 @@
     return filtered.length ? filtered : ['observe'];
   }
 
+  function legacyResource(source) {
+    const legacyType = pick(source.resourceType, RESOURCE_TYPES, 'human_judgment');
+    const defaultActorRef = legacyType === 'human_judgment';
+    return {
+      label: source.resourceLabel,
+      type: legacyType,
+      notes: source.resourceNotes,
+      actorRef: source.resourceActorRef === true ? true : source.resourceActorRef === false ? false : defaultActorRef,
+      availabilityOverall: source.availabilityOverall,
+      availability: {
+        identity: source.availabilityIdentity,
+        discoverability: source.availabilityDiscoverability,
+        reachability: source.availabilityReachability,
+        authorization: source.availabilityAuthorization,
+        temporalFit: source.availabilityTemporalFit,
+        contextSufficiency: source.availabilityContextSufficiency,
+        executionCapability: source.availabilityExecutionCapability,
+        delivery: source.availabilityDelivery
+      },
+      considerationStatus: source.considerationStatus,
+      considerationSummary: source.considerationSummary,
+      evidenceClass: source.evidenceClass,
+      evidenceType: source.evidenceType,
+      evidenceAvailability: source.evidenceAvailability,
+      evidenceLocation: source.evidenceLocation,
+      evidenceNotes: source.evidenceNotes
+    };
+  }
+
+  function normalizedResourceInputs(source) {
+    if (Array.isArray(source.resources) && source.resources.length) return source.resources;
+    return [legacyResource(source)];
+  }
+
+  function normalizeResource(item, index, context) {
+    const source = item && typeof item === 'object' ? item : {};
+    const number = index + 1;
+    const resourceId = trim(source.resourceId) || `resource:${context.decisionSlug}:${number}`;
+    const evidenceId = trim(source.evidenceId) || `evidence:${context.decisionSlug}:${number}`;
+    const resourceType = pick(source.type || source.resourceType, RESOURCE_TYPES, number === 1 ? 'human_judgment' : 'other');
+    const evidenceClass = pick(source.evidenceClass, EVIDENCE_CLASSES, 'E0');
+    const availabilitySource = source.availability && typeof source.availability === 'object' ? source.availability : {};
+    const dimension = (camelName, snakeName) => pick(
+      availabilitySource[camelName] || availabilitySource[snakeName],
+      AVAILABILITY_VALUES,
+      'unknown'
+    );
+    const actorRefRequested = source.actorRef === true || (source.actorRef === undefined && resourceType === 'human_judgment');
+    const evidenceRefs = [evidenceId];
+
+    return {
+      resource: {
+        resource_id: resourceId,
+        resource_type: resourceType,
+        label: trim(source.label || source.resourceLabel) || `Declared intelligence resource ${number}`,
+        actor_refs: actorRefRequested ? [context.actorId] : [],
+        notes: trim(source.notes || source.resourceNotes) || null
+      },
+      availability: {
+        availability_id: `availability:${context.decisionSlug}:${number}`,
+        resource_id: resourceId,
+        subject_id: context.subjectId,
+        dimensions: {
+          identity: dimension('identity', 'identity'),
+          discoverability: dimension('discoverability', 'discoverability'),
+          reachability: dimension('reachability', 'reachability'),
+          authorization: dimension('authorization', 'authorization'),
+          temporal_fit: dimension('temporalFit', 'temporal_fit'),
+          context_sufficiency: dimension('contextSufficiency', 'context_sufficiency'),
+          execution_capability: dimension('executionCapability', 'execution_capability'),
+          delivery: dimension('delivery', 'delivery')
+        },
+        overall_status: pick(source.availabilityOverall || source.overallStatus, OVERALL_AVAILABILITY, 'unknown'),
+        evidence_class: evidenceClass,
+        evidence_refs: evidenceRefs,
+        notes: 'Availability values are user-declared; resource existence does not prove practical availability.'
+      },
+      consideration: {
+        consideration_id: `consideration:${context.decisionSlug}:${number}`,
+        resource_id: resourceId,
+        status: pick(source.considerationStatus, CONSIDERATION_STATES, 'unknown'),
+        summary: trim(source.considerationSummary) || null,
+        evidence_class: evidenceClass,
+        evidence_refs: evidenceRefs
+      },
+      evidence: {
+        evidence_id: evidenceId,
+        class: evidenceClass,
+        type: trim(source.evidenceType) || 'self_declaration',
+        location: trim(source.evidenceLocation) || null,
+        availability: trim(source.evidenceAvailability) || 'builder_session',
+        notes: trim(source.evidenceNotes) || 'Declared in the local Builder session.'
+      }
+    };
+  }
+
   function buildRecord(input) {
     const source = input && typeof input === 'object' ? input : {};
     const label = trim(source.label) || 'Untitled decision';
@@ -51,26 +147,22 @@
     const recordId = trim(source.recordId) || `urn:poai:record:${slug(label, 'untitled')}:1`;
     const actorId = `human:${slug(actorName, 'actor')}`;
     const decisionSlug = slug(label, 'decision-context');
-    const resourceId = `resource:${decisionSlug}:1`;
-    const evidenceId = `evidence:${decisionSlug}:1`;
-
-    const evidenceClass = pick(source.evidenceClass, EVIDENCE_CLASSES, 'E0');
-    const resourceType = pick(source.resourceType, RESOURCE_TYPES, 'human_judgment');
-    const overallStatus = pick(source.availabilityOverall, OVERALL_AVAILABILITY, 'unknown');
-    const considerationStatus = pick(source.considerationStatus, CONSIDERATION_STATES, 'unknown');
-    const authorityStatus = pick(source.authorityStatus, AUTHORITY_STATUSES, 'unknown');
     const boundaryStatus = pick(source.boundaryStatus, BOUNDARY_STATUSES, 'live_record');
-
-    const dimension = (name) => pick(source[name], AVAILABILITY_VALUES, 'unknown');
-    const evidenceRefs = [evidenceId];
+    const authorityStatus = pick(source.authorityStatus, AUTHORITY_STATUSES, 'unknown');
     const opened = isoFromLocal(source.opened);
     const cutoff = isoFromLocal(source.cutoff);
     const closed = isoFromLocal(source.closed);
 
-    const resourceLabel = trim(source.resourceLabel) || 'Declared intelligence resource';
-    const evidenceType = trim(source.evidenceType) || 'self_declaration';
-    const evidenceAvailability = trim(source.evidenceAvailability) || 'builder_session';
-    const evidenceLocation = trim(source.evidenceLocation) || null;
+    const normalized = normalizedResourceInputs(source).map((item, index) => normalizeResource(item, index, {
+      actorId,
+      subjectId,
+      decisionSlug
+    }));
+    const intelligenceResources = normalized.map((item) => item.resource);
+    const availability = normalized.map((item) => item.availability);
+    const consideration = normalized.map((item) => item.consideration);
+    const evidence = normalized.map((item) => item.evidence);
+    const evidenceRefs = evidence.length ? [evidence[0].evidence_id] : [];
 
     const alternativeLabel = trim(source.alternativeLabel);
     const constraintLabel = trim(source.constraintLabel);
@@ -119,42 +211,11 @@
         actor_id: actorId,
         actor_type: 'human',
         name: actorName,
-        notes: 'Self-declared by builder user.'
+        notes: 'Self-declared decision actor; authority is represented separately.'
       }],
-      intelligence_resources: [{
-        resource_id: resourceId,
-        resource_type: resourceType,
-        label: resourceLabel,
-        actor_refs: resourceType === 'human_judgment' ? [actorId] : [],
-        notes: trim(source.resourceNotes) || null
-      }],
-      availability: [{
-        availability_id: `availability:${decisionSlug}:1`,
-        resource_id: resourceId,
-        subject_id: subjectId,
-        dimensions: {
-          identity: dimension('availabilityIdentity'),
-          discoverability: dimension('availabilityDiscoverability'),
-          reachability: dimension('availabilityReachability'),
-          authorization: dimension('availabilityAuthorization'),
-          temporal_fit: dimension('availabilityTemporalFit'),
-          context_sufficiency: dimension('availabilityContextSufficiency'),
-          execution_capability: dimension('availabilityExecutionCapability'),
-          delivery: dimension('availabilityDelivery')
-        },
-        overall_status: overallStatus,
-        evidence_class: evidenceClass,
-        evidence_refs: evidenceRefs,
-        notes: 'Availability values are user-declared; the Builder does not infer them from resource existence.'
-      }],
-      consideration: [{
-        consideration_id: `consideration:${decisionSlug}:1`,
-        resource_id: resourceId,
-        status: considerationStatus,
-        summary: trim(source.considerationSummary) || null,
-        evidence_class: evidenceClass,
-        evidence_refs: evidenceRefs
-      }],
+      intelligence_resources: intelligenceResources,
+      availability,
+      consideration,
       alternatives: alternativeLabel ? [{
         alternative_id: `alternative:${decisionSlug}:1`,
         label: alternativeLabel,
@@ -165,7 +226,7 @@
         actor_id: actorId,
         scopes: scopes(source.authorityScopes),
         status: authorityStatus,
-        notes: 'Authority status is a user declaration and must be independently supported for consequential use.'
+        notes: 'Authority is a user declaration and is not inferred from superior information or resource access.'
       }],
       constraints: constraintLabel ? [{
         constraint_id: `constraint:${decisionSlug}:1`,
@@ -174,16 +235,9 @@
       }] : [],
       uncertainty: [{
         type: 'builder_default',
-        notes: 'The Builder preserves uncertainty. Filled fields are not automatically promoted to stronger evidence or authority.'
+        notes: 'The Builder preserves uncertainty. Multiple resources describe compositional intelligence; none automatically confers authority or responsibility.'
       }],
-      evidence: [{
-        evidence_id: evidenceId,
-        class: evidenceClass,
-        type: evidenceType,
-        location: evidenceLocation,
-        availability: evidenceAvailability,
-        notes: trim(source.evidenceNotes) || 'Declared in the local Builder session.'
-      }],
+      evidence,
       artifact_binding: {
         status: 'not_bound',
         sha256: null,
@@ -212,7 +266,7 @@
         record_version: 1,
         previous_record: null,
         successor_record: trim(source.successorRecord) || null,
-        change_summary: 'Initial deeper-authoring draft generated by PoAI Level 3.1 Record Builder.'
+        change_summary: 'Initial compositional-intelligence draft generated by PoAI Level 3.1 Record Builder.'
       }
     };
   }
