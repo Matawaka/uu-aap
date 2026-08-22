@@ -65,12 +65,30 @@
     input.addEventListener('blur', () => label.classList.remove('focus-proxy'));
   }
 
+  function loadAdjudicationSidecarModule() {
+    if (globalThis.PoAIAdjudicationSidecar || document.querySelector('script[data-poai-adjudication-sidecar]')) return;
+    const script = document.createElement('script');
+    script.src = 'adjudication-sidecar.js';
+    script.dataset.poaiAdjudicationSidecar = 'true';
+    script.defer = true;
+    document.body.append(script);
+  }
+
   function loadAppealSidecarModule() {
-    if (globalThis.PoAIAppealSidecar || document.querySelector('script[data-poai-appeal-sidecar]')) return;
+    if (globalThis.PoAIAppealSidecar) {
+      loadAdjudicationSidecarModule();
+      return;
+    }
+    const existing = document.querySelector('script[data-poai-appeal-sidecar]');
+    if (existing) {
+      existing.addEventListener('load', loadAdjudicationSidecarModule, { once: true });
+      return;
+    }
     const script = document.createElement('script');
     script.src = 'appeal-sidecar.js';
     script.dataset.poaiAppealSidecar = 'true';
     script.defer = true;
+    script.addEventListener('load', loadAdjudicationSidecarModule, { once: true });
     document.body.append(script);
   }
 
