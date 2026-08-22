@@ -128,3 +128,25 @@ Tracking / review:
 - Execution / Compliance RFC: Issue #55;
 - implementation: Issue #56;
 - live acceptance: Issue #57.
+
+### Execution Verification Sidecar
+
+[`EXECUTION_VERIFICATION_ARTIFACT.md`](EXECUTION_VERIFICATION_ARTIFACT.md)
+
+Explores a later verification report about an Execution Sidecar as a separate provenance artifact, rather than treating either the executor's declaration or a verifier's declaration as an automatically certified fact.
+
+Core research invariants:
+
+`execution report != verification report != verified fact != observed outcome`
+
+and:
+
+`verification context != execution context != adjudication context != appeal context != review context != decision context`
+
+The first Level 3.1h experiment generates a browser-local `PoAIExecutionVerificationSidecar`. It references the root decision and required Execution Sidecar, keeps verifier authority and independence unknown, records a declared verification result and verification method, and explicitly does not establish verified execution/compliance, observed outcome, legal effect, truth, causality, authority, independence, responsibility, or a canonical verdict.
+
+Tracking / review:
+
+- Execution Verification RFC: Issue #60;
+- implementation: Issue #61;
+- live acceptance: Issue #62.
