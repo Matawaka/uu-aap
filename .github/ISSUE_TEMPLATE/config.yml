@@ -1,5 +1,8 @@
 blank_issues_enabled: true
 contact_links:
-  - name: Public review hub
+  - name: Broad design discussion
+    url: https://github.com/Matawaka/uu-aap/discussions/8
+    about: Use Discussion #8 for philosophy, use cases, countermodels and open-ended design alternatives.
+  - name: Public review RFC
     url: https://github.com/Matawaka/uu-aap/issues/1
-    about: Start with the v0.1 RFC; use one Issue per concrete failure case. GitHub Discussions will be linked here after repository Discussions are enabled.
+    about: Start with the v0.1 RFC; use one Issue per concrete failure case or normative change.
