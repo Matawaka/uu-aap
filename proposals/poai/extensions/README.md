@@ -219,3 +219,25 @@ Tracking / review:
 - deterministic binding implementation: Issue #74;
 - Level 3.1 checkpoint readiness: Issue #75;
 - live acceptance: Issue #76.
+
+### Level 4.0b Ed25519 Signature Binding
+
+[`SIGNATURE_BINDING.md`](SIGNATURE_BINDING.md)
+
+Adds an experimental Ed25519 signature envelope above the deterministic Level 4.0a digest while keeping key possession, identity, authority and materialization policy separate.
+
+Core research invariants:
+
+`matching digest != valid signature != signer identity != signer authority != materialization authority != canonical successor`
+
+and:
+
+`signature verification != truth certification`.
+
+The first 4.0b experiment signs a domain-separated JCS statement that references the Level 4.0a binding, uses an ephemeral browser-local Ed25519 key, exports only the public OKP/Ed25519 JWK plus RFC 7638 thumbprint, and exposes signature validity separately from current-artifact binding match. It is aligned with the primitive choices of W3C `eddsa-jcs-2022` but explicitly does not claim Data Integrity or PoAI/V conformance.
+
+Tracking / review:
+
+- signature-layer RFC: Issue #80;
+- implementation: Issue #81;
+- live acceptance: Issue #82.
