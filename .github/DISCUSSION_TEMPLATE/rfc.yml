@@ -1,0 +1,98 @@
+title: "[RFC] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this category for Requests for Comment on protocol semantics, schemas, interoperability, governance, pilots, threat models, conformance profiles and experimental extensions.
+
+        A strong RFC should make disagreement easy to locate and preserve. Please distinguish observed evidence from proposals, assumptions and unresolved questions.
+
+  - type: dropdown
+    id: protocol
+    attributes:
+      label: Protocol or research area
+      description: Which protocol or research layer is this RFC primarily about?
+      options:
+        - PoAI — Proof of Available Intelligence
+        - UU-AAP — Augmented Authorship & Accountability Protocol
+        - Interoperability between UU-AAP and PoAI
+        - CURA / ONUS or future institutional layer
+        - Cross-protocol / other
+    validations:
+      required: true
+
+  - type: input
+    id: summary
+    attributes:
+      label: One-sentence proposal
+      description: State the proposed change, question or design choice in one sentence.
+      placeholder: "Define context_sufficiency as an independently evidenced availability dimension."
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or failure case
+      description: What concrete ambiguity, implementation failure, accountability gap or counterexample motivates this RFC?
+      placeholder: Describe the case that the current protocol cannot represent safely or clearly.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed protocol change or interpretation
+      description: Describe the semantic, schema, governance or implementation change being requested.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and examples
+      description: Link examples, test vectors, standards, pilots or reproducible cases. Mark synthetic examples clearly.
+    validations:
+      required: false
+
+  - type: textarea
+    id: privacy_security
+    attributes:
+      label: Privacy, security and misuse impact
+      description: Could this proposal increase surveillance, coercive disclosure, responsibility laundering, hindsight injection or other abuse?
+    validations:
+      required: true
+
+  - type: textarea
+    id: interoperability
+    attributes:
+      label: Interoperability impact
+      description: Note any relationship to W3C PROV, Verifiable Credentials, C2PA, transparency logs, JSON Schema or other standards.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternative positions
+      description: What competing design choices should reviewers consider, including keeping the current behavior unchanged?
+    validations:
+      required: true
+
+  - type: textarea
+    id: unresolved
+    attributes:
+      label: Unresolved questions
+      description: Which questions should remain explicitly open after this RFC is published?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgement
+    attributes:
+      label: RFC discipline
+      options:
+        - label: I have separated factual claims from proposals or speculation where practical.
+          required: true
+        - label: I understand that cryptographic integrity, signatures or successful validation do not by themselves prove factual truth.
+          required: true
