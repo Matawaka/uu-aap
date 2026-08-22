@@ -47,6 +47,9 @@ jobs:
         run: |
           node --check docs/poai/validator.js
           node --check docs/poai/i18n.js
+          node --check docs/poai/builder-core.js
+          node --check docs/poai/builder-ui.js
           node --check docs/poai/app.js
           node --check docs/poai/accessibility.js
           node docs/poai/test-validator.js
+          node docs/poai/test-builder.js
