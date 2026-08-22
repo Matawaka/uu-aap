@@ -19,6 +19,16 @@ Content provenance standards can bind declarations to digital artifacts. Publish
 
 UU-AAP adds that layer.
 
+## First real-work pilot
+
+**Pilot 001 — «Вайбкодинг реальности»** is now published as a **UU-AAP/T — Traceable** manifest.
+
+- [Pilot overview](pilots/vibe-coding-reality/README.md)
+- [Machine-readable manifest](pilots/vibe-coding-reality/manifest.json)
+- [Evidence and limitations note](pilots/vibe-coding-reality/EVIDENCE.md)
+
+The pilot intentionally does **not** claim profile V yet: no canonical PDF/EPUB artifact has been selected and cryptographically bound. This makes the example useful for testing whether the protocol can represent incomplete but honest provenance rather than forcing a false appearance of completeness.
+
 ## Join the public review
 
 - **Broad design discussion:** [What should accountable AI-augmented authorship mean? — Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8)
