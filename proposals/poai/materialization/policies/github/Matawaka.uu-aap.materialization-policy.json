@@ -1,0 +1,58 @@
+{
+  "artifact_type": "PoAIMaterializationPolicy",
+  "artifact_version": "0.1-experimental",
+  "policy_id": "urn:poai:materialization-policy:github-matawaka-uu-aap-live:1",
+  "policy_version": 1,
+  "canonicality_scope": "github:Matawaka/uu-aap",
+  "applies_to": {
+    "target": "github:Matawaka/uu-aap",
+    "source_record_prefix": "urn:poai:record:"
+  },
+  "required_authority_scope": "poai.successor.materialization.execute",
+  "candidate_binding_rule": {
+    "canonicalization": "RFC8785-JCS",
+    "digest_algorithm": "SHA-256",
+    "digest_encoding": "hex"
+  },
+  "authority_verification_rule": {
+    "require_verified_authority": true,
+    "require_issuer_entitlement": true,
+    "required_target": "github:Matawaka/uu-aap",
+    "allowed_delegation_modes": [
+      "non_delegable"
+    ],
+    "root_acceptance_rule": {
+      "accepted_root_ids": [
+        "urn:poai:authority-root:github-matawaka-uu-aap:live"
+      ],
+      "accepted_root_digests": [
+        "cbc28f90591526a3fc180322410d5ad4a1a6ba6ff52806e0f8b3e4411336d79f"
+      ],
+      "allowed_root_modes": [
+        "self_governed_resource"
+      ],
+      "require_root_evidence": true,
+      "allowed_evidence_types": [
+        "github_repository_control_publication"
+      ],
+      "exact_scope_match": true
+    }
+  },
+  "conflict_rule": {
+    "mode": "single_head_no_unresolved_conflict"
+  },
+  "appeal_or_stay_rule": {
+    "active_stay_blocks_materialization": true
+  },
+  "effective_from": "2026-08-22T22:00:00Z",
+  "effective_until": null,
+  "supersedes_policy": null,
+  "claims": {
+    "truth_certified": false,
+    "causal_proof_certified": false,
+    "legal_responsibility_determined": false,
+    "universal_canonicality_established": false,
+    "poai_v_conformance_established": false
+  },
+  "notes": "First live repository-scoped Materialization Policy for Issue #110. It accepts only the exact published live Authority Root v1 by root ID, RFC 8785 JCS SHA-256 digest, root mode, evidence type, target and canonicality scope. Publication of this policy does not by itself establish issuer entitlement, materialization authority, legal authority, truth, legal effect, universal canonicality or PoAI/V."
+}
