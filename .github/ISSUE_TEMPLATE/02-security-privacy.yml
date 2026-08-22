@@ -1,0 +1,17 @@
+name: Security / privacy / coercion risk
+description: Report a misuse, privacy, surveillance or security concern
+body:
+  - type: textarea
+    id: threat
+    attributes:
+      label: Threat or coercion scenario
+    validations:
+      required: true
+  - type: textarea
+    id: affected
+    attributes:
+      label: Affected protocol section
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Proposed mitigation
