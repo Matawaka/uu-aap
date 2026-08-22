@@ -360,3 +360,133 @@ jobs:
 
           print('CCRP/C2 admits only the current fenced executor and preserves stronger boundaries')
           PY
+
+      - name: Run CCRP C3 convergent collaboration vectors
+        run: |
+          node --check proposals/ccrp/tools/ccrp-c3.js
+          node --check proposals/ccrp/test-c3.js
+          node proposals/ccrp/test-c3.js /tmp/ccrp-c3
+
+      - name: Validate CCRP C3 collaboration operation and reconciliation schemas
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          operation_schema = json.loads(Path('proposals/ccrp/schema/collaboration-operation.c3.schema.json').read_text(encoding='utf-8'))
+          result_schema = json.loads(Path('proposals/ccrp/schema/reconciliation-result.c3.schema.json').read_text(encoding='utf-8'))
+          operation_validator = Draft202012Validator(operation_schema, format_checker=FormatChecker())
+          result_validator = Draft202012Validator(result_schema, format_checker=FormatChecker())
+
+          operations = []
+          for name in ['operationA.collaboration-operation.json', 'operationB.collaboration-operation.json']:
+              artifact = json.loads((Path('/tmp/ccrp-c3') / name).read_text(encoding='utf-8'))
+              operation_validator.validate(artifact)
+              operations.append(artifact)
+              print(f'VALID CCRP/C3 collaboration operation: {name}')
+
+          premature = copy.deepcopy(operations[0])
+          premature['claims']['reconciliation_checked'] = True
+          assert list(operation_validator.iter_errors(premature)), 'C3 source operation must not claim reconciliation before evaluation'
+
+          expected = {
+              'forward.reconciliation-result.json': 'merge',
+              'reverse.reconciliation-result.json': 'merge',
+              'identical.reconciliation-result.json': 'merge',
+              'semanticConflict.reconciliation-result.json': 'human_resolution_required',
+              'pathOverlap.reconciliation-result.json': 'human_resolution_required',
+              'exclusiveResult.reconciliation-result.json': 'reject',
+              'baseMismatch.reconciliation-result.json': 'hold',
+              'intentMismatch.reconciliation-result.json': 'reject',
+              'duplicate.reconciliation-result.json': 'reject',
+          }
+          for name, decision in expected.items():
+              artifact = json.loads((Path('/tmp/ccrp-c3') / name).read_text(encoding='utf-8'))
+              result_validator.validate(artifact)
+              assert artifact['decision'] == decision
+              assert artifact['source_operations_preserved'] is True
+              assert artifact['claims']['reconciliation_checked'] is True
+              assert artifact['claims']['execution_admitted'] is False
+              assert artifact['claims']['materialization_permitted'] is False
+              assert artifact['claims']['canonical_state_established'] is False
+              assert artifact['claims']['poai_authority_established'] is False
+              if decision == 'merge':
+                  assert artifact['claims']['deterministic_convergence_established'] is True
+                  assert artifact['claims']['coordination_relative_convergence_established'] is True
+              else:
+                  assert artifact['claims']['deterministic_convergence_established'] is False
+                  assert artifact['provisional_converged_projection'] is None
+              print(f'VALID CCRP/C3 reconciliation result: {name} -> {decision}')
+
+          forward = json.loads((Path('/tmp/ccrp-c3') / 'forward.reconciliation-result.json').read_text(encoding='utf-8'))
+          reverse = json.loads((Path('/tmp/ccrp-c3') / 'reverse.reconciliation-result.json').read_text(encoding='utf-8'))
+          assert forward == reverse, 'arrival order must not change deterministic C3 result'
+          print('CCRP/C3 schema and arrival-order convergence vectors validated')
+          PY
+
+      - name: Confirm CCRP C3 artifacts are outside Genesis records
+        run: |
+          for artifact in \
+            /tmp/ccrp-c3/operationA.collaboration-operation.json \
+            /tmp/ccrp-c3/operationB.collaboration-operation.json \
+            /tmp/ccrp-c3/forward.reconciliation-result.json \
+            /tmp/ccrp-c3/semanticConflict.reconciliation-result.json \
+            /tmp/ccrp-c3/baseMismatch.reconciliation-result.json
+          do
+            if python proposals/poai/tools/validate_poai.py --schema proposals/poai/schema/poai-record.schema.json "$artifact"; then
+              echo "ERROR: CCRP/C3 artifact was incorrectly accepted as a Genesis PoAI record: $artifact"; exit 1
+            else
+              echo "Expected separation confirmed: $artifact"
+            fi
+          done
+
+      - name: Preserve CCRP C3 assurance boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          false_claims = [
+              'execution_admitted',
+              'materialization_permitted',
+              'canonical_state_established',
+              'poai_authority_established',
+              'policy_relative_canonicality_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'moral_correctness_established',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]
+
+          results = {}
+          for path in sorted(Path('/tmp/ccrp-c3').glob('*.reconciliation-result.json')):
+              artifact = json.loads(path.read_text(encoding='utf-8'))
+              results[path.name] = artifact
+              assert artifact['source_operations_preserved'] is True
+              assert artifact['claims']['reconciliation_checked'] is True
+              for claim in false_claims:
+                  assert artifact['claims'][claim] is False, f'{path}: {claim}'
+
+          forward = results['forward.reconciliation-result.json']
+          reverse = results['reverse.reconciliation-result.json']
+          assert forward['decision'] == 'merge'
+          assert forward['claims']['coordination_relative_convergence_established'] is True
+          assert forward['claims']['deterministic_convergence_established'] is True
+          assert forward['provisional_converged_projection_digest'] == reverse['provisional_converged_projection_digest']
+
+          conflict = results['semanticConflict.reconciliation-result.json']
+          assert conflict['decision'] == 'human_resolution_required'
+          assert conflict['claims']['human_resolution_required'] is True
+          assert conflict['provisional_converged_projection'] is None
+
+          held = results['baseMismatch.reconciliation-result.json']
+          assert held['decision'] == 'hold'
+          assert 'base_revision_mismatch_rebase_required' in held['reason_codes']
+
+          print('CCRP/C3 converges compatible work without materialization or arbitrary semantic winner selection')
+          PY
