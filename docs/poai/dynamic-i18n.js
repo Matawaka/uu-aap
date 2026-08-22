@@ -10,6 +10,8 @@
     ['Download Verification Sidecar', 'Скачать сопроводительный артефакт верификации'],
     ['Download Outcome Sidecar', 'Скачать сопроводительный артефакт исхода'],
     ['Download Successor Proposal', 'Скачать предложение преемника'],
+    ['Does not affect PASS', 'Не влияет на результат проверки (PASS)'],
+    ['Separate experimental review artifact; the source PoAI JSON is not modified.', 'Отдельный экспериментальный артефакт рецензирования; исходный PoAI JSON не изменяется.'],
 
     // Level 4.0a.
     ['Deterministic binding', 'Детерминированная привязка'],
@@ -76,17 +78,53 @@
   // Earlier modules intentionally mixed protocol jargon with translated UI text.
   // Treat those strings as aliases so language switching can normalize them too.
   const aliases = new Map([
+    // Level 3 legacy mixed controls.
+    ['Скачать Review Sidecar', 'Download Review Sidecar'],
+    ['Скачать Appeal Request Sidecar', 'Download Appeal Request Sidecar'],
+    ['Скачать Adjudication Sidecar', 'Download Adjudication Sidecar'],
+    ['Скачать Execution Sidecar', 'Download Execution Sidecar'],
+    ['Скачать Verification Sidecar', 'Download Verification Sidecar'],
+    ['Скачать Outcome Sidecar', 'Download Outcome Sidecar'],
+    ['Скачать Successor Proposal', 'Download Successor Proposal'],
+    ['Не влияет на PASS', 'Does not affect PASS'],
+    ['Отдельный экспериментальный review artifact; исходный PoAI JSON не изменяется.', 'Separate experimental review artifact; the source PoAI JSON is not modified.'],
+
+    // Level 4.0a legacy mixed UI.
+    ['DIGEST ONLY · НЕ ПОДПИСЬ', 'DIGEST ONLY · NOT A SIGNATURE'],
+    ['Скачать Binding Receipt', 'Download Binding Receipt'],
+    ['RFC 8785 JCS → UTF-8 → SHA-256. Привязка не подтверждает личность, полномочие, истинность или PoAI/V.', 'RFC 8785 JCS → UTF-8 → SHA-256. A digest does not establish identity, authority, truth, or PoAI/V.'],
+
+    // Level 4.0b legacy mixed UI.
+    ['Подпись Ed25519', 'Ed25519 signature binding'],
+    ['EPHEMERAL KEY · НЕ IDENTITY', 'EPHEMERAL KEY · NOT IDENTITY'],
+    ['Скачать Signature Envelope', 'Download Signature Envelope'],
+    ['Загрузить Signature Envelope', 'Load Signature Envelope'],
+    ['RFC 8785 + SHA-256 → domain-separated statement → Ed25519. Корректная подпись не доказывает личность, полномочие, истинность или PoAI/V.', 'RFC 8785 + SHA-256 → domain-separated statement → Ed25519. A valid signature does not prove identity, authority, truth, or PoAI/V.'],
+
+    // Level 4.0c legacy mixed UI.
+    ['Постоянный локальный ключ', 'Persistent local signer key'],
+    ['LOCAL CONTINUITY · НЕ IDENTITY', 'LOCAL CONTINUITY · NOT IDENTITY'],
+    ['Проверить continuity signature', 'Verify continuity signature'],
+    ['Скачать Continuity Envelope', 'Download Continuity Envelope'],
+    ['Загрузить Continuity Envelope', 'Load Continuity Envelope'],
+    ['Non-exportable Ed25519 private key хранится как CryptoKey в IndexedDB этого origin. Совпадение ключа во времени не доказывает личность или полномочия.', 'A non-exportable Ed25519 private CryptoKey is stored in IndexedDB for this origin. Same-key continuity over time does not prove identity or authority.'],
+
+    // Level 4.0d legacy mixed UI.
     ['Создать подписанный identity claim', 'Create signed identity claim'],
     ['Проверить claim', 'Verify claim'],
     ['Скачать Identity Evidence', 'Download Identity Evidence'],
     ['Загрузить Identity Evidence', 'Load Identity Evidence'],
     ['CLAIM/EVIDENCE · НЕ LEGAL IDENTITY', 'CLAIM/EVIDENCE · NOT LEGAL IDENTITY'],
+    ['Связывает persistent key с заявленным внешним идентификатором. Публичная публикация может дать наблюдаемое evidence контроля аккаунта/репозитория, но не доказывает человеческую или юридическую личность и не создаёт полномочия.', 'Binds the persistent key to a claimed external identifier. Public publication can provide observable account/repository-control evidence, but does not prove human/legal identity or create authority.'],
+
+    // Level 4.0e legacy mixed UI.
     ['Создать подписанное authority evidence', 'Create signed authority evidence'],
     ['Проверить evidence', 'Verify evidence'],
     ['Скачать Authority Evidence', 'Download Authority Evidence'],
     ['Загрузить Authority Evidence', 'Load Authority Evidence'],
     ['EVIDENCE · НЕ VERIFIED AUTHORITY', 'EVIDENCE · NOT VERIFIED AUTHORITY'],
-    ['Identity evidence issuer (необязательно)', 'Issuer identity evidence ref (optional)']
+    ['Identity evidence issuer (необязательно)', 'Issuer identity evidence ref (optional)'],
+    ['Фиксирует подписанное утверждение о конкретном полномочии, цели и сроке. Подпись и публикация показывают существование evidence, но не доказывают право issuer выдавать полномочие и не создают materialization authority.', 'Records a signed claim about a specific authority scope, target and validity window. Signature and publication show that evidence exists, but do not prove issuer entitlement or create materialization authority.']
   ]);
 
   const enToRu = new Map(entries);
@@ -226,12 +264,12 @@
     if (typeof document === 'undefined') return;
     const language = languageValue || currentLanguage();
 
-    document.querySelectorAll('button, label.file-label, .panel-head h2, .panel-head .badge').forEach((element) => {
+    document.querySelectorAll('button, label.file-label, .panel-head h2, .badge').forEach((element) => {
       translateElementExact(element, language);
     });
     document.querySelectorAll('.form-grid label').forEach((label) => translateLabelTextNodes(label, language));
 
-    document.querySelectorAll('.summary, .footnote, .panel > p').forEach((element) => {
+    document.querySelectorAll('.summary, .footnote, .panel > p, .review-cues-note').forEach((element) => {
       translateHelperElement(element, language);
     });
   }
