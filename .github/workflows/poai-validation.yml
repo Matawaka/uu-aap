@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "proposals/poai/**"
+      - "docs/poai/**"
       - ".github/workflows/poai-validation.yml"
 
 permissions:
@@ -41,3 +42,9 @@ jobs:
           python proposals/poai/tools/validate_poai.py \
             --schema proposals/poai/schema/poai-record.schema.json \
             --test-vectors proposals/poai/test-vectors
+
+      - name: Validate Level 3 browser interface
+        run: |
+          node --check docs/poai/validator.js
+          node --check docs/poai/app.js
+          node docs/poai/test-validator.js
