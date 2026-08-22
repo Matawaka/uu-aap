@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/ccrp/schema/reconciliation-result.c3.schema.json",
+  "title": "CCRP/C3 Reconciliation Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "ccrp_version",
+    "conformance_level",
+    "result_id",
+    "evaluated_at",
+    "base_revision",
+    "input_state_digest",
+    "source_operation_refs",
+    "source_context_refs",
+    "deterministic_operation_order",
+    "decision",
+    "reason_codes",
+    "conflict_paths",
+    "source_operations_preserved",
+    "provisional_converged_projection",
+    "provisional_converged_projection_digest",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CCRPReconciliationResult"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "ccrp_version": {"const": "0.1"},
+    "conformance_level": {"const": "CCRP/C3"},
+    "result_id": {"type": "string", "pattern": "^urn:ccrp:reconciliation-result:"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "base_revision": {"type": "string", "minLength": 1},
+    "input_state_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "source_operation_refs": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^urn:ccrp:collaboration-operation:"}
+    },
+    "source_context_refs": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^urn:ccrp:context:"}
+    },
+    "deterministic_operation_order": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^urn:ccrp:collaboration-operation:"}
+    },
+    "decision": {"enum": ["merge", "hold", "reject", "human_resolution_required"]},
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "conflict_paths": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^/"}
+    },
+    "source_operations_preserved": {"const": true},
+    "provisional_converged_projection": {"type": ["object", "null"]},
+    "provisional_converged_projection_digest": {
+      "oneOf": [
+        {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        {"type": "null"}
+      ]
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reconciliation_checked",
+        "deterministic_convergence_established",
+        "coordination_relative_convergence_established",
+        "human_resolution_required",
+        "execution_admitted",
+        "materialization_permitted",
+        "canonical_state_established",
+        "poai_authority_established",
+        "policy_relative_canonicality_established",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_responsibility_determined",
+        "moral_correctness_established",
+        "legal_effect_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "reconciliation_checked": {"const": true},
+        "deterministic_convergence_established": {"type": "boolean"},
+        "coordination_relative_convergence_established": {"type": "boolean"},
+        "human_resolution_required": {"type": "boolean"},
+        "execution_admitted": {"const": false},
+        "materialization_permitted": {"const": false},
+        "canonical_state_established": {"const": false},
+        "poai_authority_established": {"const": false},
+        "policy_relative_canonicality_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "merge"}}},
+      "then": {
+        "properties": {
+          "provisional_converged_projection": {"type": "object"},
+          "provisional_converged_projection_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "claims": {
+            "properties": {
+              "deterministic_convergence_established": {"const": true},
+              "coordination_relative_convergence_established": {"const": true},
+              "human_resolution_required": {"const": false}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "provisional_converged_projection": {"type": "null"},
+          "provisional_converged_projection_digest": {"type": "null"},
+          "claims": {
+            "properties": {
+              "deterministic_convergence_established": {"const": false},
+              "coordination_relative_convergence_established": {"const": false}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"decision": {"const": "human_resolution_required"}}},
+      "then": {"properties": {"claims": {"properties": {"human_resolution_required": {"const": true}}}}},
+      "else": {"properties": {"claims": {"properties": {"human_resolution_required": {"const": false}}}}}
+    }
+  ]
+}

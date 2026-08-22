@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/proposals/ccrp/schema/collaboration-operation.c3.schema.json",
+  "title": "CCRP/C3 Collaboration Operation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "ccrp_version",
+    "conformance_level",
+    "operation_id",
+    "context_ref",
+    "target",
+    "base_revision",
+    "concurrency_class",
+    "idempotency_key",
+    "causal_predecessors",
+    "mutations",
+    "created_at",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CCRPCollaborationOperation"},
+    "artifact_version": {"const": "0.1-experimental"},
+    "ccrp_version": {"const": "0.1"},
+    "conformance_level": {"const": "CCRP/C3"},
+    "operation_id": {"type": "string", "pattern": "^urn:ccrp:collaboration-operation:"},
+    "context_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_id",
+        "actor_id",
+        "session_id",
+        "intent_id",
+        "intent_revision",
+        "intent_digest"
+      ],
+      "properties": {
+        "context_id": {"type": "string", "pattern": "^urn:ccrp:context:"},
+        "actor_id": {"type": "string", "minLength": 1},
+        "session_id": {"type": "string", "minLength": 1},
+        "intent_id": {"type": "string", "pattern": "^urn:ccrp:intent:"},
+        "intent_revision": {"type": "integer", "minimum": 1},
+        "intent_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "target": {"type": "string", "minLength": 1},
+    "base_revision": {"type": "string", "minLength": 1},
+    "concurrency_class": {"enum": ["commutative", "mergeable", "exclusive"]},
+    "idempotency_key": {"type": "string", "minLength": 1},
+    "causal_predecessors": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "mutations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "path", "value"],
+            "properties": {
+              "kind": {"const": "set"},
+              "path": {"type": "string", "pattern": "^/", "minLength": 2},
+              "value": {}
+            }
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["kind", "path", "values"],
+            "properties": {
+              "kind": {"const": "set_add"},
+              "path": {"type": "string", "pattern": "^/", "minLength": 2},
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "uniqueItems": true,
+                "items": {}
+              }
+            }
+          }
+        ]
+      }
+    },
+    "created_at": {"type": "string", "format": "date-time"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "context_bound",
+        "source_intent_preserved",
+        "reconciliation_checked",
+        "coordination_relative_convergence_established",
+        "execution_admitted",
+        "materialization_permitted",
+        "canonical_state_established",
+        "poai_authority_established",
+        "policy_relative_canonicality_established",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_responsibility_determined",
+        "moral_correctness_established",
+        "legal_effect_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "context_bound": {"const": true},
+        "source_intent_preserved": {"const": true},
+        "reconciliation_checked": {"const": false},
+        "coordination_relative_convergence_established": {"const": false},
+        "execution_admitted": {"const": false},
+        "materialization_permitted": {"const": false},
+        "canonical_state_established": {"const": false},
+        "poai_authority_established": {"const": false},
+        "policy_relative_canonicality_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  }
+}
