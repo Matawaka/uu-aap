@@ -51,6 +51,7 @@ jobs:
 
           pairs = [
               (Path('proposals/poai/authority/schema/authority-root.schema.json'), Path('proposals/poai/authority/examples/self-governed-uu-aap.authority-root.json')),
+              (Path('proposals/poai/authority/schema/authority-root.schema.json'), Path('proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json')),
               (Path('proposals/poai/authority/schema/authority-grant.schema.json'), Path('/tmp/authority-grant.json')),
               (Path('proposals/poai/authority/schema/authority-verification-result.schema.json'), Path('/tmp/authority-verification.json')),
           ]
@@ -65,6 +66,7 @@ jobs:
         run: |
           for artifact in \
             proposals/poai/authority/examples/self-governed-uu-aap.authority-root.json \
+            proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json \
             /tmp/authority-grant.json \
             /tmp/authority-verification.json
           do
