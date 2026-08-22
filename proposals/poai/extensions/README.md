@@ -241,3 +241,25 @@ Tracking / review:
 - signature-layer RFC: Issue #80;
 - implementation: Issue #81;
 - live acceptance: Issue #82.
+
+### Level 4.0c Persistent Local Key Continuity
+
+[`KEY_CONTINUITY.md`](KEY_CONTINUITY.md)
+
+Adds browser-origin-local continuity for an Ed25519 signing key without upgrading key possession into identity or authority.
+
+Core research invariants:
+
+`valid signature != persistent key continuity != verified identity != signer authority != materialization authority`
+
+and:
+
+`same key over time != same human proven`.
+
+The first 4.0c experiment stores a non-extractable Ed25519 private `CryptoKey` and its public key in IndexedDB, derives a stable RFC 7638 thumbprint from the public JWK, reuses the key across reloads, and exposes explicit key rotation as a new local continuity epoch. The exported `PoAIContinuitySignatureEnvelope` contains signed local-continuity metadata but no private key material. Identity, authority, truth, canonical successor status and PoAI/V remain unestablished.
+
+Tracking / review:
+
+- key-continuity RFC: Issue #84;
+- implementation: Issue #85;
+- live acceptance: Issue #86.
