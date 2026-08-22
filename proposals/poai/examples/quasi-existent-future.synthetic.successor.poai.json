@@ -1,0 +1,267 @@
+{
+  "protocol": "PoAI",
+  "protocol_version": "0.0",
+  "profile": "T",
+  "record_id": "urn:poai:record:synthetic-shipment:delay-risk:2",
+  "subject": {
+    "type": "decision",
+    "id": "decision:synthetic-shipment-intervention",
+    "label": "Intervene before a predicted shipment delay becomes factual",
+    "description": "Synthetic successor record preserving the original decision state and adding the later observed outcome."
+  },
+  "decision_boundary": {
+    "opened_at": "2026-07-10T09:00:00Z",
+    "closed_at": "2026-07-10T09:30:00Z",
+    "knowledge_cutoff": "2026-07-10T09:25:00Z",
+    "precision": "instant",
+    "timezone": "UTC",
+    "status": "live_record",
+    "notes": "The successor does not move the original knowledge cutoff. Outcome information is appended after the decision rather than injected into the earlier state."
+  },
+  "future_target": {
+    "future_target_id": "future:synthetic-shipment:missed-window",
+    "label": "Shipment misses planned delivery window",
+    "observation_window": {
+      "starts_at": "2026-07-15T08:00:00Z",
+      "ends_at": "2026-07-15T18:00:00Z"
+    },
+    "epistemic_status": "probable",
+    "probability": null,
+    "notes": "This field preserves the future-target status as it existed at decision time; observed outcome is recorded separately."
+  },
+  "actors": [
+    {
+      "actor_id": "human:synthetic-logistics-planner",
+      "actor_type": "human",
+      "name": "Synthetic Logistics Planner",
+      "identifier": null,
+      "notes": "Synthetic actor."
+    },
+    {
+      "actor_id": "system:synthetic-forecast",
+      "actor_type": "automated_system",
+      "name": "Synthetic Delay Forecast",
+      "identifier": null,
+      "notes": "Synthetic forecasting system."
+    }
+  ],
+  "intelligence_resources": [
+    {
+      "resource_id": "resource:synthetic-route-data",
+      "resource_type": "dataset",
+      "label": "Synthetic route status data",
+      "provider": null,
+      "version": "2026-07-10T09:20Z",
+      "capability_claims": ["route_status", "delay_indicators"],
+      "identity_status": "known_in_scenario",
+      "actor_refs": [],
+      "notes": "Synthetic evidence source."
+    },
+    {
+      "resource_id": "resource:synthetic-delay-forecast",
+      "resource_type": "forecasting_model",
+      "label": "Synthetic shipment delay forecast",
+      "provider": null,
+      "version": "1.0-synthetic",
+      "capability_claims": ["delay_risk_classification", "alternative_comparison"],
+      "identity_status": "known_in_scenario",
+      "actor_refs": ["system:synthetic-forecast"],
+      "notes": "Synthetic model; no real-world performance claim is made."
+    },
+    {
+      "resource_id": "resource:synthetic-human-judgment",
+      "resource_type": "human_judgment",
+      "label": "Synthetic logistics planner judgment",
+      "provider": null,
+      "version": null,
+      "capability_claims": ["operational_context", "intervention_selection"],
+      "identity_status": "known_in_scenario",
+      "actor_refs": ["human:synthetic-logistics-planner"],
+      "notes": "Synthetic human decision resource."
+    }
+  ],
+  "availability": [
+    {
+      "availability_id": "availability:route-data",
+      "resource_id": "resource:synthetic-route-data",
+      "subject_id": "decision:synthetic-shipment-intervention",
+      "dimensions": {
+        "identity": "available",
+        "discoverability": "available",
+        "reachability": "available",
+        "authorization": "available",
+        "temporal_fit": "available",
+        "context_sufficiency": "available",
+        "execution_capability": "not_applicable",
+        "delivery": "available"
+      },
+      "overall_status": "available",
+      "evidence_class": "E0",
+      "evidence_refs": ["evidence:synthetic-scenario"],
+      "notes": "Preserved from the original decision record."
+    },
+    {
+      "availability_id": "availability:forecast",
+      "resource_id": "resource:synthetic-delay-forecast",
+      "subject_id": "decision:synthetic-shipment-intervention",
+      "dimensions": {
+        "identity": "available",
+        "discoverability": "available",
+        "reachability": "available",
+        "authorization": "available",
+        "temporal_fit": "available",
+        "context_sufficiency": "available",
+        "execution_capability": "available",
+        "delivery": "available"
+      },
+      "overall_status": "available",
+      "evidence_class": "E0",
+      "evidence_refs": ["evidence:synthetic-scenario"],
+      "notes": "Preserved from the original decision record."
+    },
+    {
+      "availability_id": "availability:human-judgment",
+      "resource_id": "resource:synthetic-human-judgment",
+      "subject_id": "decision:synthetic-shipment-intervention",
+      "dimensions": {
+        "identity": "available",
+        "discoverability": "not_applicable",
+        "reachability": "available",
+        "authorization": "available",
+        "temporal_fit": "available",
+        "context_sufficiency": "available",
+        "execution_capability": "available",
+        "delivery": "not_applicable"
+      },
+      "overall_status": "available",
+      "evidence_class": "E0",
+      "evidence_refs": ["evidence:synthetic-scenario"],
+      "notes": "Preserved from the original decision record."
+    }
+  ],
+  "consideration": [
+    {
+      "consideration_id": "consideration:forecast",
+      "resource_id": "resource:synthetic-delay-forecast",
+      "status": "relied_upon",
+      "summary": "The elevated delay-risk warning was used to compare intervention options.",
+      "evidence_class": "E0",
+      "evidence_refs": ["evidence:synthetic-scenario"]
+    },
+    {
+      "consideration_id": "consideration:human-judgment",
+      "resource_id": "resource:synthetic-human-judgment",
+      "status": "relied_upon",
+      "summary": "The planner selected a reroute/expedite intervention after reviewing the forecast and operational context.",
+      "evidence_class": "E0",
+      "evidence_refs": ["evidence:synthetic-scenario"]
+    }
+  ],
+  "alternatives": [
+    {
+      "alternative_id": "alternative:wait",
+      "label": "Take no action and wait for the delivery window",
+      "availability_status": "available",
+      "consideration_status": "rejected",
+      "reason": "The synthetic decision selected intervention while there was still time to alter the route.",
+      "epistemic_status": "asserted",
+      "evidence_refs": ["evidence:synthetic-scenario"]
+    },
+    {
+      "alternative_id": "alternative:reroute-expedite",
+      "label": "Reroute and expedite before the delivery window",
+      "availability_status": "available",
+      "consideration_status": "relied_upon",
+      "reason": "Selected as the scenario intervention.",
+      "epistemic_status": "asserted",
+      "evidence_refs": ["evidence:synthetic-scenario"]
+    }
+  ],
+  "authority": [
+    {
+      "actor_id": "human:synthetic-logistics-planner",
+      "scopes": ["observe", "request_analysis", "recommend", "decide", "approve", "execute"],
+      "status": "accepted",
+      "notes": "Synthetic authority mapping."
+    },
+    {
+      "actor_id": "system:synthetic-forecast",
+      "scopes": ["recommend"],
+      "status": "limited",
+      "notes": "Forecasting system provides a signal but does not hold decision authority."
+    }
+  ],
+  "constraints": [
+    {
+      "constraint_id": "constraint:synthetic-no-real-evidence",
+      "type": "missing_metadata",
+      "applies_to": ["decision:synthetic-shipment-intervention"],
+      "effect": "The example demonstrates semantics only and must not be treated as evidence about a real shipment or model.",
+      "status": "permanent_example_limit"
+    }
+  ],
+  "uncertainty": [
+    {
+      "uncertainty_id": "uncertainty:future-outcome",
+      "target": "future:synthetic-shipment:missed-window",
+      "status": "probable",
+      "statement": "At decision time the shipment outcome had not yet occurred; only an elevated-risk signal was available."
+    },
+    {
+      "uncertainty_id": "uncertainty:intervention-causality",
+      "target": "intervention:synthetic-reroute-expedite",
+      "status": "not_verified",
+      "statement": "The example records temporal association between intervention and outcome but does not claim proof that the intervention alone caused the non-realization."
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "evidence:synthetic-scenario",
+      "class": "E0",
+      "type": "synthetic_test_fixture",
+      "location": null,
+      "availability": "public_fixture",
+      "notes": "Constructed solely to exercise PoAI Future Target and successor semantics."
+    }
+  ],
+  "artifact_binding": {
+    "status": "not_bound",
+    "sha256": null,
+    "signature": null,
+    "c2pa": null,
+    "notes": "Synthetic PoAI/T example; no V-profile binding is claimed."
+  },
+  "contestability": {
+    "channel_available": true,
+    "channel": "https://github.com/Matawaka/uu-aap/issues",
+    "discussion_channel": "https://github.com/Matawaka/uu-aap/discussions/8",
+    "open_disputes": 0,
+    "appeal_available": false,
+    "notes": "Protocol-design challenges can be filed publicly."
+  },
+  "outcome": {
+    "status": "not_realized_after_intervention",
+    "observed_at": "2026-07-15T18:30:00Z",
+    "intervention": {
+      "intervention_id": "intervention:synthetic-reroute-expedite",
+      "type": "reroute_and_expedite",
+      "initiated_at": "2026-07-10T09:28:00Z",
+      "actor_id": "human:synthetic-logistics-planner",
+      "causal_status": "associated_not_proven"
+    },
+    "successor_record": null,
+    "notes": "Synthetic shipment arrived inside the observation window after intervention. PoAI records the intervention relation and does not rewrite the earlier risk signal as simply false."
+  },
+  "links": {
+    "uu_aap_manifest": null,
+    "uu_aap_pilot": null,
+    "related_decisions": ["decision:synthetic-shipment-intervention"],
+    "external": []
+  },
+  "versioning": {
+    "record_version": 2,
+    "previous_record": "urn:poai:record:synthetic-shipment:delay-risk:1",
+    "successor_record": null,
+    "change_summary": "Synthetic successor adds observed outcome after the intervention without overwriting the original decision state."
+  }
+}
