@@ -44,6 +44,21 @@ The first executable layer contains:
 
 The schema revision is **0.0.1**. The conceptual protocol remains **Genesis v0.0** while the machine model is being tested.
 
+## Level 3 — Human Interface
+
+The experimental human-facing layer lives in [`docs/poai/`](../../docs/poai/README.md).
+
+Its first MVP provides:
+
+- a browser-only PoAI JSON verifier;
+- a human-readable Decision Boundary / Future Target / resources / authority / outcome view;
+- explicit `Truth certified? NO` and artifact-binding state;
+- a guided PoAI/T Record Builder that begins at **E0 self-declaration** and defaults uncertain facts to `unknown`;
+- no server upload endpoint and no external JavaScript dependencies;
+- Node smoke tests against the existing PoAI valid/invalid vectors.
+
+The browser validator is a usability mirror of core semantic invariants. JSON Schema + the Python validator remain the machine-layer reference.
+
 ## Quick Start
 
 From the repository root:
@@ -69,6 +84,14 @@ Run the machine test vectors:
 ```bash
 python proposals/poai/tools/validate_poai.py \
   --test-vectors proposals/poai/test-vectors
+```
+
+Run the Level 3 browser-validator parity smoke test:
+
+```bash
+node --check docs/poai/validator.js
+node --check docs/poai/app.js
+node docs/poai/test-validator.js
 ```
 
 ## What the validator checks
