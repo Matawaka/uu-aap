@@ -58,198 +58,51 @@
     input.addEventListener('blur', () => label.classList.remove('focus-proxy'));
   }
 
-  function loadKeyContinuityModule() {
-    if (globalThis.PoAIKeyContinuity || document.querySelector('script[data-poai-key-continuity]')) return;
-    const script = document.createElement('script');
-    script.src = 'key-continuity.js';
-    script.dataset.poaiKeyContinuity = 'true';
-    script.defer = true;
-    document.body.append(script);
-  }
+  const moduleChain = [
+    ['PoAIReviewCues', 'review-cues.js', 'review-cues'],
+    ['PoAIReviewSidecar', 'review-sidecar.js', 'review-sidecar'],
+    ['PoAIAppealSidecar', 'appeal-sidecar.js', 'appeal-sidecar'],
+    ['PoAIAdjudicationSidecar', 'adjudication-sidecar.js', 'adjudication-sidecar'],
+    ['PoAIExecutionSidecar', 'execution-sidecar.js', 'execution-sidecar'],
+    ['PoAIExecutionVerificationSidecar', 'execution-verification-sidecar.js', 'execution-verification-sidecar'],
+    ['PoAIObservedOutcomeSidecar', 'outcome-sidecar.js', 'observed-outcome-sidecar'],
+    ['PoAISuccessorProposalSidecar', 'successor-proposal-sidecar.js', 'successor-proposal-sidecar'],
+    ['PoAIBindingReceipt', 'binding-receipt.js', 'binding-receipt'],
+    ['PoAISignatureEnvelope', 'signature-envelope.js', 'signature-envelope'],
+    ['PoAIKeyContinuity', 'key-continuity.js', 'key-continuity'],
+    ['PoAIIdentityEvidence', 'identity-evidence.js', 'identity-evidence']
+  ];
 
-  function loadSignatureEnvelopeModule() {
-    if (globalThis.PoAISignatureEnvelope) {
-      loadKeyContinuityModule();
+  function loadModule(index) {
+    if (index >= moduleChain.length) return;
+    const [globalName, src, marker] = moduleChain[index];
+    if (globalThis[globalName]) {
+      loadModule(index + 1);
       return;
     }
-    const existing = document.querySelector('script[data-poai-signature-envelope]');
-    if (existing) {
-      existing.addEventListener('load', loadKeyContinuityModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'signature-envelope.js';
-    script.dataset.poaiSignatureEnvelope = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadKeyContinuityModule, { once: true });
-    document.body.append(script);
-  }
 
-  function loadBindingReceiptModule() {
-    if (globalThis.PoAIBindingReceipt) {
-      loadSignatureEnvelopeModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-binding-receipt]');
+    const selector = `script[data-poai-module="${marker}"]`;
+    const existing = document.querySelector(selector);
     if (existing) {
-      existing.addEventListener('load', loadSignatureEnvelopeModule, { once: true });
+      if (existing.dataset.loaded === 'true') loadModule(index + 1);
+      else existing.addEventListener('load', () => loadModule(index + 1), { once: true });
       return;
     }
-    const script = document.createElement('script');
-    script.src = 'binding-receipt.js';
-    script.dataset.poaiBindingReceipt = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadSignatureEnvelopeModule, { once: true });
-    document.body.append(script);
-  }
 
-  function loadSuccessorProposalSidecarModule() {
-    if (globalThis.PoAISuccessorProposalSidecar) {
-      loadBindingReceiptModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-successor-proposal-sidecar]');
-    if (existing) {
-      existing.addEventListener('load', loadBindingReceiptModule, { once: true });
-      return;
-    }
     const script = document.createElement('script');
-    script.src = 'successor-proposal-sidecar.js';
-    script.dataset.poaiSuccessorProposalSidecar = 'true';
+    script.src = src;
+    script.dataset.poaiModule = marker;
     script.defer = true;
-    script.addEventListener('load', loadBindingReceiptModule, { once: true });
-    document.body.append(script);
-  }
-
-  function loadObservedOutcomeSidecarModule() {
-    if (globalThis.PoAIObservedOutcomeSidecar) {
-      loadSuccessorProposalSidecarModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-observed-outcome-sidecar]');
-    if (existing) {
-      existing.addEventListener('load', loadSuccessorProposalSidecarModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'outcome-sidecar.js';
-    script.dataset.poaiObservedOutcomeSidecar = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadSuccessorProposalSidecarModule, { once: true });
-    document.body.append(script);
-  }
-
-  function loadExecutionVerificationSidecarModule() {
-    if (globalThis.PoAIExecutionVerificationSidecar) {
-      loadObservedOutcomeSidecarModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-execution-verification-sidecar]');
-    if (existing) {
-      existing.addEventListener('load', loadObservedOutcomeSidecarModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'execution-verification-sidecar.js';
-    script.dataset.poaiExecutionVerificationSidecar = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadObservedOutcomeSidecarModule, { once: true });
-    document.body.append(script);
-  }
-
-  function loadExecutionSidecarModule() {
-    if (globalThis.PoAIExecutionSidecar) {
-      loadExecutionVerificationSidecarModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-execution-sidecar]');
-    if (existing) {
-      existing.addEventListener('load', loadExecutionVerificationSidecarModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'execution-sidecar.js';
-    script.dataset.poaiExecutionSidecar = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadExecutionVerificationSidecarModule, { once: true });
-    document.body.append(script);
-  }
-
-  function loadAdjudicationSidecarModule() {
-    if (globalThis.PoAIAdjudicationSidecar) {
-      loadExecutionSidecarModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-adjudication-sidecar]');
-    if (existing) {
-      existing.addEventListener('load', loadExecutionSidecarModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'adjudication-sidecar.js';
-    script.dataset.poaiAdjudicationSidecar = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadExecutionSidecarModule, { once: true });
-    document.body.append(script);
-  }
-
-  function loadAppealSidecarModule() {
-    if (globalThis.PoAIAppealSidecar) {
-      loadAdjudicationSidecarModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-appeal-sidecar]');
-    if (existing) {
-      existing.addEventListener('load', loadAdjudicationSidecarModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'appeal-sidecar.js';
-    script.dataset.poaiAppealSidecar = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadAdjudicationSidecarModule, { once: true });
-    document.body.append(script);
-  }
-
-  function loadReviewSidecarModule() {
-    if (globalThis.PoAIReviewSidecar) {
-      loadAppealSidecarModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-review-sidecar]');
-    if (existing) {
-      existing.addEventListener('load', loadAppealSidecarModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'review-sidecar.js';
-    script.dataset.poaiReviewSidecar = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadAppealSidecarModule, { once: true });
-    document.body.append(script);
-  }
-
-  function loadReviewCueModule() {
-    if (globalThis.PoAIReviewCues) {
-      loadReviewSidecarModule();
-      return;
-    }
-    const existing = document.querySelector('script[data-poai-review-cues]');
-    if (existing) {
-      existing.addEventListener('load', loadReviewSidecarModule, { once: true });
-      return;
-    }
-    const script = document.createElement('script');
-    script.src = 'review-cues.js';
-    script.dataset.poaiReviewCues = 'true';
-    script.defer = true;
-    script.addEventListener('load', loadReviewSidecarModule, { once: true });
+    script.addEventListener('load', () => {
+      script.dataset.loaded = 'true';
+      loadModule(index + 1);
+    }, { once: true });
     document.body.append(script);
   }
 
   document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     setupFileFocusProxy();
-    loadReviewCueModule();
+    loadModule(0);
   });
 })();
