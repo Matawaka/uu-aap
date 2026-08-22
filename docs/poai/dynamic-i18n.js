@@ -73,10 +73,13 @@
     ['Проверить claim', 'Verify claim'],
     ['Скачать Identity Evidence', 'Download Identity Evidence'],
     ['Загрузить Identity Evidence', 'Load Identity Evidence'],
+    ['CLAIM/EVIDENCE · НЕ LEGAL IDENTITY', 'CLAIM/EVIDENCE · NOT LEGAL IDENTITY'],
     ['Создать подписанное authority evidence', 'Create signed authority evidence'],
     ['Проверить evidence', 'Verify evidence'],
     ['Скачать Authority Evidence', 'Download Authority Evidence'],
-    ['Загрузить Authority Evidence', 'Load Authority Evidence']
+    ['Загрузить Authority Evidence', 'Load Authority Evidence'],
+    ['EVIDENCE · НЕ VERIFIED AUTHORITY', 'EVIDENCE · NOT VERIFIED AUTHORITY'],
+    ['Identity evidence issuer (необязательно)', 'Issuer identity evidence ref (optional)']
   ]);
 
   const enToRu = new Map(entries);
