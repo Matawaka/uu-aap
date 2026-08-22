@@ -1,0 +1,24 @@
+name: Protocol change
+description: Propose a normative change to UU-AAP
+body:
+  - type: textarea
+    id: clause
+    attributes:
+      label: Affected clause or object
+    validations:
+      required: true
+  - type: textarea
+    id: failure
+    attributes:
+      label: Concrete failure case
+      description: Describe a real or plausible scenario where the draft fails.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+  - type: textarea
+    id: impacts
+    attributes:
+      label: Privacy, security and compatibility impact
