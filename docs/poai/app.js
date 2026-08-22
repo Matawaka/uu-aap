@@ -138,9 +138,11 @@
     renderResources(record);
     renderAuthority(record);
     const outcome = record.outcome || {};
+    const intervention = outcome.intervention || null;
     kv($('outcomeCard'), 'Outcome status', outcome.status);
     kv($('outcomeCard'), 'Observed at', outcome.observed_at);
-    kv($('outcomeCard'), 'Intervention', outcome.intervention ? 'present' : 'none');
+    kv($('outcomeCard'), 'Intervention', intervention ? 'present' : 'none');
+    kv($('outcomeCard'), 'Causal status', intervention && intervention.causal_status);
     kv($('outcomeCard'), 'Successor', outcome.successor_record);
 
     const evidence = Array.isArray(record.evidence) ? record.evidence : [];
