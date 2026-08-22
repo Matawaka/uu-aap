@@ -1,9 +1,16 @@
 # PoAI Level 3 — Human Interface
 
 **Status:** experimental interface proposal  
-**Protocol basis:** PoAI Genesis v0.0 · Machine Layer v0.0.1
+**Protocol basis:** PoAI Genesis v0.0 · Machine Layer v0.0.1  
+**Canonical predecessor:** [`poai-genesis-v0.0.1`](https://github.com/Matawaka/uu-aap/tree/poai-genesis-v0.0.1) at commit `4f9d1929ba19df9512855001c285d688af8ec6fa`
 
 This directory contains the first human-facing PoAI interface: a browser-only **Web Verifier & Record Builder**.
+
+## Version boundary
+
+Level 3 is developed **after** the frozen Genesis/Machine-Layer checkpoint. The canonical predecessor tag must not move as Level 3 evolves.
+
+This interface therefore consumes and presents PoAI Genesis v0.0 / Machine Layer v0.0.1 records without silently redefining that checkpoint. Any future semantic change belongs in an explicit successor protocol revision and RFC.
 
 ## Goals
 
