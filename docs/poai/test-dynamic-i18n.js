@@ -30,6 +30,18 @@ assert.equal(
   i18n.translateExactText('Скачать сопроводительный артефакт исхода', 'en'),
   'Download Outcome Sidecar'
 );
+assert.equal(
+  i18n.translateExactText('CLAIM/EVIDENCE · НЕ LEGAL IDENTITY', 'ru'),
+  'УТВЕРЖДЕНИЕ/ДОКАЗАТЕЛЬСТВО · НЕ ЮРИДИЧЕСКАЯ ИДЕНТИЧНОСТЬ'
+);
+assert.equal(
+  i18n.translateExactText('EVIDENCE · НЕ VERIFIED AUTHORITY', 'en'),
+  'EVIDENCE · NOT VERIFIED AUTHORITY'
+);
+assert.equal(
+  i18n.translateExactText('Identity evidence issuer (необязательно)', 'ru'),
+  'Ссылка на доказательство идентификатора выдающей стороны (необязательно)'
+);
 
 const authorityEn = 'SIGNED AUTHORITY CLAIM VALID · ACTIVE SUBJECT KEY MATCH · TIME ACTIVE · PUBLICATION MATCH · AUTHORITY EVIDENCE OBSERVED · issuer entitlement/verified authority not established';
 const authorityRu = 'ПОДПИСАННОЕ УТВЕРЖДЕНИЕ О ПОЛНОМОЧИИ ВАЛИДНО · АКТИВНЫЙ КЛЮЧ СУБЪЕКТА СОВПАДАЕТ · ПЕРИОД ДЕЙСТВУЕТ · ПУБЛИКАЦИЯ СОВПАДАЕТ · ДОКАЗАТЕЛЬСТВО ПОЛНОМОЧИЯ НАБЛЮДАЕТСЯ · право выдающей стороны предоставлять полномочие / подтверждённое полномочие не установлены';
