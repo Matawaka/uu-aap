@@ -1,0 +1,102 @@
+{
+  "artifact_type": "PoAICheckpointManifest",
+  "artifact_version": "0.1-experimental",
+  "checkpoint_id": "urn:poai:checkpoint:authority-root-issuer-entitlement:live-v0.1",
+  "checkpoint_subject": {
+    "repository": "github:Matawaka/uu-aap",
+    "main_commit": "e4b12a63863bb966a1d746af5155dca3bebf824a",
+    "commit_role": "last main commit after PR #124 and before publication of this checkpoint manifest",
+    "scope": "repository_scoped"
+  },
+  "stage": {
+    "name": "PoAI Authority Root / Issuer Entitlement experimental v0.1",
+    "status": "live_acceptance_completed",
+    "rfc_issue": 108,
+    "implementation_issue": 109,
+    "live_acceptance_issue": 110
+  },
+  "bindings": {
+    "authority_root": {
+      "path": "proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json",
+      "ref": "e4b12a63863bb966a1d746af5155dca3bebf824a",
+      "git_blob_sha": "15b573e394e101ecd05c2d88c99d51d71fe50b09",
+      "root_id": "urn:poai:authority-root:github-matawaka-uu-aap:live",
+      "root_version": 1,
+      "canonicalization": "RFC8785-JCS",
+      "digest_algorithm": "SHA-256",
+      "digest_encoding": "hex",
+      "digest": "cbc28f90591526a3fc180322410d5ad4a1a6ba6ff52806e0f8b3e4411336d79f"
+    },
+    "materialization_policy": {
+      "path": "proposals/poai/materialization/policies/github/Matawaka.uu-aap.materialization-policy.json",
+      "ref": "e4b12a63863bb966a1d746af5155dca3bebf824a",
+      "git_blob_sha": "54c4aa2d83f0440e3b4e727116b2e8a2848ec5e2",
+      "policy_id": "urn:poai:materialization-policy:github-matawaka-uu-aap-live:1",
+      "policy_version": 1,
+      "canonicalization": "RFC8785-JCS",
+      "digest_algorithm": "SHA-256",
+      "digest_encoding": "hex",
+      "digest": "423f2407d26056709d5354fac8d8ef62a04a9dccd6a5079fe5a51b3ed67f3238"
+    },
+    "execute_grant": {
+      "path": "proposals/poai/authority/grants/github/Matawaka.uu-aap.execute-grant.json",
+      "ref": "e4b12a63863bb966a1d746af5155dca3bebf824a",
+      "git_blob_sha": "1ee586779d22201d3c48267d7777b250cbecf80f",
+      "grant_id": "urn:poai:authority-grant:5b19ddbadafdd943",
+      "action_scope": "poai.successor.materialization.execute",
+      "target": "github:Matawaka/uu-aap",
+      "delegation_mode": "non_delegable",
+      "canonicalization": "RFC8785-JCS",
+      "digest_algorithm": "SHA-256",
+      "digest_encoding": "hex",
+      "digest": "e278c9ce3aafdb64c2b3a536faf9385c6d39cbfa7a685cf8208d3628c24deb84"
+    }
+  },
+  "active_subject_key": {
+    "key_id": "urn:poai:key:ed25519:6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A",
+    "rfc7638_jwk_thumbprint": "6bASxF6xsQnlOXgzXo6hMC_t0leOFhKfGrULkqM660A"
+  },
+  "acceptance_history": {
+    "normative_pr": 114,
+    "machine_layer_pr": 115,
+    "required_check_hardening_pr": 117,
+    "live_acceptance_prs": [118, 119, 120, 121, 122, 123, 124],
+    "required_checks": [
+      "PoAI Genesis validation",
+      "PoAI Authority Root validation"
+    ]
+  },
+  "validated_conclusions": {
+    "repository_scoped_root_published": true,
+    "root_evidence_observed_separately_from_acceptance": true,
+    "root_accepted_by_exact_policy": true,
+    "execute_grant_published": true,
+    "issuer_entitlement_chain_valid_for_declared_scope": true,
+    "materialization_authority_established_for_declared_scope": true,
+    "live_authority_consumed_by_materialization_machine_in_ci_dry_run": true,
+    "root_supersession_and_historical_stability_secondary_test_passed": true
+  },
+  "boundaries_and_non_claims": {
+    "cryptographic_grant_signature_verified": false,
+    "persistent_materialization_event_published": false,
+    "successor_record_published": false,
+    "repository_mutation_performed_by_materialization_test": false,
+    "automatic_browser_materialization_action_performed": false,
+    "legal_identity_verified": false,
+    "legal_authority_established": false,
+    "universal_authority_established": false,
+    "universal_canonicality_established": false,
+    "truth_certified": false,
+    "causal_proof_certified": false,
+    "legal_responsibility_determined": false,
+    "moral_correctness_established": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  },
+  "tag_plan": {
+    "proposed_tag": "poai-authority-exp-v0.1",
+    "target": "checkpoint_manifest_merge_commit",
+    "tag_created": false
+  },
+  "notes": "This checkpoint records a repository-scoped experimental authority/materialization acceptance state. Root acceptance is policy-relative. Repository control is repository-scoped evidence only. Signature, identity, role, issuer entitlement, delegated authority and materialization authority remain distinct. This checkpoint does not establish universal legitimacy, legal identity or authority, factual truth, causality, responsibility, moral correctness, legal effect, universal canonicality or PoAI/V."
+}
