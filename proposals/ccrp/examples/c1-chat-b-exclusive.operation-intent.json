@@ -1,0 +1,41 @@
+{
+  "artifact_type": "CCRPOperationIntent",
+  "artifact_version": "0.1-experimental",
+  "ccrp_version": "0.1",
+  "conformance_level": "CCRP/C1",
+  "operation_id": "urn:ccrp:operation:uu-aap:chat-b:main-update:1",
+  "context_ref": {
+    "context_id": "urn:ccrp:context:uu-aap:chat-b:1",
+    "actor_id": "urn:ccrp:actor:chatgpt-project-agent",
+    "session_id": "urn:ccrp:session:chat-b",
+    "intent_id": "urn:ccrp:intent:ccrp-c0-machine-layer",
+    "intent_revision": 1,
+    "intent_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "action": "repository.main.update",
+  "target": "github:Matawaka/uu-aap:branch/main",
+  "concurrency_class": "exclusive",
+  "base_revision": "git:cacf6eb53ea52a25f0d3aef88a36d323c32ea996",
+  "observed_current_revision": "git:cacf6eb53ea52a25f0d3aef88a36d323c32ea996",
+  "idempotency_key": "ccrp-c1-chat-b-main-update-1",
+  "read_set": ["ref:refs/heads/main"],
+  "write_set": ["ref:refs/heads/main"],
+  "created_at": "2026-08-22T23:09:31Z",
+  "claims": {
+    "context_bound": true,
+    "collision_checked": false,
+    "execution_admitted": false,
+    "current_execution_owner_established": false,
+    "lease_established": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "universal_canonicality_established": false,
+    "truth_certified": false,
+    "causal_proof_certified": false,
+    "legal_responsibility_determined": false,
+    "moral_correctness_established": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  }
+}
