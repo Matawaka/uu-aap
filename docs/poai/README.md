@@ -1,16 +1,29 @@
 # PoAI Level 3 — Human Interface
 
-**Status:** pre-alpha experimental human interface  
+**Status:** Level 3 alpha v0.1 · experimental human interface  
 **Protocol basis:** PoAI Genesis v0.0 · Machine Layer v0.0.1  
-**Canonical predecessor:** [`poai-genesis-v0.0.1`](https://github.com/Matawaka/uu-aap/tree/poai-genesis-v0.0.1) at commit `4f9d1929ba19df9512855001c285d688af8ec6fa`
+**Canonical predecessor:** [`poai-genesis-v0.0.1`](https://github.com/Matawaka/uu-aap/tree/poai-genesis-v0.0.1) at commit `4f9d1929ba19df9512855001c285d688af8ec6fa`  
+**Alpha checkpoint tag:** `poai-level3-alpha-v0.1`
 
 This directory contains the first human-facing PoAI interface: a browser-only **Web Verifier & Record Builder**.
+
+Public interface: https://matawaka.github.io/uu-aap/poai/
 
 ## Version boundary
 
 Level 3 is developed **after** the frozen Genesis/Machine-Layer checkpoint. The canonical predecessor tag must not move as Level 3 evolves.
 
 This interface therefore consumes and presents PoAI Genesis v0.0 / Machine Layer v0.0.1 records without silently redefining that checkpoint. Any future semantic change belongs in an explicit successor protocol revision and RFC.
+
+## Alpha v0.1 checkpoint
+
+The first Level 3 alpha checkpoint follows the completed public usability audit in [Issue #14](https://github.com/Matawaka/uu-aap/issues/14).
+
+The audit covered a live Builder record, JSON download/reload round trip, malformed JSON handling, Future Target and successor records, causal-status visibility, Android/mobile rendering, dark-mode rendering and desktop keyboard navigation.
+
+The checkpoint is intentionally a **human-interface checkpoint**, not a new PoAI semantic revision. Machine Layer v0.0.1 remains the protocol basis.
+
+See [`ALPHA-v0.1.md`](ALPHA-v0.1.md) for the checkpoint scope, evidence and known limitations.
 
 ## Goals
 
@@ -64,7 +77,7 @@ Generated JSON should be extended with actual resources, evidence, constraints, 
 
 ## Accessibility boundary
 
-The pre-alpha interface uses native controls, visible focus treatment and ARIA tab/tabpanel semantics. The Verifier and Record Builder tabs support `ArrowLeft`, `ArrowRight`, `Home` and `End` keyboard navigation in addition to normal `Tab` navigation.
+The alpha interface uses native controls, visible focus treatment and ARIA tab/tabpanel semantics. The Verifier and Record Builder tabs support `ArrowLeft`, `ArrowRight`, `Home` and `End` keyboard navigation in addition to normal `Tab` navigation.
 
 The hidden file input receives a visible focus proxy on its `Choose a .json file` label so keyboard focus is not invisible.
 
@@ -76,7 +89,7 @@ The first Level 3 alpha is **English-first**. Machine protocol values remain lan
 
 A future bilingual UI should map both languages to the same underlying protocol terms and values.
 
-## Known pre-alpha limitations
+## Known alpha limitations
 
 The current interface does not provide or claim:
 
