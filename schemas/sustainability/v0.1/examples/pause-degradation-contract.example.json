@@ -1,0 +1,44 @@
+{
+  "document_type": "uu-aap.sustainability-pause-degradation",
+  "version": "0.1",
+  "status": "non-normative-contract",
+  "subject": {
+    "component_id": "sustainability-kernel",
+    "scope": "project interruption entry classification"
+  },
+  "pre_interruption_frontier": {
+    "main_sha": "bb59df959aadc8dc59ac95473cb0b2e1b74adad4",
+    "observed_at": "2026-08-23T17:37:17Z",
+    "frontier_was_current_when_recorded": true
+  },
+  "interruption": {
+    "kind": "human_pause",
+    "observed_at": "2026-08-23T17:40:00Z",
+    "evidence_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "continuous_monitoring_used": false
+  },
+  "classification": {
+    "result": "paused",
+    "safe_effect": "preserve-only",
+    "recovery_resume_required_before_later_preparation": true
+  },
+  "invariants": {
+    "history_preserved": true,
+    "mutable_authorization_preserved": false,
+    "pause_is_abandonment": false,
+    "pause_is_authority_waiver": false,
+    "inactivity_is_consent": false,
+    "degradation_authorizes_failover": false,
+    "degradation_authorizes_bypass": false,
+    "context_loss_authorizes_rescue": false,
+    "automatic_resume": false,
+    "external_execution_authorized": false
+  },
+  "authority_effect": "none",
+  "external_execution_authorized": false,
+  "notes": [
+    "The pause preserves project history but does not preserve mutable execution authorization.",
+    "Any later preparation must first pass through Sustainability Recovery / Resume v0.1.",
+    "KONTUR remains inactive and no permission is expanded."
+  ]
+}
