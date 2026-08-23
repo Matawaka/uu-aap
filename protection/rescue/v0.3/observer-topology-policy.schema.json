@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/observer-topology-policy-v0.3.json",
+  "title": "ObserverTopologyPolicy v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "policy_id", "minimums", "requirements", "claims"],
+  "properties": {
+    "artifact_type": {"const": "ObserverTopologyPolicy"},
+    "artifact_version": {"const": "0.3"},
+    "policy_id": {"type": "string", "minLength": 1},
+    "minimums": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attested_observers", "observer_domains", "failure_domains", "custodian_domains", "attestor_domains", "provider_domains", "evidence_classes"],
+      "properties": {
+        "attested_observers": {"type": "integer", "minimum": 1},
+        "observer_domains": {"type": "integer", "minimum": 1},
+        "failure_domains": {"type": "integer", "minimum": 1},
+        "custodian_domains": {"type": "integer", "minimum": 1},
+        "attestor_domains": {"type": "integer", "minimum": 1},
+        "provider_domains": {"type": "integer", "minimum": 1},
+        "evidence_classes": {"type": "integer", "minimum": 1}
+      }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reject_expired", "reject_duplicate_observer_ids", "require_non_self_attestation", "require_evidence_digest", "require_distinct_attestor_from_observer_domain"],
+      "properties": {
+        "reject_expired": {"type": "boolean"},
+        "reject_duplicate_observer_ids": {"type": "boolean"},
+        "require_non_self_attestation": {"type": "boolean"},
+        "require_evidence_digest": {"type": "boolean"},
+        "require_distinct_attestor_from_observer_domain": {"type": "boolean"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_bounded_only", "universal_physical_independence_proven", "loss_confirmed", "execution_authority_granted"],
+      "properties": {
+        "policy_bounded_only": {"const": true},
+        "universal_physical_independence_proven": {"const": false},
+        "loss_confirmed": {"const": false},
+        "execution_authority_granted": {"const": false}
+      }
+    }
+  }
+}

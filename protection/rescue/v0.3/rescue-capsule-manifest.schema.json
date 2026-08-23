@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/rescue-capsule-manifest-v0.3.json",
+  "title": "RescueCapsuleManifest v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "capsule_id", "created_at", "project_id", "frontier_ref", "items", "manifest_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "RescueCapsuleManifest"},
+    "artifact_version": {"const": "0.3"},
+    "capsule_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "frontier_ref": {"type": "string", "minLength": 1},
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["role", "source_label", "stored_path", "size_bytes", "sha256"],
+        "properties": {
+          "role": {"enum": ["frontier_evidence", "continuity_manifest", "metadata_manifest", "prevention_registry", "prevention_assessment", "passive_observation", "observer_attestation", "observer_topology_assessment", "rescue_case", "rescue_assessment", "recovery_source_manifest", "kontur_replica_manifest", "external_anchor"]},
+          "source_label": {"type": "string", "minLength": 1, "maxLength": 255},
+          "stored_path": {"type": "string", "pattern": "^items/[0-9]{4}-[a-z0-9_-]+-[A-Za-z0-9._-]+$"},
+          "size_bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capsule_internal_integrity_only", "evidence_truth_certified", "rescue_authorized", "recovery_executed", "canonical_successor_established", "ownership_transferred", "kontur_activated", "execution_authority_granted"],
+      "properties": {
+        "capsule_internal_integrity_only": {"const": true},
+        "evidence_truth_certified": {"const": false},
+        "rescue_authorized": {"const": false},
+        "recovery_executed": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "execution_authority_granted": {"const": false}
+      }
+    }
+  }
+}

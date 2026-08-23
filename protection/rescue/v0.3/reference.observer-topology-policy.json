@@ -1,0 +1,28 @@
+{
+  "$schema": "https://uu-aap.example/schema/observer-topology-policy-v0.3.json",
+  "artifact_type": "ObserverTopologyPolicy",
+  "artifact_version": "0.3",
+  "policy_id": "uu-aap-project-survival-observer-topology-v0.3",
+  "minimums": {
+    "attested_observers": 2,
+    "observer_domains": 2,
+    "failure_domains": 2,
+    "custodian_domains": 2,
+    "attestor_domains": 2,
+    "provider_domains": 2,
+    "evidence_classes": 2
+  },
+  "requirements": {
+    "reject_expired": true,
+    "reject_duplicate_observer_ids": true,
+    "require_non_self_attestation": true,
+    "require_evidence_digest": true,
+    "require_distinct_attestor_from_observer_domain": true
+  },
+  "claims": {
+    "policy_bounded_only": true,
+    "universal_physical_independence_proven": false,
+    "loss_confirmed": false,
+    "execution_authority_granted": false
+  }
+}
