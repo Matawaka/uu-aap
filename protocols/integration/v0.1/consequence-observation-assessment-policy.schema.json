@@ -1,0 +1,143 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:consequence-observation-assessment-policy:0.1",
+  "title": "ConsequenceObservationAssessmentPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "policy_id", "policy_version",
+    "assessment_scope", "effective_from", "effective_until", "applies_to",
+    "allowed_gate_statuses", "gate_rules", "registered_live_source_profiles",
+    "invariants", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "artifact_type": {"const": "ConsequenceObservationAssessmentPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"const": "urn:uu-aap:consequence-observation-assessment-policy:bounded-source-admissibility:1"},
+    "policy_version": {"const": 1},
+    "assessment_scope": {"const": "urn:uu-aap:consequence-observation-assessment-scope:bounded-source-admissibility-v0.1"},
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"type": ["string", "null"], "format": "date-time"},
+    "applies_to": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ingress_policy_id", "ingress_receipt_artifact_type", "ingress_receipt_artifact_version",
+        "claim_artifact_type", "claim_artifact_version", "source_evidence_artifact_type",
+        "source_evidence_artifact_version", "frontier_artifact_types"
+      ],
+      "properties": {
+        "ingress_policy_id": {"const": "urn:uu-aap:consequence-observation-ingress-policy:responsibility-event-frontier:1"},
+        "ingress_receipt_artifact_type": {"const": "ConsequenceObservationIngressReceipt"},
+        "ingress_receipt_artifact_version": {"const": "0.1"},
+        "claim_artifact_type": {"const": "ConsequenceObservationClaim"},
+        "claim_artifact_version": {"const": "0.1"},
+        "source_evidence_artifact_type": {"const": "ConsequenceObservationSourceEvidence"},
+        "source_evidence_artifact_version": {"const": "0.1"},
+        "frontier_artifact_types": {
+          "type": "array", "minItems": 2, "maxItems": 2, "uniqueItems": true,
+          "items": {"enum": ["ResponsibilityEventAppendLedgerEntry", "ResponsibilityEventSuccessorLedgerEntry"]}
+        }
+      }
+    },
+    "allowed_gate_statuses": {
+      "type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true,
+      "items": {"enum": ["qualified", "not_qualified", "deferred", "out_of_scope"]}
+    },
+    "gate_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ingress_package_exact", "source_bytes_exact", "producer_profile_recognized",
+        "producer_artifact_identity_exact", "observation_present", "observation_chronology_valid",
+        "observation_horizon_valid", "frontier_exact", "fixture_excluded_from_live_qualification",
+        "source_semantics_profile_satisfied"
+      ],
+      "properties": {
+        "ingress_package_exact": {"$ref": "#/$defs/gateRule"},
+        "source_bytes_exact": {"$ref": "#/$defs/gateRule"},
+        "producer_profile_recognized": {"$ref": "#/$defs/gateRule"},
+        "producer_artifact_identity_exact": {"$ref": "#/$defs/gateRule"},
+        "observation_present": {"$ref": "#/$defs/gateRule"},
+        "observation_chronology_valid": {"$ref": "#/$defs/gateRule"},
+        "observation_horizon_valid": {"$ref": "#/$defs/gateRule"},
+        "frontier_exact": {"$ref": "#/$defs/gateRule"},
+        "fixture_excluded_from_live_qualification": {"$ref": "#/$defs/gateRule"},
+        "source_semantics_profile_satisfied": {"$ref": "#/$defs/gateRule"}
+      }
+    },
+    "registered_live_source_profiles": {
+      "type": "array", "maxItems": 0,
+      "items": {"type": "object"}
+    },
+    "invariants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_byte_bindings_required", "frontier_exact_required",
+        "source_profile_required_for_live_observed", "live_observation_qualification_allowed",
+        "test_fixture_live_qualification_allowed", "successor_adapter_authorization_allowed",
+        "assessment_is_policy_relative", "scalar_scores_allowed"
+      ],
+      "properties": {
+        "exact_byte_bindings_required": {"const": true},
+        "frontier_exact_required": {"const": true},
+        "source_profile_required_for_live_observed": {"const": true},
+        "live_observation_qualification_allowed": {"const": false},
+        "test_fixture_live_qualification_allowed": {"const": false},
+        "successor_adapter_authorization_allowed": {"const": false},
+        "assessment_is_policy_relative": {"const": true},
+        "scalar_scores_allowed": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_policy_defined", "source_profile_registry_empty",
+        "new_external_consequence_observed", "consequence_truth_certified",
+        "generalized_external_consequence_causality_established", "causal_proof_certified",
+        "responsibility_for_consequence_attributed", "responsibility_for_outcome_adjudicated",
+        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
+        "truth_certified", "successor_adapter_authorized", "successor_append_may_proceed",
+        "global_replay_protection_established", "distributed_consensus_established",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "assessment_policy_defined": {"const": true},
+        "source_profile_registry_empty": {"const": true},
+        "new_external_consequence_observed": {"const": false},
+        "consequence_truth_certified": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_consequence_attributed": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "successor_adapter_authorized": {"const": false},
+        "successor_append_may_proceed": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "gateRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "reason_codes"],
+      "properties": {
+        "required": {"const": true},
+        "reason_codes": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
