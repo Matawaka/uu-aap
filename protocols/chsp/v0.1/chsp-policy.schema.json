@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-policy-v0.1.json",
+  "title": "CHSPPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "project_id", "minimum_immersion_days",
+    "maximum_evidence_age_days", "minimum_evidence_events", "minimum_observer_domains",
+    "required_evidence_classes", "minimum_challenge_events",
+    "minimum_completed_successful_delegations", "countable_delegation_levels",
+    "requirements", "transition_safeguards", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "project_id": {"type": "string", "minLength": 1},
+    "minimum_immersion_days": {"type": "integer", "minimum": 1},
+    "maximum_evidence_age_days": {"type": "integer", "minimum": 1},
+    "minimum_evidence_events": {"type": "integer", "minimum": 1},
+    "minimum_observer_domains": {"type": "integer", "minimum": 1},
+    "required_evidence_classes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "protocol_comprehension", "boundary_respect", "conflict_of_interest_disclosure",
+          "challenged_decision_response", "uncertainty_handling", "reversibility_preservation",
+          "appeal_preservation", "operational_stewardship"
+        ]
+      }
+    },
+    "minimum_challenge_events": {"type": "integer", "minimum": 1},
+    "minimum_completed_successful_delegations": {"type": "integer", "minimum": 1},
+    "countable_delegation_levels": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["advisory", "reversible_limited", "supervised_stewardship"]}
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "self_attestation_counts_as_independent_evidence", "unresolved_adverse_evidence_blocks",
+        "candidate_must_not_be_sole_appeal_contour", "delegation_must_be_reversible",
+        "delegation_must_expire", "completed_delegation_outcome_required",
+        "automatic_authority_progression", "automatic_canonical_recognition"
+      ],
+      "properties": {
+        "self_attestation_counts_as_independent_evidence": {"const": false},
+        "unresolved_adverse_evidence_blocks": {"const": true},
+        "candidate_must_not_be_sole_appeal_contour": {"const": true},
+        "delegation_must_be_reversible": {"const": true},
+        "delegation_must_expire": {"const": true},
+        "completed_delegation_outcome_required": {"const": true},
+        "automatic_authority_progression": {"const": false},
+        "automatic_canonical_recognition": {"const": false}
+      }
+    },
+    "transition_safeguards": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "historical_anchors_preserved", "appeal_path_preserved", "recovery_path_preserved",
+        "temporary_authority_reversible", "irreversible_canon_rewrite_prohibited",
+        "hidden_centralization_prohibited", "canonical_origin_mutation_prohibited",
+        "ownership_transfer_prohibited", "kontur_activation_prohibited",
+        "automatic_failover_prohibited"
+      ],
+      "properties": {
+        "historical_anchors_preserved": {"const": true},
+        "appeal_path_preserved": {"const": true},
+        "recovery_path_preserved": {"const": true},
+        "temporary_authority_reversible": {"const": true},
+        "irreversible_canon_rewrite_prohibited": {"const": true},
+        "hidden_centralization_prohibited": {"const": true},
+        "canonical_origin_mutation_prohibited": {"const": true},
+        "ownership_transfer_prohibited": {"const": true},
+        "kontur_activation_prohibited": {"const": true},
+        "automatic_failover_prohibited": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "descriptive_policy_only", "psychological_fitness_certified", "legal_identity_certified",
+        "canonical_successor_established", "ownership_transferred", "kontur_activated",
+        "universal_trust_established"
+      ],
+      "properties": {
+        "descriptive_policy_only": {"const": true},
+        "psychological_fitness_certified": {"const": false},
+        "legal_identity_certified": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
