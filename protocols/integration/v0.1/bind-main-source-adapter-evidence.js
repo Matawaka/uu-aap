@@ -37,6 +37,10 @@ function assert(value, message) {
   if (!value) throw new Error(`MainSourceAdapterBinding: ${message}`);
 }
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
 function noScalarFields(value, at = '$') {
   const banned = /(score|probability|confidence|likelihood|responsibility_score)$/i;
   if (Array.isArray(value)) return value.forEach((item, i) => noScalarFields(item, `${at}[${i}]`));
@@ -71,6 +75,18 @@ async function bindingFor(value, fallbackRef) {
   };
 }
 
+async function assertSameCanonical(left, right, label) {
+  assert(left && right && await digestOf(left) === await digestOf(right), `${label} inconsistency`);
+}
+
+function validateHistoricalFrontierBinding(binding) {
+  assert(binding && binding.artifact_type === 'ResponsibilityEventSuccessorLedgerEntry', 'historical frontier binding artifact substitution');
+  assert(typeof binding.artifact_ref === 'string' && binding.artifact_ref.startsWith('urn:uu-aap:responsibility-event-successor-ledger-entry:'), 'historical frontier binding ref malformed');
+  assert(binding.digest && binding.digest.canonicalization === 'RFC8785-JCS', 'historical frontier binding canonicalization substitution');
+  assert(binding.digest.digest_algorithm === 'SHA-256' && binding.digest.digest_encoding === 'hex', 'historical frontier binding digest profile substitution');
+  assert(/^[0-9a-f]{64}$/.test(binding.digest.value || ''), 'historical frontier binding digest malformed');
+}
+
 function validatePolicy(policy) {
   assert(policy && policy.artifact_type === POLICY_TYPE && policy.artifact_version === '0.1', 'policy artifact substitution');
   assert(policy.policy_id === POLICY_ID && policy.policy_version === 1, 'policy ID/version substitution');
@@ -81,9 +97,11 @@ function validatePolicy(policy) {
   for (const key of [
     'exact_push_event_required', 'exact_main_ref_required', 'workflow_success_required',
     'artifact_name_revision_bound', 'artifact_not_expired_required', 'bundle_schema_valid_required',
-    'bundle_cross_digest_binding_required', 'adapter_receipt_main_bound_required',
-    'adapter_receipt_candidate_prohibited', 'source_revision_explicit_required'
+    'bundle_cross_digest_binding_required', 'historical_frontier_binding_consistency_required',
+    'adapter_receipt_main_bound_required', 'adapter_receipt_candidate_prohibited',
+    'source_revision_explicit_required'
   ]) assert(inv[key] === true, `policy invariant weakened: ${key}`);
+  assert(inv.historical_frontier_bytes_reverification_required === false, 'historical frontier byte-reverification overclaim');
   assert(inv.successor_append_permission_allowed === false, 'policy append permission escalation');
   assert(inv.successor_append_execution_allowed === false, 'policy append execution escalation');
   assert(inv.server_runtime_dependency_required === false, 'server runtime dependency escalation');
@@ -116,7 +134,7 @@ async function assertBinding(binding, artifact, label) {
   assert(binding && binding.digest && binding.digest.value === await digestOf(artifact), `${label} digest binding substitution`);
 }
 
-async function validateBundle({ bundle, adapterPolicy, frontierEntry, expectedSha, sourceRun }) {
+async function validateBundle({ bundle, adapterPolicy, expectedSha, sourceRun }) {
   const o = bundle.runtime_observation;
   const s = bundle.source_evidence;
   const c = bundle.claim;
@@ -155,7 +173,15 @@ async function validateBundle({ bundle, adapterPolicy, frontierEntry, expectedSh
   await assertBinding(r.claim_binding, c, 'claim');
   await assertBinding(r.source_evidence_binding, s, 'source evidence');
   await assertBinding(r.producer_observation_binding, o, 'producer observation');
-  await assertBinding(r.frontier_entry_binding, frontierEntry, 'frontier entry');
+
+  validateHistoricalFrontierBinding(a.frontier_entry_binding);
+  validateHistoricalFrontierBinding(r.frontier_entry_binding);
+  await assertSameCanonical(a.frontier_entry_binding, r.frontier_entry_binding, 'historical frontier binding');
+  for (const field of ['responsibility_event_head', 'semantic_frontier', 'effect_frontier']) {
+    await assertSameCanonical(c[field], i[field], `${field} claim/ingress`);
+    await assertSameCanonical(c[field], a[field], `${field} claim/assessment`);
+    await assertSameCanonical(c[field], r[field], `${field} claim/adapter`);
+  }
 
   assert(s.source_payload && await digestOf(s.source_payload) === await digestOf(o), 'source wrapper/runtime payload mismatch');
   assert(summary.runtime_context_class === 'main_push' && summary.event_name === 'push', 'summary main-push context substitution');
@@ -188,12 +214,12 @@ function evaluatorContext(env) {
   throw new Error('MainSourceAdapterBinding: evaluator event must be pull_request or push');
 }
 
-async function buildReceipt({ policy, adapterPolicy, frontierEntry, bundle, sourceRun, sourceArtifact, expectedSha, evaluatedAt, env = process.env }) {
+async function buildReceipt({ policy, adapterPolicy, bundle, sourceRun, sourceArtifact, expectedSha, evaluatedAt, env = process.env }) {
   validatePolicy(policy);
   assert(/^[0-9a-f]{40}$/.test(expectedSha || ''), 'expected source revision required');
   validateSourceRun(sourceRun, expectedSha);
   validateSourceArtifact(sourceArtifact, expectedSha);
-  await validateBundle({ bundle, adapterPolicy, frontierEntry, expectedSha, sourceRun });
+  await validateBundle({ bundle, adapterPolicy, expectedSha, sourceRun });
   const context = evaluatorContext(env);
 
   const policyBinding = await bindingFor(policy, POLICY_ID);
@@ -226,6 +252,7 @@ async function buildReceipt({ policy, adapterPolicy, frontierEntry, bundle, sour
     sha: bundle.runtime_observation.sha,
     ref: bundle.runtime_observation.ref
   };
+  const historicalFrontierBinding = clone(bundle.adapter_receipt.frontier_entry_binding);
 
   const seed = {
     policy_digest: policyBinding.digest.value,
@@ -233,6 +260,7 @@ async function buildReceipt({ policy, adapterPolicy, frontierEntry, bundle, sour
     source_run_id: sourceWorkflowRun.run_id,
     source_artifact_id: sourceArtifactOut.artifact_id,
     adapter_receipt_digest: bundleBindings.adapter_receipt.digest.value,
+    historical_frontier_digest: historicalFrontierBinding.digest.value,
     evaluator: context
   };
   const idDigest = await digestOf(seed);
@@ -248,6 +276,7 @@ async function buildReceipt({ policy, adapterPolicy, frontierEntry, bundle, sour
     source_workflow_run: sourceWorkflowRun,
     source_artifact: sourceArtifactOut,
     bundle_bindings: bundleBindings,
+    historical_frontier_binding: historicalFrontierBinding,
     runtime_context: runtimeContext,
     evaluator_context: context,
     decision: {
@@ -256,6 +285,8 @@ async function buildReceipt({ policy, adapterPolicy, frontierEntry, bundle, sour
       exact_push_run_verified: true,
       exact_artifact_verified: true,
       bundle_integrity_verified: true,
+      historical_frontier_binding_consistency_verified: true,
+      historical_frontier_bytes_reverified: false,
       main_bound_source_evidence_verified: true,
       source_may_be_presented_to_future_successor_policy: true,
       candidate_binding_receipt: !mainBound,
@@ -269,6 +300,8 @@ async function buildReceipt({ policy, adapterPolicy, frontierEntry, bundle, sour
       exact_push_run_verified: true,
       exact_artifact_verified: true,
       bundle_integrity_verified: true,
+      historical_frontier_binding_consistency_verified: true,
+      historical_frontier_bytes_reverified: false,
       main_bound_source_evidence_verified: true,
       stronger_claims_withheld: true,
       provider_identity_cryptographically_attested: false,
@@ -318,6 +351,7 @@ function readBundle(dir) {
 
 module.exports = {
   POLICY_ID, POLICY_TYPE, RECEIPT_TYPE, FALSE_CLAIMS,
-  digestOf, bindingFor, validatePolicy, validateSourceRun, validateSourceArtifact,
-  validateBundle, evaluatorContext, buildReceipt, validateReceipt, readBundle
+  digestOf, bindingFor, validateHistoricalFrontierBinding, validatePolicy,
+  validateSourceRun, validateSourceArtifact, validateBundle, evaluatorContext,
+  buildReceipt, validateReceipt, readBundle
 };
