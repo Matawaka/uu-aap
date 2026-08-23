@@ -1,0 +1,41 @@
+{
+  "document_type": "uu-aap.human-sustainability-observation",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "observed_at": "2026-08-23T16:46:00Z",
+  "observation_scope": "interaction-load-only",
+  "signals": [
+    {
+      "kind": "task_creation_outpaces_task_closure",
+      "confidence": "medium",
+      "evidence_scope": "explicitly_supplied_project_history",
+      "note": "Used only to justify preserving checkpoints and deferring optional work; not a diagnostic inference."
+    }
+  ],
+  "allowed_adaptations": [
+    "fewer_simultaneous_decisions",
+    "stronger_checkpointing",
+    "explicit_defer_option",
+    "reduce_novelty_injection",
+    "preserve_safe_resume_point"
+  ],
+  "prohibited_interpretations": [
+    "medical_diagnosis",
+    "mental_health_diagnosis",
+    "incapacity_determination",
+    "authority_revocation",
+    "hidden_psychological_score",
+    "biometric_identity_inference",
+    "fitness_for_work_determination",
+    "coercive_behavioral_ranking"
+  ],
+  "authority_effect": "none",
+  "raw_private_content_required": false,
+  "biometric_data_required": false,
+  "medical_data_required": false,
+  "scalar_human_score_allowed": false,
+  "notes": [
+    "Observation may adjust interaction pacing only.",
+    "It must never be used as an execution authorization, denial, medical claim, or reduction of human authority."
+  ]
+}
