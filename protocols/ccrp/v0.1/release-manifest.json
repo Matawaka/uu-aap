@@ -1,0 +1,430 @@
+{
+  "$schema": "./release-manifest.schema.json",
+  "artifact_type": "CCRPReleaseManifest",
+  "artifact_version": "1.0",
+  "release_id": "urn:ccrp:release:v0.1",
+  "protocol": {
+    "id": "CCRP",
+    "name": "Concurrent Context Reconciliation Protocol",
+    "version": "0.1",
+    "status": "release_candidate",
+    "semantic_source_status": "Experimental Draft",
+    "repository": "github:Matawaka/uu-aap"
+  },
+  "lineage": {
+    "predecessor_checkpoint": {
+      "tag": "poai-ccrp-exp-v0.1",
+      "commit": "33215e251310105e2fac591b17ae2d90522488d9",
+      "role": "frozen experimental CCRP v0.1 checkpoint"
+    },
+    "promotion_policy": "content_addressed_binding_without_historical_rewrite"
+  },
+  "release": {
+    "planned_tag": "poai-ccrp-v0.1",
+    "target_policy": "merge_commit_containing_this_manifest",
+    "immutable_tag_required": true,
+    "github_release_required": true,
+    "canonical_state_update_after_publication": true
+  },
+  "conformance": {
+    "levels": ["C0", "C1", "C2", "C3", "C4", "C5"],
+    "release_binding_validator": "protocols/ccrp/v0.1/validate-release.js",
+    "required_existing_checks": [
+      "PoAI Genesis validation",
+      "PoAI Authority Root validation",
+      "CCRP validation",
+      "PoAI CCRP pre-materialization validation"
+    ],
+    "release_check": "CCRP release binding validation"
+  },
+  "binding_model": {
+    "strategy": "repository_path_plus_git_blob_sha",
+    "git_object_format": "sha1",
+    "verification_command": "git hash-object <path>",
+    "copy_required": false,
+    "meaning": "The release manifest binds exact repository bytes. The immutable release tag freezes the repository tree that contains both this manifest and every bound artifact."
+  },
+  "artifacts": [
+    {
+      "id": "ccrp-spec",
+      "role": "normative_specification",
+      "conformance": ["C0", "C1", "C2", "C3", "C4", "C5"],
+      "path": "proposals/ccrp/CCRP.md",
+      "git_blob_sha": "9c79e9496e78ed7ef8519acb4921bb6cb0bbe74f",
+      "media_type": "text/markdown",
+      "normative": true
+    },
+    {
+      "id": "schema-work-context-c0",
+      "role": "schema",
+      "conformance": ["C0"],
+      "path": "proposals/ccrp/schema/work-context.c0.schema.json",
+      "git_blob_sha": "3694d7e69cdda9b4c6deec077d96e0a1043979bf",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-operation-intent-c1",
+      "role": "schema",
+      "conformance": ["C1"],
+      "path": "proposals/ccrp/schema/operation-intent.c1.schema.json",
+      "git_blob_sha": "4dec749b40b3fc791065f66a616f5efc3a2b6bba",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-collision-result-c1",
+      "role": "schema",
+      "conformance": ["C1"],
+      "path": "proposals/ccrp/schema/collision-result.c1.schema.json",
+      "git_blob_sha": "75ffa4249ca27929d261070ae1d84174e2e5a98d",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-execution-lease-c2",
+      "role": "schema",
+      "conformance": ["C2"],
+      "path": "proposals/ccrp/schema/execution-lease.c2.schema.json",
+      "git_blob_sha": "b22c3ffdae373ef4b591b1164732ab021031740d",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-execution-admission-c2",
+      "role": "schema",
+      "conformance": ["C2"],
+      "path": "proposals/ccrp/schema/execution-admission-result.c2.schema.json",
+      "git_blob_sha": "f17cd54bee5d9dee022e468e09845bd6df971a03",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-collaboration-operation-c3",
+      "role": "schema",
+      "conformance": ["C3"],
+      "path": "proposals/ccrp/schema/collaboration-operation.c3.schema.json",
+      "git_blob_sha": "ca6d6e0fe304e1291547e86900830d5b8512db0a",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-reconciliation-result-c3",
+      "role": "schema",
+      "conformance": ["C3"],
+      "path": "proposals/ccrp/schema/reconciliation-result.c3.schema.json",
+      "git_blob_sha": "9fa397eefa1504cfb4d9344c8ec49e9a5b24f4a7",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-context-admission-c4",
+      "role": "schema",
+      "conformance": ["C4"],
+      "path": "proposals/ccrp/schema/context-admission-result.c4.schema.json",
+      "git_blob_sha": "8598554f6fa5996880cd667db640e8fb30cb59ed",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-coordination-state-c4",
+      "role": "schema",
+      "conformance": ["C4"],
+      "path": "proposals/ccrp/schema/coordination-state.c4.schema.json",
+      "git_blob_sha": "1fade99b47199016524e1394d8ee56a2b5575088",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-coordination-transition-c4",
+      "role": "schema",
+      "conformance": ["C4"],
+      "path": "proposals/ccrp/schema/coordination-transition.c4.schema.json",
+      "git_blob_sha": "6c3584aab570a7aeab61b7101f54e504d637c88e",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-coordination-transition-result-c4",
+      "role": "schema",
+      "conformance": ["C4"],
+      "path": "proposals/ccrp/schema/coordination-transition-result.c4.schema.json",
+      "git_blob_sha": "36b890aab4ca83c3ed801eca8e8e5e49c885db96",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-policy-coordination-result-c5",
+      "role": "schema",
+      "conformance": ["C5"],
+      "path": "proposals/ccrp/schema/policy-coordination-result.c5.schema.json",
+      "git_blob_sha": "cc2abddb0c17b0c5cc34c2e3f311a319f2f3d79a",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "schema-pre-materialization-result",
+      "role": "integration_schema",
+      "conformance": ["C5"],
+      "path": "proposals/ccrp/schema/pre-materialization-result.v0.1.schema.json",
+      "git_blob_sha": "697e0d6db84fbd38b39ec096fd1dc2b17adb5f3b",
+      "media_type": "application/schema+json",
+      "normative": true
+    },
+    {
+      "id": "tool-ccrp-core",
+      "role": "reference_implementation",
+      "conformance": ["C0", "C1"],
+      "path": "proposals/ccrp/tools/ccrp-core.js",
+      "git_blob_sha": "cf6d4e9105379aab5a99f6e1fb258846b9df18d8",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "tool-ccrp-c2",
+      "role": "reference_implementation",
+      "conformance": ["C2"],
+      "path": "proposals/ccrp/tools/ccrp-c2.js",
+      "git_blob_sha": "f740bc842a07e510aa82c3fae10bec72624df345",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "tool-ccrp-c3",
+      "role": "reference_implementation",
+      "conformance": ["C3"],
+      "path": "proposals/ccrp/tools/ccrp-c3.js",
+      "git_blob_sha": "8c794423ea2ee1de8f3eefa4c79031be4bdc6708",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "tool-ccrp-c4",
+      "role": "reference_implementation",
+      "conformance": ["C4"],
+      "path": "proposals/ccrp/tools/ccrp-c4.js",
+      "git_blob_sha": "327bb93ebafa748364dd5587c5a7049585090dbd",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "tool-ccrp-c5",
+      "role": "reference_implementation",
+      "conformance": ["C5"],
+      "path": "proposals/ccrp/tools/ccrp-c5.js",
+      "git_blob_sha": "fff0cb7d42b32089ad3df9f43cdd364f4591d022",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "tool-pre-materialization-gate",
+      "role": "integration_reference_implementation",
+      "conformance": ["C5"],
+      "path": "proposals/ccrp/tools/pre-materialization-gate.js",
+      "git_blob_sha": "aec38c4b78f99305d89516d603a62a897ee0fcea",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "validator-c4-python",
+      "role": "secondary_validator",
+      "conformance": ["C4"],
+      "path": "proposals/ccrp/validate-c4.py",
+      "git_blob_sha": "f4a8ce0f46cd3605feb2a12e09f6d8708809d3e7",
+      "media_type": "text/x-python",
+      "normative": false
+    },
+    {
+      "id": "test-c0",
+      "role": "conformance_test",
+      "conformance": ["C0"],
+      "path": "proposals/ccrp/test-c0.js",
+      "git_blob_sha": "e1fa68c11e80eae1dc74147f9eaa85c7a0f29cfb",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "test-c1",
+      "role": "conformance_test",
+      "conformance": ["C1"],
+      "path": "proposals/ccrp/test-c1.js",
+      "git_blob_sha": "d5753d2142b543f6ec884b3b08d2f4cdf545798c",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "test-c2",
+      "role": "conformance_test",
+      "conformance": ["C2"],
+      "path": "proposals/ccrp/test-c2.js",
+      "git_blob_sha": "54b2dddfada7bc92a1fe2c2317f17b2619288ae4",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "test-c3",
+      "role": "conformance_test",
+      "conformance": ["C3"],
+      "path": "proposals/ccrp/test-c3.js",
+      "git_blob_sha": "9107edfe420c2be84cbb63f413ab22b2c68d2b79",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "test-c4",
+      "role": "conformance_test",
+      "conformance": ["C4"],
+      "path": "proposals/ccrp/test-c4.js",
+      "git_blob_sha": "640f53e1258fb8c4004c54b1d694fb9dcbfbca31",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "test-c5",
+      "role": "conformance_test",
+      "conformance": ["C5"],
+      "path": "proposals/ccrp/test-c5.js",
+      "git_blob_sha": "eb7242bc2e68b408c6b3979343b4d41eb084b3fb",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "test-pre-materialization",
+      "role": "integration_test",
+      "conformance": ["C5"],
+      "path": "proposals/ccrp/test-pre-materialization.js",
+      "git_blob_sha": "40db66b7d5e4b9e6e4931b6917bf71fab86b2cbe",
+      "media_type": "text/javascript",
+      "normative": false
+    },
+    {
+      "id": "example-c0-chat-a",
+      "role": "example",
+      "conformance": ["C0"],
+      "path": "proposals/ccrp/examples/c0-same-actor-chat-a.work-context.json",
+      "git_blob_sha": "cee02bf9a138c625375d9004ee2a83788cba4040",
+      "media_type": "application/json",
+      "normative": false
+    },
+    {
+      "id": "example-c0-chat-b",
+      "role": "example",
+      "conformance": ["C0"],
+      "path": "proposals/ccrp/examples/c0-same-actor-chat-b.work-context.json",
+      "git_blob_sha": "e78376582dea8f0d3b9bcc4bc89737cefe54d03e",
+      "media_type": "application/json",
+      "normative": false
+    },
+    {
+      "id": "example-c1-chat-a-exclusive",
+      "role": "example",
+      "conformance": ["C1"],
+      "path": "proposals/ccrp/examples/c1-chat-a-exclusive.operation-intent.json",
+      "git_blob_sha": "ad388a96ad6009277a5d7f606abd32ed02845961",
+      "media_type": "application/json",
+      "normative": false
+    },
+    {
+      "id": "example-c1-chat-b-exclusive",
+      "role": "example",
+      "conformance": ["C1"],
+      "path": "proposals/ccrp/examples/c1-chat-b-exclusive.operation-intent.json",
+      "git_blob_sha": "1f66ac3c72d299961bedac1fc7ed84c1237aaa33",
+      "media_type": "application/json",
+      "normative": false
+    },
+    {
+      "id": "example-c2-chat-a-superseded",
+      "role": "example",
+      "conformance": ["C2"],
+      "path": "proposals/ccrp/examples/c2-chat-a-superseded.execution-lease.json",
+      "git_blob_sha": "32cdb8e12bf063d099b9e68da1393fabc66a80d0",
+      "media_type": "application/json",
+      "normative": false
+    },
+    {
+      "id": "example-c2-chat-b-current",
+      "role": "example",
+      "conformance": ["C2"],
+      "path": "proposals/ccrp/examples/c2-chat-b-current.execution-lease.json",
+      "git_blob_sha": "029fdca6c1bc7d9a8363b8c69f3bd7e7cf6b6538",
+      "media_type": "application/json",
+      "normative": false
+    },
+    {
+      "id": "implementation-checkpoint",
+      "role": "historical_checkpoint",
+      "conformance": ["C0", "C1", "C2", "C3", "C4", "C5"],
+      "path": "proposals/ccrp/checkpoints/ccrp-v0.1-implementation.json",
+      "git_blob_sha": "6cc566bb5ca982d0fa8b2ea23c648df4da46f11d",
+      "media_type": "application/json",
+      "normative": false
+    },
+    {
+      "id": "workflow-ccrp-validation",
+      "role": "validation_workflow",
+      "conformance": ["C0", "C1", "C2", "C3", "C4", "C5"],
+      "path": ".github/workflows/ccrp-validation.yml",
+      "git_blob_sha": "d252f4bfb6b44ea1a8ae90b44672a4cc3721e95d",
+      "media_type": "application/yaml",
+      "normative": false
+    },
+    {
+      "id": "workflow-poai-ccrp-pre-materialization",
+      "role": "integration_validation_workflow",
+      "conformance": ["C5"],
+      "path": ".github/workflows/poai-ccrp-pre-materialization.yml",
+      "git_blob_sha": "7f67b4f14d8654f9630447a9b9b0a963cb299d0c",
+      "media_type": "application/yaml",
+      "normative": false
+    }
+  ],
+  "external_dependencies": [
+    {
+      "id": "poai-authority-core",
+      "role": "external_reference_dependency",
+      "path": "proposals/poai/authority/tools/authority-core.js",
+      "git_blob_sha": "ffbc27ec041466461b157bd211a2bf1c4781f039",
+      "media_type": "text/javascript"
+    },
+    {
+      "id": "poai-authority-verification-schema",
+      "role": "external_schema_dependency",
+      "path": "proposals/poai/authority/schema/authority-verification-result.schema.json",
+      "git_blob_sha": "c4d620f9408ca85ddacb69f592a64b048e798a70",
+      "media_type": "application/schema+json"
+    },
+    {
+      "id": "poai-materialization-core",
+      "role": "external_reference_dependency",
+      "path": "proposals/poai/materialization/tools/materialization-core.js",
+      "git_blob_sha": "ce53bad1a0c19c48c69493811639860c94b81243",
+      "media_type": "text/javascript"
+    },
+    {
+      "id": "poai-materialization-policy-schema",
+      "role": "external_schema_dependency",
+      "path": "proposals/poai/materialization/schema/materialization-policy.schema.json",
+      "git_blob_sha": "062069fa3d654fa474a09bb8148aeed043b2e759",
+      "media_type": "application/schema+json"
+    },
+    {
+      "id": "uu-aap-materialization-policy",
+      "role": "external_policy_dependency",
+      "path": "proposals/poai/materialization/policies/github/Matawaka.uu-aap.materialization-policy.json",
+      "git_blob_sha": "54c4aa2d83f0440e3b4e727116b2e8a2848ec5e2",
+      "media_type": "application/json"
+    }
+  ],
+  "non_claims": [
+    "factual_truth_certified",
+    "causal_proof_certified",
+    "legal_identity_verified",
+    "legal_authority_established",
+    "legal_responsibility_determined",
+    "moral_correctness_established",
+    "universal_canonicality_established",
+    "poai_v_conformance_established",
+    "materialization_event_recorded_by_release_manifest"
+  ]
+}
