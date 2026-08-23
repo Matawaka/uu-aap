@@ -1,0 +1,25 @@
+{
+  "artifact_type": "CCRPLiveCompatibleOperation",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#158",
+  "executor_label": "executor-a-chatgpt",
+  "operation_id": "urn:ccrp:experiment:compatible-convergence:operation:a",
+  "operation_class": "commutative_addition",
+  "observed_main_sha": "e8edaab1c3110bf8d7f496d7a0cb395b7828c9e2",
+  "baseline_binding": {
+    "path": "experiments/ccrp-v0.1/compatible-convergence/baseline.json",
+    "blob_sha": "cb832d1b9aef9c0eee3a26bfb7cfddbf5a023f75",
+    "logical_resource_id": "urn:ccrp:experiment:compatible-convergence:resource:1",
+    "baseline_generation": 0
+  },
+  "contribution": "alpha",
+  "claims": {
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  }
+}
