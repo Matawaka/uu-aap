@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-canonical-stewardship-handover-authorization-v0.4.json",
+  "title": "CHSPCanonicalStewardshipHandoverAuthorization v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "authorization_id", "project_id",
+    "candidate_id", "predecessor_steward_id", "predecessor_disposition_mode",
+    "v03_final_handover_assessment_sha256", "predecessor_disposition_sha256",
+    "v03_handover_sha256", "v03_handover_outcome_sha256",
+    "approval_set_sha256", "approval_sha256s", "authorizer_ids", "authorizer_domain_ids",
+    "authorized_action", "authorized_at", "expires_at", "nonce",
+    "authorization_sha256", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPCanonicalStewardshipHandoverAuthorization"},
+    "artifact_version": {"const": "0.4"},
+    "authorization_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "predecessor_disposition_mode": {"enum": ["acknowledged", "protocol_unavailability_attested"]},
+    "v03_final_handover_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "v03_handover_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "v03_handover_outcome_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "approval_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "approval_sha256s": {
+      "type": "array", "minItems": 2, "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    },
+    "authorizer_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "authorizer_domain_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "authorized_action": {"const": "record_protocol_canonical_stewardship_handover"},
+    "authorized_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "authorization_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "human_quorum_authorization_recorded",
+        "bounded_handover_recording_authorized",
+        "authorization_revocable", "authorization_expires",
+        "candidate_stewardship_effective", "execution_performed",
+        "canonical_successor_established", "repository_ownership_transferred",
+        "account_control_transferred", "canonical_origin_mutated",
+        "canonical_publication_executed", "kontur_activated",
+        "distributed_consensus_established", "legal_effect_established",
+        "universal_trust_established"
+      ],
+      "properties": {
+        "human_quorum_authorization_recorded": {"const": true},
+        "bounded_handover_recording_authorized": {"const": true},
+        "authorization_revocable": {"const": true},
+        "authorization_expires": {"const": true},
+        "candidate_stewardship_effective": {"const": false},
+        "execution_performed": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
