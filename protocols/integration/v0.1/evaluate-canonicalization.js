@@ -113,6 +113,8 @@ function validateObservationReceipt(receipt) {
   assert(receipt && typeof receipt === 'object', 'ObservationReceipt: required object');
   assert(receipt.artifact_type === 'ObservationReceipt', 'ObservationReceipt: artifact_type mismatch');
   assert(receipt.artifact_version === '0.1', 'ObservationReceipt: artifact_version mismatch');
+  assert(typeof receipt.observed_at === 'string' && Number.isFinite(Date.parse(receipt.observed_at)),
+    'ObservationReceipt: invalid observed_at');
   assert(receipt.observation_mode === 'git_object_database_readback',
     'ObservationReceipt: unsupported observation mode');
   assert(receipt.observation_source === 'local_git_object_database',
@@ -254,6 +256,9 @@ async function evaluateCanonicalization({
   validatePolicy(policy);
   validateRecognitionContext(context);
 
+  assert(Date.parse(context.evaluated_at) > Date.parse(observationReceipt.observed_at),
+    'CanonicalizationReceipt: canonicalization must be after observation');
+
   assert(observationReceipt.commit_receipt_ref === commitReceipt.receipt_id,
     'CanonicalizationReceipt: ObservationReceipt/CommitReceipt lineage substitution');
   assert(commitReceipt.commit_decision_ref === commitDecision.decision_id,
@@ -370,6 +375,7 @@ async function evaluateCanonicalization({
     },
     verification: {
       observation_predecessor_accepted: true,
+      canonicalization_after_observation: true,
       observation_matches_commit_receipt: true,
       commit_lineage_exact: true,
       decision_lineage_exact: true,
