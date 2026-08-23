@@ -1,0 +1,175 @@
+name: Outcome ResponsibilityTrace validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/outcome-responsibility-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/outcome-responsibility-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  outcome-responsibility:
+    name: Outcome / ResponsibilityTrace validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check Outcome ResponsibilityTrace JavaScript
+        run: |
+          node --check protocols/integration/v0.1/trace-responsibility.js
+          node --check protocols/integration/v0.1/test-outcome-responsibility.js
+
+      - name: Validate Outcome ResponsibilityTrace schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('protocols/integration/v0.1/outcome-responsibility.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: outcome-responsibility.schema.json')
+          PY
+
+      - name: Reproduce completed provenance and trace exact transition effect
+        run: |
+          node protocols/integration/v0.1/test-outcome-responsibility.js \
+            /tmp/responsibility-trace.json \
+            /tmp/outcome-observation.json \
+            /tmp/outcome-provenance-completion.json
+
+      - name: Validate generated OutcomeObservationReceipt and ResponsibilityTrace boundaries
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          schema = json.loads(Path('protocols/integration/v0.1/outcome-responsibility.schema.json').read_text(encoding='utf-8'))
+          trace = json.loads(Path('/tmp/responsibility-trace.json').read_text(encoding='utf-8'))
+          outcome = json.loads(Path('/tmp/outcome-observation.json').read_text(encoding='utf-8'))
+
+          trace_validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          trace_validator.validate(trace)
+
+          outcome_schema = {
+              '$schema': 'https://json-schema.org/draft/2020-12/schema',
+              '$defs': schema['$defs'],
+              '$ref': '#/$defs/outcomeObservationReceipt',
+          }
+          outcome_validator = Draft202012Validator(outcome_schema, format_checker=FormatChecker())
+          outcome_validator.validate(outcome)
+
+          assert outcome['effect_relation']['code'] == 'exact_state_transition_effect'
+          assert outcome['effect_relation']['establishes_exact_transition_effect'] is True
+          assert outcome['effect_relation']['establishes_external_consequence_causality'] is False
+          assert outcome['causal_assessment']['status'] == 'not_assessed_beyond_transition'
+          assert outcome['claims']['exact_transition_effect_observed'] is True
+          assert outcome['claims']['causal_proof_certified'] is False
+
+          assert trace['effect_relation'] == 'exact_state_transition_effect'
+          assert trace['causal_assessment']['status'] == 'not_assessed_beyond_transition'
+          assert trace['responsibility_attribution']['status'] == 'traceable_not_adjudicated'
+          assert trace['claims']['responsibility_chain_traceable'] is True
+          assert trace['claims']['responsibility_for_outcome_adjudicated'] is False
+          assert trace['scope_intersection'] == [trace['semantic_binding']['action']]
+
+          forbidden = [
+              'external_consequence_causality_established',
+              'causal_proof_certified',
+              'responsibility_for_outcome_adjudicated',
+              'legal_responsibility_determined',
+              'legal_effect_established',
+              'moral_blame_assigned',
+              'moral_correctness_established',
+              'truth_certified',
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'poai_successor_record_identity_inferred',
+              'universal_canonicality_established',
+              'poai_v_conformance_established',
+          ]
+          for key in forbidden:
+              assert trace['claims'][key] is False, key
+              bad = copy.deepcopy(trace)
+              bad['claims'][key] = True
+              try:
+                  trace_validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden ResponsibilityTrace overclaim: {key}')
+
+          for key in [
+              'external_consequence_causality_established', 'causal_proof_certified',
+              'responsibility_for_outcome_established', 'legal_responsibility_determined',
+              'legal_effect_established', 'moral_blame_assigned', 'truth_certified',
+              'remote_branch_or_ref_canonicality_established', 'poai_materialization_event_recorded',
+              'universal_canonicality_established', 'poai_v_conformance_established'
+          ]:
+              bad = copy.deepcopy(outcome)
+              bad['claims'][key] = True
+              try:
+                  outcome_validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden OutcomeObservation overclaim: {key}')
+
+          bad = copy.deepcopy(trace)
+          bad['responsibility_attribution']['responsibility_for_outcome_adjudicated'] = True
+          try:
+              trace_validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted responsibility adjudication overclaim')
+
+          bad = copy.deepcopy(outcome)
+          bad['causal_assessment']['establishes_causal_proof'] = True
+          try:
+              outcome_validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted causal proof upgrade')
+
+          print('Outcome effect is observed and responsibility chain is traceable; causality/liability/blame remain unadjudicated')
+          PY
+
+      - name: Confirm trace evaluation produced no repository mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
