@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/origin-provenance.schema.json",
+  "title": "UU-AAP Origin Provenance v0.1",
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "stage": {"type": "string", "minLength": 1},
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "contextFrame": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["$schema", "artifact_type", "artifact_version", "context_frame_id", "captured_at", "construction_mode", "target_scope", "base_revision", "source_contexts", "claims"],
+      "properties": {
+        "$schema": {"const": "./origin-provenance.schema.json#/$defs/contextFrame"},
+        "artifact_type": {"const": "ContextFrame"},
+        "artifact_version": {"const": "0.1"},
+        "context_frame_id": {"type": "string", "pattern": "^urn:uu-aap:context-frame:"},
+        "captured_at": {"type": "string", "format": "date-time"},
+        "construction_mode": {"const": "normalized_from_declared_machine_context"},
+        "target_scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "source_contexts": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["artifact_type", "artifact_ref", "digest"],
+            "properties": {
+              "artifact_type": {"const": "CCRPWorkContext"},
+              "artifact_ref": {"type": "string", "minLength": 1},
+              "digest": {"$ref": "#/$defs/digest"}
+            }
+          }
+        },
+        "claims": {
+          "type": "object", "additionalProperties": false,
+          "required": ["machine_context_frontier_established", "human_context_exhaustively_captured", "authority_established", "execution_admitted", "outcome_observed", "truth_certified"],
+          "properties": {
+            "machine_context_frontier_established": {"const": true},
+            "human_context_exhaustively_captured": {"const": false},
+            "authority_established": {"const": false},
+            "execution_admitted": {"const": false},
+            "outcome_observed": {"const": false},
+            "truth_certified": {"const": false}
+          }
+        }
+      }
+    },
+    "intentArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["$schema", "artifact_type", "artifact_version", "intent_id", "declared_at", "context_frame_ref", "context_frame_digest", "action", "target", "operation_ref", "base_revision", "purpose", "claims"],
+      "properties": {
+        "$schema": {"const": "./origin-provenance.schema.json#/$defs/intentArtifact"},
+        "artifact_type": {"const": "IntentArtifact"},
+        "artifact_version": {"const": "0.1"},
+        "intent_id": {"type": "string", "minLength": 1},
+        "declared_at": {"type": "string", "format": "date-time"},
+        "context_frame_ref": {"type": "string", "pattern": "^urn:uu-aap:context-frame:"},
+        "context_frame_digest": {"$ref": "#/$defs/digest"},
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "operation_ref": {"type": "string", "pattern": "^urn:ccrp:operation:"},
+        "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "purpose": {"const": "request_materialization_execution_subject_to_responsibility_authority_and_admission"},
+        "claims": {
+          "type": "object", "additionalProperties": false,
+          "required": ["intent_declared", "responsibility_accepted", "authority_established", "execution_admitted", "materialization_permitted", "outcome_observed", "truth_certified"],
+          "properties": {
+            "intent_declared": {"const": true},
+            "responsibility_accepted": {"const": false},
+            "authority_established": {"const": false},
+            "execution_admitted": {"const": false},
+            "materialization_permitted": {"const": false},
+            "outcome_observed": {"const": false},
+            "truth_certified": {"const": false}
+          }
+        }
+      }
+    },
+    "originEnvelope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["$schema", "artifact_type", "artifact_version", "origin_envelope_id", "recorded_at", "origin_mode", "context_frame_binding", "intent_binding", "operation_binding", "semantic_binding", "claims"],
+      "properties": {
+        "$schema": {"const": "./origin-provenance.schema.json#/$defs/originEnvelope"},
+        "artifact_type": {"const": "OriginEnvelope"},
+        "artifact_version": {"const": "0.1"},
+        "origin_envelope_id": {"type": "string", "pattern": "^urn:uu-aap:origin-envelope:"},
+        "recorded_at": {"type": "string", "format": "date-time"},
+        "origin_mode": {"const": "normalized_machine_semantic_origin"},
+        "context_frame_binding": {"$ref": "#/$defs/binding"},
+        "intent_binding": {"$ref": "#/$defs/binding"},
+        "operation_binding": {"$ref": "#/$defs/binding"},
+        "semantic_binding": {
+          "type": "object", "additionalProperties": false,
+          "required": ["action", "target", "operation_ref", "base_revision"],
+          "properties": {
+            "action": {"type": "string", "minLength": 1},
+            "target": {"type": "string", "minLength": 1},
+            "operation_ref": {"type": "string", "pattern": "^urn:ccrp:operation:"},
+            "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"}
+          }
+        },
+        "claims": {
+          "type": "object", "additionalProperties": false,
+          "required": ["context_frame_bound", "intent_bound", "operation_bound", "machine_semantic_origin_established", "human_cognitive_origin_established", "truth_certified", "causal_proof_certified"],
+          "properties": {
+            "context_frame_bound": {"const": true},
+            "intent_bound": {"const": true},
+            "operation_bound": {"const": true},
+            "machine_semantic_origin_established": {"const": true},
+            "human_cognitive_origin_established": {"const": false},
+            "truth_certified": {"const": false},
+            "causal_proof_certified": {"const": false}
+          }
+        }
+      }
+    },
+    "evidenceBundle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["$schema", "artifact_type", "artifact_version", "bundle_id", "captured_at", "decision_input_ref", "decision_input_digest", "decision_result_ref", "decision_result_digest", "operation", "upstream", "claims"],
+      "properties": {
+        "$schema": {"const": "./origin-provenance.schema.json#/$defs/evidenceBundle"},
+        "artifact_type": {"const": "IntegrationEvidenceBundle"},
+        "artifact_version": {"const": "0.1"},
+        "bundle_id": {"type": "string", "pattern": "^urn:uu-aap:integration-evidence-bundle:"},
+        "captured_at": {"type": "string", "format": "date-time"},
+        "decision_input_ref": {"type": "string", "minLength": 1},
+        "decision_input_digest": {"$ref": "#/$defs/digest"},
+        "decision_result_ref": {"type": "string", "minLength": 1},
+        "decision_result_digest": {"$ref": "#/$defs/digest"},
+        "operation": {"$ref": "#/$defs/exportedArtifact"},
+        "upstream": {
+          "type": "object", "additionalProperties": false,
+          "required": ["handoff_result", "handoff_offer", "handoff_acceptance", "authority_verification", "execution_admission", "pre_materialization"],
+          "properties": {
+            "handoff_result": {"$ref": "#/$defs/exportedArtifact"},
+            "handoff_offer": {"$ref": "#/$defs/exportedArtifact"},
+            "handoff_acceptance": {"$ref": "#/$defs/exportedArtifact"},
+            "authority_verification": {"$ref": "#/$defs/exportedArtifact"},
+            "execution_admission": {"$ref": "#/$defs/exportedArtifact"},
+            "pre_materialization": {"$ref": "#/$defs/exportedArtifact"}
+          }
+        },
+        "claims": {
+          "type": "object", "additionalProperties": false,
+          "required": ["same_decision_execution_captured", "all_upstream_evidence_artifact_bytes_exported", "reconstructed_equivalent_evidence_used"],
+          "properties": {
+            "same_decision_execution_captured": {"const": true},
+            "all_upstream_evidence_artifact_bytes_exported": {"const": true},
+            "reconstructed_equivalent_evidence_used": {"const": false}
+          }
+        }
+      }
+    },
+    "exportedArtifact": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_ref", "artifact_type", "digest", "artifact"],
+      "properties": {
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "artifact_type": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"},
+        "artifact": {"type": "object", "minProperties": 1}
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "artifact_type", "artifact_version", "completion_id", "completed_at", "bounded_closure_binding", "origin_envelope_binding", "origin_bindings", "upstream_evidence_bindings", "semantic_binding", "recognized_state", "verification", "claims"],
+  "properties": {
+    "$schema": {"const": "./origin-provenance.schema.json"},
+    "artifact_type": {"const": "ProvenanceCompletionReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "completion_id": {"type": "string", "pattern": "^urn:uu-aap:provenance-completion:"},
+    "completed_at": {"type": "string", "format": "date-time"},
+    "bounded_closure_binding": {"$ref": "#/$defs/binding"},
+    "origin_envelope_binding": {"$ref": "#/$defs/binding"},
+    "origin_bindings": {"type": "array", "minItems": 3, "maxItems": 3, "prefixItems": [{"$ref": "#/$defs/binding"}, {"$ref": "#/$defs/binding"}, {"$ref": "#/$defs/binding"}], "items": false},
+    "upstream_evidence_bindings": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"$ref": "#/$defs/binding"}},
+    "semantic_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
+      "properties": {
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "operation_ref": {"type": "string", "minLength": 1},
+        "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "responsible_party_id": {"type": "string", "minLength": 1},
+        "executor_implementation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "recognized_state": {
+      "type": "object", "additionalProperties": false,
+      "required": ["revision", "commit_sha", "tree_sha", "changed_paths", "changed_path_count", "canonicality_scope"],
+      "properties": {
+        "revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "changed_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "changed_path_count": {"type": "integer", "minimum": 1},
+        "canonicality_scope": {"type": "string", "minLength": 1}
+      }
+    },
+    "verification": {"type": "object", "additionalProperties": {"const": true}, "minProperties": 12},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["bounded_chain_preserved", "context_frame_provenance_established", "intent_provenance_established", "all_upstream_evidence_artifact_bytes_bound", "machine_semantic_origin_provenance_complete", "human_cognitive_origin_provenance_established", "policy_relative_canonicality_preserved", "remote_branch_or_ref_canonicality_established", "poai_materialization_event_recorded", "poai_successor_record_identity_inferred", "universal_canonicality_established", "truth_certified", "causal_proof_certified", "legal_responsibility_determined", "legal_effect_established", "moral_correctness_established", "poai_v_conformance_established"],
+      "properties": {
+        "bounded_chain_preserved": {"const": true},
+        "context_frame_provenance_established": {"const": true},
+        "intent_provenance_established": {"const": true},
+        "all_upstream_evidence_artifact_bytes_bound": {"const": true},
+        "machine_semantic_origin_provenance_complete": {"const": true},
+        "human_cognitive_origin_provenance_established": {"const": false},
+        "policy_relative_canonicality_preserved": {"const": true},
+        "remote_branch_or_ref_canonicality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "poai_successor_record_identity_inferred": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  }
+}
