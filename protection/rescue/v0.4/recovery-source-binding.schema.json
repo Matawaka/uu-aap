@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/recovery-source-binding-v0.4.json",
+  "title": "RecoverySourceBinding v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "source_id", "source_kind", "payload_sha256", "frontier_commit", "failure_domain_id", "verified", "claims"],
+  "properties": {
+    "artifact_type": {"const": "RecoverySourceBinding"},
+    "artifact_version": {"const": "0.4"},
+    "source_id": {"type": "string", "minLength": 1},
+    "source_kind": {"const": "git_bundle"},
+    "payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "frontier_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "failure_domain_id": {"type": "string", "minLength": 1},
+    "verified": {"const": true},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonical", "authority_transfer", "network_source", "truth_certified"],
+      "properties": {
+        "canonical": {"const": false},
+        "authority_transfer": {"const": false},
+        "network_source": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
