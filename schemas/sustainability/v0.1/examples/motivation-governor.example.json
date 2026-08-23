@@ -1,0 +1,36 @@
+{
+  "document_type": "uu-aap.motivation-governor-item",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "item_id": "idea-example-0001",
+  "title": "Investigate an optional future protocol extension",
+  "state": "deferred",
+  "created_at": "2026-08-23T16:45:00Z",
+  "commitment_created": false,
+  "active_capacity_cost": null,
+  "capacity_unit": null,
+  "dependencies": [],
+  "history": [
+    {
+      "from": null,
+      "to": "idea",
+      "at": "2026-08-23T16:45:00Z",
+      "reason": "Idea captured without creating an execution obligation.",
+      "attributable_actor": "human-supervised-project-context"
+    },
+    {
+      "from": "idea",
+      "to": "deferred",
+      "at": "2026-08-23T16:45:10Z",
+      "reason": "Preserve the idea while protecting current active work from unnecessary scope growth.",
+      "attributable_actor": "human-supervised-project-context"
+    }
+  ],
+  "closure": null,
+  "invariants": [
+    "idea_does_not_create_execution_duty",
+    "candidate_does_not_create_execution_duty",
+    "deferred_is_not_failed",
+    "capacity_limit_does_not_revoke_human_authority"
+  ]
+}
