@@ -41,6 +41,63 @@ jobs:
             /tmp/live-authority-verification.json \
             /tmp/live-published-grant-check.json
 
+      - name: Run CCRP C5 policy-integrated coordination vectors
+        run: |
+          node --check proposals/ccrp/tools/ccrp-c5.js
+          node --check proposals/ccrp/test-c5.js
+          node proposals/ccrp/test-c5.js \
+            /tmp/live-authority-verification.json \
+            /tmp/ccrp-c5-policy-coordination-result.json \
+            /tmp/ccrp-c5-policy-coordination-check.json
+
+      - name: Validate CCRP C5 policy coordination result schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('proposals/ccrp/schema/policy-coordination-result.c5.schema.json').read_text(encoding='utf-8'))
+          result = json.loads(Path('/tmp/ccrp-c5-policy-coordination-result.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(result)
+
+          assert result['decision'] == 'coordinated'
+          assert result['reason_codes'] == []
+          assert result['claims']['external_poai_authority_input_established'] is True
+          assert result['claims']['external_materialization_policy_input_established'] is True
+          assert result['claims']['context_admission_input_established'] is True
+          assert result['claims']['execution_admission_input_established'] is True
+          assert result['claims']['policy_integrated_coordination_established'] is True
+          assert result['claims']['execution_admitted'] is False
+          assert result['claims']['materialization_permitted'] is False
+          assert result['claims']['poai_authority_established'] is False
+          assert result['claims']['canonical_state_established'] is False
+          assert result['claims']['universal_canonicality_established'] is False
+          assert result['claims']['poai_v_conformance_established'] is False
+          print('VALID CCRP/C5 policy-integrated coordination result')
+          PY
+
+      - name: Preserve CCRP C5 assurance boundary
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          check = json.loads(Path('/tmp/ccrp-c5-policy-coordination-check.json').read_text(encoding='utf-8'))
+          claims = check['claims']
+          assert claims['policy_integrated_coordination_established'] is True
+          assert claims['source_axes_preserved_separately'] is True
+          assert claims['poai_authority_reissued_by_ccrp'] is False
+          assert claims['materialization_permitted_by_c5'] is False
+          assert claims['repository_mutation_performed'] is False
+          assert claims['canonical_state_established'] is False
+          assert claims['universal_canonicality_established'] is False
+          assert claims['poai_v_conformance_established'] is False
+          assert len(check['negative_vectors']) >= 9
+          assert all(vector['decision'] == 'not_coordinated' for vector in check['negative_vectors'])
+          print('C5 keeps authority, context, execution and materialization as separate axes')
+          PY
+
       - name: Run PoAI CCRP pre-materialization vectors
         run: |
           node --check proposals/ccrp/tools/pre-materialization-gate.js
@@ -111,15 +168,20 @@ jobs:
           print('Pre-materialization permit remains distinct from materialization/canonicality')
           PY
 
-      - name: Confirm bridge artifact is outside Genesis records
+      - name: Confirm integration artifacts are outside Genesis records
         run: |
-          if python proposals/poai/tools/validate_poai.py \
-            --schema proposals/poai/schema/poai-record.schema.json \
-            /tmp/poai-ccrp-pre-materialization-result.json; then
-            echo "ERROR: pre-materialization result was incorrectly accepted as a Genesis PoAI record"; exit 1
-          else
-            echo "Expected separation confirmed: pre-materialization result is not a Genesis PoAI record"
-          fi
+          for artifact in \
+            /tmp/ccrp-c5-policy-coordination-result.json \
+            /tmp/poai-ccrp-pre-materialization-result.json
+          do
+            if python proposals/poai/tools/validate_poai.py \
+              --schema proposals/poai/schema/poai-record.schema.json \
+              "$artifact"; then
+              echo "ERROR: integration artifact was incorrectly accepted as a Genesis PoAI record: $artifact"; exit 1
+            else
+              echo "Expected separation confirmed: $artifact is not a Genesis PoAI record"
+            fi
+          done
 
       - name: Confirm test performed no working-tree mutation
         run: git diff --exit-code
