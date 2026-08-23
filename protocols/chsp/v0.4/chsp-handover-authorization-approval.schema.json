@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-authorization-approval-v0.4.json",
+  "title": "CHSPHandoverAuthorizationApproval v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "approval_id", "project_id",
+    "candidate_id", "predecessor_steward_id",
+    "v03_final_handover_assessment_sha256", "predecessor_disposition_sha256",
+    "authorizer_id", "authorizer_domain_id", "authority_evidence_sha256",
+    "approved_at", "nonce", "confirmation_token", "approval_sha256", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverAuthorizationApproval"},
+    "artifact_version": {"const": "0.4"},
+    "approval_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "v03_final_handover_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authorizer_id": {"type": "string", "minLength": 1},
+    "authorizer_domain_id": {"type": "string", "minLength": 1},
+    "authority_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "approved_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "confirmation_token": {"const": "APPROVE_CHSP_CANONICAL_STEWARDSHIP_HANDOVER_AUTHORIZATION_ONLY"},
+    "approval_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "human_approval_recorded", "approval_bound_to_exact_assessment",
+        "approval_grants_stewardship_immediately", "domain_independence_proven",
+        "canonical_successor_established", "repository_ownership_transferred",
+        "canonical_origin_mutated", "canonical_publication_executed", "kontur_activated",
+        "legal_effect_established", "universal_trust_established"
+      ],
+      "properties": {
+        "human_approval_recorded": {"const": true},
+        "approval_bound_to_exact_assessment": {"const": true},
+        "approval_grants_stewardship_immediately": {"const": false},
+        "domain_independence_proven": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_effect_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
