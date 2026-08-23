@@ -7,7 +7,8 @@
   "required": [
     "$schema", "artifact_type", "artifact_version", "binding_receipt_id", "evaluated_at",
     "policy_binding", "expected_source_revision", "source_workflow_run", "source_artifact",
-    "bundle_bindings", "runtime_context", "evaluator_context", "decision", "claims"
+    "bundle_bindings", "historical_frontier_binding", "runtime_context", "evaluator_context",
+    "decision", "claims"
   ],
   "properties": {
     "$schema": {"type": "string"},
@@ -42,10 +43,7 @@
         "name": {"type": "string", "pattern": "^consequence-source-adapter-[0-9a-f]{40}$"},
         "size_in_bytes": {"type": "integer", "minimum": 1},
         "expired": {"const": false},
-        "archive_digest": {
-          "type": ["string", "null"],
-          "pattern": "^sha256:[0-9a-f]{64}$"
-        }
+        "archive_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
       }
     },
     "bundle_bindings": {
@@ -62,6 +60,7 @@
         "summary": {"$ref": "#/$defs/binding"}
       }
     },
+    "historical_frontier_binding": {"$ref": "#/$defs/binding"},
     "runtime_context": {
       "type": "object",
       "additionalProperties": false,
@@ -93,7 +92,8 @@
       "additionalProperties": false,
       "required": [
         "status", "policy_relative", "exact_push_run_verified", "exact_artifact_verified",
-        "bundle_integrity_verified", "main_bound_source_evidence_verified",
+        "bundle_integrity_verified", "historical_frontier_binding_consistency_verified",
+        "historical_frontier_bytes_reverified", "main_bound_source_evidence_verified",
         "source_may_be_presented_to_future_successor_policy", "candidate_binding_receipt",
         "main_bound_binding_receipt", "successor_append_may_proceed", "successor_append_executed",
         "requires_separate_successor_consumer_policy"
@@ -104,6 +104,8 @@
         "exact_push_run_verified": {"const": true},
         "exact_artifact_verified": {"const": true},
         "bundle_integrity_verified": {"const": true},
+        "historical_frontier_binding_consistency_verified": {"const": true},
+        "historical_frontier_bytes_reverified": {"const": false},
         "main_bound_source_evidence_verified": {"const": true},
         "source_may_be_presented_to_future_successor_policy": {"const": true},
         "candidate_binding_receipt": {"type": "boolean"},
@@ -122,22 +124,25 @@
       "additionalProperties": false,
       "required": [
         "main_binding_policy_applied", "exact_push_run_verified", "exact_artifact_verified",
-        "bundle_integrity_verified", "main_bound_source_evidence_verified", "stronger_claims_withheld",
-        "provider_identity_cryptographically_attested", "github_remote_truth_certified",
-        "new_external_consequence_observed", "consequence_truth_certified",
-        "generalized_external_consequence_causality_established", "causal_proof_certified",
-        "responsibility_for_consequence_attributed", "responsibility_for_outcome_adjudicated",
-        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
-        "moral_correctness_established", "truth_certified", "successor_append_may_proceed",
-        "successor_append_executed", "global_replay_protection_established",
-        "distributed_consensus_established", "poai_materialization_event_recorded",
-        "universal_canonicality_established"
+        "bundle_integrity_verified", "historical_frontier_binding_consistency_verified",
+        "historical_frontier_bytes_reverified", "main_bound_source_evidence_verified",
+        "stronger_claims_withheld", "provider_identity_cryptographically_attested",
+        "github_remote_truth_certified", "new_external_consequence_observed",
+        "consequence_truth_certified", "generalized_external_consequence_causality_established",
+        "causal_proof_certified", "responsibility_for_consequence_attributed",
+        "responsibility_for_outcome_adjudicated", "legal_liability_established",
+        "legal_effect_established", "moral_blame_assigned", "moral_correctness_established",
+        "truth_certified", "successor_append_may_proceed", "successor_append_executed",
+        "global_replay_protection_established", "distributed_consensus_established",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
       ],
       "properties": {
         "main_binding_policy_applied": {"const": true},
         "exact_push_run_verified": {"const": true},
         "exact_artifact_verified": {"const": true},
         "bundle_integrity_verified": {"const": true},
+        "historical_frontier_binding_consistency_verified": {"const": true},
+        "historical_frontier_bytes_reverified": {"const": false},
         "main_bound_source_evidence_verified": {"const": true},
         "stronger_claims_withheld": {"const": true},
         "provider_identity_cryptographically_attested": {"const": false},
