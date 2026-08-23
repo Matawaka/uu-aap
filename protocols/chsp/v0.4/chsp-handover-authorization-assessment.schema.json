@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-authorization-assessment-v0.4.json",
+  "title": "CHSPHandoverAuthorizationAssessment v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "assessment_id", "evaluated_at",
+    "project_id", "candidate_id", "predecessor_steward_id",
+    "v03_final_handover_assessment_sha256", "predecessor_disposition_sha256",
+    "policy_sha256", "authorization_sha256", "revocation_set_sha256",
+    "state", "decision", "metrics", "reasons", "assessment_sha256", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverAuthorizationAssessment"},
+    "artifact_version": {"const": "0.4"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "v03_final_handover_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authorization_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "revocation_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["authorization_invalid", "authorization_active", "authorization_revoked", "authorization_expired"]},
+    "decision": {"enum": ["reject_authorization", "bounded_handover_executor_may_be_requested", "do_not_execute_revoked_authorization", "renew_human_authorization_if_still_appropriate"]},
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "predecessor_disposition_mode", "approval_count", "authorizer_domains",
+        "source_assessment_age_days", "approval_spread_hours", "revocation_count",
+        "authorization_expired"
+      ],
+      "properties": {
+        "predecessor_disposition_mode": {"enum": ["acknowledged", "protocol_unavailability_attested"]},
+        "approval_count": {"type": "integer", "minimum": 0},
+        "authorizer_domains": {"type": "integer", "minimum": 0},
+        "source_assessment_age_days": {"type": "integer", "minimum": 0},
+        "approval_spread_hours": {"type": "integer", "minimum": 0},
+        "revocation_count": {"type": "integer", "minimum": 0},
+        "authorization_expired": {"type": "boolean"}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "policy_sufficiency_only", "authorization_validated",
+        "executor_invoked", "candidate_stewardship_effective",
+        "canonical_successor_established", "repository_ownership_transferred",
+        "account_control_transferred", "canonical_origin_mutated",
+        "canonical_publication_executed", "kontur_activated",
+        "distributed_consensus_established", "legal_effect_established",
+        "universal_trust_established"
+      ],
+      "properties": {
+        "policy_sufficiency_only": {"const": true},
+        "authorization_validated": {"type": "boolean"},
+        "executor_invoked": {"const": false},
+        "candidate_stewardship_effective": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}

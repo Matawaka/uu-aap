@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-authorization-revocation-v0.4.json",
+  "title": "CHSPHandoverAuthorizationRevocation v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "revocation_id", "project_id",
+    "candidate_id", "authorization_sha256", "mode", "actor_id",
+    "authority_evidence_sha256", "revoked_at", "reason_code",
+    "nonce", "revocation_sha256", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverAuthorizationRevocation"},
+    "artifact_version": {"const": "0.4"},
+    "revocation_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "authorization_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "mode": {"enum": ["authorizer_revocation", "candidate_withdrawal"]},
+    "actor_id": {"type": "string", "minLength": 1},
+    "authority_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "revoked_at": {"type": "string", "format": "date-time"},
+    "reason_code": {"enum": ["new_adverse_information", "process_integrity_concern", "authority_scope_concern", "candidate_withdrawal", "superseded_review_required", "other"]},
+    "nonce": {"type": "string", "minLength": 16},
+    "revocation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "revocation_recorded", "future_execution_blocked",
+        "original_authorization_erased", "canonical_state_mutated",
+        "repository_ownership_transferred", "canonical_origin_mutated",
+        "kontur_activated", "legal_effect_established", "truth_certified"
+      ],
+      "properties": {
+        "revocation_recorded": {"const": true},
+        "future_execution_blocked": {"const": true},
+        "original_authorization_erased": {"const": false},
+        "canonical_state_mutated": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}

@@ -9,6 +9,7 @@ Current development line:
 - [`v0.1/`](v0.1/) — foundation: candidate registration, observable evidence, reversible delegation, appeal-contour binding, transition safeguards, and succession-readiness assessment.
 - [`v0.2/`](v0.2/) — explicit human recognition, cooling/challenge windows, immutable progressive-authority envelopes, separate authority outcomes, revocation semantics, and staged A1→A4 succession review.
 - [`v0.3/`](v0.3/) — final human recognition, predecessor acknowledgement or protocol-unavailability alternative, final challenge contour, bounded non-exclusive dual-control handover, immutable handover outcome, and canonical-stewardship handover review eligibility.
+- [`v0.4/`](v0.4/) — human approval quorum, bounded canonical-stewardship handover authorization, authorization expiry, immutable authorizer revocation/candidate withdrawal, and executor-request eligibility without execution.
 
 Core invariants:
 
@@ -32,6 +33,10 @@ Core invariants:
 
 `positive handover outcome != canonical stewardship transfer`
 
+`handover authorization != handover execution`
+
+`protocol stewardship successor != repository/account owner`
+
 `human recognition != canonical publication`
 
-CHSP artifacts MUST NOT be interpreted as legal identity certification, psychological diagnosis, medical/legal incapacity determination, ownership adjudication, automatic authority transfer, KONTUR activation, or universal governance authority.
+CHSP artifacts MUST NOT be interpreted as legal identity certification, psychological diagnosis, medical/legal incapacity determination, ownership adjudication, automatic authority transfer, repository/account ownership transfer, KONTUR activation, or universal governance authority.
