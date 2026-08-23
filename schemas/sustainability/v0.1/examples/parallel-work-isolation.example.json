@@ -1,0 +1,28 @@
+{
+  "document_type": "uu-aap.parallel-work-isolation",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "branch": "parallel/sustainability-backlog-v0.1",
+  "base_sha": "89b26161312a120b03c874968245331391c3e107",
+  "allowed_change_types": ["add"],
+  "allowed_path_prefixes": [
+    "docs/PARALLEL-SUSTAINABILITY-",
+    "schemas/sustainability/v0.1/"
+  ],
+  "forbidden_path_prefixes": [
+    ".github/",
+    "protocols/chsp/",
+    "protocols/ccrp/",
+    "protection/checkpoints/",
+    "releases/"
+  ],
+  "main_ref_update_allowed": false,
+  "pull_request_creation_allowed": false,
+  "workflow_activation_allowed": false,
+  "tag_or_release_mutation_allowed": false,
+  "authority_effect": "none",
+  "notes": [
+    "The side-track may accumulate additive, non-normative artifacts only.",
+    "Integration into main requires a separate fresh observation and explicit human decision."
+  ]
+}
