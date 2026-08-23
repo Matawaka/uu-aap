@@ -1,0 +1,214 @@
+name: KONTUR Human Activation Review v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "server/kontur/v0.1/HUMAN_ACTIVATION_REVIEW.md"
+      - "server/kontur/v0.1/human-activation-review.js"
+      - "server/kontur/v0.1/test-human-activation-review.js"
+      - "server/kontur/v0.1/kontur-human-activation-review-*.schema.json"
+      - ".github/workflows/kontur-human-activation-review-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  review:
+    name: Human activation review boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout full history read-only
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check "jsonschema==4.25.1"
+
+      - name: Check review code and schemas
+        run: |
+          node --check server/kontur/v0.1/human-activation-review.js
+          node --check server/kontur/v0.1/test-human-activation-review.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          for name in [
+              'kontur-human-activation-review-packet.schema.json',
+              'kontur-human-activation-review-decision.schema.json',
+          ]:
+              schema = json.loads((Path('server/kontur/v0.1') / name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              print('VALID schema:', name)
+          PY
+
+      - name: Run human activation review fail-closed tests
+        run: node server/kontur/v0.1/test-human-activation-review.js
+
+      - name: Keep audit hardening green
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          node server/kontur/v0.1/test-audit-revision-gate.js
+          python schemas/architecture/v0.1/tests/test_architecture_convergence_readiness_v01.py
+          node schemas/architecture/v0.1/tests/test_project_readiness_checkpoint_v01.js
+
+      - name: Reproduce current-main readiness for review packet
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node server/kontur/v0.1/test-readiness-aggregator.js /tmp/kontur-human-review
+
+      - name: Emit current-main frontier verification
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          REVIEW_EVENT_NAME: ${{ github.event_name }}
+          REVIEW_REF: ${{ github.ref }}
+          REVIEW_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          CHECKOUT_SHA="$(git rev-parse HEAD)"
+          node server/kontur/v0.1/verify-current-main-frontier.js \
+            /tmp/kontur-human-review/activation-frontier.json \
+            /tmp/kontur-human-review/current-main-frontier-verification.json \
+            "$REVIEW_EVENT_NAME" "$REVIEW_REF" "$REVIEW_GITHUB_SHA" "$CHECKOUT_SHA"
+
+      - name: Verify convergence predecessor and build project checkpoint
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          REVIEW_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          PREDECESSOR="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json').read_text())['canonical_predecessor_sha'])
+          PY
+          )"
+          git cat-file -e "${PREDECESSOR}^{commit}"
+          git merge-base --is-ancestor "$PREDECESSOR" "$REVIEW_GITHUB_SHA"
+          python schemas/architecture/v0.1/architecture_convergence_assessor.py \
+            schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json \
+            --repo-root . \
+            --observed-predecessor-sha "$PREDECESSOR" \
+            --assessed-revision-sha "$REVIEW_GITHUB_SHA" \
+            --predecessor-object-exists true \
+            --predecessor-is-ancestor true
+          node - <<'NODE'
+          const fs = require('fs');
+          const Builder = require('./schemas/architecture/v0.1/build-project-readiness-checkpoint.js');
+          (async () => {
+            const convergenceManifest = JSON.parse(fs.readFileSync('schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json', 'utf8'));
+            const currentMainVerification = JSON.parse(fs.readFileSync('/tmp/kontur-human-review/current-main-frontier-verification.json', 'utf8'));
+            const checkpoint = await Builder.buildProjectReadinessCheckpoint({
+              convergenceManifest,
+              currentMainVerification,
+              gitRevision: `git:${process.env.REVIEW_GITHUB_SHA}`,
+              recordedAt: new Date().toISOString()
+            });
+            fs.writeFileSync('/tmp/kontur-human-review/project-readiness-checkpoint.json', JSON.stringify(checkpoint, null, 2) + '\n');
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
+      - name: Build current-main human activation review packet
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          REVIEW_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const Review = require('./server/kontur/v0.1/human-activation-review.js');
+          (async () => {
+            const projectCheckpoint = JSON.parse(fs.readFileSync('/tmp/kontur-human-review/project-readiness-checkpoint.json', 'utf8'));
+            const currentMainVerification = JSON.parse(fs.readFileSync('/tmp/kontur-human-review/current-main-frontier-verification.json', 'utf8'));
+            const packet = await Review.buildReviewPacket({
+              projectCheckpoint,
+              currentMainVerification,
+              gitRevision: `git:${process.env.REVIEW_GITHUB_SHA}`,
+              preparedAt: new Date().toISOString()
+            });
+            fs.writeFileSync('/tmp/kontur-human-review/human-activation-review-packet.json', JSON.stringify(packet, null, 2) + '\n');
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
+      - name: Validate production review packet and non-effects
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          REVIEW_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-human-review')
+          schema = json.loads((root / 'kontur-human-activation-review-packet.schema.json').read_text(encoding='utf-8'))
+          packet = json.loads((out / 'human-activation-review-packet.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(packet)
+          assert packet['git_revision'] == 'git:' + os.environ['REVIEW_GITHUB_SHA']
+          assert packet['review_state'] == 'ready_for_human_activation_review'
+          assert packet['safe_next_step'] == 'human_review_decision_only'
+          assert packet['claims']['human_activation_review_ready'] is True
+          for key in [
+              'human_review_decision_recorded', 'activation_intent_preparation_authorized',
+              'activation_intent_created', 'preflight_requested', 'execute_command_created',
+              'kernel_activated', 'responsibility_state_created', 'responsibility_accepted',
+              'execution_authority_granted', 'permission_expansion_authorized',
+              'permission_bypass_authorized', 'repository_ownership_transferred',
+              'canonical_origin_mutated', 'legal_authority_established', 'truth_certified',
+              'distributed_consensus_established'
+          ]:
+              assert packet['claims'][key] is False, key
+          print('KONTUR human activation review packet ready; no human decision or activation emitted')
+          PY
+
+      - name: Assert review tooling is local-only and cannot execute activation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('server/kontur/v0.1/human-activation-review.js').read_text(encoding='utf-8')
+          forbidden = [
+              'child_' + 'process', "require('" + 'http' + "')", "require('" + 'https' + "')",
+              "require('" + 'net' + "')", 'activation-' + 'executor.js', 'activation-' + 'preflight.js',
+              'responsibility-' + 'kernel.js', 'responsibility-' + 'ledger.js'
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS: review tooling has no activation/network/process surface')
+          PY
+
+      - name: Assert workflow remains read-only and never emits a human decision
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/kontur-human-activation-review-v0.1-validation.yml').read_text(encoding='utf-8')
+          forbidden = [
+              'contents:' + ' write', 'pull_request' + '_target', 'secrets' + '.',
+              'activation-' + 'executor.js', 'activation-' + 'preflight.js',
+              'buildReview' + 'Decision', 'git ' + 'push'
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          assert 'permissions:\n  contents: read' in text
+          print('PASS: workflow is read-only and cannot create a human review decision')
+          PY
+
+      - name: Confirm checkout was not mutated
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Upload current-main human activation review evidence
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: kontur-human-activation-review-${{ github.sha }}
+          path: /tmp/kontur-human-review/
+          if-no-files-found: error
+          retention-days: 30
