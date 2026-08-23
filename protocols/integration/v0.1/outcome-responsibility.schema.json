@@ -1,0 +1,247 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/outcome-responsibility.schema.json",
+  "title": "UU-AAP Outcome / ResponsibilityTrace v0.1",
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "effectObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "git_object_sha"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "git_object_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "outcomeObservationReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "$schema", "artifact_type", "artifact_version", "outcome_observation_id", "observed_at",
+        "completion_binding", "predecessor_bindings", "semantic_binding", "observed_state", "effect_relation",
+        "causal_assessment", "verification", "claims"
+      ],
+      "properties": {
+        "$schema": {"const": "./outcome-responsibility.schema.json"},
+        "artifact_type": {"const": "OutcomeObservationReceipt"},
+        "artifact_version": {"const": "0.1"},
+        "outcome_observation_id": {"type": "string", "pattern": "^urn:uu-aap:outcome-observation:"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "completion_binding": {"$ref": "#/$defs/binding"},
+        "predecessor_bindings": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["commit_receipt", "observation_receipt"],
+          "properties": {
+            "commit_receipt": {"$ref": "#/$defs/binding"},
+            "observation_receipt": {"$ref": "#/$defs/binding"}
+          }
+        },
+        "semantic_binding": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
+          "properties": {
+            "action": {"type": "string", "minLength": 1},
+            "target": {"type": "string", "minLength": 1},
+            "operation_ref": {"type": "string", "minLength": 1},
+            "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+            "responsible_party_id": {"type": "string", "minLength": 1},
+            "executor_implementation_id": {"type": "string", "minLength": 1}
+          }
+        },
+        "observed_state": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["observation_source", "observation_scope", "revision", "commit_sha", "tree_sha", "changed_paths", "effect_objects"],
+          "properties": {
+            "observation_source": {"const": "local_git_object_database"},
+            "observation_scope": {"const": "exact_local_git_transition_effect"},
+            "revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+            "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "changed_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "effect_objects": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/effectObject"}}
+          }
+        },
+        "effect_relation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["code", "establishes_exact_transition_effect", "establishes_external_consequence_causality"],
+          "properties": {
+            "code": {"const": "exact_state_transition_effect"},
+            "establishes_exact_transition_effect": {"const": true},
+            "establishes_external_consequence_causality": {"const": false}
+          }
+        },
+        "causal_assessment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "alternative_causes_assessed", "establishes_causal_proof"],
+          "properties": {
+            "status": {"const": "not_assessed_beyond_transition"},
+            "alternative_causes_assessed": {"const": false},
+            "establishes_causal_proof": {"const": false}
+          }
+        },
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["completion_exact", "predecessor_lineage_exact", "successor_state_exact", "changed_effect_exact", "later_readback_performed"],
+          "properties": {
+            "completion_exact": {"const": true},
+            "predecessor_lineage_exact": {"const": true},
+            "successor_state_exact": {"const": true},
+            "changed_effect_exact": {"const": true},
+            "later_readback_performed": {"const": true}
+          }
+        },
+        "claims": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "exact_transition_effect_observed", "outcome_observed", "external_consequence_observed",
+            "external_consequence_causality_established", "causal_proof_certified", "responsibility_for_outcome_established",
+            "legal_responsibility_determined", "legal_effect_established", "moral_blame_assigned", "truth_certified",
+            "remote_branch_or_ref_canonicality_established", "poai_materialization_event_recorded", "universal_canonicality_established", "poai_v_conformance_established"
+          ],
+          "properties": {
+            "exact_transition_effect_observed": {"const": true},
+            "outcome_observed": {"const": true},
+            "external_consequence_observed": {"const": false},
+            "external_consequence_causality_established": {"const": false},
+            "causal_proof_certified": {"const": false},
+            "responsibility_for_outcome_established": {"const": false},
+            "legal_responsibility_determined": {"const": false},
+            "legal_effect_established": {"const": false},
+            "moral_blame_assigned": {"const": false},
+            "truth_certified": {"const": false},
+            "remote_branch_or_ref_canonicality_established": {"const": false},
+            "poai_materialization_event_recorded": {"const": false},
+            "universal_canonicality_established": {"const": false},
+            "poai_v_conformance_established": {"const": false}
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "trace_id", "traced_at", "completion_binding",
+    "outcome_observation_binding", "responsibility_evidence_bindings", "semantic_binding", "accepted_responsibility_scope",
+    "scope_intersection", "effect_relation", "causal_assessment", "responsibility_attribution", "verification", "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./outcome-responsibility.schema.json"},
+    "artifact_type": {"const": "ResponsibilityTrace"},
+    "artifact_version": {"const": "0.1"},
+    "trace_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-trace:"},
+    "traced_at": {"type": "string", "format": "date-time"},
+    "completion_binding": {"$ref": "#/$defs/binding"},
+    "outcome_observation_binding": {"$ref": "#/$defs/binding"},
+    "responsibility_evidence_bindings": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {"$ref": "#/$defs/binding"}
+    },
+    "semantic_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
+      "properties": {
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "operation_ref": {"type": "string", "minLength": 1},
+        "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "responsible_party_id": {"type": "string", "minLength": 1},
+        "executor_implementation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "accepted_responsibility_scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "scope_intersection": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "string", "minLength": 1}},
+    "effect_relation": {"const": "exact_state_transition_effect"},
+    "causal_assessment": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "external_consequence_model_present", "establishes_causal_proof"],
+      "properties": {
+        "status": {"const": "not_assessed_beyond_transition"},
+        "external_consequence_model_present": {"const": false},
+        "establishes_causal_proof": {"const": false}
+      }
+    },
+    "responsibility_attribution": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "accepted_scope_preserved", "responsibility_for_outcome_adjudicated", "legal_liability_established", "moral_blame_assigned"],
+      "properties": {
+        "status": {"const": "traceable_not_adjudicated"},
+        "accepted_scope_preserved": {"const": true},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "moral_blame_assigned": {"const": false}
+      }
+    },
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["completion_exact", "outcome_observation_exact", "responsibility_evidence_exact", "semantic_binding_exact", "accepted_scope_exact", "originating_action_in_accepted_scope", "assurance_not_upgraded"],
+      "properties": {
+        "completion_exact": {"const": true},
+        "outcome_observation_exact": {"const": true},
+        "responsibility_evidence_exact": {"const": true},
+        "semantic_binding_exact": {"const": true},
+        "accepted_scope_exact": {"const": true},
+        "originating_action_in_accepted_scope": {"const": true},
+        "assurance_not_upgraded": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "provenance_completion_preserved", "exact_transition_effect_observed", "responsibility_chain_traceable",
+        "responsible_party_execution_context_bound", "accepted_responsibility_scope_preserved",
+        "external_consequence_causality_established", "causal_proof_certified", "responsibility_for_outcome_adjudicated",
+        "legal_responsibility_determined", "legal_effect_established", "moral_blame_assigned", "moral_correctness_established",
+        "truth_certified", "remote_branch_or_ref_canonicality_established", "poai_materialization_event_recorded",
+        "poai_successor_record_identity_inferred", "universal_canonicality_established", "poai_v_conformance_established"
+      ],
+      "properties": {
+        "provenance_completion_preserved": {"const": true},
+        "exact_transition_effect_observed": {"const": true},
+        "responsibility_chain_traceable": {"const": true},
+        "responsible_party_execution_context_bound": {"const": true},
+        "accepted_responsibility_scope_preserved": {"const": true},
+        "external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "remote_branch_or_ref_canonicality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "poai_successor_record_identity_inferred": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  }
+}
