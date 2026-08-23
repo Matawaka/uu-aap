@@ -1,0 +1,35 @@
+{
+  "document_type": "uu-aap.inactivity-resilience-checkpoint",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "checkpoint_id": "inactivity-resilience-2026-08-23-001",
+  "created_at": "2026-08-23T16:50:00Z",
+  "observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "recoverable_state_ref": "schemas/sustainability/v0.1/examples/project-recovery-checkpoint.example.json",
+  "open_work_refs": [
+    "parallel/sustainability-backlog-v0.1"
+  ],
+  "resume_requires_fresh_observation": true,
+  "inactivity_creates_consent": false,
+  "inactivity_creates_abandonment": false,
+  "inactivity_preserves_external_authorization": false,
+  "automatic_resume_allowed": false,
+  "safe_resume_modes": [
+    "observe-only",
+    "validate-only",
+    "prepare-only"
+  ],
+  "resume_checks": [
+    "reobserve_main",
+    "recheck_open_pull_requests",
+    "recheck_external_state",
+    "revalidate_time_bounded_authorizations",
+    "reconcile_duplicate_realization",
+    "confirm_current_human_intent"
+  ],
+  "authority_effect": "none",
+  "notes": [
+    "The project may remain safely inactive without treating lack of activity as failure or consent.",
+    "Any previously time-bounded or state-bounded external authorization must be independently revalidated after inactivity."
+  ]
+}
