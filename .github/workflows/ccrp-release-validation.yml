@@ -1,0 +1,34 @@
+name: CCRP release binding validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/ccrp/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/ccrp-release-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/ccrp/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/ccrp-release-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-release-binding:
+    name: CCRP release binding validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate CCRP v0.1 release bindings
+        run: node protocols/ccrp/v0.1/validate-release.js
