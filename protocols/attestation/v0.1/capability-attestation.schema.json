@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/attestation/v0.1/capability-attestation.schema.json",
+  "title": "Protocol Capability Attestation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema","artifact_type","artifact_version","attestation_id","scope","subject","protocol_binding","dependency_artifacts","setup_evidence","attested_conformance_levels","test_evidence","verification_policy","non_claims"],
+  "properties": {
+    "$schema": {"const": "../capability-attestation.schema.json"},
+    "artifact_type": {"const": "ProtocolCapabilityAttestation"},
+    "artifact_version": {"const": "0.1"},
+    "attestation_id": {"type": "string", "minLength": 1},
+    "scope": {"const": "repository_scoped_reproducible_conformance"},
+    "subject": {"$ref": "#/$defs/subject"},
+    "protocol_binding": {"$ref": "#/$defs/protocolBinding"},
+    "dependency_artifacts": {"type": "array", "items": {"$ref": "#/$defs/artifactBinding"}},
+    "setup_evidence": {"type": "array", "items": {"$ref": "#/$defs/setupEvidence"}},
+    "attested_conformance_levels": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["C0","C1","C2","C3","C4","C5"]}},
+    "test_evidence": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/testEvidence"}},
+    "verification_policy": {"$ref": "#/$defs/verificationPolicy"},
+    "non_claims": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  },
+  "$defs": {
+    "sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "safePath": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"},
+    "tmpJson": {"type": "string", "pattern": "^/tmp/[A-Za-z0-9._-]+\\.json$"},
+    "artifactBinding": {"type": "object", "additionalProperties": false, "required": ["path","git_blob_sha"], "properties": {"path": {"$ref": "#/$defs/safePath"}, "git_blob_sha": {"$ref": "#/$defs/sha1"}}},
+    "subject": {"type": "object", "additionalProperties": false, "required": ["subject_id","kind","repository","artifact_set"], "properties": {"subject_id": {"type": "string", "minLength": 1}, "kind": {"const": "repository_reference_implementation"}, "repository": {"const": "github:Matawaka/uu-aap"}, "artifact_set": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifactBinding"}}}},
+    "protocolBinding": {"type": "object", "additionalProperties": false, "required": ["registry_id","protocol_id","version","logical_uri","release_tag","release_commit","release_manifest_path","release_manifest_git_blob_sha"], "properties": {"registry_id": {"const": "urn:uu-aap:protocol-registry:v0.1"}, "protocol_id": {"const": "CCRP"}, "version": {"const": "0.1"}, "logical_uri": {"const": "urn:uu-aap:protocol:ccrp:0.1"}, "release_tag": {"const": "poai-ccrp-v0.1"}, "release_commit": {"$ref": "#/$defs/sha1"}, "release_manifest_path": {"$ref": "#/$defs/safePath"}, "release_manifest_git_blob_sha": {"$ref": "#/$defs/sha1"}}},
+    "testRunner": {"type": "object", "additionalProperties": false, "required": ["executable","args"], "properties": {"executable": {"const": "node"}, "args": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"$ref": "#/$defs/safePath"}}}},
+    "setupRunner": {"type": "object", "additionalProperties": false, "required": ["executable","args"], "properties": {"executable": {"const": "node"}, "args": {"type": "array", "prefixItems": [{"$ref": "#/$defs/safePath"},{"$ref": "#/$defs/tmpJson"},{"$ref": "#/$defs/tmpJson"}], "items": false, "minItems": 3, "maxItems": 3}}},
+    "setupEvidence": {"type": "object", "additionalProperties": false, "required": ["level","harness_artifacts","runner","expected_exit_code"], "properties": {"level": {"enum": ["C0","C1","C2","C3","C4","C5"]}, "harness_artifacts": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/artifactBinding"}}, "runner": {"$ref": "#/$defs/setupRunner"}, "expected_exit_code": {"const": 0}}},
+    "testEvidence": {"type": "object", "additionalProperties": false, "required": ["level","test_path","git_blob_sha","runner","expected_exit_code"], "properties": {"level": {"enum": ["C0","C1","C2","C3","C4","C5"]}, "test_path": {"$ref": "#/$defs/safePath"}, "git_blob_sha": {"$ref": "#/$defs/sha1"}, "runner": {"$ref": "#/$defs/testRunner"}, "expected_exit_code": {"const": 0}}},
+    "verificationPolicy": {"type": "object", "additionalProperties": false, "required": ["rerun_required","implementation_blob_match_required","dependency_blob_match_required","setup_harness_blob_match_required","test_blob_match_required","release_manifest_membership_required","command_binding"], "properties": {"rerun_required": {"const": true}, "implementation_blob_match_required": {"const": true}, "dependency_blob_match_required": {"const": true}, "setup_harness_blob_match_required": {"const": true}, "test_blob_match_required": {"const": true}, "release_manifest_membership_required": {"const": true}, "command_binding": {"const": "node_bound_paths_only"}}}
+  }
+}
