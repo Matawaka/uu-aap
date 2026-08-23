@@ -1,0 +1,80 @@
+{
+  "artifact_type": "CCRPLiveHumanResolutionInstruction",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#170",
+  "frozen_predecessor": {
+    "tag": "poai-ccrp-exp-v0.1",
+    "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+  },
+  "setup_binding": {
+    "main_sha": "8941e29315fcee8d0728635fb11336ee2ee1184f",
+    "baseline_path": "experiments/ccrp-v0.1/human-resolution/baseline.json",
+    "baseline_blob_sha": "6d1e4464d5f2372ab4990d11c4a270c73dc90768"
+  },
+  "predecessor_conflict_binding": {
+    "issue": "Matawaka/uu-aap#165",
+    "result_path": "experiments/ccrp-v0.1/semantic-conflict/result.json",
+    "result_blob_sha": "416df58dff502ee7816b34af853139a553c3c202",
+    "semantic_result_sha256": "d0ca939f6806eaa7113ad204694bdf4342cc46b9a14866d862ed710a3a7e2c5d",
+    "decision_slot": "routing_mode",
+    "conflicting_operations": [
+      {
+        "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+        "source_blob_sha": "5e9926ca17b177d484675fefe2c72250ab5002c7",
+        "proposed_value": "direct"
+      },
+      {
+        "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+        "source_blob_sha": "c74a1f567d0a17c4498735d1f1eff0085c796779",
+        "proposed_value": "relay"
+      }
+    ],
+    "predecessor_outcome": "HOLD",
+    "predecessor_conflict_resolved": false
+  },
+  "instruction_observation": {
+    "instruction_source": "interactive_chat_user_message",
+    "instruction_text_exact": "direct",
+    "observed_after_setup_merge": true,
+    "human_resolution_instruction_observed": true,
+    "human_identity_cryptographically_attested": false
+  },
+  "selection": {
+    "decision_slot": "routing_mode",
+    "allowed_values": [
+      "direct",
+      "relay"
+    ],
+    "selected_value": "direct",
+    "non_selected_value": "relay",
+    "selected_operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+    "non_selected_operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b"
+  },
+  "resolution_state": {
+    "resolution_instruction_recorded": true,
+    "resolution_artifact_present": true,
+    "resolution_verification_pending": true,
+    "conflict_resolved": false,
+    "automatic_winner_selection": false,
+    "source_operations_rewritten": false,
+    "predecessor_conflict_evidence_rewritten": false
+  },
+  "claims": {
+    "protocol_definition": false,
+    "human_identity_cryptographically_attested": false,
+    "universal_human_authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "causality_established": false,
+    "legal_authority_established": false,
+    "legal_effect_established": false,
+    "responsibility_established": false,
+    "moral_correctness_established": false,
+    "universal_canonicality_established": false,
+    "poai_v_conformance_established": false,
+    "universal_ccrp_correctness_established": false
+  }
+}
