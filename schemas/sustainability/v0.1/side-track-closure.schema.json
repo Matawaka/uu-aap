@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/side-track-closure.schema.json",
+  "title": "UU-AAP Side-Track Closure v0.1",
+  "description": "Non-normative draft for ending or freezing isolated parallel work without requiring main-line action, deleting provenance, or creating automatic future execution rights.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "side_track",
+    "closure_state",
+    "reason",
+    "historical_material_preserved",
+    "main_line_action_required",
+    "automatic_reactivation_allowed",
+    "automatic_integration_allowed",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.side-track-closure"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "side_track": {"type": "string", "minLength": 1},
+    "closure_state": {
+      "enum": ["frozen", "archived", "superseded", "rejected", "completed-independent"]
+    },
+    "reason": {"type": "string", "minLength": 1},
+    "closed_at": {"type": ["string", "null"], "format": "date-time"},
+    "last_observed_main_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+    "disposition_ref": {"type": ["string", "null"]},
+    "archive_ref": {"type": ["string", "null"]},
+    "historical_material_preserved": {"const": true},
+    "main_line_action_required": {"const": false},
+    "automatic_reactivation_allowed": {"const": false},
+    "automatic_integration_allowed": {"const": false},
+    "branch_deletion_required": {"const": false},
+    "reentry_requires": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "fresh_main_observation",
+          "fresh_semantic_overlap_review",
+          "fresh_path_overlap_review",
+          "explicit_human_decision"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
