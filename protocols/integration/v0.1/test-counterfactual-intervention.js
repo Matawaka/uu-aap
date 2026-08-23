@@ -185,7 +185,7 @@ async function main() {
     const changed = clone(scenarios);
     changed[2].kind = 'suppress_originating_execution';
     await buildCounterfactualInterventionAssessment({ ...args, scenarios: changed });
-  }, /exactly one alternative_reproduction_mechanism/));
+  }, /exactly one alternative_reproduction_mechanism|exactly one suppress_originating_execution/));
 
   vectors.push(await reject('baseline_intervention_substitution', async () => {
     const changed = clone(scenarios);
