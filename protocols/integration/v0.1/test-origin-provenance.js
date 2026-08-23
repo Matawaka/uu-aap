@@ -111,7 +111,7 @@ async function main() {
     const a = fresh();
     a.contextFrame.source_contexts[0].digest.value = '0'.repeat(64);
     await completeProvenance(a);
-  }, /OriginEnvelope ContextFrame binding mismatch/));
+  }, /Intent\/ContextFrame digest substitution/));
 
   vectors.push(await expectReject('intent_context_ref_substitution', async () => {
     const a = fresh();
