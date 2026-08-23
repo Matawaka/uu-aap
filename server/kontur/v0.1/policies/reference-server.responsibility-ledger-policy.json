@@ -1,0 +1,28 @@
+{
+  "$schema": "../kontur-responsibility-ledger-policy.schema.json",
+  "artifact_type": "KONTURResponsibilityLedgerPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:kontur:responsibility-ledger-policy:reference-server:1",
+  "policy_version": 1,
+  "ledger_id": "urn:uu-aap:kontur:responsibility-ledger:reference-primary",
+  "system_id": "urn:uu-aap:kontur:system:server-responsibility",
+  "server_instance_id": "urn:uu-aap:kontur:server:reference-primary",
+  "storage_model": "immutable_entry_files",
+  "atomic_publication": "temp_fsync_rename_dir_fsync",
+  "head_authority": "validated_entry_chain",
+  "replay_scope": "ledger_history",
+  "corruption_mode": "fail_closed",
+  "claims": {
+    "mutable_head_authoritative": false,
+    "temporary_file_authoritative": false,
+    "ledger_relative_replay_protection_defined": true,
+    "distributed_consensus_established": false,
+    "legal_responsibility_determined": false,
+    "legal_effect_established": false,
+    "moral_blame_assigned": false,
+    "truth_certified": false,
+    "universal_causality_established": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}
