@@ -1,0 +1,30 @@
+{
+  "$schema": "https://uu-aap.example/schema/rescue-execution-policy-v0.4.json",
+  "artifact_type": "RescueExecutionPolicy",
+  "artifact_version": "0.4",
+  "project_id": "Matawaka/uu-aap",
+  "allowed_scope": "reconstruct_noncanonical_git_copy",
+  "allowed_source_kinds": ["git_bundle"],
+  "requirements": {
+    "capsule_verified": true,
+    "assessment_rescue_eligible": true,
+    "authorization_unexpired": true,
+    "exact_assessment_binding": true,
+    "selected_source_binding": true,
+    "local_regular_payload": true,
+    "destination_absent": true,
+    "consume_nonce_before_execution": true,
+    "bare_repository_only": true,
+    "no_git_remotes": true,
+    "git_fsck_full": true,
+    "expected_frontier_present": true,
+    "network_prohibited": true
+  },
+  "claims": {
+    "automatic_failover_enabled": false,
+    "canonical_succession_enabled": false,
+    "ownership_transfer_enabled": false,
+    "kontur_activation_enabled": false,
+    "distributed_consensus_established": false
+  }
+}
