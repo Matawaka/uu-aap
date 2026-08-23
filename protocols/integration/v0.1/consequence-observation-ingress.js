@@ -42,7 +42,27 @@ function assertPolicy(policy){
   assert(!hasScalarKey(policy),'scalar fields prohibited');
 }
 
-function frontierHead(frontierEntry){assert(frontierEntry&&FRONTIER_TYPES.has(frontierEntry.artifact_type),'unsupported frontier artifact type');assert(frontierEntry.entry_id&&frontierEntry.resulting_event_head,'frontier entry incomplete');return frontierEntry.resulting_event_head;}
+function frontierHead(frontierEntry){
+  assert(frontierEntry&&FRONTIER_TYPES.has(frontierEntry.artifact_type),'unsupported frontier artifact type');
+  assert(frontierEntry.entry_id&&frontierEntry.resulting_event_head,'frontier entry incomplete');
+  return frontierEntry.resulting_event_head;
+}
+function frontierEvent(frontierEntry){
+  frontierHead(frontierEntry);
+  let event=null;
+  if(frontierEntry.artifact_type==='ResponsibilityEventSuccessorLedgerEntry'){
+    event=frontierEntry.validation_bundle&&frontierEntry.validation_bundle.successor_append_receipt&&frontierEntry.validation_bundle.successor_append_receipt.appended_event;
+  }else if(frontierEntry.artifact_type==='ResponsibilityEventAppendLedgerEntry'){
+    event=frontierEntry.validation_bundle&&frontierEntry.validation_bundle.append_receipt&&frontierEntry.validation_bundle.append_receipt.appended_event;
+  }
+  assert(event&&event.semantic_binding&&event.effect_frontier,'frontier embedded event context missing');
+  assert(event.event_id===frontierEntry.resulting_event_head.event_id&&event.event_digest&&event.event_digest.value===frontierEntry.resulting_event_head.event_digest.value,'frontier embedded event/head mismatch');
+  return event;
+}
+function frontierContext(frontierEntry){
+  const event=frontierEvent(frontierEntry);
+  return {semantic_frontier:event.semantic_binding,effect_frontier:event.effect_frontier};
+}
 
 async function validateClaim({claim,frontierEntry,policy}){
   assertPolicy(policy);
@@ -63,6 +83,9 @@ async function validateClaim({claim,frontierEntry,policy}){
   assert(Array.isArray(claim.evidence_refs)&&new Set(claim.evidence_refs).size===claim.evidence_refs.length,'duplicate evidence refs');
   if(claim.claimed_status==='observed'){assert(typeof claim.observation_time==='string','observed claim requires observation_time');assert(claim.evidence_refs.length>0,'observed claim requires evidence refs');}
   assert(canonicalEqual(claim.responsibility_event_head,frontierHead(frontierEntry)),'responsibility event frontier substitution');
+  const context=frontierContext(frontierEntry);
+  assert(canonicalEqual(claim.semantic_frontier,context.semantic_frontier),'semantic frontier substitution');
+  assert(canonicalEqual(claim.effect_frontier,context.effect_frontier),'effect frontier substitution');
   assertFalseClaims({...claim.claims,new_external_consequence_observed:false,global_replay_protection_established:false,distributed_consensus_established:false,poai_materialization_event_recorded:false,universal_canonicality_established:false},'claim');
   const expectedIdHash=await Binding.sha256Hex(Binding.utf8Bytes(`${claim.environment}|${claim.claimant.declaration}|${claim.claimant.claimant_id||''}|${claim.consequence_class}|${claim.consequence_subject_ref}|${claim.claimed_status}|${claim.claimed_at}|${claim.responsibility_event_head.event_digest.value}`));
   assert(claim.claim_id===`urn:uu-aap:consequence-observation-claim:${expectedIdHash.slice(0,24)}`,'claim ID substitution');
@@ -71,6 +94,7 @@ async function validateClaim({claim,frontierEntry,policy}){
 
 async function buildClaim({frontierEntry,environment='live',claimantDeclaration='undisclosed',claimantId=null,consequenceClass,consequenceSubjectRef,claimedStatus,claimedAt,observationTime=null,evidenceCutoff,observationMethod='unknown',evidenceRefs=[]}){
   const head=clone(frontierHead(frontierEntry));
+  const context=frontierContext(frontierEntry);
   const seed=`${environment}|${claimantDeclaration}|${claimantId||''}|${consequenceClass}|${consequenceSubjectRef}|${claimedStatus}|${claimedAt}|${head.event_digest.value}`;
   const idHash=await Binding.sha256Hex(Binding.utf8Bytes(seed));
   return {
@@ -78,7 +102,8 @@ async function buildClaim({frontierEntry,environment='live',claimantDeclaration=
     claim_id:`urn:uu-aap:consequence-observation-claim:${idHash.slice(0,24)}`,environment,
     claimant:{declaration:claimantDeclaration,claimant_id:claimantDeclaration==='undisclosed'?null:claimantId},
     consequence_class:consequenceClass,consequence_subject_ref:consequenceSubjectRef,claimed_status:claimedStatus,claimed_at:claimedAt,
-    observation_time:observationTime,evidence_cutoff:evidenceCutoff,observation_method:observationMethod,evidence_refs:[...evidenceRefs],responsibility_event_head:head,
+    observation_time:observationTime,evidence_cutoff:evidenceCutoff,observation_method:observationMethod,evidence_refs:[...evidenceRefs],
+    responsibility_event_head:head,semantic_frontier:clone(context.semantic_frontier),effect_frontier:clone(context.effect_frontier),
     claims:{consequence_truth_certified:false,generalized_external_consequence_causality_established:false,causal_proof_certified:false,responsibility_for_consequence_attributed:false,responsibility_for_outcome_adjudicated:false,legal_liability_established:false,legal_effect_established:false,moral_blame_assigned:false,truth_certified:false}
   };
 }
@@ -105,6 +130,9 @@ async function validateIngressReceipt({receipt,policy,claim,frontierEntry}){
   assert(sameBinding(receipt.claim_binding,b.claimBinding),'claim binding substitution');
   assert(sameBinding(receipt.frontier_binding,b.frontierBinding),'frontier binding substitution');
   assert(canonicalEqual(receipt.responsibility_event_head,frontierHead(frontierEntry)),'receipt frontier substitution');
+  const context=frontierContext(frontierEntry);
+  assert(canonicalEqual(receipt.semantic_frontier,context.semantic_frontier),'receipt semantic frontier substitution');
+  assert(canonicalEqual(receipt.effect_frontier,context.effect_frontier),'receipt effect frontier substitution');
   assert(canonicalEqual(receipt.source_declaration,{environment:claim.environment,claimant_declaration:claim.claimant.declaration,claimant_id:claim.claimant.claimant_id,claimed_status:claim.claimed_status}),'source declaration substitution');
   assert(receipt.verification&&Object.values(receipt.verification).every(v=>v===true),'verification boundary weakened');
   for(const k of ['consequence_observation_claim_well_formed','claim_provenance_bound','observation_horizon_bound','responsibility_event_frontier_bound','ingress_accepted'])assert(receipt.claims&&receipt.claims[k]===true,`positive claim ${k} missing`);
@@ -118,12 +146,14 @@ async function validateIngressReceipt({receipt,policy,claim,frontierEntry}){
 async function buildIngressReceipt({policy,claim,frontierEntry,receivedAt}){
   await validateClaim({claim,frontierEntry,policy});
   const b=await expectedBindings({policy,claim,frontierEntry});
+  const context=frontierContext(frontierEntry);
   const idSeed=`${b.policyBinding.digest.value}|${b.claimBinding.digest.value}|${b.frontierBinding.digest.value}|${receivedAt}`;
   const idHash=await Binding.sha256Hex(Binding.utf8Bytes(idSeed));
   const receipt={
     $schema:'./consequence-observation-ingress-receipt.schema.json',artifact_type:'ConsequenceObservationIngressReceipt',artifact_version:'0.1',
     receipt_id:`urn:uu-aap:consequence-observation-ingress-receipt:${idHash.slice(0,24)}`,received_at:receivedAt,decision:'accepted_non_certifying_claim',
     policy_binding:b.policyBinding,claim_binding:b.claimBinding,frontier_binding:b.frontierBinding,responsibility_event_head:clone(frontierHead(frontierEntry)),
+    semantic_frontier:clone(context.semantic_frontier),effect_frontier:clone(context.effect_frontier),
     source_declaration:{environment:claim.environment,claimant_declaration:claim.claimant.declaration,claimant_id:claim.claimant.claimant_id,claimed_status:claim.claimed_status},
     verification:{policy_exact:true,claim_exact:true,frontier_exact:true,semantic_frontier_exact:true,effect_frontier_exact:true,chronology_valid:true,evidence_requirements_valid:true,non_certifying_boundary_preserved:true},
     claims:{consequence_observation_claim_well_formed:true,claim_provenance_bound:true,observation_horizon_bound:true,responsibility_event_frontier_bound:true,ingress_accepted:true,new_external_consequence_observed:false,consequence_truth_certified:false,generalized_external_consequence_causality_established:false,causal_proof_certified:false,responsibility_for_consequence_attributed:false,responsibility_for_outcome_adjudicated:false,legal_liability_established:false,legal_effect_established:false,moral_blame_assigned:false,truth_certified:false,global_replay_protection_established:false,distributed_consensus_established:false,poai_materialization_event_recorded:false,universal_canonicality_established:false}
@@ -132,4 +162,4 @@ async function buildIngressReceipt({policy,claim,frontierEntry,receivedAt}){
   return receipt;
 }
 
-module.exports={assertPolicy,validateClaim,buildClaim,validateIngressReceipt,buildIngressReceipt,digestJson,binding};
+module.exports={assertPolicy,frontierHead,frontierContext,validateClaim,buildClaim,validateIngressReceipt,buildIngressReceipt,digestJson,binding};
