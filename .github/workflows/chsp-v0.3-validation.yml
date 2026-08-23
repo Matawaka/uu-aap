@@ -1,0 +1,102 @@
+name: CHSP v0.3 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v0.3-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate CHSP v0.3 Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protocols/chsp/v0.3/chsp_v03.py
+          python3 -m py_compile protocols/chsp/v0.3/test_chsp_v03.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.3')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise CHSP v0.3 final recognition and dual-control boundaries
+        run: python3 protocols/chsp/v0.3/test_chsp_v03.py
+
+      - name: Keep CHSP v0.2 green
+        run: python3 protocols/chsp/v0.2/test_chsp_v02.py
+
+      - name: Keep CHSP v0.1 green
+        run: python3 protocols/chsp/v0.1/test_chsp.py
+
+      - name: Keep Human Canonical Recognition v0.6 green
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert CHSP v0.3 has no network or Git execution surface
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('protocols/chsp/v0.3/chsp_v03.py')
+          tree = ast.parse(path.read_text(encoding='utf-8'))
+          forbidden_roots = {'socket', 'subprocess', 'requests', 'urllib', 'http', 'ftplib'}
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  for alias in node.names:
+                      if alias.name.split('.')[0] in forbidden_roots:
+                          raise SystemExit(f'forbidden import: {alias.name}')
+              if isinstance(node, ast.ImportFrom) and (node.module or '').split('.')[0] in forbidden_roots:
+                  raise SystemExit(f'forbidden import: {node.module}')
+          text = path.read_text(encoding='utf-8').lower()
+          forbidden = ['git push', 'git fetch', 'git clone', 'authorization:', 'bearer ', 'requests.post', 'requests.put', 'requests.patch', 'requests.delete']
+          for token in forbidden:
+              if token in text:
+                  raise SystemExit(f'forbidden execution token: {token}')
+          print('local-only guard: PASS')
+          PY
+
+      - name: Assert no automatic stewardship transfer path exists
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.3')
+          policy = json.loads((root / 'reference.chsp-final-handover-policy.json').read_text())
+          assert policy['requirements']['automatic_stewardship_transfer'] is False
+          assert policy['requirements']['automatic_canonical_publication'] is False
+          assert policy['requirements']['automatic_kontur_activation'] is False
+          assessment_schema = json.loads((root / 'chsp-final-handover-assessment.schema.json').read_text())
+          props = assessment_schema['properties']['claims']['properties']
+          for key in ['automatic_stewardship_transfer','exclusive_successor_authority','canonical_successor_established','canonical_origin_mutated','canonical_publication_executed','ownership_transferred','account_control_transferred','kontur_activated','legal_incapacity_certified','medical_incapacity_certified','distributed_consensus_established','universal_trust_established']:
+              assert props[key]['const'] is False
+          print('authority boundary guard: PASS')
+          PY
