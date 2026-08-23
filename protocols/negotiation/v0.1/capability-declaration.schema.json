@@ -16,7 +16,7 @@
     "non_claims"
   ],
   "properties": {
-    "$schema": {"const": "./capability-declaration.schema.json"},
+    "$schema": {"enum": ["./capability-declaration.schema.json", "../capability-declaration.schema.json"]},
     "artifact_type": {"const": "ProtocolCapabilityDeclaration"},
     "artifact_version": {"const": "0.1"},
     "declaration_id": {"type": "string", "minLength": 1},
