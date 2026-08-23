@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-execution-assessment-v1.0.json",
+  "title":"CHSPExternalExecutionAssessment v1.0",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","assessment_id","evaluated_at","project_id","steward_id","execution_receipt_sha256","state","decision","reasons","assessment_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalExecutionAssessment"},"artifact_version":{"const":"1.0"},"assessment_id":{"type":"string","minLength":1},"evaluated_at":{"type":"string","format":"date-time"},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},"execution_receipt_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "state":{"enum":["execution_rejected","execution_verified_no_change","execution_verified_changed","execution_failed","execution_uncertain"]},"decision":{"enum":["do_not_record_external_effect","external_transition_effect_may_be_recorded","investigate_provider_state_before_further_action"]},"reasons":{"type":"array","items":{"type":"string"}},"assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["policy_sufficiency_only","exact_external_transition_verified","external_effect_recordable","repository_ownership_transferred","account_control_transferred","predecessor_access_removed","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_ownership_adjudicated","global_provider_state_proven"],"properties":{"policy_sufficiency_only":{"const":true},"exact_external_transition_verified":{"type":"boolean"},"external_effect_recordable":{"type":"boolean"},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"predecessor_access_removed":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false},"legal_ownership_adjudicated":{"const":false},"global_provider_state_proven":{"const":false}}}
+  }
+}
