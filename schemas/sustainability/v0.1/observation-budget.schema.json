@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/observation-budget.schema.json",
+  "title": "UU-AAP Parallel Observation Budget v0.1",
+  "description": "Non-normative draft limiting how an isolated side-track observes a moving main line so observation does not become polling pressure, hidden monitoring, or a dependency on continuous external state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "scope",
+    "continuous_polling_allowed",
+    "background_monitoring_allowed",
+    "mutation_during_observation_allowed",
+    "observation_triggers",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.parallel-observation-budget"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "scope": {"const": "parallel-side-track-only"},
+    "continuous_polling_allowed": {"const": false},
+    "background_monitoring_allowed": {"const": false},
+    "mutation_during_observation_allowed": {"const": false},
+    "max_external_observations_per_work_cycle": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "observation_triggers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "explicit_user_continuation",
+          "before_new_parallel_design_block",
+          "before_convergence_review",
+          "before_reentry_assessment",
+          "when_main_state_is_materially_uncertain"
+        ]
+      }
+    },
+    "permitted_observations": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "main_head",
+          "active_pull_request_metadata",
+          "changed_path_surface",
+          "branch_relation",
+          "relevant_public_protocol_text"
+        ]
+      }
+    },
+    "prohibited_behaviors": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "continuous_polling",
+          "background_watch",
+          "observe_then_auto_merge",
+          "observe_then_auto_comment",
+          "observe_then_auto_review",
+          "observe_then_auto_execute",
+          "treat_no_change_as_implicit_permission"
+        ]
+      }
+    },
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
