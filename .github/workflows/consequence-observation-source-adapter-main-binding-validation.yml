@@ -185,8 +185,16 @@ jobs:
           print('VALID downloaded main source-adapter bundle schemas')
           PY
 
-      - name: Reconstruct exact predecessor frontier for independent binding check
-        run: node protocols/integration/v0.1/test-responsibility-event-successor-append.js
+      - name: Reconstruct exact historical predecessor frontier for independent binding check
+        run: |
+          rm -rf /tmp/source-frontier-checkout
+          git worktree add --detach /tmp/source-frontier-checkout "$EXPECTED_SOURCE_SHA"
+          (
+            cd /tmp/source-frontier-checkout
+            test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+            node protocols/integration/v0.1/test-responsibility-event-successor-append.js
+          )
+          git worktree remove --force /tmp/source-frontier-checkout
 
       - name: Build and test main-bound source-adapter evidence receipt
         run: |
