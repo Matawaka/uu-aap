@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/observer-topology-assessment-v0.3.json",
+  "title": "ObserverTopologyAssessment v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "assessment_id", "evaluated_at", "policy_sha256", "attestation_set_sha256", "metrics", "decision", "reasons", "assessment_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "ObserverTopologyAssessment"},
+    "artifact_version": {"const": "0.3"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "attestation_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attested_observers", "observer_domains", "failure_domains", "custodian_domains", "attestor_domains", "provider_domains", "network_domains", "evidence_classes", "expired_attestations", "invalid_attestations"],
+      "properties": {
+        "attested_observers": {"type": "integer", "minimum": 0},
+        "observer_domains": {"type": "integer", "minimum": 0},
+        "failure_domains": {"type": "integer", "minimum": 0},
+        "custodian_domains": {"type": "integer", "minimum": 0},
+        "attestor_domains": {"type": "integer", "minimum": 0},
+        "provider_domains": {"type": "integer", "minimum": 0},
+        "network_domains": {"type": "integer", "minimum": 0},
+        "evidence_classes": {"type": "integer", "minimum": 0},
+        "expired_attestations": {"type": "integer", "minimum": 0},
+        "invalid_attestations": {"type": "integer", "minimum": 0}
+      }
+    },
+    "decision": {"enum": ["independence_sufficient_for_policy", "independence_insufficient_for_policy"]},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["independence_sufficient_for_policy", "universal_physical_independence_proven", "loss_confirmed", "rescue_eligible", "execution_authority_granted", "canonical_successor_established"],
+      "properties": {
+        "independence_sufficient_for_policy": {"type": "boolean"},
+        "universal_physical_independence_proven": {"const": false},
+        "loss_confirmed": {"const": false},
+        "rescue_eligible": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "canonical_successor_established": {"const": false}
+      }
+    }
+  }
+}
