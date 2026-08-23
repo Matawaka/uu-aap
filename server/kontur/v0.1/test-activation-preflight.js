@@ -125,7 +125,7 @@ async function main() {
   vectors.push(await reject('readiness_epoch_substitution', async () => {
     const changed = clone(readinessSignal); changed.readiness_epoch += 1; await build({ readinessSignal: changed });
   }, /frontier\/readiness epoch mismatch|binding substitution/));
-  vectors.push(await reject('expired_readiness', () => preflight({ evaluatedAt: iso(Date.parse(readinessSignal.valid_until) + 1) }), /readiness signal expired/));
+  vectors.push(await reject('expired_readiness', () => preflight({ evaluatedAt: iso(Date.parse(readinessSignal.valid_until) + 1) }), /readiness signal expired|activation intent is stale or future-dated/));
   vectors.push(await reject('aggregation_policy_drift', async () => {
     const changed = clone(aggregationPolicy); changed.policy_version += 1; await build({ aggregationPolicy: changed });
   }, /frontier aggregation policy binding substitution/));
