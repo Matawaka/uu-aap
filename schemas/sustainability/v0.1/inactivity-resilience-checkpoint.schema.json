@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/inactivity-resilience-checkpoint.schema.json",
+  "title": "UU-AAP Inactivity Resilience Checkpoint v0.1",
+  "description": "Non-normative draft for preserving a safe project resume point across periods of human inactivity without interpreting inactivity as consent, abandonment, approval, or continued external authorization validity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "checkpoint_id",
+    "created_at",
+    "observed_main_sha",
+    "resume_requires_fresh_observation",
+    "inactivity_creates_consent",
+    "inactivity_creates_abandonment",
+    "inactivity_preserves_external_authorization",
+    "automatic_resume_allowed",
+    "safe_resume_modes",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.inactivity-resilience-checkpoint"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "checkpoint_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "recoverable_state_ref": {"type": ["string", "null"]},
+    "open_work_refs": {"type": "array", "items": {"type": "string"}},
+    "resume_requires_fresh_observation": {"const": true},
+    "inactivity_creates_consent": {"const": false},
+    "inactivity_creates_abandonment": {"const": false},
+    "inactivity_preserves_external_authorization": {"const": false},
+    "automatic_resume_allowed": {"const": false},
+    "safe_resume_modes": {
+      "type": "array",
+      "items": {"enum": ["observe-only", "validate-only", "prepare-only"]},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "resume_checks": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "reobserve_main",
+          "recheck_open_pull_requests",
+          "recheck_external_state",
+          "revalidate_time_bounded_authorizations",
+          "reconcile_duplicate_realization",
+          "confirm_current_human_intent"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
