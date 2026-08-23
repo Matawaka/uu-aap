@@ -1,0 +1,74 @@
+{
+  "artifact_type": "UUAAPProductProtectionCheckpoint",
+  "artifact_version": "0.1",
+  "checkpoint_id": "urn:uu-aap:checkpoint:product-provenance-responsibility:v0.1",
+  "repository": "Matawaka/uu-aap",
+  "canonical_repository_url": "https://github.com/Matawaka/uu-aap",
+  "checkpoint_scope": "repository-scoped-product-provenance-and-responsibility",
+  "protection_source_commit": "58917b3466650627373cb9ac5b6c528f50f8d81b",
+  "initial_proposer_editor": {
+    "name": "Kuznetsov Dmitrii Olegovich",
+    "name_cyrillic": "Кузнецов Дмитрий Олегович",
+    "github": "Matawaka"
+  },
+  "bound_artifacts": [
+    {
+      "path": "NOTICE.md",
+      "git_blob_sha1": "db0421a3fe70e8c9942562c25e6ad70200b85722",
+      "role": "canonical-origin-attribution-and-anti-impersonation-notice"
+    },
+    {
+      "path": "CITATION.cff",
+      "git_blob_sha1": "ae466c1784b50cc0916f2d3a9c0e6618941147f9",
+      "role": "machine-readable-project-citation"
+    },
+    {
+      "path": ".github/CODEOWNERS",
+      "git_blob_sha1": "2a83d74583549145dbde1406da41ce92fdecbd24",
+      "role": "repository-scoped-review-ownership"
+    },
+    {
+      "path": "RESPONSIBILITY.md",
+      "git_blob_sha1": "f71dd1920157d4137f1e3a1ab270bcdfc873e61f",
+      "role": "responsibility-boundary-record"
+    }
+  ],
+  "preserved_predecessor_checkpoints": [
+    {
+      "tag": "poai-authority-exp-v0.1",
+      "commit": "2424e61846fd262f9c01ccc406931683d3c6e616"
+    },
+    {
+      "tag": "poai-ccrp-exp-v0.1",
+      "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+    }
+  ],
+  "intended_protected_tag": "uu-aap-product-protection-v0.1",
+  "invariants": [
+    "copy != canonical origin",
+    "fork != canonical successor",
+    "attribution != legal ownership adjudication",
+    "repository control != universal authority",
+    "merge authority != authorship of every contribution",
+    "AI assistance != responsibility transfer",
+    "responsibility requires explicit attributable action",
+    "provenance preserved != truth certified"
+  ],
+  "licensing_state": {
+    "license_file": "LICENSE.md",
+    "finalized_by_this_checkpoint": false,
+    "note": "This checkpoint does not change or finalize repository licensing terms."
+  },
+  "claims": {
+    "legal_identity_established": false,
+    "copyright_ownership_adjudicated": false,
+    "legal_authority_established": false,
+    "legal_effect_established": false,
+    "universal_authority_established": false,
+    "universal_canonicality_established": false,
+    "truth_certified": false,
+    "causality_established": false,
+    "responsibility_for_third_party_actions_established": false,
+    "poai_v_conformance_established": false
+  }
+}
