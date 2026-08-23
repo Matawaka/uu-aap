@@ -38,6 +38,26 @@ candidate frontier != canonical main frontier
 
 Only a successful run whose checkout revision is the exact canonical `main` revision may be treated as the current repository frontier evidence for that revision.
 
+### Interpretation of `canonical_frontier_bound`
+
+The existing frontier artifact contains the claim:
+
+```text
+canonical_frontier_bound = true
+```
+
+That claim means the frontier is deterministically bound to the exact checkout revision under the frontier contract. It MUST NOT, by itself, be interpreted as proof that the checkout is the repository's current canonical `main`.
+
+Current-main status requires external event/ref agreement as well:
+
+```text
+workflow event == push
+AND workflow ref == refs/heads/main
+AND frontier.git_revision == git:<current main SHA>
+```
+
+A pull-request merge-ref may therefore produce a valid candidate frontier with `canonical_frontier_bound=true` while still remaining non-canonical for current-main activation consideration.
+
 ## Freshness boundary
 
 The newest successful frontier is current only while its `git_revision` equals the repository's current canonical `main` commit.
