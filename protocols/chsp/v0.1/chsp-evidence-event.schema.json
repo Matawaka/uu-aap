@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-evidence-event-v0.1.json",
+  "title": "CHSPEvidenceEvent v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "event_id", "project_id", "candidate_id", "observed_at",
+    "observer_id", "observer_domain_id", "observer_is_candidate", "evidence_class", "finding",
+    "resolution", "scenario_id", "evidence_payload_sha256", "event_sha256", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPEvidenceEvent"},
+    "artifact_version": {"const": "0.1"},
+    "event_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "observer_id": {"type": "string", "minLength": 1},
+    "observer_domain_id": {"type": "string", "minLength": 1},
+    "observer_is_candidate": {"const": false},
+    "evidence_class": {
+      "enum": [
+        "protocol_comprehension", "boundary_respect", "conflict_of_interest_disclosure",
+        "challenged_decision_response", "uncertainty_handling", "reversibility_preservation",
+        "appeal_preservation", "operational_stewardship"
+      ]
+    },
+    "finding": {"enum": ["supportive", "adverse", "indeterminate"]},
+    "resolution": {"enum": ["unresolved", "resolved_upheld", "resolved_remediated", "not_applicable"]},
+    "scenario_id": {"type": "string", "minLength": 1},
+    "evidence_payload_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "event_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observable_event_recorded", "independent_domain_declared", "domain_independence_proven", "trust_established", "authority_granted", "truth_certified"],
+      "properties": {
+        "observable_event_recorded": {"const": true},
+        "independent_domain_declared": {"const": true},
+        "domain_independence_proven": {"const": false},
+        "trust_established": {"const": false},
+        "authority_granted": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
