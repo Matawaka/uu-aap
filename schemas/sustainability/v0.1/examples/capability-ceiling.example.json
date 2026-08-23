@@ -1,0 +1,54 @@
+{
+  "document_type": "uu-aap.capability-ceiling",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "component_id": "example.parallel-sustainability-worker",
+  "issued_at": "2026-08-23T16:35:00Z",
+  "issued_by": "example-human-authorizer",
+  "authorization_event_id": "example-only-not-an-operational-authorization",
+  "predecessor_ceiling_ref": null,
+  "allowed_capabilities": [
+    {
+      "capability": "repository.read",
+      "scope": [
+        "Matawaka/uu-aap"
+      ],
+      "external_effect": false,
+      "constraints": [
+        "read-only observation does not imply authority to mutate observed resources"
+      ]
+    },
+    {
+      "capability": "repository.branch_draft_write",
+      "scope": [
+        "Matawaka/uu-aap:refs/heads/parallel/sustainability-backlog-v0.1"
+      ],
+      "external_effect": true,
+      "constraints": [
+        "no direct main mutation",
+        "no tag or checkpoint mutation",
+        "no workflow mutation",
+        "no active CHSP/CCRP implementation mutation",
+        "no KONTUR activation",
+        "no merge authority implied"
+      ]
+    }
+  ],
+  "forbidden_escalation_behaviors": [
+    "request_additional_permission_without_new_human_authorization_event",
+    "infer_permission_from_prior_unrelated_authorization",
+    "route_around_denied_permission",
+    "delegate_to_gain_broader_permission",
+    "treat_inactivity_as_consent",
+    "treat_delay_as_approval",
+    "reinterpret_abort_as_pause",
+    "reuse_stale_authorization_for_mutable_external_state"
+  ],
+  "expansion_requires_new_authorization": true,
+  "expires_at": null,
+  "revocation_ref": null,
+  "notes": [
+    "Example fixture only. It is not an operational authorization record.",
+    "A real ceiling must reference an attributable human authorization event."
+  ]
+}
