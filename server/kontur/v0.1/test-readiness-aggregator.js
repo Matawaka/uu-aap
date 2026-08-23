@@ -34,11 +34,6 @@ async function main() {
   const policy = readJson(path.join(repoRoot, 'server/kontur/v0.1/policies/reference-server.readiness-aggregation-policy.json'));
   const responsibilityPolicy = readJson(path.join(repoRoot, 'server/kontur/v0.1/policies/reference-server.responsibility-policy.json'));
   const effectiveMs = Date.parse(policy.effective_from);
-  const baseMs = Math.max(Date.now(), effectiveMs + 5000);
-  const aggregatedAt = iso(baseMs);
-  const acceptedAt = iso(baseMs + 1000);
-  const frontierAt = iso(baseMs + 2000);
-  const sourceObservedAt = iso(baseMs - 1000);
 
   // 1. Protocol Registry: rerun its exact immutable-tag validator before binding registry.json.
   run('node', ['protocols/registry/v0.1/validate-registry.js']);
@@ -72,6 +67,13 @@ async function main() {
   run('node', ['protocols/integration/v0.1/test-causal-claim-qualification.js', causalPath]);
   const causal = readJson(causalPath);
 
+  // The evidence observation frontier is captured only after all upstream validators completed.
+  const captureMs = Math.max(Date.now(), effectiveMs + 5000);
+  const sourceObservedAt = iso(captureMs);
+  const aggregatedAt = iso(captureMs + 1000);
+  const acceptedAt = iso(captureMs + 2000);
+  const frontierAt = iso(captureMs + 3000);
+
   // 6. Server health: independently prove basic reference-harness runtime components.
   run('node', ['--version']);
   run('git', ['cat-file', '-e', 'HEAD^{commit}']);
@@ -99,12 +101,7 @@ async function main() {
     { checkId: 'server_health_ready', producerId: 'urn:uu-aap:producer:kontur-server-health-observer', artifact: health, observedAt: sourceObservedAt }
   ];
 
-  const aggregated = await Aggregator.aggregateReadiness({
-    policy,
-    sources,
-    aggregatedAt,
-    readinessEpoch: 1
-  });
+  const aggregated = await Aggregator.aggregateReadiness({ policy, sources, aggregatedAt, readinessEpoch: 1 });
   const acceptance = await Aggregator.dryRunAcceptReadiness({
     aggregationReceipt: aggregated.receipt,
     readinessSignal: aggregated.readinessSignal,
@@ -169,10 +166,10 @@ async function main() {
     const changed = clone(policy); changed.aggregation_scope = 'urn:uu-aap:kontur:readiness-aggregation-scope:other'; await aggregate({ policy: changed });
   }, /aggregation scope substitution/));
   vectors.push(await reject('stale_evidence', async () => {
-    const changed = clone(sources); changed[0].observedAt = iso(baseMs - (policy.evidence_freshness_seconds + 10) * 1000); await aggregate({ sources: changed });
+    const changed = clone(sources); changed[0].observedAt = iso(captureMs - (policy.evidence_freshness_seconds + 10) * 1000); await aggregate({ sources: changed });
   }, /stale evidence/));
   vectors.push(await reject('future_evidence', async () => {
-    const changed = clone(sources); changed[0].observedAt = iso(baseMs + 1000); await aggregate({ sources: changed });
+    const changed = clone(sources); changed[0].observedAt = iso(Date.parse(aggregatedAt) + 1000); await aggregate({ sources: changed });
   }, /observed after aggregation/));
   vectors.push(await reject('coordination_self_permits', async () => {
     const changed = clone(sources); changed[1].artifact.claims.materialization_permitted = true; await aggregate({ sources: changed });
