@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/commit-decision-result.schema.json",
+  "title": "CommitDecisionResult v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "decision_id",
+    "decision_input_id",
+    "evaluated_at",
+    "decision",
+    "reason_codes",
+    "action",
+    "target",
+    "operation_ref",
+    "responsible_party_id",
+    "executor_implementation_id",
+    "revision",
+    "checks",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./commit-decision-result.schema.json"},
+    "artifact_type": {"const": "CommitDecisionResult"},
+    "artifact_version": {"const": "0.1"},
+    "decision_id": {"type": "string", "minLength": 1},
+    "decision_input_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "decision": {"enum": ["approved", "not_approved"]},
+    "reason_codes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "action": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "operation_ref": {"type": "string", "pattern": "^urn:ccrp:operation:"},
+    "responsible_party_id": {"type": "string", "minLength": 1},
+    "executor_implementation_id": {"type": "string", "minLength": 1},
+    "revision": {"type": "string", "minLength": 1},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handoff_accepted",
+        "handoff_party_exact",
+        "handoff_executor_exact",
+        "action_exact",
+        "target_exact",
+        "operation_exact",
+        "revalidation_fresh",
+        "revision_unchanged",
+        "authority_established",
+        "authority_scope_exact",
+        "authority_target_exact",
+        "execution_admitted",
+        "collision_clear",
+        "execution_revision_exact",
+        "pre_materialization_permitted",
+        "pre_materialization_refs_exact"
+      ],
+      "properties": {
+        "handoff_accepted": {"type": "boolean"},
+        "handoff_party_exact": {"type": "boolean"},
+        "handoff_executor_exact": {"type": "boolean"},
+        "action_exact": {"type": "boolean"},
+        "target_exact": {"type": "boolean"},
+        "operation_exact": {"type": "boolean"},
+        "revalidation_fresh": {"type": "boolean"},
+        "revision_unchanged": {"type": "boolean"},
+        "authority_established": {"type": "boolean"},
+        "authority_scope_exact": {"type": "boolean"},
+        "authority_target_exact": {"type": "boolean"},
+        "execution_admitted": {"type": "boolean"},
+        "collision_clear": {"type": "boolean"},
+        "execution_revision_exact": {"type": "boolean"},
+        "pre_materialization_permitted": {"type": "boolean"},
+        "pre_materialization_refs_exact": {"type": "boolean"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsibility_input_established",
+        "authority_input_established",
+        "execution_admission_input_established",
+        "revalidation_input_established",
+        "pre_materialization_permission_input_established",
+        "commit_decision_approved",
+        "commit_performed",
+        "materialization_event_recorded",
+        "repository_mutation_performed",
+        "outcome_observed",
+        "canonical_state_established",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_effect_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "responsibility_input_established": {"type": "boolean"},
+        "authority_input_established": {"type": "boolean"},
+        "execution_admission_input_established": {"type": "boolean"},
+        "revalidation_input_established": {"type": "boolean"},
+        "pre_materialization_permission_input_established": {"type": "boolean"},
+        "commit_decision_approved": {"type": "boolean"},
+        "commit_performed": {"const": false},
+        "materialization_event_recorded": {"const": false},
+        "repository_mutation_performed": {"const": false},
+        "outcome_observed": {"const": false},
+        "canonical_state_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "approved"}}},
+      "then": {
+        "properties": {
+          "reason_codes": {"maxItems": 0},
+          "claims": {
+            "properties": {
+              "responsibility_input_established": {"const": true},
+              "authority_input_established": {"const": true},
+              "execution_admission_input_established": {"const": true},
+              "revalidation_input_established": {"const": true},
+              "pre_materialization_permission_input_established": {"const": true},
+              "commit_decision_approved": {"const": true}
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {"properties": {"decision": {"const": "not_approved"}}},
+      "then": {
+        "properties": {
+          "reason_codes": {"minItems": 1},
+          "claims": {"properties": {"commit_decision_approved": {"const": false}}}
+        }
+      }
+    }
+  ]
+}
