@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-responsibility-ledger-entry.schema.json",
+  "title": "KONTURResponsibilityLedgerEntry v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "entry_id", "ledger_id", "sequence",
+    "committed_at", "system_id", "server_instance_id", "previous_entry_binding", "transition_kind",
+    "ledger_policy", "ledger_policy_binding", "responsibility_policy", "responsibility_policy_binding",
+    "readiness_signal", "readiness_signal_binding", "responsibility_state", "responsibility_state_binding",
+    "transition_receipt", "transition_receipt_binding", "trigger_binding", "command_nonce",
+    "activation_preflight", "activation_preflight_binding", "entry_digest", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-responsibility-ledger-entry\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURResponsibilityLedgerEntry"},
+    "artifact_version": {"const": "0.1"},
+    "entry_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:responsibility-ledger-entry:"},
+    "ledger_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:responsibility-ledger:"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "committed_at": {"type": "string", "format": "date-time"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "previous_entry_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "transition_kind": {"enum": ["activate", "heartbeat", "degrade", "suspend", "resume", "retire"]},
+    "ledger_policy": {"type": "object"},
+    "ledger_policy_binding": {"$ref": "#/$defs/binding"},
+    "responsibility_policy": {"type": "object"},
+    "responsibility_policy_binding": {"$ref": "#/$defs/binding"},
+    "readiness_signal": {"oneOf": [{"type": "null"}, {"type": "object"}]},
+    "readiness_signal_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "responsibility_state": {"type": "object"},
+    "responsibility_state_binding": {"$ref": "#/$defs/binding"},
+    "transition_receipt": {"type": "object"},
+    "transition_receipt_binding": {"$ref": "#/$defs/binding"},
+    "trigger_binding": {"$ref": "#/$defs/binding"},
+    "command_nonce": {"oneOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
+    "activation_preflight": {"oneOf": [{"type": "null"}, {"type": "object"}]},
+    "activation_preflight_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "entry_digest": {"$ref": "#/$defs/digest"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_durable_commit_established", "authoritative_head_derivable", "embedded_historical_evidence_bound",
+        "ledger_relative_replay_protection_applied", "distributed_consensus_established",
+        "legal_responsibility_determined", "legal_effect_established", "moral_blame_assigned",
+        "truth_certified", "universal_causality_established", "poai_materialization_event_recorded",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "local_durable_commit_established": {"const": true},
+        "authoritative_head_derivable": {"const": true},
+        "embedded_historical_evidence_bound": {"const": true},
+        "ledger_relative_replay_protection_applied": {"const": true},
+        "distributed_consensus_established": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_causality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

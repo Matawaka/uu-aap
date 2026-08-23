@@ -1,0 +1,187 @@
+name: KONTUR Durable Responsibility Ledger validation
+
+on:
+  pull_request:
+    paths:
+      - "server/kontur/**"
+      - "protocols/registry/**"
+      - "protocols/integration/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-responsibility-ledger-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "server/kontur/**"
+      - "protocols/registry/**"
+      - "protocols/integration/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-responsibility-ledger-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  durable-ledger:
+    name: KONTUR durable ledger, recovery and replay boundary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check KONTUR ledger JavaScript
+        run: |
+          node --check server/kontur/v0.1/responsibility-ledger.js
+          node --check server/kontur/v0.1/recover-responsibility-ledger.js
+          node --check server/kontur/v0.1/test-responsibility-ledger.js
+
+      - name: Validate KONTUR ledger schemas and policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('server/kontur/v0.1')
+          schemas = {}
+          for name in [
+              'kontur-responsibility-ledger-policy.schema.json',
+              'kontur-responsibility-ledger-entry.schema.json',
+              'kontur-responsibility-artifacts.schema.json',
+              'kontur-readiness-signal.schema.json',
+              'kontur-activation-preflight.schema.json',
+          ]:
+              schema = json.loads((root / name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              schemas[name] = schema
+              print(f'VALID schema: {name}')
+
+          policy = json.loads((root / 'policies/reference-server.responsibility-ledger-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(
+              schemas['kontur-responsibility-ledger-policy.schema.json'],
+              format_checker=FormatChecker()
+          ).validate(policy)
+          assert policy['storage_model'] == 'immutable_entry_files'
+          assert policy['atomic_publication'] == 'temp_fsync_rename_dir_fsync'
+          assert policy['head_authority'] == 'validated_entry_chain'
+          assert policy['replay_scope'] == 'ledger_history'
+          assert policy['corruption_mode'] == 'fail_closed'
+          assert policy['claims']['mutable_head_authoritative'] is False
+          assert policy['claims']['temporary_file_authoritative'] is False
+          print('VALID canonical KONTUR durable ledger policy')
+          PY
+
+      - name: Prove atomic publication primitives are explicit
+        run: |
+          grep -F "await handle.sync()" server/kontur/v0.1/responsibility-ledger.js
+          grep -F "await fsp.rename(tempPath, finalPath)" server/kontur/v0.1/responsibility-ledger.js
+          grep -F "await fsyncDirectory(entriesDir)" server/kontur/v0.1/responsibility-ledger.js
+          grep -F "writer lock already held; fail closed" server/kontur/v0.1/responsibility-ledger.js
+          echo "Atomic local publication and single-writer barriers are explicit"
+
+      - name: Reproduce test-only transition chain and durable ledger recovery
+        run: node server/kontur/v0.1/test-responsibility-ledger.js /tmp/kontur-ledger
+
+      - name: Validate canonical committed ledger entries by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('server/kontur/v0.1/kontur-responsibility-ledger-entry.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          entries = sorted(Path('/tmp/kontur-ledger/ledger/entries').glob('*.json'))
+          assert len(entries) == 3, len(entries)
+          for path in entries:
+              value = json.loads(path.read_text(encoding='utf-8'))
+              validator.validate(value)
+              assert value['sequence'] >= 1
+              assert value['claims']['local_durable_commit_established'] is True
+              assert value['claims']['distributed_consensus_established'] is False
+              assert value['claims']['legal_responsibility_determined'] is False
+              assert value['claims']['truth_certified'] is False
+              print(f'VALID committed entry: {path.name}')
+
+          summary = json.loads(Path('/tmp/kontur-ledger/summary.json').read_text(encoding='utf-8'))
+          assert summary['test_only_activation'] is True
+          assert summary['live_kontur_activated'] is False
+          assert summary['entry_count'] == 3
+          assert summary['lifecycle_state'] == 'retired'
+          assert summary['restart_recovery_verified'] is True
+          assert summary['temp_file_non_authoritative_verified'] is True
+          assert summary['mutable_head_non_authoritative_verified'] is True
+          assert summary['negative_vectors'] >= 20
+          assert summary['distributed_consensus_established'] is False
+          assert summary['legal_responsibility_determined'] is False
+          assert summary['truth_certified'] is False
+          print('KONTUR durable ledger summary boundary validated')
+          PY
+
+      - name: Independently reject ledger assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          schema = json.loads(Path('server/kontur/v0.1/kontur-responsibility-ledger-entry.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          path = sorted(Path('/tmp/kontur-ledger/ledger/entries').glob('*.json'))[0]
+          entry = json.loads(path.read_text(encoding='utf-8'))
+          validator.validate(entry)
+          for key in [
+              'distributed_consensus_established', 'legal_responsibility_determined',
+              'legal_effect_established', 'moral_blame_assigned', 'truth_certified',
+              'universal_causality_established', 'poai_materialization_event_recorded',
+              'universal_canonicality_established'
+          ]:
+              bad = copy.deepcopy(entry)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'ledger schema accepted prohibited overclaim {key}')
+          print('Ledger schema independently rejects stronger claims')
+          PY
+
+      - name: Confirm ledger test did not activate repository state or mutate checkout
+        run: |
+          test ! -e server/kontur/v0.1/live-responsibility-ledger
+          test ! -e server/kontur/v0.1/responsibility-state.json
+          test ! -e server/kontur/v0.1/activation-receipt.json
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          echo "No live KONTUR state created; test ledger remained runner-local"
+
+      - name: Upload KONTUR durable ledger evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: kontur-durable-ledger-${{ github.sha }}
+          path: |
+            /tmp/kontur-ledger/summary.json
+            /tmp/kontur-ledger/ledger/entries/*.json
+          if-no-files-found: error
+          retention-days: 30
