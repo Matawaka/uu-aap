@@ -1,0 +1,118 @@
+name: ResponsibilityEventAppendLedger validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-append-ledger-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-append-ledger-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  responsibility-event-append-ledger:
+    name: Durable local successor append ledger boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check append-ledger JavaScript
+        run: |
+          node --check protocols/integration/v0.1/responsibility-event-append-ledger.js
+          node --check protocols/integration/v0.1/recover-responsibility-event-append-ledger.js
+          node --check protocols/integration/v0.1/test-responsibility-event-append-ledger.js
+
+      - name: Validate append-ledger schemas and reference policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          policy_schema = json.loads((root/'responsibility-event-append-ledger-policy.schema.json').read_text(encoding='utf-8'))
+          entry_schema = json.loads((root/'responsibility-event-append-ledger-entry.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(policy_schema)
+          Draft202012Validator.check_schema(entry_schema)
+          policy = json.loads((root/'policies/reference.responsibility-event-append-ledger-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
+          assert policy['artifact_type'] == 'ResponsibilityEventAppendLedgerPolicy'
+          assert policy['claims']['global_replay_protection_established'] is False
+          assert policy['claims']['distributed_consensus_established'] is False
+          print('VALID ResponsibilityEventAppendLedger schemas and policy')
+          PY
+
+      - name: Build, commit, restart and validate durable append ledger
+        run: node protocols/integration/v0.1/test-responsibility-event-append-ledger.js
+
+      - name: Validate generated ledger entry by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-event-append-ledger-entry.schema.json').read_text())
+          entry = json.loads(Path('/tmp/responsibility-event-append-ledger-entry.json').read_text())
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(entry)
+          assert entry['sequence'] == 0
+          assert entry['predecessor_event_head']['sequence'] == 5
+          assert entry['resulting_event_head']['sequence'] == 6
+          assert entry['claims']['ledger_local_durable_replay_protection_established'] is True
+          assert entry['claims']['global_replay_protection_established'] is False
+          assert entry['claims']['distributed_consensus_established'] is False
+          assert entry['claims']['new_external_consequence_observed'] is False
+          print('VALID ResponsibilityEventAppendLedger entry')
+          PY
+
+      - name: Independently reject ledger assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-event-append-ledger-entry.schema.json').read_text())
+          entry = json.loads(Path('/tmp/responsibility-event-append-ledger-entry.json').read_text())
+          def reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+          bad = copy.deepcopy(entry); bad['claims']['global_replay_protection_established'] = True; reject(bad, 'global replay overclaim')
+          bad = copy.deepcopy(entry); bad['claims']['distributed_consensus_established'] = True; reject(bad, 'distributed consensus overclaim')
+          bad = copy.deepcopy(entry); bad['claims']['legal_liability_established'] = True; reject(bad, 'legal liability overclaim')
+          bad = copy.deepcopy(entry); bad['claims']['new_external_consequence_observed'] = True; reject(bad, 'external consequence overclaim')
+          bad = copy.deepcopy(entry); bad['responsibility_score'] = 1; reject(bad, 'scalar responsibility score')
+          PY
+
+      - name: Confirm KONTUR is not part of this profile
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD 2>/dev/null | grep '^server/kontur/' && exit 1 || true
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
