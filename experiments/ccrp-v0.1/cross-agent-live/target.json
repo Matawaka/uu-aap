@@ -7,9 +7,9 @@
     "commit": "33215e251310105e2fac591b17ae2d90522488d9"
   },
   "operation_class": "exclusive_state_sensitive",
-  "generation": 0,
-  "state": "baseline",
-  "accepted_executor": null,
+  "generation": 1,
+  "state": "executor-a-accepted",
+  "accepted_executor": "executor-a-chatgpt",
   "allowed_live_mutation_scope": "this_file_only",
   "claims": {
     "protocol_definition": false,
