@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:source-specific-successor-admission-policy:0.1",
+  "title": "SourceSpecificSuccessorAdmissionPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "policy_id", "policy_version", "repository",
+    "upstream_workflow", "upstream_artifact_prefix", "required_upstream_main_revision",
+    "required_original_source_revision", "accepted_input", "admitted_source_profile", "invariants", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "artifact_type": {"const": "SourceSpecificSuccessorAdmissionPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"const": "urn:uu-aap:source-specific-successor-admission-policy:github-actions-main-bound:1"},
+    "policy_version": {"const": 1},
+    "repository": {"const": "Matawaka/uu-aap"},
+    "upstream_workflow": {"const": "ConsequenceObservation Source Adapter Main Binding validation"},
+    "upstream_artifact_prefix": {"const": "consequence-source-main-binding-"},
+    "required_upstream_main_revision": {"const": "4c76d80ead3e0d8d3af14375a3478cc72beddefa"},
+    "required_original_source_revision": {"const": "0ea85faa957cd924c250e0cea0d0758f855d4fd0"},
+    "accepted_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_version"],
+      "properties": {
+        "artifact_type": {"const": "ConsequenceObservationSourceAdapterMainBindingReceipt"},
+        "artifact_version": {"const": "0.1"}
+      }
+    },
+    "admitted_source_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer_id", "producer_artifact_type", "producer_artifact_version", "source_adapter_policy_id", "source_context_class"],
+      "properties": {
+        "producer_id": {"const": "urn:uu-aap:producer:github-actions-runtime"},
+        "producer_artifact_type": {"const": "GitHubActionsRuntimeObservation"},
+        "producer_artifact_version": {"const": "0.1"},
+        "source_adapter_policy_id": {"const": "urn:uu-aap:consequence-observation-source-adapter-policy:github-actions-runtime:1"},
+        "source_context_class": {"const": "main_push"}
+      }
+    },
+    "invariants": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_main_binding_receipt_required", "exact_upstream_artifact_required", "input_digest_binding_required",
+        "main_bound_receipt_required", "candidate_receipt_prohibited", "historical_frontier_binding_consistency_required",
+        "historical_frontier_bytes_reverification_required", "source_profile_admission_only",
+        "future_adapter_registration_proposal_allowed", "successor_adapter_registration_allowed",
+        "successor_policy_modification_allowed", "successor_append_permission_allowed",
+        "successor_append_execution_allowed", "server_runtime_dependency_required", "scalar_scores_allowed"
+      ],
+      "properties": {
+        "exact_main_binding_receipt_required": {"const": true},
+        "exact_upstream_artifact_required": {"const": true},
+        "input_digest_binding_required": {"const": true},
+        "main_bound_receipt_required": {"const": true},
+        "candidate_receipt_prohibited": {"const": true},
+        "historical_frontier_binding_consistency_required": {"const": true},
+        "historical_frontier_bytes_reverification_required": {"const": false},
+        "source_profile_admission_only": {"const": true},
+        "future_adapter_registration_proposal_allowed": {"const": true},
+        "successor_adapter_registration_allowed": {"const": false},
+        "successor_policy_modification_allowed": {"const": false},
+        "successor_append_permission_allowed": {"const": false},
+        "successor_append_execution_allowed": {"const": false},
+        "server_runtime_dependency_required": {"const": false},
+        "scalar_scores_allowed": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_specific_successor_admission_policy_defined", "successor_adapter_registered", "successor_policy_modified",
+        "successor_append_may_proceed", "successor_append_executed", "new_external_consequence_observed",
+        "generalized_external_consequence_causality_established", "causal_proof_certified",
+        "responsibility_for_consequence_attributed", "responsibility_for_outcome_adjudicated",
+        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
+        "moral_correctness_established", "truth_certified", "global_replay_protection_established",
+        "distributed_consensus_established", "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "source_specific_successor_admission_policy_defined": {"const": true},
+        "successor_adapter_registered": {"const": false},
+        "successor_policy_modified": {"const": false},
+        "successor_append_may_proceed": {"const": false},
+        "successor_append_executed": {"const": false},
+        "new_external_consequence_observed": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_consequence_attributed": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}
