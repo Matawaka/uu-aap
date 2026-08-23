@@ -1,0 +1,43 @@
+{
+  "artifact_type": "CHSPFinalHandoverPolicy",
+  "artifact_version": "0.3",
+  "project_id": "Matawaka/uu-aap",
+  "minimum_final_cooling_days": 14,
+  "minimum_dual_control_days": 30,
+  "maximum_handover_days": 60,
+  "minimum_unavailability_attestations": 3,
+  "minimum_unavailability_attestor_domains": 3,
+  "allowed_handover_scopes": [
+    "canonical_review",
+    "release_review",
+    "incident_coordination",
+    "policy_draft_review",
+    "supervised_release_preparation",
+    "provenance_verification",
+    "succession_package_validation",
+    "canonical_publication_preparation"
+  ],
+  "requirements": {
+    "v02_final_review_eligibility_required": true,
+    "predecessor_disposition_required": true,
+    "final_recognizer_distinct_from_candidate_and_predecessor": true,
+    "final_cooling_required": true,
+    "open_or_upheld_final_challenge_blocks": true,
+    "handover_nonexclusive": true,
+    "handover_reversible": true,
+    "handover_expires": true,
+    "positive_outcome_required": true,
+    "automatic_stewardship_transfer": false,
+    "automatic_canonical_publication": false,
+    "automatic_kontur_activation": false
+  },
+  "claims": {
+    "descriptive_policy_only": true,
+    "canonical_successor_established": false,
+    "ownership_transferred": false,
+    "kontur_activated": false,
+    "legal_incapacity_certified": false,
+    "medical_incapacity_certified": false,
+    "universal_trust_established": false
+  }
+}
