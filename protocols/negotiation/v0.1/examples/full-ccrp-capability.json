@@ -1,0 +1,24 @@
+{
+  "$schema": "../capability-declaration.schema.json",
+  "artifact_type": "ProtocolCapabilityDeclaration",
+  "artifact_version": "0.1",
+  "declaration_id": "urn:example:capability-declaration:ccrp-full:v0.1",
+  "subject_id": "urn:example:agent:ccrp-full",
+  "assertion_mode": "self_declared",
+  "registry_id": "urn:uu-aap:protocol-registry:v0.1",
+  "capabilities": [
+    {
+      "protocol_id": "CCRP",
+      "version": "0.1",
+      "logical_uri": "urn:uu-aap:protocol:ccrp:0.1",
+      "release_commit": "2c98d34ebfb5e86491bffb29a27e5a55b4db707e",
+      "conformance_levels": ["C0", "C1", "C2", "C3", "C4", "C5"]
+    }
+  ],
+  "non_claims": [
+    "verified_operational_capability_established",
+    "legal_identity_established",
+    "legal_authority_established",
+    "materialization_permission_established"
+  ]
+}
