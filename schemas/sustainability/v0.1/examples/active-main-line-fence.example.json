@@ -1,0 +1,55 @@
+{
+  "document_type": "uu-aap.active-main-line-fence",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "observed_at": "2026-08-23T16:53:33Z",
+  "observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "active_work": [
+    {
+      "kind": "pull-request",
+      "ref": "Matawaka/uu-aap#273",
+      "state": "open",
+      "head_sha": "7fc8f103c5aad61e771c29780c62e9bc23c7bd6d",
+      "changed_paths": [
+        ".github/workflows/chsp-v1.0-validation.yml",
+        "protocols/chsp/README.md",
+        "protocols/chsp/v1.0/README.md",
+        "protocols/chsp/v1.0/chsp-external-execution-assessment.schema.json",
+        "protocols/chsp/v1.0/chsp-external-execution-receipt.schema.json",
+        "protocols/chsp/v1.0/chsp-external-execution-request.schema.json",
+        "protocols/chsp/v1.0/chsp-external-executor-policy.schema.json",
+        "protocols/chsp/v1.0/chsp_v10.py",
+        "protocols/chsp/v1.0/execute_github.py",
+        "protocols/chsp/v1.0/github_rest_adapter.py",
+        "protocols/chsp/v1.0/reference.chsp-external-executor-policy.json",
+        "protocols/chsp/v1.0/test_chsp_v10.py"
+      ]
+    }
+  ],
+  "protected_path_prefixes": [
+    ".github/",
+    "protocols/chsp/"
+  ],
+  "parallel_allowed_path_prefixes": [
+    "docs/PARALLEL-SUSTAINABILITY-",
+    "schemas/sustainability/v0.1/"
+  ],
+  "integration_actions_blocked": [
+    "open_parallel_pr",
+    "rebase_parallel_onto_active_main",
+    "merge_parallel_into_main",
+    "edit_active_pr",
+    "comment_on_active_pr",
+    "update_main_ref",
+    "activate_workflow",
+    "tag_or_release"
+  ],
+  "main_mutation_allowed": false,
+  "authority_effect": "none",
+  "expires_on_fresh_observation": true,
+  "notes": [
+    "Observed PR #273 is the active main-line work surface.",
+    "This fence is descriptive and temporary; it does not modify or constrain the PR itself.",
+    "A fresh observation is required after PR #273 changes state or head SHA."
+  ]
+}
