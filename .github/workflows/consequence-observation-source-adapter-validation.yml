@@ -1,0 +1,186 @@
+name: ConsequenceObservation Source Adapter validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-source-adapter-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-source-adapter-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  github-actions-source-adapter:
+    name: GitHub Actions source-specific consequence adapter boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Confirm runner revision equals GitHub runtime SHA
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Check source-adapter JavaScript
+        run: |
+          node --check protocols/integration/v0.1/observe-github-actions-runtime.js
+          node --check protocols/integration/v0.1/consequence-observation-source-adapter.js
+          node --check protocols/integration/v0.1/test-consequence-observation-source-adapter.js
+
+      - name: Validate source-adapter schemas and reference policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('protocols/integration/v0.1')
+          names = [
+              'github-actions-runtime-observation.schema.json',
+              'consequence-observation-source-adapter-policy.schema.json',
+              'consequence-observation-source-adapter-receipt.schema.json',
+          ]
+          schemas = {}
+          for name in names:
+              schema = json.loads((root/name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              schemas[name] = schema
+
+          policy = json.loads((root/'policies/github-actions-runtime.consequence-observation-source-adapter-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schemas['consequence-observation-source-adapter-policy.schema.json'], format_checker=FormatChecker()).validate(policy)
+          assert policy['registered_profile']['producer_id'] == 'urn:uu-aap:producer:github-actions-runtime'
+          assert policy['registered_profile']['repository'] == 'Matawaka/uu-aap'
+          assert policy['registered_profile']['workflow_name'] == 'ConsequenceObservation Source Adapter validation'
+          assert policy['required_predecessor']['assessment_status'] == 'deferred_source_profile_required'
+          assert policy['invariants']['typed_successor_source_eligibility_allowed'] is True
+          assert policy['invariants']['successor_append_execution_allowed'] is False
+          assert policy['invariants']['successor_append_permission_allowed'] is False
+          print('VALID GitHub Actions source-adapter schemas and policy')
+          PY
+
+      - name: Build real GitHub Actions runtime source-adapter receipt
+        run: node protocols/integration/v0.1/test-consequence-observation-source-adapter.js
+
+      - name: Validate generated live artifacts by schema
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('protocols/integration/v0.1')
+          pairs = [
+              ('github-actions-runtime-observation.schema.json', '/tmp/github-actions-runtime-observation.json'),
+              ('consequence-observation-source-evidence.schema.json', '/tmp/consequence-observation-source-live.json'),
+              ('consequence-observation-claim.schema.json', '/tmp/consequence-observation-claim-live.json'),
+              ('consequence-observation-ingress-receipt.schema.json', '/tmp/consequence-observation-ingress-live.json'),
+              ('consequence-observation-assessment.schema.json', '/tmp/consequence-observation-assessment-live-deferred.json'),
+              ('consequence-observation-source-adapter-receipt.schema.json', '/tmp/consequence-observation-source-adapter-receipt.json'),
+          ]
+          for schema_name, artifact_path in pairs:
+              schema = json.loads((root/schema_name).read_text(encoding='utf-8'))
+              artifact = json.loads(Path(artifact_path).read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+
+          observation = json.loads(Path('/tmp/github-actions-runtime-observation.json').read_text(encoding='utf-8'))
+          assessment = json.loads(Path('/tmp/consequence-observation-assessment-live-deferred.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('/tmp/consequence-observation-source-adapter-receipt.json').read_text(encoding='utf-8'))
+          assert observation['sha'] == os.environ['GITHUB_SHA']
+          assert observation['repository'] == os.environ['GITHUB_REPOSITORY'] == 'Matawaka/uu-aap'
+          assert observation['workflow_name'] == os.environ['GITHUB_WORKFLOW'] == 'ConsequenceObservation Source Adapter validation'
+          assert assessment['status'] == 'deferred_source_profile_required'
+          assert assessment['assessment_result']['observation_qualified'] is False
+          assert assessment['assessment_result']['successor_adapter_eligible'] is False
+          assert receipt['profile_decision']['status'] == 'eligible_as_typed_successor_source'
+          assert receipt['profile_decision']['typed_successor_source_eligible'] is True
+          assert receipt['profile_decision']['successor_append_may_proceed'] is False
+          assert receipt['profile_decision']['successor_append_executed'] is False
+          if os.environ['GITHUB_EVENT_NAME'] == 'pull_request':
+              assert observation['context_class'] == 'candidate_pull_request'
+              assert receipt['profile_decision']['candidate_evidence'] is True
+              assert receipt['profile_decision']['main_bound_evidence'] is False
+          elif os.environ['GITHUB_EVENT_NAME'] == 'push':
+              assert observation['context_class'] == 'main_push'
+              assert observation['ref'] == 'refs/heads/main'
+              assert receipt['profile_decision']['candidate_evidence'] is False
+              assert receipt['profile_decision']['main_bound_evidence'] is True
+          else:
+              raise AssertionError('unexpected workflow event')
+          print('VALID live source-specific adapter receipt')
+          PY
+
+      - name: Independently reject successor and assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+
+          schema = json.loads(Path('protocols/integration/v0.1/consequence-observation-source-adapter-receipt.schema.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('/tmp/consequence-observation-source-adapter-receipt.json').read_text(encoding='utf-8'))
+
+          def reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+
+          bad = copy.deepcopy(receipt); bad['profile_decision']['successor_append_may_proceed'] = True; reject(bad, 'successor append permission escalation')
+          bad = copy.deepcopy(receipt); bad['profile_decision']['successor_append_executed'] = True; reject(bad, 'successor append execution escalation')
+          bad = copy.deepcopy(receipt); bad['claims']['github_remote_truth_certified'] = True; reject(bad, 'GitHub remote truth overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['new_external_consequence_observed'] = True; reject(bad, 'external consequence universalization')
+          bad = copy.deepcopy(receipt); bad['claims']['causal_proof_certified'] = True; reject(bad, 'causal proof overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['responsibility_for_consequence_attributed'] = True; reject(bad, 'responsibility attribution overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['legal_liability_established'] = True; reject(bad, 'legal liability overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['moral_blame_assigned'] = True; reject(bad, 'moral blame overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['truth_certified'] = True; reject(bad, 'truth overclaim')
+          bad = copy.deepcopy(receipt); bad['responsibility_score'] = 1; reject(bad, 'scalar responsibility score')
+          PY
+
+      - name: Confirm KONTUR is not part of this profile
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD 2>/dev/null | grep '^server/kontur/' && exit 1 || true
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
+
+      - name: Upload exact runtime source-adapter evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: consequence-source-adapter-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            /tmp/github-actions-runtime-observation.json
+            /tmp/consequence-observation-source-live.json
+            /tmp/consequence-observation-claim-live.json
+            /tmp/consequence-observation-ingress-live.json
+            /tmp/consequence-observation-assessment-live-deferred.json
+            /tmp/consequence-observation-source-adapter-receipt.json
+            /tmp/consequence-observation-source-adapter-summary.json
