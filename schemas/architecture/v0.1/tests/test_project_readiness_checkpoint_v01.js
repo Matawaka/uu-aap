@@ -95,6 +95,7 @@ async function reject(label, mutateManifest, mutateReceipt, revision = `git:${SH
   await reject('convergence not eligible', m => { m.assessment.state = 'incomplete'; });
   await reject('unsafe convergence activation', m => { m.claims.kontur_activation_authorized = true; });
   await reject('unsafe convergence execution', m => { m.claims.external_execution_authorized = true; });
+  await reject('convergence already claims current frontier', m => { m.claims.current_kontur_activation_frontier_verified = true; });
   await reject('future evolution closed', m => { m.claims.future_evolution_allowed = false; });
   await reject('checkpoint revision mismatch', null, null, `git:${'e'.repeat(40)}`);
 
