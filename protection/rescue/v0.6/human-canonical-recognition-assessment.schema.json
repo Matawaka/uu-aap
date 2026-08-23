@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/human-canonical-recognition-assessment-v0.6.json",
+  "title": "HumanCanonicalRecognitionAssessment v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "assessment_id", "evaluated_at", "project_id", "recognition_sha256", "proposal_sha256", "proposal_assessment_sha256", "policy_sha256", "state", "decision", "checks", "reasons", "assessment_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "HumanCanonicalRecognitionAssessment"},
+    "artifact_version": {"const": "0.6"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposal_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposal_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["rejected", "recognition_valid"]},
+    "decision": {"enum": ["reject_recognition", "canonical_publication_authorization_may_be_requested"]},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recognition_self_digest_match", "proposal_self_digest_match", "proposal_assessment_self_digest_match", "proposal_reviewable", "exact_proposal_binding", "project_binding_match", "candidate_binding_match", "confirmation_token_match", "recognition_window_valid", "actor_evidence_digest_valid", "authority_boundary_preserved"],
+      "properties": {
+        "recognition_self_digest_match": {"type": "boolean"},
+        "proposal_self_digest_match": {"type": "boolean"},
+        "proposal_assessment_self_digest_match": {"type": "boolean"},
+        "proposal_reviewable": {"type": "boolean"},
+        "exact_proposal_binding": {"type": "boolean"},
+        "project_binding_match": {"type": "boolean"},
+        "candidate_binding_match": {"type": "boolean"},
+        "confirmation_token_match": {"type": "boolean"},
+        "recognition_window_valid": {"type": "boolean"},
+        "actor_evidence_digest_valid": {"type": "boolean"},
+        "authority_boundary_preserved": {"type": "boolean"}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_recognition_validated", "publication_authorization_only_may_be_requested", "canonical_successor_established", "canonical_origin_created", "canonical_origin_mutated", "publication_executed", "ownership_transferred", "kontur_activated", "distributed_consensus_established", "legal_effect_established", "truth_certified"],
+      "properties": {
+        "human_recognition_validated": {"type": "boolean"},
+        "publication_authorization_only_may_be_requested": {"type": "boolean"},
+        "canonical_successor_established": {"const": false},
+        "canonical_origin_created": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "publication_executed": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
