@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/ccrp/v0.1/release-manifest.schema.json",
+  "title": "CCRP v0.1 Release Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "release_id",
+    "protocol",
+    "lineage",
+    "release",
+    "conformance",
+    "binding_model",
+    "artifacts",
+    "external_dependencies",
+    "non_claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "artifact_type": {"const": "CCRPReleaseManifest"},
+    "artifact_version": {"const": "1.0"},
+    "release_id": {"type": "string", "pattern": "^urn:ccrp:release:"},
+    "protocol": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "version", "status", "semantic_source_status", "repository"],
+      "properties": {
+        "id": {"const": "CCRP"},
+        "name": {"type": "string", "minLength": 1},
+        "version": {"const": "0.1"},
+        "status": {"enum": ["release_candidate", "released"]},
+        "semantic_source_status": {"type": "string", "minLength": 1},
+        "repository": {"const": "github:Matawaka/uu-aap"}
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predecessor_checkpoint", "promotion_policy"],
+      "properties": {
+        "predecessor_checkpoint": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tag", "commit", "role"],
+          "properties": {
+            "tag": {"const": "poai-ccrp-exp-v0.1"},
+            "commit": {"const": "33215e251310105e2fac591b17ae2d90522488d9"},
+            "role": {"type": "string", "minLength": 1}
+          }
+        },
+        "promotion_policy": {"const": "content_addressed_binding_without_historical_rewrite"}
+      }
+    },
+    "release": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["planned_tag", "target_policy", "immutable_tag_required", "github_release_required", "canonical_state_update_after_publication"],
+      "properties": {
+        "planned_tag": {"const": "poai-ccrp-v0.1"},
+        "target_policy": {"const": "merge_commit_containing_this_manifest"},
+        "immutable_tag_required": {"const": true},
+        "github_release_required": {"type": "boolean"},
+        "canonical_state_update_after_publication": {"const": true}
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["levels", "release_binding_validator", "required_existing_checks", "release_check"],
+      "properties": {
+        "levels": {
+          "type": "array",
+          "prefixItems": [
+            {"const": "C0"},
+            {"const": "C1"},
+            {"const": "C2"},
+            {"const": "C3"},
+            {"const": "C4"},
+            {"const": "C5"}
+          ],
+          "items": false,
+          "minItems": 6,
+          "maxItems": 6
+        },
+        "release_binding_validator": {"const": "protocols/ccrp/v0.1/validate-release.js"},
+        "required_existing_checks": {"type": "array", "items": {"type": "string"}, "minItems": 1, "uniqueItems": true},
+        "release_check": {"const": "CCRP release binding validation"}
+      }
+    },
+    "binding_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["strategy", "git_object_format", "verification_command", "copy_required", "meaning"],
+      "properties": {
+        "strategy": {"const": "repository_path_plus_git_blob_sha"},
+        "git_object_format": {"const": "sha1"},
+        "verification_command": {"const": "git hash-object <path>"},
+        "copy_required": {"const": false},
+        "meaning": {"type": "string", "minLength": 1}
+      }
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/boundArtifact"}
+    },
+    "external_dependencies": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/dependencyArtifact"}
+    },
+    "non_claims": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1, "uniqueItems": true}
+  },
+  "$defs": {
+    "sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "safePath": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+"},
+    "boundArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "conformance", "path", "git_blob_sha", "media_type", "normative"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "role": {"type": "string", "minLength": 1},
+        "conformance": {"type": "array", "items": {"enum": ["C0", "C1", "C2", "C3", "C4", "C5"]}, "minItems": 1, "uniqueItems": true},
+        "path": {"$ref": "#/$defs/safePath"},
+        "git_blob_sha": {"$ref": "#/$defs/sha1"},
+        "media_type": {"type": "string", "minLength": 1},
+        "normative": {"type": "boolean"}
+      }
+    },
+    "dependencyArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "role", "path", "git_blob_sha", "media_type"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "role": {"type": "string", "minLength": 1},
+        "path": {"$ref": "#/$defs/safePath"},
+        "git_blob_sha": {"$ref": "#/$defs/sha1"},
+        "media_type": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
