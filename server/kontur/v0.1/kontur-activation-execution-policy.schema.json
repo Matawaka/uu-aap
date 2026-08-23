@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-activation-execution-policy.schema.json",
+  "title": "KONTURActivationExecutionPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "policy_id", "policy_version",
+    "effective_from", "effective_until", "system_id", "server_instance_id",
+    "max_execute_command_age_seconds", "max_preflight_age_seconds", "requirements", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-execution-policy\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURActivationExecutionPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-execution-policy:"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "max_execute_command_age_seconds": {"type": "integer", "minimum": 1, "maximum": 60},
+    "max_preflight_age_seconds": {"type": "integer", "minimum": 1, "maximum": 60},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_git_revision", "exact_intent_binding", "exact_preflight_binding",
+        "fresh_preflight", "fresh_readiness", "fresh_health", "live_lease",
+        "empty_genesis_ledger", "one_shot_execute_nonce", "execute_nonce_distinct_from_intent_nonce",
+        "kernel_activate_exactly_once", "durable_genesis_commit", "post_commit_recovery",
+        "recovered_head_exact", "automatic_retry_allowed", "auto_activation_allowed"
+      ],
+      "properties": {
+        "exact_git_revision": {"const": true},
+        "exact_intent_binding": {"const": true},
+        "exact_preflight_binding": {"const": true},
+        "fresh_preflight": {"const": true},
+        "fresh_readiness": {"const": true},
+        "fresh_health": {"const": true},
+        "live_lease": {"const": true},
+        "empty_genesis_ledger": {"const": true},
+        "one_shot_execute_nonce": {"const": true},
+        "execute_nonce_distinct_from_intent_nonce": {"const": true},
+        "kernel_activate_exactly_once": {"const": true},
+        "durable_genesis_commit": {"const": true},
+        "post_commit_recovery": {"const": true},
+        "recovered_head_exact": {"const": true},
+        "automatic_retry_allowed": {"const": false},
+        "auto_activation_allowed": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_execution_policy_defined", "execution_authority_granted",
+        "legal_responsibility_determined", "legal_effect_established", "moral_blame_assigned",
+        "truth_certified", "distributed_consensus_established", "poai_materialization_event_recorded",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "activation_execution_policy_defined": {"const": true},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}

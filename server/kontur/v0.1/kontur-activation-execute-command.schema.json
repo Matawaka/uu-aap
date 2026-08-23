@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-activation-execute-command.schema.json",
+  "title": "KONTURActivationExecuteCommand v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "command_id", "command", "execution_mode",
+    "declared_at", "valid_until", "git_revision", "system_id", "server_instance_id",
+    "activation_intent_binding", "activation_preflight_binding", "execution_policy_binding",
+    "holder_id", "responsibility_scopes", "fencing_epoch", "lease", "human_execute", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-execute-command\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURActivationExecuteCommand"},
+    "artifact_version": {"const": "0.1"},
+    "command_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-execute-command:"},
+    "command": {"const": "execute_kontur_activation"},
+    "execution_mode": {"enum": ["test_only", "live"]},
+    "declared_at": {"type": "string", "format": "date-time"},
+    "valid_until": {"type": "string", "format": "date-time"},
+    "git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "activation_intent_binding": {"$ref": "#/$defs/binding"},
+    "activation_preflight_binding": {"$ref": "#/$defs/binding"},
+    "execution_policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
+    "responsibility_scopes": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "fencing_epoch": {"type": "integer", "minimum": 1},
+    "lease": {"$ref": "#/$defs/lease"},
+    "human_execute": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_ref", "declaration_type", "nonce", "explicit", "identity_assurance"],
+      "properties": {
+        "actor_ref": {"type": "string", "minLength": 1},
+        "declaration_type": {"const": "explicit_final_human_execute"},
+        "nonce": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-intent-nonce:execute:"},
+        "explicit": {"const": true},
+        "identity_assurance": {"const": "declared_not_cryptographically_verified"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "final_human_execute_declared", "exact_execute_parameters_bound",
+        "human_identity_cryptographically_verified", "kernel_activated", "responsibility_state_created",
+        "local_kontur_activation_completed", "execution_authority_granted", "legal_responsibility_determined",
+        "legal_effect_established", "moral_blame_assigned", "truth_certified",
+        "distributed_consensus_established", "poai_materialization_event_recorded",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "final_human_execute_declared": {"const": true},
+        "exact_execute_parameters_bound": {"const": true},
+        "human_identity_cryptographically_verified": {"const": false},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "local_kontur_activation_completed": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "policyBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "policy_version", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "policy_version": {"type": "integer", "minimum": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "lease": {
+      "type": "object", "additionalProperties": false,
+      "required": ["lease_id", "holder_id", "server_instance_id", "issued_at", "expires_at"],
+      "properties": {
+        "lease_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:lease:"},
+        "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
+        "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

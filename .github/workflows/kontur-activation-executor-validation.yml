@@ -1,0 +1,154 @@
+name: KONTUR Activation Executor validation
+
+on:
+  pull_request:
+    paths:
+      - 'server/kontur/v0.1/**'
+      - '.github/workflows/kontur-activation-executor-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'server/kontur/v0.1/**'
+      - '.github/workflows/kontur-activation-executor-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  activation-executor:
+    name: KONTUR final human execute and durable activation completion boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check KONTUR activation executor JavaScript
+        run: |
+          node --check server/kontur/v0.1/activation-executor.js
+          node --check server/kontur/v0.1/test-activation-executor.js
+          node --check server/kontur/v0.1/responsibility-ledger.js
+          node --check server/kontur/v0.1/responsibility-kernel.js
+          node --check server/kontur/v0.1/activation-preflight.js
+
+      - name: Validate execution schemas and canonical policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('server/kontur/v0.1')
+          names = [
+              'kontur-activation-execution-policy.schema.json',
+              'kontur-activation-execute-command.schema.json',
+              'kontur-activation-execution-receipt.schema.json',
+              'kontur-responsibility-ledger-entry.schema.json',
+          ]
+          schemas = {}
+          for name in names:
+              schema = json.loads((root / name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              schemas[name] = schema
+              print('VALID schema:', name)
+          policy = json.loads((root / 'policies/reference-server.activation-execution-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schemas['kontur-activation-execution-policy.schema.json'], format_checker=FormatChecker()).validate(policy)
+          assert policy['max_execute_command_age_seconds'] == 30
+          assert policy['max_preflight_age_seconds'] == 30
+          assert policy['requirements']['automatic_retry_allowed'] is False
+          assert policy['requirements']['auto_activation_allowed'] is False
+          print('VALID canonical KONTUR activation execution policy')
+          PY
+
+      - name: Execute isolated test-only activation through Kernel and Durable Ledger
+        run: node server/kontur/v0.1/test-activation-executor.js /tmp/kontur-activation-executor
+
+      - name: Validate generated activation execution artifacts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-activation-executor')
+          pairs = [
+              ('kontur-activation-execute-command.schema.json', 'activation-execute-command.json'),
+              ('kontur-activation-execution-receipt.schema.json', 'activation-execution-receipt.json'),
+              ('kontur-responsibility-ledger-entry.schema.json', 'genesis-ledger-entry.json'),
+          ]
+          for schema_name, artifact_name in pairs:
+              schema = json.loads((root / schema_name).read_text(encoding='utf-8'))
+              artifact = json.loads((out / artifact_name).read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+              print('VALID artifact:', artifact_name)
+          receipt = json.loads((out / 'activation-execution-receipt.json').read_text())
+          summary = json.loads((out / 'summary.json').read_text())
+          assert receipt['execution_mode'] == 'test_only'
+          assert receipt['status'] == 'activation_completed_test_only'
+          assert receipt['claims']['live_kontur_activated'] is False
+          assert receipt['claims']['genesis_ledger_entry_durably_committed'] is True
+          assert receipt['claims']['authoritative_active_head_recovered'] is True
+          assert summary['separate_process_recovery_confirmed'] is True
+          assert summary['live_kontur_activated'] is False
+          PY
+
+      - name: Independently reject execution assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-activation-executor')
+          command_schema = json.loads((root / 'kontur-activation-execute-command.schema.json').read_text())
+          receipt_schema = json.loads((root / 'kontur-activation-execution-receipt.schema.json').read_text())
+          command = json.loads((out / 'activation-execute-command.json').read_text())
+          receipt = json.loads((out / 'activation-execution-receipt.json').read_text())
+          def must_reject(schema, value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+          bad = copy.deepcopy(command); bad['claims']['kernel_activated'] = True
+          must_reject(command_schema, bad, 'command kernel activation overclaim')
+          bad = copy.deepcopy(command); bad['responsibility_score'] = 1
+          must_reject(command_schema, bad, 'scalar responsibility score')
+          bad = copy.deepcopy(receipt); bad['claims']['live_kontur_activated'] = True
+          must_reject(receipt_schema, bad, 'test-only live activation overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['legal_responsibility_determined'] = True
+          must_reject(receipt_schema, bad, 'legal responsibility overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['truth_certified'] = True
+          must_reject(receipt_schema, bad, 'truth overclaim')
+          PY
+
+      - name: Confirm CI did not activate repository/server KONTUR state
+        run: |
+          test ! -e server/kontur/v0.1/responsibility-state.json
+          test ! -e server/kontur/v0.1/activation-execution-receipt.json
+          test ! -d server/kontur/v0.1/ledger
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
+
+      - name: Upload KONTUR activation executor evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: kontur-activation-executor-${{ github.sha }}
+          path: /tmp/kontur-activation-executor
+          if-no-files-found: error
