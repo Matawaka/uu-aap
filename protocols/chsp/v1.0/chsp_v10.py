@@ -70,10 +70,19 @@ def load_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _reservation_path(state_dir: Path, category: str, key: str) -> Path:
+    return state_dir / category / (hashlib.sha256(key.encode("utf-8")).hexdigest() + ".json")
+
+
+def reservation_exists(state_dir: Path, category: str, key: str) -> bool:
+    target = _reservation_path(state_dir, category, key)
+    return target.is_file() or target.is_symlink()
+
+
 def reserve_once(state_dir: Path, category: str, key: str, payload: dict[str, Any]) -> None:
     target_dir = state_dir / category
     target_dir.mkdir(parents=True, exist_ok=True)
-    target = target_dir / (hashlib.sha256(key.encode("utf-8")).hexdigest() + ".json")
+    target = _reservation_path(state_dir, category, key)
     try:
         fd = os.open(target, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     except FileExistsError as exc:
@@ -114,6 +123,14 @@ def validate_policy(policy: dict[str, Any]) -> None:
     ]:
         require(req.get(key) is True, f"unsafe missing policy requirement: {key}")
     require(req.get("automatic_execution_on_merge_or_ci") is False, "automatic execution must remain false")
+    claims = policy.get("claims") or {}
+    require(claims.get("execution_policy_only") is True, "execution policy boundary missing")
+    for key in [
+        "repository_ownership_transferred", "account_control_transferred", "predecessor_access_removed",
+        "canonical_origin_mutated", "canonical_publication_executed", "kontur_activated",
+        "legal_ownership_adjudicated", "distributed_consensus_established",
+    ]:
+        require(claims.get(key) is False, f"unsafe policy claim: {key}")
 
 
 def validate_operations(operations: list[dict[str, Any]], policy: dict[str, Any]) -> None:
@@ -152,12 +169,23 @@ def validate_predecessors(
 
     require(recheck.get("artifact_type") == "CHSPExternalExecutionRecheck" and recheck.get("artifact_version") == "0.9", "CHSPExternalExecutionRecheck v0.9 required")
     require(_valid_self(recheck, "recheck_sha256"), "v0.9 recheck self-digest mismatch")
+    require(recheck.get("project_id") == envelope.get("project_id"), "recheck project mismatch")
+    require(recheck.get("steward_id") == envelope.get("steward_id"), "recheck steward mismatch")
     require(recheck.get("v08_envelope_sha256") == envelope["envelope_sha256"], "recheck/envelope binding mismatch")
+    require(recheck.get("external_system_type") == envelope.get("external_system_type"), "recheck system type mismatch")
+    require(recheck.get("external_system_id") == envelope.get("external_system_id"), "recheck external system mismatch")
+    require(recheck.get("external_principal_id") == envelope.get("external_principal_id"), "recheck external principal mismatch")
     require(recheck.get("result") == "match", "execution recheck is not a no-drift match")
     require(recheck.get("contains_credentials") is False, "credentials prohibited in execution recheck")
+    recheck_claims = recheck.get("claims") or {}
+    require(recheck_claims.get("fresh_observation_recorded") is True, "fresh recheck observation claim missing")
+    for key in ["global_provider_state_proven", "external_mutation_performed", "ownership_proven", "credentials_present"]:
+        require(recheck_claims.get(key) is False, f"unsafe v0.9 recheck claim: {key}")
 
     require(authorization.get("artifact_type") == "CHSPExternalExecutionAuthorization" and authorization.get("artifact_version") == "0.9", "CHSPExternalExecutionAuthorization v0.9 required")
     require(_valid_self(authorization, "authorization_sha256"), "v0.9 authorization self-digest mismatch")
+    require(authorization.get("project_id") == envelope.get("project_id"), "authorization project mismatch")
+    require(authorization.get("steward_id") == envelope.get("steward_id"), "authorization steward mismatch")
     require(authorization.get("v08_envelope_sha256") == envelope["envelope_sha256"], "authorization/envelope binding mismatch")
     require(authorization.get("execution_recheck_sha256") == recheck["recheck_sha256"], "authorization/recheck binding mismatch")
     require(authorization.get("operations_sha256") == sha256_json(envelope["operations"]), "authorization operation-set digest mismatch")
@@ -171,10 +199,18 @@ def validate_predecessors(
 
     require(authorization_assessment.get("artifact_type") == "CHSPExternalExecutionAuthorizationAssessment" and authorization_assessment.get("artifact_version") == "0.9", "CHSPExternalExecutionAuthorizationAssessment v0.9 required")
     require(_valid_self(authorization_assessment, "assessment_sha256"), "v0.9 authorization assessment self-digest mismatch")
+    require(authorization_assessment.get("project_id") == envelope.get("project_id"), "v0.9 assessment project mismatch")
+    require(authorization_assessment.get("steward_id") == envelope.get("steward_id"), "v0.9 assessment steward mismatch")
+    require(authorization_assessment.get("v08_envelope_sha256") == envelope["envelope_sha256"], "v0.9 assessment envelope mismatch")
     require(authorization_assessment.get("authorization_sha256") == authorization["authorization_sha256"], "v0.9 assessment/authorization binding mismatch")
     require(authorization_assessment.get("execution_recheck_sha256") == recheck["recheck_sha256"], "v0.9 assessment/recheck binding mismatch")
     require(authorization_assessment.get("state") == "execution_authorization_active", "v0.9 execution authorization is not active")
     require(authorization_assessment.get("decision") == "bounded_external_execution_executor_may_be_requested", "v0.9 assessment does not permit executor request")
+    assessment_claims = authorization_assessment.get("claims") or {}
+    require(assessment_claims.get("policy_sufficiency_only") is True, "v0.9 assessment policy boundary missing")
+    require(assessment_claims.get("bounded_exact_external_execution_authorized") is True, "v0.9 assessment bounded authorization missing")
+    for key in ["executor_invoked", "execution_performed", "unbounded_external_mutation_authorized", "repository_ownership_transferred", "account_control_transferred", "canonical_origin_mutated", "canonical_publication_executed", "kontur_activated", "global_provider_state_proven"]:
+        require(assessment_claims.get(key) is False, f"unsafe v0.9 assessment claim: {key}")
     assessed_at = parse_time(authorization_assessment["evaluated_at"])
     require(at >= assessed_at, "execution predates v0.9 authorization assessment")
     require(at - assessed_at <= timedelta(minutes=policy["maximum_v09_assessment_age_minutes"]), "v0.9 authorization assessment too old")
@@ -221,12 +257,15 @@ def validate_request(request: dict[str, Any], envelope: dict[str, Any], authoriz
     claims = request.get("claims") or {}
     require(claims.get("explicit_execution_event_requested") is True and claims.get("exact_authorization_bound") is True, "execution request boundary missing")
     require(claims.get("credential_embedded") is False, "credential material must not be embedded")
+    for key in ["executor_invoked", "external_mutation_performed", "ownership_transfer_requested", "predecessor_access_removal_requested", "canonical_origin_mutation_requested", "canonical_publication_requested", "kontur_activation_requested"]:
+        require(claims.get(key) is False, f"unsafe execution request claim: {key}")
 
 
-def _receipt_claims(mutation: bool, verified: bool) -> dict[str, Any]:
+def _receipt_claims(mutation: bool, may_have_occurred: bool, verified: bool) -> dict[str, Any]:
     return {
         "executor_invoked":True,"exact_authorization_consumed_locally":True,
-        "external_mutation_performed":mutation,"exact_external_transition_verified":verified,
+        "external_mutation_performed":mutation,"external_mutation_may_have_occurred":may_have_occurred,
+        "exact_external_transition_verified":verified,
         "credential_material_persisted":False,"repository_ownership_transferred":False,
         "account_control_transferred":False,"predecessor_access_removed":False,
         "canonical_origin_mutated":False,"canonical_publication_executed":False,
@@ -234,7 +273,7 @@ def _receipt_claims(mutation: bool, verified: bool) -> dict[str, Any]:
     }
 
 
-def _make_receipt(envelope: dict[str, Any], authorization: dict[str, Any], authorization_assessment: dict[str, Any], request: dict[str, Any], adapter_id: str, started: datetime, completed: datetime, result: str, preflight: dict[str, Any], operation_results: list[dict[str, Any]], post: dict[str, Any] | None, mutation: bool, verified: bool) -> dict[str, Any]:
+def _make_receipt(envelope: dict[str, Any], authorization: dict[str, Any], authorization_assessment: dict[str, Any], request: dict[str, Any], adapter_id: str, started: datetime, completed: datetime, result: str, preflight: dict[str, Any], operation_results: list[dict[str, Any]], post: dict[str, Any] | None, mutation: bool, may_have_occurred: bool, verified: bool) -> dict[str, Any]:
     value = {
         "artifact_type":"CHSPExternalExecutionReceipt","artifact_version":"1.0",
         "receipt_id":"urn:uu-aap:chsp:external-execution-receipt:" + sha256_json({"request":request["request_sha256"],"started":iso_z(started),"adapter":adapter_id})[:24],
@@ -243,7 +282,7 @@ def _make_receipt(envelope: dict[str, Any], authorization: dict[str, Any], autho
         "provider_adapter_id":adapter_id,"started_at":iso_z(started),"completed_at":iso_z(completed),"result":result,
         "preflight_observed_role":preflight["role"],"preflight_evidence_sha256":preflight["evidence_sha256"],
         "operation_results":operation_results,"post_observed_role":None if post is None else post["role"],"post_evidence_sha256":None if post is None else post["evidence_sha256"],
-        "receipt_sha256":"0"*64,"claims":_receipt_claims(mutation, verified),
+        "receipt_sha256":"0"*64,"claims":_receipt_claims(mutation, may_have_occurred, verified),
     }
     value["receipt_sha256"] = self_digest(value, "receipt_sha256")
     return value
@@ -258,6 +297,13 @@ def execute_exact_transition(
     adapter_id = getattr(adapter, "adapter_id", "")
     require(isinstance(adapter_id, str) and adapter_id, "provider adapter id required")
 
+    # Already-consumed exact authorizations fail before any new provider read. Creation of
+    # this reservation still occurs only after the complete first-execution preflight below.
+    if reservation_exists(state_dir, "executed-authorizations", authorization["authorization_sha256"]):
+        raise ValueError("local reservation already exists for executed-authorizations")
+    if reservation_exists(state_dir, "executed-requests", request["request_sha256"]):
+        raise ValueError("local reservation already exists for executed-requests")
+
     preflight = adapter.observe(envelope)
     require(preflight.get("role") in ROLE_RANK, "adapter returned invalid role")
     require(HEX64_RE.fullmatch(preflight.get("evidence_sha256", "")) is not None, "adapter preflight evidence digest invalid")
@@ -269,7 +315,7 @@ def execute_exact_transition(
             plans.append({"supported":True,"mutation_needed":False,"projected_role":preflight["role"],"reason":"receipt-local protocol record"})
         else:
             plans.append(adapter.preflight(op, preflight, policy))
-    require(all(p.get("supported") is True for p in plans), "provider adapter cannot safely execute every operation")
+    require(all(isinstance(p, dict) and p.get("supported") is True for p in plans), "provider adapter cannot safely execute every operation")
     require(sum(1 for p in plans if p.get("mutation_needed") is True) <= policy["maximum_provider_mutations"], "provider preflight exceeds one-mutation limit")
 
     reservation = {"authorization_sha256":authorization["authorization_sha256"],"request_sha256":request["request_sha256"],"reserved_at":iso_z(started),"claims":{"global_replay_prevention_established":False}}
@@ -280,6 +326,7 @@ def execute_exact_transition(
     results: list[dict[str, Any]] = []
     mutation_attempted = False
     mutation_performed = False
+    mutation_may_have_occurred = False
     failed = False
     uncertain = False
     for op, plan in zip(envelope["operations"], plans):
@@ -289,23 +336,31 @@ def execute_exact_transition(
         if op["kind"] == "record_external_stewardship_mapping":
             results.append({"operation_id":op["operation_id"],"kind":op["kind"],"status":"recorded_in_receipt","mutation_attempted":False,"mutation_performed":False,"before_role":current["role"],"after_role":current["role"],"provider_evidence_sha256":current["evidence_sha256"],"provider_request_id":None,"reason":"protocol-local record"})
             continue
+        planned_mutation = plan.get("mutation_needed") is True
         try:
+            # Crossing into adapter.apply for a preflighted mutating operation means a
+            # provider write may have occurred even if the call later raises or times out.
+            if planned_mutation:
+                mutation_attempted = True
+                mutation_may_have_occurred = True
             outcome = adapter.apply(op, current, policy)
             attempted = bool(outcome.get("mutation_attempted"))
             changed = bool(outcome.get("mutation_performed"))
             mutation_attempted = mutation_attempted or attempted
             mutation_performed = mutation_performed or changed
+            mutation_may_have_occurred = mutation_may_have_occurred or attempted or changed
             after = outcome.get("observation") or current
             require(after.get("role") in ROLE_RANK and HEX64_RE.fullmatch(after.get("evidence_sha256", "")) is not None, "adapter returned invalid post-operation observation")
             status = outcome.get("status")
             require(status in {"already_satisfied", "changed", "verification_failed"}, "adapter returned invalid operation status")
             if status == "verification_failed":
                 failed, uncertain = True, True
-            results.append({"operation_id":op["operation_id"],"kind":op["kind"],"status":status,"mutation_attempted":attempted,"mutation_performed":changed,"before_role":current["role"],"after_role":after["role"],"provider_evidence_sha256":after["evidence_sha256"],"provider_request_id":outcome.get("request_id"),"reason":str(outcome.get("reason", ""))})
+            results.append({"operation_id":op["operation_id"],"kind":op["kind"],"status":status,"mutation_attempted":attempted or planned_mutation,"mutation_performed":changed,"before_role":current["role"],"after_role":after["role"],"provider_evidence_sha256":after["evidence_sha256"],"provider_request_id":outcome.get("request_id"),"reason":str(outcome.get("reason", ""))})
             current = after
         except Exception as exc:
             failed = True
-            results.append({"operation_id":op["operation_id"],"kind":op["kind"],"status":"rejected","mutation_attempted":False,"mutation_performed":False,"before_role":current["role"],"after_role":current["role"],"provider_evidence_sha256":current["evidence_sha256"],"provider_request_id":None,"reason":f"adapter failure: {type(exc).__name__}"})
+            uncertain = uncertain or planned_mutation
+            results.append({"operation_id":op["operation_id"],"kind":op["kind"],"status":"rejected","mutation_attempted":planned_mutation,"mutation_performed":False,"before_role":current["role"],"after_role":current["role"],"provider_evidence_sha256":current["evidence_sha256"],"provider_request_id":None,"reason":f"adapter failure: {type(exc).__name__}"})
 
     post: dict[str, Any] | None = None
     if not failed or mutation_attempted:
@@ -338,12 +393,17 @@ def execute_exact_transition(
         result = "failed_after_mutation"
     else:
         result = "failed_before_mutation"
-    return _make_receipt(envelope, authorization, authorization_assessment, request, adapter_id, started, completed, result, preflight, results, post, mutation_performed, verified)
+    return _make_receipt(envelope, authorization, authorization_assessment, request, adapter_id, started, completed, result, preflight, results, post, mutation_performed, mutation_may_have_occurred, verified)
 
 
 def assess_execution(receipt: dict[str, Any], evaluated_at: str) -> dict[str, Any]:
     require(receipt.get("artifact_type") == "CHSPExternalExecutionReceipt" and receipt.get("artifact_version") == "1.0", "CHSPExternalExecutionReceipt v1.0 required")
     require(_valid_self(receipt, "receipt_sha256"), "execution receipt self-digest mismatch")
+    claims = receipt.get("claims") or {}
+    require(claims.get("executor_invoked") is True and claims.get("exact_authorization_consumed_locally") is True, "execution receipt boundary missing")
+    require(claims.get("credential_material_persisted") is False, "credential persistence claim unsafe")
+    for key in ["repository_ownership_transferred", "account_control_transferred", "predecessor_access_removed", "canonical_origin_mutated", "canonical_publication_executed", "kontur_activated", "global_provider_state_proven"]:
+        require(claims.get(key) is False, f"unsafe execution receipt claim: {key}")
     result = receipt["result"]
     if result == "verified_success":
         state, decision, reasons = "execution_verified_changed", "external_transition_effect_may_be_recorded", []
