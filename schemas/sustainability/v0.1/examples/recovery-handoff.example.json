@@ -1,0 +1,37 @@
+{
+  "document_type": "uu-aap.recovery-handoff",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "handoff_id": "handoff-example-0001",
+  "created_at": "2026-08-23T16:44:00Z",
+  "source_context": {
+    "context_id": "parallel-sustainability-context",
+    "last_observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+    "observer": "human-supervised-assistant"
+  },
+  "recovery_checkpoint_ref": "schemas/sustainability/v0.1/examples/project-recovery-checkpoint.example.json",
+  "capability_ceiling_ref": "schemas/sustainability/v0.1/examples/capability-ceiling.example.json",
+  "authority_transfer": false,
+  "requires_fresh_external_observation": true,
+  "safe_resume_mode": "observe-only",
+  "unresolved_items": [
+    {
+      "id": "main-line-progress-after-observation",
+      "state": "unknown",
+      "external_effect_possible": true,
+      "notes": "Re-observe current main and any active pull requests before interpreting prior state."
+    }
+  ],
+  "prohibited_resume_assumptions": [
+    "assume_main_unchanged",
+    "assume_authorization_still_valid",
+    "assume_prior_intent_equals_current_intent",
+    "assume_paused_work_is_safe_to_execute",
+    "infer_new_capability_from_handoff",
+    "treat_handoff_as_execution_authorization"
+  ],
+  "notes": [
+    "This handoff transfers information only, not authority.",
+    "A receiving context must freshly observe mutable external state before proposing continuation."
+  ]
+}
