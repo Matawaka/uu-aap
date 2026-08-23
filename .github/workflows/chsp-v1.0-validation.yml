@@ -125,10 +125,14 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           workflow = Path('.github/workflows/chsp-v1.0-validation.yml').read_text(encoding='utf-8')
-          assert 'execute_github.py --' not in workflow
-          assert 'CHSP_GITHUB_TOKEN:' not in workflow
-          assert 'secrets.' not in workflow
-          assert 'pull_request_target' not in workflow
+          execution_invocation = 'execute_' + 'github.py --'
+          token_binding = 'CHSP_' + 'GITHUB_TOKEN:'
+          secret_reference = 'secrets' + '.'
+          privileged_event = 'pull_request' + '_target'
+          assert execution_invocation not in workflow
+          assert token_binding not in workflow
+          assert secret_reference not in workflow
+          assert privileged_event not in workflow
           entry = Path('protocols/chsp/v1.0/execute_github.py').read_text(encoding='utf-8')
           assert '--commit' in entry
           assert '--authorization-sha256' in entry
