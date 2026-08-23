@@ -38,7 +38,7 @@ def expect_fail(fn, contains=None):
     raise AssertionError("operation unexpectedly succeeded")
 
 
-def make_chain(base, initial_role="collaborator", intended_role="maintainer", include_mapping=True):
+def make_chain(base, initial_role="absent", intended_role="collaborator", include_mapping=True):
     operations = [{"operation_id":"op-role","kind":"ensure_role_at_least","intended_role":intended_role,"force":False,"destructive":False}]
     if include_mapping:
         operations.append({"operation_id":"op-record","kind":"record_external_stewardship_mapping","intended_role":None,"force":False,"destructive":False})
@@ -88,7 +88,7 @@ def make_chain(base, initial_role="collaborator", intended_role="maintainer", in
 
 class FakeAdapter:
     adapter_id = "fake-provider-v1.0"
-    def __init__(self, role="collaborator", fail_verify=False, raise_on_apply=False):
+    def __init__(self, role="absent", fail_verify=False, raise_on_apply=False):
         self.role = role
         self.fail_verify = fail_verify
         self.raise_on_apply = raise_on_apply
@@ -103,7 +103,7 @@ class FakeAdapter:
         if op["kind"] == "ensure_release_signer_binding":
             return {"supported":False,"mutation_needed":False,"projected_role":observation["role"],"reason":"unsupported"}
         if op["kind"] == "ensure_principal_presence":
-            return {"supported":observation["role"] != "absent","mutation_needed":False,"projected_role":observation["role"],"reason":"presence"}
+            return {"supported":observation["role"] in {"collaborator","owner"},"mutation_needed":False,"projected_role":observation["role"],"reason":"presence"}
         if op["kind"] == "ensure_role_at_least":
             target = op["intended_role"]
             need = C.ROLE_RANK[observation["role"]] < C.ROLE_RANK[target]
@@ -119,7 +119,7 @@ class FakeAdapter:
         self.role = op["intended_role"]
         after = self.observation()
         if self.fail_verify:
-            after = {"role":"collaborator","evidence_sha256":C.sha256_json({"role":"collaborator","failed":True}),"request_id":"fake-failed"}
+            after = {"role":"absent","evidence_sha256":C.sha256_json({"role":"absent","failed":True}),"request_id":"fake-failed"}
             return {"status":"verification_failed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":"fake-write","reason":"synthetic verification failure"}
         return {"status":"changed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":"fake-write","reason":"synthetic change"}
 
@@ -133,16 +133,17 @@ def main():
     C.validate_policy(policy)
     base = datetime(2026, 8, 23, 16, 40, tzinfo=timezone.utc)
 
-    # Positive changed execution.
+    # Positive personal-repository collaborator transition.
     with tempfile.TemporaryDirectory(prefix="chsp-v10-positive-") as td:
         state = Path(td)
         envelope, recheck, auth, assessment = make_chain(base)
         request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=7))
-        adapter = FakeAdapter("collaborator")
+        adapter = FakeAdapter("absent")
         receipt = C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, adapter, state, z(base+timedelta(minutes=7, seconds=30)))
         assert receipt["result"] == "verified_success"
         assert adapter.writes == 1
         assert receipt["claims"]["external_mutation_performed"] is True
+        assert receipt["claims"]["external_mutation_may_have_occurred"] is True
         assert receipt["claims"]["exact_external_transition_verified"] is True
         assert receipt["claims"]["repository_ownership_transferred"] is False
         final = C.assess_execution(receipt, z(base+timedelta(minutes=8)))
@@ -150,19 +151,21 @@ def main():
         assert final["decision"] == "external_transition_effect_may_be_recorded"
         serialized = json.dumps(receipt)
         assert "CHSP_GITHUB_TOKEN" not in serialized and "token-secret" not in serialized
-        replay_adapter = FakeAdapter("collaborator")
+        replay_adapter = FakeAdapter("absent")
         expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, replay_adapter, state, z(base+timedelta(minutes=8))), "executed-authorizations")
-        assert replay_adapter.writes == 0
+        assert replay_adapter.writes == 0 and replay_adapter.observes == 0
 
-    # No-change execution still consumes exact authorization once.
+    # No-change collaborator execution still consumes exact authorization once.
     with tempfile.TemporaryDirectory(prefix="chsp-v10-nochange-") as td:
         state = Path(td)
-        envelope, recheck, auth, assessment = make_chain(base, initial_role="maintainer")
+        envelope, recheck, auth, assessment = make_chain(base, initial_role="collaborator")
         request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=7))
-        adapter = FakeAdapter("maintainer")
+        adapter = FakeAdapter("collaborator")
         receipt = C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, adapter, state, z(base+timedelta(minutes=7, seconds=20)))
         assert receipt["result"] == "no_change_verified"
         assert adapter.writes == 0
+        assert receipt["claims"]["external_mutation_performed"] is False
+        assert receipt["claims"]["external_mutation_may_have_occurred"] is False
         assert C.assess_execution(receipt, z(base+timedelta(minutes=8)))["state"] == "execution_verified_no_change"
 
     # Live provider drift after v0.9 recheck is blocked before mutation and before authorization consumption.
@@ -170,13 +173,13 @@ def main():
         state = Path(td)
         envelope, recheck, auth, assessment = make_chain(base)
         request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=7))
-        adapter = FakeAdapter("identity_only")
+        adapter = FakeAdapter("collaborator")
         expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, adapter, state, z(base+timedelta(minutes=7, seconds=10))), "drifted")
         assert adapter.writes == 0
         assert not (state / "executed-authorizations").exists()
 
-    # v1.0 role cap refuses admin even if v0.8 could describe it.
-    envelope, recheck, auth, assessment = make_chain(base, intended_role="admin")
+    # v1.0 personal-repository role cap refuses maintain/admin semantics.
+    envelope, recheck, auth, assessment = make_chain(base, intended_role="maintainer")
     expect_fail(lambda: C.validate_predecessors(envelope, recheck, auth, assessment, policy, base+timedelta(minutes=7)), "role exceeds")
 
     # Unsupported signer transition fails in provider preflight before mutation consumption.
@@ -189,7 +192,7 @@ def main():
         auth["v08_envelope_sha256"] = envelope["envelope_sha256"]; auth["execution_recheck_sha256"] = recheck["recheck_sha256"]; auth["operations_sha256"] = C.sha256_json(envelope["operations"]); auth["authorization_sha256"] = C.self_digest(auth, "authorization_sha256")
         assessment["v08_envelope_sha256"] = envelope["envelope_sha256"]; assessment["execution_recheck_sha256"] = recheck["recheck_sha256"]; assessment["authorization_sha256"] = auth["authorization_sha256"]; assessment["assessment_sha256"] = C.self_digest(assessment, "assessment_sha256")
         request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=7))
-        adapter = FakeAdapter("collaborator")
+        adapter = FakeAdapter("absent")
         expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, adapter, state, z(base+timedelta(minutes=7, seconds=10))), "cannot safely execute")
         assert adapter.writes == 0
 
@@ -198,25 +201,41 @@ def main():
         state = Path(td)
         envelope, recheck, auth, assessment = make_chain(base)
         request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=7))
-        adapter = FakeAdapter("collaborator", fail_verify=True)
+        adapter = FakeAdapter("absent", fail_verify=True)
         receipt = C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, adapter, state, z(base+timedelta(minutes=7, seconds=20)))
         assert receipt["result"] in {"verification_uncertain","failed_after_mutation"}
+        assert receipt["claims"]["external_mutation_performed"] is True
+        assert receipt["claims"]["external_mutation_may_have_occurred"] is True
         assert receipt["claims"]["exact_external_transition_verified"] is False
         assert C.assess_execution(receipt, z(base+timedelta(minutes=8)))["decision"] == "investigate_provider_state_before_further_action"
+
+    # Provider call raises after crossing a preflighted write boundary: occurrence stays uncertain.
+    with tempfile.TemporaryDirectory(prefix="chsp-v10-provider-exception-") as td:
+        state = Path(td)
+        envelope, recheck, auth, assessment = make_chain(base)
+        request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=7))
+        adapter = FakeAdapter("absent", raise_on_apply=True)
+        receipt = C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, adapter, state, z(base+timedelta(minutes=7, seconds=20)))
+        assert receipt["result"] == "verification_uncertain"
+        assert receipt["claims"]["external_mutation_performed"] is False
+        assert receipt["claims"]["external_mutation_may_have_occurred"] is True
+        assert receipt["claims"]["exact_external_transition_verified"] is False
 
     # Stale execution request is independently fail-closed while v0.9 assessment is still just fresh enough.
     with tempfile.TemporaryDirectory(prefix="chsp-v10-stale-") as td:
         state = Path(td)
         envelope, recheck, auth, assessment = make_chain(base)
         request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=5))
-        expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, FakeAdapter("collaborator"), state, z(base+timedelta(minutes=8))), "request too old")
+        expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, FakeAdapter("absent"), state, z(base+timedelta(minutes=8))), "request too old")
         bad = copy.deepcopy(auth); bad["claims"]["ownership_transfer_authorized"] = True
         expect_fail(lambda: C.validate_predecessors(envelope, recheck, bad, assessment, policy, base+timedelta(minutes=7)), "self-digest mismatch")
 
     # Pure GitHub adapter mappings are testable without network.
     assert G.parse_target({"external_system_type":"github_repository","external_system_id":"Matawaka/uu-aap","external_principal_id":"github:successor"}) == ("Matawaka","uu-aap","successor")
-    assert G.ROLE_TO_PERMISSION["maintainer"] == "maintain"
-    assert "admin" not in G.ROLE_TO_PERMISSION and "owner" not in G.ROLE_TO_PERMISSION
+    assert G.EXECUTABLE_TARGET_ROLE == "collaborator"
+    assert G.PERMISSION_TO_ROLE["write"] == "collaborator"
+    assert G.PERMISSION_TO_ROLE["read"] == "absent"
+    assert "maintainer" not in G.ROLE_RANK and "admin" not in G.ROLE_RANK
     expect_fail(lambda: G.parse_target({"external_system_type":"github_repository","external_system_id":"Matawaka/uu-aap","external_principal_id":"github:bad/user"}), "invalid GitHub login")
 
     print("CHSP v1.0 tests: PASS")
