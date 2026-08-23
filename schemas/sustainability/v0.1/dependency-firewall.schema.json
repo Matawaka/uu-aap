@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/dependency-firewall.schema.json",
+  "title": "UU-AAP Parallel Dependency Firewall v0.1",
+  "description": "Non-normative draft enforcing one-way observation: a parallel side-track may depend on observations of main, while main must not become operationally dependent on the side-track merely because the side-track exists.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "parallel_ref",
+    "main_ref",
+    "parallel_may_observe_main",
+    "main_must_not_wait_for_parallel",
+    "main_must_not_require_parallel_artifacts",
+    "parallel_cannot_block_main_progress",
+    "parallel_output_is_advisory_until_adopted",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.parallel-dependency-firewall"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "parallel_ref": {"type": "string", "minLength": 1},
+    "main_ref": {"type": "string", "minLength": 1},
+    "parallel_may_observe_main": {"const": true},
+    "main_must_not_wait_for_parallel": {"const": true},
+    "main_must_not_require_parallel_artifacts": {"const": true},
+    "parallel_cannot_block_main_progress": {"const": true},
+    "parallel_output_is_advisory_until_adopted": {"const": true},
+    "forbidden_backpressure": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "require_main_to_pause",
+          "require_main_to_merge_parallel_first",
+          "require_active_pr_to_rebase_on_parallel",
+          "treat_parallel_validation_as_main_gate",
+          "treat_parallel_artifact_as_canonical_dependency",
+          "create_main_workflow_dependency"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "adoption_requires_explicit_event": {"const": true},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
