@@ -1,0 +1,91 @@
+name: CHSP v1.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v1.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v1.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Validate CHSP v1.1 Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protocols/chsp/v1.1/chsp_v11.py protocols/chsp/v1.1/test_chsp_v11.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for p in sorted(Path('protocols/chsp/v1.1').glob('*.json')):
+              json.load(p.open(encoding='utf-8')); print('validated',p)
+          PY
+      - name: Exercise CHSP v1.1 stabilization boundaries
+        run: python3 protocols/chsp/v1.1/test_chsp_v11.py
+      - name: Keep CHSP v1.0 green
+        run: python3 protocols/chsp/v1.0/test_chsp_v10.py
+      - name: Keep CHSP v0.9 green
+        run: python3 protocols/chsp/v0.9/test_chsp_v09.py
+      - name: Keep CHSP v0.8 green
+        run: python3 protocols/chsp/v0.8/test_chsp_v08.py
+      - name: Keep CHSP v0.7 green
+        run: python3 protocols/chsp/v0.7/test_chsp_v07.py
+      - name: Keep CHSP v0.6 green
+        run: python3 protocols/chsp/v0.6/test_chsp_v06.py
+      - name: Keep CHSP v0.5 green
+        run: python3 protocols/chsp/v0.5/test_chsp_v05.py
+      - name: Keep CHSP v0.4 green
+        run: python3 protocols/chsp/v0.4/test_chsp_v04.py
+      - name: Keep CHSP v0.3 green
+        run: python3 protocols/chsp/v0.3/test_chsp_v03.py
+      - name: Keep CHSP v0.2 green
+        run: python3 protocols/chsp/v0.2/test_chsp_v02.py
+      - name: Keep CHSP v0.1 green
+        run: python3 protocols/chsp/v0.1/test_chsp.py
+      - name: Keep Human Canonical Recognition v0.6 green
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+      - name: Assert CHSP v1.1 is read-only and network-free
+        run: |
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          tree=ast.parse(Path('protocols/chsp/v1.1/chsp_v11.py').read_text())
+          forbidden={'socket','urllib','http','requests','subprocess','git','paramiko','ftplib'};found=set()
+          for n in ast.walk(tree):
+              if isinstance(n,ast.Import): found.update(a.name.split('.')[0] for a in n.names if a.name.split('.')[0] in forbidden)
+              elif isinstance(n,ast.ImportFrom) and n.module and n.module.split('.')[0] in forbidden: found.add(n.module.split('.')[0])
+          assert not found,found
+          print('read-only/network-free v1.1 surface: PASS')
+          PY
+      - name: Assert recognition claims stay bounded
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=Path('protocols/chsp/v1.1');p=json.load((r/'reference.chsp-external-effect-stabilization-policy.json').open());assert p['minimum_stabilization_hours']==24 and p['minimum_supportive_observations']==3 and p['minimum_observer_domains']==2;assert p['requirements']['automatic_external_mutation'] is False and p['requirements']['automatic_recognition'] is False
+          c=json.load((r/'chsp-external-effect-recognition.schema.json').open())['properties']['claims']['properties'];assert c['external_effect_recognized']['const'] is True
+          for k in ['permanent_availability_proven','repository_ownership_transferred','account_control_transferred','predecessor_access_removed','canonical_origin_mutated','canonical_publication_executed','kontur_activated','legal_ownership_adjudicated','global_provider_state_proven','distributed_consensus_established']: assert c[k]['const'] is False,k
+          print('bounded external-effect recognition claims: PASS')
+          PY
