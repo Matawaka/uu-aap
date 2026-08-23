@@ -1,0 +1,6 @@
+{
+  "schema":"urn:uu-aap:continuity:policy:v0.2",
+  "metadata_capture":{"mode":"read_only","required_core_datasets":["repository","main_branch","issues","pulls","issue_comments","pull_review_comments","releases","workflow_runs"],"optional_explicit_datasets":["rulesets","discussions"],"generated_snapshots_must_not_be_committed_publicly":true},
+  "mirror_verification":{"mode":"read_only","exact_refs_required_for_positive_receipt":true,"credential_bearing_urls_forbidden":true,"remote_mutation_permitted":false},
+  "authority":{"copy_is_canonical_successor":false,"mirror_is_authority_transfer":false,"metadata_snapshot_is_truth_certification":false,"kontur_activation_permitted":false}
+}
