@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-dual-control-handover-v0.3.json",
+  "title": "CHSPDualControlHandover v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","handover_id","project_id","candidate_id","predecessor_steward_id","final_recognition_sha256","predecessor_disposition_sha256","participation_mode","scopes","authorized_by_human_id","authorization_evidence_sha256","window_started_at","window_ends_at","nonce","handover_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPDualControlHandover"},
+    "artifact_version": {"const": "0.3"},
+    "handover_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "final_recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "participation_mode": {"enum": ["predecessor_participating","predecessor_protocol_unavailability_alternative"]},
+    "scopes": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"enum": ["canonical_review","release_review","incident_coordination","policy_draft_review","supervised_release_preparation","provenance_verification","succession_package_validation","canonical_publication_preparation"]}
+    },
+    "authorized_by_human_id": {"type": "string", "minLength": 1},
+    "authorization_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "window_started_at": {"type": "string", "format": "date-time"},
+    "window_ends_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "handover_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["bounded_dual_control_recorded","nonexclusive","revocable","appeal_path_preserved","recovery_path_preserved","external_execution_performed","exclusive_successor_authority","canonical_successor_established","canonical_publication_authorized","ownership_transferred","account_control_transferred","kontur_activated"],
+      "properties": {
+        "bounded_dual_control_recorded": {"const": true},
+        "nonexclusive": {"const": true},
+        "revocable": {"const": true},
+        "appeal_path_preserved": {"const": true},
+        "recovery_path_preserved": {"const": true},
+        "external_execution_performed": {"const": false},
+        "exclusive_successor_authority": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "canonical_publication_authorized": {"const": false},
+        "ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "kontur_activated": {"const": false}
+      }
+    }
+  }
+}
