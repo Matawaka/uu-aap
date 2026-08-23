@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/canonicalization-policy.schema.json",
+  "title": "UU-AAP CanonicalizationPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "policy_id",
+    "policy_version",
+    "canonicality_scope",
+    "applies_to",
+    "recognition_rule",
+    "effective_from",
+    "effective_until",
+    "poai_adapter_boundary",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)canonicalization-policy\\.schema\\.json$"},
+    "artifact_type": {"const": "UU-AAPCanonicalizationPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"type": "string", "pattern": "^urn:uu-aap:canonicalization-policy:"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "canonicality_scope": {"type": "string", "pattern": "^urn:uu-aap:canonicality-scope:"},
+    "applies_to": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["target", "observation_mode", "observation_source", "outcome_scope"],
+      "properties": {
+        "target": {"type": "string", "minLength": 1},
+        "observation_mode": {"const": "git_object_database_readback"},
+        "observation_source": {"const": "local_git_object_database"},
+        "outcome_scope": {"const": "local_git_successor_object"}
+      }
+    },
+    "recognition_rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "require_observation_match",
+        "require_execution_lineage",
+        "require_authority_input",
+        "require_pre_materialization_permission_input",
+        "conflict_mode",
+        "active_stay_blocks_recognition"
+      ],
+      "properties": {
+        "require_observation_match": {"const": true},
+        "require_execution_lineage": {"const": true},
+        "require_authority_input": {"const": true},
+        "require_pre_materialization_permission_input": {"const": true},
+        "conflict_mode": {"const": "single_head_no_unresolved_conflict"},
+        "active_stay_blocks_recognition": {"const": true}
+      }
+    },
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"type": ["string", "null"], "format": "date-time"},
+    "poai_adapter_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_git_successor_is_poai_successor_record",
+        "typed_poai_successor_adapter_required",
+        "canonicalization_receipt_is_poai_materialization_event"
+      ],
+      "properties": {
+        "observed_git_successor_is_poai_successor_record": {"const": false},
+        "typed_poai_successor_adapter_required": {"const": true},
+        "canonicalization_receipt_is_poai_materialization_event": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "remote_branch_or_ref_canonicality_established",
+        "poai_materialization_event_recorded",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_responsibility_determined",
+        "legal_effect_established",
+        "moral_correctness_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "remote_branch_or_ref_canonicality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  }
+}

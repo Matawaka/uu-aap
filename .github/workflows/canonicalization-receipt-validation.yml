@@ -1,0 +1,182 @@
+name: CanonicalizationReceipt policy validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/canonicalization-receipt-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/canonicalization-receipt-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  canonicalization-receipt:
+    name: CanonicalizationReceipt policy validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check CanonicalizationReceipt JavaScript
+        run: |
+          node --check protocols/integration/v0.1/evaluate-canonicalization.js
+          node --check protocols/integration/v0.1/test-canonicalization-receipt.js
+
+      - name: Validate canonicalization policy and receipt schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('protocols/integration/v0.1')
+          policy_schema = json.loads((root / 'canonicalization-policy.schema.json').read_text(encoding='utf-8'))
+          receipt_schema = json.loads((root / 'canonicalization-receipt.schema.json').read_text(encoding='utf-8'))
+          policy = json.loads((root / 'policies/integration-local-git-object-database.canonicalization-policy.json').read_text(encoding='utf-8'))
+
+          Draft202012Validator.check_schema(policy_schema)
+          Draft202012Validator.check_schema(receipt_schema)
+          Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
+          print('VALID schemas and repository-scoped canonicalization policy')
+          PY
+
+      - name: Reproduce ObservationReceipt then evaluate canonicalization policy
+        run: |
+          node protocols/integration/v0.1/test-canonicalization-receipt.js \
+            /tmp/canonicalization-receipt.json \
+            /tmp/canonicalization-observation.json \
+            /tmp/canonicalization-commit-receipt.json \
+            /tmp/canonicalization-decision.json \
+            /tmp/canonicalization-decision-input.json \
+            /tmp/canonicalization-revalidation.json
+
+      - name: Validate CanonicalizationReceipt and assurance boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('protocols/integration/v0.1')
+          schema = json.loads((root / 'canonicalization-receipt.schema.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('/tmp/canonicalization-receipt.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(receipt)
+
+          assert receipt['canonicality_claim']['status'] == 'recognized'
+          assert receipt['canonicality_claim']['scope'] == 'urn:uu-aap:canonicality-scope:integration-local-git-object-database'
+          assert receipt['policy']['policy_id'] == 'urn:uu-aap:canonicalization-policy:integration-local-git-object-database:0.1'
+          assert receipt['recognized_state']['revision'].startswith('git:')
+          assert len(receipt['recognized_state']['commit_sha']) == 40
+          assert len(receipt['recognized_state']['tree_sha']) == 40
+          assert receipt['recognized_state']['changed_path_count'] == len(receipt['recognized_state']['changed_paths'])
+          assert all(receipt['verification'].values())
+
+          claims = receipt['claims']
+          for key in [
+              'observation_predecessor_accepted',
+              'execution_lineage_exact',
+              'authority_input_preserved',
+              'pre_materialization_permission_input_preserved',
+              'policy_evaluation_passed',
+              'policy_relative_canonicality_established',
+          ]:
+              assert claims[key] is True, key
+
+          for key in [
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'poai_successor_record_identity_inferred',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'legal_effect_established',
+              'moral_correctness_established',
+              'poai_v_conformance_established',
+          ]:
+              assert claims[key] is False, key
+
+          boundary = receipt['poai_adapter_boundary']
+          assert boundary['observed_git_successor_is_poai_successor_record'] is False
+          assert boundary['typed_poai_successor_adapter_present'] is False
+          assert boundary['poai_materialization_equivalence_inferred'] is False
+
+          for key in [
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'poai_successor_record_identity_inferred',
+              'universal_canonicality_established',
+              'truth_certified',
+              'legal_effect_established',
+          ]:
+              bad = copy.deepcopy(receipt)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden overclaim: {key}')
+
+          bad = copy.deepcopy(receipt)
+          bad['claims']['policy_relative_canonicality_established'] = False
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted loss of policy-relative canonicality claim')
+
+          bad = copy.deepcopy(receipt)
+          bad['poai_adapter_boundary']['observed_git_successor_is_poai_successor_record'] = True
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted implicit Git-to-PoAI successor equivalence')
+
+          print('CanonicalizationReceipt recognizes only the declared local policy scope; PoAI/remote/universal claims remain false')
+          PY
+
+      - name: Confirm canonicalization produced no ref or working-tree mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

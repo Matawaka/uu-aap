@@ -1,0 +1,40 @@
+{
+  "$schema": "../canonicalization-policy.schema.json",
+  "artifact_type": "UU-AAPCanonicalizationPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:canonicalization-policy:integration-local-git-object-database:0.1",
+  "policy_version": 1,
+  "canonicality_scope": "urn:uu-aap:canonicality-scope:integration-local-git-object-database",
+  "applies_to": {
+    "target": "github:Matawaka/uu-aap",
+    "observation_mode": "git_object_database_readback",
+    "observation_source": "local_git_object_database",
+    "outcome_scope": "local_git_successor_object"
+  },
+  "recognition_rule": {
+    "require_observation_match": true,
+    "require_execution_lineage": true,
+    "require_authority_input": true,
+    "require_pre_materialization_permission_input": true,
+    "conflict_mode": "single_head_no_unresolved_conflict",
+    "active_stay_blocks_recognition": true
+  },
+  "effective_from": "2026-08-23T07:40:00Z",
+  "effective_until": null,
+  "poai_adapter_boundary": {
+    "observed_git_successor_is_poai_successor_record": false,
+    "typed_poai_successor_adapter_required": true,
+    "canonicalization_receipt_is_poai_materialization_event": false
+  },
+  "claims": {
+    "remote_branch_or_ref_canonicality_established": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false,
+    "truth_certified": false,
+    "causal_proof_certified": false,
+    "legal_responsibility_determined": false,
+    "legal_effect_established": false,
+    "moral_correctness_established": false,
+    "poai_v_conformance_established": false
+  }
+}
