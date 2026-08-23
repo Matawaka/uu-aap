@@ -16,7 +16,7 @@
     "non_claims"
   ],
   "properties": {
-    "$schema": {"const": "./capability-requirement.schema.json"},
+    "$schema": {"enum": ["./capability-requirement.schema.json", "../capability-requirement.schema.json"]},
     "artifact_type": {"const": "ProtocolCapabilityRequirement"},
     "artifact_version": {"const": "0.1"},
     "requirement_id": {"type": "string", "minLength": 1},
