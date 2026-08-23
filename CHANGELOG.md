@@ -1,5 +1,25 @@
 # Changelog
 
+## Repository hardening — 2026-08-23 (non-normative)
+
+Repository-facing provenance, responsibility, licensing and checkpoint infrastructure was completed and cross-linked without changing UU-AAP v0.1 normative semantics.
+
+Key repository-state changes:
+
+- added canonical project-origin, attribution and anti-impersonation notice;
+- added repository-scoped responsibility boundaries to prevent responsibility laundering across forks, merges, AI-assisted work and downstream implementations;
+- added machine-readable project citation metadata and repository-scoped CODEOWNERS routing;
+- finalized the open licensing split: non-software content under CC BY 4.0 and software/implementation content under Apache-2.0, with full canonical license texts under `LICENSES/`;
+- added explicit contribution licensing (`inbound = outbound`) and contributor rights/provenance responsibility;
+- created and preserved product-protection checkpoint `uu-aap-product-protection-v0.1`;
+- created and preserved open-licensing checkpoint `uu-aap-licensing-v0.1`;
+- preserved predecessor PoAI authority and CCRP experimental checkpoint tags;
+- added `docs/CANONICAL-STATE.md` as the current non-normative map of release/checkpoint anchors, provenance documents, licensing state and repository-control boundaries;
+- clarified that GitHub Rulesets are administrative controls and are not equivalent to committed cryptographic evidence;
+- clarified that `.github/CODEOWNERS` is review-routing metadata and that mandatory code-owner approval must not be claimed unless repository rules actually enforce it with a safe reviewer/bypass model.
+
+These hardening changes do not establish legal identity, adjudicated copyright ownership, universal authority, factual truth, causality, downstream responsibility or PoAI/V conformance.
+
 ## 0.1 — 2026-08-22
 
 First public draft and first real-work pilot.

@@ -33,6 +33,20 @@ During 0.x, editors MAY merge changes after public review, but SHOULD document:
 
 Changes that weaken a principle in `PRINCIPLES.md` SHOULD require an explicit public proposal titled **Principle Change**.
 
+## Repository-state protection
+
+Historical release/checkpoint anchors are listed in [`FILE_HASHES.md`](FILE_HASHES.md) and summarized in [`docs/CANONICAL-STATE.md`](docs/CANONICAL-STATE.md).
+
+Repository administration SHOULD protect designated immutable release/checkpoint tags against update and deletion. GitHub Rulesets are operational controls and do not themselves redefine protocol semantics or prove legal/canonical claims beyond the repository-scoped state they protect.
+
+The repository contains [`.github/CODEOWNERS`](.github/CODEOWNERS) with `* @Matawaka` for repository-scoped review routing. CODEOWNERS metadata does not itself assert intellectual-property ownership and does not prove that code-owner approval is required by GitHub settings.
+
+At the current single-code-owner stage, mandatory independent code-owner approval SHOULD NOT be represented as a completed assurance unless a safe second-reviewer or explicit bypass model exists. A strict approval gate with only one eligible reviewer can deadlock self-authored pull requests and therefore may reduce governance availability rather than improve review quality.
+
+`review routing != independent approval`
+
+`repository control != universal authority`
+
 ## Future transition trigger
 
 The project SHOULD seek a more neutral standards venue when at least two of the following exist:

@@ -13,6 +13,35 @@ It is designed around a simple distinction:
 - humans and organizations can exercise authority, judgment and responsibility in defined scopes;
 - the protocol should make those relationships inspectable without pretending that authorship can be reduced to a “human/AI percentage”.
 
+## Canonical repository state, provenance and licensing
+
+The canonical repository is `https://github.com/Matawaka/uu-aap`.
+
+For the current map of release/checkpoint anchors, provenance documents, licensing state and repository-control boundaries, see [`docs/CANONICAL-STATE.md`](docs/CANONICAL-STATE.md).
+
+Key repository-facing records:
+
+- [`NOTICE.md`](NOTICE.md) — canonical origin, attribution and anti-impersonation boundary;
+- [`RESPONSIBILITY.md`](RESPONSIBILITY.md) — responsibility-laundering boundary;
+- [`LICENSE.md`](LICENSE.md) — finalized repository licensing map;
+- [`CONTRIBUTING.md`](CONTRIBUTING.md) — contribution licensing and provenance responsibility;
+- [`FILE_HASHES.md`](FILE_HASHES.md) — release/checkpoint integrity-anchor policy;
+- [`CITATION.cff`](CITATION.cff) — machine-readable project citation.
+
+The finalized open licensing model is:
+
+- non-software content → **CC BY 4.0**;
+- software and implementation content → **Apache-2.0**;
+- file-specific and third-party notices override repository defaults where applicable.
+
+Open reuse does not transfer canonical project status or endorsement.
+
+`permission to copy != canonical succession`
+
+`open license != endorsement`
+
+The first public draft remains anchored by tag `v0.1`. Later repository-scoped protection and licensing checkpoints are preserved as separate tags rather than silently redefining the release.
+
 ## Why this exists
 
 Content provenance standards can bind declarations to digital artifacts. Publishing policies can require AI disclosure. Neither alone describes the **governance of meaning**: who set the intent, selected among alternatives, validated claims, accepted uncertainty, and authorized publication.
@@ -69,6 +98,8 @@ Agreement is not required. Concrete counterexamples, privacy risks, implementati
 7. [`CONTESTABILITY.md`](CONTESTABILITY.md) — disputes, corrections and appeals.
 8. [`SECURITY.md`](SECURITY.md) — threat model and privacy limits.
 9. [`REFERENCES.md`](REFERENCES.md) — standards and adjacent work.
+10. [`docs/CANONICAL-STATE.md`](docs/CANONICAL-STATE.md) — canonical repository anchors, provenance, licensing and protection-status boundaries.
+11. [`NOTICE.md`](NOTICE.md), [`RESPONSIBILITY.md`](RESPONSIBILITY.md), [`LICENSE.md`](LICENSE.md) and [`GOVERNANCE.md`](GOVERNANCE.md) — repository provenance, responsibility, licensing and governance records.
 
 ## Four conformance profiles
 
