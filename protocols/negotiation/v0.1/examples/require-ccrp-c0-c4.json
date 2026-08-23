@@ -1,0 +1,28 @@
+{
+  "$schema": "../capability-requirement.schema.json",
+  "artifact_type": "ProtocolCapabilityRequirement",
+  "artifact_version": "0.1",
+  "requirement_id": "urn:example:capability-requirement:ccrp-c0-c4:v0.1",
+  "registry_id": "urn:uu-aap:protocol-registry:v0.1",
+  "requirements": [
+    {
+      "protocol_id": "CCRP",
+      "version": "0.1",
+      "logical_uri": "urn:uu-aap:protocol:ccrp:0.1",
+      "required_conformance_levels": ["C0", "C1", "C2", "C3", "C4"]
+    }
+  ],
+  "dependency_requirements": [],
+  "matching_policy": {
+    "version_selection": "exact_only",
+    "implicit_upgrade": false,
+    "infer_conformance_hierarchy": false,
+    "missing_requirement": "incompatible"
+  },
+  "non_claims": [
+    "verified_operational_capability_established",
+    "legal_identity_established",
+    "legal_authority_established",
+    "materialization_permission_established"
+  ]
+}
