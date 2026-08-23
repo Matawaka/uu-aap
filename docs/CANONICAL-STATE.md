@@ -26,6 +26,7 @@ The following tag-to-commit bindings were verified against the canonical reposit
 | `v0.1` | first public draft / release anchor | `16f83e655b80d1dabcd1d6b7533dc823796c767c` |
 | `poai-authority-exp-v0.1` | PoAI authority-root experimental checkpoint | `2424e61846fd262f9c01ccc406931683d3c6e616` |
 | `poai-ccrp-exp-v0.1` | frozen CCRP v0.1 experimental checkpoint | `33215e251310105e2fac591b17ae2d90522488d9` |
+| `poai-ccrp-v0.1` | machine-readable CCRP v0.1 protocol release anchor | `2c98d34ebfb5e86491bffb29a27e5a55b4db707e` |
 | `uu-aap-product-protection-v0.1` | product provenance, attribution and responsibility checkpoint | `66cbeb97b512bc3d09babdfb43fbd4339bae4dda` |
 | `uu-aap-licensing-v0.1` | finalized open-licensing package checkpoint | `541d345432de851b198fa459cb33447c096aebe7` |
 
@@ -33,12 +34,15 @@ Historical tags identify historical states; later edits on `main` do not redefin
 
 The repository policy designates release/checkpoint anchors as immutable reference points. GitHub Rulesets are administrative controls rather than committed cryptographic evidence, so exact current enforcement must be checked in repository settings by an administrator. The tag/commit bindings above remain independently inspectable in Git history.
 
+The `poai-ccrp-v0.1` tag freezes the release-layer bytes exactly as published. Its embedded release manifest records its pre-publication build state as `release_candidate`; publication is recorded separately by the immutable tag/GitHub Release and the successor checkpoint on `main`. The tagged manifest must not be rewritten retroactively merely to change that status label.
+
 ## Checkpoint manifests
 
 Repository-scoped checkpoint manifests currently include:
 
 - [`protection/checkpoints/product-provenance-responsibility-v0.1.json`](../protection/checkpoints/product-provenance-responsibility-v0.1.json) — binds the product-provenance, attribution and responsibility hardening state;
-- [`protection/checkpoints/open-licensing-v0.1.json`](../protection/checkpoints/open-licensing-v0.1.json) — binds the finalized open-licensing package.
+- [`protection/checkpoints/open-licensing-v0.1.json`](../protection/checkpoints/open-licensing-v0.1.json) — binds the finalized open-licensing package;
+- [`protocols/ccrp/checkpoints/ccrp-v0.1-release.json`](../protocols/ccrp/checkpoints/ccrp-v0.1-release.json) — records the post-publication CCRP v0.1 release anchor and its exact release-layer Git object identities.
 
 Earlier PoAI/CCRP checkpoints remain preserved under their own tagged repository history and proposal/experiment records.
 
@@ -84,7 +88,8 @@ The repository's validation path includes the following named checks for protect
 - `PoAI Genesis validation`;
 - `PoAI Authority Root validation`;
 - `CCRP validation`;
-- `PoAI CCRP pre-materialization validation`.
+- `PoAI CCRP pre-materialization validation`;
+- `CCRP release binding validation`.
 
 Administrative Ruleset configuration is not a substitute for committed provenance and is not represented here as cryptographic proof.
 
