@@ -1,0 +1,18 @@
+{
+  "$schema": "./continuity-policy.schema.json",
+  "schema_id": "urn:uu-aap:continuity:policy:v0.1",
+  "canonical_repository": "https://github.com/Matawaka/uu-aap.git",
+  "minimum_independent_copies": 3,
+  "minimum_independent_custodians": 2,
+  "offline_copy_required": true,
+  "shared_credentials_allowed": false,
+  "capture_cadence_days": 7,
+  "verification_cadence_days": 30,
+  "metadata_backup_required": true,
+  "kontur_read_only_replica_required_before_live_activation": true,
+  "canonicality_boundary": {
+    "copy_is_canonical_successor": false,
+    "replica_transfers_authority": false,
+    "standby_account_is_shared_identity": false
+  }
+}

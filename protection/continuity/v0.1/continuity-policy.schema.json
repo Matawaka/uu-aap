@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:continuity:policy-schema:v0.1",
+  "title": "UU-AAP Continuity Policy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "canonical_repository",
+    "minimum_independent_copies",
+    "minimum_independent_custodians",
+    "offline_copy_required",
+    "shared_credentials_allowed",
+    "capture_cadence_days",
+    "verification_cadence_days",
+    "canonicality_boundary"
+  ],
+  "properties": {
+    "schema_id": {"const": "urn:uu-aap:continuity:policy:v0.1"},
+    "canonical_repository": {"type": "string", "minLength": 1},
+    "minimum_independent_copies": {"type": "integer", "minimum": 3},
+    "minimum_independent_custodians": {"type": "integer", "minimum": 2},
+    "offline_copy_required": {"const": true},
+    "shared_credentials_allowed": {"const": false},
+    "capture_cadence_days": {"type": "integer", "minimum": 1},
+    "verification_cadence_days": {"type": "integer", "minimum": 1},
+    "metadata_backup_required": {"type": "boolean"},
+    "kontur_read_only_replica_required_before_live_activation": {"type": "boolean"},
+    "canonicality_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "copy_is_canonical_successor",
+        "replica_transfers_authority",
+        "standby_account_is_shared_identity"
+      ],
+      "properties": {
+        "copy_is_canonical_successor": {"const": false},
+        "replica_transfers_authority": {"const": false},
+        "standby_account_is_shared_identity": {"const": false}
+      }
+    }
+  }
+}
