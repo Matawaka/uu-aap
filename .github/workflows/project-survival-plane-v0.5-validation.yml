@@ -72,9 +72,39 @@ jobs:
       - name: Assert canonical recognition remains impossible in v0.5 claims
         run: |
           set -euo pipefail
-          grep -R -n '"canonical_successor_established": false' protection/rescue/v0.5
-          grep -R -n '"human_recognition_required": true' protection/rescue/v0.5
-          if grep -R -nE 'canonical_successor_established["'"']?[[:space:]]*[:=][[:space:]]*True|automatic_canonical_recognition_enabled["'"']?[[:space:]]*[:=][[:space:]]*True' protection/rescue/v0.5/*.py; then
-            echo 'v0.5 must not establish canonical recognition' >&2
-            exit 1
-          fi
+          python3 - <<'PY'
+          import importlib.util
+          import json
+          from pathlib import Path
+
+          root = Path('protection/rescue/v0.5')
+          policy = json.loads((root / 'reference.canonical-succession-policy.json').read_text(encoding='utf-8'))
+          assert policy['requirements']['human_recognition_required'] is True
+          assert policy['claims']['automatic_canonical_recognition_enabled'] is False
+          assert policy['claims']['automatic_origin_creation_enabled'] is False
+          assert policy['claims']['ownership_transfer_enabled'] is False
+          assert policy['claims']['kontur_activation_enabled'] is False
+
+          spec = importlib.util.spec_from_file_location('succession_v05_ci', root / 'canonical_succession.py')
+          module = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(module)
+          claims = module.proposal_claims()
+          assert claims['human_recognition_required'] is True
+          assert claims['candidate_is_noncanonical'] is True
+          for key in [
+              'canonical_successor_established', 'canonical_origin_mutated', 'ownership_transferred',
+              'kontur_activated', 'distributed_consensus_established', 'universal_canonicality_established',
+              'legal_effect_established', 'truth_certified',
+          ]:
+              assert claims[key] is False, key
+
+          proposal_schema = json.loads((root / 'canonical-succession-proposal.schema.json').read_text(encoding='utf-8'))
+          pclaims = proposal_schema['properties']['claims']['properties']
+          assert pclaims['human_recognition_required']['const'] is True
+          assert pclaims['canonical_successor_established']['const'] is False
+          assessment_schema = json.loads((root / 'canonical-succession-assessment.schema.json').read_text(encoding='utf-8'))
+          aclaims = assessment_schema['properties']['claims']['properties']
+          assert aclaims['human_recognition_required']['const'] is True
+          assert aclaims['canonical_successor_established']['const'] is False
+          print('v0.5 canonical recognition boundary remains explicit and non-executable')
+          PY
