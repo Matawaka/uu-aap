@@ -72,7 +72,10 @@ function validateDeclaration(declaration, registry) {
   ];
   exactKeys(declaration, topKeys, 'declaration');
 
-  assert(declaration.$schema === './capability-declaration.schema.json', 'declaration: schema binding mismatch');
+  assert(
+    ['./capability-declaration.schema.json', '../capability-declaration.schema.json'].includes(declaration.$schema),
+    'declaration: schema binding mismatch'
+  );
   assert(declaration.artifact_type === 'ProtocolCapabilityDeclaration', 'declaration: unexpected artifact_type');
   assert(declaration.artifact_version === '0.1', 'declaration: unexpected artifact_version');
   assert(typeof declaration.declaration_id === 'string' && declaration.declaration_id.length > 0, 'declaration: missing declaration_id');
@@ -138,7 +141,10 @@ function validateRequirement(requirement, registry) {
   ];
   exactKeys(requirement, topKeys, 'requirement');
 
-  assert(requirement.$schema === './capability-requirement.schema.json', 'requirement: schema binding mismatch');
+  assert(
+    ['./capability-requirement.schema.json', '../capability-requirement.schema.json'].includes(requirement.$schema),
+    'requirement: schema binding mismatch'
+  );
   assert(requirement.artifact_type === 'ProtocolCapabilityRequirement', 'requirement: unexpected artifact_type');
   assert(requirement.artifact_version === '0.1', 'requirement: unexpected artifact_version');
   assert(typeof requirement.requirement_id === 'string' && requirement.requirement_id.length > 0, 'requirement: missing requirement_id');
