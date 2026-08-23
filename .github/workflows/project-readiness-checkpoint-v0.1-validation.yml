@@ -54,11 +54,24 @@ jobs:
           print('VALID ProjectReadinessCheckpointReceipt v0.1 schema')
           PY
 
-      - name: Validate architecture convergence predecessor
+      - name: Validate architecture convergence predecessor with Git facts
         run: |
+          PREDECESSOR="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json').read_text())['canonical_predecessor_sha'])
+          PY
+          )"
+          ASSESSED="$(git rev-parse HEAD)"
+          git cat-file -e "${PREDECESSOR}^{commit}"
+          git merge-base --is-ancestor "$PREDECESSOR" "$ASSESSED"
           python schemas/architecture/v0.1/architecture_convergence_assessor.py \
             schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json \
-            --repo-root .
+            --repo-root . \
+            --observed-predecessor-sha "$PREDECESSOR" \
+            --assessed-revision-sha "$ASSESSED" \
+            --predecessor-object-exists true \
+            --predecessor-is-ancestor true
 
       - name: Run project checkpoint fail-closed tests
         run: node schemas/architecture/v0.1/tests/test_project_readiness_checkpoint_v01.js
