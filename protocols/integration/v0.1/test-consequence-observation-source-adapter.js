@@ -205,7 +205,7 @@ async function main() {
   vectors.push(await reject('claim_environment_fixture', async () => {
     const c = clone(claim); c.environment = 'test_fixture';
     await Adapter.validateInputs({ ...args, claim: c, evaluatedAt });
-  }, /claim ID substitution|live observed system-record claim required/));
+  }, /test fixture claim requires fixture source|claim ID substitution|live observed system-record claim required/));
   vectors.push(await reject('claim_subject_substitution', async () => {
     const c = clone(claim); c.consequence_subject_ref = 'urn:other';
     await Adapter.validateInputs({ ...args, claim: c, evaluatedAt });
