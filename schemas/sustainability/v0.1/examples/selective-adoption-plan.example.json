@@ -1,0 +1,41 @@
+{
+  "document_type": "uu-aap.selective-adoption-plan",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "plan_id": "selective-adoption-2026-08-23-001",
+  "source_branch": "parallel/sustainability-backlog-v0.1",
+  "fresh_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "items": [
+    {
+      "source_ref": "schemas/sustainability/v0.1/capability-ceiling.schema.json",
+      "adoption_mode": "concept-only",
+      "reason": "Retain the generic non-escalation invariant independently of CHSP v0.9 exact execution authorization semantics.",
+      "target_semantics": "Any future component capability expansion requires a new attributable authorization event and cannot be inferred from prior unrelated authority.",
+      "target_path": null,
+      "must_preserve_invariants": [
+        "no permission inference",
+        "no route-around denied permission",
+        "no stale authorization reuse",
+        "no automatic authority expansion"
+      ],
+      "requires_manual_reconciliation": true
+    }
+  ],
+  "excluded_items": [
+    {
+      "source_ref": "schemas/sustainability/v0.1/examples/parallel-disposition-record.example.json",
+      "reason": "Evidence/example records are historical side-track context and should not be adopted as canonical protocol semantics."
+    }
+  ],
+  "fresh_overlap_review_required": true,
+  "fresh_validation_required": true,
+  "explicit_human_adoption_decision_required": true,
+  "whole_branch_merge_implied": false,
+  "automatic_merge_allowed": false,
+  "historical_source_preserved": true,
+  "authority_effect": "none",
+  "notes": [
+    "This is only an example of selective adoption mechanics, not an integration request.",
+    "A later main SHA invalidates this example as a fresh adoption basis."
+  ]
+}
