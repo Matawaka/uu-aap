@@ -1,0 +1,124 @@
+{
+  "document_type": "uu-aap.sustainability-lifecycle-test-vectors",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "execution": "none",
+  "purpose": "Test project-level stop, pause, resume and abort invariants without producing external actions.",
+  "vectors": [
+    {
+      "id": "SPR-001",
+      "name": "STOP requires no cooperation from stopped component",
+      "input": {
+        "state": "running",
+        "event": "STOP",
+        "component_cooperates": false
+      },
+      "expected": {
+        "state": "stopped",
+        "new_external_effect_allowed": false,
+        "permission_expansion_allowed": false,
+        "provenance_preserved": true
+      }
+    },
+    {
+      "id": "SPR-002",
+      "name": "PAUSE preserves intent but blocks new external effects",
+      "input": {
+        "state": "running",
+        "event": "PAUSE"
+      },
+      "expected": {
+        "state": "paused",
+        "pending_intent_preserved": true,
+        "new_external_effect_allowed": false,
+        "provenance_preserved": true
+      }
+    },
+    {
+      "id": "SPR-003",
+      "name": "RESUME of mutable external operation requires fresh observation",
+      "input": {
+        "state": "paused",
+        "event": "RESUME",
+        "mutable_external_state": true,
+        "fresh_observation_available": false
+      },
+      "expected": {
+        "state": "paused",
+        "advance_allowed": false,
+        "reason": "fresh_observation_required"
+      }
+    },
+    {
+      "id": "SPR-004",
+      "name": "RESUME may proceed only after fresh observation and unchanged authority boundary",
+      "input": {
+        "state": "paused",
+        "event": "RESUME",
+        "mutable_external_state": true,
+        "fresh_observation_available": true,
+        "authority_boundary_changed": false
+      },
+      "expected": {
+        "state": "prepared",
+        "advance_allowed": true,
+        "external_execution_implicit": false
+      }
+    },
+    {
+      "id": "SPR-005",
+      "name": "ABORT cannot be reinterpreted as DELAY or PAUSE",
+      "input": {
+        "state": "prepared",
+        "event": "ABORT"
+      },
+      "expected": {
+        "state": "aborted",
+        "automatic_resume_allowed": false,
+        "new_authorization_required_for_restart": true
+      }
+    },
+    {
+      "id": "SPR-006",
+      "name": "Human inactivity is not consent",
+      "input": {
+        "state": "awaiting_authorization",
+        "event": "NO_RESPONSE"
+      },
+      "expected": {
+        "state": "awaiting_authorization",
+        "permission_expansion_allowed": false,
+        "external_execution_allowed": false
+      }
+    },
+    {
+      "id": "SPR-007",
+      "name": "Stale authorization fails closed",
+      "input": {
+        "state": "prepared",
+        "event": "EXECUTION_REQUEST",
+        "authorization_fresh": false
+      },
+      "expected": {
+        "state": "blocked",
+        "external_execution_allowed": false,
+        "reason": "stale_authorization"
+      }
+    },
+    {
+      "id": "SPR-008",
+      "name": "Denied permission cannot be routed around through delegation",
+      "input": {
+        "state": "prepared",
+        "event": "DELEGATE_FOR_BROADER_PERMISSION",
+        "requested_permission_previously_denied": true
+      },
+      "expected": {
+        "state": "blocked",
+        "delegation_allowed": false,
+        "permission_expansion_allowed": false,
+        "reason": "new_human_authorization_event_required"
+      }
+    }
+  ]
+}
