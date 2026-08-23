@@ -1,0 +1,81 @@
+{
+  "document_type": "uu-aap.continuity-readiness",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "assessment_id": "continuity-readiness-2026-08-23-001",
+  "assessed_at": "2026-08-23T16:50:00Z",
+  "observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "dimensions": [
+    {
+      "name": "recoverability",
+      "state": "established",
+      "evidence_refs": ["schemas/sustainability/v0.1/project-recovery-checkpoint.schema.json"],
+      "blocking": false,
+      "notes": "A machine-readable recovery checkpoint contract exists in the isolated side-track."
+    },
+    {
+      "name": "authority-boundedness",
+      "state": "established",
+      "evidence_refs": ["schemas/sustainability/v0.1/capability-ceiling.schema.json"],
+      "blocking": false,
+      "notes": "Capability expansion requires a new attributable authorization event."
+    },
+    {
+      "name": "context-handoff",
+      "state": "established",
+      "evidence_refs": ["schemas/sustainability/v0.1/recovery-handoff.schema.json", "schemas/sustainability/v0.1/cross-context-consistency.schema.json"],
+      "blocking": false,
+      "notes": "Handoff is informational and does not transfer execution authority."
+    },
+    {
+      "name": "stale-state-detection",
+      "state": "established",
+      "evidence_refs": ["schemas/sustainability/v0.1/stale-state-assessment.schema.json"],
+      "blocking": false,
+      "notes": "Moved or divergent main state invalidates continuation assumptions."
+    },
+    {
+      "name": "parallel-isolation",
+      "state": "established",
+      "evidence_refs": ["schemas/sustainability/v0.1/parallel-work-isolation.schema.json"],
+      "blocking": false,
+      "notes": "The side-track remains additive and does not touch active protocol/workflow paths."
+    },
+    {
+      "name": "duplicate-realization-control",
+      "state": "established",
+      "evidence_refs": ["schemas/sustainability/v0.1/duplicate-realization-assessment.schema.json"],
+      "blocking": false,
+      "notes": "Main-line semantic overlap can be assessed without automatic replacement."
+    },
+    {
+      "name": "inactivity-resilience",
+      "state": "established",
+      "evidence_refs": ["schemas/sustainability/v0.1/inactivity-resilience-checkpoint.schema.json"],
+      "blocking": false,
+      "notes": "Inactivity creates neither consent nor automatic resume authority."
+    },
+    {
+      "name": "human-sustainability",
+      "state": "partial",
+      "evidence_refs": ["schemas/sustainability/v0.1/human-sustainability-observation.schema.json", "schemas/sustainability/v0.1/motivation-governor.schema.json"],
+      "blocking": false,
+      "notes": "Non-diagnostic interaction-load controls exist, but no canonical project integration has occurred."
+    },
+    {
+      "name": "validation-availability",
+      "state": "partial",
+      "evidence_refs": ["schemas/sustainability/v0.1/tests/test_sustainability_v01.py", "schemas/sustainability/v0.1/tests/test_branch_evolution_v01.py"],
+      "blocking": false,
+      "notes": "Local-only validation exists and is intentionally not connected to CI."
+    }
+  ],
+  "aggregate_scalar_score_allowed": false,
+  "overall_state": "conditionally-recoverable",
+  "blocking_dimensions": [],
+  "authority_effect": "none",
+  "notes": [
+    "This matrix describes evidence dimensions separately instead of producing a universal project-health score.",
+    "Established in the side-track does not mean integrated into canonical main."
+  ]
+}
