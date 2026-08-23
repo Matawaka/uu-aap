@@ -1,0 +1,292 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/responsibility-attribution.schema.json",
+  "title": "UU-AAP ResponsibilityAttributionAssessment v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "attribution_id", "assessed_at",
+    "policy_binding", "predecessor_bindings", "semantic_binding", "responsibility_basis",
+    "causal_basis", "effect_under_attribution", "decisions", "attribution_result",
+    "verification", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)responsibility-attribution\\.schema\\.json$"},
+    "artifact_type": {"const": "ResponsibilityAttributionAssessment"},
+    "artifact_version": {"const": "0.1"},
+    "attribution_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-attribution-assessment:"},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "predecessor_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["causal_claim_qualification", "responsibility_trace", "outcome_observation"],
+      "properties": {
+        "causal_claim_qualification": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactBinding"},
+            {"properties": {"artifact_type": {"const": "CausalClaimQualification"}}}
+          ]
+        },
+        "responsibility_trace": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactBinding"},
+            {"properties": {"artifact_type": {"const": "ResponsibilityTrace"}}}
+          ]
+        },
+        "outcome_observation": {
+          "allOf": [
+            {"$ref": "#/$defs/artifactBinding"},
+            {"properties": {"artifact_type": {"const": "OutcomeObservationReceipt"}}}
+          ]
+        }
+      }
+    },
+    "semantic_binding": {"$ref": "#/$defs/semanticBinding"},
+    "responsibility_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsible_party_id", "accepted_responsibility_scope", "scope_intersection",
+        "originating_action", "scope_relation", "trace_status"
+      ],
+      "properties": {
+        "responsible_party_id": {"type": "string", "minLength": 1},
+        "accepted_responsibility_scope": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "scope_intersection": {
+          "type": "array", "minItems": 1, "maxItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "originating_action": {"type": "string", "minLength": 1},
+        "scope_relation": {"const": "originating_action_within_accepted_scope"},
+        "trace_status": {"const": "traceable_not_adjudicated"}
+      }
+    },
+    "causal_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predicate", "qualification_status", "qualification_scope",
+        "establishes_predicate", "stronger_causal_predicates_withheld"
+      ],
+      "properties": {
+        "predicate": {"const": "originating_execution_contributed_to_exact_transition"},
+        "qualification_status": {"const": "qualified"},
+        "qualification_scope": {"const": "urn:uu-aap:causal-qualification-scope:exact-local-git-transition-v0.1"},
+        "establishes_predicate": {"const": true},
+        "stronger_causal_predicates_withheld": {"const": true}
+      }
+    },
+    "effect_under_attribution": {"$ref": "#/$defs/effect"},
+    "decisions": {
+      "type": "array",
+      "prefixItems": [
+        {"allOf": [{"$ref": "#/$defs/decision"}, {"properties": {"predicate": {"const": "accepted_action_responsibility_applies"}, "status": {"const": "attributed"}, "establishes_predicate": {"const": true}}}]},
+        {"allOf": [{"$ref": "#/$defs/decision"}, {"properties": {"predicate": {"const": "exact_transition_responsibility_attribution"}, "status": {"const": "attributed"}, "establishes_predicate": {"const": true}}}]},
+        {"allOf": [{"$ref": "#/$defs/decision"}, {"properties": {"predicate": {"const": "external_consequence_responsibility"}, "status": {"const": "out_of_scope"}, "establishes_predicate": {"const": false}}}]},
+        {"allOf": [{"$ref": "#/$defs/decision"}, {"properties": {"predicate": {"const": "responsibility_adjudication"}, "status": {"const": "not_adjudicated"}, "establishes_predicate": {"const": false}}}]},
+        {"allOf": [{"$ref": "#/$defs/decision"}, {"properties": {"predicate": {"const": "legal_liability"}, "status": {"const": "not_adjudicated"}, "establishes_predicate": {"const": false}}}]},
+        {"allOf": [{"$ref": "#/$defs/decision"}, {"properties": {"predicate": {"const": "moral_blame"}, "status": {"const": "not_adjudicated"}, "establishes_predicate": {"const": false}}}]}
+      ],
+      "items": false,
+      "minItems": 6,
+      "maxItems": 6
+    },
+    "attribution_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "attribution_scope", "policy_relative", "attributed_predicate_count",
+        "withheld_predicate_count", "uncertainty_status", "responsibility_adjudicated",
+        "external_consequence_responsibility_established", "legal_liability_established",
+        "moral_blame_assigned"
+      ],
+      "properties": {
+        "status": {"const": "bounded_responsibility_attribution_supported_stronger_claims_withheld"},
+        "attribution_scope": {"const": "urn:uu-aap:responsibility-attribution-scope:exact-local-git-transition-v0.1"},
+        "policy_relative": {"const": true},
+        "attributed_predicate_count": {"const": 2},
+        "withheld_predicate_count": {"const": 4},
+        "uncertainty_status": {"const": "material_uncertainty_preserved"},
+        "responsibility_adjudicated": {"const": false},
+        "external_consequence_responsibility_established": {"const": false},
+        "legal_liability_established": {"const": false},
+        "moral_blame_assigned": {"const": false}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_exact", "policy_effective", "causal_qualification_exact", "responsibility_trace_exact",
+        "outcome_observation_exact", "semantic_frontier_exact", "effect_frontier_exact",
+        "responsible_party_exact", "accepted_scope_exact", "originating_action_in_accepted_scope",
+        "qualified_contribution_exact", "policy_rules_applied_exactly", "all_policy_predicates_decided_once",
+        "stronger_responsibility_claims_withheld", "scalar_scoring_absent",
+        "predecessor_assurance_not_upgraded", "logical_stage_order_preserved"
+      ],
+      "properties": {
+        "policy_exact": {"const": true},
+        "policy_effective": {"const": true},
+        "causal_qualification_exact": {"const": true},
+        "responsibility_trace_exact": {"const": true},
+        "outcome_observation_exact": {"const": true},
+        "semantic_frontier_exact": {"const": true},
+        "effect_frontier_exact": {"const": true},
+        "responsible_party_exact": {"const": true},
+        "accepted_scope_exact": {"const": true},
+        "originating_action_in_accepted_scope": {"const": true},
+        "qualified_contribution_exact": {"const": true},
+        "policy_rules_applied_exactly": {"const": true},
+        "all_policy_predicates_decided_once": {"const": true},
+        "stronger_responsibility_claims_withheld": {"const": true},
+        "scalar_scoring_absent": {"const": true},
+        "predecessor_assurance_not_upgraded": {"const": true},
+        "logical_stage_order_preserved": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_attribution_policy_applied", "predecessor_evidence_verified",
+        "accepted_responsibility_scope_applies_to_originating_action",
+        "qualified_causal_contribution_bound_to_same_effect",
+        "policy_relative_responsibility_attribution_established",
+        "exact_transition_responsibility_attributed", "stronger_responsibility_claims_withheld",
+        "external_consequence_responsibility_established", "responsibility_for_outcome_adjudicated",
+        "responsibility_adjudication_completed", "legal_responsibility_determined",
+        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
+        "moral_correctness_established", "universal_responsibility_established",
+        "universal_causality_established", "truth_certified",
+        "remote_branch_or_ref_canonicality_established", "poai_materialization_event_recorded",
+        "poai_successor_record_identity_inferred", "universal_canonicality_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "exact_attribution_policy_applied": {"const": true},
+        "predecessor_evidence_verified": {"const": true},
+        "accepted_responsibility_scope_applies_to_originating_action": {"const": true},
+        "qualified_causal_contribution_bound_to_same_effect": {"const": true},
+        "policy_relative_responsibility_attribution_established": {"const": true},
+        "exact_transition_responsibility_attributed": {"const": true},
+        "stronger_responsibility_claims_withheld": {"const": true},
+        "external_consequence_responsibility_established": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "responsibility_adjudication_completed": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "universal_responsibility_established": {"const": false},
+        "universal_causality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "remote_branch_or_ref_canonicality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "poai_successor_record_identity_inferred": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "artifactBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "policyBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "policy_version", "attribution_scope", "digest"],
+      "properties": {
+        "artifact_type": {"const": "UU-AAPResponsibilityAttributionPolicy"},
+        "artifact_ref": {"const": "urn:uu-aap:responsibility-attribution-policy:exact-local-git-transition:1"},
+        "policy_version": {"const": 1},
+        "attribution_scope": {"const": "urn:uu-aap:responsibility-attribution-scope:exact-local-git-transition-v0.1"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "semanticBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
+      "properties": {
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "operation_ref": {"type": "string", "minLength": 1},
+        "base_revision": {"type": "string", "minLength": 1},
+        "responsible_party_id": {"type": "string", "minLength": 1},
+        "executor_implementation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "effectObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "git_object_sha"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "git_object_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"}
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "relation", "revision", "commit_sha", "tree_sha", "changed_paths", "effect_objects"],
+      "properties": {
+        "scope": {"const": "exact_local_git_transition_effect"},
+        "relation": {"const": "exact_state_transition_effect"},
+        "revision": {"type": "string", "minLength": 1},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+        "changed_paths": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "effect_objects": {
+          "type": "array", "minItems": 1,
+          "items": {"$ref": "#/$defs/effectObject"}
+        }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predicate", "status", "attribution_scope", "reason_codes", "evidence_refs", "establishes_predicate"],
+      "properties": {
+        "predicate": {"type": "string", "minLength": 1},
+        "status": {"enum": ["attributed", "not_attributed", "not_adjudicated", "out_of_scope"]},
+        "attribution_scope": {"const": "urn:uu-aap:responsibility-attribution-scope:exact-local-git-transition-v0.1"},
+        "reason_codes": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "evidence_refs": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "establishes_predicate": {"type": "boolean"}
+      }
+    }
+  }
+}

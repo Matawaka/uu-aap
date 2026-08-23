@@ -264,3 +264,51 @@ The bounded closure reveals the next predecessor-side gap rather than a new post
 The next integration work is a typed **Origin Envelope** (working name) that introduces standalone machine-readable `ContextFrame` and `Intent` artifacts and exports exact bytes for the currently reference-only upstream handoff/authority/admission/pre-materialization evidence.
 
 Only after those predecessor artifacts are explicitly bound may a future closure truthfully upgrade from `bounded_machine_suffix` to complete semantic-origin provenance.
+
+---
+
+## Current continuation frontier
+
+The historical sections above document the earlier bounded-closure stage and are intentionally retained. The integration chain has since advanced through origin completion, outcome observation, responsibility tracing, bounded causal assessment, counterfactual intervention and causal claim qualification.
+
+The current machine-readable continuation is:
+
+```text
+ProvenanceCompletionReceipt
+  -> OutcomeObservationReceipt
+  -> ResponsibilityTrace
+  -> CausalAttributionAssessment
+  -> CounterfactualInterventionAssessment
+  -> CausalClaimQualification
+  -> ResponsibilityAttributionAssessment
+```
+
+`ResponsibilityAttributionAssessment v0.1` combines three exact evidence axes without collapsing them:
+
+```text
+accepted responsibility scope
++ qualified bounded causal contribution
++ exact observed transition effect
+-> policy-relative exact-transition responsibility attribution
+```
+
+The corresponding files are:
+
+- `responsibility-attribution-policy.schema.json`
+- `policies/exact-local-git-transition.responsibility-attribution-policy.json`
+- `responsibility-attribution.schema.json`
+- `assess-responsibility-attribution.js`
+- `test-responsibility-attribution.js`
+- `RESPONSIBILITY_ATTRIBUTION.md`
+
+The new layer preserves:
+
+```text
+policy-relative responsibility attribution
+!= responsibility adjudication
+!= legal liability
+!= moral blame
+!= universal responsibility
+```
+
+The next planned main-line layer is an append-only multi-event `ResponsibilityEventChain` (working name) that preserves successive observed events, scopes, causal qualifications and responsibility attributions through time without reducing them to a scalar blame/probability score.

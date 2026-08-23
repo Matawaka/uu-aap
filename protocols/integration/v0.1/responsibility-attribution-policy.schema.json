@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/responsibility-attribution-policy.schema.json",
+  "title": "UU-AAP ResponsibilityAttributionPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "policy_id", "policy_version",
+    "attribution_scope", "applies_to", "allowed_statuses", "predicate_rules",
+    "effective_from", "effective_until", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)responsibility-attribution-policy\\.schema\\.json$"},
+    "artifact_type": {"const": "UU-AAPResponsibilityAttributionPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"const": "urn:uu-aap:responsibility-attribution-policy:exact-local-git-transition:1"},
+    "policy_version": {"const": 1},
+    "attribution_scope": {"const": "urn:uu-aap:responsibility-attribution-scope:exact-local-git-transition-v0.1"},
+    "applies_to": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "causal_qualification_artifact_type", "causal_qualification_artifact_version",
+        "responsibility_trace_artifact_type", "responsibility_trace_artifact_version",
+        "outcome_observation_artifact_type", "outcome_observation_artifact_version",
+        "effect_scope"
+      ],
+      "properties": {
+        "causal_qualification_artifact_type": {"const": "CausalClaimQualification"},
+        "causal_qualification_artifact_version": {"const": "0.1"},
+        "responsibility_trace_artifact_type": {"const": "ResponsibilityTrace"},
+        "responsibility_trace_artifact_version": {"const": "0.1"},
+        "outcome_observation_artifact_type": {"const": "OutcomeObservationReceipt"},
+        "outcome_observation_artifact_version": {"const": "0.1"},
+        "effect_scope": {"const": "exact_local_git_transition_effect"}
+      }
+    },
+    "allowed_statuses": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "attributed"},
+        {"const": "not_attributed"},
+        {"const": "not_adjudicated"},
+        {"const": "out_of_scope"}
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "predicate_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accepted_action_responsibility_applies",
+        "exact_transition_responsibility_attribution",
+        "external_consequence_responsibility",
+        "responsibility_adjudication",
+        "legal_liability",
+        "moral_blame"
+      ],
+      "properties": {
+        "accepted_action_responsibility_applies": {
+          "allOf": [
+            {"$ref": "#/$defs/rule"},
+            {"properties": {"status": {"const": "attributed"}, "establishes_predicate": {"const": true}}}
+          ]
+        },
+        "exact_transition_responsibility_attribution": {
+          "allOf": [
+            {"$ref": "#/$defs/rule"},
+            {"properties": {"status": {"const": "attributed"}, "establishes_predicate": {"const": true}}}
+          ]
+        },
+        "external_consequence_responsibility": {
+          "allOf": [
+            {"$ref": "#/$defs/rule"},
+            {"properties": {"status": {"const": "out_of_scope"}, "establishes_predicate": {"const": false}}}
+          ]
+        },
+        "responsibility_adjudication": {
+          "allOf": [
+            {"$ref": "#/$defs/rule"},
+            {"properties": {"status": {"const": "not_adjudicated"}, "establishes_predicate": {"const": false}}}
+          ]
+        },
+        "legal_liability": {
+          "allOf": [
+            {"$ref": "#/$defs/rule"},
+            {"properties": {"status": {"const": "not_adjudicated"}, "establishes_predicate": {"const": false}}}
+          ]
+        },
+        "moral_blame": {
+          "allOf": [
+            {"$ref": "#/$defs/rule"},
+            {"properties": {"status": {"const": "not_adjudicated"}, "establishes_predicate": {"const": false}}}
+          ]
+        }
+      }
+    },
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"oneOf": [{"type": "null"}, {"type": "string", "format": "date-time"}]},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_establishes_universal_responsibility",
+        "policy_establishes_responsibility_adjudication",
+        "policy_establishes_legal_liability",
+        "policy_establishes_moral_blame",
+        "policy_establishes_external_consequence_responsibility"
+      ],
+      "properties": {
+        "policy_establishes_universal_responsibility": {"const": false},
+        "policy_establishes_responsibility_adjudication": {"const": false},
+        "policy_establishes_legal_liability": {"const": false},
+        "policy_establishes_moral_blame": {"const": false},
+        "policy_establishes_external_consequence_responsibility": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "rule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "establishes_predicate", "required_conditions", "reason_codes"],
+      "properties": {
+        "status": {"enum": ["attributed", "not_attributed", "not_adjudicated", "out_of_scope"]},
+        "establishes_predicate": {"type": "boolean"},
+        "required_conditions": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "reason_codes": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
