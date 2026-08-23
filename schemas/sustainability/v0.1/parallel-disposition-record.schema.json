@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/parallel-disposition-record.schema.json",
+  "title": "UU-AAP Parallel Work Disposition Record v0.1",
+  "description": "Non-normative draft for recording what happens to an isolated parallel artifact after fresh comparison with the canonical main line, without rewriting its history.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "record_id",
+    "parallel_item_ref",
+    "fresh_main_sha",
+    "decision",
+    "reason",
+    "decided_by",
+    "decided_at",
+    "historical_parallel_state_preserved",
+    "silent_rewrite_allowed",
+    "automatic_merge_allowed",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.parallel-disposition-record"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "record_id": {"type": "string", "minLength": 1},
+    "parallel_item_ref": {"type": "string", "minLength": 1},
+    "duplicate_assessment_ref": {"type": ["string", "null"]},
+    "fresh_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "decision": {
+      "enum": [
+        "keep-isolated",
+        "candidate-for-selective-adoption",
+        "superseded-by-main",
+        "archive-without-integration",
+        "reject",
+        "needs-more-evidence"
+      ]
+    },
+    "reason": {"type": "string", "minLength": 1},
+    "decided_by": {"type": "string", "minLength": 1},
+    "decided_at": {"type": "string", "format": "date-time"},
+    "successor_or_main_ref": {"type": ["string", "null"]},
+    "retained_distinct_value": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "historical_parallel_state_preserved": {"const": true},
+    "silent_rewrite_allowed": {"const": false},
+    "automatic_merge_allowed": {"const": false},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "superseded-by-main"}}},
+      "then": {"required": ["successor_or_main_ref"]}
+    },
+    {
+      "if": {"properties": {"decision": {"const": "candidate-for-selective-adoption"}}},
+      "then": {"properties": {"retained_distinct_value": {"minItems": 1}}}
+    }
+  ]
+}
