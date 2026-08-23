@@ -1,0 +1,60 @@
+{
+  "$schema": "../kontur-readiness-aggregation-policy.schema.json",
+  "artifact_type": "KONTURReadinessAggregationPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:kontur:readiness-aggregation-policy:reference-server:1",
+  "policy_version": 1,
+  "aggregation_scope": "urn:uu-aap:kontur:readiness-aggregation-scope:reference-server-v0.1",
+  "system_id": "urn:uu-aap:kontur:system:server-responsibility",
+  "server_instance_id": "urn:uu-aap:kontur:server:reference-primary",
+  "effective_from": "2026-08-23T09:10:00Z",
+  "effective_until": null,
+  "aggregation_rule": "all_required_checks_pass",
+  "required_checks": [
+    {
+      "check_id": "protocol_registry_ready",
+      "producer_id": "urn:uu-aap:producer:protocol-registry-validator",
+      "allowed_artifact_type": "ProtocolRegistry"
+    },
+    {
+      "check_id": "coordination_ready",
+      "producer_id": "urn:uu-aap:producer:ccrp-c5-validator",
+      "allowed_artifact_type": "CCRPPolicyCoordinationResult"
+    },
+    {
+      "check_id": "authority_ready",
+      "producer_id": "urn:uu-aap:producer:poai-authority-validator",
+      "allowed_artifact_type": "PoAIAuthorityVerificationResult"
+    },
+    {
+      "check_id": "provenance_ready",
+      "producer_id": "urn:uu-aap:producer:origin-provenance-validator",
+      "allowed_artifact_type": "ProvenanceCompletionReceipt"
+    },
+    {
+      "check_id": "causal_qualification_ready",
+      "producer_id": "urn:uu-aap:producer:causal-qualification-validator",
+      "allowed_artifact_type": "CausalClaimQualification"
+    },
+    {
+      "check_id": "server_health_ready",
+      "producer_id": "urn:uu-aap:producer:kontur-server-health-observer",
+      "allowed_artifact_type": "KONTURServerHealthObservation"
+    }
+  ],
+  "evidence_freshness_seconds": 900,
+  "signal_validity_seconds": 900,
+  "producer_independence_required": true,
+  "epoch_rule": "explicit_monotonic_server_epoch",
+  "claims": {
+    "global_readiness_self_certifiable_by_single_source": false,
+    "execution_authority_granted": false,
+    "responsibility_accepted": false,
+    "kernel_activated": false,
+    "legal_responsibility_determined": false,
+    "moral_blame_assigned": false,
+    "truth_certified": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}

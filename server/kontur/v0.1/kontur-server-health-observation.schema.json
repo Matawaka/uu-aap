@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-server-health-observation.schema.json",
+  "title": "KONTURServerHealthObservation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "observation_id",
+    "system_id",
+    "server_instance_id",
+    "observed_at",
+    "status",
+    "components",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-server-health-observation\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURServerHealthObservation"},
+    "artifact_version": {"const": "0.1"},
+    "observation_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server-health:"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["healthy", "degraded", "critical"]},
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["component_id", "status", "evidence_ref"],
+        "properties": {
+          "component_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["pass", "degraded", "fail"]},
+          "evidence_ref": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "server_health_observed",
+        "global_readiness_established",
+        "execution_authority_granted",
+        "responsibility_accepted",
+        "kernel_activated",
+        "legal_responsibility_determined",
+        "moral_blame_assigned",
+        "truth_certified",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "server_health_observed": {"const": true},
+        "global_readiness_established": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "kernel_activated": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}

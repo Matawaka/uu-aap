@@ -1,0 +1,239 @@
+name: KONTUR Readiness Aggregator validation
+
+on:
+  pull_request:
+    paths:
+      - "server/kontur/**"
+      - "protocols/registry/**"
+      - "protocols/integration/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-readiness-aggregator-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "server/kontur/**"
+      - "protocols/registry/**"
+      - "protocols/integration/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-readiness-aggregator-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  readiness-aggregator:
+    name: KONTUR readiness aggregation and dry-run acceptance
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check KONTUR readiness JavaScript
+        run: |
+          node --check server/kontur/v0.1/observe-server-health.js
+          node --check server/kontur/v0.1/readiness-aggregator.js
+          node --check server/kontur/v0.1/build-activation-frontier.js
+          node --check server/kontur/v0.1/test-readiness-aggregator.js
+
+      - name: Validate KONTUR readiness schemas and policies
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('server/kontur/v0.1')
+          schema_names = [
+              'kontur-readiness-aggregation-policy.schema.json',
+              'kontur-server-health-observation.schema.json',
+              'kontur-readiness-aggregation.schema.json',
+              'kontur-readiness-acceptance.schema.json',
+              'kontur-activation-frontier.schema.json',
+              'kontur-readiness-signal.schema.json',
+              'kontur-responsibility-policy.schema.json',
+          ]
+          schemas = {}
+          for name in schema_names:
+              schema = json.loads((root / name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              schemas[name] = schema
+              print(f'VALID schema: {name}')
+
+          aggregation_policy = json.loads((root / 'policies/reference-server.readiness-aggregation-policy.json').read_text(encoding='utf-8'))
+          responsibility_policy = json.loads((root / 'policies/reference-server.responsibility-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(
+              schemas['kontur-readiness-aggregation-policy.schema.json'],
+              format_checker=FormatChecker()
+          ).validate(aggregation_policy)
+          Draft202012Validator(
+              schemas['kontur-responsibility-policy.schema.json'],
+              format_checker=FormatChecker()
+          ).validate(responsibility_policy)
+          print('VALID canonical KONTUR aggregation and responsibility policies')
+          PY
+
+      - name: Reproduce independent evidence and build readiness frontier
+        run: node server/kontur/v0.1/test-readiness-aggregator.js /tmp/kontur-readiness
+
+      - name: Validate generated readiness artifacts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-readiness')
+
+          health_schema = json.loads((root / 'kontur-server-health-observation.schema.json').read_text(encoding='utf-8'))
+          signal_schema = json.loads((root / 'kontur-readiness-signal.schema.json').read_text(encoding='utf-8'))
+          aggregation_schema = json.loads((root / 'kontur-readiness-aggregation.schema.json').read_text(encoding='utf-8'))
+          acceptance_schema = json.loads((root / 'kontur-readiness-acceptance.schema.json').read_text(encoding='utf-8'))
+          frontier_schema = json.loads((root / 'kontur-activation-frontier.schema.json').read_text(encoding='utf-8'))
+          evidence_set_schema = {
+              '$schema': 'https://json-schema.org/draft/2020-12/schema',
+              '$ref': '#/$defs/evidenceSet',
+              '$defs': aggregation_schema['$defs'],
+          }
+
+          health = json.loads((out / 'server-health.json').read_text(encoding='utf-8'))
+          evidence_set = json.loads((out / 'evidence-set.json').read_text(encoding='utf-8'))
+          signal = json.loads((out / 'readiness-signal.json').read_text(encoding='utf-8'))
+          aggregation = json.loads((out / 'aggregation-receipt.json').read_text(encoding='utf-8'))
+          acceptance = json.loads((out / 'acceptance-receipt.json').read_text(encoding='utf-8'))
+          frontier = json.loads((out / 'activation-frontier.json').read_text(encoding='utf-8'))
+
+          Draft202012Validator(health_schema, format_checker=FormatChecker()).validate(health)
+          Draft202012Validator(signal_schema, format_checker=FormatChecker()).validate(signal)
+          Draft202012Validator(evidence_set_schema, format_checker=FormatChecker()).validate(evidence_set)
+          Draft202012Validator(aggregation_schema, format_checker=FormatChecker()).validate(aggregation)
+          Draft202012Validator(acceptance_schema, format_checker=FormatChecker()).validate(acceptance)
+          Draft202012Validator(frontier_schema, format_checker=FormatChecker()).validate(frontier)
+
+          assert health['status'] == 'healthy'
+          assert all(item['status'] == 'pass' for item in health['components'])
+          assert len(evidence_set['evidence']) == 6
+          assert len({item['producer_id'] for item in evidence_set['evidence']}) == 6
+          assert signal['ready'] is True
+          assert len(signal['checks']) == 6
+          assert all(item['status'] == 'pass' for item in signal['checks'])
+          assert aggregation['aggregation_result'] == {
+              'rule': 'all_required_checks_pass',
+              'ready': True,
+              'passed_check_count': 6,
+              'failed_check_count': 0,
+              'producer_independence_verified': True,
+          }
+          assert acceptance['decision'] == 'accepted_for_activation_precondition'
+          assert acceptance['claims']['readiness_signal_accepted'] is True
+          assert acceptance['claims']['activation_permitted_by_readiness_boundary'] is True
+          assert acceptance['claims']['human_activation_step_still_required'] is True
+          assert frontier['status'] == 'activation_prompt_may_be_requested'
+          assert frontier['claims']['canonical_frontier_bound'] is True
+          assert frontier['claims']['readiness_accepted'] is True
+          assert frontier['claims']['activation_prompt_may_be_requested'] is True
+          assert frontier['claims']['human_activation_step_still_required'] is True
+
+          for artifact in [signal, aggregation, acceptance, frontier]:
+              claims = artifact['claims']
+              for key in [
+                  'kernel_activated',
+                  'execution_authority_granted',
+                  'legal_responsibility_determined',
+                  'truth_certified',
+                  'universal_canonicality_established',
+              ]:
+                  if key in claims:
+                      assert claims[key] is False, (artifact['artifact_type'], key)
+          assert aggregation['claims']['responsibility_state_created'] is False
+          assert acceptance['claims']['responsibility_state_created'] is False
+          assert acceptance['claims']['responsibility_accepted'] is False
+          assert frontier['claims']['responsibility_state_created'] is False
+          assert frontier['claims']['responsibility_accepted'] is False
+
+          print('KONTUR readiness signal accepted in dry-run; activation remains human-gated')
+          PY
+
+      - name: Independently reject readiness and activation overclaims by schema
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-readiness')
+          schema_map = {
+              'aggregation-receipt.json': 'kontur-readiness-aggregation.schema.json',
+              'acceptance-receipt.json': 'kontur-readiness-acceptance.schema.json',
+              'activation-frontier.json': 'kontur-activation-frontier.schema.json',
+          }
+          forbidden = [
+              'kernel_activated', 'responsibility_state_created', 'execution_authority_granted',
+              'legal_responsibility_determined', 'truth_certified', 'universal_canonicality_established'
+          ]
+
+          for artifact_name, schema_name in schema_map.items():
+              schema = json.loads((root / schema_name).read_text(encoding='utf-8'))
+              artifact = json.loads((out / artifact_name).read_text(encoding='utf-8'))
+              validator = Draft202012Validator(schema, format_checker=FormatChecker())
+              validator.validate(artifact)
+              for key in forbidden:
+                  if key not in artifact['claims']:
+                      continue
+                  bad = copy.deepcopy(artifact)
+                  bad['claims'][key] = True
+                  try:
+                      validator.validate(bad)
+                  except ValidationError:
+                      pass
+                  else:
+                      raise AssertionError(f'{artifact_name}: schema accepted forbidden overclaim {key}')
+
+          frontier_schema = json.loads((root / 'kontur-activation-frontier.schema.json').read_text(encoding='utf-8'))
+          frontier = json.loads((out / 'activation-frontier.json').read_text(encoding='utf-8'))
+          bad = copy.deepcopy(frontier)
+          bad['git_revision'] = 'git:not-canonical'
+          try:
+              Draft202012Validator(frontier_schema, format_checker=FormatChecker()).validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('activation frontier schema accepted invalid Git revision')
+
+          print('Schema boundary rejects readiness/activation assurance escalation')
+          PY
+
+      - name: Confirm readiness aggregation produced no repository mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Upload KONTUR readiness frontier evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: kontur-readiness-frontier-${{ github.sha }}
+          path: /tmp/kontur-readiness/
+          if-no-files-found: error
+          retention-days: 30

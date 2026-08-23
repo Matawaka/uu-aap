@@ -1,0 +1,221 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-readiness-aggregation.schema.json",
+  "title": "KONTURReadinessAggregationReceipt v0.1",
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "check_id",
+        "producer_id",
+        "source_artifact_type",
+        "source_artifact_ref",
+        "source_artifact_digest",
+        "observed_at",
+        "decision",
+        "reason_codes",
+        "claims"
+      ],
+      "properties": {
+        "check_id": {
+          "enum": [
+            "protocol_registry_ready",
+            "coordination_ready",
+            "authority_ready",
+            "provenance_ready",
+            "causal_qualification_ready",
+            "server_health_ready"
+          ]
+        },
+        "producer_id": {"type": "string", "pattern": "^urn:uu-aap:producer:"},
+        "source_artifact_type": {"type": "string", "minLength": 1},
+        "source_artifact_ref": {"type": "string", "minLength": 1},
+        "source_artifact_digest": {"$ref": "#/$defs/digest"},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "decision": {"enum": ["pass", "fail"]},
+        "reason_codes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "claims": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "source_validation_observed",
+            "global_readiness_established",
+            "kernel_activated",
+            "execution_authority_granted",
+            "legal_responsibility_determined",
+            "truth_certified"
+          ],
+          "properties": {
+            "source_validation_observed": {"const": true},
+            "global_readiness_established": {"const": false},
+            "kernel_activated": {"const": false},
+            "execution_authority_granted": {"const": false},
+            "legal_responsibility_determined": {"const": false},
+            "truth_certified": {"const": false}
+          }
+        }
+      }
+    },
+    "evidenceSet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["$schema", "artifact_type", "artifact_version", "evidence_set_id", "system_id", "server_instance_id", "captured_at", "evidence", "claims"],
+      "properties": {
+        "$schema": {"type": "string", "pattern": "(^|.*/)kontur-readiness-aggregation\\.schema\\.json#/\\$defs/evidenceSet$"},
+        "artifact_type": {"const": "KONTURReadinessEvidenceSet"},
+        "artifact_version": {"const": "0.1"},
+        "evidence_set_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:readiness-evidence-set:"},
+        "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+        "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+        "captured_at": {"type": "string", "format": "date-time"},
+        "evidence": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "items": {"$ref": "#/$defs/evidence"}
+        },
+        "claims": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["six_source_frontier_bound", "producer_independence_preserved", "global_readiness_established", "kernel_activated", "truth_certified"],
+          "properties": {
+            "six_source_frontier_bound": {"const": true},
+            "producer_independence_preserved": {"const": true},
+            "global_readiness_established": {"const": false},
+            "kernel_activated": {"const": false},
+            "truth_certified": {"const": false}
+          }
+        }
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "aggregation_id",
+    "aggregated_at",
+    "policy_binding",
+    "evidence_set_binding",
+    "evidence_set",
+    "readiness_epoch",
+    "decisions",
+    "aggregation_result",
+    "readiness_signal_binding",
+    "readiness_signal_ref",
+    "verification",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-readiness-aggregation\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURReadinessAggregationReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "aggregation_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:readiness-aggregation:"},
+    "aggregated_at": {"type": "string", "format": "date-time"},
+    "policy_binding": {"$ref": "#/$defs/binding"},
+    "evidence_set_binding": {"$ref": "#/$defs/binding"},
+    "evidence_set": {"$ref": "#/$defs/evidenceSet"},
+    "readiness_epoch": {"type": "integer", "minimum": 1},
+    "decisions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check_id", "producer_id", "status", "evidence_ref"],
+        "properties": {
+          "check_id": {"type": "string", "minLength": 1},
+          "producer_id": {"type": "string", "pattern": "^urn:uu-aap:producer:"},
+          "status": {"const": "pass"},
+          "evidence_ref": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "aggregation_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["rule", "ready", "passed_check_count", "failed_check_count", "producer_independence_verified"],
+      "properties": {
+        "rule": {"const": "all_required_checks_pass"},
+        "ready": {"const": true},
+        "passed_check_count": {"const": 6},
+        "failed_check_count": {"const": 0},
+        "producer_independence_verified": {"const": true}
+      }
+    },
+    "readiness_signal_binding": {"$ref": "#/$defs/binding"},
+    "readiness_signal_ref": {"type": "string", "pattern": "^urn:uu-aap:kontur:readiness:"},
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_exact", "evidence_set_exact", "six_required_checks_exact", "producer_independence_exact", "source_artifact_types_exact", "source_digests_exact", "evidence_freshness_enforced", "all_checks_pass", "epoch_explicit", "signal_boundary_preserved"],
+      "properties": {
+        "policy_exact": {"const": true},
+        "evidence_set_exact": {"const": true},
+        "six_required_checks_exact": {"const": true},
+        "producer_independence_exact": {"const": true},
+        "source_artifact_types_exact": {"const": true},
+        "source_digests_exact": {"const": true},
+        "evidence_freshness_enforced": {"const": true},
+        "all_checks_pass": {"const": true},
+        "epoch_explicit": {"const": true},
+        "signal_boundary_preserved": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "global_readiness_aggregated",
+        "readiness_signal_emitted",
+        "single_source_self_certified_global_readiness",
+        "kernel_activated",
+        "responsibility_state_created",
+        "execution_authority_granted",
+        "legal_responsibility_determined",
+        "moral_blame_assigned",
+        "truth_certified",
+        "poai_materialization_event_recorded",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "global_readiness_aggregated": {"const": true},
+        "readiness_signal_emitted": {"const": true},
+        "single_source_self_certified_global_readiness": {"const": false},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}

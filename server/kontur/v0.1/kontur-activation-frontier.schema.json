@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-activation-frontier.schema.json",
+  "title": "KONTURActivationFrontierReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "frontier_id", "recorded_at",
+    "git_revision", "system_id", "server_instance_id", "readiness_epoch",
+    "aggregation_policy_binding", "responsibility_policy_binding", "readiness_signal_binding",
+    "aggregation_receipt_binding", "acceptance_receipt_binding", "status", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-frontier\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURActivationFrontierReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "frontier_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-frontier:"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "readiness_epoch": {"type": "integer", "minimum": 1},
+    "aggregation_policy_binding": {"$ref": "#/$defs/binding"},
+    "responsibility_policy_binding": {"$ref": "#/$defs/binding"},
+    "readiness_signal_binding": {"$ref": "#/$defs/binding"},
+    "aggregation_receipt_binding": {"$ref": "#/$defs/binding"},
+    "acceptance_receipt_binding": {"$ref": "#/$defs/binding"},
+    "status": {"const": "activation_prompt_may_be_requested"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "canonical_frontier_bound", "readiness_accepted", "activation_prompt_may_be_requested",
+        "human_activation_step_still_required", "kernel_activated", "responsibility_state_created",
+        "responsibility_accepted", "execution_authority_granted", "legal_responsibility_determined",
+        "legal_effect_established", "moral_blame_assigned", "truth_certified",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "canonical_frontier_bound": {"const": true},
+        "readiness_accepted": {"const": true},
+        "activation_prompt_may_be_requested": {"const": true},
+        "human_activation_step_still_required": {"const": true},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
