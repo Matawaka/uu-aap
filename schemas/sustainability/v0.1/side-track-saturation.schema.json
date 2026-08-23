@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/side-track-saturation.schema.json",
+  "title": "UU-AAP Side-Track Saturation Assessment v0.1",
+  "description": "Non-normative draft for detecting when an isolated parallel line should prefer consolidation over adding more concepts, without blocking main or forcing closure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "side_track",
+    "artifact_count",
+    "commit_count",
+    "saturation_state",
+    "preferred_mode",
+    "main_line_blocked",
+    "automatic_closure_allowed",
+    "automatic_integration_allowed",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.side-track-saturation-assessment"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "side_track": {"type": "string", "minLength": 1},
+    "artifact_count": {"type": "integer", "minimum": 0},
+    "commit_count": {"type": "integer", "minimum": 0},
+    "saturation_state": {
+      "enum": ["low", "growing", "consolidation-recommended", "freeze-candidate", "archival-candidate"]
+    },
+    "preferred_mode": {
+      "enum": ["explore", "validate", "consolidate-invariants", "prepare-selective-adoption", "freeze", "archive"]
+    },
+    "new_design_allowed": {"type": "boolean"},
+    "new_design_requires_distinct_gap": {"const": true},
+    "main_line_blocked": {"const": false},
+    "automatic_closure_allowed": {"const": false},
+    "automatic_integration_allowed": {"const": false},
+    "consolidation_principles": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "prefer_invariants_over_artifact_count",
+          "prefer_selective_adoption_over_whole_branch_merge",
+          "preserve_provenance_when_compacting",
+          "do_not_delete_disagreement",
+          "do_not_create_main_line_dependency"
+        ]
+      }
+    },
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
