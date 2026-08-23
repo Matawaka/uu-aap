@@ -1,0 +1,46 @@
+{
+  "$schema": "./registry.schema.json",
+  "artifact_type": "ProtocolRegistry",
+  "artifact_version": "0.1",
+  "registry_id": "urn:uu-aap:protocol-registry:v0.1",
+  "scope": "repository_scoped",
+  "repository": "github:Matawaka/uu-aap",
+  "resolution_policy": {
+    "selection": "exact_protocol_id_and_version_only",
+    "mutable_latest_alias": false,
+    "implicit_upgrade": false,
+    "ambiguity": "fail_closed",
+    "missing_version": "fail_closed",
+    "tag_drift": "fail_closed",
+    "manifest_blob_mismatch": "fail_closed"
+  },
+  "entries": [
+    {
+      "logical_uri": "urn:uu-aap:protocol:ccrp:0.1",
+      "protocol_id": "CCRP",
+      "version": "0.1",
+      "status": "published",
+      "semantic_source_status": "Experimental Draft",
+      "release_tag": "poai-ccrp-v0.1",
+      "release_commit": "2c98d34ebfb5e86491bffb29a27e5a55b4db707e",
+      "release_tree": "52207c5c0c1b516462221a47a3791ad97b02cc5f",
+      "release_manifest_path": "protocols/ccrp/v0.1/release-manifest.json",
+      "release_manifest_git_blob_sha": "78250d9dbfe08b5f340c05ac821fbae4ef263a86",
+      "publication_checkpoint_path": "protocols/ccrp/checkpoints/ccrp-v0.1-release.json",
+      "publication_checkpoint_git_blob_sha": "3cb1d08f5805fb26fa2bbcb25cf11ce3eff84624",
+      "conformance_levels": ["C0", "C1", "C2", "C3", "C4", "C5"]
+    }
+  ],
+  "non_claims": [
+    "factual_truth_certified",
+    "causal_proof_established",
+    "legal_identity_established",
+    "legal_authority_established",
+    "universal_canonicality_established",
+    "version_compatibility_established",
+    "dependency_solution_established",
+    "signature_validity_established",
+    "poai_v_conformance_established",
+    "materialization_permission_established"
+  ]
+}
