@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-execution-human-decision-v0.9.json",
+  "title":"CHSPExternalExecutionHumanDecision v0.9",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","decision_id","project_id","steward_id","v08_envelope_sha256","v08_dry_run_receipt_sha256","v08_dry_run_assessment_sha256","execution_recheck_sha256","human_id","human_domain_id","authority_evidence_sha256","decided_at","nonce","confirmation_token","decision_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalExecutionHumanDecision"},"artifact_version":{"const":"0.9"},"decision_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},
+    "v08_envelope_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v08_dry_run_receipt_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v08_dry_run_assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"execution_recheck_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "human_id":{"type":"string","minLength":1},"human_domain_id":{"type":"string","minLength":1},"authority_evidence_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"decided_at":{"type":"string","format":"date-time"},"nonce":{"type":"string","minLength":16},"confirmation_token":{"const":"AUTHORIZE_CHSP_EXACT_EXTERNAL_EXECUTION_ONLY"},"decision_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["human_execution_decision_recorded","exact_scope_consent","execution_authorized_by_single_decision","external_mutation_performed","ownership_transfer_authorized","canonical_origin_mutation_authorized","kontur_activation_authorized"],"properties":{"human_execution_decision_recorded":{"const":true},"exact_scope_consent":{"const":true},"execution_authorized_by_single_decision":{"const":false},"external_mutation_performed":{"const":false},"ownership_transfer_authorized":{"const":false},"canonical_origin_mutation_authorized":{"const":false},"kontur_activation_authorized":{"const":false}}}
+  }
+}
