@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-readiness-acceptance.schema.json",
+  "title": "KONTURReadinessAcceptanceReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "acceptance_id",
+    "evaluated_at",
+    "system_id",
+    "server_instance_id",
+    "readiness_epoch",
+    "aggregation_receipt_binding",
+    "readiness_signal_binding",
+    "responsibility_policy_binding",
+    "decision",
+    "checks",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-readiness-acceptance\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURReadinessAcceptanceReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "acceptance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:readiness-acceptance:"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "readiness_epoch": {"type": "integer", "minimum": 1},
+    "aggregation_receipt_binding": {"$ref": "#/$defs/binding"},
+    "readiness_signal_binding": {"$ref": "#/$defs/binding"},
+    "responsibility_policy_binding": {"$ref": "#/$defs/binding"},
+    "decision": {"const": "accepted_for_activation_precondition"},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aggregation_lineage_exact",
+        "readiness_signal_exact",
+        "responsibility_policy_exact",
+        "identity_exact",
+        "freshness_valid",
+        "epoch_acceptable",
+        "all_required_checks_pass",
+        "no_parallel_active_holder_asserted",
+        "assurance_boundary_preserved"
+      ],
+      "properties": {
+        "aggregation_lineage_exact": {"const": true},
+        "readiness_signal_exact": {"const": true},
+        "responsibility_policy_exact": {"const": true},
+        "identity_exact": {"const": true},
+        "freshness_valid": {"const": true},
+        "epoch_acceptable": {"const": true},
+        "all_required_checks_pass": {"const": true},
+        "no_parallel_active_holder_asserted": {"const": true},
+        "assurance_boundary_preserved": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "readiness_signal_accepted",
+        "activation_permitted_by_readiness_boundary",
+        "human_activation_step_still_required",
+        "kernel_activated",
+        "responsibility_state_created",
+        "responsibility_accepted",
+        "execution_authority_granted",
+        "legal_responsibility_determined",
+        "legal_effect_established",
+        "moral_blame_assigned",
+        "truth_certified",
+        "poai_materialization_event_recorded",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "readiness_signal_accepted": {"const": true},
+        "activation_permitted_by_readiness_boundary": {"const": true},
+        "human_activation_step_still_required": {"const": true},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
