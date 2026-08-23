@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/project-rescue-assessment-v0.1.json",
+  "title": "ProjectRescueAssessment v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "assessment_id", "case_id", "evaluated_at", "state", "loss_classification", "metrics", "preventer_result", "recovery_result", "decision", "reasons", "case_sha256", "policy_sha256", "assessment_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "ProjectRescueAssessment"},
+    "artifact_version": {"const": "0.1"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "case_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "state": {"enum": ["healthy", "degraded", "loss_suspected", "loss_confirmation_pending", "loss_confirmed", "rescue_eligible"]},
+    "loss_classification": {"enum": ["none", "transient_or_unknown", "availability_loss", "authority_loss", "integrity_loss", "destructive_loss"]},
+    "metrics": {"type": "object"},
+    "preventer_result": {"enum": ["continuity_restored", "exhausted", "incomplete"]},
+    "recovery_result": {"enum": ["verified_source_available", "no_verified_source"]},
+    "decision": {"enum": ["no_rescue", "continue_observation", "loss_confirmed_not_rescue_eligible", "human_rescue_authorization_may_be_requested"]},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "case_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["loss_confirmed", "rescue_eligible", "execution_authority_granted", "canonical_successor_established", "automatic_failover_executed", "legal_effect_established", "truth_certified"],
+      "properties": {
+        "loss_confirmed": {"type": "boolean"},
+        "rescue_eligible": {"type": "boolean"},
+        "execution_authority_granted": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "automatic_failover_executed": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}

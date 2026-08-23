@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/project-rescue-case-v0.1.json",
+  "title": "ProjectRescueCase v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "case_id", "project_id", "opened_at", "observations", "preventers", "recovery_sources", "claims"],
+  "properties": {
+    "artifact_type": {"const": "ProjectRescueCase"},
+    "artifact_version": {"const": "0.1"},
+    "case_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "opened_at": {"type": "string", "format": "date-time"},
+    "last_known_good_frontier": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["kind", "ref", "sha256"],
+      "properties": {
+        "kind": {"enum": ["git_commit", "protected_tag", "continuity_manifest", "external_anchor"]},
+        "ref": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["observation_id", "observed_at", "observer_domain_id", "failure_domain_id", "evidence_class", "subject", "result", "indicator", "evidence_sha256", "claims"],
+        "properties": {
+          "observation_id": {"type": "string", "minLength": 1},
+          "observed_at": {"type": "string", "format": "date-time"},
+          "observer_domain_id": {"type": "string", "minLength": 1},
+          "failure_domain_id": {"type": "string", "minLength": 1},
+          "evidence_class": {"enum": ["canonical_read_path", "canonical_control_path", "provider_status_path", "independent_replica_path", "independent_human_custodian", "external_content_anchor"]},
+          "subject": {"enum": ["canonical_origin", "owner_or_admin_control", "repository_integrity", "protected_frontier", "metadata_context", "kontur_ledger"]},
+          "result": {"enum": ["available", "unavailable", "inconsistent", "unknown"]},
+          "indicator": {"enum": ["reachable", "temporary_error", "access_denied", "object_missing", "frontier_replaced", "provider_confirmed_deleted", "integrity_mismatch", "custodian_unavailable", "replica_verified", "anchor_verified", "unknown"]},
+          "evidence_ref": {"type": ["string", "null"]},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "claims": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["establishes_loss_alone", "contains_credentials"],
+            "properties": {
+              "establishes_loss_alone": {"const": false},
+              "contains_credentials": {"const": false}
+            }
+          }
+        }
+      }
+    },
+    "preventers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["preventer_id", "status", "evidence_sha256"],
+        "properties": {
+          "preventer_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["succeeded", "exhausted", "blocked", "not_applicable", "available_not_attempted", "unknown"]},
+          "evidence_ref": {"type": ["string", "null"]},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "recovery_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_id", "source_kind", "failure_domain_id", "verified", "content_sha256", "frontier_ref", "claims"],
+        "properties": {
+          "source_id": {"type": "string", "minLength": 1},
+          "source_kind": {"enum": ["git_bundle", "bare_mirror", "second_remote", "release_archive", "metadata_snapshot", "kontur_ledger_replica"]},
+          "failure_domain_id": {"type": "string", "minLength": 1},
+          "verified": {"type": "boolean"},
+          "content_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "frontier_ref": {"type": "string", "minLength": 1},
+          "claims": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["canonical", "authority_transfer"],
+            "properties": {
+              "canonical": {"const": false},
+              "authority_transfer": {"const": false}
+            }
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_authorization_present", "canonical_successor_established", "automatic_recovery_executed"],
+      "properties": {
+        "human_authorization_present": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "automatic_recovery_executed": {"const": false}
+      }
+    }
+  }
+}
