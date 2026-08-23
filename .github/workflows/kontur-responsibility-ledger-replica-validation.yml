@@ -1,0 +1,64 @@
+name: KONTUR Responsibility Ledger Read-Only Replica validation
+
+on:
+  pull_request:
+    paths:
+      - 'server/kontur/v0.1/responsibility-ledger-replica.js'
+      - 'server/kontur/v0.1/RESPONSIBILITY_LEDGER_REPLICA.md'
+      - 'server/kontur/v0.1/kontur-responsibility-ledger-replica.schema.json'
+      - '.github/workflows/kontur-responsibility-ledger-replica-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'server/kontur/v0.1/responsibility-ledger-replica.js'
+      - 'server/kontur/v0.1/RESPONSIBILITY_LEDGER_REPLICA.md'
+      - 'server/kontur/v0.1/kontur-responsibility-ledger-replica.schema.json'
+      - '.github/workflows/kontur-responsibility-ledger-replica-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate syntax and schema JSON
+        run: |
+          node --check server/kontur/v0.1/responsibility-ledger-replica.js
+          python3 - <<'PY'
+          import json
+          json.load(open('server/kontur/v0.1/kontur-responsibility-ledger-replica.schema.json', encoding='utf-8'))
+          print('replica schema JSON valid')
+          PY
+
+      - name: Build synthetic durable KONTUR ledger fixture
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/kontur-replica-validation
+          node server/kontur/v0.1/test-responsibility-ledger.js /tmp/kontur-replica-validation/source
+
+      - name: Capture read-only replica and prove source files unchanged
+        run: |
+          set -euo pipefail
+          source=/tmp/kontur-replica-validation/source/ledger
+          policy=server/kontur/v0.1/policies/reference-server.responsibility-ledger-policy.json
+          replica=/tmp/kontur-replica-validation/replicas
+          find "$source" -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/source-before.sha256
+          snapshot="$(node server/kontur/v0.1/responsibility-ledger-replica.js create "$source" "$policy" "$replica")"
+          find "$source" -type f -print0 | sort -z | xargs -0 sha256sum > /tmp/source-after.sha256
+          cmp /tmp/source-before.sha256 /tmp/source-after.sha256
+          node server/kontur/v0.1/responsibility-ledger-replica.js verify "$snapshot"
+          printf '%s\n' "$snapshot" > /tmp/kontur-replica-snapshot-path
+
+      - name: Reject replica entry tampering fail-closed
+        run: |
+          set -euo pipefail
+          snapshot="$(cat /tmp/kontur-replica-snapshot-path)"
+          entry="$(find "$snapshot/entries" -type f -name '*.json' | sort | head -n1)"
+          printf 'TAMPER\n' >> "$entry"
+          if node server/kontur/v0.1/responsibility-ledger-replica.js verify "$snapshot"; then
+            echo 'tampered replica was incorrectly accepted' >&2
+            exit 1
+          fi
