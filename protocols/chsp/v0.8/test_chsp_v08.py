@@ -110,43 +110,35 @@ def main():
         assert final["claims"]["external_execution_authorized"] is False
         assert final["claims"]["executor_invoked"] is False
 
-        # One nonce cannot create a second envelope locally.
         expect_fail(lambda: C.build_envelope(proposal, auth, assessment, observed, policy, operations, "dry-run-envelope-nonce-0001", state, z(base+timedelta(minutes=14)), z(base+timedelta(minutes=46))), "dry-run-envelope-nonces")
 
-        # Planning ownership elevation is prohibited even at dry-run stage.
         unsafe_owner = [{"operation_id":"owner","kind":"ensure_role_at_least","intended_role":"owner","force":False,"destructive":False}]
         expect_fail(lambda: C.build_envelope(proposal, auth, assessment, observed, policy, unsafe_owner, "dry-run-envelope-nonce-owner", state, z(base+timedelta(minutes=14)), z(base+timedelta(minutes=46))), "unsafe intended role")
 
-        # Force/destructive plans are rejected.
         unsafe_force = [{"operation_id":"force","kind":"ensure_principal_presence","intended_role":None,"force":True,"destructive":False}]
         expect_fail(lambda: C.build_envelope(proposal, auth, assessment, observed, policy, unsafe_force, "dry-run-envelope-nonce-force", state, z(base+timedelta(minutes=14)), z(base+timedelta(minutes=46))), "force operation prohibited")
 
-        # Tampering with the envelope cannot produce a positive receipt.
         bad_envelope = copy.deepcopy(envelope)
         bad_envelope["external_principal_id"] = "github:attacker"
         bad_receipt = C.verify_dry_run(proposal, auth, assessment, observed, bad_envelope, policy, z(base+timedelta(minutes=14)))
         assert bad_receipt["result"] == "rejected"
         assert bad_receipt["claims"]["external_mutation_performed"] is False
 
-        # A previously valid receipt expires with its exact envelope and requires a fresh dry-run.
         expired = C.assess_dry_run(envelope, receipt, z(base+timedelta(minutes=46)))
         assert expired["state"] == "dry_run_expired"
         assert expired["decision"] == "repeat_dry_run_with_fresh_state"
 
-    # Stale v0.7 assessment is fail-closed.
     observed = C.issue_observed_state(proposal, policy, "maintainer", "observer:2", "observer-domain:2", "f"*64, z(base+timedelta(minutes=24)))
     fake_envelope = {"artifact_type":"CHSPExternalTransitionEnvelope","artifact_version":"0.8","envelope_sha256":"0"*64}
     stale_receipt = C.verify_dry_run(proposal, auth, assessment, observed, fake_envelope, policy, z(base+timedelta(minutes=30)))
     assert stale_receipt["result"] == "rejected"
     assert any("too old" in reason for reason in stale_receipt["reasons"])
 
-    # Stale observed state is independently fail-closed while v0.7 assessment is still fresh enough for this test.
-    old_observed = C.issue_observed_state(proposal, policy, "maintainer", "observer:3", "observer-domain:3", "1"*64, z(base))
+    old_observed = C.issue_observed_state(proposal, policy, "maintainer", "observer:3", "observer-domain:3", "1"*64, z(base-timedelta(minutes=2)))
     stale_obs_receipt = C.verify_dry_run(proposal, auth, assessment, old_observed, fake_envelope, policy, z(base+timedelta(minutes=14)))
     assert stale_obs_receipt["result"] == "rejected"
     assert any("observed external state too old" in reason for reason in stale_obs_receipt["reasons"])
 
-    # Credential-bearing or target-tampered observations are not acceptable.
     observed = C.issue_observed_state(proposal, policy, "maintainer", "observer:4", "observer-domain:4", "2"*64, z(base+timedelta(minutes=12)))
     bad_observed = copy.deepcopy(observed)
     bad_observed["contains_credentials"] = True
@@ -155,7 +147,6 @@ def main():
     assert rejected["result"] == "rejected"
     assert any("credentials prohibited" in reason for reason in rejected["reasons"])
 
-    # v0.7 tamper cannot be hidden behind a fresh v0.8 envelope.
     tampered_assessment = copy.deepcopy(assessment)
     tampered_assessment["state"] = "recognition_active"
     rejected = C.verify_dry_run(proposal, auth, tampered_assessment, observed, fake_envelope, policy, z(base+timedelta(minutes=14)))
