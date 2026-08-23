@@ -86,8 +86,7 @@
           "enum": [
             "within-ceiling",
             "requires-fresh-authorization",
-            "denied",
-            "unknown"
+            "denied"
           ]
         },
         "safe_effect": {"enum": ["prepare-only", "no-action"]}
