@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/sustainability/v0.1/human-observation-contract.schema.json",
+  "title": "Sustainability Human Interaction Observation / Adaptation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "subject",
+    "observation_window",
+    "signals",
+    "policy",
+    "assessment",
+    "authority_effect",
+    "capability_effect",
+    "external_execution_authorized",
+    "kontur_activation_authorized"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.sustainability-human-observation"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-contract"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["component_id", "scope"],
+      "properties": {
+        "component_id": {"type": "string", "minLength": 1},
+        "scope": {"const": "interaction-process-only"}
+      }
+    },
+    "observation_window": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["started_at", "ended_at", "event_count", "bounded", "continuous_monitoring"],
+      "properties": {
+        "started_at": {"type": "string", "format": "date-time"},
+        "ended_at": {"type": "string", "format": "date-time"},
+        "event_count": {"type": "integer", "minimum": 0, "maximum": 100},
+        "bounded": {"const": true},
+        "continuous_monitoring": {"const": false}
+      }
+    },
+    "signals": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "explicit_pause_request",
+          "explicit_reduce_pace_request",
+          "repeated_retries",
+          "repeated_corrections",
+          "interaction_looping",
+          "high_decision_density"
+        ]
+      }
+    },
+    "policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provocation_used",
+        "medical_inference",
+        "biometric_inference",
+        "hidden_psychological_scoring",
+        "fitness_determination",
+        "authority_reduction_allowed",
+        "automatic_external_action",
+        "continuous_monitoring",
+        "stores_sensitive_health_data",
+        "user_visible_adaptation_only"
+      ],
+      "properties": {
+        "provocation_used": {"const": false},
+        "medical_inference": {"const": false},
+        "biometric_inference": {"const": false},
+        "hidden_psychological_scoring": {"const": false},
+        "fitness_determination": {"const": false},
+        "authority_reduction_allowed": {"const": false},
+        "automatic_external_action": {"const": false},
+        "continuous_monitoring": {"const": false},
+        "stores_sensitive_health_data": {"const": false},
+        "user_visible_adaptation_only": {"const": true}
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result", "safe_effect"],
+      "properties": {
+        "result": {"enum": ["stable", "adaptation-suggested", "explicit-pause"]},
+        "safe_effect": {
+          "enum": [
+            "no-change",
+            "suggest-checkpoint",
+            "reduce-decision-density",
+            "honor-explicit-pause"
+          ]
+        }
+      }
+    },
+    "authority_effect": {"const": "none"},
+    "capability_effect": {"const": "none"},
+    "external_execution_authorized": {"const": false},
+    "kontur_activation_authorized": {"const": false},
+    "notes": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}
