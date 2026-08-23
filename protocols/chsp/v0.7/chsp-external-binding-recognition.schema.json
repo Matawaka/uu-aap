@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-binding-recognition-v0.7.json",
+  "title":"CHSPExternalBindingRecognition v0.7",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","recognition_id","project_id","steward_id","v06_binding_proposal_sha256","v06_binding_assessment_sha256","decision_set_sha256","decision_sha256s","recognizer_ids","recognizer_domain_ids","recognized_at","expires_at","nonce","recognition_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalBindingRecognition"},"artifact_version":{"const":"0.7"},"recognition_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},
+    "v06_binding_proposal_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v06_binding_assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"decision_set_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "decision_sha256s":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","pattern":"^[0-9a-f]{64}$"}},"recognizer_ids":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},"recognizer_domain_ids":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "recognized_at":{"type":"string","format":"date-time"},"expires_at":{"type":"string","format":"date-time"},"nonce":{"type":"string","minLength":16},"recognition_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["human_binding_recognition_recorded","external_mapping_recognized_for_transition_preparation","external_binding_established","external_control_mutation_authorized","external_control_transferred","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_ownership_adjudicated","universal_identity_proven","distributed_consensus_established"],"properties":{
+      "human_binding_recognition_recorded":{"const":true},"external_mapping_recognized_for_transition_preparation":{"const":true},"external_binding_established":{"const":false},"external_control_mutation_authorized":{"const":false},"external_control_transferred":{"const":false},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false},"legal_ownership_adjudicated":{"const":false},"universal_identity_proven":{"const":false},"distributed_consensus_established":{"const":false}
+    }}
+  }
+}

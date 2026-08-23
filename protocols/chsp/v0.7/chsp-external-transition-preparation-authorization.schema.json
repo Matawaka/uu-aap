@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-transition-preparation-authorization-v0.7.json",
+  "title":"CHSPExternalTransitionPreparationAuthorization v0.7",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","authorization_id","project_id","steward_id","recognition_sha256","v06_binding_proposal_sha256","v06_binding_assessment_sha256","decision_set_sha256","decision_sha256s","authorizer_ids","authorizer_domain_ids","authorized_action","authorized_at","expires_at","nonce","authorization_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalTransitionPreparationAuthorization"},"artifact_version":{"const":"0.7"},"authorization_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},"recognition_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v06_binding_proposal_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v06_binding_assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"decision_set_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "decision_sha256s":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","pattern":"^[0-9a-f]{64}$"}},"authorizer_ids":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},"authorizer_domain_ids":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "authorized_action":{"const":"prepare_bounded_external_stewardship_transition_envelope"},"authorized_at":{"type":"string","format":"date-time"},"expires_at":{"type":"string","format":"date-time"},"nonce":{"type":"string","minLength":16},"authorization_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["bounded_external_transition_preparation_authorized","steward_consent_recorded","external_binding_established","external_control_mutation_authorized","external_control_transferred","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_ownership_adjudicated","executor_invoked","distributed_consensus_established"],"properties":{
+      "bounded_external_transition_preparation_authorized":{"const":true},"steward_consent_recorded":{"const":true},"external_binding_established":{"const":false},"external_control_mutation_authorized":{"const":false},"external_control_transferred":{"const":false},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false},"legal_ownership_adjudicated":{"const":false},"executor_invoked":{"const":false},"distributed_consensus_established":{"const":false}
+    }}
+  }
+}
