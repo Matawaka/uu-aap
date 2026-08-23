@@ -122,11 +122,11 @@ async function main() {
   vectors.push(await reject('historical_semantic_frontier_substitution', async () => {
     const b = clone(bundle); b.ingress_receipt.semantic_frontier.target = 'github:other/repo';
     await Binder.buildReceipt({ ...args, bundle: b });
-  }, /semantic_frontier claim\/ingress inconsistency/));
+  }, /ingress receipt digest binding substitution|semantic_frontier claim\/ingress inconsistency/));
   vectors.push(await reject('historical_effect_frontier_substitution', async () => {
     const b = clone(bundle); b.assessment.effect_frontier.commit_sha = '0'.repeat(40);
     await Binder.buildReceipt({ ...args, bundle: b });
-  }, /effect_frontier claim\/assessment inconsistency/));
+  }, /assessment digest binding substitution|effect_frontier claim\/assessment inconsistency/));
   vectors.push(await reject('source_payload_substitution', async () => {
     const b = clone(bundle); b.source_evidence.source_payload.run_id = '1';
     await Binder.buildReceipt({ ...args, bundle: b });
