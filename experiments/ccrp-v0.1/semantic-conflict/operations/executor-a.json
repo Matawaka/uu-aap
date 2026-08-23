@@ -1,0 +1,26 @@
+{
+  "artifact_type": "CCRPLiveSemanticConflictOperation",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#165",
+  "executor_label": "executor-a-chatgpt",
+  "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+  "operation_class": "exclusive_semantic_choice",
+  "observed_main_sha": "e9d0c44e4818704ed7248835663a0310f1839285",
+  "baseline_binding": {
+    "path": "experiments/ccrp-v0.1/semantic-conflict/baseline.json",
+    "blob_sha": "b878971292644f129f1c762f638eb8128c7c8b4c",
+    "logical_resource_id": "urn:ccrp:experiment:semantic-conflict:resource:1",
+    "baseline_generation": 0
+  },
+  "decision_slot": "routing_mode",
+  "proposed_value": "direct",
+  "claims": {
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  }
+}
