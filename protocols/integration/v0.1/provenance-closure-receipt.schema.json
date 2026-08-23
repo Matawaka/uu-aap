@@ -1,0 +1,245 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/provenance-closure-receipt.schema.json",
+  "title": "UU-AAP ProvenanceClosureReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "closure_id",
+    "closed_at",
+    "origin_frontier",
+    "semantic_binding",
+    "evidence_frontier",
+    "digest_bound_lineage",
+    "reference_bound_upstream",
+    "recognized_state",
+    "canonicalization_binding",
+    "verification",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./provenance-closure-receipt.schema.json"},
+    "artifact_type": {"const": "ProvenanceClosureReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "closure_id": {"type": "string", "pattern": "^urn:uu-aap:provenance-closure:"},
+    "closed_at": {"type": "string", "format": "date-time"},
+    "origin_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mode",
+        "earliest_digest_bound_artifact_type",
+        "standalone_context_frame_present",
+        "standalone_intent_present",
+        "semantic_origin_provenance_complete"
+      ],
+      "properties": {
+        "mode": {"const": "bounded_machine_suffix"},
+        "earliest_digest_bound_artifact_type": {"const": "RevalidationReceipt"},
+        "standalone_context_frame_present": {"const": false},
+        "standalone_intent_present": {"const": false},
+        "semantic_origin_provenance_complete": {"const": false}
+      }
+    },
+    "semantic_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "target", "operation_ref", "responsible_party_id", "executor_implementation_id"],
+      "properties": {
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "operation_ref": {"type": "string", "minLength": 1},
+        "responsible_party_id": {"type": "string", "minLength": 1},
+        "executor_implementation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "evidence_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handoff_result_ref",
+        "handoff_offer_ref",
+        "handoff_acceptance_ref",
+        "revalidation_receipt_ref",
+        "authority_verification_ref",
+        "execution_admission_ref",
+        "pre_materialization_ref"
+      ],
+      "properties": {
+        "handoff_result_ref": {"type": "string", "minLength": 1},
+        "handoff_offer_ref": {"type": "string", "minLength": 1},
+        "handoff_acceptance_ref": {"type": "string", "minLength": 1},
+        "revalidation_receipt_ref": {"type": "string", "minLength": 1},
+        "authority_verification_ref": {"type": "string", "minLength": 1},
+        "execution_admission_ref": {"type": "string", "minLength": 1},
+        "pre_materialization_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "digest_bound_lineage": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "prefixItems": [
+        {"$ref": "#/$defs/revalidationBinding"},
+        {"$ref": "#/$defs/decisionInputBinding"},
+        {"$ref": "#/$defs/decisionBinding"},
+        {"$ref": "#/$defs/commitBinding"},
+        {"$ref": "#/$defs/observationBinding"},
+        {"$ref": "#/$defs/canonicalizationBinding"},
+        {"$ref": "#/$defs/policyBinding"}
+      ],
+      "items": false
+    },
+    "reference_bound_upstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["binding_mode", "refs", "artifact_bytes_bound"],
+      "properties": {
+        "binding_mode": {"const": "exact_reference_only"},
+        "refs": {
+          "type": "array",
+          "minItems": 6,
+          "maxItems": 6,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "artifact_bytes_bound": {"const": false}
+      }
+    },
+    "recognized_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "commit_sha", "tree_sha", "changed_paths", "changed_path_count"],
+      "properties": {
+        "revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "changed_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "changed_path_count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "canonicalization_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["receipt_ref", "policy_id", "policy_version", "policy_digest", "canonicality_scope", "status"],
+      "properties": {
+        "receipt_ref": {"type": "string", "pattern": "^urn:uu-aap:canonicalization-receipt:"},
+        "policy_id": {"type": "string", "pattern": "^urn:uu-aap:canonicalization-policy:"},
+        "policy_version": {"type": "integer", "minimum": 1},
+        "policy_digest": {"$ref": "#/$defs/digest"},
+        "canonicality_scope": {"type": "string", "pattern": "^urn:uu-aap:canonicality-scope:"},
+        "status": {"const": "recognized"}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_input_evidence_frontier_exact",
+        "revalidation_ref_exact",
+        "decision_input_to_decision_exact",
+        "decision_to_commit_exact",
+        "commit_to_observation_exact",
+        "observation_to_canonicalization_exact",
+        "semantic_binding_exact",
+        "successor_state_exact",
+        "canonicalization_policy_exact",
+        "policy_relative_canonicality_preserved",
+        "artifact_digests_computed",
+        "assurance_not_upgraded"
+      ],
+      "properties": {
+        "decision_input_evidence_frontier_exact": {"const": true},
+        "revalidation_ref_exact": {"const": true},
+        "decision_input_to_decision_exact": {"const": true},
+        "decision_to_commit_exact": {"const": true},
+        "commit_to_observation_exact": {"const": true},
+        "observation_to_canonicalization_exact": {"const": true},
+        "semantic_binding_exact": {"const": true},
+        "successor_state_exact": {"const": true},
+        "canonicalization_policy_exact": {"const": true},
+        "policy_relative_canonicality_preserved": {"const": true},
+        "artifact_digests_computed": {"const": true},
+        "assurance_not_upgraded": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bounded_chain_closed",
+        "digest_bound_suffix_established",
+        "reference_bound_upstream_frontier_established",
+        "standalone_context_frame_provenance_established",
+        "standalone_intent_provenance_established",
+        "semantic_origin_provenance_complete",
+        "all_upstream_evidence_artifact_bytes_bound",
+        "policy_relative_canonicality_preserved",
+        "remote_branch_or_ref_canonicality_established",
+        "poai_materialization_event_recorded",
+        "poai_successor_record_identity_inferred",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_responsibility_determined",
+        "legal_effect_established",
+        "moral_correctness_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "bounded_chain_closed": {"const": true},
+        "digest_bound_suffix_established": {"const": true},
+        "reference_bound_upstream_frontier_established": {"const": true},
+        "standalone_context_frame_provenance_established": {"const": false},
+        "standalone_intent_provenance_established": {"const": false},
+        "semantic_origin_provenance_complete": {"const": false},
+        "all_upstream_evidence_artifact_bytes_bound": {"const": false},
+        "policy_relative_canonicality_preserved": {"const": true},
+        "remote_branch_or_ref_canonicality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "poai_successor_record_identity_inferred": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "baseBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stage", "artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "stage": {"type": "string"},
+        "artifact_type": {"type": "string"},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "revalidationBinding": {"allOf": [{"$ref": "#/$defs/baseBinding"}, {"properties": {"stage": {"const": "revalidation"}, "artifact_type": {"const": "RevalidationReceipt"}}}]},
+    "decisionInputBinding": {"allOf": [{"$ref": "#/$defs/baseBinding"}, {"properties": {"stage": {"const": "decision_input"}, "artifact_type": {"const": "CommitDecisionInput"}}}]},
+    "decisionBinding": {"allOf": [{"$ref": "#/$defs/baseBinding"}, {"properties": {"stage": {"const": "commit_decision"}, "artifact_type": {"const": "CommitDecisionResult"}}}]},
+    "commitBinding": {"allOf": [{"$ref": "#/$defs/baseBinding"}, {"properties": {"stage": {"const": "commit"}, "artifact_type": {"const": "CommitReceipt"}}}]},
+    "observationBinding": {"allOf": [{"$ref": "#/$defs/baseBinding"}, {"properties": {"stage": {"const": "observation"}, "artifact_type": {"const": "ObservationReceipt"}}}]},
+    "canonicalizationBinding": {"allOf": [{"$ref": "#/$defs/baseBinding"}, {"properties": {"stage": {"const": "canonicalization"}, "artifact_type": {"const": "CanonicalizationReceipt"}}}]},
+    "policyBinding": {"allOf": [{"$ref": "#/$defs/baseBinding"}, {"properties": {"stage": {"const": "canonicalization_policy"}, "artifact_type": {"const": "UU-AAPCanonicalizationPolicy"}}}]}
+  }
+}
