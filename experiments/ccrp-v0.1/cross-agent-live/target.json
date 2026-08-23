@@ -1,0 +1,23 @@
+{
+  "artifact_type": "CCRPLiveCrossAgentTarget",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#154",
+  "frozen_predecessor": {
+    "tag": "poai-ccrp-exp-v0.1",
+    "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+  },
+  "operation_class": "exclusive_state_sensitive",
+  "generation": 0,
+  "state": "baseline",
+  "accepted_executor": null,
+  "allowed_live_mutation_scope": "this_file_only",
+  "claims": {
+    "protocol_definition": false,
+    "canonical_state_established": false,
+    "materialization_permitted": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  }
+}
