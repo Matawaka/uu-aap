@@ -1,0 +1,159 @@
+name: Project Readiness Checkpoint v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "schemas/architecture/v0.1/**"
+      - "docs/PROJECT-READINESS-CHECKPOINT-v0.1.md"
+      - ".github/workflows/project-readiness-checkpoint-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checkpoint:
+    name: Architecture convergence + current-main frontier checkpoint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Check checkpoint code syntax
+        run: |
+          node --check schemas/architecture/v0.1/build-project-readiness-checkpoint.js
+          node --check schemas/architecture/v0.1/tests/test_project_readiness_checkpoint_v01.js
+          node --check server/kontur/v0.1/verify-current-main-frontier.js
+
+      - name: Validate checkpoint schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('schemas/architecture/v0.1/project-readiness-checkpoint.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID ProjectReadinessCheckpointReceipt v0.1 schema')
+          PY
+
+      - name: Validate architecture convergence predecessor
+        run: |
+          python schemas/architecture/v0.1/architecture_convergence_assessor.py \
+            schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json \
+            --repo-root .
+
+      - name: Run project checkpoint fail-closed tests
+        run: node schemas/architecture/v0.1/tests/test_project_readiness_checkpoint_v01.js
+
+      - name: Reproduce KONTUR readiness for canonical checkpoint
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node server/kontur/v0.1/test-readiness-aggregator.js /tmp/project-readiness
+
+      - name: Emit exact current-main frontier verification receipt
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          CHECKPOINT_EVENT_NAME: ${{ github.event_name }}
+          CHECKPOINT_REF: ${{ github.ref }}
+          CHECKPOINT_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          CHECKOUT_SHA="$(git rev-parse HEAD)"
+          node server/kontur/v0.1/verify-current-main-frontier.js \
+            /tmp/project-readiness/activation-frontier.json \
+            /tmp/project-readiness/current-main-frontier-verification.json \
+            "$CHECKPOINT_EVENT_NAME" \
+            "$CHECKPOINT_REF" \
+            "$CHECKPOINT_GITHUB_SHA" \
+            "$CHECKOUT_SHA"
+
+      - name: Build project readiness checkpoint
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          CHECKPOINT_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const Builder = require('./schemas/architecture/v0.1/build-project-readiness-checkpoint.js');
+          (async () => {
+            const convergenceManifest = JSON.parse(fs.readFileSync('schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json', 'utf8'));
+            const currentMainVerification = JSON.parse(fs.readFileSync('/tmp/project-readiness/current-main-frontier-verification.json', 'utf8'));
+            const checkpoint = await Builder.buildProjectReadinessCheckpoint({
+              convergenceManifest,
+              currentMainVerification,
+              gitRevision: `git:${process.env.CHECKPOINT_GITHUB_SHA}`,
+              recordedAt: new Date().toISOString()
+            });
+            fs.writeFileSync('/tmp/project-readiness/project-readiness-checkpoint.json', JSON.stringify(checkpoint, null, 2) + '\n');
+          })().catch(error => { console.error(error); process.exit(1); });
+          NODE
+
+      - name: Validate production checkpoint and non-effects
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          CHECKPOINT_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          out = Path('/tmp/project-readiness')
+          schema = json.loads(Path('schemas/architecture/v0.1/project-readiness-checkpoint.schema.json').read_text(encoding='utf-8'))
+          checkpoint = json.loads((out / 'project-readiness-checkpoint.json').read_text(encoding='utf-8'))
+          verification = json.loads((out / 'current-main-frontier-verification.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(checkpoint)
+          sha = os.environ['CHECKPOINT_GITHUB_SHA']
+          assert checkpoint['git_revision'] == 'git:' + sha
+          assert verification['workflow_context']['event_name'] == 'push'
+          assert verification['workflow_context']['ref'] == 'refs/heads/main'
+          assert verification['workflow_context']['github_sha'] == sha
+          assert verification['frontier_git_revision'] == 'git:' + sha
+          assert checkpoint['status'] == 'project_readiness_checkpoint_established'
+          assert checkpoint['claims']['current_main_frontier_verified'] is True
+          assert checkpoint['claims']['project_readiness_checkpoint_established'] is True
+          assert checkpoint['claims']['human_activation_step_still_required'] is True
+          for key in ['kontur_activation_authorized', 'kontur_activated', 'execution_authority_granted', 'repository_ownership_transferred', 'canonical_origin_mutated', 'legal_authority_established', 'truth_certified', 'distributed_consensus_established', 'universal_architecture_completeness_proven']:
+              assert checkpoint['claims'][key] is False, key
+          print('Project readiness checkpoint established for exact canonical main; activation remains human-gated')
+          PY
+
+      - name: Guard against activation or repository mutation surface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/project-readiness-checkpoint-v0.1-validation.yml').read_text(encoding='utf-8')
+          forbidden = ['transitionResponsibility(', 'activate-kontur', 'git push', 'gh api', 'curl -X POST', 'curl -X PUT', 'curl -X DELETE']
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS: checkpoint workflow has no activation or repository mutation command')
+          PY
+
+      - name: Confirm checkpoint workflow did not mutate checkout
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Upload project readiness checkpoint evidence
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: project-readiness-checkpoint-${{ github.sha }}
+          path: /tmp/project-readiness/
+          if-no-files-found: error
+          retention-days: 30
