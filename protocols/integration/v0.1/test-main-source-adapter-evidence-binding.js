@@ -26,13 +26,12 @@ async function main() {
 
   const policy = readJson(path.join(repoRoot, 'protocols/integration/v0.1/policies/github-actions-main.consequence-observation-source-adapter-main-binding-policy.json'));
   const adapterPolicy = readJson(path.join(repoRoot, 'protocols/integration/v0.1/policies/github-actions-runtime.consequence-observation-source-adapter-policy.json'));
-  const frontierEntry = readJson('/tmp/responsibility-event-successor-ledger-entry-2.json');
   const sourceRun = readJson(runMetadataPath);
   const sourceArtifact = readJson(artifactMetadataPath);
   const bundle = Binder.readBundle(evidenceDir);
   const evaluatedAt = new Date().toISOString();
 
-  const args = { policy, adapterPolicy, frontierEntry, bundle, sourceRun, sourceArtifact, expectedSha, evaluatedAt, env: process.env };
+  const args = { policy, adapterPolicy, bundle, sourceRun, sourceArtifact, expectedSha, evaluatedAt, env: process.env };
   const receipt = await Binder.buildReceipt(args);
 
   assert(receipt.expected_source_revision === expectedSha, 'source revision binding missing');
@@ -42,10 +41,14 @@ async function main() {
   assert(receipt.decision.exact_push_run_verified === true, 'push run not verified');
   assert(receipt.decision.exact_artifact_verified === true, 'artifact not verified');
   assert(receipt.decision.bundle_integrity_verified === true, 'bundle integrity not verified');
+  assert(receipt.decision.historical_frontier_binding_consistency_verified === true, 'historical frontier binding consistency missing');
+  assert(receipt.decision.historical_frontier_bytes_reverified === false, 'historical frontier bytes must not be claimed reverified');
+  assert(receipt.historical_frontier_binding.digest.value === bundle.adapter_receipt.frontier_entry_binding.digest.value, 'historical frontier binding not preserved');
   assert(receipt.decision.main_bound_source_evidence_verified === true, 'main-bound source evidence not verified');
   assert(receipt.decision.source_may_be_presented_to_future_successor_policy === true, 'future successor presentation boundary missing');
   assert(receipt.decision.successor_append_may_proceed === false && receipt.decision.successor_append_executed === false, 'binding layer must not append');
   assert(policy.invariants.server_runtime_dependency_required === false, 'server runtime must not gate main-binding layer');
+  assert(policy.invariants.historical_frontier_bytes_reverification_required === false, 'policy must not require unavailable historical bytes');
   assert(receipt.claims.causal_proof_certified === false && receipt.claims.responsibility_for_consequence_attributed === false, 'causal/responsibility overclaim');
 
   await Binder.validateReceipt({ ...args, receipt });
@@ -108,10 +111,22 @@ async function main() {
     const b = clone(bundle); b.adapter_receipt.policy_binding.digest.value = '0'.repeat(64);
     await Binder.buildReceipt({ ...args, bundle: b });
   }, /adapter policy digest binding substitution/));
-  vectors.push(await reject('frontier_binding_substitution', async () => {
+  vectors.push(await reject('historical_frontier_binding_substitution', async () => {
     const b = clone(bundle); b.adapter_receipt.frontier_entry_binding.digest.value = '0'.repeat(64);
     await Binder.buildReceipt({ ...args, bundle: b });
-  }, /frontier entry digest binding substitution/));
+  }, /historical frontier binding inconsistency/));
+  vectors.push(await reject('historical_event_head_substitution', async () => {
+    const b = clone(bundle); b.adapter_receipt.responsibility_event_head.event_digest.value = '0'.repeat(64);
+    await Binder.buildReceipt({ ...args, bundle: b });
+  }, /responsibility_event_head claim\/adapter inconsistency/));
+  vectors.push(await reject('historical_semantic_frontier_substitution', async () => {
+    const b = clone(bundle); b.ingress_receipt.semantic_frontier.target = 'github:other/repo';
+    await Binder.buildReceipt({ ...args, bundle: b });
+  }, /semantic_frontier claim\/ingress inconsistency/));
+  vectors.push(await reject('historical_effect_frontier_substitution', async () => {
+    const b = clone(bundle); b.assessment.effect_frontier.commit_sha = '0'.repeat(40);
+    await Binder.buildReceipt({ ...args, bundle: b });
+  }, /effect_frontier claim\/assessment inconsistency/));
   vectors.push(await reject('source_payload_substitution', async () => {
     const b = clone(bundle); b.source_evidence.source_payload.run_id = '1';
     await Binder.buildReceipt({ ...args, bundle: b });
@@ -124,6 +139,10 @@ async function main() {
     const p = clone(policy); p.invariants.server_runtime_dependency_required = true;
     await Binder.buildReceipt({ ...args, policy: p });
   }, /server runtime dependency escalation/));
+  vectors.push(await reject('policy_historical_byte_reverification_escalation', async () => {
+    const p = clone(policy); p.invariants.historical_frontier_bytes_reverification_required = true;
+    await Binder.buildReceipt({ ...args, policy: p });
+  }, /historical frontier byte-reverification overclaim/));
   vectors.push(await reject('policy_append_permission_escalation', async () => {
     const p = clone(policy); p.invariants.successor_append_permission_allowed = true;
     await Binder.buildReceipt({ ...args, policy: p });
@@ -138,6 +157,10 @@ async function main() {
   }, /scalar fields prohibited/));
   vectors.push(await reject('receipt_append_permission_escalation', async () => {
     const r = clone(receipt); r.decision.successor_append_may_proceed = true;
+    await Binder.validateReceipt({ ...args, receipt: r });
+  }, /binding receipt substitution/));
+  vectors.push(await reject('receipt_historical_bytes_overclaim', async () => {
+    const r = clone(receipt); r.decision.historical_frontier_bytes_reverified = true;
     await Binder.validateReceipt({ ...args, receipt: r });
   }, /binding receipt substitution/));
   vectors.push(await reject('receipt_causal_overclaim', async () => {
@@ -162,6 +185,10 @@ async function main() {
     source_runtime_context_class: receipt.runtime_context.context_class,
     source_runtime_ref: receipt.runtime_context.ref,
     evaluator_context_class: receipt.evaluator_context.context_class,
+    historical_frontier_ref: receipt.historical_frontier_binding.artifact_ref,
+    historical_frontier_digest: receipt.historical_frontier_binding.digest.value,
+    historical_frontier_binding_consistency_verified: true,
+    historical_frontier_bytes_reverified: false,
     exact_push_run_verified: true,
     exact_artifact_verified: true,
     bundle_integrity_verified: true,
