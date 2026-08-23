@@ -1,0 +1,113 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-human-activation-review-packet.schema.json",
+  "title": "KONTURHumanActivationReviewPacket v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "review_packet_id", "prepared_at",
+    "project_id", "git_revision", "project_readiness_checkpoint_binding",
+    "current_main_frontier_verification_binding", "required_human_confirmations",
+    "review_state", "safe_next_step", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-human-activation-review-packet\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURHumanActivationReviewPacket"},
+    "artifact_version": {"const": "0.1"},
+    "review_packet_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:human-activation-review-packet:"},
+    "prepared_at": {"type": "string", "format": "date-time"},
+    "project_id": {"const": "Matawaka/uu-aap"},
+    "git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+    "project_readiness_checkpoint_binding": {"$ref": "#/$defs/binding"},
+    "current_main_frontier_verification_binding": {"$ref": "#/$defs/binding"},
+    "required_human_confirmations": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "exact_revision_and_review_packet_understood",
+          "existing_permissions_only",
+          "no_permission_bypass_or_escalation",
+          "activation_intent_is_separate_future_artifact",
+          "preflight_is_separate_and_must_be_fresh",
+          "execute_command_requires_separate_human_step",
+          "holder_scopes_and_lease_must_be_explicit_before_intent",
+          "activation_does_not_establish_legal_truth_or_universal_authority"
+        ]
+      }
+    },
+    "review_state": {"const": "ready_for_human_activation_review"},
+    "safe_next_step": {"const": "human_review_decision_only"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_readiness_checkpoint_verified",
+        "current_main_frontier_verified",
+        "human_activation_review_ready",
+        "human_review_decision_recorded",
+        "activation_intent_preparation_authorized",
+        "activation_intent_created",
+        "preflight_requested",
+        "execute_command_created",
+        "kernel_activated",
+        "responsibility_state_created",
+        "responsibility_accepted",
+        "execution_authority_granted",
+        "permission_expansion_authorized",
+        "permission_bypass_authorized",
+        "repository_ownership_transferred",
+        "canonical_origin_mutated",
+        "legal_authority_established",
+        "truth_certified",
+        "distributed_consensus_established"
+      ],
+      "properties": {
+        "project_readiness_checkpoint_verified": {"const": true},
+        "current_main_frontier_verified": {"const": true},
+        "human_activation_review_ready": {"const": true},
+        "human_review_decision_recorded": {"const": false},
+        "activation_intent_preparation_authorized": {"const": false},
+        "activation_intent_created": {"const": false},
+        "preflight_requested": {"const": false},
+        "execute_command_created": {"const": false},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "permission_expansion_authorized": {"const": false},
+        "permission_bypass_authorized": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "legal_authority_established": {"const": false},
+        "truth_certified": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
