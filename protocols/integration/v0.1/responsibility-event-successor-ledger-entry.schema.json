@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/responsibility-event-successor-ledger-entry.schema.json",
+  "title": "UU-AAP ResponsibilityEventSuccessorLedgerEntry v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "entry_id", "ledger_id", "sequence", "committed_at",
+    "previous_entry_binding", "storage_policy_binding", "successor_policy_binding", "base_chain_binding",
+    "validation_bundle", "successor_append_receipt_binding", "predecessor_event_head", "resulting_event_head",
+    "claims", "entry_digest"
+  ],
+  "properties": {
+    "$schema": {"const": "./responsibility-event-successor-ledger-entry.schema.json"},
+    "artifact_type": {"const": "ResponsibilityEventSuccessorLedgerEntry"},
+    "artifact_version": {"const": "0.1"},
+    "entry_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event-successor-ledger-entry:"},
+    "ledger_id": {"const": "urn:uu-aap:responsibility-event-append-ledger:reference-local-v0.1"},
+    "sequence": {"type": "integer", "minimum": 1},
+    "committed_at": {"type": "string", "format": "date-time"},
+    "previous_entry_binding": {"$ref": "#/$defs/binding"},
+    "storage_policy_binding": {"$ref": "#/$defs/binding"},
+    "successor_policy_binding": {"$ref": "#/$defs/binding"},
+    "base_chain_binding": {"$ref": "#/$defs/binding"},
+    "validation_bundle": {
+      "type": "object", "additionalProperties": false,
+      "required": ["base_chain", "successor_source", "successor_append_receipt"],
+      "properties": {
+        "base_chain": {"type": "object", "minProperties": 1},
+        "successor_source": {"type": "object", "minProperties": 1},
+        "successor_append_receipt": {"type": "object", "minProperties": 1}
+      }
+    },
+    "successor_append_receipt_binding": {"$ref": "#/$defs/binding"},
+    "predecessor_event_head": {"$ref": "#/$defs/head"},
+    "resulting_event_head": {"$ref": "#/$defs/head"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "local_durable_commit_established", "authoritative_successor_head_derivable",
+        "embedded_historical_evidence_bound", "ledger_local_durable_replay_protection_established",
+        "accepted_append_identity_set_recoverable", "generic_successor_append_persisted",
+        "new_external_consequence_observed", "causal_proof_certified",
+        "responsibility_for_outcome_adjudicated", "legal_liability_established", "legal_effect_established",
+        "moral_blame_assigned", "moral_correctness_established", "truth_certified",
+        "global_replay_protection_established", "distributed_consensus_established",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "local_durable_commit_established": {"const": true},
+        "authoritative_successor_head_derivable": {"const": true},
+        "embedded_historical_evidence_bound": {"const": true},
+        "ledger_local_durable_replay_protection_established": {"const": true},
+        "accepted_append_identity_set_recoverable": {"const": true},
+        "generic_successor_append_persisted": {"const": true},
+        "new_external_consequence_observed": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    },
+    "entry_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "digest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "head": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "event_id", "event_digest"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 6},
+        "event_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event:"},
+        "event_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}

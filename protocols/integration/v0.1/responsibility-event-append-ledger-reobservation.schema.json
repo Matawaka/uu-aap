@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/responsibility-event-append-ledger-reobservation.schema.json",
+  "title": "UU-AAP ResponsibilityEventAppendLedgerReobservationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "reobservation_id", "observed_at",
+    "ledger_id", "storage_policy_binding", "successor_policy_binding", "entry_count",
+    "head_entry_binding", "authoritative_successor_head", "history_digest",
+    "accepted_append_receipt_ids", "accepted_event_ids", "accepted_event_digests",
+    "verification", "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./responsibility-event-append-ledger-reobservation.schema.json"},
+    "artifact_type": {"const": "ResponsibilityEventAppendLedgerReobservationReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "reobservation_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event-append-ledger-reobservation:"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "ledger_id": {"const": "urn:uu-aap:responsibility-event-append-ledger:reference-local-v0.1"},
+    "storage_policy_binding": {"$ref": "#/$defs/binding"},
+    "successor_policy_binding": {"$ref": "#/$defs/binding"},
+    "entry_count": {"type": "integer", "minimum": 1},
+    "head_entry_binding": {"$ref": "#/$defs/binding"},
+    "authoritative_successor_head": {"$ref": "#/$defs/head"},
+    "history_digest": {"$ref": "#/$defs/digest"},
+    "accepted_append_receipt_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "accepted_event_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event:"}},
+    "accepted_event_digests": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "committed_entries_replayed", "entry_chain_exact", "head_exact", "accepted_identity_sets_exact",
+        "storage_policy_exact", "successor_policy_exact", "mutable_head_ignored", "temporary_files_ignored",
+        "scalar_scoring_absent"
+      ],
+      "properties": {
+        "committed_entries_replayed": {"const": true},
+        "entry_chain_exact": {"const": true},
+        "head_exact": {"const": true},
+        "accepted_identity_sets_exact": {"const": true},
+        "storage_policy_exact": {"const": true},
+        "successor_policy_exact": {"const": true},
+        "mutable_head_ignored": {"const": true},
+        "temporary_files_ignored": {"const": true},
+        "scalar_scoring_absent": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "ledger_history_reobserved", "authoritative_successor_head_reobserved",
+        "ledger_local_durable_replay_protection_reobserved", "new_external_consequence_observed",
+        "generalized_external_consequence_causality_established", "causal_proof_certified",
+        "responsibility_for_outcome_adjudicated", "legal_liability_established", "legal_effect_established",
+        "moral_blame_assigned", "moral_correctness_established", "truth_certified",
+        "global_replay_protection_established", "distributed_consensus_established",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "ledger_history_reobserved": {"const": true},
+        "authoritative_successor_head_reobserved": {"const": true},
+        "ledger_local_durable_replay_protection_reobserved": {"const": true},
+        "new_external_consequence_observed": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "head": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sequence", "event_id", "event_digest"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 6},
+        "event_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event:"},
+        "event_digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
