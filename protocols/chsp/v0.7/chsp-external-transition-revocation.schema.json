@@ -1,0 +1,14 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-transition-revocation-v0.7.json",
+  "title":"CHSPExternalTransitionRevocation v0.7",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","revocation_id","project_id","steward_id","target_type","target_sha256","mode","actor_id","authority_evidence_sha256","revoked_at","reason_code","nonce","revocation_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalTransitionRevocation"},"artifact_version":{"const":"0.7"},"revocation_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},
+    "target_type":{"enum":["recognition","transition_preparation_authorization"]},"target_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"mode":{"enum":["human_revocation","steward_withdrawal"]},"actor_id":{"type":"string","minLength":1},"authority_evidence_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"revoked_at":{"type":"string","format":"date-time"},"reason_code":{"type":"string","minLength":1},"nonce":{"type":"string","minLength":16},"revocation_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["revocation_recorded","future_execution_blocked","historical_target_erased","external_control_mutated","repository_ownership_transferred","canonical_origin_mutated","kontur_activated","legal_effect_established","truth_certified"],"properties":{
+      "revocation_recorded":{"const":true},"future_execution_blocked":{"const":true},"historical_target_erased":{"const":false},"external_control_mutated":{"const":false},"repository_ownership_transferred":{"const":false},"canonical_origin_mutated":{"const":false},"kontur_activated":{"const":false},"legal_effect_established":{"const":false},"truth_certified":{"const":false}
+    }}
+  }
+}
