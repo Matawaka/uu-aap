@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-readiness-aggregation-policy.schema.json",
+  "title": "KONTURReadinessAggregationPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "policy_id",
+    "policy_version",
+    "aggregation_scope",
+    "system_id",
+    "server_instance_id",
+    "effective_from",
+    "effective_until",
+    "aggregation_rule",
+    "required_checks",
+    "evidence_freshness_seconds",
+    "signal_validity_seconds",
+    "producer_independence_required",
+    "epoch_rule",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-readiness-aggregation-policy\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURReadinessAggregationPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:readiness-aggregation-policy:"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "aggregation_scope": {"type": "string", "pattern": "^urn:uu-aap:kontur:readiness-aggregation-scope:"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"type": ["string", "null"], "format": "date-time"},
+    "aggregation_rule": {"const": "all_required_checks_pass"},
+    "required_checks": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "uniqueItems": true,
+      "prefixItems": [
+        {"$ref": "#/$defs/protocolRegistryRule"},
+        {"$ref": "#/$defs/coordinationRule"},
+        {"$ref": "#/$defs/authorityRule"},
+        {"$ref": "#/$defs/provenanceRule"},
+        {"$ref": "#/$defs/causalRule"},
+        {"$ref": "#/$defs/healthRule"}
+      ],
+      "items": false
+    },
+    "evidence_freshness_seconds": {"type": "integer", "minimum": 60, "maximum": 3600},
+    "signal_validity_seconds": {"type": "integer", "minimum": 60, "maximum": 1800},
+    "producer_independence_required": {"const": true},
+    "epoch_rule": {"const": "explicit_monotonic_server_epoch"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "global_readiness_self_certifiable_by_single_source",
+        "execution_authority_granted",
+        "responsibility_accepted",
+        "kernel_activated",
+        "legal_responsibility_determined",
+        "moral_blame_assigned",
+        "truth_certified",
+        "poai_materialization_event_recorded",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "global_readiness_self_certifiable_by_single_source": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "kernel_activated": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "baseRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["check_id", "producer_id", "allowed_artifact_type"],
+      "properties": {
+        "check_id": {"type": "string"},
+        "producer_id": {"type": "string", "pattern": "^urn:uu-aap:producer:"},
+        "allowed_artifact_type": {"type": "string", "minLength": 1}
+      }
+    },
+    "protocolRegistryRule": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRule"},
+        {"properties": {
+          "check_id": {"const": "protocol_registry_ready"},
+          "producer_id": {"const": "urn:uu-aap:producer:protocol-registry-validator"},
+          "allowed_artifact_type": {"const": "ProtocolRegistry"}
+        }}
+      ]
+    },
+    "coordinationRule": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRule"},
+        {"properties": {
+          "check_id": {"const": "coordination_ready"},
+          "producer_id": {"const": "urn:uu-aap:producer:ccrp-c5-validator"},
+          "allowed_artifact_type": {"const": "CCRPPolicyCoordinationResult"}
+        }}
+      ]
+    },
+    "authorityRule": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRule"},
+        {"properties": {
+          "check_id": {"const": "authority_ready"},
+          "producer_id": {"const": "urn:uu-aap:producer:poai-authority-validator"},
+          "allowed_artifact_type": {"const": "PoAIAuthorityVerificationResult"}
+        }}
+      ]
+    },
+    "provenanceRule": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRule"},
+        {"properties": {
+          "check_id": {"const": "provenance_ready"},
+          "producer_id": {"const": "urn:uu-aap:producer:origin-provenance-validator"},
+          "allowed_artifact_type": {"const": "ProvenanceCompletionReceipt"}
+        }}
+      ]
+    },
+    "causalRule": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRule"},
+        {"properties": {
+          "check_id": {"const": "causal_qualification_ready"},
+          "producer_id": {"const": "urn:uu-aap:producer:causal-qualification-validator"},
+          "allowed_artifact_type": {"const": "CausalClaimQualification"}
+        }}
+      ]
+    },
+    "healthRule": {
+      "allOf": [
+        {"$ref": "#/$defs/baseRule"},
+        {"properties": {
+          "check_id": {"const": "server_health_ready"},
+          "producer_id": {"const": "urn:uu-aap:producer:kontur-server-health-observer"},
+          "allowed_artifact_type": {"const": "KONTURServerHealthObservation"}
+        }}
+      ]
+    }
+  }
+}
