@@ -1,0 +1,108 @@
+{
+  "artifact_type": "CCRPCheckpointManifest",
+  "artifact_version": "0.1-experimental",
+  "checkpoint_id": "urn:ccrp:checkpoint:implementation:v0.1",
+  "checkpoint_subject": {
+    "repository": "github:Matawaka/uu-aap",
+    "main_commit": "82bb5f9f833da99147b7435f40da16e2df8090d8",
+    "commit_role": "last main commit after PR #147 and before publication of this checkpoint manifest",
+    "scope": "repository_scoped"
+  },
+  "stage": {
+    "name": "CCRP v0.1 — Concurrent Context Reconciliation Protocol",
+    "status": "implementation_completed_pending_checkpoint_merge",
+    "rfc_issue": 126,
+    "checkpoint_issue": 148,
+    "conformance_levels": ["CCRP/C0", "CCRP/C1", "CCRP/C2", "CCRP/C3", "CCRP/C4", "CCRP/C5"]
+  },
+  "predecessor_checkpoint": {
+    "tag": "poai-authority-exp-v0.1",
+    "commit": "2424e61846fd262f9c01ccc406931683d3c6e616",
+    "role": "frozen PoAI Authority Root / Issuer Entitlement experimental checkpoint before CCRP implementation"
+  },
+  "bindings": {
+    "normative_specification": {
+      "path": "proposals/ccrp/CCRP.md",
+      "ref": "82bb5f9f833da99147b7435f40da16e2df8090d8",
+      "git_blob_sha": "9c79e9496e78ed7ef8519acb4921bb6cb0bbe74f",
+      "version": "0.1",
+      "status": "Experimental Draft"
+    },
+    "final_policy_coordination_schema": {
+      "path": "proposals/ccrp/schema/policy-coordination-result.c5.schema.json",
+      "ref": "82bb5f9f833da99147b7435f40da16e2df8090d8",
+      "git_blob_sha": "cc2abddb0c17b0c5cc34c2e3f311a319f2f3d79a"
+    },
+    "final_policy_coordination_evaluator": {
+      "path": "proposals/ccrp/tools/ccrp-c5.js",
+      "ref": "82bb5f9f833da99147b7435f40da16e2df8090d8",
+      "git_blob_sha": "fff0cb7d42b32089ad3df9f43cdd364f4591d022"
+    },
+    "final_policy_coordination_vectors": {
+      "path": "proposals/ccrp/test-c5.js",
+      "ref": "82bb5f9f833da99147b7435f40da16e2df8090d8",
+      "git_blob_sha": "eb7242bc2e68b408c6b3979343b4d41eb084b3fb"
+    },
+    "poai_ccrp_integration_workflow": {
+      "path": ".github/workflows/poai-ccrp-pre-materialization.yml",
+      "ref": "82bb5f9f833da99147b7435f40da16e2df8090d8",
+      "git_blob_sha": "7f67b4f14d8654f9630447a9b9b0a963cb299d0c"
+    }
+  },
+  "implementation_history": {
+    "normative_specification_pr": 127,
+    "c0_context_identification": {"issue": 128, "pr": 129},
+    "c1_collision_detection": {"issue": 130, "pr": 131},
+    "c2_execution_fencing": {"issue": 132, "pr": 135},
+    "poai_ccrp_pre_materialization_bridge": {"issue": 136, "pr": 137},
+    "required_check_smoke_and_cleanup_prs": [138, 139],
+    "c3_convergent_collaboration": {"issue": 140, "pr": 143},
+    "c4_cross_context_coordination": {"issue": 144, "pr": 145},
+    "c5_policy_integrated_coordination": {"issue": 146, "pr": 147},
+    "required_checks": [
+      "PoAI Genesis validation",
+      "PoAI Authority Root validation",
+      "CCRP validation",
+      "PoAI CCRP pre-materialization validation"
+    ]
+  },
+  "validated_conclusions": {
+    "same_actor_does_not_collapse_distinct_contexts": true,
+    "historically_valid_does_not_imply_currently_executable": true,
+    "duplicate_delivery_does_not_imply_repeat_execution": true,
+    "stale_epoch_and_fencing_token_are_rejected": true,
+    "compatible_parallel_operations_can_deterministically_converge": true,
+    "semantic_conflict_requires_explicit_resolution": true,
+    "pause_resume_and_handoff_preserve_historical_provenance": true,
+    "resume_and_handoff_require_successor_epoch_and_fencing_token": true,
+    "context_admission_is_distinct_from_execution_admission": true,
+    "external_poai_authority_is_consumed_without_becoming_ccrp_issued_authority": true,
+    "policy_integrated_coordination_is_distinct_from_materialization_permission": true,
+    "poai_ccrp_pre_materialization_gate_dry_run_passed": true,
+    "four_required_checks_pass_on_pull_requests": true
+  },
+  "boundaries_and_non_claims": {
+    "ccrp_c5_materialization_permitted": false,
+    "persistent_materialization_event_published": false,
+    "successor_record_published": false,
+    "repository_mutation_performed_by_c5_vectors": false,
+    "automatic_browser_materialization_action_performed": false,
+    "canonical_state_established_by_this_checkpoint": false,
+    "policy_relative_canonicality_established_by_this_checkpoint": false,
+    "universal_canonicality_established": false,
+    "truth_certified": false,
+    "causal_proof_certified": false,
+    "legal_identity_verified": false,
+    "legal_authority_established": false,
+    "legal_responsibility_determined": false,
+    "moral_correctness_established": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  },
+  "tag_plan": {
+    "proposed_tag": "poai-ccrp-exp-v0.1",
+    "target": "checkpoint_manifest_merge_commit",
+    "tag_created": false
+  },
+  "notes": "This checkpoint records repository-scoped experimental implementation of CCRP v0.1 through C0-C5 and its separation from PoAI authority and materialization. Coordination validity, context admission, execution admission, external authority and materialization permission remain distinct. The separate pre-materialization gate has been proven in CI dry-run only; no Materialization Event or repository mutation is established by this checkpoint. It does not establish universal legitimacy, legal identity or authority, factual truth, causality, responsibility, moral correctness, legal effect, universal canonicality or PoAI/V."
+}
