@@ -1,0 +1,136 @@
+{
+  "artifact_type": "CCRPLiveSemanticConflictResult",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#165",
+  "reconciled_from_main_sha": "7e7775d7e4d33270be176a223421e5b712be6659",
+  "baseline": {
+    "path": "experiments/ccrp-v0.1/semantic-conflict/baseline.json",
+    "blob_sha": "b878971292644f129f1c762f638eb8128c7c8b4c",
+    "logical_resource_id": "urn:ccrp:experiment:semantic-conflict:resource:1",
+    "baseline_generation": 0,
+    "operation_class": "exclusive_semantic_choice",
+    "decision_slot": "routing_mode",
+    "current_value": null
+  },
+  "source_operations": [
+    {
+      "path": "experiments/ccrp-v0.1/semantic-conflict/operations/executor-a.json",
+      "blob_sha": "5e9926ca17b177d484675fefe2c72250ab5002c7",
+      "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+      "executor_label": "executor-a-chatgpt",
+      "proposed_value": "direct"
+    },
+    {
+      "path": "experiments/ccrp-v0.1/semantic-conflict/operations/executor-b.json",
+      "blob_sha": "c74a1f567d0a17c4498735d1f1eff0085c796779",
+      "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+      "executor_label": "executor-b-codex",
+      "proposed_value": "relay"
+    }
+  ],
+  "observed_materialization_order": [
+    {
+      "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+      "merge_commit": "ae6fb3cb6712da83e8734dc27d9e3da560a3a7b0"
+    },
+    {
+      "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+      "merge_commit": "7e7775d7e4d33270be176a223421e5b712be6659"
+    }
+  ],
+  "reconciliation_rule": {
+    "same_scalar_slot_distinct_values": "semantic_conflict",
+    "presentation_order": "lexicographic operation_id ascending",
+    "arrival_order_selects_winner": false,
+    "automatic_winner_selection": false
+  },
+  "input_order_tests": [
+    {
+      "input_order": [
+        "urn:ccrp:experiment:semantic-conflict:operation:a",
+        "urn:ccrp:experiment:semantic-conflict:operation:b"
+      ],
+      "conflict_set": [
+        {
+          "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+          "proposed_value": "direct"
+        },
+        {
+          "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+          "proposed_value": "relay"
+        }
+      ],
+      "outcome": "HOLD",
+      "semantic_conflict_detected": true,
+      "human_resolution_required": true,
+      "winner_selected": false
+    },
+    {
+      "input_order": [
+        "urn:ccrp:experiment:semantic-conflict:operation:b",
+        "urn:ccrp:experiment:semantic-conflict:operation:a"
+      ],
+      "conflict_set": [
+        {
+          "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+          "proposed_value": "direct"
+        },
+        {
+          "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+          "proposed_value": "relay"
+        }
+      ],
+      "outcome": "HOLD",
+      "semantic_conflict_detected": true,
+      "human_resolution_required": true,
+      "winner_selected": false
+    }
+  ],
+  "semantic_result": {
+    "decision_slot": "routing_mode",
+    "conflicting_operations": [
+      {
+        "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+        "proposed_value": "direct"
+      },
+      {
+        "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+        "proposed_value": "relay"
+      }
+    ],
+    "semantic_conflict_detected": true,
+    "human_resolution_required": true,
+    "winner_selected": false,
+    "outcome": "HOLD"
+  },
+  "semantic_result_canonical_string": "{\"conflicting_operations\":[{\"operation_id\":\"urn:ccrp:experiment:semantic-conflict:operation:a\",\"proposed_value\":\"direct\"},{\"operation_id\":\"urn:ccrp:experiment:semantic-conflict:operation:b\",\"proposed_value\":\"relay\"}],\"decision_slot\":\"routing_mode\",\"human_resolution_required\":true,\"outcome\":\"HOLD\",\"semantic_conflict_detected\":true,\"winner_selected\":false}",
+  "semantic_result_sha256": "d0ca939f6806eaa7113ad204694bdf4342cc46b9a14866d862ed710a3a7e2c5d",
+  "observations": {
+    "accepted_source_operation_count": 2,
+    "source_operations_preserved": true,
+    "distinct_values_observed": true,
+    "input_order_invariant": true,
+    "arrival_order_used_as_semantic_priority": false,
+    "last_writer_wins_used": false,
+    "semantic_conflict_detected": true,
+    "human_resolution_required": true,
+    "winner_selected": false,
+    "automatic_materialization_performed": false
+  },
+  "claims": {
+    "protocol_definition": false,
+    "conflict_resolved": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "causality_established": false,
+    "legal_effect_established": false,
+    "responsibility_established": false,
+    "moral_correctness_established": false,
+    "poai_v_conformance_established": false,
+    "universal_ccrp_correctness_established": false,
+    "universal_consensus_correctness_established": false
+  }
+}
