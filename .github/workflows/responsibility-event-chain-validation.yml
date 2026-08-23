@@ -1,0 +1,140 @@
+name: ResponsibilityEventChain validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-chain-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-chain-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  responsibility-event-chain:
+    name: Append-only responsibility event chain boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check ResponsibilityEventChain JavaScript
+        run: |
+          node --check protocols/integration/v0.1/build-responsibility-event-chain.js
+          node --check protocols/integration/v0.1/test-responsibility-event-chain.js
+
+      - name: Validate ResponsibilityEventChain schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-event-chain.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          assert schema['properties']['artifact_type']['const'] == 'ResponsibilityEventChain'
+          assert schema['properties']['artifact_version']['const'] == '0.1'
+          assert schema['properties']['events']['minItems'] == 6
+          assert schema['properties']['events']['maxItems'] == 6
+          print('VALID ResponsibilityEventChain schema')
+          PY
+
+      - name: Build and validate ResponsibilityEventChain
+        run: node protocols/integration/v0.1/test-responsibility-event-chain.js /tmp/responsibility-event-chain.json
+
+      - name: Validate generated chain by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-event-chain.schema.json').read_text(encoding='utf-8'))
+          chain = json.loads(Path('/tmp/responsibility-event-chain.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(chain)
+          assert chain['chain_profile'] == 'responsibility_transition_assurance_trace_v0.1'
+          assert len(chain['events']) == 6
+          assert chain['events'][0]['event_kind'] == 'exact_transition_observed'
+          assert chain['events'][5]['event_kind'] == 'bounded_responsibility_attributed'
+          assert chain['head']['sequence'] == 5
+          assert chain['claims']['append_only_digest_chain_established'] is True
+          assert chain['claims']['historical_assurance_snapshots_preserved'] is True
+          assert chain['claims']['complete_global_wall_clock_chronology_established'] is False
+          assert chain['claims']['responsibility_for_outcome_adjudicated'] is False
+          assert chain['claims']['legal_liability_established'] is False
+          assert chain['claims']['moral_blame_assigned'] is False
+          print('VALID ResponsibilityEventChain artifact')
+          PY
+
+      - name: Independently reject chain assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-event-chain.schema.json').read_text())
+          chain = json.loads(Path('/tmp/responsibility-event-chain.json').read_text())
+
+          def must_reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+
+          bad = copy.deepcopy(chain)
+          bad['events'].pop()
+          must_reject(bad, 'missing reference event')
+
+          bad = copy.deepcopy(chain)
+          bad['events'][0]['assurance_snapshot']['causal_proof_certified'] = True
+          must_reject(bad, 'retroactive causal proof upgrade')
+
+          bad = copy.deepcopy(chain)
+          bad['claims']['responsibility_for_outcome_adjudicated'] = True
+          must_reject(bad, 'responsibility adjudication overclaim')
+
+          bad = copy.deepcopy(chain)
+          bad['claims']['legal_liability_established'] = True
+          must_reject(bad, 'legal liability overclaim')
+
+          bad = copy.deepcopy(chain)
+          bad['claims']['moral_blame_assigned'] = True
+          must_reject(bad, 'moral blame overclaim')
+
+          bad = copy.deepcopy(chain)
+          bad['responsibility_score'] = 1
+          must_reject(bad, 'scalar responsibility score')
+          PY
+
+      - name: Confirm KONTUR is not part of this profile
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD 2>/dev/null | grep '^server/kontur/' && exit 1 || true
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
