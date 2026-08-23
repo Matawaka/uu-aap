@@ -1,0 +1,80 @@
+name: Project Survival Plane v0.5 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/rescue/v0.5/**'
+      - '.github/workflows/project-survival-plane-v0.5-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/rescue/v0.5/**'
+      - '.github/workflows/project-survival-plane-v0.5-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protection/rescue/v0.5/canonical_succession.py
+          python3 -m py_compile protection/rescue/v0.5/test_canonical_succession.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/rescue/v0.5')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise Canonical Succession Proposal fail-closed boundaries
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert v0.5 implementation cannot mutate Git or use network
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          src = Path('protection/rescue/v0.5/canonical_succession.py').read_text(encoding='utf-8')
+          forbidden = [
+              'requests', 'urllib.request', 'http.client', 'socket.',
+              '["push"', "['push'", '["fetch"', "['fetch'", '["clone"', "['clone'",
+              '["update-ref"', "['update-ref'", '["tag"', "['tag'", '["branch"', "['branch'",
+              'remote", "add', "remote', 'add", 'remote", "set-url', "remote', 'set-url",
+          ]
+          found = [item for item in forbidden if item in src]
+          if found:
+              raise SystemExit('forbidden network/Git mutation primitive in v0.5 implementation: ' + ', '.join(found))
+          print('v0.5 remains local/read-only proposal tooling')
+          PY
+
+      - name: Assert canonical recognition remains impossible in v0.5 claims
+        run: |
+          set -euo pipefail
+          grep -R -n '"canonical_successor_established": false' protection/rescue/v0.5
+          grep -R -n '"human_recognition_required": true' protection/rescue/v0.5
+          if grep -R -nE 'canonical_successor_established["'"']?[[:space:]]*[:=][[:space:]]*True|automatic_canonical_recognition_enabled["'"']?[[:space:]]*[:=][[:space:]]*True' protection/rescue/v0.5/*.py; then
+            echo 'v0.5 must not establish canonical recognition' >&2
+            exit 1
+          fi
