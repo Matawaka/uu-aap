@@ -1,13 +1,58 @@
 {
-  "$schema":"https://json-schema.org/draft/2020-12/schema",
-  "$id":"https://uu-aap.example/schema/chsp-external-effect-stabilization-policy-v1.1.json",
-  "title":"CHSPExternalEffectStabilizationPolicy v1.1",
-  "type":"object","additionalProperties":false,
-  "required":["artifact_type","artifact_version","project_id","minimum_stabilization_hours","minimum_supportive_observations","minimum_observer_domains","maximum_observation_age_days","minimum_acknowledgers","minimum_acknowledger_domains","requirements","claims"],
-  "properties":{
-    "artifact_type":{"const":"CHSPExternalEffectStabilizationPolicy"},"artifact_version":{"const":"1.1"},"project_id":{"type":"string","minLength":1},
-    "minimum_stabilization_hours":{"type":"integer","minimum":1},"minimum_supportive_observations":{"type":"integer","minimum":2},"minimum_observer_domains":{"type":"integer","minimum":2},"maximum_observation_age_days":{"type":"integer","minimum":1},"minimum_acknowledgers":{"type":"integer","minimum":2},"minimum_acknowledger_domains":{"type":"integer","minimum":2},
-    "requirements":{"type":"object","additionalProperties":false,"required":["verified_v10_effect_required","credentials_prohibited","drift_blocks_stabilization","indeterminate_blocks_stabilization","distinct_observer_domains_required","human_acknowledgement_required","steward_acknowledgement_required","non_steward_acknowledger_required","automatic_external_mutation","automatic_recognition","ownership_transfer_authorized","predecessor_access_removal_authorized","canonical_origin_mutation_authorized","canonical_publication_authorized","kontur_activation_authorized"],"properties":{"verified_v10_effect_required":{"const":true},"credentials_prohibited":{"const":true},"drift_blocks_stabilization":{"const":true},"indeterminate_blocks_stabilization":{"const":true},"distinct_observer_domains_required":{"const":true},"human_acknowledgement_required":{"const":true},"steward_acknowledgement_required":{"const":true},"non_steward_acknowledger_required":{"const":true},"automatic_external_mutation":{"const":false},"automatic_recognition":{"const":false},"ownership_transfer_authorized":{"const":false},"predecessor_access_removal_authorized":{"const":false},"canonical_origin_mutation_authorized":{"const":false},"canonical_publication_authorized":{"const":false},"kontur_activation_authorized":{"const":false}},
-    "claims":{"type":"object","additionalProperties":false,"required":["stabilization_policy_only","external_mutation_performed","repository_ownership_transferred","account_control_transferred","predecessor_access_removed","canonical_origin_mutated","canonical_publication_executed","kontur_activated","global_provider_state_proven","distributed_consensus_established"],"properties":{"stabilization_policy_only":{"const":true},"external_mutation_performed":{"const":false},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"predecessor_access_removed":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false},"global_provider_state_proven":{"const":false},"distributed_consensus_established":{"const":false}}}
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-external-effect-stabilization-policy-v1.1.json",
+  "title": "CHSPExternalEffectStabilizationPolicy v1.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","project_id","minimum_stabilization_hours","minimum_supportive_observations","minimum_observer_domains","maximum_observation_age_days","minimum_acknowledgers","minimum_acknowledger_domains","requirements","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPExternalEffectStabilizationPolicy"},
+    "artifact_version": {"const": "1.1"},
+    "project_id": {"type": "string", "minLength": 1},
+    "minimum_stabilization_hours": {"type": "integer", "minimum": 1},
+    "minimum_supportive_observations": {"type": "integer", "minimum": 2},
+    "minimum_observer_domains": {"type": "integer", "minimum": 2},
+    "maximum_observation_age_days": {"type": "integer", "minimum": 1},
+    "minimum_acknowledgers": {"type": "integer", "minimum": 2},
+    "minimum_acknowledger_domains": {"type": "integer", "minimum": 2},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified_v10_effect_required","credentials_prohibited","drift_blocks_stabilization","indeterminate_blocks_stabilization","distinct_observer_domains_required","human_acknowledgement_required","steward_acknowledgement_required","non_steward_acknowledger_required","automatic_external_mutation","automatic_recognition","ownership_transfer_authorized","predecessor_access_removal_authorized","canonical_origin_mutation_authorized","canonical_publication_authorized","kontur_activation_authorized"],
+      "properties": {
+        "verified_v10_effect_required": {"const": true},
+        "credentials_prohibited": {"const": true},
+        "drift_blocks_stabilization": {"const": true},
+        "indeterminate_blocks_stabilization": {"const": true},
+        "distinct_observer_domains_required": {"const": true},
+        "human_acknowledgement_required": {"const": true},
+        "steward_acknowledgement_required": {"const": true},
+        "non_steward_acknowledger_required": {"const": true},
+        "automatic_external_mutation": {"const": false},
+        "automatic_recognition": {"const": false},
+        "ownership_transfer_authorized": {"const": false},
+        "predecessor_access_removal_authorized": {"const": false},
+        "canonical_origin_mutation_authorized": {"const": false},
+        "canonical_publication_authorized": {"const": false},
+        "kontur_activation_authorized": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stabilization_policy_only","external_mutation_performed","repository_ownership_transferred","account_control_transferred","predecessor_access_removed","canonical_origin_mutated","canonical_publication_executed","kontur_activated","global_provider_state_proven","distributed_consensus_established"],
+      "properties": {
+        "stabilization_policy_only": {"const": true},
+        "external_mutation_performed": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "predecessor_access_removed": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "global_provider_state_proven": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
   }
 }
