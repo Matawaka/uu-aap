@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-authorization-policy-v0.4.json",
+  "title": "CHSPHandoverAuthorizationPolicy v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "project_id",
+    "minimum_authorizers", "minimum_authorizer_domains",
+    "unavailability_minimum_authorizers", "unavailability_minimum_authorizer_domains",
+    "maximum_source_assessment_age_days", "maximum_approval_spread_hours",
+    "maximum_authorization_days", "authorized_action", "requirements", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverAuthorizationPolicy"},
+    "artifact_version": {"const": "0.4"},
+    "project_id": {"type": "string", "minLength": 1},
+    "minimum_authorizers": {"type": "integer", "minimum": 2},
+    "minimum_authorizer_domains": {"type": "integer", "minimum": 2},
+    "unavailability_minimum_authorizers": {"type": "integer", "minimum": 3},
+    "unavailability_minimum_authorizer_domains": {"type": "integer", "minimum": 3},
+    "maximum_source_assessment_age_days": {"type": "integer", "minimum": 1},
+    "maximum_approval_spread_hours": {"type": "integer", "minimum": 1},
+    "maximum_authorization_days": {"type": "integer", "minimum": 1},
+    "authorized_action": {"const": "record_protocol_canonical_stewardship_handover"},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "v03_handover_review_eligibility_required",
+        "candidate_cannot_approve",
+        "distinct_authorizer_ids_required",
+        "declared_authorizer_domains_required",
+        "acknowledged_path_requires_predecessor_approval",
+        "unavailability_path_predecessor_approval_prohibited",
+        "authority_evidence_digest_required",
+        "typed_confirmation_required",
+        "authorization_expires",
+        "authorization_revocable_before_execution",
+        "candidate_withdrawal_blocks_execution",
+        "automatic_execution",
+        "automatic_ownership_transfer",
+        "automatic_canonical_origin_mutation",
+        "automatic_kontur_activation"
+      ],
+      "properties": {
+        "v03_handover_review_eligibility_required": {"const": true},
+        "candidate_cannot_approve": {"const": true},
+        "distinct_authorizer_ids_required": {"const": true},
+        "declared_authorizer_domains_required": {"const": true},
+        "acknowledged_path_requires_predecessor_approval": {"const": true},
+        "unavailability_path_predecessor_approval_prohibited": {"const": true},
+        "authority_evidence_digest_required": {"const": true},
+        "typed_confirmation_required": {"const": true},
+        "authorization_expires": {"const": true},
+        "authorization_revocable_before_execution": {"const": true},
+        "candidate_withdrawal_blocks_execution": {"const": true},
+        "automatic_execution": {"const": false},
+        "automatic_ownership_transfer": {"const": false},
+        "automatic_canonical_origin_mutation": {"const": false},
+        "automatic_kontur_activation": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "descriptive_policy_only", "domain_independence_proven",
+        "canonical_successor_established", "repository_ownership_transferred",
+        "canonical_origin_mutated", "canonical_publication_executed",
+        "kontur_activated", "distributed_consensus_established",
+        "legal_effect_established", "universal_trust_established"
+      ],
+      "properties": {
+        "descriptive_policy_only": {"const": true},
+        "domain_independence_proven": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
