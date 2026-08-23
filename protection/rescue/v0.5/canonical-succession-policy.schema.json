@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/canonical-succession-proposal-policy-v0.5.json",
+  "title": "CanonicalSuccessionProposalPolicy v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "project_id", "requirements", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CanonicalSuccessionProposalPolicy"},
+    "artifact_version": {"const": "0.5"},
+    "project_id": {"type": "string", "minLength": 1},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified_v04_recovery", "predecessor_binding_required", "recovered_frontier_must_match_predecessor", "candidate_local_branch_required", "candidate_descends_from_recovered_frontier", "candidate_repo_bare", "candidate_repo_no_remotes", "candidate_repo_fsck_full", "proposal_only", "human_recognition_required", "canonical_origin_mutation_prohibited", "network_prohibited"],
+      "properties": {
+        "verified_v04_recovery": {"const": true},
+        "predecessor_binding_required": {"const": true},
+        "recovered_frontier_must_match_predecessor": {"const": true},
+        "candidate_local_branch_required": {"const": true},
+        "candidate_descends_from_recovered_frontier": {"const": true},
+        "candidate_repo_bare": {"const": true},
+        "candidate_repo_no_remotes": {"const": true},
+        "candidate_repo_fsck_full": {"const": true},
+        "proposal_only": {"const": true},
+        "human_recognition_required": {"const": true},
+        "canonical_origin_mutation_prohibited": {"const": true},
+        "network_prohibited": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automatic_canonical_recognition_enabled", "automatic_origin_creation_enabled", "ownership_transfer_enabled", "kontur_activation_enabled", "distributed_consensus_established"],
+      "properties": {
+        "automatic_canonical_recognition_enabled": {"const": false},
+        "automatic_origin_creation_enabled": {"const": false},
+        "ownership_transfer_enabled": {"const": false},
+        "kontur_activation_enabled": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  }
+}
