@@ -6,7 +6,7 @@
   "maximum_execution_request_age_minutes":2,
   "maximum_execution_duration_seconds":120,
   "maximum_provider_mutations":1,
-  "maximum_executable_role":"maintainer",
+  "maximum_executable_role":"collaborator",
   "allowed_external_system_types":["github_repository"],
   "requirements":{
     "v09_active_authorization_required":true,
