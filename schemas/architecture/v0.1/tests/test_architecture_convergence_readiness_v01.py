@@ -17,18 +17,24 @@ from architecture_convergence_assessor import assess  # noqa: E402
 SCHEMA = json.loads((V01 / "architecture-convergence-readiness.schema.json").read_text(encoding="utf-8"))
 EXAMPLE = json.loads((V01 / "examples" / "architecture-convergence-readiness.example.json").read_text(encoding="utf-8"))
 VALIDATOR = Draft202012Validator(SCHEMA)
+GOOD_GIT_FACTS = {
+    "observed_predecessor_sha": EXAMPLE["canonical_predecessor_sha"],
+    "assessed_revision_sha": "d4e3efd63416d9ef97d868fea096d966b843b350",
+    "predecessor_object_exists": True,
+    "predecessor_is_ancestor": True,
+}
 
 
 def schema_errors(doc):
     return list(VALIDATOR.iter_errors(doc))
 
 
-def semantic_errors(doc):
-    return assess(doc, REPO_ROOT)
+def semantic_errors(doc, git_facts=None):
+    return assess(doc, REPO_ROOT, GOOD_GIT_FACTS if git_facts is None else git_facts)
 
 
-def expect_invalid(doc):
-    assert schema_errors(doc) or semantic_errors(doc)
+def expect_invalid(doc, git_facts=None):
+    assert schema_errors(doc) or semantic_errors(doc, git_facts)
 
 
 def main():
@@ -85,6 +91,25 @@ def main():
     d = copy.deepcopy(EXAMPLE)
     d["canonical_predecessor_sha"] = "not-a-sha"
     expect_invalid(d)
+
+    # Audit hardening: predecessor verification context is mandatory.
+    assert assess(EXAMPLE, REPO_ROOT, None)
+
+    facts = copy.deepcopy(GOOD_GIT_FACTS)
+    facts["observed_predecessor_sha"] = "0" * 40
+    assert semantic_errors(EXAMPLE, facts)
+
+    facts = copy.deepcopy(GOOD_GIT_FACTS)
+    facts["predecessor_object_exists"] = False
+    assert semantic_errors(EXAMPLE, facts)
+
+    facts = copy.deepcopy(GOOD_GIT_FACTS)
+    facts["predecessor_is_ancestor"] = False
+    assert semantic_errors(EXAMPLE, facts)
+
+    facts = copy.deepcopy(GOOD_GIT_FACTS)
+    facts["assessed_revision_sha"] = "not-a-sha"
+    assert semantic_errors(EXAMPLE, facts)
 
     print("Architecture convergence readiness v0.1 tests: PASS")
 

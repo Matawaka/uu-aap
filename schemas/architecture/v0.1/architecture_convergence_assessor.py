@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 EXPECTED_PATHS = {
     "coordination": [
@@ -32,13 +33,19 @@ EXPECTED_PATHS = {
     ],
 }
 
+SHA40 = re.compile(r"^[0-9a-f]{40}$")
+
 
 def load_json(path: Path) -> Dict[str, Any]:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
 
 
-def assess(manifest: Dict[str, Any], repo_root: Path) -> List[str]:
+def assess(
+    manifest: Dict[str, Any],
+    repo_root: Path,
+    git_facts: Optional[Dict[str, Any]] = None,
+) -> List[str]:
     errors: List[str] = []
 
     planes = manifest.get("planes", [])
@@ -61,6 +68,23 @@ def assess(manifest: Dict[str, Any], repo_root: Path) -> List[str]:
         for rel in expected_paths:
             if not (repo_root / rel).exists():
                 errors.append(f"{plane_id}: missing repository path {rel}")
+
+    predecessor = manifest.get("canonical_predecessor_sha")
+    if not git_facts:
+        errors.append("canonical predecessor verification context required")
+    else:
+        observed_predecessor = git_facts.get("observed_predecessor_sha")
+        assessed_revision = git_facts.get("assessed_revision_sha")
+        if not isinstance(observed_predecessor, str) or not SHA40.fullmatch(observed_predecessor):
+            errors.append("observed predecessor SHA must be exact 40-hex")
+        if not isinstance(assessed_revision, str) or not SHA40.fullmatch(assessed_revision):
+            errors.append("assessed revision SHA must be exact 40-hex")
+        if observed_predecessor != predecessor:
+            errors.append("declared predecessor differs from observed Git predecessor")
+        if git_facts.get("predecessor_object_exists") is not True:
+            errors.append("declared predecessor commit object not verified")
+        if git_facts.get("predecessor_is_ancestor") is not True:
+            errors.append("declared predecessor ancestry not verified")
 
     claims = manifest.get("claims", {})
     forbidden_true = [
@@ -97,15 +121,40 @@ def assess(manifest: Dict[str, Any], repo_root: Path) -> List[str]:
     return errors
 
 
+def _as_bool(value: Optional[str]) -> Optional[bool]:
+    if value is None:
+        return None
+    return value == "true"
+
+
 def main() -> int:
     import argparse
 
     parser = argparse.ArgumentParser()
     parser.add_argument("manifest")
     parser.add_argument("--repo-root", default=".")
+    parser.add_argument("--observed-predecessor-sha")
+    parser.add_argument("--assessed-revision-sha")
+    parser.add_argument("--predecessor-object-exists", choices=["true", "false"])
+    parser.add_argument("--predecessor-is-ancestor", choices=["true", "false"])
     args = parser.parse_args()
 
-    errors = assess(load_json(Path(args.manifest)), Path(args.repo_root))
+    supplied = [
+        args.observed_predecessor_sha,
+        args.assessed_revision_sha,
+        args.predecessor_object_exists,
+        args.predecessor_is_ancestor,
+    ]
+    git_facts = None
+    if any(value is not None for value in supplied):
+        git_facts = {
+            "observed_predecessor_sha": args.observed_predecessor_sha,
+            "assessed_revision_sha": args.assessed_revision_sha,
+            "predecessor_object_exists": _as_bool(args.predecessor_object_exists),
+            "predecessor_is_ancestor": _as_bool(args.predecessor_is_ancestor),
+        }
+
+    errors = assess(load_json(Path(args.manifest)), Path(args.repo_root), git_facts)
     if errors:
         for error in errors:
             print(f"ERROR: {error}")
