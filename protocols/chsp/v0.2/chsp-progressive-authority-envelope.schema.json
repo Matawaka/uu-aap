@@ -4,7 +4,7 @@
   "title": "CHSPProgressiveAuthorityEnvelope v0.2",
   "type": "object",
   "additionalProperties": false,
-  "required": ["artifact_type", "artifact_version", "envelope_id", "project_id", "candidate_id", "recognition_sha256", "stage", "scopes", "authorized_by_human_id", "authorization_evidence_sha256", "issued_at", "expires_at", "status", "outcome", "completed_at", "predecessor_envelope_sha256", "nonce", "envelope_sha256", "claims"],
+  "required": ["artifact_type", "artifact_version", "envelope_id", "project_id", "candidate_id", "recognition_sha256", "stage", "scopes", "authorized_by_human_id", "authorization_evidence_sha256", "issued_at", "expires_at", "predecessor_envelope_sha256", "predecessor_outcome_sha256", "nonce", "envelope_sha256", "claims"],
   "properties": {
     "artifact_type": {"const": "CHSPProgressiveAuthorityEnvelope"},
     "artifact_version": {"const": "0.2"},
@@ -23,10 +23,8 @@
     "authorization_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "issued_at": {"type": "string", "format": "date-time"},
     "expires_at": {"type": "string", "format": "date-time"},
-    "status": {"enum": ["active", "completed", "revoked", "expired"]},
-    "outcome": {"enum": ["none", "positive", "adverse", "indeterminate"]},
-    "completed_at": {"type": ["string", "null"], "format": "date-time"},
     "predecessor_envelope_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_outcome_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
     "nonce": {"type": "string", "minLength": 16},
     "envelope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "claims": {
@@ -50,20 +48,16 @@
   "allOf": [
     {
       "if": {"properties": {"stage": {"const": "A1_advisory"}}},
-      "then": {"properties": {"predecessor_envelope_sha256": {"const": null}}},
-      "else": {"properties": {"predecessor_envelope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}
-    },
-    {
-      "if": {"properties": {"status": {"const": "completed"}}},
       "then": {
         "properties": {
-          "completed_at": {"type": "string", "format": "date-time"},
-          "outcome": {"enum": ["positive", "adverse", "indeterminate"]}
+          "predecessor_envelope_sha256": {"const": null},
+          "predecessor_outcome_sha256": {"const": null}
         }
       },
       "else": {
         "properties": {
-          "completed_at": {"type": ["string", "null"], "format": "date-time"}
+          "predecessor_envelope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "predecessor_outcome_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
         }
       }
     }
