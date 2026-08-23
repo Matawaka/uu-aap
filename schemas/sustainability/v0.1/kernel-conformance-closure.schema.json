@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/sustainability/v0.1/kernel-conformance-closure.schema.json",
+  "title": "Sustainability Kernel Conformance Closure v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","project_id","kernel_version","frontier_sha256","components","coverage","result","claims"],
+  "properties": {
+    "schema_version": {"const": "sustainability-kernel-conformance-closure-v0.1"},
+    "project_id": {"const": "Matawaka/uu-aap"},
+    "kernel_version": {"const": "v0.1"},
+    "frontier_sha256": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "components": {
+      "type": "array", "minItems": 5, "maxItems": 5,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id","document_path","schema_path","test_path","invariants"],
+        "properties": {
+          "id": {"enum": ["recovery-resume-v0.1","capability-ceiling-v0.1","pause-degradation-v0.1","exploratory-disposition-v0.1","human-observation-v0.1"]},
+          "document_path": {"type": "string", "minLength": 1},
+          "schema_path": {"type": "string", "minLength": 1},
+          "test_path": {"type": "string", "minLength": 1},
+          "invariants": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["K1","K2","K3","K4","K5","K6","K7","K8","K9","K10"]}}
+        }
+      }
+    },
+    "coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["K1","K2","K3","K4","K5","K6","K7","K8","K9","K10"],
+      "properties": {
+        "K1":{"const":true},"K2":{"const":true},"K3":{"const":true},"K4":{"const":true},"K5":{"const":true},
+        "K6":{"const":true},"K7":{"const":true},"K8":{"const":true},"K9":{"const":true},"K10":{"const":true}
+      }
+    },
+    "result": {"const": "kernel-v0.1-operationally-covered"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authority_effect","external_execution_authorized","capability_expansion_authorized","canonical_authority_established","kontur_activation_authorized","universal_completeness_claimed","future_evolution_allowed","new_capability_requires_new_attributable_authorization"],
+      "properties": {
+        "authority_effect": {"const": "none"},
+        "external_execution_authorized": {"const": false},
+        "capability_expansion_authorized": {"const": false},
+        "canonical_authority_established": {"const": false},
+        "kontur_activation_authorized": {"const": false},
+        "universal_completeness_claimed": {"const": false},
+        "future_evolution_allowed": {"const": true},
+        "new_capability_requires_new_attributable_authorization": {"const": true}
+      }
+    }
+  }
+}
