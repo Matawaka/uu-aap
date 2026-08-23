@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-execution-request-v1.0.json",
+  "title":"CHSPExternalExecutionRequest v1.0",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","request_id","project_id","steward_id","v08_envelope_sha256","v09_execution_authorization_sha256","v09_execution_authorization_assessment_sha256","operator_id","operator_domain_id","operator_evidence_sha256","requested_at","nonce","confirmation_token","request_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalExecutionRequest"},"artifact_version":{"const":"1.0"},"request_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},
+    "v08_envelope_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v09_execution_authorization_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v09_execution_authorization_assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "operator_id":{"type":"string","minLength":1},"operator_domain_id":{"type":"string","minLength":1},"operator_evidence_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"requested_at":{"type":"string","format":"date-time"},"nonce":{"type":"string","minLength":16},"confirmation_token":{"const":"EXECUTE_CHSP_V1_EXACT_EXTERNAL_TRANSITION_ONLY"},"request_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["explicit_execution_event_requested","exact_authorization_bound","credential_embedded","executor_invoked","external_mutation_performed","ownership_transfer_requested","predecessor_access_removal_requested","canonical_origin_mutation_requested","canonical_publication_requested","kontur_activation_requested"],"properties":{"explicit_execution_event_requested":{"const":true},"exact_authorization_bound":{"const":true},"credential_embedded":{"const":false},"executor_invoked":{"const":false},"external_mutation_performed":{"const":false},"ownership_transfer_requested":{"const":false},"predecessor_access_removal_requested":{"const":false},"canonical_origin_mutation_requested":{"const":false},"canonical_publication_requested":{"const":false},"kontur_activation_requested":{"const":false}}}
+  }
+}
