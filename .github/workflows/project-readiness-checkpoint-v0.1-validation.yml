@@ -133,15 +133,15 @@ jobs:
           print('Project readiness checkpoint established for exact canonical main; activation remains human-gated')
           PY
 
-      - name: Guard against activation or repository mutation surface
+      - name: Guard checkpoint builder as local-only
         run: |
           python - <<'PY'
           from pathlib import Path
-          text = Path('.github/workflows/project-readiness-checkpoint-v0.1-validation.yml').read_text(encoding='utf-8')
-          forbidden = ['transitionResponsibility(', 'activate-kontur', 'git push', 'gh api', 'curl -X POST', 'curl -X PUT', 'curl -X DELETE']
+          text = Path('schemas/architecture/v0.1/build-project-readiness-checkpoint.js').read_text(encoding='utf-8')
+          forbidden = ['child_process', "require('http')", "require('https')", "require('net')", "require('tls')"]
           for token in forbidden:
               assert token not in text, token
-          print('PASS: checkpoint workflow has no activation or repository mutation command')
+          print('PASS: checkpoint builder is local-only')
           PY
 
       - name: Confirm checkpoint workflow did not mutate checkout
