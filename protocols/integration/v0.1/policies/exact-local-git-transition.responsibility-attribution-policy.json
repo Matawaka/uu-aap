@@ -1,0 +1,113 @@
+{
+  "$schema": "../responsibility-attribution-policy.schema.json",
+  "artifact_type": "UU-AAPResponsibilityAttributionPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:responsibility-attribution-policy:exact-local-git-transition:1",
+  "policy_version": 1,
+  "attribution_scope": "urn:uu-aap:responsibility-attribution-scope:exact-local-git-transition-v0.1",
+  "applies_to": {
+    "causal_qualification_artifact_type": "CausalClaimQualification",
+    "causal_qualification_artifact_version": "0.1",
+    "responsibility_trace_artifact_type": "ResponsibilityTrace",
+    "responsibility_trace_artifact_version": "0.1",
+    "outcome_observation_artifact_type": "OutcomeObservationReceipt",
+    "outcome_observation_artifact_version": "0.1",
+    "effect_scope": "exact_local_git_transition_effect"
+  },
+  "allowed_statuses": [
+    "attributed",
+    "not_attributed",
+    "not_adjudicated",
+    "out_of_scope"
+  ],
+  "predicate_rules": {
+    "accepted_action_responsibility_applies": {
+      "status": "attributed",
+      "establishes_predicate": true,
+      "required_conditions": [
+        "responsibility_trace_traceable_not_adjudicated",
+        "originating_action_in_accepted_scope",
+        "responsible_party_identity_exact",
+        "accepted_scope_preserved"
+      ],
+      "reason_codes": [
+        "responsibility_trace_traceable_not_adjudicated",
+        "originating_action_in_accepted_scope",
+        "responsible_party_identity_exact",
+        "accepted_scope_preserved"
+      ]
+    },
+    "exact_transition_responsibility_attribution": {
+      "status": "attributed",
+      "establishes_predicate": true,
+      "required_conditions": [
+        "accepted_action_responsibility_applies",
+        "originating_execution_contribution_qualified",
+        "exact_transition_effect_identity_bound",
+        "outcome_observation_exact"
+      ],
+      "reason_codes": [
+        "accepted_action_responsibility_applies",
+        "originating_execution_contribution_qualified",
+        "exact_transition_effect_identity_bound",
+        "outcome_observation_exact"
+      ]
+    },
+    "external_consequence_responsibility": {
+      "status": "out_of_scope",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "external_consequence_observed",
+        "external_consequence_causality_qualified",
+        "external_consequence_responsibility_scope_accepted"
+      ],
+      "reason_codes": [
+        "external_consequence_not_observed",
+        "external_consequence_causality_not_qualified",
+        "attribution_scope_bounded_to_exact_local_git_transition"
+      ]
+    },
+    "responsibility_adjudication": {
+      "status": "not_adjudicated",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "institutional_responsibility_adjudication_protocol_applied"
+      ],
+      "reason_codes": [
+        "responsibility_attribution_is_policy_relative_not_adjudicated",
+        "institutional_adjudication_protocol_not_applied"
+      ]
+    },
+    "legal_liability": {
+      "status": "not_adjudicated",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "applicable_legal_standard_and_jurisdiction_adjudicated"
+      ],
+      "reason_codes": [
+        "legal_standard_not_applied",
+        "jurisdiction_not_adjudicated"
+      ]
+    },
+    "moral_blame": {
+      "status": "not_adjudicated",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "explicit_normative_moral_standard_applied"
+      ],
+      "reason_codes": [
+        "moral_standard_not_applied",
+        "causal_and_scope_attribution_not_moral_blame"
+      ]
+    }
+  },
+  "effective_from": "2026-08-23T08:40:01Z",
+  "effective_until": null,
+  "claims": {
+    "policy_establishes_universal_responsibility": false,
+    "policy_establishes_responsibility_adjudication": false,
+    "policy_establishes_legal_liability": false,
+    "policy_establishes_moral_blame": false,
+    "policy_establishes_external_consequence_responsibility": false
+  }
+}
