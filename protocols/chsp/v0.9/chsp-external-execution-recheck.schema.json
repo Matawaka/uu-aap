@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-execution-recheck-v0.9.json",
+  "title":"CHSPExternalExecutionRecheck v0.9",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","recheck_id","project_id","steward_id","v08_envelope_sha256","v08_dry_run_receipt_sha256","v08_dry_run_assessment_sha256","previous_observed_state_sha256","external_system_type","external_system_id","external_principal_id","previous_observed_role","current_observed_role","observer_id","observer_domain_id","evidence_sha256","checked_at","contains_credentials","result","drift_fields","recheck_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalExecutionRecheck"},"artifact_version":{"const":"0.9"},"recheck_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},
+    "v08_envelope_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v08_dry_run_receipt_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v08_dry_run_assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"previous_observed_state_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "external_system_type":{"enum":["github_repository","git_host_repository","signing_identity","generic_control_plane"]},"external_system_id":{"type":"string","minLength":1},"external_principal_id":{"type":"string","minLength":1},
+    "previous_observed_role":{"enum":["absent","identity_only","collaborator","maintainer","admin","owner","release_signer","unknown"]},"current_observed_role":{"enum":["absent","identity_only","collaborator","maintainer","admin","owner","release_signer","unknown"]},
+    "observer_id":{"type":"string","minLength":1},"observer_domain_id":{"type":"string","minLength":1},"evidence_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"checked_at":{"type":"string","format":"date-time"},"contains_credentials":{"const":false},
+    "result":{"enum":["match","drift_detected","indeterminate"]},"drift_fields":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},"recheck_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["fresh_observation_recorded","global_provider_state_proven","external_mutation_performed","ownership_proven","credentials_present"],"properties":{"fresh_observation_recorded":{"const":true},"global_provider_state_proven":{"const":false},"external_mutation_performed":{"const":false},"ownership_proven":{"const":false},"credentials_present":{"const":false}}}
+  }
+}
