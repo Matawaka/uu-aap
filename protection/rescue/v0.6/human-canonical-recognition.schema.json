@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/human-canonical-recognition-v0.6.json",
+  "title": "HumanCanonicalRecognition v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "recognition_id", "project_id", "human_actor_id", "actor_evidence_sha256", "proposal_sha256", "proposal_assessment_sha256", "predecessor_origin_id", "predecessor_frontier_commit", "candidate_frontier_commit", "candidate_frontier_tree", "candidate_ref_set_sha256", "successor_origin_id", "scope", "decision", "issued_at", "expires_at", "nonce", "confirmation_token", "recognition_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "HumanCanonicalRecognition"},
+    "artifact_version": {"const": "0.6"},
+    "recognition_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "human_actor_id": {"type": "string", "minLength": 1},
+    "actor_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposal_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposal_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_origin_id": {"type": "string", "minLength": 1},
+    "predecessor_frontier_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "candidate_frontier_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "candidate_frontier_tree": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "candidate_ref_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "successor_origin_id": {"type": "string", "minLength": 1},
+    "scope": {"const": "prepare_canonical_publication"},
+    "decision": {"const": "recognize_candidate_for_canonical_publication_preparation"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "confirmation_token": {"const": "RECOGNIZE_FOR_CANONICAL_PUBLICATION_PREPARATION_ONLY"},
+    "recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_decision_recorded", "candidate_recognized_for_publication_preparation", "repository_scoped_successor_intent_recorded", "canonical_successor_established", "canonical_origin_created", "canonical_origin_mutated", "publication_executed", "ownership_transferred", "kontur_activated", "distributed_consensus_established", "cryptographic_or_legal_identity_proven", "global_replay_prevention_established", "legal_effect_established", "truth_certified"],
+      "properties": {
+        "human_decision_recorded": {"const": true},
+        "candidate_recognized_for_publication_preparation": {"const": true},
+        "repository_scoped_successor_intent_recorded": {"const": true},
+        "canonical_successor_established": {"const": false},
+        "canonical_origin_created": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "publication_executed": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "cryptographic_or_legal_identity_proven": {"const": false},
+        "global_replay_prevention_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
