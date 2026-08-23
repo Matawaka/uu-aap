@@ -19,7 +19,7 @@
     "claims"
   ],
   "properties": {
-    "$schema": {"const": "./canonicalization-policy.schema.json"},
+    "$schema": {"type": "string", "pattern": "(^|.*/)canonicalization-policy\\.schema\\.json$"},
     "artifact_type": {"const": "UU-AAPCanonicalizationPolicy"},
     "artifact_version": {"const": "0.1"},
     "policy_id": {"type": "string", "pattern": "^urn:uu-aap:canonicalization-policy:"},
