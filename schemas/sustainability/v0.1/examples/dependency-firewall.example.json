@@ -1,0 +1,26 @@
+{
+  "document_type": "uu-aap.parallel-dependency-firewall",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "parallel_ref": "parallel/sustainability-backlog-v0.1",
+  "main_ref": "main",
+  "parallel_may_observe_main": true,
+  "main_must_not_wait_for_parallel": true,
+  "main_must_not_require_parallel_artifacts": true,
+  "parallel_cannot_block_main_progress": true,
+  "parallel_output_is_advisory_until_adopted": true,
+  "forbidden_backpressure": [
+    "require_main_to_pause",
+    "require_main_to_merge_parallel_first",
+    "require_active_pr_to_rebase_on_parallel",
+    "treat_parallel_validation_as_main_gate",
+    "treat_parallel_artifact_as_canonical_dependency",
+    "create_main_workflow_dependency"
+  ],
+  "adoption_requires_explicit_event": true,
+  "authority_effect": "none",
+  "notes": [
+    "The active CHSP v1.0 line may continue independently of this side-track.",
+    "Observation of main is informational and creates no reverse dependency."
+  ]
+}
