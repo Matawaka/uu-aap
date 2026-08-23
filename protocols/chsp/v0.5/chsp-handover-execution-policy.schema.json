@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-execution-policy-v0.5.json",
+  "title": "CHSPHandoverExecutionPolicy v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","project_id","authorized_action","maximum_active_assessment_age_minutes","requirements","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverExecutionPolicy"},
+    "artifact_version": {"const": "0.5"},
+    "project_id": {"type": "string", "minLength": 1},
+    "authorized_action": {"const": "record_protocol_canonical_stewardship_handover"},
+    "maximum_active_assessment_age_minutes": {"type": "integer", "minimum": 1, "maximum": 1440},
+    "requirements": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v04_active_assessment_required","exact_authorization_binding_required","authorization_unexpired_at_execution","zero_presented_revocations_required","recorder_evidence_digest_required","execution_nonce_required","single_local_execution_per_authorization","immutable_state_and_receipt","atomic_local_publish","automatic_repository_mutation","automatic_account_control_transfer","automatic_canonical_publication","automatic_kontur_activation"],
+      "properties": {
+        "v04_active_assessment_required": {"const": true},
+        "exact_authorization_binding_required": {"const": true},
+        "authorization_unexpired_at_execution": {"const": true},
+        "zero_presented_revocations_required": {"const": true},
+        "recorder_evidence_digest_required": {"const": true},
+        "execution_nonce_required": {"const": true},
+        "single_local_execution_per_authorization": {"const": true},
+        "immutable_state_and_receipt": {"const": true},
+        "atomic_local_publish": {"const": true},
+        "automatic_repository_mutation": {"const": false},
+        "automatic_account_control_transfer": {"const": false},
+        "automatic_canonical_publication": {"const": false},
+        "automatic_kontur_activation": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["descriptive_execution_policy_only","global_revocation_absence_proven","global_replay_prevention_established","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_effect_established","distributed_consensus_established","universal_trust_established"],
+      "properties": {
+        "descriptive_execution_policy_only": {"const": true},
+        "global_revocation_absence_proven": {"const": false},
+        "global_replay_prevention_established": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_effect_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
