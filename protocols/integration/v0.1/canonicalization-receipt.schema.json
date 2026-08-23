@@ -129,6 +129,7 @@
       "additionalProperties": false,
       "required": [
         "observation_predecessor_accepted",
+        "canonicalization_after_observation",
         "observation_matches_commit_receipt",
         "commit_lineage_exact",
         "decision_lineage_exact",
@@ -147,6 +148,7 @@
       ],
       "properties": {
         "observation_predecessor_accepted": {"const": true},
+        "canonicalization_after_observation": {"const": true},
         "observation_matches_commit_receipt": {"const": true},
         "commit_lineage_exact": {"const": true},
         "decision_lineage_exact": {"const": true},
