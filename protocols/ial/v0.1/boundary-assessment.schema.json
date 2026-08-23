@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/ial/v0.1/boundary-assessment.schema.json",
+  "title": "IAL BoundaryAssessment v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "assessment_id",
+    "subject_ref",
+    "effect_class",
+    "elevation_level",
+    "state",
+    "responsibility_boundary_required",
+    "reason_codes",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "../boundary-assessment.schema.json"},
+    "artifact_type": {"const": "BoundaryAssessment"},
+    "artifact_version": {"const": "0.1"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "subject_ref": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent_id", "action", "target"],
+      "properties": {
+        "intent_id": {"type": "string", "minLength": 1},
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1}
+      }
+    },
+    "effect_class": {
+      "enum": [
+        "internal_no_external_effect",
+        "externally_observable_effect",
+        "responsibility_transfer",
+        "materialization_or_canonical_commitment"
+      ]
+    },
+    "elevation_level": {"enum": ["E0", "E1", "E2", "E3"]},
+    "state": {"enum": ["IAL_NOT_REQUIRED", "ELEVATED"]},
+    "responsibility_boundary_required": {"type": "boolean"},
+    "reason_codes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "private_reasoning_required",
+        "private_reasoning_disclosed",
+        "responsibility_transfer_established",
+        "authority_established",
+        "execution_admitted",
+        "materialization_permitted",
+        "outcome_observed"
+      ],
+      "properties": {
+        "private_reasoning_required": {"const": false},
+        "private_reasoning_disclosed": {"const": false},
+        "responsibility_transfer_established": {"const": false},
+        "authority_established": {"const": false},
+        "execution_admitted": {"const": false},
+        "materialization_permitted": {"const": false},
+        "outcome_observed": {"const": false}
+      }
+    }
+  }
+}
