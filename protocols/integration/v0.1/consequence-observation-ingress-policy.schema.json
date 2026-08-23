@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:consequence-observation-ingress-policy:0.1",
+  "title": "ConsequenceObservationIngressPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema","artifact_type","artifact_version","policy_id","policy_version","scope","allowed_consequence_classes","allowed_claimed_statuses","allowed_observation_methods","accepted_frontier_artifact_types","accepted_source_wrapper","invariants","claims"],
+  "properties": {
+    "$schema": {"type":"string"},
+    "artifact_type": {"const":"ConsequenceObservationIngressPolicy"},
+    "artifact_version": {"const":"0.1"},
+    "policy_id": {"const":"urn:uu-aap:consequence-observation-ingress-policy:responsibility-event-frontier:1"},
+    "policy_version": {"const":1},
+    "scope": {"const":"urn:uu-aap:consequence-observation-ingress-scope:responsibility-event-frontier-v0.1"},
+    "allowed_consequence_classes": {"type":"array","uniqueItems":true,"items":{"enum":["local_machine","organizational","economic","legal","physical","human","other"]}},
+    "allowed_claimed_statuses": {"type":"array","uniqueItems":true,"items":{"enum":["observed","not_observed","not_yet_observable","indeterminate"]}},
+    "allowed_observation_methods": {"type":"array","uniqueItems":true,"items":{"enum":["system_record","direct_observation","document_review","multi_source","other","unknown"]}},
+    "accepted_frontier_artifact_types": {"type":"array","uniqueItems":true,"items":{"enum":["ResponsibilityEventAppendLedgerEntry","ResponsibilityEventSuccessorLedgerEntry"]}},
+    "accepted_source_wrapper": {
+      "type":"object","additionalProperties":false,
+      "required":["artifact_type","artifact_version"],
+      "properties":{"artifact_type":{"const":"ConsequenceObservationSourceEvidence"},"artifact_version":{"const":"0.1"}}
+    },
+    "invariants": {
+      "type":"object","additionalProperties":false,
+      "required":["observed_claim_requires_evidence","observed_claim_requires_source_bytes","source_bytes_digest_required","frontier_binding_required","semantic_frontier_exact","effect_frontier_exact","claim_is_non_certifying","test_fixture_successor_adapter_eligible","scalar_scores_allowed"],
+      "properties": {
+        "observed_claim_requires_evidence":{"const":true},
+        "observed_claim_requires_source_bytes":{"const":true},
+        "source_bytes_digest_required":{"const":true},
+        "frontier_binding_required":{"const":true},
+        "semantic_frontier_exact":{"const":true},
+        "effect_frontier_exact":{"const":true},
+        "claim_is_non_certifying":{"const":true},
+        "test_fixture_successor_adapter_eligible":{"const":false},
+        "scalar_scores_allowed":{"const":false}
+      }
+    },
+    "claims": {
+      "type":"object","additionalProperties":false,
+      "required":["ingress_policy_defined","source_bytes_binding_required","new_external_consequence_observed","consequence_truth_certified","generalized_external_consequence_causality_established","causal_proof_certified","responsibility_for_consequence_attributed","responsibility_for_outcome_adjudicated","legal_liability_established","legal_effect_established","moral_blame_assigned","truth_certified","global_replay_protection_established","distributed_consensus_established","poai_materialization_event_recorded","universal_canonicality_established"],
+      "properties": {
+        "ingress_policy_defined":{"const":true},
+        "source_bytes_binding_required":{"const":true},
+        "new_external_consequence_observed":{"const":false},
+        "consequence_truth_certified":{"const":false},
+        "generalized_external_consequence_causality_established":{"const":false},
+        "causal_proof_certified":{"const":false},
+        "responsibility_for_consequence_attributed":{"const":false},
+        "responsibility_for_outcome_adjudicated":{"const":false},
+        "legal_liability_established":{"const":false},
+        "legal_effect_established":{"const":false},
+        "moral_blame_assigned":{"const":false},
+        "truth_certified":{"const":false},
+        "global_replay_protection_established":{"const":false},
+        "distributed_consensus_established":{"const":false},
+        "poai_materialization_event_recorded":{"const":false},
+        "universal_canonicality_established":{"const":false}
+      }
+    }
+  }
+}

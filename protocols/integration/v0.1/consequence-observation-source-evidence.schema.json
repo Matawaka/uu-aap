@@ -1,0 +1,43 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:schema:consequence-observation-source-evidence:0.1",
+  "title":"ConsequenceObservationSourceEvidence v0.1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["$schema","artifact_type","artifact_version","source_evidence_id","producer_id","producer_artifact_type","producer_artifact_version","producer_artifact_ref","captured_at","observation_present","test_fixture_only","source_payload","source_digest","claims"],
+  "properties":{
+    "$schema":{"type":"string"},
+    "artifact_type":{"const":"ConsequenceObservationSourceEvidence"},
+    "artifact_version":{"const":"0.1"},
+    "source_evidence_id":{"type":"string","pattern":"^urn:uu-aap:consequence-observation-source-evidence:[0-9a-f]{24}$"},
+    "producer_id":{"type":"string","minLength":1},
+    "producer_artifact_type":{"type":"string","minLength":1},
+    "producer_artifact_version":{"type":"string","minLength":1},
+    "producer_artifact_ref":{"type":"string","minLength":1},
+    "captured_at":{"type":"string","format":"date-time"},
+    "observation_present":{"type":"boolean"},
+    "test_fixture_only":{"type":"boolean"},
+    "source_payload":{"type":"object"},
+    "source_digest":{"$ref":"#/$defs/digest"},
+    "claims":{
+      "type":"object","additionalProperties":false,
+      "required":["source_bytes_digest_bound","producer_identity_declared","external_consequence_certified","causal_proof_certified","responsibility_for_consequence_attributed","legal_liability_established","moral_blame_assigned","truth_certified"],
+      "properties":{
+        "source_bytes_digest_bound":{"const":true},
+        "producer_identity_declared":{"const":true},
+        "external_consequence_certified":{"const":false},
+        "causal_proof_certified":{"const":false},
+        "responsibility_for_consequence_attributed":{"const":false},
+        "legal_liability_established":{"const":false},
+        "moral_blame_assigned":{"const":false},
+        "truth_certified":{"const":false}
+      }
+    }
+  },
+  "$defs":{
+    "digest":{"type":"object","additionalProperties":false,"required":["canonicalization","digest_algorithm","digest_encoding","value"],"properties":{"canonicalization":{"const":"RFC8785-JCS"},"digest_algorithm":{"const":"SHA-256"},"digest_encoding":{"const":"hex"},"value":{"type":"string","pattern":"^[0-9a-f]{64}$"}}}
+  },
+  "allOf":[
+    {"if":{"properties":{"test_fixture_only":{"const":true}}},"then":{"properties":{"observation_present":{"type":"boolean"}}}}
+  ]
+}
