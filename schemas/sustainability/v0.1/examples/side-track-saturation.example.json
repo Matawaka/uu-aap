@@ -1,0 +1,26 @@
+{
+  "document_type": "uu-aap.side-track-saturation-assessment",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "side_track": "parallel/sustainability-backlog-v0.1",
+  "artifact_count": 61,
+  "commit_count": 61,
+  "saturation_state": "consolidation-recommended",
+  "preferred_mode": "consolidate-invariants",
+  "new_design_allowed": true,
+  "new_design_requires_distinct_gap": true,
+  "main_line_blocked": false,
+  "automatic_closure_allowed": false,
+  "automatic_integration_allowed": false,
+  "consolidation_principles": [
+    "prefer_invariants_over_artifact_count",
+    "prefer_selective_adoption_over_whole_branch_merge",
+    "preserve_provenance_when_compacting",
+    "do_not_delete_disagreement",
+    "do_not_create_main_line_dependency"
+  ],
+  "authority_effect": "none",
+  "notes": [
+    "The example marks the side-track for consolidation without stopping the active main-line process or forcing the side-track to close."
+  ]
+}
