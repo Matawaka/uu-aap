@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-final-challenge-v0.3.json",
+  "title": "CHSPFinalChallenge v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","challenge_id","project_id","candidate_id","final_recognition_sha256","challenger_id","challenger_domain_id","raised_at","category","status","evidence_sha256","resolution_sha256","challenge_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPFinalChallenge"},
+    "artifact_version": {"const": "0.3"},
+    "challenge_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "final_recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "challenger_id": {"type": "string", "minLength": 1},
+    "challenger_domain_id": {"type": "string", "minLength": 1},
+    "raised_at": {"type": "string", "format": "date-time"},
+    "category": {"enum": ["protocol_boundary","evidence_integrity","predecessor_disposition","conflict_of_interest","handover_scope","stewardship_concern","process_integrity","other"]},
+    "status": {"enum": ["open","upheld","rejected","withdrawn","resolved_remediated"]},
+    "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "resolution_sha256": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "challenge_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["challenge_recorded","progression_blocked_when_open_or_upheld","authority_automatically_revoked","canonical_successor_established","truth_certified"],
+      "properties": {
+        "challenge_recorded": {"const": true},
+        "progression_blocked_when_open_or_upheld": {"const": true},
+        "authority_automatically_revoked": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
