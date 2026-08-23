@@ -1,0 +1,126 @@
+name: Independent Audit Hardening v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "docs/AUDIT-HARDENING-v0.1.md"
+      - "schemas/architecture/v0.1/**"
+      - "server/kontur/v0.1/audit-revision-gate.js"
+      - "server/kontur/v0.1/test-audit-revision-gate.js"
+      - ".github/workflows/audit-hardening-v0.1-validation.yml"
+      - ".github/workflows/architecture-convergence-readiness-v0.1-validation.yml"
+      - ".github/workflows/project-readiness-checkpoint-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout full history read-only
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check "jsonschema==4.25.1"
+
+      - name: Check hardening code syntax
+        run: |
+          python -m py_compile schemas/architecture/v0.1/architecture_convergence_assessor.py
+          python -m py_compile schemas/architecture/v0.1/tests/test_architecture_convergence_readiness_v01.py
+          node --check schemas/architecture/v0.1/build-project-readiness-checkpoint.js
+          node --check schemas/architecture/v0.1/tests/test_project_readiness_checkpoint_v01.js
+          node --check server/kontur/v0.1/audit-revision-gate.js
+          node --check server/kontur/v0.1/test-audit-revision-gate.js
+
+      - name: Run stale-checkout permanent regression
+        run: node server/kontur/v0.1/test-audit-revision-gate.js
+
+      - name: Verify concrete stale incident remains historical ancestry
+        run: |
+          git cat-file -e "9894f6be4be663863696c5981d3d68c3c6777525^{commit}"
+          git cat-file -e "d4e3efd63416d9ef97d868fea096d966b843b350^{commit}"
+          git merge-base --is-ancestor \
+            9894f6be4be663863696c5981d3d68c3c6777525 \
+            d4e3efd63416d9ef97d868fea096d966b843b350
+
+      - name: Run Architecture Convergence fail-closed tests
+        run: python schemas/architecture/v0.1/tests/test_architecture_convergence_readiness_v01.py
+
+      - name: Verify current checkout predecessor object and ancestry
+        run: |
+          PREDECESSOR="$(python - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path('schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json').read_text())['canonical_predecessor_sha'])
+          PY
+          )"
+          ASSESSED="$(git rev-parse HEAD)"
+          git cat-file -e "${PREDECESSOR}^{commit}"
+          git merge-base --is-ancestor "$PREDECESSOR" "$ASSESSED"
+          python schemas/architecture/v0.1/architecture_convergence_assessor.py \
+            schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json \
+            --repo-root . \
+            --observed-predecessor-sha "$PREDECESSOR" \
+            --assessed-revision-sha "$ASSESSED" \
+            --predecessor-object-exists true \
+            --predecessor-is-ancestor true
+
+      - name: Run Project Readiness Checkpoint fail-closed tests
+        run: node schemas/architecture/v0.1/tests/test_project_readiness_checkpoint_v01.js
+
+      - name: Guard assessor and gate as local-only
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          assessor = Path('schemas/architecture/v0.1/architecture_convergence_assessor.py')
+          tree = ast.parse(assessor.read_text(encoding='utf-8'))
+          banned = {'socket', 'subprocess', 'urllib', 'requests', 'http', 'paramiko'}
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  for alias in node.names:
+                      assert alias.name.split('.')[0] not in banned, alias.name
+              if isinstance(node, ast.ImportFrom) and node.module:
+                  assert node.module.split('.')[0] not in banned, node.module
+          gate = Path('server/kontur/v0.1/audit-revision-gate.js').read_text(encoding='utf-8')
+          forbidden_js = ['child_' + 'process', "require('" + 'http' + "')", "require('" + 'https' + "')", "require('" + 'net' + "')"]
+          for token in forbidden_js:
+              assert token not in gate, token
+          print('PASS: hardening logic is local-only')
+          PY
+
+      - name: Assert workflow remains read-only and activation-free
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/audit-hardening-v0.1-validation.yml').read_text(encoding='utf-8')
+          forbidden = [
+              'contents:' + ' write',
+              'pull_request' + '_target',
+              'secrets' + '.',
+              'activation-' + 'executor.js',
+              'git ' + 'push',
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          assert 'permissions:\n  contents: read' in text
+          print('PASS: workflow is read-only and activation-free')
+          PY
+
+      - name: Confirm no checkout mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
