@@ -12,13 +12,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - "server/kontur/**"
-      - "protocols/registry/**"
-      - "protocols/integration/**"
-      - "proposals/ccrp/**"
-      - "proposals/poai/**"
-      - ".github/workflows/kontur-readiness-aggregator-validation.yml"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
