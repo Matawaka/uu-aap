@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-responsibility-artifacts.schema.json",
+  "title": "KONTUR Responsibility TransitionReceipt v0.1",
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "lease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lease_id", "holder_id", "server_instance_id", "issued_at", "expires_at"],
+      "properties": {
+        "lease_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:lease:"},
+        "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
+        "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "health": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "observed_at", "components"],
+      "properties": {
+        "status": {"enum": ["healthy", "degraded", "critical"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "components": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["component_id", "status"],
+            "properties": {
+              "component_id": {"type": "string", "minLength": 1},
+              "status": {"enum": ["pass", "degraded", "fail"]}
+            }
+          }
+        }
+      }
+    },
+    "boundaryClaims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kernel_responsibility_state_established", "structural_responsibility_holder_bound", "responsibility_scope_bound", "lease_and_fencing_frontier_established", "execution_authority_granted", "legal_responsibility_determined", "legal_effect_established", "moral_blame_assigned", "truth_certified", "universal_causality_established", "poai_materialization_event_recorded", "universal_canonicality_established"],
+      "properties": {
+        "kernel_responsibility_state_established": {"const": true},
+        "structural_responsibility_holder_bound": {"const": true},
+        "responsibility_scope_bound": {"const": true},
+        "lease_and_fencing_frontier_established": {"const": true},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_causality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["$schema", "artifact_type", "artifact_version", "state_id", "generation", "lifecycle_state", "system_id", "server_instance_id", "holder_id", "responsibility_scopes", "fencing_epoch", "lease", "policy_binding", "readiness_binding", "predecessor_state_binding", "health", "last_transition", "claims"],
+      "properties": {
+        "$schema": {"type": "string", "pattern": "(^|.*/)kontur-responsibility-artifacts\\.schema\\.json#/\\$defs/state$"},
+        "artifact_type": {"const": "KONTURResponsibilityState"},
+        "artifact_version": {"const": "0.1"},
+        "state_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:responsibility-state:"},
+        "generation": {"type": "integer", "minimum": 1},
+        "lifecycle_state": {"enum": ["active", "degraded", "suspended", "retired"]},
+        "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+        "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+        "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
+        "responsibility_scopes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "fencing_epoch": {"type": "integer", "minimum": 1},
+        "lease": {"$ref": "#/$defs/lease"},
+        "policy_binding": {"$ref": "#/$defs/binding"},
+        "readiness_binding": {"$ref": "#/$defs/binding"},
+        "predecessor_state_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+        "health": {"$ref": "#/$defs/health"},
+        "last_transition": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "at", "trigger_ref"],
+          "properties": {
+            "kind": {"enum": ["activate", "heartbeat", "degrade", "suspend", "resume", "retire"]},
+            "at": {"type": "string", "format": "date-time"},
+            "trigger_ref": {"type": "string", "minLength": 1}
+          }
+        },
+        "claims": {"$ref": "#/$defs/boundaryClaims"}
+      }
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "artifact_type", "artifact_version", "receipt_id", "evaluated_at", "transition_kind", "predecessor_state_binding", "policy_binding", "readiness_binding", "resulting_state_binding", "resulting_state", "verification", "claims"],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-responsibility-artifacts\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURResponsibilityTransitionReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:responsibility-transition:"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "transition_kind": {"enum": ["activate", "heartbeat", "degrade", "suspend", "resume", "retire"]},
+    "predecessor_state_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "policy_binding": {"$ref": "#/$defs/binding"},
+    "readiness_binding": {"$ref": "#/$defs/binding"},
+    "resulting_state_binding": {"$ref": "#/$defs/binding"},
+    "resulting_state": {"$ref": "#/$defs/state"},
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_exact", "readiness_exact", "identity_exact", "generation_monotonic", "fencing_monotonic", "lease_checked", "health_transition_checked", "single_active_holder_checked", "predecessor_exact", "fail_closed_boundary_preserved"],
+      "properties": {
+        "policy_exact": {"const": true},
+        "readiness_exact": {"const": true},
+        "identity_exact": {"const": true},
+        "generation_monotonic": {"const": true},
+        "fencing_monotonic": {"const": true},
+        "lease_checked": {"const": true},
+        "health_transition_checked": {"const": true},
+        "single_active_holder_checked": {"const": true},
+        "predecessor_exact": {"const": true},
+        "fail_closed_boundary_preserved": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["server_responsibility_transition_recorded", "persistent_responsibility_state_derived", "readiness_trigger_consumed_under_policy", "legal_responsibility_determined", "legal_effect_established", "moral_blame_assigned", "truth_certified", "universal_causality_established", "poai_materialization_event_recorded", "universal_canonicality_established"],
+      "properties": {
+        "server_responsibility_transition_recorded": {"const": true},
+        "persistent_responsibility_state_derived": {"const": true},
+        "readiness_trigger_consumed_under_policy": {"const": true},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_causality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}
