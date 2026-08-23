@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-authority-outcome-v0.2.json",
+  "title": "CHSPAuthorityOutcome v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "outcome_id", "project_id", "candidate_id", "recognition_sha256", "envelope_sha256", "stage", "recorded_by_human_id", "recorded_at", "result", "evidence_sha256", "outcome_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPAuthorityOutcome"},
+    "artifact_version": {"const": "0.2"},
+    "outcome_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "envelope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stage": {"enum": ["A1_advisory", "A2_reversible_limited", "A3_supervised_stewardship", "A4_canonical_preparation"]},
+    "recorded_by_human_id": {"type": "string", "minLength": 1},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "result": {"enum": ["positive", "adverse", "indeterminate", "revoked"]},
+    "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outcome_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["outcome_recorded", "historical_envelope_mutated", "authority_automatically_extended", "canonical_successor_established", "truth_certified"],
+      "properties": {
+        "outcome_recorded": {"const": true},
+        "historical_envelope_mutated": {"const": false},
+        "authority_automatically_extended": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
