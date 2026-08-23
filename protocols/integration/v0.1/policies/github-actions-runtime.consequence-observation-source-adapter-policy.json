@@ -1,0 +1,58 @@
+{
+  "$schema": "../consequence-observation-source-adapter-policy.schema.json",
+  "artifact_type": "ConsequenceObservationSourceAdapterPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:consequence-observation-source-adapter-policy:github-actions-runtime:1",
+  "policy_version": 1,
+  "adapter_scope": "urn:uu-aap:consequence-observation-source-adapter-scope:github-actions-runtime-v0.1",
+  "effective_from": "2026-08-23T12:10:00Z",
+  "effective_until": null,
+  "registered_profile": {
+    "producer_id": "urn:uu-aap:producer:github-actions-runtime",
+    "producer_artifact_type": "GitHubActionsRuntimeObservation",
+    "producer_artifact_version": "0.1",
+    "repository": "Matawaka/uu-aap",
+    "workflow_name": "ConsequenceObservation Source Adapter validation",
+    "allowed_event_names": ["pull_request", "push"],
+    "observation_method": "system_record",
+    "consequence_class": "other"
+  },
+  "required_predecessor": {
+    "assessment_artifact_type": "ConsequenceObservationAssessment",
+    "assessment_artifact_version": "0.1",
+    "assessment_policy_id": "urn:uu-aap:consequence-observation-assessment-policy:bounded-source-admissibility:1",
+    "assessment_status": "deferred_source_profile_required"
+  },
+  "invariants": {
+    "exact_byte_bindings_required": true,
+    "live_observed_claim_required": true,
+    "fixture_source_allowed": false,
+    "event_payload_byte_digest_required": true,
+    "event_ref_semantics_required": true,
+    "provider_identity_is_runtime_declared_not_cryptographically_attested": true,
+    "typed_successor_source_eligibility_allowed": true,
+    "successor_append_execution_allowed": false,
+    "successor_append_permission_allowed": false,
+    "policy_relative_only": true,
+    "scalar_scores_allowed": false
+  },
+  "claims": {
+    "source_adapter_policy_defined": true,
+    "registered_profile_count_one": true,
+    "provider_identity_cryptographically_attested": false,
+    "github_remote_truth_certified": false,
+    "new_external_consequence_observed": false,
+    "consequence_truth_certified": false,
+    "causal_proof_certified": false,
+    "responsibility_for_consequence_attributed": false,
+    "responsibility_for_outcome_adjudicated": false,
+    "legal_liability_established": false,
+    "legal_effect_established": false,
+    "moral_blame_assigned": false,
+    "truth_certified": false,
+    "successor_append_executed": false,
+    "successor_append_may_proceed": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}
