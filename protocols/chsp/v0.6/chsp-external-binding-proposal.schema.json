@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-external-binding-proposal-v0.6.json",
+  "title": "CHSPExternalBindingProposal v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","proposal_id","project_id","steward_id","v05_stewardship_state_sha256","v05_execution_receipt_sha256","claim_sha256","attestation_set_sha256","supporting_attestation_sha256s","observer_domain_ids","evidence_classes","external_system_type","external_system_id","external_principal_id","claimed_role","proposed_binding_scope","created_at","proposal_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPExternalBindingProposal"},
+    "artifact_version": {"const": "0.6"},
+    "proposal_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "steward_id": {"type": "string", "minLength": 1},
+    "v05_stewardship_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "v05_execution_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claim_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "attestation_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "supporting_attestation_sha256s": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+    "observer_domain_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evidence_classes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["identity_match","role_visibility","challenge_response","signature_verification","repository_metadata"]}},
+    "external_system_type": {"enum": ["github_repository","git_host_repository","signing_identity","generic_control_plane"]},
+    "external_system_id": {"type": "string", "minLength": 1},
+    "external_principal_id": {"type": "string", "minLength": 1},
+    "claimed_role": {"enum": ["identity_only","collaborator","maintainer","admin","owner","release_signer"]},
+    "proposed_binding_scope": {"const": "descriptive_external_stewardship_mapping"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "proposal_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["proposal_only","evidence_threshold_satisfied","external_binding_established","external_control_transition_authorized","external_control_transferred","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_ownership_adjudicated","universal_identity_proven","distributed_consensus_established"],
+      "properties": {
+        "proposal_only": {"const": true},
+        "evidence_threshold_satisfied": {"const": true},
+        "external_binding_established": {"const": false},
+        "external_control_transition_authorized": {"const": false},
+        "external_control_transferred": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_ownership_adjudicated": {"const": false},
+        "universal_identity_proven": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  }
+}
