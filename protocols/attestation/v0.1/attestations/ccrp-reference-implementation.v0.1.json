@@ -9,26 +9,11 @@
     "kind": "repository_reference_implementation",
     "repository": "github:Matawaka/uu-aap",
     "artifact_set": [
-      {
-        "path": "proposals/ccrp/tools/ccrp-core.js",
-        "git_blob_sha": "cf6d4e9105379aab5a99f6e1fb258846b9df18d8"
-      },
-      {
-        "path": "proposals/ccrp/tools/ccrp-c2.js",
-        "git_blob_sha": "f740bc842a07e510aa82c3fae10bec72624df345"
-      },
-      {
-        "path": "proposals/ccrp/tools/ccrp-c3.js",
-        "git_blob_sha": "8c794423ea2ee1de8f3eefa4c79031be4bdc6708"
-      },
-      {
-        "path": "proposals/ccrp/tools/ccrp-c4.js",
-        "git_blob_sha": "327bb93ebafa748364dd5587c5a7049585090dbd"
-      },
-      {
-        "path": "proposals/ccrp/tools/ccrp-c5.js",
-        "git_blob_sha": "fff0cb7d42b32089ad3df9f43cdd364f4591d022"
-      }
+      {"path": "proposals/ccrp/tools/ccrp-core.js", "git_blob_sha": "cf6d4e9105379aab5a99f6e1fb258846b9df18d8"},
+      {"path": "proposals/ccrp/tools/ccrp-c2.js", "git_blob_sha": "f740bc842a07e510aa82c3fae10bec72624df345"},
+      {"path": "proposals/ccrp/tools/ccrp-c3.js", "git_blob_sha": "8c794423ea2ee1de8f3eefa4c79031be4bdc6708"},
+      {"path": "proposals/ccrp/tools/ccrp-c4.js", "git_blob_sha": "327bb93ebafa748364dd5587c5a7049585090dbd"},
+      {"path": "proposals/ccrp/tools/ccrp-c5.js", "git_blob_sha": "fff0cb7d42b32089ad3df9f43cdd364f4591d022"}
     ]
   },
   "protocol_binding": {
@@ -42,89 +27,20 @@
     "release_manifest_git_blob_sha": "78250d9dbfe08b5f340c05ac821fbae4ef263a86"
   },
   "dependency_artifacts": [
-    {
-      "path": "proposals/poai/authority/tools/authority-core.js",
-      "git_blob_sha": "ffbc27ec041466461b157bd211a2bf1c4781f039"
-    },
-    {
-      "path": "proposals/poai/authority/schema/authority-verification-result.schema.json",
-      "git_blob_sha": "c4d620f9408ca85ddacb69f592a64b048e798a70"
-    },
-    {
-      "path": "proposals/poai/materialization/tools/materialization-core.js",
-      "git_blob_sha": "ce53bad1a0c19c48c69493811639860c94b81243"
-    },
-    {
-      "path": "proposals/poai/materialization/schema/materialization-policy.schema.json",
-      "git_blob_sha": "062069fa3d654fa474a09bb8148aeed043b2e759"
-    },
-    {
-      "path": "proposals/poai/materialization/policies/uu-aap.v0.1.json",
-      "git_blob_sha": "54c4aa2d83f0440e3b4e727116b2e8a2848ec5e2"
-    }
+    {"path": "proposals/poai/authority/tools/authority-core.js", "git_blob_sha": "ffbc27ec041466461b157bd211a2bf1c4781f039"},
+    {"path": "proposals/poai/authority/schema/authority-verification-result.schema.json", "git_blob_sha": "c4d620f9408ca85ddacb69f592a64b048e798a70"},
+    {"path": "proposals/poai/materialization/tools/materialization-core.js", "git_blob_sha": "ce53bad1a0c19c48c69493811639860c94b81243"},
+    {"path": "proposals/poai/materialization/schema/materialization-policy.schema.json", "git_blob_sha": "062069fa3d654fa474a09bb8148aeed043b2e759"},
+    {"path": "proposals/poai/materialization/policies/github/Matawaka.uu-aap.materialization-policy.json", "git_blob_sha": "54c4aa2d83f0440e3b4e727116b2e8a2848ec5e2"}
   ],
   "attested_conformance_levels": ["C0", "C1", "C2", "C3", "C4", "C5"],
   "test_evidence": [
-    {
-      "level": "C0",
-      "test_path": "proposals/ccrp/test-c0.js",
-      "git_blob_sha": "e1fa68c11e80eae1dc74147f9eaa85c7a0f29cfb",
-      "runner": {
-        "executable": "node",
-        "args": ["proposals/ccrp/test-c0.js"]
-      },
-      "expected_exit_code": 0
-    },
-    {
-      "level": "C1",
-      "test_path": "proposals/ccrp/test-c1.js",
-      "git_blob_sha": "d5753d2142b543f6ec884b3b08d2f4cdf545798c",
-      "runner": {
-        "executable": "node",
-        "args": ["proposals/ccrp/test-c1.js"]
-      },
-      "expected_exit_code": 0
-    },
-    {
-      "level": "C2",
-      "test_path": "proposals/ccrp/test-c2.js",
-      "git_blob_sha": "54b2dddfada7bc92a1fe2c2317f17b2619288ae4",
-      "runner": {
-        "executable": "node",
-        "args": ["proposals/ccrp/test-c2.js"]
-      },
-      "expected_exit_code": 0
-    },
-    {
-      "level": "C3",
-      "test_path": "proposals/ccrp/test-c3.js",
-      "git_blob_sha": "9107edfe420c2be84cbb63f413ab22b2c68d2b79",
-      "runner": {
-        "executable": "node",
-        "args": ["proposals/ccrp/test-c3.js"]
-      },
-      "expected_exit_code": 0
-    },
-    {
-      "level": "C4",
-      "test_path": "proposals/ccrp/test-c4.js",
-      "git_blob_sha": "640f53e1258fb8c4004c54b1d694fb9dcbfbca31",
-      "runner": {
-        "executable": "node",
-        "args": ["proposals/ccrp/test-c4.js"]
-      },
-      "expected_exit_code": 0
-    },
-    {
-      "level": "C5",
-      "test_path": "proposals/ccrp/test-c5.js",
-      "git_blob_sha": "eb7242bc2e68b408c6b3979343b4d41eb084b3fb",
-      "runner": {
-        "executable": "node",
-        "args": ["proposals/ccrp/test-c5.js"]
-      },
-      "expected_exit_code": 0
-    }
+    {"level": "C0", "test_path": "proposals/ccrp/test-c0.js", "git_blob_sha": "e1fa68c11e80eae1dc74147f9eaa85c7a0f29cfb", "runner": {"executable": "node", "args": ["proposals/ccrp/test-c0.js"]}, "expected_exit_code": 0},
+    {"level": "C1", "test_path": "proposals/ccrp/test-c1.js", "git_blob_sha": "d5753d2142b543f6ec884b3b08d2f4cdf545798c", "runner": {"executable": "node", "args": ["proposals/ccrp/test-c1.js"]}, "expected_exit_code": 0},
+    {"level": "C2", "test_path": "proposals/ccrp/test-c2.js", "git_blob_sha": "54b2dddfada7bc92a1fe2c2317f17b2619288ae4", "runner": {"executable": "node", "args": ["proposals/ccrp/test-c2.js"]}, "expected_exit_code": 0},
+    {"level": "C3", "test_path": "proposals/ccrp/test-c3.js", "git_blob_sha": "9107edfe420c2be84cbb63f413ab22b2c68d2b79", "runner": {"executable": "node", "args": ["proposals/ccrp/test-c3.js"]}, "expected_exit_code": 0},
+    {"level": "C4", "test_path": "proposals/ccrp/test-c4.js", "git_blob_sha": "640f53e1258fb8c4004c54b1d694fb9dcbfbca31", "runner": {"executable": "node", "args": ["proposals/ccrp/test-c4.js"]}, "expected_exit_code": 0},
+    {"level": "C5", "test_path": "proposals/ccrp/test-c5.js", "git_blob_sha": "eb7242bc2e68b408c6b3979343b4d41eb084b3fb", "runner": {"executable": "node", "args": ["proposals/ccrp/test-c5.js"]}, "expected_exit_code": 0}
   ],
   "verification_policy": {
     "rerun_required": true,
