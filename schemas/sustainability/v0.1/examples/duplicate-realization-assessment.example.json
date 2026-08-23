@@ -1,0 +1,34 @@
+{
+  "document_type": "uu-aap.duplicate-realization-assessment",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "assessment_id": "duplicate-assessment-2026-08-23-001",
+  "parallel_item_ref": "schemas/sustainability/v0.1/capability-ceiling.schema.json",
+  "observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "candidates": [
+    {
+      "main_ref": "protocols/chsp/v0.9/README.md",
+      "semantic_overlap": "medium",
+      "boundary_overlap": "partial",
+      "evidence_refs": [
+        "protocols/chsp/v0.9/README.md",
+        "protocols/chsp/v0.9/chsp-external-execution-authorization.schema.json"
+      ],
+      "differences": [
+        "CHSP v0.9 binds exact already-bounded external transition operations after a fresh recheck and human decision set.",
+        "Capability Ceiling declares a component-wide maximum capability envelope and requires a new attributable authorization event for expansion.",
+        "Capability Ceiling is not an execution authorization and has no execution path."
+      ],
+      "notes": "Related authority-boundary concepts should not be treated as duplicates without field-level and lifecycle comparison."
+    }
+  ],
+  "overall_disposition": "parallel-remains-distinct",
+  "automatic_replacement_allowed": false,
+  "automatic_merge_allowed": false,
+  "explicit_human_disposition_required": true,
+  "authority_effect": "none",
+  "notes": [
+    "The current evidence supports partial conceptual overlap, not semantic identity.",
+    "Future CHSP versions may change this assessment and therefore require fresh observation."
+  ]
+}
