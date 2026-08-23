@@ -1,0 +1,49 @@
+{
+  "document_type": "uu-aap.sustainability-exploratory-disposition",
+  "version": "0.1",
+  "status": "non-normative-contract",
+  "source": {
+    "source_ref": "historical-side-track/example",
+    "source_head_sha": "1111111111111111111111111111111111111111"
+  },
+  "review": {
+    "current_main_sha": "24658379e959c709c4fcefb6d37393969c88b069",
+    "fresh_overlap_review": true,
+    "review_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "disposition": {
+    "mode": "selective-adoption",
+    "reason": "One bounded artifact remains useful after fresh overlap review; the rest of the exploratory source remains isolated.",
+    "selected_artifacts": [
+      {
+        "source_path": "docs/example-invariant.md",
+        "source_blob_sha": "2222222222222222222222222222222222222222",
+        "intended_target_path": "docs/example-invariant.md"
+      }
+    ],
+    "safe_effect": "prepare-bounded-adoption-only"
+  },
+  "provenance_policy": {
+    "source_provenance_preserved": true,
+    "disposition_reason_preserved": true,
+    "disagreement_history_preserved": true,
+    "archive_is_execution_queue": false,
+    "rejection_erases_history": false
+  },
+  "claims": {
+    "whole_branch_merge_entitled": false,
+    "exploratory_age_creates_entitlement": false,
+    "effort_creates_entitlement": false,
+    "historical_priority_creates_entitlement": false,
+    "selected_artifacts_only": true,
+    "main_dependency_created": false,
+    "canonicality_changed": false,
+    "kontur_activated": false
+  },
+  "authority_effect": "none",
+  "external_execution_authorized": false,
+  "notes": [
+    "Selective adoption prepares only the exact selected blob for later human integration review.",
+    "No whole-branch merge entitlement or execution authority is created."
+  ]
+}
