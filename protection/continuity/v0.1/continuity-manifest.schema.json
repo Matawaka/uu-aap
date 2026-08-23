@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:continuity:manifest-schema:v0.1",
+  "title": "UU-AAP Continuity Capture Manifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_id", "tool_version", "captured_at_utc", "source", "integrity", "refs", "tags", "lineage", "boundary"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "schema_id": {"const": "urn:uu-aap:continuity:manifest:v0.1"},
+    "tool_version": {"type": "string"},
+    "captured_at_utc": {"type": "string"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "main_branch", "main_commit_sha", "main_tree_sha"],
+      "properties": {
+        "repository": {"type": "string"},
+        "main_branch": {"type": "string"},
+        "main_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+        "main_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"}
+      }
+    },
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["git_fsck", "git_fsck_output", "bundle_verify", "bundle_verify_output", "bundle_file", "bundle_sha256"],
+      "properties": {
+        "git_fsck": {"const": "pass"},
+        "git_fsck_output": {"type": "string"},
+        "bundle_verify": {"const": "pass"},
+        "bundle_verify_output": {"type": "string"},
+        "bundle_file": {"type": "string", "minLength": 1},
+        "bundle_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "refs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ref", "object_sha"],
+        "properties": {
+          "ref": {"type": "string"},
+          "object_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"}
+        }
+      }
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "tag_object_or_target_sha", "commit_sha"],
+        "properties": {
+          "name": {"type": "string"},
+          "tag_object_or_target_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+          "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"}
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["previous_manifest"],
+      "properties": {
+        "previous_manifest": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["relative_path", "sha256"],
+              "properties": {
+                "relative_path": {"type": "string"},
+                "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["remote_mutation_performed", "canonical_successor_claimed", "authority_transferred", "kontur_activated_or_modified", "distributed_consensus_claimed"],
+      "properties": {
+        "remote_mutation_performed": {"const": false},
+        "canonical_successor_claimed": {"const": false},
+        "authority_transferred": {"const": false},
+        "kontur_activated_or_modified": {"const": false},
+        "distributed_consensus_claimed": {"const": false}
+      }
+    }
+  }
+}

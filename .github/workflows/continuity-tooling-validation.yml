@@ -1,0 +1,58 @@
+name: Continuity tooling validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/continuity/v0.1/**'
+      - '.github/workflows/continuity-tooling-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/continuity/v0.1/**'
+      - '.github/workflows/continuity-tooling-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile continuity tool
+        run: python3 -m py_compile protection/continuity/v0.1/continuity.py
+
+      - name: Validate JSON syntax
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/continuity/v0.1')
+          for path in sorted(root.glob('*.json')):
+              with path.open(encoding='utf-8') as f:
+                  json.load(f)
+              print('validated', path)
+          PY
+
+      - name: Exercise capture and recovery boundary against synthetic local Git source
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          src="$tmp/source"
+          out="$tmp/out"
+          mkdir -p "$src"
+          git -C "$src" init -b main
+          git -C "$src" config user.name 'continuity-test'
+          git -C "$src" config user.email 'continuity-test@example.invalid'
+          printf 'fixture\n' > "$src/README.md"
+          git -C "$src" add README.md
+          git -C "$src" commit -m 'fixture genesis'
+          git -C "$src" tag fixture-v0.1
+          expected="$(git -C "$src" rev-parse HEAD)"
+          python3 protection/continuity/v0.1/continuity.py capture \
+            --repo "$src" \
+            --root "$out" \
+            --expected-main "$expected"
+          manifest="$(find "$out/captures" -name continuity-manifest.json -print -quit)"
+          python3 protection/continuity/v0.1/continuity.py verify --manifest "$manifest"
