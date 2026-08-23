@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/recovery-resume-contract.schema.json",
+  "title": "UU-AAP Sustainability Recovery Resume Contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "recovery_id",
+    "historical_frontier",
+    "fresh_frontier",
+    "comparison",
+    "authority_transfer",
+    "authorization_reuse_allowed",
+    "safe_resume_mode",
+    "external_execution_authorized",
+    "unresolved_items",
+    "disposition"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.sustainability-recovery-resume"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-candidate"},
+    "recovery_id": {"type": "string", "minLength": 1},
+    "historical_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed_ref", "observed_at"],
+      "properties": {
+        "observed_ref": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "notes": {"type": "string"}
+      }
+    },
+    "fresh_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed_ref", "observed_at", "fresh_observation_performed"],
+      "properties": {
+        "observed_ref": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "fresh_observation_performed": {"const": true},
+        "notes": {"type": "string"}
+      }
+    },
+    "comparison": {
+      "enum": ["unchanged", "advanced", "diverged", "unknown"]
+    },
+    "reconciliation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "changes_observed": {"type": "array", "items": {"type": "string"}},
+        "material_to_intended_work": {"type": "boolean"},
+        "intended_work_semantically_valid": {"type": "boolean"},
+        "path_or_resource_overlap_changed": {"type": "boolean"},
+        "notes": {"type": "string"}
+      }
+    },
+    "authority_transfer": {"const": false},
+    "authorization_reuse_allowed": {"const": false},
+    "safe_resume_mode": {"enum": ["observe-only", "validate-only", "prepare-only", "blocked"]},
+    "external_execution_authorized": {"const": false},
+    "unresolved_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "external_effect_possible"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "external_effect_possible": {"type": "boolean"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "disposition": {"enum": ["safe-to-prepare", "blocked", "superseded", "rejected"]},
+    "prohibited_assumptions": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "world_unchanged_during_pause",
+          "prior_intent_is_current_intent",
+          "prior_authorization_is_current",
+          "pause_implies_consent",
+          "branch_existence_implies_authority",
+          "denied_capability_may_be_routed_around",
+          "recovery_equals_execution_authorization"
+        ]
+      }
+    },
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"comparison": {"enum": ["diverged", "unknown"]}}},
+      "then": {
+        "properties": {
+          "safe_resume_mode": {"const": "blocked"},
+          "disposition": {"const": "blocked"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"disposition": {"const": "safe-to-prepare"}}},
+      "then": {
+        "properties": {
+          "safe_resume_mode": {"const": "prepare-only"}
+        }
+      }
+    }
+  ]
+}
