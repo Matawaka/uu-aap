@@ -1,0 +1,95 @@
+{
+  "artifact_type": "CCRPReleasePublicationCheckpoint",
+  "artifact_version": "0.1",
+  "checkpoint_id": "urn:ccrp:checkpoint:release-publication:v0.1",
+  "repository": "Matawaka/uu-aap",
+  "canonical_repository_url": "https://github.com/Matawaka/uu-aap",
+  "checkpoint_scope": "repository-scoped-ccrp-release-publication",
+  "release": {
+    "tag": "poai-ccrp-v0.1",
+    "commit": "2c98d34ebfb5e86491bffb29a27e5a55b4db707e",
+    "tree": "52207c5c0c1b516462221a47a3791ad97b02cc5f",
+    "github_release_url": "https://github.com/Matawaka/uu-aap/releases/tag/poai-ccrp-v0.1",
+    "release_layer_path": "protocols/ccrp/v0.1/"
+  },
+  "lineage": {
+    "frozen_predecessor": {
+      "tag": "poai-ccrp-exp-v0.1",
+      "commit": "33215e251310105e2fac591b17ae2d90522488d9",
+      "role": "frozen-ccrp-v0.1-experimental-checkpoint"
+    },
+    "promotion_policy": "content-addressed-binding-without-historical-rewrite"
+  },
+  "release_layer_artifacts": [
+    {
+      "path": "protocols/ccrp/v0.1/README.md",
+      "git_blob_sha1": "ce3449aad3f07fc51a51d14ded2e30f1335aa3cb",
+      "role": "release-layer-overview"
+    },
+    {
+      "path": "protocols/ccrp/v0.1/release-manifest.json",
+      "git_blob_sha1": "78250d9dbfe08b5f340c05ac821fbae4ef263a86",
+      "role": "content-addressed-release-inventory"
+    },
+    {
+      "path": "protocols/ccrp/v0.1/release-manifest.schema.json",
+      "git_blob_sha1": "28257ff085ef3ac7fe45294d40a0d22046c2ef29",
+      "role": "release-manifest-schema"
+    },
+    {
+      "path": "protocols/ccrp/v0.1/validate-release.js",
+      "git_blob_sha1": "ba77b72d5548467e00d004c2daead1ac786957c4",
+      "role": "release-binding-validator"
+    },
+    {
+      "path": ".github/workflows/ccrp-release-validation.yml",
+      "git_blob_sha1": "cb921faeea5976ef981a312e54d919e8bff08541",
+      "role": "release-binding-ci"
+    }
+  ],
+  "publication_evidence": {
+    "tag_binding": {
+      "status": "verified",
+      "resolved_tag": "poai-ccrp-v0.1",
+      "resolved_commit": "2c98d34ebfb5e86491bffb29a27e5a55b4db707e"
+    },
+    "github_release": {
+      "status": "operator-reported-published",
+      "url": "https://github.com/Matawaka/uu-aap/releases/tag/poai-ccrp-v0.1"
+    }
+  },
+  "status_semantics": {
+    "tagged_manifest_build_status": "release_candidate",
+    "publication_state_recorded_by_this_checkpoint": "published",
+    "retroactive_tagged_manifest_rewrite_required": false,
+    "meaning": "The immutable tag preserves the exact pre-publication release candidate bytes; publication is a successor fact recorded outside the frozen release snapshot."
+  },
+  "conformance_levels": [
+    "C0",
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5"
+  ],
+  "invariants": [
+    "historical tag target must not be rewritten",
+    "release publication != universal canonicality",
+    "repository-scoped canonicality != factual truth",
+    "coordination validity != materialization permission",
+    "published release != PoAI/V conformance"
+  ],
+  "claims": {
+    "repository_release_tag_binding_established": true,
+    "release_layer_blob_identities_recorded": true,
+    "historical_predecessor_preserved": true,
+    "factual_truth_certified": false,
+    "causality_established": false,
+    "legal_identity_established": false,
+    "legal_authority_established": false,
+    "universal_canonicality_established": false,
+    "poai_v_conformance_established": false,
+    "materialization_event_recorded": false
+  },
+  "epistemic_status": "tag-binding-verified / github-release-operator-reported / repository-scoped"
+}
