@@ -1,0 +1,97 @@
+{
+  "$schema": "../consequence-observation-assessment-policy.schema.json",
+  "artifact_type": "ConsequenceObservationAssessmentPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:consequence-observation-assessment-policy:bounded-source-admissibility:1",
+  "policy_version": 1,
+  "assessment_scope": "urn:uu-aap:consequence-observation-assessment-scope:bounded-source-admissibility-v0.1",
+  "effective_from": "2026-08-23T11:54:00Z",
+  "effective_until": null,
+  "applies_to": {
+    "ingress_policy_id": "urn:uu-aap:consequence-observation-ingress-policy:responsibility-event-frontier:1",
+    "ingress_receipt_artifact_type": "ConsequenceObservationIngressReceipt",
+    "ingress_receipt_artifact_version": "0.1",
+    "claim_artifact_type": "ConsequenceObservationClaim",
+    "claim_artifact_version": "0.1",
+    "source_evidence_artifact_type": "ConsequenceObservationSourceEvidence",
+    "source_evidence_artifact_version": "0.1",
+    "frontier_artifact_types": [
+      "ResponsibilityEventAppendLedgerEntry",
+      "ResponsibilityEventSuccessorLedgerEntry"
+    ]
+  },
+  "allowed_gate_statuses": ["qualified", "not_qualified", "deferred", "out_of_scope"],
+  "gate_rules": {
+    "ingress_package_exact": {
+      "required": true,
+      "reason_codes": ["exact_ingress_package_revalidated"]
+    },
+    "source_bytes_exact": {
+      "required": true,
+      "reason_codes": ["exact_source_bytes_revalidated", "no_observation_source_not_applicable"]
+    },
+    "producer_profile_recognized": {
+      "required": true,
+      "reason_codes": ["registered_source_profile_required", "fixture_not_live_profile", "no_observation_profile_not_applicable"]
+    },
+    "producer_artifact_identity_exact": {
+      "required": true,
+      "reason_codes": ["producer_artifact_identity_exact", "no_observation_source_not_applicable"]
+    },
+    "observation_present": {
+      "required": true,
+      "reason_codes": ["source_declares_observation_present", "claim_has_no_observation"]
+    },
+    "observation_chronology_valid": {
+      "required": true,
+      "reason_codes": ["assessment_after_ingress_and_source"]
+    },
+    "observation_horizon_valid": {
+      "required": true,
+      "reason_codes": ["evidence_cutoff_not_after_claim"]
+    },
+    "frontier_exact": {
+      "required": true,
+      "reason_codes": ["authoritative_frontier_exact"]
+    },
+    "fixture_excluded_from_live_qualification": {
+      "required": true,
+      "reason_codes": ["fixture_exclusion_enforced", "live_environment_not_fixture"]
+    },
+    "source_semantics_profile_satisfied": {
+      "required": true,
+      "reason_codes": ["source_specific_semantic_profile_required", "fixture_not_live_semantic_profile", "no_observation_semantics_not_applicable"]
+    }
+  },
+  "registered_live_source_profiles": [],
+  "invariants": {
+    "exact_byte_bindings_required": true,
+    "frontier_exact_required": true,
+    "source_profile_required_for_live_observed": true,
+    "live_observation_qualification_allowed": false,
+    "test_fixture_live_qualification_allowed": false,
+    "successor_adapter_authorization_allowed": false,
+    "assessment_is_policy_relative": true,
+    "scalar_scores_allowed": false
+  },
+  "claims": {
+    "assessment_policy_defined": true,
+    "source_profile_registry_empty": true,
+    "new_external_consequence_observed": false,
+    "consequence_truth_certified": false,
+    "generalized_external_consequence_causality_established": false,
+    "causal_proof_certified": false,
+    "responsibility_for_consequence_attributed": false,
+    "responsibility_for_outcome_adjudicated": false,
+    "legal_liability_established": false,
+    "legal_effect_established": false,
+    "moral_blame_assigned": false,
+    "truth_certified": false,
+    "successor_adapter_authorized": false,
+    "successor_append_may_proceed": false,
+    "global_replay_protection_established": false,
+    "distributed_consensus_established": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}
