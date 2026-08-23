@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """Narrow GitHub REST provider adapter for CHSP v1.0.
 
-Only collaborator-permission observation and bounded role elevation are implemented.
-No ownership transfer, access removal, credential rotation, ref/content mutation, release
-publication, canonical-origin mutation, or KONTUR surface exists here.
+The reference target is a repository owned by a personal GitHub account. Personal
+repositories have owner/collaborator access rather than organization repository-role
+assignment. This adapter therefore only observes collaborator permission and can add
+the exact principal as a standard collaborator (write). It cannot assign granular
+organization roles.
+
+No ownership transfer, access removal, credential rotation, ref/content mutation,
+release publication, canonical-origin mutation, or KONTUR surface exists here.
 """
 from __future__ import annotations
 
@@ -17,12 +22,16 @@ from typing import Any
 
 SYSTEM_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 USER_RE = re.compile(r"^[A-Za-z0-9-]{1,39}$")
-ROLE_RANK = {"absent":0,"identity_only":1,"collaborator":2,"maintainer":3,"admin":4,"owner":5,"unknown":-1}
+ROLE_RANK = {"absent":0,"collaborator":2,"owner":5,"unknown":-1}
 PERMISSION_TO_ROLE = {
-    "none":"absent","read":"identity_only","triage":"identity_only","write":"collaborator",
-    "maintain":"maintainer","admin":"admin",
+    "none":"absent",
+    "read":"absent",
+    "triage":"absent",
+    "write":"collaborator",
+    "maintain":"collaborator",
+    "admin":"owner",
 }
-ROLE_TO_PERMISSION = {"identity_only":"pull","collaborator":"push","maintainer":"maintain"}
+EXECUTABLE_TARGET_ROLE = "collaborator"
 
 
 def _digest(value: dict[str, Any]) -> str:
@@ -47,7 +56,7 @@ def parse_target(envelope: dict[str, Any]) -> tuple[str, str, str]:
 
 
 class GitHubRestAdapter:
-    adapter_id = "github-rest-collaborator-v1.0"
+    adapter_id = "github-rest-personal-collaborator-v1.0"
 
     def __init__(self, token: str, api_base: str = "https://api.github.com", timeout_seconds: int = 10):
         if not isinstance(token, str) or len(token) < 8:
@@ -104,19 +113,20 @@ class GitHubRestAdapter:
         if role == "unknown":
             return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"provider role unknown"}
         if kind == "ensure_principal_presence":
-            return {"supported": role != "absent", "mutation_needed":False,"projected_role":role,"reason":"presence already verified" if role != "absent" else "presence-only operation cannot invite without an explicit bounded role"}
+            present = role in {"collaborator","owner"}
+            return {"supported":present,"mutation_needed":False,"projected_role":role,"reason":"collaborator presence already verified" if present else "presence-only operation cannot silently grant collaborator write access"}
         if kind == "ensure_release_signer_binding":
-            return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"GitHub collaborator API does not establish release-signing identity"}
+            return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"GitHub personal collaborator API does not establish release-signing identity"}
         if kind != "ensure_role_at_least":
             return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"operation not implemented by GitHub adapter"}
         target = op.get("intended_role")
-        if target not in ROLE_TO_PERMISSION:
-            return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"target role is not executable by GitHub v1.0 adapter"}
-        if ROLE_RANK[target] > ROLE_RANK[policy["maximum_executable_role"]]:
-            return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"target role exceeds policy cap"}
-        if ROLE_RANK.get(role, -1) >= ROLE_RANK[target]:
-            return {"supported":True,"mutation_needed":False,"projected_role":role,"reason":"role already satisfies target"}
-        return {"supported":True,"mutation_needed":True,"projected_role":target,"reason":"bounded collaborator role elevation required"}
+        if target != EXECUTABLE_TARGET_ROLE or policy.get("maximum_executable_role") != EXECUTABLE_TARGET_ROLE:
+            return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"v1.0 personal-repository adapter only grants collaborator/write"}
+        if role in {"collaborator","owner"}:
+            return {"supported":True,"mutation_needed":False,"projected_role":role,"reason":"collaborator access already satisfied"}
+        if role != "absent":
+            return {"supported":False,"mutation_needed":False,"projected_role":role,"reason":"provider role cannot be safely interpreted for personal-repository collaborator transition"}
+        return {"supported":True,"mutation_needed":True,"projected_role":"collaborator","reason":"standard personal-repository collaborator invitation required"}
 
     def apply(self, op: dict[str, Any], observation: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
         plan = self.preflight(op, observation, policy)
@@ -127,12 +137,14 @@ class GitHubRestAdapter:
         if self._target is None:
             raise RuntimeError("provider target was not observed before mutation")
         owner, repo, login = self._target
-        target = op["intended_role"]
         path = "/repos/{}/{}/collaborators/{}".format(
             urllib.parse.quote(owner, safe=""), urllib.parse.quote(repo, safe=""), urllib.parse.quote(login, safe="")
         )
-        _, _, request_id = self._request("PUT", path, {"permission":ROLE_TO_PERMISSION[target]})
+        # For repositories owned by personal accounts GitHub grants the standard
+        # collaborator/write level. The permission parameter is intentionally omitted;
+        # GitHub documents granular permission assignment as organization-only.
+        _, _, request_id = self._request("PUT", path, None)
         after = self.observe({"external_system_type":"github_repository","external_system_id":f"{owner}/{repo}","external_principal_id":f"github:{login}"})
-        if ROLE_RANK.get(after["role"], -1) < ROLE_RANK[target]:
-            return {"status":"verification_failed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":request_id,"reason":"provider mutation returned but target role was not re-observed"}
-        return {"status":"changed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":request_id,"reason":"bounded collaborator role elevation verified"}
+        if after["role"] not in {"collaborator","owner"}:
+            return {"status":"verification_failed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":request_id,"reason":"provider mutation returned but collaborator access was not re-observed"}
+        return {"status":"changed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":request_id,"reason":"personal-repository collaborator access verified"}
