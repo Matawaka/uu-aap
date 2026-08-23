@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Local-only Canonical Succession Proposal Protocol v0.5.
 
-This module can bind a local predecessor frontier, create a proposal from a
-verified v0.4 RECOVERED_NONCANONICAL repository, and assess that proposal.
+The sealed v0.4 RECOVERED_NONCANONICAL directory remains immutable evidence.
+Succession candidates live in a separate local bare repository. This module
+only reads both repositories, creates proposal artifacts, and assesses them.
 It never recognizes a canonical successor and never performs network I/O.
 """
 
@@ -67,10 +68,9 @@ def write_json(path: Path, value: dict[str, Any]) -> None:
     path.write_text(json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def run_git(args: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess:
+def run_git(args: list[str], check: bool = True) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["git", *args],
-        cwd=str(cwd) if cwd else None,
         check=check,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
@@ -137,18 +137,15 @@ def bind_predecessor(project_id: str, origin_id: str, repo: Path, frontier_ref: 
     require(commit.returncode == 0, "frontier ref does not resolve to a commit")
     frontier_commit = commit.stdout.strip()
     require(OID_RE.fullmatch(frontier_commit) is not None, "invalid frontier commit object ID")
-    frontier_tree = run_git(["-C", str(repo), "rev-parse", f"{frontier_commit}^{{tree}}"], check=True).stdout.strip()
+    frontier_tree = run_git(["-C", str(repo), "rev-parse", f"{frontier_commit}^{{tree}}"]).stdout.strip()
+    refs_digest = ref_set_sha256(repo)
     now = parse_time(at) if at else datetime.now(timezone.utc)
     body = {
         "artifact_type": "CanonicalPredecessorBinding",
         "artifact_version": "0.5",
         "binding_id": "urn:uu-aap:canonical-predecessor-binding:" + sha256_json({
-            "project": project_id,
-            "origin": origin_id,
-            "ref": frontier_ref,
-            "commit": frontier_commit,
-            "tree": frontier_tree,
-            "refs": ref_set_sha256(repo),
+            "project": project_id, "origin": origin_id, "ref": frontier_ref,
+            "commit": frontier_commit, "tree": frontier_tree, "refs": refs_digest,
         })[:24],
         "bound_at": iso_z(now),
         "project_id": project_id,
@@ -156,7 +153,7 @@ def bind_predecessor(project_id: str, origin_id: str, repo: Path, frontier_ref: 
         "canonical_frontier_ref": frontier_ref,
         "canonical_frontier_commit": frontier_commit,
         "canonical_frontier_tree": frontier_tree,
-        "canonical_ref_set_sha256": ref_set_sha256(repo),
+        "canonical_ref_set_sha256": refs_digest,
         "binding_sha256": "0" * 64,
         "claims": binding_claims(),
     }
@@ -177,7 +174,7 @@ def validate_predecessor_binding(binding: dict[str, Any]) -> None:
     require(HEX64_RE.fullmatch(digest) is not None, "invalid predecessor binding digest")
     require(self_digest(binding, "binding_sha256") == digest, "predecessor binding self-digest mismatch")
     claims = binding.get("claims") or {}
-    require(claims.get("repository_scoped_canonical_predecessor_recorded") is True, "predecessor binding must explicitly record repository-scoped predecessor")
+    require(claims.get("repository_scoped_canonical_predecessor_recorded") is True, "predecessor binding must record repository-scoped predecessor")
     for key in ["universal_canonicality_established", "future_successor_selected", "ownership_adjudicated", "truth_certified"]:
         require(claims.get(key) is False, f"unsafe predecessor binding claim: {key}")
 
@@ -210,53 +207,52 @@ def validate_proposal_claims(proposal: dict[str, Any]) -> None:
         require(claims.get(key) is False, f"unsafe succession proposal claim: {key}")
 
 
-def candidate_state(recovery_dir: Path, candidate_ref: str) -> dict[str, Any]:
+def verify_sealed_recovery(recovery_dir: Path) -> dict[str, Any]:
+    require(recovery_dir.exists() and recovery_dir.is_dir() and not recovery_dir.is_symlink(), "recovery-dir must be a local non-symlink directory")
+    return load_v04_module().verify_recovery(recovery_dir)
+
+
+def inspect_candidate(candidate_repo: Path, recovered_frontier: str, candidate_ref: str) -> dict[str, Any]:
     require(LOCAL_BRANCH_RE.fullmatch(candidate_ref) is not None, "candidate-ref must be an explicit local refs/heads/* ref")
-    v04 = load_v04_module()
-    receipt = v04.verify_recovery(recovery_dir)
-    repo = recovery_dir / "repository.git"
-    bare = run_git(["-C", str(repo), "rev-parse", "--is-bare-repository"]).stdout.strip()
+    ensure_local_git_repo(candidate_repo)
+    bare = run_git(["-C", str(candidate_repo), "rev-parse", "--is-bare-repository"]).stdout.strip()
     require(bare == "true", "candidate repository must be bare")
-    remotes = run_git(["-C", str(repo), "remote"]).stdout.split()
+    remotes = run_git(["-C", str(candidate_repo), "remote"]).stdout.split()
     require(remotes == [], "candidate repository must contain no Git remotes")
-    run_git(["-C", str(repo), "fsck", "--full"])
-    resolved = run_git(["-C", str(repo), "rev-parse", f"{candidate_ref}^{{commit}}"], check=False)
+    run_git(["-C", str(candidate_repo), "fsck", "--full"])
+    recovered_present = run_git(["-C", str(candidate_repo), "cat-file", "-e", f"{recovered_frontier}^{{commit}}"], check=False)
+    require(recovered_present.returncode == 0, "candidate repository does not contain recovered frontier")
+    resolved = run_git(["-C", str(candidate_repo), "rev-parse", f"{candidate_ref}^{{commit}}"], check=False)
     require(resolved.returncode == 0, "candidate ref does not resolve to a commit")
     candidate_commit = resolved.stdout.strip()
     require(OID_RE.fullmatch(candidate_commit) is not None, "invalid candidate commit")
-    recovered = receipt["recovered_frontier_commit"]
-    ancestry = run_git(["-C", str(repo), "merge-base", "--is-ancestor", recovered, candidate_commit], check=False)
+    ancestry = run_git(["-C", str(candidate_repo), "merge-base", "--is-ancestor", recovered_frontier, candidate_commit], check=False)
     require(ancestry.returncode == 0, "candidate frontier does not descend from recovered frontier")
-    tree = run_git(["-C", str(repo), "rev-parse", f"{candidate_commit}^{{tree}}"]).stdout.strip()
+    tree = run_git(["-C", str(candidate_repo), "rev-parse", f"{candidate_commit}^{{tree}}"]).stdout.strip()
     return {
-        "receipt": receipt,
-        "repo": repo,
         "candidate_commit": candidate_commit,
         "candidate_tree": tree,
-        "candidate_ref_set_sha256": ref_set_sha256(repo),
-        "candidate_advances_recovered_frontier": candidate_commit != recovered,
+        "candidate_ref_set_sha256": ref_set_sha256(candidate_repo),
+        "candidate_advances_recovered_frontier": candidate_commit != recovered_frontier,
     }
 
 
-def create_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_dir: Path, candidate_ref: str, proposer_id: str, at: str | None = None) -> dict[str, Any]:
+def create_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_dir: Path, candidate_repo: Path, candidate_ref: str, proposer_id: str, at: str | None = None) -> dict[str, Any]:
     validate_policy(policy)
     validate_predecessor_binding(binding)
     require(policy.get("project_id") == binding.get("project_id"), "policy/predecessor project mismatch")
     require(isinstance(proposer_id, str) and proposer_id, "proposer_id is required")
-    state = candidate_state(recovery_dir, candidate_ref)
-    receipt = state["receipt"]
+    receipt = verify_sealed_recovery(recovery_dir)
     require(receipt.get("project_id") == policy.get("project_id"), "recovery receipt project mismatch")
     require(receipt.get("recovered_frontier_commit") == binding.get("canonical_frontier_commit"), "recovered frontier does not match canonical predecessor binding")
+    candidate = inspect_candidate(candidate_repo, receipt["recovered_frontier_commit"], candidate_ref)
     now = parse_time(at) if at else datetime.now(timezone.utc)
     proposal = {
         "artifact_type": "CanonicalSuccessionProposal",
         "artifact_version": "0.5",
         "proposal_id": "urn:uu-aap:canonical-succession-proposal:" + sha256_json({
-            "predecessor": binding["binding_sha256"],
-            "receipt": receipt["receipt_sha256"],
-            "candidate": state["candidate_commit"],
-            "ref": candidate_ref,
-            "proposer": proposer_id,
+            "predecessor": binding["binding_sha256"], "receipt": receipt["receipt_sha256"],
+            "candidate": candidate["candidate_commit"], "ref": candidate_ref, "proposer": proposer_id,
         })[:24],
         "created_at": iso_z(now),
         "project_id": policy["project_id"],
@@ -267,10 +263,10 @@ def create_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_di
         "recovery_execution_receipt_sha256": receipt["receipt_sha256"],
         "recovered_frontier_commit": receipt["recovered_frontier_commit"],
         "candidate_ref": candidate_ref,
-        "candidate_frontier_commit": state["candidate_commit"],
-        "candidate_frontier_tree": state["candidate_tree"],
-        "candidate_ref_set_sha256": state["candidate_ref_set_sha256"],
-        "candidate_advances_recovered_frontier": state["candidate_advances_recovered_frontier"],
+        "candidate_frontier_commit": candidate["candidate_commit"],
+        "candidate_frontier_tree": candidate["candidate_tree"],
+        "candidate_ref_set_sha256": candidate["candidate_ref_set_sha256"],
+        "candidate_advances_recovered_frontier": candidate["candidate_advances_recovered_frontier"],
         "proposal_sha256": "0" * 64,
         "claims": proposal_claims(),
     }
@@ -278,22 +274,15 @@ def create_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_di
     return proposal
 
 
-def assess_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_dir: Path, proposal: dict[str, Any], at: str | None = None) -> dict[str, Any]:
+def assess_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_dir: Path, candidate_repo: Path, proposal: dict[str, Any], at: str | None = None) -> dict[str, Any]:
     validate_policy(policy)
+    checks = {key: False for key in [
+        "v04_recovery_verified", "predecessor_binding_verified", "project_binding_match",
+        "recovered_frontier_matches_predecessor", "candidate_ref_valid", "candidate_repo_no_remotes",
+        "candidate_repo_fsck_full", "candidate_descends_from_recovered_frontier", "candidate_tree_match",
+        "candidate_ref_set_match", "proposal_self_digest_match",
+    ]}
     reasons: list[str] = []
-    checks = {
-        "v04_recovery_verified": False,
-        "predecessor_binding_verified": False,
-        "project_binding_match": False,
-        "recovered_frontier_matches_predecessor": False,
-        "candidate_ref_valid": False,
-        "candidate_repo_no_remotes": False,
-        "candidate_repo_fsck_full": False,
-        "candidate_descends_from_recovered_frontier": False,
-        "candidate_tree_match": False,
-        "candidate_ref_set_match": False,
-        "proposal_self_digest_match": False,
-    }
 
     try:
         validate_predecessor_binding(binding)
@@ -306,7 +295,6 @@ def assess_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_di
         checks["proposal_self_digest_match"] = True
     else:
         reasons.append("proposal self-digest mismatch")
-
     try:
         require(proposal.get("artifact_type") == "CanonicalSuccessionProposal", "CanonicalSuccessionProposal required")
         require(proposal.get("artifact_version") == "0.5", "CanonicalSuccessionProposal v0.5 required")
@@ -314,11 +302,9 @@ def assess_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_di
     except Exception as exc:
         reasons.append(str(exc))
 
-    receipt: dict[str, Any] | None = None
-    repo = recovery_dir / "repository.git"
-    v04 = load_v04_module()
+    receipt = None
     try:
-        receipt = v04.verify_recovery(recovery_dir)
+        receipt = verify_sealed_recovery(recovery_dir)
         checks["v04_recovery_verified"] = True
     except Exception as exc:
         reasons.append(f"v0.4 recovery verification failed: {exc}")
@@ -339,47 +325,26 @@ def assess_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_di
         if not checks["recovered_frontier_matches_predecessor"]:
             reasons.append("recovered frontier does not match canonical predecessor")
 
-    candidate_ref = proposal.get("candidate_ref", "")
-    if LOCAL_BRANCH_RE.fullmatch(candidate_ref or "") is not None:
-        resolved = run_git(["-C", str(repo), "rev-parse", f"{candidate_ref}^{{commit}}"], check=False) if repo.exists() else None
-        if resolved is not None and resolved.returncode == 0 and resolved.stdout.strip() == proposal.get("candidate_frontier_commit"):
-            checks["candidate_ref_valid"] = True
-        else:
-            reasons.append("candidate ref does not resolve to proposal candidate commit")
-    else:
-        reasons.append("candidate ref is not an explicit local branch")
-
-    if repo.exists() and repo.is_dir() and not repo.is_symlink():
-        bare = run_git(["-C", str(repo), "rev-parse", "--is-bare-repository"], check=False)
-        remotes = run_git(["-C", str(repo), "remote"], check=False)
-        checks["candidate_repo_no_remotes"] = bare.returncode == 0 and bare.stdout.strip() == "true" and remotes.returncode == 0 and remotes.stdout.split() == []
-        if not checks["candidate_repo_no_remotes"]:
-            reasons.append("candidate repository is not bare or contains remotes")
-        fsck = run_git(["-C", str(repo), "fsck", "--full"], check=False)
-        checks["candidate_repo_fsck_full"] = fsck.returncode == 0
-        if not checks["candidate_repo_fsck_full"]:
-            reasons.append("candidate repository git fsck --full failed")
-
-        candidate_commit = proposal.get("candidate_frontier_commit", "")
+    try:
         recovered = proposal.get("recovered_frontier_commit", "")
-        if OID_RE.fullmatch(candidate_commit or "") and OID_RE.fullmatch(recovered or ""):
-            ancestry = run_git(["-C", str(repo), "merge-base", "--is-ancestor", recovered, candidate_commit], check=False)
-            checks["candidate_descends_from_recovered_frontier"] = ancestry.returncode == 0
-            if not checks["candidate_descends_from_recovered_frontier"]:
-                reasons.append("candidate frontier does not descend from recovered frontier")
-            tree = run_git(["-C", str(repo), "rev-parse", f"{candidate_commit}^{{tree}}"], check=False)
-            checks["candidate_tree_match"] = tree.returncode == 0 and tree.stdout.strip() == proposal.get("candidate_frontier_tree")
-            if not checks["candidate_tree_match"]:
-                reasons.append("candidate tree mismatch")
-        current_ref_set = ref_set_sha256(repo)
-        checks["candidate_ref_set_match"] = current_ref_set == proposal.get("candidate_ref_set_sha256")
+        state = inspect_candidate(candidate_repo, recovered, proposal.get("candidate_ref", ""))
+        checks["candidate_ref_valid"] = state["candidate_commit"] == proposal.get("candidate_frontier_commit")
+        checks["candidate_repo_no_remotes"] = True
+        checks["candidate_repo_fsck_full"] = True
+        checks["candidate_descends_from_recovered_frontier"] = True
+        checks["candidate_tree_match"] = state["candidate_tree"] == proposal.get("candidate_frontier_tree")
+        checks["candidate_ref_set_match"] = state["candidate_ref_set_sha256"] == proposal.get("candidate_ref_set_sha256")
+        if not checks["candidate_ref_valid"]:
+            reasons.append("candidate ref does not resolve to proposal candidate commit")
+        if not checks["candidate_tree_match"]:
+            reasons.append("candidate tree mismatch")
         if not checks["candidate_ref_set_match"]:
             reasons.append("candidate ref-set digest mismatch")
-    else:
-        reasons.append("candidate repository missing or unsafe")
+    except Exception as exc:
+        reasons.append(str(exc))
 
     all_ok = all(checks.values())
-    state = "proposal_reviewable" if all_ok else "rejected"
+    state_name = "proposal_reviewable" if all_ok else "rejected"
     decision = "human_canonical_recognition_may_be_requested" if all_ok else "reject_proposal"
     if all_ok:
         reasons = ["all proposal admissibility checks passed; separate human canonical recognition remains required"]
@@ -388,16 +353,12 @@ def assess_proposal(policy: dict[str, Any], binding: dict[str, Any], recovery_di
     assessment = {
         "artifact_type": "CanonicalSuccessionProposalAssessment",
         "artifact_version": "0.5",
-        "assessment_id": "urn:uu-aap:canonical-succession-assessment:" + sha256_json({
-            "proposal": digest,
-            "at": iso_z(now),
-            "state": state,
-        })[:24],
+        "assessment_id": "urn:uu-aap:canonical-succession-assessment:" + sha256_json({"proposal": digest, "at": iso_z(now), "state": state_name})[:24],
         "evaluated_at": iso_z(now),
         "project_id": policy["project_id"],
         "proposal_sha256": digest if HEX64_RE.fullmatch(digest or "") else sha256_json(proposal),
         "policy_sha256": sha256_json(policy),
-        "state": state,
+        "state": state_name,
         "decision": decision,
         "checks": checks,
         "reasons": reasons,
@@ -434,6 +395,7 @@ def main() -> int:
     pp.add_argument("--policy", required=True)
     pp.add_argument("--predecessor-binding", required=True)
     pp.add_argument("--recovery-dir", required=True)
+    pp.add_argument("--candidate-repo", required=True)
     pp.add_argument("--candidate-ref", required=True)
     pp.add_argument("--proposer-id", required=True)
     pp.add_argument("--out", required=True)
@@ -443,6 +405,7 @@ def main() -> int:
     ap.add_argument("--policy", required=True)
     ap.add_argument("--predecessor-binding", required=True)
     ap.add_argument("--recovery-dir", required=True)
+    ap.add_argument("--candidate-repo", required=True)
     ap.add_argument("--proposal", required=True)
     ap.add_argument("--out")
     ap.add_argument("--at")
@@ -454,14 +417,14 @@ def main() -> int:
             write_json(Path(args.out), result)
         elif args.cmd == "propose":
             result = create_proposal(
-                load_json(Path(args.policy)), load_json(Path(args.predecessor_binding)),
-                Path(args.recovery_dir), args.candidate_ref, args.proposer_id, args.at,
+                load_json(Path(args.policy)), load_json(Path(args.predecessor_binding)), Path(args.recovery_dir),
+                Path(args.candidate_repo), args.candidate_ref, args.proposer_id, args.at,
             )
             write_json(Path(args.out), result)
         else:
             result = assess_proposal(
-                load_json(Path(args.policy)), load_json(Path(args.predecessor_binding)),
-                Path(args.recovery_dir), load_json(Path(args.proposal)), args.at,
+                load_json(Path(args.policy)), load_json(Path(args.predecessor_binding)), Path(args.recovery_dir),
+                Path(args.candidate_repo), load_json(Path(args.proposal)), args.at,
             )
             text = json.dumps(result, indent=2, ensure_ascii=False) + "\n"
             if args.out:
