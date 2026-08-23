@@ -1,0 +1,42 @@
+name: Protocol capability attestation validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "protocols/ccrp/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/protocol-capability-attestation-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "protocols/ccrp/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/protocol-capability-attestation-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-capability-attestation:
+    name: Protocol capability attestation validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate protocol registry bindings
+        run: node protocols/registry/v0.1/validate-registry.js
+      - name: Reproduce CCRP reference implementation attestation
+        run: node protocols/attestation/v0.1/verify-attestation.js
+      - name: Run attestation positive and fail-closed vectors
+        run: node protocols/attestation/v0.1/test-attestation.js
