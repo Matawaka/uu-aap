@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/ial/v0.1/responsibility-handoff-acceptance.schema.json",
+  "title": "IAL ResponsibilityHandoffAcceptance v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "acceptance_id",
+    "offer_id",
+    "receiving_party_id",
+    "executor_implementation_id",
+    "decision",
+    "accepted_responsibility_scope",
+    "attestation_ref",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "../responsibility-handoff-acceptance.schema.json"},
+    "artifact_type": {"const": "ResponsibilityHandoffAcceptance"},
+    "artifact_version": {"const": "0.1"},
+    "acceptance_id": {"type": "string", "minLength": 1},
+    "offer_id": {"type": "string", "minLength": 1},
+    "receiving_party_id": {"type": "string", "minLength": 1},
+    "executor_implementation_id": {"type": "string", "minLength": 1},
+    "decision": {"enum": ["accepted", "rejected"]},
+    "accepted_responsibility_scope": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "attestation_ref": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "path",
+            "git_blob_sha",
+            "attestation_id",
+            "subject_id"
+          ],
+          "properties": {
+            "path": {"type": "string", "minLength": 1},
+            "git_blob_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+            "attestation_id": {"type": "string", "minLength": 1},
+            "subject_id": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsibility_acceptance_explicit",
+        "responsibility_accepted",
+        "capability_attestation_is_authority",
+        "authority_established",
+        "execution_admitted",
+        "materialization_permitted",
+        "outcome_observed"
+      ],
+      "properties": {
+        "responsibility_acceptance_explicit": {"const": true},
+        "responsibility_accepted": {"type": "boolean"},
+        "capability_attestation_is_authority": {"const": false},
+        "authority_established": {"const": false},
+        "execution_admitted": {"const": false},
+        "materialization_permitted": {"const": false},
+        "outcome_observed": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "accepted"}}},
+      "then": {
+        "properties": {
+          "accepted_responsibility_scope": {"minItems": 1},
+          "attestation_ref": {"type": "object"},
+          "claims": {"properties": {"responsibility_accepted": {"const": true}}}
+        }
+      },
+      "else": {
+        "properties": {
+          "accepted_responsibility_scope": {"maxItems": 0},
+          "attestation_ref": {"type": "null"},
+          "claims": {"properties": {"responsibility_accepted": {"const": false}}}
+        }
+      }
+    }
+  ]
+}
