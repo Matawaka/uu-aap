@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   consequence-observation-ingress:
-    name: Non-certifying consequence claim ingress boundary
+    name: Digest-bound non-certifying consequence ingress boundary
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository with immutable tags
@@ -53,6 +53,7 @@ jobs:
           root = Path('protocols/integration/v0.1')
           names = [
               'consequence-observation-ingress-policy.schema.json',
+              'consequence-observation-source-evidence.schema.json',
               'consequence-observation-claim.schema.json',
               'consequence-observation-ingress-receipt.schema.json',
           ]
@@ -64,14 +65,17 @@ jobs:
           policy = json.loads((root/'policies/reference.consequence-observation-ingress-policy.json').read_text(encoding='utf-8'))
           Draft202012Validator(schemas['consequence-observation-ingress-policy.schema.json'], format_checker=FormatChecker()).validate(policy)
           assert policy['claims']['new_external_consequence_observed'] is False
+          assert policy['claims']['source_bytes_binding_required'] is True
           assert policy['invariants']['claim_is_non_certifying'] is True
+          assert policy['invariants']['source_bytes_digest_required'] is True
+          assert policy['invariants']['test_fixture_successor_adapter_eligible'] is False
           print('VALID ConsequenceObservationIngress schemas and policy')
           PY
 
       - name: Build claims and ingress receipts against current responsibility-event frontier
         run: node protocols/integration/v0.1/test-consequence-observation-ingress.js
 
-      - name: Validate generated claims and receipts by schema
+      - name: Validate generated source, claims and receipts by schema
         run: |
           python - <<'PY'
           import json
@@ -81,6 +85,7 @@ jobs:
           pairs = [
               ('consequence-observation-claim.schema.json','/tmp/consequence-observation-claim-not-yet.json'),
               ('consequence-observation-ingress-receipt.schema.json','/tmp/consequence-observation-ingress-not-yet.json'),
+              ('consequence-observation-source-evidence.schema.json','/tmp/consequence-observation-source-fixture.json'),
               ('consequence-observation-claim.schema.json','/tmp/consequence-observation-claim-observed-fixture.json'),
               ('consequence-observation-ingress-receipt.schema.json','/tmp/consequence-observation-ingress-observed-fixture.json'),
           ]
@@ -88,13 +93,21 @@ jobs:
               schema = json.loads((root/schema_name).read_text(encoding='utf-8'))
               artifact = json.loads(Path(artifact_path).read_text(encoding='utf-8'))
               Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+          source = json.loads(Path('/tmp/consequence-observation-source-fixture.json').read_text())
           fixture = json.loads(Path('/tmp/consequence-observation-claim-observed-fixture.json').read_text())
           receipt = json.loads(Path('/tmp/consequence-observation-ingress-observed-fixture.json').read_text())
+          assert source['test_fixture_only'] is True
+          assert source['observation_present'] is True
+          assert source['claims']['source_bytes_digest_bound'] is True
           assert fixture['environment'] == 'test_fixture'
           assert fixture['claimed_status'] == 'observed'
+          assert fixture['source_evidence_binding']['digest']['value']
+          assert receipt['source_evidence_binding']['digest']['value'] == fixture['source_evidence_binding']['digest']['value']
+          assert receipt['adapter_eligibility']['eligible_for_successor_adapter'] is False
+          assert receipt['adapter_eligibility']['reason'] == 'test_fixture_only'
           assert receipt['claims']['new_external_consequence_observed'] is False
           assert receipt['claims']['causal_proof_certified'] is False
-          print('VALID non-certifying consequence ingress artifacts')
+          print('VALID digest-bound non-certifying consequence ingress artifacts')
           PY
 
       - name: Independently reject ingress assurance escalation by schema
@@ -104,8 +117,10 @@ jobs:
           from pathlib import Path
           from jsonschema import Draft202012Validator, ValidationError
           root = Path('protocols/integration/v0.1')
+          source_schema = json.loads((root/'consequence-observation-source-evidence.schema.json').read_text())
           claim_schema = json.loads((root/'consequence-observation-claim.schema.json').read_text())
           receipt_schema = json.loads((root/'consequence-observation-ingress-receipt.schema.json').read_text())
+          source = json.loads(Path('/tmp/consequence-observation-source-fixture.json').read_text())
           claim = json.loads(Path('/tmp/consequence-observation-claim-observed-fixture.json').read_text())
           receipt = json.loads(Path('/tmp/consequence-observation-ingress-observed-fixture.json').read_text())
           def reject(schema, value, label):
@@ -115,7 +130,9 @@ jobs:
                   print('REJECTED:', label)
                   return
               raise AssertionError('schema accepted forbidden ' + label)
+          bad = copy.deepcopy(source); bad['claims']['truth_certified'] = True; reject(source_schema,bad,'source truth overclaim')
           bad = copy.deepcopy(claim); bad['claims']['truth_certified'] = True; reject(claim_schema,bad,'claim truth overclaim')
+          bad = copy.deepcopy(receipt); bad['adapter_eligibility']['eligible_for_successor_adapter'] = True; reject(receipt_schema,bad,'generic adapter authorization')
           bad = copy.deepcopy(receipt); bad['claims']['new_external_consequence_observed'] = True; reject(receipt_schema,bad,'external consequence overclaim')
           bad = copy.deepcopy(receipt); bad['claims']['causal_proof_certified'] = True; reject(receipt_schema,bad,'causal proof overclaim')
           bad = copy.deepcopy(receipt); bad['claims']['responsibility_for_consequence_attributed'] = True; reject(receipt_schema,bad,'responsibility attribution overclaim')
