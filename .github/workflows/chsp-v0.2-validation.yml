@@ -1,0 +1,113 @@
+name: CHSP v0.2 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/chsp/v0.2/**'
+      - '.github/workflows/chsp-v0.2-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/chsp/v0.2/**'
+      - '.github/workflows/chsp-v0.2-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate CHSP v0.2 Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protocols/chsp/v0.2/chsp_v02.py
+          python3 -m py_compile protocols/chsp/v0.2/test_chsp_v02.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.2')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise CHSP v0.2 recognition and progressive authority boundaries
+        run: python3 protocols/chsp/v0.2/test_chsp_v02.py
+
+      - name: Keep CHSP v0.1 green
+        run: python3 protocols/chsp/v0.1/test_chsp.py
+
+      - name: Keep Human Canonical Recognition v0.6 green
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert CHSP v0.2 has no network or Git execution surface
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('protocols/chsp/v0.2/chsp_v02.py')
+          tree = ast.parse(path.read_text(encoding='utf-8'))
+          forbidden_modules = {'subprocess', 'socket', 'http', 'urllib', 'requests', 'git'}
+          found = []
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  for alias in node.names:
+                      if alias.name.split('.')[0] in forbidden_modules:
+                          found.append(alias.name)
+              elif isinstance(node, ast.ImportFrom) and node.module:
+                  if node.module.split('.')[0] in forbidden_modules:
+                      found.append(node.module)
+          if found:
+              raise SystemExit('forbidden execution/network imports: ' + ', '.join(sorted(set(found))))
+          print('CHSP v0.2 remains local governance-artifact tooling')
+          PY
+
+      - name: Assert no automatic canonical authority path exists
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.2')
+          policy = json.load((root / 'reference.chsp-recognition-policy.json').open(encoding='utf-8'))
+          assert policy['requirements']['automatic_authority_progression'] is False
+          assert policy['requirements']['automatic_canonical_recognition'] is False
+          assert policy['claims']['canonical_successor_established'] is False
+          assert policy['claims']['canonical_publication_authorized'] is False
+          text = (root / 'chsp_v02.py').read_text(encoding='utf-8')
+          forbidden = [
+              'canonical_successor_established": True',
+              "'canonical_successor_established': True",
+              'canonical_publication_authorized": True',
+              "'canonical_publication_authorized': True",
+              'automatic_authority_progression": True',
+              "'automatic_authority_progression': True",
+              'kontur_activated": True',
+              "'kontur_activated': True",
+          ]
+          found = [x for x in forbidden if x in text]
+          if found:
+              raise SystemExit('unsafe CHSP v0.2 authority claim found: ' + ', '.join(found))
+          print('CHSP v0.2 cannot silently establish canonical authority')
+          PY
