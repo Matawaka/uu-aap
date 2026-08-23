@@ -1,0 +1,24 @@
+{
+  "$schema": "../elevation-receipt.schema.json",
+  "artifact_type": "ElevationReceipt",
+  "artifact_version": "0.1",
+  "receipt_id": "urn:ial:elevation-receipt:e2-ccrp-handoff:1",
+  "assessment_id": "urn:ial:boundary-assessment:e2-ccrp-handoff:1",
+  "elevation_level": "E2",
+  "effect_class": "responsibility_transfer",
+  "elevated_by": "urn:uu-aap:actor:coordination-boundary-evaluator",
+  "semantic_basis": {
+    "intent_id": "urn:ial:intent:ccrp-change-preparation:1",
+    "action": "coordinate_change_preparation",
+    "target": "github:Matawaka/uu-aap:refs/heads/main"
+  },
+  "private_reasoning_disclosed": false,
+  "claims": {
+    "semantic_elevation_recorded": true,
+    "responsibility_transfer_established": false,
+    "authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "outcome_observed": false
+  }
+}
