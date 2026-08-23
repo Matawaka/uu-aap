@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/cross-context-consistency.schema.json",
+  "title": "UU-AAP Cross-Context Recovery Consistency v0.1",
+  "description": "Non-normative draft for checking whether a recovery handoff remains internally consistent after a receiving context independently observes the project state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "assessment_id",
+    "handoff_ref",
+    "source_last_observed_main_sha",
+    "receiver_observed_main_sha",
+    "relation",
+    "information_frontier_preserved",
+    "hidden_memory_required",
+    "authority_transfer",
+    "execution_authorization_derived",
+    "safe_result"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.cross-context-consistency"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "handoff_ref": {"type": "string", "minLength": 1},
+    "source_last_observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "receiver_observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "relation": {
+      "enum": ["same-state", "main-advanced", "main-diverged", "insufficient-evidence"]
+    },
+    "information_frontier_preserved": {"const": true},
+    "hidden_memory_required": {"const": false},
+    "authority_transfer": {"const": false},
+    "execution_authorization_derived": {"const": false},
+    "safe_result": {
+      "enum": [
+        "resume-validation-only",
+        "reobserve-and-reconcile",
+        "hold-for-human-review"
+      ]
+    },
+    "consistency_findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "result"],
+        "properties": {
+          "field": {"type": "string", "minLength": 1},
+          "result": {"enum": ["match", "changed", "unknown", "not-applicable"]},
+          "evidence_ref": {"type": ["string", "null"]},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"relation": {"const": "same-state"}}},
+      "then": {"properties": {"safe_result": {"const": "resume-validation-only"}}}
+    },
+    {
+      "if": {"properties": {"relation": {"enum": ["main-advanced", "main-diverged"]}}},
+      "then": {"properties": {"safe_result": {"enum": ["reobserve-and-reconcile", "hold-for-human-review"]}}}
+    },
+    {
+      "if": {"properties": {"relation": {"const": "insufficient-evidence"}}},
+      "then": {"properties": {"safe_result": {"const": "hold-for-human-review"}}}
+    }
+  ]
+}
