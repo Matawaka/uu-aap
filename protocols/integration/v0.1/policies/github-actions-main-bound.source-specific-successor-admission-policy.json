@@ -1,0 +1,61 @@
+{
+  "$schema": "../source-specific-successor-admission-policy.schema.json",
+  "artifact_type": "SourceSpecificSuccessorAdmissionPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:source-specific-successor-admission-policy:github-actions-main-bound:1",
+  "policy_version": 1,
+  "repository": "Matawaka/uu-aap",
+  "upstream_workflow": "ConsequenceObservation Source Adapter Main Binding validation",
+  "upstream_artifact_prefix": "consequence-source-main-binding-",
+  "required_upstream_main_revision": "4c76d80ead3e0d8d3af14375a3478cc72beddefa",
+  "required_original_source_revision": "0ea85faa957cd924c250e0cea0d0758f855d4fd0",
+  "accepted_input": {
+    "artifact_type": "ConsequenceObservationSourceAdapterMainBindingReceipt",
+    "artifact_version": "0.1"
+  },
+  "admitted_source_profile": {
+    "producer_id": "urn:uu-aap:producer:github-actions-runtime",
+    "producer_artifact_type": "GitHubActionsRuntimeObservation",
+    "producer_artifact_version": "0.1",
+    "source_adapter_policy_id": "urn:uu-aap:consequence-observation-source-adapter-policy:github-actions-runtime:1",
+    "source_context_class": "main_push"
+  },
+  "invariants": {
+    "exact_main_binding_receipt_required": true,
+    "exact_upstream_artifact_required": true,
+    "input_digest_binding_required": true,
+    "main_bound_receipt_required": true,
+    "candidate_receipt_prohibited": true,
+    "historical_frontier_binding_consistency_required": true,
+    "historical_frontier_bytes_reverification_required": false,
+    "source_profile_admission_only": true,
+    "future_adapter_registration_proposal_allowed": true,
+    "successor_adapter_registration_allowed": false,
+    "successor_policy_modification_allowed": false,
+    "successor_append_permission_allowed": false,
+    "successor_append_execution_allowed": false,
+    "server_runtime_dependency_required": false,
+    "scalar_scores_allowed": false
+  },
+  "claims": {
+    "source_specific_successor_admission_policy_defined": true,
+    "successor_adapter_registered": false,
+    "successor_policy_modified": false,
+    "successor_append_may_proceed": false,
+    "successor_append_executed": false,
+    "new_external_consequence_observed": false,
+    "generalized_external_consequence_causality_established": false,
+    "causal_proof_certified": false,
+    "responsibility_for_consequence_attributed": false,
+    "responsibility_for_outcome_adjudicated": false,
+    "legal_liability_established": false,
+    "legal_effect_established": false,
+    "moral_blame_assigned": false,
+    "moral_correctness_established": false,
+    "truth_certified": false,
+    "global_replay_protection_established": false,
+    "distributed_consensus_established": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}
