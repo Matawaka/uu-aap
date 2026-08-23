@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/responsibility-event-chain-reobservation.schema.json",
+  "title": "UU-AAP ResponsibilityEventChainReobservationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "reobservation_id", "observed_at",
+    "observation_mode", "chain_binding", "observed_chain_digest", "observed_head",
+    "semantic_binding", "effect_frontier", "verification", "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./responsibility-event-chain-reobservation.schema.json"},
+    "artifact_type": {"const": "ResponsibilityEventChainReobservationReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "reobservation_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event-chain-reobservation:"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "observation_mode": {"const": "serialized_chain_readback_and_full_revalidation"},
+    "chain_binding": {"$ref": "#/$defs/chainBinding"},
+    "observed_chain_digest": {"$ref": "#/$defs/digest"},
+    "observed_head": {"$ref": "#/$defs/head"},
+    "semantic_binding": {"$ref": "#/$defs/semanticBinding"},
+    "effect_frontier": {"$ref": "#/$defs/effect"},
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "serialized_readback_performed", "full_chain_revalidation_passed", "chain_binding_exact",
+        "chain_digest_exact", "head_exact", "semantic_frontier_exact", "effect_frontier_exact",
+        "observation_after_chain_build", "historical_assurance_preserved", "scalar_scoring_absent",
+        "base_chain_mutated"
+      ],
+      "properties": {
+        "serialized_readback_performed": {"const": true},
+        "full_chain_revalidation_passed": {"const": true},
+        "chain_binding_exact": {"const": true},
+        "chain_digest_exact": {"const": true},
+        "head_exact": {"const": true},
+        "semantic_frontier_exact": {"const": true},
+        "effect_frontier_exact": {"const": true},
+        "observation_after_chain_build": {"const": true},
+        "historical_assurance_preserved": {"const": true},
+        "scalar_scoring_absent": {"const": true},
+        "base_chain_mutated": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsibility_event_chain_reobserved", "chain_integrity_reverified",
+        "new_external_consequence_observed", "generalized_external_consequence_causality_established",
+        "universal_causal_truth_established", "causal_proof_certified",
+        "responsibility_for_outcome_adjudicated", "legal_responsibility_determined",
+        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
+        "moral_correctness_established", "truth_certified",
+        "complete_global_wall_clock_chronology_established",
+        "remote_branch_or_ref_canonicality_established", "poai_materialization_event_recorded",
+        "poai_successor_record_identity_inferred", "universal_canonicality_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "responsibility_event_chain_reobserved": {"const": true},
+        "chain_integrity_reverified": {"const": true},
+        "new_external_consequence_observed": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "universal_causal_truth_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "complete_global_wall_clock_chronology_established": {"const": false},
+        "remote_branch_or_ref_canonicality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "poai_successor_record_identity_inferred": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "chainBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"const": "ResponsibilityEventChain"},
+        "artifact_ref": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event-chain:"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "head": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "event_id", "event_digest"],
+      "properties": {
+        "sequence": {"const": 5},
+        "event_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event:"},
+        "event_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "semanticBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
+      "properties": {
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "operation_ref": {"type": "string", "minLength": 1},
+        "base_revision": {"type": "string", "minLength": 1},
+        "responsible_party_id": {"type": "string", "minLength": 1},
+        "executor_implementation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "effectObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "git_object_sha"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "git_object_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"}
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "relation", "revision", "commit_sha", "tree_sha", "changed_paths", "effect_objects"],
+      "properties": {
+        "scope": {"const": "exact_local_git_transition_effect"},
+        "relation": {"const": "exact_state_transition_effect"},
+        "revision": {"type": "string", "minLength": 1},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+        "changed_paths": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "effect_objects": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/effectObject"}}
+      }
+    }
+  }
+}
