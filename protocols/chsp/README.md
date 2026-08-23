@@ -16,6 +16,7 @@ Current development line:
 - [`v0.8/`](v0.8/) — exact external before-state observation, bounded non-destructive transition envelope, short-freshness dry-run verification receipt, and execution-authorization request eligibility without external mutation.
 - [`v0.9/`](v0.9/) — fresh no-drift execution recheck, exact phase-specific human execution decisions, short-lived execution authorization bound to the exact v0.8 operation set, immutable revocation, and executor-request eligibility without execution.
 - [`v1.0/`](v1.0/) — first explicit bounded external execution layer: exact v0.9 authorization consumption, fresh provider preflight, at most one bounded provider mutation, post-write verification, immutable execution receipt, and post-execution assessment. CI uses a fake provider only; real execution is a separate explicit operator event.
+- [`v1.1/`](v1.1/) — read-only post-effect stabilization: exact v1.0 effect binding, multi-observer stabilization window, drift/indeterminate blocking, separate human acknowledgement quorum, and immutable external-effect recognition without new external mutation.
 
 Core invariants:
 
@@ -98,6 +99,20 @@ Core invariants:
 `transition verified != canonical publication executed`
 
 `transition verified != KONTUR activated`
+
+`v1.0 execution verified != effect stabilized`
+
+`single observation != durable external state`
+
+`support quorum != drift erased`
+
+`stabilization eligible != human recognition`
+
+`external effect recognized != permanent availability proven`
+
+`external effect recognized != repository ownership transferred`
+
+`external effect recognized != canonical publication`
 
 `later authorization revocation != historical execution erased`
 
