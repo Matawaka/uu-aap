@@ -1,0 +1,27 @@
+{
+  "document_type": "uu-aap.parallel-disposition-record",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "record_id": "parallel-disposition-2026-08-23-001",
+  "parallel_item_ref": "schemas/sustainability/v0.1/capability-ceiling.schema.json",
+  "duplicate_assessment_ref": "schemas/sustainability/v0.1/examples/duplicate-realization-assessment.example.json",
+  "fresh_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "decision": "keep-isolated",
+  "reason": "CHSP v0.9 overlaps with exact external execution authorization, but does not subsume the general component-wide capability ceiling or its expansion constraints.",
+  "decided_by": "human-review-required-before-integration",
+  "decided_at": "2026-08-23T16:50:00Z",
+  "successor_or_main_ref": null,
+  "retained_distinct_value": [
+    "component-wide maximum capability envelope",
+    "explicit prohibition on permission inference and escalation",
+    "generic applicability outside CHSP external transition execution"
+  ],
+  "historical_parallel_state_preserved": true,
+  "silent_rewrite_allowed": false,
+  "automatic_merge_allowed": false,
+  "authority_effect": "none",
+  "notes": [
+    "This example records a conservative provisional disposition only.",
+    "It does not constitute permission to merge or to modify the active main-line process."
+  ]
+}
