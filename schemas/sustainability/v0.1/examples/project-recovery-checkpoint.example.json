@@ -1,0 +1,68 @@
+{
+  "document_type": "uu-aap.project-recovery-checkpoint",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "repository": "Matawaka/uu-aap",
+  "observed_at": "2026-08-23T16:35:00Z",
+  "observed_main_sha": "89b26161312a120b03c874968245331391c3e107",
+  "observer": "parallel-sustainability-draft",
+  "anchors": [
+    {
+      "kind": "release",
+      "name": "v0.1",
+      "ref": "refs/tags/v0.1",
+      "commit_sha": "16f83e655b80d1dabcd1d6b7533dc823796c767c"
+    },
+    {
+      "kind": "checkpoint",
+      "name": "poai-ccrp-exp-v0.1",
+      "ref": "refs/tags/poai-ccrp-exp-v0.1",
+      "commit_sha": "33215e251310105e2fac591b17ae2d90522488d9"
+    },
+    {
+      "kind": "release",
+      "name": "poai-ccrp-v0.1",
+      "ref": "refs/tags/poai-ccrp-v0.1",
+      "commit_sha": "2c98d34ebfb5e86491bffb29a27e5a55b4db707e"
+    }
+  ],
+  "active_protocols": [
+    {
+      "name": "CHSP",
+      "version": "0.8",
+      "state": "experimental",
+      "anchor": "main@89b26161312a120b03c874968245331391c3e107"
+    }
+  ],
+  "frozen_protocols": [
+    {
+      "name": "CCRP",
+      "version": "0.1",
+      "state": "frozen",
+      "anchor": "refs/tags/poai-ccrp-exp-v0.1"
+    }
+  ],
+  "external_effect_open_work": [],
+  "provisional_work": [
+    {
+      "id": "parallel/sustainability-backlog-v0.1",
+      "state": "prepared",
+      "external_effect": false,
+      "ref": "refs/heads/parallel/sustainability-backlog-v0.1",
+      "notes": "Isolated non-normative branch; no merge obligation."
+    }
+  ],
+  "unresolved_authority_questions": [
+    "KONTUR activation authority and readiness remain outside this checkpoint."
+  ],
+  "safe_next_entry_point": {
+    "action": "Re-observe main, open pull requests, mutable external state, and authorization freshness before any external-effect continuation.",
+    "requires_fresh_observation": true,
+    "external_effect": false,
+    "notes": "This example does not authorize execution or activation."
+  },
+  "notes": [
+    "Example fixture only; it is not a canonical checkpoint.",
+    "Historical anchors are copied from the repository canonical-state index and must be independently reverified when used operationally."
+  ]
+}
