@@ -1,0 +1,27 @@
+{
+  "artifact_type": "HumanCanonicalRecognitionPolicy",
+  "artifact_version": "0.6",
+  "project_id": "Matawaka/uu-aap",
+  "confirmation_token": "RECOGNIZE_FOR_CANONICAL_PUBLICATION_PREPARATION_ONLY",
+  "allowed_scope": "prepare_canonical_publication",
+  "requirements": {
+    "reviewable_v05_assessment": true,
+    "exact_proposal_binding": true,
+    "actor_evidence_digest": true,
+    "active_validity_window": true,
+    "local_nonce_reservation": true,
+    "local_proposal_reservation": true,
+    "network_prohibited": true,
+    "git_mutation_prohibited": true,
+    "publication_prohibited": true,
+    "kontur_activation_prohibited": true
+  },
+  "claims": {
+    "automatic_recognition_enabled": false,
+    "automatic_publication_enabled": false,
+    "canonical_origin_mutation_enabled": false,
+    "ownership_transfer_enabled": false,
+    "kontur_activation_enabled": false,
+    "distributed_consensus_established": false
+  }
+}
