@@ -1,0 +1,287 @@
+name: ConsequenceObservation Source Adapter Main Binding validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-source-adapter-main-binding-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-source-adapter-main-binding-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  EXPECTED_SOURCE_SHA: 0ea85faa957cd924c250e0cea0d0758f855d4fd0
+  SOURCE_WORKFLOW_FILE: consequence-observation-source-adapter-validation.yml
+  SOURCE_ARTIFACT_PREFIX: consequence-source-adapter-
+
+jobs:
+  main-bound-source-adapter-evidence:
+    name: Main-bound source-adapter evidence binding
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Prove KONTUR is not changed or required by this layer
+        run: |
+          if git diff --name-only "$EXPECTED_SOURCE_SHA" HEAD | grep '^server/kontur/'; then
+            echo 'ERROR: main-binding migration must not modify KONTUR'
+            exit 1
+          fi
+          ! grep -R -E 'server/kontur|KONTUR.*(activate|readiness|preflight|kernel)' \
+            protocols/integration/v0.1/bind-main-source-adapter-evidence.js \
+            protocols/integration/v0.1/test-main-source-adapter-evidence-binding.js
+
+      - name: Check main-binding JavaScript
+        run: |
+          node --check protocols/integration/v0.1/bind-main-source-adapter-evidence.js
+          node --check protocols/integration/v0.1/test-main-source-adapter-evidence-binding.js
+
+      - name: Validate main-binding schemas and policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('protocols/integration/v0.1')
+          policy_schema = json.loads((root/'consequence-observation-source-adapter-main-binding-policy.schema.json').read_text())
+          receipt_schema = json.loads((root/'consequence-observation-source-adapter-main-binding-receipt.schema.json').read_text())
+          Draft202012Validator.check_schema(policy_schema)
+          Draft202012Validator.check_schema(receipt_schema)
+          policy = json.loads((root/'policies/github-actions-main.consequence-observation-source-adapter-main-binding-policy.json').read_text())
+          Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
+          assert policy['repository'] == 'Matawaka/uu-aap'
+          assert policy['source_workflow'] == 'ConsequenceObservation Source Adapter validation'
+          assert policy['invariants']['historical_frontier_binding_consistency_required'] is True
+          assert policy['invariants']['historical_frontier_bytes_reverification_required'] is False
+          assert policy['invariants']['server_runtime_dependency_required'] is False
+          assert policy['invariants']['successor_append_permission_allowed'] is False
+          assert policy['invariants']['successor_append_execution_allowed'] is False
+          print('VALID main-binding schemas and policy')
+          PY
+
+      - name: Locate exact successful post-merge push/main source workflow
+        id: locate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X GET \
+            "/repos/${GITHUB_REPOSITORY}/actions/workflows/${SOURCE_WORKFLOW_FILE}/runs" \
+            -f branch=main \
+            -f event=push \
+            -f head_sha="$EXPECTED_SOURCE_SHA" \
+            -f per_page=20 > /tmp/source-runs.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads(Path('/tmp/source-runs.json').read_text())
+          expected = os.environ['EXPECTED_SOURCE_SHA']
+          runs = [r for r in data.get('workflow_runs', [])
+                  if r.get('name') == 'ConsequenceObservation Source Adapter validation'
+                  and r.get('event') == 'push'
+                  and r.get('head_branch') == 'main'
+                  and r.get('head_sha') == expected
+                  and r.get('status') == 'completed'
+                  and r.get('conclusion') == 'success']
+          if len(runs) != 1:
+              raise SystemExit(f'expected exactly one successful exact push/main source run, found {len(runs)}')
+          r = runs[0]
+          out = {
+              'run_id': str(r['id']),
+              'run_number': str(r['run_number']),
+              'run_attempt': str(r.get('run_attempt', 1)),
+              'event': r['event'],
+              'head_branch': r['head_branch'],
+              'head_sha': r['head_sha'],
+              'status': r['status'],
+              'conclusion': r['conclusion'],
+              'workflow_name': r['name']
+          }
+          Path('/tmp/source-run.json').write_text(json.dumps(out, indent=2) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"run_id={r['id']}\n")
+          print(json.dumps(out, indent=2))
+          PY
+
+      - name: Locate exact revision-bound source artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ steps.locate.outputs.run_id }}
+        run: |
+          gh api -X GET \
+            "/repos/${GITHUB_REPOSITORY}/actions/runs/${SOURCE_RUN_ID}/artifacts" \
+            -f per_page=100 > /tmp/source-artifacts.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads(Path('/tmp/source-artifacts.json').read_text())
+          expected_name = os.environ['SOURCE_ARTIFACT_PREFIX'] + os.environ['EXPECTED_SOURCE_SHA']
+          found = [a for a in data.get('artifacts', []) if a.get('name') == expected_name and not a.get('expired')]
+          if len(found) != 1:
+              raise SystemExit(f'expected exactly one non-expired exact source artifact, found {len(found)}')
+          a = found[0]
+          out = {
+              'artifact_id': str(a['id']),
+              'name': a['name'],
+              'size_in_bytes': a['size_in_bytes'],
+              'expired': bool(a['expired']),
+              'archive_digest': a.get('digest')
+          }
+          Path('/tmp/source-artifact.json').write_text(json.dumps(out, indent=2) + '\n')
+          print(json.dumps(out, indent=2))
+          PY
+
+      - name: Download exact post-merge source-adapter artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: consequence-source-adapter-${{ env.EXPECTED_SOURCE_SHA }}
+          path: /tmp/main-source-adapter-evidence
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.locate.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Validate downloaded source bundle schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          bundle = Path('/tmp/main-source-adapter-evidence')
+          pairs = [
+              ('github-actions-runtime-observation.schema.json', 'github-actions-runtime-observation.json'),
+              ('consequence-observation-source-evidence.schema.json', 'consequence-observation-source-live.json'),
+              ('consequence-observation-claim.schema.json', 'consequence-observation-claim-live.json'),
+              ('consequence-observation-ingress-receipt.schema.json', 'consequence-observation-ingress-live.json'),
+              ('consequence-observation-assessment.schema.json', 'consequence-observation-assessment-live-deferred.json'),
+              ('consequence-observation-source-adapter-receipt.schema.json', 'consequence-observation-source-adapter-receipt.json'),
+          ]
+          for schema_name, artifact_name in pairs:
+              schema = json.loads((root/schema_name).read_text())
+              artifact = json.loads((bundle/artifact_name).read_text())
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+          print('VALID downloaded main source-adapter bundle schemas')
+          PY
+
+      - name: Confirm historical frontier is preserved as binding-only evidence
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b = Path('/tmp/main-source-adapter-evidence')
+          assessment = json.loads((b/'consequence-observation-assessment-live-deferred.json').read_text())
+          adapter = json.loads((b/'consequence-observation-source-adapter-receipt.json').read_text())
+          assert assessment['frontier_entry_binding'] == adapter['frontier_entry_binding']
+          assert assessment['frontier_entry_binding']['artifact_type'] == 'ResponsibilityEventSuccessorLedgerEntry'
+          assert len(assessment['frontier_entry_binding']['digest']['value']) == 64
+          assert not (b/'responsibility-event-successor-ledger-entry-2.json').exists()
+          print('VALID historical frontier binding preserved; predecessor bytes are not present and are not claimed reverified')
+          PY
+
+      - name: Build and test main-bound source-adapter evidence receipt
+        run: |
+          node protocols/integration/v0.1/test-main-source-adapter-evidence-binding.js \
+            /tmp/main-source-adapter-evidence \
+            /tmp/source-run.json \
+            /tmp/source-artifact.json \
+            "$EXPECTED_SOURCE_SHA" \
+            /tmp/main-source-binding
+
+      - name: Validate generated main-binding receipt by schema
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path('protocols/integration/v0.1/consequence-observation-source-adapter-main-binding-receipt.schema.json').read_text())
+          receipt = json.loads(Path('/tmp/main-source-binding/consequence-observation-source-adapter-main-binding-receipt.json').read_text())
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          assert receipt['expected_source_revision'] == os.environ['EXPECTED_SOURCE_SHA']
+          assert receipt['runtime_context']['context_class'] == 'main_push'
+          assert receipt['runtime_context']['ref'] == 'refs/heads/main'
+          assert receipt['decision']['historical_frontier_binding_consistency_verified'] is True
+          assert receipt['decision']['historical_frontier_bytes_reverified'] is False
+          assert receipt['decision']['main_bound_source_evidence_verified'] is True
+          assert receipt['decision']['source_may_be_presented_to_future_successor_policy'] is True
+          assert receipt['decision']['successor_append_may_proceed'] is False
+          assert receipt['decision']['successor_append_executed'] is False
+          assert receipt['claims']['causal_proof_certified'] is False
+          assert receipt['claims']['responsibility_for_consequence_attributed'] is False
+          if os.environ['GITHUB_EVENT_NAME'] == 'pull_request':
+              assert receipt['decision']['candidate_binding_receipt'] is True
+              assert receipt['decision']['main_bound_binding_receipt'] is False
+          elif os.environ['GITHUB_EVENT_NAME'] == 'push':
+              assert receipt['evaluator_context']['context_class'] == 'main_push'
+              assert receipt['decision']['candidate_binding_receipt'] is False
+              assert receipt['decision']['main_bound_binding_receipt'] is True
+          else:
+              raise AssertionError('unexpected evaluator event')
+          print('VALID main-bound source-adapter evidence receipt')
+          PY
+
+      - name: Independently reject append and assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          schema = json.loads(Path('protocols/integration/v0.1/consequence-observation-source-adapter-main-binding-receipt.schema.json').read_text())
+          receipt = json.loads(Path('/tmp/main-source-binding/consequence-observation-source-adapter-main-binding-receipt.json').read_text())
+          def reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label); return
+              raise AssertionError('schema accepted forbidden ' + label)
+          bad=copy.deepcopy(receipt); bad['decision']['historical_frontier_bytes_reverified']=True; reject(bad,'historical frontier byte-reverification overclaim')
+          bad=copy.deepcopy(receipt); bad['decision']['successor_append_may_proceed']=True; reject(bad,'append permission escalation')
+          bad=copy.deepcopy(receipt); bad['decision']['successor_append_executed']=True; reject(bad,'append execution escalation')
+          bad=copy.deepcopy(receipt); bad['claims']['new_external_consequence_observed']=True; reject(bad,'external consequence overclaim')
+          bad=copy.deepcopy(receipt); bad['claims']['causal_proof_certified']=True; reject(bad,'causal proof overclaim')
+          bad=copy.deepcopy(receipt); bad['claims']['responsibility_for_consequence_attributed']=True; reject(bad,'responsibility overclaim')
+          bad=copy.deepcopy(receipt); bad['claims']['legal_liability_established']=True; reject(bad,'legal overclaim')
+          bad=copy.deepcopy(receipt); bad['claims']['moral_blame_assigned']=True; reject(bad,'moral overclaim')
+          bad=copy.deepcopy(receipt); bad['claims']['truth_certified']=True; reject(bad,'truth overclaim')
+          bad=copy.deepcopy(receipt); bad['responsibility_score']=1; reject(bad,'scalar responsibility score')
+          PY
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
+
+      - name: Upload exact main-binding evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: consequence-source-main-binding-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            /tmp/source-run.json
+            /tmp/source-artifact.json
+            /tmp/main-source-binding/consequence-observation-source-adapter-main-binding-receipt.json
+            /tmp/main-source-binding/consequence-observation-source-adapter-main-binding-summary.json
