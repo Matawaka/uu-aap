@@ -14,6 +14,7 @@ Current development line:
 - [`v0.6/`](v0.6/) — evidence-bound mapping of an effective CHSP steward to an external control-plane principal, multi-class attestations, conflict handling, proposal-only external binding, and human-review eligibility without external mutation.
 - [`v0.7/`](v0.7/) — separate human-quorum recognition of one exact v0.6 external mapping and separate bounded transition-preparation authorization, with expiry, immutable revocation, replay boundaries, and no external execution.
 - [`v0.8/`](v0.8/) — exact external before-state observation, bounded non-destructive transition envelope, short-freshness dry-run verification receipt, and execution-authorization request eligibility without external mutation.
+- [`v0.9/`](v0.9/) — fresh no-drift execution recheck, exact phase-specific human execution decisions, short-lived execution authorization bound to the exact v0.8 operation set, immutable revocation, and executor-request eligibility without execution.
 
 Core invariants:
 
@@ -70,6 +71,14 @@ Core invariants:
 `dry-run verified != external execution authorized`
 
 `dry-run verified != external transition executed`
+
+`execution recheck matched != human execution authorization`
+
+`bounded exact execution authorized != unbounded external mutation authority`
+
+`execution authorization active != executor invoked`
+
+`execution authorization active != execution performed`
 
 `later authorization revocation != historical execution erased`
 
