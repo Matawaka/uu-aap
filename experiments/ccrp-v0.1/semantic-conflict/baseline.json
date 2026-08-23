@@ -1,0 +1,25 @@
+{
+  "artifact_type": "CCRPLiveSemanticConflictBaseline",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#165",
+  "frozen_predecessor": {
+    "tag": "poai-ccrp-exp-v0.1",
+    "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+  },
+  "logical_resource_id": "urn:ccrp:experiment:semantic-conflict:resource:1",
+  "operation_class": "exclusive_semantic_choice",
+  "baseline_generation": 0,
+  "decision_slot": "routing_mode",
+  "current_value": null,
+  "reconciliation_status": "not_reconciled",
+  "allowed_live_mutation_scope": "experiments/ccrp-v0.1/semantic-conflict/**",
+  "claims": {
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  }
+}
