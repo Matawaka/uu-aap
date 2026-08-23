@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-final-handover-policy-v0.3.json",
+  "title": "CHSPFinalHandoverPolicy v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","project_id","minimum_final_cooling_days","minimum_dual_control_days","maximum_handover_days","minimum_unavailability_attestations","minimum_unavailability_attestor_domains","allowed_handover_scopes","requirements","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPFinalHandoverPolicy"},
+    "artifact_version": {"const": "0.3"},
+    "project_id": {"type": "string", "minLength": 1},
+    "minimum_final_cooling_days": {"type": "integer", "minimum": 1},
+    "minimum_dual_control_days": {"type": "integer", "minimum": 1},
+    "maximum_handover_days": {"type": "integer", "minimum": 1},
+    "minimum_unavailability_attestations": {"type": "integer", "minimum": 2},
+    "minimum_unavailability_attestor_domains": {"type": "integer", "minimum": 2},
+    "allowed_handover_scopes": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"enum": ["canonical_review","release_review","incident_coordination","policy_draft_review","supervised_release_preparation","provenance_verification","succession_package_validation","canonical_publication_preparation"]}
+    },
+    "requirements": {
+      "type": "object", "additionalProperties": false,
+      "required": ["v02_final_review_eligibility_required","predecessor_disposition_required","final_recognizer_distinct_from_candidate_and_predecessor","final_cooling_required","open_or_upheld_final_challenge_blocks","handover_nonexclusive","handover_reversible","handover_expires","positive_outcome_required","automatic_stewardship_transfer","automatic_canonical_publication","automatic_kontur_activation"],
+      "properties": {
+        "v02_final_review_eligibility_required": {"const": true},
+        "predecessor_disposition_required": {"const": true},
+        "final_recognizer_distinct_from_candidate_and_predecessor": {"const": true},
+        "final_cooling_required": {"const": true},
+        "open_or_upheld_final_challenge_blocks": {"const": true},
+        "handover_nonexclusive": {"const": true},
+        "handover_reversible": {"const": true},
+        "handover_expires": {"const": true},
+        "positive_outcome_required": {"const": true},
+        "automatic_stewardship_transfer": {"const": false},
+        "automatic_canonical_publication": {"const": false},
+        "automatic_kontur_activation": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["descriptive_policy_only","canonical_successor_established","ownership_transferred","kontur_activated","legal_incapacity_certified","medical_incapacity_certified","universal_trust_established"],
+      "properties": {
+        "descriptive_policy_only": {"const": true},
+        "canonical_successor_established": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_incapacity_certified": {"const": false},
+        "medical_incapacity_certified": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
