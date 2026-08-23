@@ -76,6 +76,8 @@ jobs:
           Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
           assert policy['repository'] == 'Matawaka/uu-aap'
           assert policy['source_workflow'] == 'ConsequenceObservation Source Adapter validation'
+          assert policy['invariants']['historical_frontier_binding_consistency_required'] is True
+          assert policy['invariants']['historical_frontier_bytes_reverification_required'] is False
           assert policy['invariants']['server_runtime_dependency_required'] is False
           assert policy['invariants']['successor_append_permission_allowed'] is False
           assert policy['invariants']['successor_append_execution_allowed'] is False
@@ -185,16 +187,20 @@ jobs:
           print('VALID downloaded main source-adapter bundle schemas')
           PY
 
-      - name: Reconstruct exact historical predecessor frontier for independent binding check
+      - name: Confirm historical frontier is preserved as binding-only evidence
         run: |
-          rm -rf /tmp/source-frontier-checkout
-          git worktree add --detach /tmp/source-frontier-checkout "$EXPECTED_SOURCE_SHA"
-          (
-            cd /tmp/source-frontier-checkout
-            test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
-            node protocols/integration/v0.1/test-responsibility-event-successor-append.js
-          )
-          git worktree remove --force /tmp/source-frontier-checkout
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b = Path('/tmp/main-source-adapter-evidence')
+          assessment = json.loads((b/'consequence-observation-assessment-live-deferred.json').read_text())
+          adapter = json.loads((b/'consequence-observation-source-adapter-receipt.json').read_text())
+          assert assessment['frontier_entry_binding'] == adapter['frontier_entry_binding']
+          assert assessment['frontier_entry_binding']['artifact_type'] == 'ResponsibilityEventSuccessorLedgerEntry'
+          assert len(assessment['frontier_entry_binding']['digest']['value']) == 64
+          assert not (b/'responsibility-event-successor-ledger-entry-2.json').exists()
+          print('VALID historical frontier binding preserved; predecessor bytes are not present and are not claimed reverified')
+          PY
 
       - name: Build and test main-bound source-adapter evidence receipt
         run: |
@@ -217,6 +223,8 @@ jobs:
           assert receipt['expected_source_revision'] == os.environ['EXPECTED_SOURCE_SHA']
           assert receipt['runtime_context']['context_class'] == 'main_push'
           assert receipt['runtime_context']['ref'] == 'refs/heads/main'
+          assert receipt['decision']['historical_frontier_binding_consistency_verified'] is True
+          assert receipt['decision']['historical_frontier_bytes_reverified'] is False
           assert receipt['decision']['main_bound_source_evidence_verified'] is True
           assert receipt['decision']['source_may_be_presented_to_future_successor_policy'] is True
           assert receipt['decision']['successor_append_may_proceed'] is False
@@ -249,6 +257,7 @@ jobs:
               except ValidationError:
                   print('REJECTED:', label); return
               raise AssertionError('schema accepted forbidden ' + label)
+          bad=copy.deepcopy(receipt); bad['decision']['historical_frontier_bytes_reverified']=True; reject(bad,'historical frontier byte-reverification overclaim')
           bad=copy.deepcopy(receipt); bad['decision']['successor_append_may_proceed']=True; reject(bad,'append permission escalation')
           bad=copy.deepcopy(receipt); bad['decision']['successor_append_executed']=True; reject(bad,'append execution escalation')
           bad=copy.deepcopy(receipt); bad['claims']['new_external_consequence_observed']=True; reject(bad,'external consequence overclaim')
