@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/canonical-succession-proposal-v0.5.json",
+  "title": "CanonicalSuccessionProposal v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "proposal_id", "created_at", "project_id", "proposer_id", "predecessor_binding_sha256", "predecessor_origin_id", "predecessor_frontier_commit", "recovery_execution_receipt_sha256", "recovered_frontier_commit", "candidate_ref", "candidate_frontier_commit", "candidate_frontier_tree", "candidate_ref_set_sha256", "candidate_advances_recovered_frontier", "proposal_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CanonicalSuccessionProposal"},
+    "artifact_version": {"const": "0.5"},
+    "proposal_id": {"type": "string", "minLength": 1},
+    "created_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "proposer_id": {"type": "string", "minLength": 1},
+    "predecessor_binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_origin_id": {"type": "string", "minLength": 1},
+    "predecessor_frontier_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "recovery_execution_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "recovered_frontier_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "candidate_ref": {"type": "string", "pattern": "^refs/heads/[A-Za-z0-9._/-]+$"},
+    "candidate_frontier_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "candidate_frontier_tree": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "candidate_ref_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "candidate_advances_recovered_frontier": {"type": "boolean"},
+    "proposal_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate_is_noncanonical", "proposal_only", "human_recognition_required", "canonical_successor_established", "canonical_origin_mutated", "ownership_transferred", "kontur_activated", "distributed_consensus_established", "universal_canonicality_established", "legal_effect_established", "truth_certified"],
+      "properties": {
+        "candidate_is_noncanonical": {"const": true},
+        "proposal_only": {"const": true},
+        "human_recognition_required": {"const": true},
+        "canonical_successor_established": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
