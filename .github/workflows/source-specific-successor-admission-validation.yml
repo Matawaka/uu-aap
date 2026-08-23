@@ -1,0 +1,289 @@
+name: SourceSpecific Successor Admission validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/source-specific-successor-admission-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/source-specific-successor-admission-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  EXPECTED_UPSTREAM_SHA: 4c76d80ead3e0d8d3af14375a3478cc72beddefa
+  EXPECTED_ORIGINAL_SOURCE_SHA: 0ea85faa957cd924c250e0cea0d0758f855d4fd0
+  UPSTREAM_WORKFLOW_FILE: consequence-observation-source-adapter-main-binding-validation.yml
+  UPSTREAM_WORKFLOW_NAME: ConsequenceObservation Source Adapter Main Binding validation
+  UPSTREAM_ARTIFACT_PREFIX: consequence-source-main-binding-
+
+jobs:
+  source-specific-successor-admission:
+    name: Source-specific successor admission
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Prove KONTUR is neither changed nor required
+        run: |
+          if git diff --name-only "$EXPECTED_UPSTREAM_SHA" HEAD | grep '^server/kontur/'; then
+            echo 'ERROR: successor admission must not modify KONTUR'
+            exit 1
+          fi
+          ! grep -R -E 'server/kontur|KONTUR.*(activate|readiness|preflight|kernel)' \
+            protocols/integration/v0.1/admit-main-bound-consequence-source.js \
+            protocols/integration/v0.1/test-source-specific-successor-admission.js
+
+      - name: Prove existing successor policy is unchanged
+        run: |
+          git diff --exit-code "$EXPECTED_UPSTREAM_SHA" HEAD -- \
+            protocols/integration/v0.1/policies/reference.responsibility-event-successor-policy.json
+
+      - name: Check admission JavaScript
+        run: |
+          node --check protocols/integration/v0.1/admit-main-bound-consequence-source.js
+          node --check protocols/integration/v0.1/test-source-specific-successor-admission.js
+
+      - name: Validate admission schemas and policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          ps = json.loads((root/'source-specific-successor-admission-policy.schema.json').read_text())
+          rs = json.loads((root/'source-specific-successor-admission-receipt.schema.json').read_text())
+          Draft202012Validator.check_schema(ps)
+          Draft202012Validator.check_schema(rs)
+          policy = json.loads((root/'policies/github-actions-main-bound.source-specific-successor-admission-policy.json').read_text())
+          Draft202012Validator(ps, format_checker=FormatChecker()).validate(policy)
+          assert policy['required_upstream_main_revision'] == '4c76d80ead3e0d8d3af14375a3478cc72beddefa'
+          assert policy['required_original_source_revision'] == '0ea85faa957cd924c250e0cea0d0758f855d4fd0'
+          assert policy['invariants']['future_adapter_registration_proposal_allowed'] is True
+          assert policy['invariants']['successor_adapter_registration_allowed'] is False
+          assert policy['invariants']['successor_policy_modification_allowed'] is False
+          assert policy['invariants']['successor_append_permission_allowed'] is False
+          assert policy['invariants']['successor_append_execution_allowed'] is False
+          assert policy['invariants']['server_runtime_dependency_required'] is False
+          print('VALID successor admission schemas and policy')
+          PY
+
+      - name: Locate exact successful post-merge push/main MainBinding workflow
+        id: locate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api -X GET \
+            "/repos/${GITHUB_REPOSITORY}/actions/workflows/${UPSTREAM_WORKFLOW_FILE}/runs" \
+            -f branch=main \
+            -f event=push \
+            -f head_sha="$EXPECTED_UPSTREAM_SHA" \
+            -f per_page=20 > /tmp/upstream-runs.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads(Path('/tmp/upstream-runs.json').read_text())
+          expected = os.environ['EXPECTED_UPSTREAM_SHA']
+          name = os.environ['UPSTREAM_WORKFLOW_NAME']
+          runs = [r for r in data.get('workflow_runs', [])
+                  if r.get('name') == name
+                  and r.get('event') == 'push'
+                  and r.get('head_branch') == 'main'
+                  and r.get('head_sha') == expected
+                  and r.get('status') == 'completed'
+                  and r.get('conclusion') == 'success']
+          if len(runs) != 1:
+              raise SystemExit(f'expected exactly one successful exact push/main MainBinding run, found {len(runs)}')
+          r = runs[0]
+          out = {
+              'run_id': str(r['id']),
+              'run_number': str(r['run_number']),
+              'run_attempt': str(r.get('run_attempt', 1)),
+              'event': r['event'],
+              'head_branch': r['head_branch'],
+              'head_sha': r['head_sha'],
+              'status': r['status'],
+              'conclusion': r['conclusion'],
+              'workflow_name': r['name']
+          }
+          Path('/tmp/upstream-run.json').write_text(json.dumps(out, indent=2) + '\n')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"run_id={r['id']}\n")
+          print(json.dumps(out, indent=2))
+          PY
+
+      - name: Locate exact revision-bound MainBinding artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPSTREAM_RUN_ID: ${{ steps.locate.outputs.run_id }}
+        run: |
+          gh api -X GET \
+            "/repos/${GITHUB_REPOSITORY}/actions/runs/${UPSTREAM_RUN_ID}/artifacts" \
+            -f per_page=100 > /tmp/upstream-artifacts.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads(Path('/tmp/upstream-artifacts.json').read_text())
+          expected_name = os.environ['UPSTREAM_ARTIFACT_PREFIX'] + os.environ['EXPECTED_UPSTREAM_SHA']
+          found = [a for a in data.get('artifacts', []) if a.get('name') == expected_name and not a.get('expired')]
+          if len(found) != 1:
+              raise SystemExit(f'expected exactly one non-expired exact MainBinding artifact, found {len(found)}')
+          a = found[0]
+          out = {
+              'artifact_id': str(a['id']),
+              'name': a['name'],
+              'size_in_bytes': a['size_in_bytes'],
+              'expired': bool(a['expired']),
+              'archive_digest': a.get('digest')
+          }
+          Path('/tmp/upstream-artifact.json').write_text(json.dumps(out, indent=2) + '\n')
+          print(json.dumps(out, indent=2))
+          PY
+
+      - name: Download exact post-merge MainBinding artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: consequence-source-main-binding-${{ env.EXPECTED_UPSTREAM_SHA }}
+          path: /tmp/main-binding-evidence
+          repository: ${{ github.repository }}
+          run-id: ${{ steps.locate.outputs.run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Validate exact MainBinding receipt and assurance boundary
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          p = Path('/tmp/main-binding-evidence/consequence-observation-source-adapter-main-binding-receipt.json')
+          schema = json.loads((root/'consequence-observation-source-adapter-main-binding-receipt.schema.json').read_text())
+          receipt = json.loads(p.read_text())
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          assert receipt['artifact_type'] == 'ConsequenceObservationSourceAdapterMainBindingReceipt'
+          assert receipt['expected_source_revision'] == os.environ['EXPECTED_ORIGINAL_SOURCE_SHA']
+          assert receipt['evaluator_context']['context_class'] == 'main_push'
+          assert receipt['evaluator_context']['event_name'] == 'push'
+          assert receipt['evaluator_context']['sha'] == os.environ['EXPECTED_UPSTREAM_SHA']
+          assert receipt['evaluator_context']['ref'] == 'refs/heads/main'
+          assert receipt['decision']['candidate_binding_receipt'] is False
+          assert receipt['decision']['main_bound_binding_receipt'] is True
+          assert receipt['decision']['main_bound_source_evidence_verified'] is True
+          assert receipt['decision']['historical_frontier_binding_consistency_verified'] is True
+          assert receipt['decision']['historical_frontier_bytes_reverified'] is False
+          assert receipt['decision']['source_may_be_presented_to_future_successor_policy'] is True
+          assert receipt['decision']['successor_append_may_proceed'] is False
+          assert receipt['decision']['successor_append_executed'] is False
+          print('VALID canonical post-merge MainBinding receipt')
+          PY
+
+      - name: Build and test source-specific successor admission
+        run: |
+          node protocols/integration/v0.1/test-source-specific-successor-admission.js \
+            /tmp/main-binding-evidence \
+            /tmp/upstream-run.json \
+            /tmp/upstream-artifact.json \
+            /tmp/source-specific-successor-admission
+
+      - name: Validate generated admission receipt by schema
+        env:
+          EVALUATOR_EVENT: ${{ github.event_name }}
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path('protocols/integration/v0.1/source-specific-successor-admission-receipt.schema.json').read_text())
+          receipt = json.loads(Path('/tmp/source-specific-successor-admission/source-specific-successor-admission-receipt.json').read_text())
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          assert receipt['decision']['main_bound_source_binding_accepted'] is True
+          assert receipt['decision']['source_profile_admitted_for_successor_adapter_design'] is True
+          assert receipt['decision']['future_successor_adapter_registration_may_be_proposed'] is True
+          assert receipt['decision']['successor_adapter_registered'] is False
+          assert receipt['decision']['successor_policy_modified'] is False
+          assert receipt['decision']['successor_append_may_proceed'] is False
+          assert receipt['decision']['successor_append_executed'] is False
+          if os.environ['EVALUATOR_EVENT'] == 'pull_request':
+              assert receipt['decision']['candidate_admission_receipt'] is True
+              assert receipt['decision']['main_bound_admission_receipt'] is False
+          else:
+              assert receipt['decision']['candidate_admission_receipt'] is False
+              assert receipt['decision']['main_bound_admission_receipt'] is True
+          print('VALID source-specific successor admission receipt')
+          PY
+
+      - name: Independently reject admission assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          schema = json.loads(Path('protocols/integration/v0.1/source-specific-successor-admission-receipt.schema.json').read_text())
+          receipt = json.loads(Path('/tmp/source-specific-successor-admission/source-specific-successor-admission-receipt.json').read_text())
+          def reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+          vectors = [
+              ('adapter registration', ('decision','successor_adapter_registered')),
+              ('successor policy mutation', ('decision','successor_policy_modified')),
+              ('append permission', ('decision','successor_append_may_proceed')),
+              ('append execution', ('decision','successor_append_executed')),
+              ('historical byte reverification', ('decision','historical_frontier_bytes_reverified')),
+              ('causal proof', ('claims','causal_proof_certified')),
+              ('responsibility attribution', ('claims','responsibility_for_consequence_attributed')),
+              ('legal liability', ('claims','legal_liability_established')),
+              ('moral blame', ('claims','moral_blame_assigned')),
+              ('truth certification', ('claims','truth_certified'))
+          ]
+          for label, (section, key) in vectors:
+              bad = copy.deepcopy(receipt)
+              bad[section][key] = True
+              reject(bad, label)
+          bad = copy.deepcopy(receipt)
+          bad['responsibility_score'] = 1
+          reject(bad, 'scalar responsibility score')
+          PY
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
+
+      - name: Upload exact successor admission evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: consequence-source-successor-admission-${{ github.sha }}
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            /tmp/upstream-run.json
+            /tmp/upstream-artifact.json
+            /tmp/source-specific-successor-admission/source-specific-successor-admission-receipt.json
+            /tmp/source-specific-successor-admission/source-specific-successor-admission-summary.json
