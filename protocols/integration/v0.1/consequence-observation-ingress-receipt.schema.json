@@ -3,7 +3,7 @@
   "$id":"urn:uu-aap:schema:consequence-observation-ingress-receipt:0.1",
   "title":"ConsequenceObservationIngressReceipt v0.1",
   "type":"object","additionalProperties":false,
-  "required":["$schema","artifact_type","artifact_version","receipt_id","received_at","decision","policy_binding","claim_binding","frontier_binding","responsibility_event_head","source_declaration","verification","claims"],
+  "required":["$schema","artifact_type","artifact_version","receipt_id","received_at","decision","policy_binding","claim_binding","frontier_binding","responsibility_event_head","semantic_frontier","effect_frontier","source_declaration","verification","claims"],
   "properties":{
     "$schema":{"type":"string"},
     "artifact_type":{"const":"ConsequenceObservationIngressReceipt"},
@@ -14,13 +14,16 @@
     "policy_binding":{"$ref":"#/$defs/binding"},
     "claim_binding":{"$ref":"#/$defs/binding"},
     "frontier_binding":{"$ref":"#/$defs/binding"},
-    "responsibility_event_head":{"type":"object","additionalProperties":false,"required":["sequence","event_id","event_digest","semantic_binding","effect_frontier"],"properties":{"sequence":{"type":"integer","minimum":0},"event_id":{"type":"string"},"event_digest":{"$ref":"#/$defs/digest"},"semantic_binding":{"type":"object","minProperties":1},"effect_frontier":{"type":"object","minProperties":1}}},
+    "responsibility_event_head":{"$ref":"#/$defs/head"},
+    "semantic_frontier":{"type":"object","minProperties":1},
+    "effect_frontier":{"type":"object","minProperties":1},
     "source_declaration":{"type":"object","additionalProperties":false,"required":["environment","claimant_declaration","claimant_id","claimed_status"],"properties":{"environment":{"enum":["live","test_fixture"]},"claimant_declaration":{"enum":["self_declared","undisclosed"]},"claimant_id":{"type":["string","null"]},"claimed_status":{"enum":["observed","not_observed","not_yet_observable","indeterminate"]}}},
     "verification":{"type":"object","additionalProperties":false,"required":["policy_exact","claim_exact","frontier_exact","semantic_frontier_exact","effect_frontier_exact","chronology_valid","evidence_requirements_valid","non_certifying_boundary_preserved"],"properties":{"policy_exact":{"const":true},"claim_exact":{"const":true},"frontier_exact":{"const":true},"semantic_frontier_exact":{"const":true},"effect_frontier_exact":{"const":true},"chronology_valid":{"const":true},"evidence_requirements_valid":{"const":true},"non_certifying_boundary_preserved":{"const":true}}},
     "claims":{"type":"object","additionalProperties":false,"required":["consequence_observation_claim_well_formed","claim_provenance_bound","observation_horizon_bound","responsibility_event_frontier_bound","ingress_accepted","new_external_consequence_observed","consequence_truth_certified","generalized_external_consequence_causality_established","causal_proof_certified","responsibility_for_consequence_attributed","responsibility_for_outcome_adjudicated","legal_liability_established","legal_effect_established","moral_blame_assigned","truth_certified","global_replay_protection_established","distributed_consensus_established","poai_materialization_event_recorded","universal_canonicality_established"],"properties":{"consequence_observation_claim_well_formed":{"const":true},"claim_provenance_bound":{"const":true},"observation_horizon_bound":{"const":true},"responsibility_event_frontier_bound":{"const":true},"ingress_accepted":{"const":true},"new_external_consequence_observed":{"const":false},"consequence_truth_certified":{"const":false},"generalized_external_consequence_causality_established":{"const":false},"causal_proof_certified":{"const":false},"responsibility_for_consequence_attributed":{"const":false},"responsibility_for_outcome_adjudicated":{"const":false},"legal_liability_established":{"const":false},"legal_effect_established":{"const":false},"moral_blame_assigned":{"const":false},"truth_certified":{"const":false},"global_replay_protection_established":{"const":false},"distributed_consensus_established":{"const":false},"poai_materialization_event_recorded":{"const":false},"universal_canonicality_established":{"const":false}}}
   },
   "$defs":{
     "digest":{"type":"object","additionalProperties":false,"required":["canonicalization","digest_algorithm","digest_encoding","value"],"properties":{"canonicalization":{"const":"RFC8785-JCS"},"digest_algorithm":{"const":"SHA-256"},"digest_encoding":{"const":"hex"},"value":{"type":"string","pattern":"^[0-9a-f]{64}$"}}},
-    "binding":{"type":"object","additionalProperties":false,"required":["artifact_type","artifact_ref","digest"],"properties":{"artifact_type":{"type":"string"},"artifact_ref":{"type":"string"},"digest":{"$ref":"#/$defs/digest"}}}
+    "binding":{"type":"object","additionalProperties":false,"required":["artifact_type","artifact_ref","digest"],"properties":{"artifact_type":{"type":"string","minLength":1},"artifact_ref":{"type":"string","minLength":1},"digest":{"$ref":"#/$defs/digest"}}},
+    "head":{"type":"object","additionalProperties":false,"required":["sequence","event_id","event_digest"],"properties":{"sequence":{"type":"integer","minimum":6},"event_id":{"type":"string","pattern":"^urn:uu-aap:responsibility-event:"},"event_digest":{"$ref":"#/$defs/digest"}}}
   }
 }
