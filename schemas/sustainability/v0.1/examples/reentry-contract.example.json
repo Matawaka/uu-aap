@@ -1,0 +1,28 @@
+{
+  "document_type": "uu-aap.parallel-reentry-contract",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "parallel_ref": "parallel/sustainability-backlog-v0.1",
+  "previous_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "fresh_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "fresh_observation_completed": true,
+  "active_work_reobserved": true,
+  "path_overlap_recomputed": true,
+  "semantic_overlap_recomputed": true,
+  "validation_recomputed": false,
+  "prior_recommendations_stale": true,
+  "allowed_reentry_modes": [
+    "observe-only",
+    "validate-only",
+    "prepare-new-disposition"
+  ],
+  "automatic_resume_allowed": false,
+  "automatic_pr_creation_allowed": false,
+  "automatic_merge_allowed": false,
+  "explicit_human_disposition_required": true,
+  "authority_effect": "none",
+  "notes": [
+    "This fixture demonstrates fail-closed re-entry semantics; identical SHA does not waive future re-observation after active work changes.",
+    "A changed or merged active PR requires a new instance with fresh evidence."
+  ]
+}
