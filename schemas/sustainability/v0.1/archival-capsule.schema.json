@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/archival-capsule.schema.json",
+  "title": "UU-AAP Archival Capsule v0.1",
+  "description": "Non-normative draft for preserving a side-track as inspectable historical evidence when it is no longer an active integration candidate.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "subject_ref",
+    "archival_reason",
+    "historical_origin_preserved",
+    "deletion_required",
+    "canonicality_claimed",
+    "future_reuse_requires_fresh_review",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.archival-capsule"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "subject_ref": {"type": "string", "minLength": 1},
+    "subject_head_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+    "archival_reason": {
+      "enum": [
+        "superseded_by_main",
+        "selectively_adopted",
+        "scope_no_longer_needed",
+        "experimental_value_only",
+        "human_decision",
+        "other"
+      ]
+    },
+    "superseding_refs": {"type": "array", "items": {"type": "string"}},
+    "retained_artifact_refs": {"type": "array", "items": {"type": "string"}},
+    "historical_origin_preserved": {"const": true},
+    "deletion_required": {"const": false},
+    "canonicality_claimed": {"const": false},
+    "future_reuse_requires_fresh_review": {"const": true},
+    "automatic_reactivation_allowed": {"const": false},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
