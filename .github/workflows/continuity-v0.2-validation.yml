@@ -1,0 +1,74 @@
+name: Continuity v0.2 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/continuity/v0.2/**'
+      - '.github/workflows/continuity-v0.2-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/continuity/v0.2/**'
+      - '.github/workflows/continuity-v0.2-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile read-only continuity tools
+        run: |
+          python3 -m py_compile protection/continuity/v0.2/github_metadata.py
+          python3 -m py_compile protection/continuity/v0.2/mirror_verify.py
+
+      - name: Validate JSON syntax
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for path in sorted(Path('protection/continuity/v0.2').glob('*.json')):
+              json.loads(path.read_text(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise metadata fixture capture and tamper detection
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          cat > "$tmp/fixture.json" <<'JSON'
+          {"datasets":{"repository":{"full_name":"fixture/continuity","default_branch":"main"},"main_branch":{"commit":{"sha":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","commit":{"tree":{"sha":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"}}}},"issues":[],"pulls":[],"issue_comments":[],"pull_review_comments":[],"releases":[],"workflow_runs":{"workflow_runs":[]},"rulesets":[],"discussions":[]}}
+          JSON
+          manifest="$(python3 protection/continuity/v0.2/github_metadata.py capture --repo fixture/continuity --fixture "$tmp/fixture.json" --out "$tmp/meta")"
+          python3 protection/continuity/v0.2/github_metadata.py verify --manifest "$manifest"
+          printf '\nTAMPER\n' >> "$(dirname "$manifest")/issues.json"
+          if python3 protection/continuity/v0.2/github_metadata.py verify --manifest "$manifest"; then
+            echo 'tampered metadata was incorrectly accepted' >&2
+            exit 1
+          fi
+
+      - name: Exercise exact mirror verification and divergence fail-closed
+        run: |
+          set -euo pipefail
+          tmp="$(mktemp -d)"
+          mkdir "$tmp/work"
+          git -C "$tmp/work" init -b main
+          git -C "$tmp/work" config user.name continuity-test
+          git -C "$tmp/work" config user.email continuity-test@example.invalid
+          echo fixture > "$tmp/work/README.md"
+          git -C "$tmp/work" add README.md
+          git -C "$tmp/work" commit -m fixture
+          git -C "$tmp/work" tag fixture-v0.2
+          git clone --mirror "$tmp/work" "$tmp/canonical.git"
+          git clone --mirror "$tmp/work" "$tmp/mirror.git"
+          python3 protection/continuity/v0.2/mirror_verify.py --canonical "$tmp/canonical.git" --mirror "$tmp/mirror.git" --out "$tmp/receipt.json"
+          echo divergence >> "$tmp/work/README.md"
+          git -C "$tmp/work" commit -am divergence
+          git -C "$tmp/canonical.git" fetch "$tmp/work" +refs/heads/*:refs/heads/*
+          if python3 protection/continuity/v0.2/mirror_verify.py --canonical "$tmp/canonical.git" --mirror "$tmp/mirror.git" --out "$tmp/divergent.json"; then
+            echo 'divergent mirror was incorrectly accepted' >&2
+            exit 1
+          fi
