@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/project-recovery-checkpoint.schema.json",
+  "title": "UU-AAP Project Recovery Checkpoint v0.1",
+  "description": "Non-normative draft for reconstructing the last independently observed project state without relying on hidden conversational memory.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "repository",
+    "observed_at",
+    "observed_main_sha",
+    "anchors",
+    "active_protocols",
+    "frozen_protocols",
+    "external_effect_open_work",
+    "provisional_work",
+    "unresolved_authority_questions",
+    "safe_next_entry_point"
+  ],
+  "properties": {
+    "document_type": {
+      "const": "uu-aap.project-recovery-checkpoint"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "status": {
+      "const": "non-normative-draft"
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observed_main_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "observer": {
+      "type": "string"
+    },
+    "anchors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "name", "ref", "commit_sha"],
+        "properties": {
+          "kind": {
+            "enum": ["release", "tag", "checkpoint", "other"]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "commit_sha": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{40}$"
+          }
+        }
+      }
+    },
+    "active_protocols": {
+      "$ref": "#/$defs/protocolList"
+    },
+    "frozen_protocols": {
+      "$ref": "#/$defs/protocolList"
+    },
+    "external_effect_open_work": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/workItem"
+      }
+    },
+    "provisional_work": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/workItem"
+      }
+    },
+    "unresolved_authority_questions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "safe_next_entry_point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "requires_fresh_observation", "external_effect"],
+      "properties": {
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "requires_fresh_observation": {
+          "type": "boolean"
+        },
+        "external_effect": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "protocolList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "version", "state"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "enum": ["active", "frozen", "experimental", "candidate", "unknown"]
+          },
+          "anchor": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "workItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "state", "external_effect"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "enum": ["prepared", "running", "paused", "blocked", "aborted", "unknown"]
+        },
+        "external_effect": {
+          "type": "boolean"
+        },
+        "ref": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
