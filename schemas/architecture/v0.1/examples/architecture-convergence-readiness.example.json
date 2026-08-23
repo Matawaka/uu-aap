@@ -1,0 +1,55 @@
+{
+  "schema_version": "architecture-convergence-readiness-v0.1",
+  "project_id": "Matawaka/uu-aap",
+  "canonical_predecessor_sha": "724ebff7667354f619d0545539c9d513dc58521c",
+  "planes": [
+    {
+      "plane_id": "coordination",
+      "required_paths": ["protocols/ccrp", ".github/workflows/ccrp-validation.yml"],
+      "present": true
+    },
+    {
+      "plane_id": "authority-governance",
+      "required_paths": ["GOVERNANCE.md", "FILE_HASHES.md"],
+      "present": true
+    },
+    {
+      "plane_id": "survival-rescue",
+      "required_paths": ["protection/rescue/v0.6/README.md", "protection/rescue/v0.6/test_canonical_recognition.py"],
+      "present": true
+    },
+    {
+      "plane_id": "human-succession",
+      "required_paths": ["protocols/chsp/v1.1/README.md", "protocols/chsp/v1.1/test_chsp_v11.py"],
+      "present": true
+    },
+    {
+      "plane_id": "sustainability",
+      "required_paths": ["docs/SUSTAINABILITY-KERNEL-CONFORMANCE-v0.1.md", "schemas/sustainability/v0.1/tests/test_kernel_conformance_closure_v01.py"],
+      "present": true
+    },
+    {
+      "plane_id": "kontur",
+      "required_paths": ["server/kontur/v0.1/READINESS_AGGREGATOR.md", "server/kontur/v0.1/ACTIVATION_BOUNDARY.md", "server/kontur/v0.1/RESPONSIBILITY_LEDGER.md"],
+      "present": true
+    }
+  ],
+  "assessment": {
+    "state": "cross-plane-integration-review-eligible",
+    "safe_effect": "integration-review-only"
+  },
+  "claims": {
+    "all_declared_planes_present": true,
+    "cross_plane_separation_preserved": true,
+    "external_execution_authorized": false,
+    "kontur_activation_authorized": false,
+    "kontur_activated": false,
+    "current_kontur_activation_frontier_verified": false,
+    "repository_ownership_transferred": false,
+    "canonical_origin_mutated": false,
+    "legal_authority_established": false,
+    "distributed_consensus_established": false,
+    "universal_architecture_completeness_proven": false,
+    "future_evolution_allowed": true
+  }
+}
