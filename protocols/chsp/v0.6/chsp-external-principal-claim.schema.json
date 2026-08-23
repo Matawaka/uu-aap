@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-external-principal-claim-v0.6.json",
+  "title": "CHSPExternalPrincipalClaim v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","claim_id","project_id","steward_id","v05_stewardship_state_sha256","v05_execution_receipt_sha256","external_system_type","external_system_id","external_principal_id","claimed_role","claimed_at","nonce","claim_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPExternalPrincipalClaim"},
+    "artifact_version": {"const": "0.6"},
+    "claim_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "steward_id": {"type": "string", "minLength": 1},
+    "v05_stewardship_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "v05_execution_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "external_system_type": {"enum": ["github_repository","git_host_repository","signing_identity","generic_control_plane"]},
+    "external_system_id": {"type": "string", "minLength": 1},
+    "external_principal_id": {"type": "string", "minLength": 1},
+    "claimed_role": {"enum": ["identity_only","collaborator","maintainer","admin","owner","release_signer"]},
+    "claimed_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "claim_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["steward_declared_mapping","current_external_control_proven","external_identity_universally_proven","external_binding_established","repository_ownership_proven","repository_ownership_transferred","account_control_transferred","external_mutation_performed","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_effect_established"],
+      "properties": {
+        "steward_declared_mapping": {"const": true},
+        "current_external_control_proven": {"const": false},
+        "external_identity_universally_proven": {"const": false},
+        "external_binding_established": {"const": false},
+        "repository_ownership_proven": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "external_mutation_performed": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_effect_established": {"const": false}
+      }
+    }
+  }
+}
