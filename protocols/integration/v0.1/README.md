@@ -1,18 +1,19 @@
-# UU-AAP Integration v0.1 — Decision and Commit Receipt
+# UU-AAP Integration v0.1 — Decision, Commit and Observation Receipts
 
 **Status:** experimental integration profile  
-**Scope:** exact pre-commit decision plus raw execution/state-transition evidence; no outcome observation or canonicalization
+**Scope:** exact pre-commit decision, raw execution/state-transition evidence, and independent post-execution readback; no policy-relative canonicalization
 
 ## Purpose
 
-This layer connects the responsibility boundary from IAL with PoAI authority, CCRP execution admission, collision/reconciliation state, fresh revision revalidation, and the first post-decision execution receipt.
+This layer connects the responsibility boundary from IAL with PoAI authority, CCRP execution admission, collision/reconciliation state, fresh revision revalidation, raw commit execution evidence, and a separate observation of the resulting state.
 
-It separates two questions that MUST NOT be collapsed:
+It separates three questions that MUST NOT be collapsed:
 
 1. **CommitDecision:** are the independently established preconditions still jointly valid for an attempted commit at this exact frontier?
 2. **CommitReceipt:** did an exact Git state transition from that approved frontier actually occur in the declared execution mode?
+3. **ObservationReceipt:** after execution, what exact successor state can be independently re-read from the declared observation source?
 
-A positive `CommitDecision` is **not** a commit. A positive `CommitReceipt` is **not** an observation of the target system after execution and is **not** policy-relative canonicalization.
+A positive `CommitDecision` is **not** a commit. A positive `CommitReceipt` is **not** an observation. A positive `ObservationReceipt` is **not** remote publication evidence and is **not** policy-relative canonicalization.
 
 ## Architectural position
 
@@ -25,7 +26,7 @@ ContextFrame
   -> ResponsibilityHandoff
   -> CommitDecision
   -> CommitReceipt          <-- raw execution/state transition
-  -> Observation
+  -> ObservationReceipt     <-- independent post-execution readback
   -> Canonicalization
   -> Provenance
 ```
@@ -63,7 +64,31 @@ It creates a real Git commit object with `git commit-tree` but deliberately move
 
 A future live profile may define `published_repository_commit`, but v0.1 MUST fail closed if that stronger mode is claimed without separate publication evidence.
 
-## CommitReceipt is not PoAI MaterializationEvent
+## ObservationReceipt
+
+`ObservationReceipt` is an independent successor artifact. It consumes an exact `CommitReceipt`, waits until after that receipt timestamp, and performs a fresh readback from the declared source instead of trusting copied successor fields.
+
+The v0.1 observation profile supports only:
+
+```text
+observation_mode   = git_object_database_readback
+observation_source = local_git_object_database
+outcome_scope      = local_git_successor_object
+```
+
+The recorder independently re-reads and verifies:
+
+- predecessor commit existence at observation time;
+- successor commit existence at observation time;
+- exact successor tree SHA;
+- exact single-parent relation;
+- exact changed paths from predecessor to successor;
+- unchanged action, target, operation, responsible party and executor implementation;
+- unchanged refs and working-tree bytes during the observation itself.
+
+A passing receipt may set `outcome_observed = true` only for the narrow declared scope above. It does **not** establish that the successor was pushed, published, selected by a branch or tag, accepted by a PoAI materialization policy, or canonical.
+
+## CommitReceipt and ObservationReceipt are not PoAI MaterializationEvent
 
 The existing PoAI `MaterializationEvent` applies a materialization policy to an exact candidate successor and carries a policy-relative `canonicality_claim`.
 
@@ -72,6 +97,9 @@ Therefore:
 ```text
 CommitReceipt
   = raw execution / Git state-transition evidence
+
+ObservationReceipt
+  = post-execution readback of the declared target state
 
 PoAI MaterializationEvent
   = later policy-recognition event
@@ -82,8 +110,9 @@ and:
 ```text
 CommitDecision approved != Commit performed
 Commit performed != Outcome observed
-Commit performed != PoAI MaterializationEvent
-Commit performed != policy-relative canonicality
+Outcome observed != Remote publication observed
+Outcome observed != PoAI MaterializationEvent
+Outcome observed != policy-relative canonicality
 PoAI MaterializationEvent != universal truth
 ```
 
@@ -111,12 +140,19 @@ A positive v0.1 CommitReceipt may additionally establish:
 - exact predecessor/parent/tree/changed-path bindings were verified;
 - the raw state transition was performed in the declared local-ephemeral mode.
 
-It MUST keep false/unestablished:
+A positive v0.1 ObservationReceipt may additionally establish:
 
-- remote repository mutation performed;
-- published branch or tag update established;
+- the CommitReceipt was accepted as its exact predecessor artifact;
+- post-execution readback was actually performed;
+- the exact successor object/tree/parent/effect is still observable in the local Git object database;
+- the observed state exactly matches the CommitReceipt;
+- `outcome_observed = true` only for `local_git_successor_object`.
+
+ObservationReceipt MUST keep false/unestablished:
+
+- remote repository state observed;
+- published branch or tag update observed;
 - PoAI materialization event recorded;
-- outcome observed;
 - policy-relative canonicality established;
 - universal canonicality;
 - factual truth;
@@ -140,6 +176,16 @@ Commit stage:
 - `record-commit-receipt.js`
 - `test-commit-receipt.js`
 
+Observation stage:
+
+- `observation-receipt.schema.json`
+- `record-observation-receipt.js`
+- `test-observation-receipt.js`
+
+## Continuation invariant
+
+Every completed integration-layer PR SHOULD name the next unimplemented layer before closure. This makes the handoff between architecture stages durable instead of depending on chat/session continuity.
+
 ## Next stage
 
-The next integration layer is an independent `ObservationReceipt`. It must re-read the target system after the commit and establish what state is actually observable. Only a later `CanonicalizationReceipt` / PoAI MaterializationEvent may determine policy-relative recognized state.
+The next integration layer is `CanonicalizationReceipt` / PoAI MaterializationEvent policy-recognition binding. It must consume observation evidence together with the existing materialization policy and authority model, and may establish only policy-relative recognized state. It must not rewrite the execution or observation frontier and must not claim universal canonicality, factual truth, causality or legal effect.
