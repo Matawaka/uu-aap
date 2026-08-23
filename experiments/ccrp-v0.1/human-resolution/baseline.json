@@ -1,0 +1,64 @@
+{
+  "artifact_type": "CCRPLiveHumanResolutionBaseline",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#170",
+  "frozen_predecessor": {
+    "tag": "poai-ccrp-exp-v0.1",
+    "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+  },
+  "setup_from_main_sha": "dd119229cac18f44b04fdad1ebb4ffe2a8655ec4",
+  "predecessor_conflict": {
+    "issue": "Matawaka/uu-aap#165",
+    "result_path": "experiments/ccrp-v0.1/semantic-conflict/result.json",
+    "result_blob_sha": "416df58dff502ee7816b34af853139a553c3c202",
+    "semantic_result_sha256": "d0ca939f6806eaa7113ad204694bdf4342cc46b9a14866d862ed710a3a7e2c5d",
+    "decision_slot": "routing_mode",
+    "conflicting_values": [
+      "direct",
+      "relay"
+    ],
+    "outcome": "HOLD",
+    "semantic_conflict_detected": true,
+    "human_resolution_required": true,
+    "winner_selected": false,
+    "conflict_resolved": false
+  },
+  "resolution_state": {
+    "allowed_values": [
+      "direct",
+      "relay"
+    ],
+    "selected_value": null,
+    "non_selected_value": null,
+    "human_resolution_instruction_observed": false,
+    "resolution_artifact_present": false,
+    "resolution_status": "awaiting_explicit_post_setup_human_selection",
+    "conflict_resolved": false
+  },
+  "negative_controls": {
+    "setup_merge_is_selection": false,
+    "workflow_continuation_is_selection": false,
+    "arrival_order_selects_winner": false,
+    "retry_selects_winner": false,
+    "executor_identity_selects_winner": false,
+    "lexical_order_selects_winner": false,
+    "assistant_inference_selects_winner": false
+  },
+  "allowed_live_mutation_scope": "experiments/ccrp-v0.1/human-resolution/**",
+  "claims": {
+    "protocol_definition": false,
+    "human_identity_cryptographically_attested": false,
+    "universal_human_authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "causality_established": false,
+    "legal_effect_established": false,
+    "responsibility_established": false,
+    "moral_correctness_established": false,
+    "poai_v_conformance_established": false,
+    "universal_ccrp_correctness_established": false
+  }
+}
