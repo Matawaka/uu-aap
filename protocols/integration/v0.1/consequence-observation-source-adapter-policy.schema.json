@@ -85,10 +85,10 @@
         "source_adapter_policy_defined", "registered_profile_count_one",
         "provider_identity_cryptographically_attested", "github_remote_truth_certified",
         "new_external_consequence_observed", "consequence_truth_certified",
-        "causal_proof_certified", "responsibility_for_consequence_attributed",
-        "responsibility_for_outcome_adjudicated", "legal_liability_established",
-        "legal_effect_established", "moral_blame_assigned", "truth_certified",
-        "successor_append_executed", "successor_append_may_proceed",
+        "generalized_external_consequence_causality_established", "causal_proof_certified",
+        "responsibility_for_consequence_attributed", "responsibility_for_outcome_adjudicated",
+        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
+        "truth_certified", "successor_append_executed", "successor_append_may_proceed",
         "poai_materialization_event_recorded", "universal_canonicality_established"
       ],
       "properties": {
@@ -98,6 +98,7 @@
         "github_remote_truth_certified": {"const": false},
         "new_external_consequence_observed": {"const": false},
         "consequence_truth_certified": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
         "causal_proof_certified": {"const": false},
         "responsibility_for_consequence_attributed": {"const": false},
         "responsibility_for_outcome_adjudicated": {"const": false},
