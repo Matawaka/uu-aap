@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/project-rescue-authorization-v0.1.json",
+  "title": "ProjectRescueAuthorization v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "authorization_id", "assessment_sha256", "selected_recovery_source_id", "authorized_scope", "human_actor_id", "issued_at", "expires_at", "nonce", "decision", "claims"],
+  "properties": {
+    "artifact_type": {"const": "ProjectRescueAuthorization"},
+    "artifact_version": {"const": "0.1"},
+    "authorization_id": {"type": "string", "minLength": 1},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "selected_recovery_source_id": {"type": "string", "minLength": 1},
+    "authorized_scope": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["reconstruct_noncanonical_git_copy", "restore_metadata_context", "restore_readonly_kontur_ledger_replica", "prepare_canonical_succession_proposal"]}
+    },
+    "human_actor_id": {"type": "string", "minLength": 1},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "decision": {"const": "authorize_noncanonical_rescue"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution_scope_limited", "canonical_successor_established", "ownership_transferred", "kontur_activated", "distributed_consensus_established", "legal_effect_established", "truth_certified"],
+      "properties": {
+        "execution_scope_limited": {"const": true},
+        "canonical_successor_established": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
