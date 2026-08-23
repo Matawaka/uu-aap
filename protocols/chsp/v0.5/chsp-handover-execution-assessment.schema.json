@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-execution-assessment-v0.5.json",
+  "title": "CHSPHandoverExecutionAssessment v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","assessment_id","evaluated_at","project_id","candidate_id","predecessor_steward_id","authorization_sha256","authorization_assessment_sha256","stewardship_state_sha256","execution_receipt_sha256","state","decision","reasons","assessment_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverExecutionAssessment"},
+    "artifact_version": {"const": "0.5"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "authorization_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authorization_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stewardship_state_sha256": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "execution_receipt_sha256": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["execution_invalid", "protocol_handover_recorded"]},
+    "decision": {"enum": ["reject_execution_record", "chsp_protocol_canonical_stewardship_is_effective"]},
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_verification_only","chsp_protocol_canonical_stewardship_effective","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","external_system_control_changed","kontur_activated","legal_effect_established","distributed_consensus_established","universal_trust_established"],
+      "properties": {
+        "evidence_verification_only": {"const": true},
+        "chsp_protocol_canonical_stewardship_effective": {"type": "boolean"},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "external_system_control_changed": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_effect_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
