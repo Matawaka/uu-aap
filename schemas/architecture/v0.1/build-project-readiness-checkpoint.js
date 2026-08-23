@@ -27,6 +27,7 @@ function assertConvergence(manifest) {
   assert(claims.future_evolution_allowed === true, 'Project Readiness Checkpoint: future evolution must remain allowed');
   for (const key of [
     'external_execution_authorized', 'kontur_activation_authorized', 'kontur_activated',
+    'current_kontur_activation_frontier_verified',
     'repository_ownership_transferred', 'canonical_origin_mutated', 'legal_authority_established',
     'distributed_consensus_established', 'universal_architecture_completeness_proven'
   ]) assert(claims[key] === false, `Project Readiness Checkpoint: unsafe convergence claim ${key}`);
