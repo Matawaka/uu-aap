@@ -1,0 +1,24 @@
+{
+  "artifact_type": "CCRPLiveCompatibleConvergenceBaseline",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#158",
+  "frozen_predecessor": {
+    "tag": "poai-ccrp-exp-v0.1",
+    "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+  },
+  "logical_resource_id": "urn:ccrp:experiment:compatible-convergence:resource:1",
+  "operation_class": "commutative_addition",
+  "baseline_generation": 0,
+  "contribution_set": [],
+  "reconciliation_status": "not_reconciled",
+  "allowed_live_mutation_scope": "experiments/ccrp-v0.1/compatible-convergence/**",
+  "claims": {
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false
+  }
+}
