@@ -20,7 +20,15 @@ It is intentionally narrower than execution authorization.
 
 A capability request is assessed against an explicit ceiling:
 
-`fresh observation -> declared ceiling -> requested capability -> within-ceiling | requires-fresh-authorization | denied | unknown`
+`fresh observation -> declared ceiling -> requested capability -> within-ceiling | requires-fresh-authorization | denied`
+
+The mapping is deterministic for v0.1:
+
+- capability in `allowed` -> `within-ceiling` + `prepare-only`;
+- capability in `denied` -> `denied` + `no-action`;
+- capability in neither list -> `requires-fresh-authorization` + `no-action`.
+
+`allowed ∩ denied` MUST be empty.
 
 The strongest result from this contract is `prepare-only`.
 
@@ -39,6 +47,22 @@ The default for an unlisted capability is:
 `denied-until-fresh-authorization`
 
 Absence from a deny list is not permission.
+
+## Semantic consistency
+
+JSON Schema validates the artifact shape and fixed safety claims. Cross-field membership semantics are additionally checked by the local reference assessor:
+
+`schemas/sustainability/v0.1/capability_ceiling_assessor.py`
+
+The assessor fails closed if:
+
+- an item appears in both `allowed` and `denied`;
+- an allowed capability is reported as denied or as requiring fresh authorization;
+- a denied capability is reported as within-ceiling;
+- an unlisted capability is reported as within-ceiling;
+- `safe_effect` disagrees with the computed classification.
+
+A syntactically valid artifact that fails this semantic check is not a valid v0.1 capability-ceiling assessment.
 
 ## Expansion rule
 
@@ -110,6 +134,8 @@ If KONTUR is later assessed against a capability ceiling, denied and unlisted ca
 6. `denial_may_be_routed_around = false`
 7. `authority_effect = none`
 8. `external_execution_authorized = false`
+9. `allowed ∩ denied = empty`
+10. declared assessment = deterministic assessor result
 
 ## Non-effects
 
@@ -120,9 +146,11 @@ This contract does not:
 - call provider mutation APIs;
 - create CHSP execution requests or authorizations;
 - activate KONTUR;
-- create workflows or required checks;
+- change required-check policy or grant workflow write permissions;
 - mutate tags, releases, checkpoints, or canonical origin;
 - infer human incapacity or reduce human authority.
+
+The validation workflow added with this contract is read-only and exists only to execute syntax, schema, semantic, and regression checks.
 
 ## Compact chain
 
