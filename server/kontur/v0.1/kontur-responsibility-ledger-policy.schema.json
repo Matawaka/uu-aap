@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-responsibility-ledger-policy.schema.json",
+  "title": "KONTURResponsibilityLedgerPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "policy_id", "policy_version",
+    "ledger_id", "system_id", "server_instance_id", "storage_model", "atomic_publication",
+    "head_authority", "replay_scope", "corruption_mode", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-responsibility-ledger-policy\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURResponsibilityLedgerPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:responsibility-ledger-policy:"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "ledger_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:responsibility-ledger:"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "storage_model": {"const": "immutable_entry_files"},
+    "atomic_publication": {"const": "temp_fsync_rename_dir_fsync"},
+    "head_authority": {"const": "validated_entry_chain"},
+    "replay_scope": {"const": "ledger_history"},
+    "corruption_mode": {"const": "fail_closed"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "mutable_head_authoritative", "temporary_file_authoritative", "ledger_relative_replay_protection_defined",
+        "distributed_consensus_established", "legal_responsibility_determined", "legal_effect_established",
+        "moral_blame_assigned", "truth_certified", "universal_causality_established",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "mutable_head_authoritative": {"const": false},
+        "temporary_file_authoritative": {"const": false},
+        "ledger_relative_replay_protection_defined": {"const": true},
+        "distributed_consensus_established": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_causality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}
