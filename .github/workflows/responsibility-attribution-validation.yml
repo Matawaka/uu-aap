@@ -1,0 +1,136 @@
+name: ResponsibilityAttributionAssessment validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-attribution-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-attribution-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  responsibility-attribution:
+    name: Policy-bound responsibility attribution boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check ResponsibilityAttribution JavaScript
+        run: |
+          node --check protocols/integration/v0.1/assess-responsibility-attribution.js
+          node --check protocols/integration/v0.1/test-responsibility-attribution.js
+
+      - name: Validate attribution schemas and canonical policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('protocols/integration/v0.1')
+          policy_schema = json.loads((root / 'responsibility-attribution-policy.schema.json').read_text(encoding='utf-8'))
+          assessment_schema = json.loads((root / 'responsibility-attribution.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(policy_schema)
+          Draft202012Validator.check_schema(assessment_schema)
+
+          policy = json.loads((root / 'policies/exact-local-git-transition.responsibility-attribution-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
+          assert policy['policy_id'] == 'urn:uu-aap:responsibility-attribution-policy:exact-local-git-transition:1'
+          assert policy['policy_version'] == 1
+          assert policy['attribution_scope'] == 'urn:uu-aap:responsibility-attribution-scope:exact-local-git-transition-v0.1'
+          assert policy['predicate_rules']['exact_transition_responsibility_attribution']['status'] == 'attributed'
+          assert policy['predicate_rules']['legal_liability']['status'] == 'not_adjudicated'
+          assert policy['predicate_rules']['moral_blame']['status'] == 'not_adjudicated'
+          print('VALID ResponsibilityAttribution schemas and canonical policy')
+          PY
+
+      - name: Build and validate ResponsibilityAttributionAssessment
+        run: node protocols/integration/v0.1/test-responsibility-attribution.js /tmp/responsibility-attribution.json
+
+      - name: Validate generated assessment by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-attribution.schema.json').read_text(encoding='utf-8'))
+          artifact = json.loads(Path('/tmp/responsibility-attribution.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+          assert artifact['attribution_result']['status'] == 'bounded_responsibility_attribution_supported_stronger_claims_withheld'
+          assert artifact['attribution_result']['attributed_predicate_count'] == 2
+          assert artifact['attribution_result']['withheld_predicate_count'] == 4
+          assert artifact['claims']['policy_relative_responsibility_attribution_established'] is True
+          assert artifact['claims']['responsibility_for_outcome_adjudicated'] is False
+          assert artifact['claims']['legal_liability_established'] is False
+          assert artifact['claims']['moral_blame_assigned'] is False
+          print('VALID ResponsibilityAttributionAssessment artifact')
+          PY
+
+      - name: Independently reject attribution assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-attribution.schema.json').read_text())
+          artifact = json.loads(Path('/tmp/responsibility-attribution.json').read_text())
+
+          def must_reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+
+          bad = copy.deepcopy(artifact)
+          bad['claims']['responsibility_for_outcome_adjudicated'] = True
+          must_reject(bad, 'responsibility adjudication overclaim')
+
+          bad = copy.deepcopy(artifact)
+          bad['claims']['legal_liability_established'] = True
+          must_reject(bad, 'legal liability overclaim')
+
+          bad = copy.deepcopy(artifact)
+          bad['claims']['moral_blame_assigned'] = True
+          must_reject(bad, 'moral blame overclaim')
+
+          bad = copy.deepcopy(artifact)
+          bad['claims']['external_consequence_responsibility_established'] = True
+          must_reject(bad, 'external consequence responsibility overclaim')
+
+          bad = copy.deepcopy(artifact)
+          bad['responsibility_score'] = 1
+          must_reject(bad, 'scalar responsibility score')
+          PY
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
