@@ -10,6 +10,7 @@ Current development line:
 - [`v0.2/`](v0.2/) — explicit human recognition, cooling/challenge windows, immutable progressive-authority envelopes, separate authority outcomes, revocation semantics, and staged A1→A4 succession review.
 - [`v0.3/`](v0.3/) — final human recognition, predecessor acknowledgement or protocol-unavailability alternative, final challenge contour, bounded non-exclusive dual-control handover, immutable handover outcome, and canonical-stewardship handover review eligibility.
 - [`v0.4/`](v0.4/) — human approval quorum, bounded canonical-stewardship handover authorization, authorization expiry, immutable authorizer revocation/candidate withdrawal, and executor-request eligibility without execution.
+- [`v0.5/`](v0.5/) — bounded local execution of one active v0.4 authorization, immutable CHSP canonical-stewardship state, execution receipt, freshness/replay boundaries, and explicit separation from external repository/account/origin control.
 
 Core invariants:
 
@@ -35,8 +36,16 @@ Core invariants:
 
 `handover authorization != handover execution`
 
-`protocol stewardship successor != repository/account owner`
+`recorder performed execution != recorder granted authority`
+
+`CHSP canonical stewardship effective != repository/account ownership transfer`
+
+`CHSP canonical stewardship effective != canonical origin publication`
+
+`CHSP canonical stewardship effective != KONTUR activation`
+
+`later authorization revocation != historical execution erased`
 
 `human recognition != canonical publication`
 
-CHSP artifacts MUST NOT be interpreted as legal identity certification, psychological diagnosis, medical/legal incapacity determination, ownership adjudication, automatic authority transfer, repository/account ownership transfer, KONTUR activation, or universal governance authority.
+CHSP artifacts MUST NOT be interpreted as legal identity certification, psychological diagnosis, medical/legal incapacity determination, ownership adjudication, repository/account ownership transfer, canonical-origin publication, automatic external authority transfer, KONTUR activation, or universal governance authority.
