@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/active-main-line-fence.schema.json",
+  "title": "UU-AAP Active Main-Line Fence v0.1",
+  "description": "Non-normative draft for declaring temporary exclusion zones while active main-line work is in progress, so parallel work can continue only in non-overlapping additive paths.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "observed_at",
+    "observed_main_sha",
+    "active_work",
+    "protected_path_prefixes",
+    "parallel_allowed_path_prefixes",
+    "integration_actions_blocked",
+    "main_mutation_allowed",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.active-main-line-fence"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "active_work": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "ref", "state", "head_sha", "changed_paths"],
+        "properties": {
+          "kind": {"enum": ["pull-request", "branch", "other"]},
+          "ref": {"type": "string", "minLength": 1},
+          "state": {"enum": ["open", "draft", "running", "unknown"]},
+          "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "changed_paths": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1}
+        }
+      }
+    },
+    "protected_path_prefixes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "parallel_allowed_path_prefixes": {"type": "array", "items": {"type": "string", "minLength": 1}, "minItems": 1},
+    "integration_actions_blocked": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "open_parallel_pr",
+          "rebase_parallel_onto_active_main",
+          "merge_parallel_into_main",
+          "edit_active_pr",
+          "comment_on_active_pr",
+          "update_main_ref",
+          "activate_workflow",
+          "tag_or_release"
+        ]
+      },
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "main_mutation_allowed": {"const": false},
+    "authority_effect": {"const": "none"},
+    "expires_on_fresh_observation": {"const": true},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
