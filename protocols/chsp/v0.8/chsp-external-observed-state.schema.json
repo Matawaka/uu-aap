@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-observed-state-v0.8.json",
+  "title":"CHSPExternalObservedState v0.8",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","observation_id","project_id","steward_id","v06_binding_proposal_sha256","external_system_type","external_system_id","external_principal_id","observed_role","observed_at","observer_id","observer_domain_id","evidence_sha256","contains_credentials","state_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalObservedState"},"artifact_version":{"const":"0.8"},"observation_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},"v06_binding_proposal_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "external_system_type":{"enum":["github_repository","git_host_repository","signing_identity","generic_control_plane"]},"external_system_id":{"type":"string","minLength":1},"external_principal_id":{"type":"string","minLength":1},"observed_role":{"enum":["absent","identity_only","collaborator","maintainer","admin","owner","release_signer","unknown"]},
+    "observed_at":{"type":"string","format":"date-time"},"observer_id":{"type":"string","minLength":1},"observer_domain_id":{"type":"string","minLength":1},"evidence_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"contains_credentials":{"const":false},"state_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["bounded_observation_recorded","global_provider_state_proven","external_control_changed","ownership_proven","credentials_embedded"],"properties":{"bounded_observation_recorded":{"const":true},"global_provider_state_proven":{"const":false},"external_control_changed":{"const":false},"ownership_proven":{"const":false},"credentials_embedded":{"const":false}}}
+  }
+}
