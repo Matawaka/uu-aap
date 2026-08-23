@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/revalidation-receipt.schema.json",
+  "title": "Pre-Commit RevalidationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "receipt_id",
+    "operation_ref",
+    "action",
+    "target",
+    "intended_base_revision",
+    "observed_current_revision",
+    "observed_at",
+    "decision_at",
+    "max_age_seconds",
+    "checks",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./revalidation-receipt.schema.json"},
+    "artifact_type": {"const": "RevalidationReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "receipt_id": {"type": "string", "minLength": 1},
+    "operation_ref": {"type": "string", "pattern": "^urn:ccrp:operation:"},
+    "action": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "intended_base_revision": {"type": "string", "minLength": 1},
+    "observed_current_revision": {"type": "string", "minLength": 1},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "decision_at": {"type": "string", "format": "date-time"},
+    "max_age_seconds": {"type": "integer", "minimum": 1, "maximum": 3600},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision_unchanged", "action_exact", "target_exact", "operation_exact"],
+      "properties": {
+        "revision_unchanged": {"type": "boolean"},
+        "action_exact": {"type": "boolean"},
+        "target_exact": {"type": "boolean"},
+        "operation_exact": {"type": "boolean"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revalidation_performed",
+        "freshness_established",
+        "commit_approved",
+        "commit_performed",
+        "outcome_observed",
+        "canonical_state_established"
+      ],
+      "properties": {
+        "revalidation_performed": {"const": true},
+        "freshness_established": {"type": "boolean"},
+        "commit_approved": {"const": false},
+        "commit_performed": {"const": false},
+        "outcome_observed": {"const": false},
+        "canonical_state_established": {"const": false}
+      }
+    }
+  }
+}
