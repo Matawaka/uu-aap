@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-activation-preflight.schema.json",
+  "title": "KONTURActivationPreflightReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "preflight_id", "evaluated_at",
+    "current_git_revision", "intent_binding", "frontier_binding", "readiness_signal_binding",
+    "aggregation_policy_binding", "responsibility_policy_binding", "activation_policy_binding",
+    "health_binding", "system_id", "server_instance_id", "readiness_epoch", "fencing_epoch",
+    "holder_id", "responsibility_scopes", "lease", "checks", "decision", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-preflight\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURActivationPreflightReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "preflight_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-preflight:"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "current_git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+    "intent_binding": {"$ref": "#/$defs/binding"},
+    "frontier_binding": {"$ref": "#/$defs/binding"},
+    "readiness_signal_binding": {"$ref": "#/$defs/binding"},
+    "aggregation_policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "responsibility_policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "activation_policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "health_binding": {"$ref": "#/$defs/binding"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "readiness_epoch": {"type": "integer", "minimum": 1},
+    "fencing_epoch": {"type": "integer", "minimum": 1},
+    "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
+    "responsibility_scopes": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "lease": {"$ref": "#/$defs/lease"},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "git_revision_exact", "frontier_exact", "frontier_admits_activation_prompt",
+        "readiness_signal_exact", "readiness_signal_current", "aggregation_policy_exact",
+        "responsibility_policy_exact", "activation_policy_exact", "activation_policy_effective",
+        "identity_exact", "epoch_exact", "health_exact", "health_current", "health_healthy",
+        "holder_exact", "responsibility_scopes_exact", "responsibility_scopes_allowed",
+        "lease_exact", "lease_live", "parallel_active_holder_absent", "human_intent_explicit",
+        "human_intent_current", "transition_activate_exact", "genesis_activation_frontier",
+        "preflight_side_effect_free"
+      ],
+      "properties": {
+        "git_revision_exact": {"const": true},
+        "frontier_exact": {"const": true},
+        "frontier_admits_activation_prompt": {"const": true},
+        "readiness_signal_exact": {"const": true},
+        "readiness_signal_current": {"const": true},
+        "aggregation_policy_exact": {"const": true},
+        "responsibility_policy_exact": {"const": true},
+        "activation_policy_exact": {"const": true},
+        "activation_policy_effective": {"const": true},
+        "identity_exact": {"const": true},
+        "epoch_exact": {"const": true},
+        "health_exact": {"const": true},
+        "health_current": {"const": true},
+        "health_healthy": {"const": true},
+        "holder_exact": {"const": true},
+        "responsibility_scopes_exact": {"const": true},
+        "responsibility_scopes_allowed": {"const": true},
+        "lease_exact": {"const": true},
+        "lease_live": {"const": true},
+        "parallel_active_holder_absent": {"const": true},
+        "human_intent_explicit": {"const": true},
+        "human_intent_current": {"const": true},
+        "transition_activate_exact": {"const": true},
+        "genesis_activation_frontier": {"const": true},
+        "preflight_side_effect_free": {"const": true}
+      }
+    },
+    "decision": {"const": "human_execute_step_may_proceed"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_intent_verified", "activation_preconditions_revalidated",
+        "human_execute_step_may_proceed", "kernel_activated", "responsibility_state_created",
+        "responsibility_accepted", "execution_authority_granted", "legal_responsibility_determined",
+        "legal_effect_established", "moral_blame_assigned", "truth_certified",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "activation_intent_verified": {"const": true},
+        "activation_preconditions_revalidated": {"const": true},
+        "human_execute_step_may_proceed": {"const": true},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object", "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "policyBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "policy_version", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "policy_version": {"type": "integer", "minimum": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "lease": {
+      "type": "object", "additionalProperties": false,
+      "required": ["lease_id", "holder_id", "server_instance_id", "issued_at", "expires_at"],
+      "properties": {
+        "lease_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:lease:"},
+        "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
+        "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"}
+      }
+    }
+  }
+}

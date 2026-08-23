@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/server/kontur/v0.1/kontur-activation-policy.schema.json",
+  "title": "KONTURActivationPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "policy_id", "policy_version",
+    "system_id", "server_instance_id", "effective_from", "effective_until",
+    "allowed_transition", "max_health_age_seconds", "max_intent_age_seconds",
+    "requirements", "responsibility_scope_source", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-policy\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURActivationPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-policy:"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"type": ["string", "null"], "format": "date-time"},
+    "allowed_transition": {"const": "activate"},
+    "max_health_age_seconds": {"type": "integer", "minimum": 1, "maximum": 300},
+    "max_intent_age_seconds": {"type": "integer", "minimum": 1, "maximum": 900},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_git_revision", "exact_frontier_binding", "exact_readiness_binding",
+        "exact_policy_bindings", "exact_system_server_identity", "exact_epoch",
+        "healthy_server", "live_lease", "no_parallel_active_holder",
+        "explicit_human_activation_intent", "genesis_activation_only",
+        "preflight_side_effect_free", "auto_activation_allowed"
+      ],
+      "properties": {
+        "exact_git_revision": {"const": true},
+        "exact_frontier_binding": {"const": true},
+        "exact_readiness_binding": {"const": true},
+        "exact_policy_bindings": {"const": true},
+        "exact_system_server_identity": {"const": true},
+        "exact_epoch": {"const": true},
+        "healthy_server": {"const": true},
+        "live_lease": {"const": true},
+        "no_parallel_active_holder": {"const": true},
+        "explicit_human_activation_intent": {"const": true},
+        "genesis_activation_only": {"const": true},
+        "preflight_side_effect_free": {"const": true},
+        "auto_activation_allowed": {"const": false}
+      }
+    },
+    "responsibility_scope_source": {"const": "exact_responsibility_policy_allowlist"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_policy_defined", "kernel_activated", "responsibility_state_created",
+        "responsibility_accepted", "execution_authority_granted", "legal_responsibility_determined",
+        "legal_effect_established", "moral_blame_assigned", "truth_certified",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "activation_policy_defined": {"const": true},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}
