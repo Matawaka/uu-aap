@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-canonical-stewardship-state-v0.5.json",
+  "title": "CHSPCanonicalStewardshipState v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","state_id","project_id","predecessor_steward_id","current_steward_id","predecessor_disposition_mode","v04_authorization_sha256","v04_authorization_assessment_sha256","effective_at","execution_nonce","predecessor_state_sha256","state_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPCanonicalStewardshipState"},
+    "artifact_version": {"const": "0.5"},
+    "state_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "current_steward_id": {"type": "string", "minLength": 1},
+    "predecessor_disposition_mode": {"enum": ["acknowledged", "protocol_unavailability_attested"]},
+    "v04_authorization_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "v04_authorization_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "effective_at": {"type": "string", "format": "date-time"},
+    "execution_nonce": {"type": "string", "minLength": 16},
+    "predecessor_state_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["chsp_protocol_canonical_stewardship_effective","effective_scope_chsp_protocol_only","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","external_system_control_changed","kontur_activated","predecessor_legal_rights_adjudicated","legal_ownership_adjudicated","distributed_consensus_established","universal_trust_established"],
+      "properties": {
+        "chsp_protocol_canonical_stewardship_effective": {"const": true},
+        "effective_scope_chsp_protocol_only": {"const": true},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "external_system_control_changed": {"const": false},
+        "kontur_activated": {"const": false},
+        "predecessor_legal_rights_adjudicated": {"const": false},
+        "legal_ownership_adjudicated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
