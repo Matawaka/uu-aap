@@ -169,12 +169,12 @@ def capsule_item_json(capsule_dir: Path, manifest: dict[str, Any], role: str) ->
     return out
 
 
-def run_git(args: list[str], cwd: Path | None = None, capture=True) -> subprocess.CompletedProcess:
+def run_git(args: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["git", *args],
         cwd=str(cwd) if cwd else None,
         check=True,
-        stdout=subprocess.PIPE if capture else subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
     )
@@ -185,6 +185,22 @@ def verify_bundle(payload: Path) -> None:
         repo = Path(td) / "verify.git"
         run_git(["init", "--bare", str(repo)])
         run_git(["-C", str(repo), "bundle", "verify", str(payload.resolve())])
+
+
+def bundle_refs(payload: Path) -> list[str]:
+    result = run_git(["bundle", "list-heads", str(payload.resolve())])
+    refs = []
+    for line in result.stdout.splitlines():
+        parts = line.split(maxsplit=1)
+        if len(parts) != 2:
+            continue
+        ref = parts[1].strip()
+        if ref.startswith("refs/"):
+            require(".." not in ref and " " not in ref and not ref.endswith("/"), f"unsafe bundle ref: {ref}")
+            refs.append(ref)
+    refs = sorted(set(refs))
+    require(refs, "bundle contains no recoverable refs")
+    return refs
 
 
 def recovered_ref_set_sha256(repo: Path) -> str:
@@ -221,6 +237,7 @@ def prepare_context(capsule_dir: Path, authorization_path: Path, payload: Path, 
     payload_digest = file_sha256(payload)
     require(payload_digest == binding["payload_sha256"], "recovery payload SHA-256 mismatch")
     verify_bundle(payload)
+    bundle_refs(payload)
 
     authorization_sha = sha256_json(auth)
     binding_sha = sha256_json(binding)
@@ -341,10 +358,10 @@ def execute_recovery(capsule_dir: Path, authorization_path: Path, payload: Path,
     temp.mkdir()
     repo = temp / "repository.git"
     try:
-        run_git(["clone", "--mirror", str(payload.resolve()), str(repo)])
-        remotes = run_git(["-C", str(repo), "remote"]).stdout.split()
-        if "origin" in remotes:
-            run_git(["-C", str(repo), "remote", "remove", "origin"])
+        run_git(["init", "--bare", str(repo)])
+        refs = bundle_refs(payload)
+        refspecs = [f"+{ref}:{ref}" for ref in refs]
+        run_git(["-C", str(repo), "fetch", "--no-write-fetch-head", str(payload.resolve()), *refspecs])
         remotes_after = run_git(["-C", str(repo), "remote"]).stdout.split()
         require(remotes_after == [], "recovered repository must contain no Git remotes")
         run_git(["-C", str(repo), "fsck", "--full"])
