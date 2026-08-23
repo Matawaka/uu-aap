@@ -14,6 +14,7 @@ Core invariants:
 - `execution request != execution authorization`
 - `execution authorization active != executor invoked`
 - `executor invoked != mutation performed`
+- `provider write may have occurred != provider write confirmed`
 - `mutation performed != transition verified`
 - `transition verified != repository ownership transferred`
 - `transition verified != predecessor access removed`
@@ -25,19 +26,21 @@ Core invariants:
 
 ## Reference scope
 
-The reference executor supports `github_repository` through a narrowly scoped GitHub REST adapter and a provider-neutral core.
+The reference executor supports the current `github_repository` control plane through a narrowly scoped GitHub REST adapter and a provider-neutral core.
 
-The reference GitHub adapter may:
+`Matawaka/uu-aap` is owned by a personal GitHub account. GitHub documents personal-account repositories as having two access levels: owner and collaborator. Granular `maintain` / `admin` repository-role assignment is an organization-repository concept, and the REST collaborator `permission` parameter is documented as valid only for organization-owned repositories.
 
-- verify that the principal is already present;
-- ensure an exact principal has at least a bounded repository role;
-- verify the post-write role.
+Therefore the v1.0 reference adapter is deliberately **personal-repository collaborator-only**. It may:
 
-The reference policy caps executable role elevation at `maintainer` and allows at most one provider-mutating operation in one execution event.
+- observe whether the exact principal currently has collaborator/write access;
+- add the exact principal as a standard personal-repository collaborator;
+- re-observe collaborator access after the provider call.
+
+The reference policy caps executable role elevation at `collaborator` and allows at most one provider-mutating operation in one execution event.
 
 It MUST NOT:
 
-- grant `admin` or `owner`;
+- assign granular `maintain`, `admin`, or `owner` roles;
 - transfer repository ownership;
 - remove predecessor access;
 - rotate credentials;
@@ -46,6 +49,8 @@ It MUST NOT:
 - execute canonical publication;
 - activate KONTUR;
 - force-push or delete refs.
+
+The adapter issues `PUT /repos/{owner}/{repo}/collaborators/{username}` without a `permission` body. It never uses collaborator `DELETE`, repository-content/ref mutation, or ownership APIs.
 
 `record_external_stewardship_mapping` is receipt-local protocol recording only. `ensure_release_signer_binding` is not implemented by the reference GitHub adapter and therefore fails closed before mutation.
 
@@ -59,9 +64,11 @@ The request binds the exact v0.9 authorization, v0.9 active assessment, v0.8 env
 
 The runtime entrypoint additionally requires an explicit `--commit` flag and the exact authorization SHA-256. The GitHub credential is read from `CHSP_GITHUB_TOKEN` only at runtime and MUST NOT be supplied as a CLI argument or written to any CHSP artifact.
 
-## Preflight and single-mutation rule
+## Preflight, replay, and single-mutation rule
 
-Before any provider write, the core validates the entire supplied predecessor chain and asks the adapter for a fresh observation. Every operation is preflighted before the first write.
+Before any first-use provider write, the core validates the entire supplied predecessor chain and asks the adapter for a fresh observation. Every operation is preflighted before the first write.
+
+A previously consumed authorization/request is rejected before any new provider read. On first use, the execution reservation is created only after deterministic checks plus fresh provider-read preflight have succeeded.
 
 Reference policy:
 
@@ -69,7 +76,7 @@ Reference policy:
 - execution request age <= 2 minutes;
 - maximum execution duration 120 seconds;
 - maximum provider-mutating operations = 1;
-- maximum executable role = `maintainer`.
+- maximum executable role = `collaborator`.
 
 A preflight drift from the v0.9 recheck state is fail-closed and no mutation is attempted.
 
@@ -81,7 +88,9 @@ The executor emits one immutable `CHSPExternalExecutionReceipt` with one of:
 - `no_change_verified` — target already satisfied the exact bounded operations;
 - `failed_before_mutation` — no provider mutation was attempted;
 - `failed_after_mutation` — a provider mutation was attempted but completion was not verified;
-- `verification_uncertain` — provider state after the mutation could not be established confidently.
+- `verification_uncertain` — provider state after crossing a possible write boundary could not be established confidently.
+
+Receipts distinguish `external_mutation_performed` from `external_mutation_may_have_occurred`. A network/provider failure after entering a preflighted mutation call can therefore preserve uncertainty without falsely asserting either success or definite non-mutation.
 
 A positive receipt never claims ownership, global provider truth, canonical publication, or KONTUR activation.
 
