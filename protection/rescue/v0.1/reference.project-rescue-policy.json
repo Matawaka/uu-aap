@@ -1,0 +1,38 @@
+{
+  "$schema": "./project-rescue-policy.schema.json",
+  "artifact_type": "ProjectRescuePolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:project-rescue-policy:v0.1:reference",
+  "project_id": "urn:uu-aap:project:proof-of-available-intelligence",
+  "canonical_origin": "https://github.com/Matawaka/uu-aap",
+  "thresholds": {
+    "min_negative_observations": 3,
+    "min_evidence_classes": 3,
+    "min_observer_domains": 2,
+    "min_failure_domains": 2,
+    "min_confirmation_span_seconds": 1800,
+    "prolonged_unavailability_seconds": 21600,
+    "require_read_path_signal": true,
+    "require_control_or_custodian_signal": true,
+    "require_frontier_or_external_anchor": true,
+    "min_verified_recovery_sources": 1
+  },
+  "mandatory_preventers": [
+    "alternate_canonical_read_path",
+    "standby_human_or_collaborator_path",
+    "provider_recovery_or_support_path",
+    "known_good_frontier_verification"
+  ],
+  "allowed_not_applicable_preventers": [
+    "second_remote",
+    "local_bundle_or_mirror",
+    "metadata_snapshot",
+    "kontur_readonly_ledger_replica"
+  ],
+  "claims": {
+    "automatic_failover_enabled": false,
+    "automatic_authority_transfer_enabled": false,
+    "canonical_succession_established": false,
+    "distributed_consensus_established": false
+  }
+}
