@@ -100,7 +100,9 @@ function evaluateCommitDecision(input, evidence) {
     handoffResult.claims.responsibility_accepted === true &&
     handoffResult.claims.execution_admitted === false &&
     handoffResult.claims.materialization_permitted === false &&
-    input.evidence_refs.handoff_result_ref === handoffResult.assessment_id;
+    input.evidence_refs.handoff_result_ref === handoffResult.assessment_id &&
+    input.evidence_refs.handoff_offer_ref === handoffOffer.offer_id &&
+    input.evidence_refs.handoff_acceptance_ref === handoffAcceptance.acceptance_id;
 
   checks.handoff_party_exact =
     handoffOffer.receiving_party_id === input.responsible_party_id &&
@@ -131,6 +133,7 @@ function evaluateCommitDecision(input, evidence) {
     preMaterializationResult.ccrp_operation_ref === input.operation_ref;
 
   checks.revalidation_fresh =
+    input.evidence_refs.revalidation_receipt_ref === revalidationReceipt.receipt_id &&
     evaluateFreshness(revalidationReceipt) &&
     revalidationReceipt.claims && revalidationReceipt.claims.revalidation_performed === true &&
     revalidationReceipt.claims.freshness_established === true &&
