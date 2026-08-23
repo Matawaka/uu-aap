@@ -1,0 +1,176 @@
+name: Origin provenance completion validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/origin-provenance-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/origin-provenance-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  origin-provenance:
+    name: Origin provenance completion validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check origin provenance JavaScript
+        run: |
+          node --check protocols/integration/v0.1/origin-capture-preload.js
+          node --check protocols/integration/v0.1/complete-provenance.js
+          node --check protocols/integration/v0.1/test-origin-provenance.js
+
+      - name: Validate origin provenance schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('protocols/integration/v0.1/origin-provenance.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: origin-provenance.schema.json')
+          PY
+
+      - name: Reproduce bounded chain and complete machine semantic origin
+        run: node protocols/integration/v0.1/test-origin-provenance.js /tmp/provenance-completion.json
+
+      - name: Validate generated origin artifacts and completion boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('protocols/integration/v0.1')
+          schema = json.loads((root / 'origin-provenance.schema.json').read_text(encoding='utf-8'))
+          completion = json.loads(Path('/tmp/provenance-completion.json').read_text(encoding='utf-8'))
+          context = json.loads(Path('/tmp/origin-context-frame.json').read_text(encoding='utf-8'))
+          intent = json.loads(Path('/tmp/origin-intent.json').read_text(encoding='utf-8'))
+          origin = json.loads(Path('/tmp/origin-envelope.json').read_text(encoding='utf-8'))
+          bundle = json.loads(Path('/tmp/origin-evidence-bundle.json').read_text(encoding='utf-8'))
+
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(completion)
+
+          def validate_def(name, value):
+              wrapper = {
+                  '$schema': 'https://json-schema.org/draft/2020-12/schema',
+                  '$defs': schema['$defs'],
+                  '$ref': f'#/$defs/{name}',
+              }
+              Draft202012Validator(wrapper, format_checker=FormatChecker()).validate(value)
+
+          validate_def('contextFrame', context)
+          validate_def('intentArtifact', intent)
+          validate_def('originEnvelope', origin)
+          validate_def('evidenceBundle', bundle)
+
+          assert context['claims']['machine_context_frontier_established'] is True
+          assert context['claims']['human_context_exhaustively_captured'] is False
+          assert intent['claims']['intent_declared'] is True
+          assert intent['claims']['authority_established'] is False
+          assert origin['claims']['machine_semantic_origin_established'] is True
+          assert origin['claims']['human_cognitive_origin_established'] is False
+          assert bundle['claims']['same_decision_execution_captured'] is True
+          assert bundle['claims']['all_upstream_evidence_artifact_bytes_exported'] is True
+          assert bundle['claims']['reconstructed_equivalent_evidence_used'] is False
+          assert len(bundle['upstream']) == 6
+
+          claims = completion['claims']
+          for key in [
+              'bounded_chain_preserved',
+              'context_frame_provenance_established',
+              'intent_provenance_established',
+              'all_upstream_evidence_artifact_bytes_bound',
+              'machine_semantic_origin_provenance_complete',
+              'policy_relative_canonicality_preserved',
+          ]:
+              assert claims[key] is True, key
+
+          for key in [
+              'human_cognitive_origin_provenance_established',
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'poai_successor_record_identity_inferred',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'legal_effect_established',
+              'moral_correctness_established',
+              'poai_v_conformance_established',
+          ]:
+              assert claims[key] is False, key
+
+          for key in [
+              'human_cognitive_origin_provenance_established',
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'universal_canonicality_established',
+              'truth_certified',
+              'legal_effect_established',
+          ]:
+              bad = copy.deepcopy(completion)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden overclaim: {key}')
+
+          bad = copy.deepcopy(completion)
+          bad['claims']['machine_semantic_origin_provenance_complete'] = False
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted loss of completed machine-origin provenance claim')
+
+          print('Origin provenance complete for declared machine semantics; human cognition/truth/remote/PoAI claims remain separate')
+          PY
+
+      - name: Confirm provenance completion produced no repository mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
