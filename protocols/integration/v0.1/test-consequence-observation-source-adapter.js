@@ -185,11 +185,11 @@ async function main() {
   vectors.push(await reject('producer_repository_substitution', async () => {
     const p = clone(producerObservation); p.repository = 'other/repo';
     await Adapter.validateInputs({ ...args, producerObservation: p, evaluatedAt });
-  }, /repository substitution|source payload \/ producer observation mismatch/));
+  }, /observation ID substitution|repository substitution|source payload \/ producer observation mismatch/));
   vectors.push(await reject('producer_workflow_substitution', async () => {
     const p = clone(producerObservation); p.workflow_name = 'Other workflow';
     await Adapter.validateInputs({ ...args, producerObservation: p, evaluatedAt });
-  }, /workflow name substitution|source payload \/ producer observation mismatch/));
+  }, /observation ID substitution|workflow name substitution|source payload \/ producer observation mismatch/));
   vectors.push(await reject('source_fixture_substitution', async () => {
     const s = clone(sourceEvidence); s.test_fixture_only = true;
     await Adapter.validateInputs({ ...args, sourceEvidence: s, evaluatedAt });
