@@ -1,0 +1,42 @@
+{
+  "$schema": "../kontur-activation-execution-policy.schema.json",
+  "artifact_type": "KONTURActivationExecutionPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:kontur:activation-execution-policy:reference-server:1",
+  "policy_version": 1,
+  "effective_from": "2026-08-23T10:10:33Z",
+  "effective_until": null,
+  "system_id": "urn:uu-aap:kontur:system:server-responsibility",
+  "server_instance_id": "urn:uu-aap:kontur:server:reference-primary",
+  "max_execute_command_age_seconds": 30,
+  "max_preflight_age_seconds": 30,
+  "requirements": {
+    "exact_git_revision": true,
+    "exact_intent_binding": true,
+    "exact_preflight_binding": true,
+    "fresh_preflight": true,
+    "fresh_readiness": true,
+    "fresh_health": true,
+    "live_lease": true,
+    "empty_genesis_ledger": true,
+    "one_shot_execute_nonce": true,
+    "execute_nonce_distinct_from_intent_nonce": true,
+    "kernel_activate_exactly_once": true,
+    "durable_genesis_commit": true,
+    "post_commit_recovery": true,
+    "recovered_head_exact": true,
+    "automatic_retry_allowed": false,
+    "auto_activation_allowed": false
+  },
+  "claims": {
+    "activation_execution_policy_defined": true,
+    "execution_authority_granted": false,
+    "legal_responsibility_determined": false,
+    "legal_effect_established": false,
+    "moral_blame_assigned": false,
+    "truth_certified": false,
+    "distributed_consensus_established": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}
