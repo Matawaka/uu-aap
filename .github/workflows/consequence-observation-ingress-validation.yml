@@ -1,0 +1,134 @@
+name: ConsequenceObservationIngress validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-ingress-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-ingress-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  consequence-observation-ingress:
+    name: Non-certifying consequence claim ingress boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check ingress JavaScript
+        run: |
+          node --check protocols/integration/v0.1/consequence-observation-ingress.js
+          node --check protocols/integration/v0.1/test-consequence-observation-ingress.js
+
+      - name: Validate ingress schemas and reference policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          names = [
+              'consequence-observation-ingress-policy.schema.json',
+              'consequence-observation-claim.schema.json',
+              'consequence-observation-ingress-receipt.schema.json',
+          ]
+          schemas = {}
+          for name in names:
+              schema = json.loads((root/name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              schemas[name] = schema
+          policy = json.loads((root/'policies/reference.consequence-observation-ingress-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schemas['consequence-observation-ingress-policy.schema.json'], format_checker=FormatChecker()).validate(policy)
+          assert policy['claims']['new_external_consequence_observed'] is False
+          assert policy['invariants']['claim_is_non_certifying'] is True
+          print('VALID ConsequenceObservationIngress schemas and policy')
+          PY
+
+      - name: Build claims and ingress receipts against current responsibility-event frontier
+        run: node protocols/integration/v0.1/test-consequence-observation-ingress.js
+
+      - name: Validate generated claims and receipts by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          pairs = [
+              ('consequence-observation-claim.schema.json','/tmp/consequence-observation-claim-not-yet.json'),
+              ('consequence-observation-ingress-receipt.schema.json','/tmp/consequence-observation-ingress-not-yet.json'),
+              ('consequence-observation-claim.schema.json','/tmp/consequence-observation-claim-observed-fixture.json'),
+              ('consequence-observation-ingress-receipt.schema.json','/tmp/consequence-observation-ingress-observed-fixture.json'),
+          ]
+          for schema_name, artifact_path in pairs:
+              schema = json.loads((root/schema_name).read_text(encoding='utf-8'))
+              artifact = json.loads(Path(artifact_path).read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+          fixture = json.loads(Path('/tmp/consequence-observation-claim-observed-fixture.json').read_text())
+          receipt = json.loads(Path('/tmp/consequence-observation-ingress-observed-fixture.json').read_text())
+          assert fixture['environment'] == 'test_fixture'
+          assert fixture['claimed_status'] == 'observed'
+          assert receipt['claims']['new_external_consequence_observed'] is False
+          assert receipt['claims']['causal_proof_certified'] is False
+          print('VALID non-certifying consequence ingress artifacts')
+          PY
+
+      - name: Independently reject ingress assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          root = Path('protocols/integration/v0.1')
+          claim_schema = json.loads((root/'consequence-observation-claim.schema.json').read_text())
+          receipt_schema = json.loads((root/'consequence-observation-ingress-receipt.schema.json').read_text())
+          claim = json.loads(Path('/tmp/consequence-observation-claim-observed-fixture.json').read_text())
+          receipt = json.loads(Path('/tmp/consequence-observation-ingress-observed-fixture.json').read_text())
+          def reject(schema, value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+          bad = copy.deepcopy(claim); bad['claims']['truth_certified'] = True; reject(claim_schema,bad,'claim truth overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['new_external_consequence_observed'] = True; reject(receipt_schema,bad,'external consequence overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['causal_proof_certified'] = True; reject(receipt_schema,bad,'causal proof overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['responsibility_for_consequence_attributed'] = True; reject(receipt_schema,bad,'responsibility attribution overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['legal_liability_established'] = True; reject(receipt_schema,bad,'legal liability overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['truth_certified'] = True; reject(receipt_schema,bad,'truth overclaim')
+          bad = copy.deepcopy(receipt); bad['responsibility_score'] = 1; reject(receipt_schema,bad,'scalar responsibility score')
+          PY
+
+      - name: Confirm KONTUR is not part of this profile
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD 2>/dev/null | grep '^server/kontur/' && exit 1 || true
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
