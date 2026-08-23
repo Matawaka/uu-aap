@@ -15,6 +15,7 @@ Current development line:
 - [`v0.7/`](v0.7/) — separate human-quorum recognition of one exact v0.6 external mapping and separate bounded transition-preparation authorization, with expiry, immutable revocation, replay boundaries, and no external execution.
 - [`v0.8/`](v0.8/) — exact external before-state observation, bounded non-destructive transition envelope, short-freshness dry-run verification receipt, and execution-authorization request eligibility without external mutation.
 - [`v0.9/`](v0.9/) — fresh no-drift execution recheck, exact phase-specific human execution decisions, short-lived execution authorization bound to the exact v0.8 operation set, immutable revocation, and executor-request eligibility without execution.
+- [`v1.0/`](v1.0/) — first explicit bounded external execution layer: exact v0.9 authorization consumption, fresh provider preflight, at most one bounded provider mutation, post-write verification, immutable execution receipt, and post-execution assessment. CI uses a fake provider only; real execution is a separate explicit operator event.
 
 Core invariants:
 
@@ -79,6 +80,24 @@ Core invariants:
 `execution authorization active != executor invoked`
 
 `execution authorization active != execution performed`
+
+`v1.0 code merged != external execution requested`
+
+`execution request != execution authorization`
+
+`executor invoked != mutation performed`
+
+`mutation performed != transition verified`
+
+`transition verified != repository ownership transferred`
+
+`transition verified != predecessor access removed`
+
+`transition verified != canonical origin mutated`
+
+`transition verified != canonical publication executed`
+
+`transition verified != KONTUR activated`
 
 `later authorization revocation != historical execution erased`
 
