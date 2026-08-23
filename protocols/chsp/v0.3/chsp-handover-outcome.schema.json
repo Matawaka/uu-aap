@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-outcome-v0.3.json",
+  "title": "CHSPHandoverOutcome v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","outcome_id","project_id","candidate_id","handover_sha256","result","recorded_by_human_id","evidence_sha256","recorded_at","outcome_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverOutcome"},
+    "artifact_version": {"const": "0.3"},
+    "outcome_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "handover_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "result": {"enum": ["positive","adverse","indeterminate","revoked"]},
+    "recorded_by_human_id": {"type": "string", "minLength": 1},
+    "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "outcome_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["outcome_recorded","positive_outcome_is_review_evidence_only","canonical_successor_established","ownership_transferred","canonical_publication_executed","kontur_activated","truth_certified"],
+      "properties": {
+        "outcome_recorded": {"const": true},
+        "positive_outcome_is_review_evidence_only": {"const": true},
+        "canonical_successor_established": {"const": false},
+        "ownership_transferred": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}

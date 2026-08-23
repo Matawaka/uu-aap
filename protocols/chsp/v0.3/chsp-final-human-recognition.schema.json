@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-final-human-recognition-v0.3.json",
+  "title": "CHSPFinalHumanRecognition v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","recognition_id","project_id","candidate_id","predecessor_steward_id","v02_transition_assessment_sha256","predecessor_disposition_sha256","final_recognizer_id","recognizer_evidence_sha256","recognized_at","cooling_period_ends_at","nonce","confirmation_token","recognition_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPFinalHumanRecognition"},
+    "artifact_version": {"const": "0.3"},
+    "recognition_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "v02_transition_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "final_recognizer_id": {"type": "string", "minLength": 1},
+    "recognizer_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "recognized_at": {"type": "string", "format": "date-time"},
+    "cooling_period_ends_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "confirmation_token": {"const": "RECOGNIZE_CHSP_FINAL_SUCCESSION_CANDIDATE_FOR_DUAL_CONTROL_ONLY"},
+    "recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["final_human_recognition_recorded","dual_control_consideration_only","exclusive_successor_authority","canonical_successor_established","canonical_publication_authorized","ownership_transferred","kontur_activated","legal_identity_certified","universal_trust_established"],
+      "properties": {
+        "final_human_recognition_recorded": {"const": true},
+        "dual_control_consideration_only": {"const": true},
+        "exclusive_successor_authority": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "canonical_publication_authorized": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_identity_certified": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
