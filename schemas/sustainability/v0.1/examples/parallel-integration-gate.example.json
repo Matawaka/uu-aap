@@ -1,0 +1,28 @@
+{
+  "document_type": "uu-aap.parallel-integration-gate",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "parallel_branch": "parallel/sustainability-backlog-v0.1",
+  "original_base_sha": "89b26161312a120b03c874968245331391c3e107",
+  "latest_observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "fresh_main_observation_required": true,
+  "path_overlap_review_required": true,
+  "validation_required": true,
+  "explicit_human_integration_decision_required": true,
+  "automatic_merge_allowed": false,
+  "authority_effect": "none",
+  "prohibited_shortcuts": [
+    "merge_because_parallel_work_is_older",
+    "merge_because_parallel_work_is_newer",
+    "merge_without_reobserving_main",
+    "merge_without_path_overlap_review",
+    "merge_without_validation",
+    "treat_branch_creation_as_future_merge_authorization",
+    "reinterpret_prior_authorization_after_main_changed"
+  ],
+  "integration_state": "isolated",
+  "notes": [
+    "The branch remains deliberately unmerged while the main process is active.",
+    "A later integration proposal must use a fresh main observation and explicit human decision."
+  ]
+}
