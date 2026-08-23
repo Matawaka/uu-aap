@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/non-interference-attestation.schema.json",
+  "title": "UU-AAP Parallel Non-Interference Attestation v0.1",
+  "description": "Non-normative draft evidence that an isolated side-track observed but did not mutate, gate, pressure, or authorize the active main-line process.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "observed_main_sha",
+    "parallel_branch",
+    "active_main_line_refs",
+    "claims",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.parallel-non-interference-attestation"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "parallel_branch": {"type": "string", "minLength": 1},
+    "active_main_line_refs": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "main_ref_mutated",
+        "main_line_files_modified",
+        "pull_request_created_or_modified",
+        "review_or_comment_pressure_applied",
+        "workflow_or_required_check_added",
+        "tag_or_release_mutated",
+        "execution_authority_asserted",
+        "main_line_dependency_created"
+      ],
+      "properties": {
+        "main_ref_mutated": {"const": false},
+        "main_line_files_modified": {"const": false},
+        "pull_request_created_or_modified": {"const": false},
+        "review_or_comment_pressure_applied": {"const": false},
+        "workflow_or_required_check_added": {"const": false},
+        "tag_or_release_mutated": {"const": false},
+        "execution_authority_asserted": {"const": false},
+        "main_line_dependency_created": {"const": false}
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "reference"],
+        "properties": {
+          "kind": {"enum": ["compare", "branch_observation", "pull_request_observation", "local_validation", "other"]},
+          "reference": {"type": "string", "minLength": 1},
+          "note": {"type": "string"}
+        }
+      }
+    },
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
