@@ -1,0 +1,37 @@
+name: Protocol capability negotiation validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/negotiation/**"
+      - "protocols/registry/**"
+      - ".github/workflows/protocol-negotiation-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/negotiation/**"
+      - "protocols/registry/**"
+      - ".github/workflows/protocol-negotiation-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-negotiation:
+    name: Protocol capability negotiation validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Validate registry bindings
+        run: node protocols/registry/v0.1/validate-registry.js
+      - name: Test exact capability negotiation
+        run: node protocols/negotiation/v0.1/test-negotiation.js
+      - name: Exercise positive negotiation CLI
+        run: |
+          node protocols/negotiation/v0.1/negotiate.js \
+            protocols/negotiation/v0.1/examples/full-ccrp-capability.json \
+            protocols/negotiation/v0.1/examples/require-ccrp-c0-c4.json
