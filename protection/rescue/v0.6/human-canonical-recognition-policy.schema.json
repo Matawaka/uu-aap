@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/human-canonical-recognition-policy-v0.6.json",
+  "title": "HumanCanonicalRecognitionPolicy v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "project_id", "confirmation_token", "allowed_scope", "requirements", "claims"],
+  "properties": {
+    "artifact_type": {"const": "HumanCanonicalRecognitionPolicy"},
+    "artifact_version": {"const": "0.6"},
+    "project_id": {"type": "string", "minLength": 1},
+    "confirmation_token": {"const": "RECOGNIZE_FOR_CANONICAL_PUBLICATION_PREPARATION_ONLY"},
+    "allowed_scope": {"const": "prepare_canonical_publication"},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewable_v05_assessment", "exact_proposal_binding", "actor_evidence_digest", "active_validity_window", "local_nonce_reservation", "local_proposal_reservation", "network_prohibited", "git_mutation_prohibited", "publication_prohibited", "kontur_activation_prohibited"],
+      "properties": {
+        "reviewable_v05_assessment": {"const": true},
+        "exact_proposal_binding": {"const": true},
+        "actor_evidence_digest": {"const": true},
+        "active_validity_window": {"const": true},
+        "local_nonce_reservation": {"const": true},
+        "local_proposal_reservation": {"const": true},
+        "network_prohibited": {"const": true},
+        "git_mutation_prohibited": {"const": true},
+        "publication_prohibited": {"const": true},
+        "kontur_activation_prohibited": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automatic_recognition_enabled", "automatic_publication_enabled", "canonical_origin_mutation_enabled", "ownership_transfer_enabled", "kontur_activation_enabled", "distributed_consensus_established"],
+      "properties": {
+        "automatic_recognition_enabled": {"const": false},
+        "automatic_publication_enabled": {"const": false},
+        "canonical_origin_mutation_enabled": {"const": false},
+        "ownership_transfer_enabled": {"const": false},
+        "kontur_activation_enabled": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  }
+}
