@@ -1,0 +1,48 @@
+name: Project Rescue Protocol validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/rescue/v0.1/**'
+      - '.github/workflows/project-rescue-protocol-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/rescue/v0.1/**'
+      - '.github/workflows/project-rescue-protocol-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate Python syntax and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protection/rescue/v0.1/rescue_assessor.py
+          python3 -m py_compile protection/rescue/v0.1/test_rescue_assessor.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/rescue/v0.1')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise independent-loss and preventer gates
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert no restore executor or remote mutation primitive is introduced
+        run: |
+          set -euo pipefail
+          if grep -R -nE 'git[[:space:]]+push|requests\.(post|put|patch|delete)|urllib.*(POST|PUT|PATCH|DELETE)|subprocess.*push' protection/rescue/v0.1; then
+            echo 'rescue v0.1 must remain assessment/authorization-foundation only' >&2
+            exit 1
+          fi
