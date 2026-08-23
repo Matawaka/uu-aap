@@ -1,0 +1,60 @@
+name: Project Survival Plane v0.2 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/rescue/v0.2/**'
+      - '.github/workflows/project-survival-plane-v0.2-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/rescue/v0.2/**'
+      - '.github/workflows/project-survival-plane-v0.2-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protection/rescue/v0.2/prevention_registry.py
+          python3 -m py_compile protection/rescue/v0.2/passive_observer.py
+          python3 -m py_compile protection/rescue/v0.2/test_survival_plane.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/rescue/v0.2')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise Prevention Registry and passive observer boundaries
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 decision boundary green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert v0.2 introduces no restore or remote mutation primitive
+        run: |
+          set -euo pipefail
+          if grep -R -nE 'git[[:space:]]+push|requests\.(post|put|patch|delete)|subprocess.*push|method.*(POST|PUT|PATCH|DELETE)|curl.*(POST|PUT|PATCH|DELETE)' protection/rescue/v0.2/*.py; then
+            echo 'Project Survival Plane v0.2 must remain prevention/observation only' >&2
+            exit 1
+          fi
+
+      - name: Assert reference observer has no authentication injection interface
+        run: |
+          set -euo pipefail
+          if grep -R -nE '(Authorization|Bearer|--header|--token)' protection/rescue/v0.2/passive_observer.py; then
+            echo 'passive observer must not accept authentication material' >&2
+            exit 1
+          fi

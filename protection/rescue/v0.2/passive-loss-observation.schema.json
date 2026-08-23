@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/passive-loss-observation-v0.2.json",
+  "title": "PassiveLossObservation v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "observation_id", "observer_id", "observer_domain_id", "failure_domain_id", "evidence_class", "probe_method", "subject", "observed_at", "result", "indicator", "evidence", "evidence_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "PassiveLossObservation"},
+    "artifact_version": {"const": "0.2"},
+    "observation_id": {"type": "string", "minLength": 1},
+    "observer_id": {"type": "string", "minLength": 1},
+    "observer_domain_id": {"type": "string", "minLength": 1},
+    "failure_domain_id": {"type": "string", "minLength": 1},
+    "evidence_class": {"enum": ["canonical_read_path", "provider_status_path", "independent_replica_path", "external_content_anchor"]},
+    "probe_method": {"enum": ["file_sha256", "http_head", "http_get", "git_ls_remote"]},
+    "subject": {"type": "string", "minLength": 1},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "result": {"enum": ["positive", "negative", "indeterminate"]},
+    "indicator": {"enum": ["reachable", "unreachable", "content_match", "content_mismatch", "frontier_match", "frontier_mismatch", "status_match", "status_mismatch", "probe_error"]},
+    "evidence": {"type": "object"},
+    "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read_only_observation", "target_mutated", "loss_confirmed", "rescue_eligible", "domain_independence_proven", "execution_authority_granted"],
+      "properties": {
+        "read_only_observation": {"const": true},
+        "target_mutated": {"const": false},
+        "loss_confirmed": {"const": false},
+        "rescue_eligible": {"const": false},
+        "domain_independence_proven": {"const": false},
+        "execution_authority_granted": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/prevention-registry-v0.2.json",
+  "title": "PreventionRegistry v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "registry_id", "project_id", "updated_at", "preventers", "claims"],
+  "properties": {
+    "$schema": {"type": "string"},
+    "artifact_type": {"const": "PreventionRegistry"},
+    "artifact_version": {"const": "0.2"},
+    "registry_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "updated_at": {"type": "string", "format": "date-time"},
+    "preventers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["preventer_id", "preventer_type", "mandatory_before_rescue", "custodian_domain_id", "failure_domain_id", "availability_state", "attempt_state", "can_mutate_canonical_state", "claims"],
+        "properties": {
+          "preventer_id": {"type": "string", "minLength": 1},
+          "preventer_type": {"enum": ["alternate_canonical_read_path", "standby_human_or_collaborator_path", "provider_recovery_or_support_path", "known_good_frontier_verification", "local_git_bundle_or_mirror", "independent_second_remote", "metadata_snapshot", "kontur_readonly_ledger_replica"]},
+          "mandatory_before_rescue": {"type": "boolean"},
+          "custodian_domain_id": {"type": "string", "minLength": 1},
+          "failure_domain_id": {"type": "string", "minLength": 1},
+          "availability_state": {"enum": ["available", "degraded", "unavailable", "unverified", "retired"]},
+          "attempt_state": {"enum": ["not_attempted", "succeeded", "failed", "blocked", "not_applicable"]},
+          "last_verified_at": {"type": ["string", "null"], "format": "date-time"},
+          "verification_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+          "known_frontier_ref": {"type": ["string", "null"]},
+          "attempts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["attempted_at", "result", "evidence_sha256"],
+              "properties": {
+                "attempted_at": {"type": "string", "format": "date-time"},
+                "result": {"enum": ["succeeded", "failed", "blocked", "not_applicable"]},
+                "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+                "note": {"type": "string", "maxLength": 500}
+              }
+            }
+          },
+          "can_mutate_canonical_state": {"const": false},
+          "claims": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["canonical_authority_held", "canonical_successor_established", "ownership_transferred", "automatic_failover_enabled"],
+            "properties": {
+              "canonical_authority_held": {"const": false},
+              "canonical_successor_established": {"const": false},
+              "ownership_transferred": {"const": false},
+              "automatic_failover_enabled": {"const": false}
+            }
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry_descriptive_only", "execution_authority_granted", "canonical_successor_established"],
+      "properties": {
+        "registry_descriptive_only": {"const": true},
+        "execution_authority_granted": {"const": false},
+        "canonical_successor_established": {"const": false}
+      }
+    }
+  }
+}

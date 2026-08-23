@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/prevention-registry-assessment-v0.2.json",
+  "title": "PreventionRegistryAssessment v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "registry_id", "registry_sha256", "preventer_result", "rescue_gate", "metrics", "claims", "assessment_sha256"],
+  "properties": {
+    "artifact_type": {"const": "PreventionRegistryAssessment"},
+    "artifact_version": {"const": "0.2"},
+    "registry_id": {"type": "string", "minLength": 1},
+    "registry_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "preventer_result": {"enum": ["continuity_restored", "exhausted", "incomplete"]},
+    "rescue_gate": {"enum": ["blocked_by_successful_preventer", "preventer_gate_satisfied", "blocked_by_unresolved_preventer"]},
+    "metrics": {"type": "object"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["preventer_state_assessed", "loss_confirmed", "rescue_eligible", "execution_authority_granted", "canonical_successor_established"],
+      "properties": {
+        "preventer_state_assessed": {"const": true},
+        "loss_confirmed": {"const": false},
+        "rescue_eligible": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "canonical_successor_established": {"const": false}
+      }
+    },
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
