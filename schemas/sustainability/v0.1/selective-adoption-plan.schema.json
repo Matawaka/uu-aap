@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/selective-adoption-plan.schema.json",
+  "title": "UU-AAP Selective Parallel Adoption Plan v0.1",
+  "description": "Non-normative draft for proposing adoption of individual isolated artifacts without treating an entire parallel branch as mergeable by default.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "plan_id",
+    "source_branch",
+    "fresh_main_sha",
+    "items",
+    "excluded_items",
+    "fresh_overlap_review_required",
+    "fresh_validation_required",
+    "explicit_human_adoption_decision_required",
+    "whole_branch_merge_implied",
+    "automatic_merge_allowed",
+    "historical_source_preserved",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.selective-adoption-plan"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "plan_id": {"type": "string", "minLength": 1},
+    "source_branch": {"type": "string", "minLength": 1},
+    "fresh_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_ref", "adoption_mode", "reason", "target_semantics"],
+        "properties": {
+          "source_ref": {"type": "string", "minLength": 1},
+          "adoption_mode": {"enum": ["copy-with-provenance", "reimplement", "reference-only", "concept-only"]},
+          "reason": {"type": "string", "minLength": 1},
+          "target_semantics": {"type": "string", "minLength": 1},
+          "target_path": {"type": ["string", "null"]},
+          "must_preserve_invariants": {"type": "array", "items": {"type": "string"}},
+          "requires_manual_reconciliation": {"type": "boolean"}
+        }
+      }
+    },
+    "excluded_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_ref", "reason"],
+        "properties": {
+          "source_ref": {"type": "string", "minLength": 1},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "fresh_overlap_review_required": {"const": true},
+    "fresh_validation_required": {"const": true},
+    "explicit_human_adoption_decision_required": {"const": true},
+    "whole_branch_merge_implied": {"const": false},
+    "automatic_merge_allowed": {"const": false},
+    "historical_source_preserved": {"const": true},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
