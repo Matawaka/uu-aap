@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-dry-run-policy-v0.8.json",
+  "title":"CHSPExternalDryRunPolicy v0.8",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","project_id","maximum_v07_assessment_age_minutes","maximum_observed_state_age_minutes","maximum_envelope_hours","allowed_operation_kinds","requirements","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalDryRunPolicy"},"artifact_version":{"const":"0.8"},"project_id":{"type":"string","minLength":1},
+    "maximum_v07_assessment_age_minutes":{"type":"integer","minimum":1},"maximum_observed_state_age_minutes":{"type":"integer","minimum":1},"maximum_envelope_hours":{"type":"integer","minimum":1},
+    "allowed_operation_kinds":{"type":"array","minItems":1,"uniqueItems":true,"items":{"enum":["ensure_principal_presence","ensure_role_at_least","ensure_release_signer_binding","record_external_stewardship_mapping"]}},
+    "requirements":{"type":"object","additionalProperties":false,"required":["v07_transition_preparation_authorized_required","exact_v07_authorization_binding_required","exact_v06_binding_proposal_required","observed_state_required","credentials_prohibited","force_prohibited","destructive_operations_prohibited","ownership_transfer_prohibited","predecessor_removal_prohibited","credential_rotation_prohibited","canonical_origin_mutation_prohibited","canonical_publication_prohibited","kontur_activation_prohibited","network_prohibited","git_mutation_prohibited","external_process_prohibited"],"properties":{
+      "v07_transition_preparation_authorized_required":{"const":true},"exact_v07_authorization_binding_required":{"const":true},"exact_v06_binding_proposal_required":{"const":true},"observed_state_required":{"const":true},"credentials_prohibited":{"const":true},"force_prohibited":{"const":true},"destructive_operations_prohibited":{"const":true},"ownership_transfer_prohibited":{"const":true},"predecessor_removal_prohibited":{"const":true},"credential_rotation_prohibited":{"const":true},"canonical_origin_mutation_prohibited":{"const":true},"canonical_publication_prohibited":{"const":true},"kontur_activation_prohibited":{"const":true},"network_prohibited":{"const":true},"git_mutation_prohibited":{"const":true},"external_process_prohibited":{"const":true}
+    }},
+    "claims":{"type":"object","additionalProperties":false,"required":["descriptive_policy_only","external_mutation_authorized","external_mutation_performed","external_control_transferred","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_ownership_adjudicated","global_provider_state_proven"],"properties":{
+      "descriptive_policy_only":{"const":true},"external_mutation_authorized":{"const":false},"external_mutation_performed":{"const":false},"external_control_transferred":{"const":false},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false},"legal_ownership_adjudicated":{"const":false},"global_provider_state_proven":{"const":false}
+    }}
+  }
+}
