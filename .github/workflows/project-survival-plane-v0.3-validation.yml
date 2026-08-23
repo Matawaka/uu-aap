@@ -1,0 +1,68 @@
+name: Project Survival Plane v0.3 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/rescue/v0.3/**'
+      - '.github/workflows/project-survival-plane-v0.3-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/rescue/v0.3/**'
+      - '.github/workflows/project-survival-plane-v0.3-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protection/rescue/v0.3/observer_topology.py
+          python3 -m py_compile protection/rescue/v0.3/rescue_capsule.py
+          python3 -m py_compile protection/rescue/v0.3/test_survival_plane_v03.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/rescue/v0.3')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise topology attestation and Rescue Capsule fail-closed boundaries
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 boundary green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 decision boundary green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert v0.3 remains local evidence packaging only
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          forbidden = [
+              'subprocess', 'socket.', 'urllib.', 'requests.', 'http.client',
+              'git push', 'Authorization', 'Bearer ', 'PRIVATE_KEY', '--token', '--header'
+          ]
+          root = Path('protection/rescue/v0.3')
+          failures = []
+          for path in sorted(root.glob('*.py')):
+              text = path.read_text(encoding='utf-8')
+              for token in forbidden:
+                  if token in text:
+                      failures.append(f'{path}:{token}')
+          if failures:
+              raise SystemExit('forbidden remote/auth primitive in v0.3: ' + ', '.join(failures))
+          print('v0.3 contains no remote/auth execution primitive')
+          PY
