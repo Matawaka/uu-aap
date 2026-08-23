@@ -20,6 +20,8 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-24.04
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Checkout full history read-only
         uses: actions/checkout@v4
@@ -36,10 +38,18 @@ jobs:
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check "jsonschema==4.25.1"
 
-      - name: Check hardening code syntax
+      - name: Check hardening code syntax without bytecode output
         run: |
-          python -m py_compile schemas/architecture/v0.1/architecture_convergence_assessor.py
-          python -m py_compile schemas/architecture/v0.1/tests/test_architecture_convergence_readiness_v01.py
+          python - <<'PY'
+          from pathlib import Path
+          for rel in [
+              'schemas/architecture/v0.1/architecture_convergence_assessor.py',
+              'schemas/architecture/v0.1/tests/test_architecture_convergence_readiness_v01.py',
+          ]:
+              source = Path(rel).read_text(encoding='utf-8')
+              compile(source, rel, 'exec')
+          print('Python syntax: PASS')
+          PY
           node --check schemas/architecture/v0.1/build-project-readiness-checkpoint.js
           node --check schemas/architecture/v0.1/tests/test_project_readiness_checkpoint_v01.js
           node --check server/kontur/v0.1/audit-revision-gate.js
