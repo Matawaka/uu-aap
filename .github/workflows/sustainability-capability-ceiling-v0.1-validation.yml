@@ -95,10 +95,15 @@ jobs:
           python3 - <<'PY'
           from pathlib import Path
           text = Path('.github/workflows/sustainability-capability-ceiling-v0.1-validation.yml').read_text(encoding='utf-8')
-          assert 'contents: read' in text
-          assert 'contents: write' not in text
-          assert 'secrets.' not in text
-          assert 'pull_request_target' not in text
-          assert 'CHSP_GITHUB_TOKEN' not in text
+          required = 'contents' + ': ' + 'read'
+          forbidden = [
+              'contents' + ': ' + 'write',
+              'secrets' + '.',
+              'pull_request' + '_target',
+              'CHSP_' + 'GITHUB_TOKEN',
+          ]
+          assert required in text
+          for token in forbidden:
+              assert token not in text, token
           print('workflow authority surface: read-only')
           PY
