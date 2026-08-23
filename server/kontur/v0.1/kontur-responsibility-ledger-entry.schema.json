@@ -38,6 +38,8 @@
     "command_nonce": {"oneOf": [{"type": "null"}, {"type": "string", "minLength": 1}]},
     "activation_preflight": {"oneOf": [{"type": "null"}, {"type": "object"}]},
     "activation_preflight_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "activation_execute_command": {"type": "object"},
+    "activation_execute_command_binding": {"$ref": "#/$defs/binding"},
     "entry_digest": {"$ref": "#/$defs/digest"},
     "claims": {
       "type": "object",
