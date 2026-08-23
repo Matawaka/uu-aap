@@ -1,0 +1,159 @@
+name: ObservationReceipt post-execution validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/observation-receipt-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/observation-receipt-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  observation-receipt:
+    name: ObservationReceipt post-execution validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check ObservationReceipt JavaScript
+        run: |
+          node --check protocols/integration/v0.1/record-observation-receipt.js
+          node --check protocols/integration/v0.1/test-observation-receipt.js
+
+      - name: Validate ObservationReceipt schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path('protocols/integration/v0.1/observation-receipt.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: observation-receipt.schema.json')
+          PY
+
+      - name: Reproduce CommitReceipt then independently read back successor state
+        run: |
+          node protocols/integration/v0.1/test-observation-receipt.js \
+            /tmp/observation-receipt.json \
+            /tmp/observation-prereq-commit-receipt.json \
+            /tmp/observation-prereq-decision.json \
+            /tmp/observation-prereq-decision-input.json \
+            /tmp/observation-prereq-revalidation.json
+
+      - name: Validate ObservationReceipt and assurance boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('protocols/integration/v0.1')
+          schema = json.loads((root / 'observation-receipt.schema.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('/tmp/observation-receipt.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(receipt)
+
+          assert receipt['observation_mode'] == 'git_object_database_readback'
+          assert receipt['observation_source'] == 'local_git_object_database'
+          assert receipt['outcome_scope'] == 'local_git_successor_object'
+          assert receipt['expected']['successor_revision'] == receipt['observed']['revision']
+          assert receipt['expected']['successor_commit_sha'] == receipt['observed']['commit_sha']
+          assert receipt['expected']['successor_tree_sha'] == receipt['observed']['tree_sha']
+          assert receipt['expected']['parent_commit_sha'] == receipt['observed']['parent_commit_sha']
+          assert receipt['expected']['changed_paths'] == receipt['observed']['changed_paths']
+          assert receipt['expected']['changed_path_count'] == receipt['observed']['changed_path_count']
+          assert all(receipt['readback_verification'].values())
+
+          claims = receipt['claims']
+          for key in [
+              'commit_receipt_accepted',
+              'post_execution_readback_performed',
+              'outcome_observed',
+              'successor_state_observed',
+              'observation_matches_commit_receipt',
+              'local_git_object_state_observed',
+          ]:
+              assert claims[key] is True, key
+
+          for key in [
+              'remote_repository_state_observed',
+              'published_branch_or_ref_update_observed',
+              'poai_materialization_event_recorded',
+              'policy_relative_canonicality_established',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_effect_established',
+              'poai_v_conformance_established',
+          ]:
+              assert claims[key] is False, key
+
+          for key in [
+              'remote_repository_state_observed',
+              'published_branch_or_ref_update_observed',
+              'policy_relative_canonicality_established',
+          ]:
+              bad = copy.deepcopy(receipt)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden overclaim: {key}')
+
+          bad = copy.deepcopy(receipt)
+          bad['claims']['outcome_observed'] = False
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted loss of observed-outcome claim')
+
+          print('ObservationReceipt establishes narrow local readback while publication/canonicality remain false')
+          PY
+
+      - name: Confirm observation produced no ref or working-tree mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
