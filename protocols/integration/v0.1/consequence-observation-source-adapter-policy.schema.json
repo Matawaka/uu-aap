@@ -89,6 +89,7 @@
         "responsibility_for_consequence_attributed", "responsibility_for_outcome_adjudicated",
         "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
         "truth_certified", "successor_append_executed", "successor_append_may_proceed",
+        "global_replay_protection_established", "distributed_consensus_established",
         "poai_materialization_event_recorded", "universal_canonicality_established"
       ],
       "properties": {
@@ -108,6 +109,8 @@
         "truth_certified": {"const": false},
         "successor_append_executed": {"const": false},
         "successor_append_may_proceed": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
         "poai_materialization_event_recorded": {"const": false},
         "universal_canonicality_established": {"const": false}
       }
