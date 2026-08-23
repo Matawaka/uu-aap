@@ -1,0 +1,99 @@
+{
+  "artifact_type": "CCRPLiveCrossAgentAcceptanceEvidence",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#154",
+  "frozen_predecessor": {
+    "tag": "poai-ccrp-exp-v0.1",
+    "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+  },
+  "prior_live_vector": {
+    "issue": "Matawaka/uu-aap#150",
+    "evidence_merge_commit": "eb920fac7ad00eb52e0895bed3d87ed45280c7ad"
+  },
+  "setup": {
+    "pr": 155,
+    "baseline_merge_commit": "91f79b30c15cae98195c6038a88d1464a9844ea4",
+    "target_path": "experiments/ccrp-v0.1/cross-agent-live/target.json",
+    "baseline_target_blob_sha": "02ae45340c924eda27d18ebc091cddfb944cc36a"
+  },
+  "executor_b_origin": {
+    "client_class": "Codex execution context",
+    "executor_label": "executor-b-codex",
+    "observed_remote_main_sha": "91f79b30c15cae98195c6038a88d1464a9844ea4",
+    "target_blob_sha": "02ae45340c924eda27d18ebc091cddfb944cc36a",
+    "generation": 0,
+    "state": "baseline",
+    "accepted_executor": null,
+    "prepared_operation": {
+      "generation": 1,
+      "state": "executor-b-accepted",
+      "accepted_executor": "executor-b-codex"
+    },
+    "working_tree_mutation_performed_reported": false,
+    "github_mutation_performed_reported": false
+  },
+  "executor_a_materialization": {
+    "client_class": "ChatGPT project conversation",
+    "executor_label": "executor-a-chatgpt",
+    "observed_base_sha": "91f79b30c15cae98195c6038a88d1464a9844ea4",
+    "proposal_commit": "82e83b6d07f0e69a4a3dabbbb620194f00106b19",
+    "pr": 156,
+    "merge_commit": "69b44a60c92a289122711c0ba813b7aa032afe0c",
+    "materialized_target": {
+      "blob_sha": "f2915924c88f87dafb026893441288ee98bc99cb",
+      "generation": 1,
+      "state": "executor-a-accepted",
+      "accepted_executor": "executor-a-chatgpt"
+    }
+  },
+  "executor_b_delayed_resume": {
+    "continuation_message": "продолжай",
+    "reported_decision": "EXECUTOR B CODEX NOT ADMITTED",
+    "origin_frontier_preserved_reported": true,
+    "fresh_observation": {
+      "current_remote_main_sha": "69b44a60c92a289122711c0ba813b7aa032afe0c",
+      "current_target_blob_sha": "f2915924c88f87dafb026893441288ee98bc99cb",
+      "generation": 1,
+      "state": "executor-a-accepted",
+      "accepted_executor": "executor-a-chatgpt"
+    },
+    "operation_b_executed_reported": false,
+    "working_tree_mutation_performed_reported": false,
+    "github_mutation_performed_reported": false
+  },
+  "independent_repository_verification": {
+    "main_sha_after_executor_b_response": "69b44a60c92a289122711c0ba813b7aa032afe0c",
+    "target_state_after_executor_b_response": {
+      "generation": 1,
+      "state": "executor-a-accepted",
+      "accepted_executor": "executor-a-chatgpt"
+    },
+    "open_pull_requests_observed": 0,
+    "branches_matching_executor_b_observed": 0,
+    "stale_repository_mutation_observed": false
+  },
+  "acceptance": {
+    "status": "pass",
+    "distinct_executor_clients_preserved": true,
+    "executor_identity_did_not_imply_current_execution_ownership": true,
+    "origin_frontier_preserved_reported": true,
+    "fresh_remote_state_reread_before_mutation_reported": true,
+    "stale_or_superseded_operation_detected": true,
+    "executor_b_not_admitted": true,
+    "stale_repository_mutation_observed": false
+  },
+  "assurance_boundary": {
+    "executor_b_transcript_source": "Codex response supplied through the experiment conversation",
+    "repository_side_effects_independently_verified": true,
+    "internal_executor_cognition_independently_verified": false,
+    "client_product_identity_cryptographically_attested": false,
+    "protocol_proven_correct": false,
+    "universal_conformance_established": false,
+    "poai_v_conformance_established": false,
+    "truth_certified": false,
+    "legal_authority_or_effect_established": false,
+    "responsibility_established": false,
+    "moral_correctness_established": false,
+    "universal_canonicality_established": false
+  }
+}
