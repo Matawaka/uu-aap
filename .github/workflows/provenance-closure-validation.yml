@@ -1,0 +1,180 @@
+name: ProvenanceClosureReceipt bounded-chain validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/provenance-closure-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "protocols/attestation/**"
+      - "protocols/registry/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/authority/**"
+      - "proposals/poai/materialization/**"
+      - ".github/workflows/provenance-closure-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-closure:
+    name: ProvenanceClosureReceipt bounded-chain validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check ProvenanceClosure JavaScript
+        run: |
+          node --check protocols/integration/v0.1/build-provenance-closure.js
+          node --check protocols/integration/v0.1/test-provenance-closure.js
+
+      - name: Validate ProvenanceClosureReceipt schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+
+          schema = json.loads(Path('protocols/integration/v0.1/provenance-closure-receipt.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: provenance-closure-receipt.schema.json')
+          PY
+
+      - name: Reproduce full integration suffix then close provenance
+        run: |
+          node protocols/integration/v0.1/test-provenance-closure.js \
+            /tmp/provenance-closure.json \
+            /tmp/provenance-canonicalization.json \
+            /tmp/provenance-observation.json \
+            /tmp/provenance-commit.json \
+            /tmp/provenance-decision.json \
+            /tmp/provenance-decision-input.json \
+            /tmp/provenance-revalidation.json
+
+      - name: Validate closure structure and assurance boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import hashlib
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('protocols/integration/v0.1')
+          schema = json.loads((root / 'provenance-closure-receipt.schema.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('/tmp/provenance-closure.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(receipt)
+
+          assert receipt['origin_frontier']['mode'] == 'bounded_machine_suffix'
+          assert receipt['origin_frontier']['earliest_digest_bound_artifact_type'] == 'RevalidationReceipt'
+          assert receipt['origin_frontier']['standalone_context_frame_present'] is False
+          assert receipt['origin_frontier']['standalone_intent_present'] is False
+          assert receipt['origin_frontier']['semantic_origin_provenance_complete'] is False
+
+          expected_types = [
+              'RevalidationReceipt',
+              'CommitDecisionInput',
+              'CommitDecisionResult',
+              'CommitReceipt',
+              'ObservationReceipt',
+              'CanonicalizationReceipt',
+              'UU-AAPCanonicalizationPolicy',
+          ]
+          assert [x['artifact_type'] for x in receipt['digest_bound_lineage']] == expected_types
+          assert len(receipt['reference_bound_upstream']['refs']) == 6
+          assert receipt['reference_bound_upstream']['artifact_bytes_bound'] is False
+          assert all(receipt['verification'].values())
+
+          claims = receipt['claims']
+          for key in [
+              'bounded_chain_closed',
+              'digest_bound_suffix_established',
+              'reference_bound_upstream_frontier_established',
+              'policy_relative_canonicality_preserved',
+          ]:
+              assert claims[key] is True, key
+
+          for key in [
+              'standalone_context_frame_provenance_established',
+              'standalone_intent_provenance_established',
+              'semantic_origin_provenance_complete',
+              'all_upstream_evidence_artifact_bytes_bound',
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'poai_successor_record_identity_inferred',
+              'universal_canonicality_established',
+              'truth_certified',
+              'causal_proof_certified',
+              'legal_responsibility_determined',
+              'legal_effect_established',
+              'moral_correctness_established',
+              'poai_v_conformance_established',
+          ]:
+              assert claims[key] is False, key
+
+          for key in [
+              'standalone_context_frame_provenance_established',
+              'standalone_intent_provenance_established',
+              'semantic_origin_provenance_complete',
+              'all_upstream_evidence_artifact_bytes_bound',
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'universal_canonicality_established',
+              'truth_certified',
+              'legal_effect_established',
+          ]:
+              bad = copy.deepcopy(receipt)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden overclaim: {key}')
+
+          bad = copy.deepcopy(receipt)
+          bad['claims']['bounded_chain_closed'] = False
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted loss of bounded-chain closure claim')
+
+          print('Provenance closure is bounded and monotonic: exact machine suffix closed; semantic origin remains explicitly incomplete')
+          PY
+
+      - name: Confirm provenance closure produced no repository mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
