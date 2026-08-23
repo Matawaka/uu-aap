@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-external-binding-assessment-v0.6.json",
+  "title": "CHSPExternalBindingAssessment v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","assessment_id","evaluated_at","project_id","steward_id","v05_stewardship_state_sha256","v05_execution_receipt_sha256","claim_sha256","attestation_set_sha256","proposal_sha256","state","decision","metrics","reasons","assessment_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPExternalBindingAssessment"},
+    "artifact_version": {"const": "0.6"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "steward_id": {"type": "string", "minLength": 1},
+    "v05_stewardship_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "v05_execution_receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claim_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "attestation_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "proposal_sha256": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["evidence_insufficient","evidence_conflicted","binding_review_eligible"]},
+    "decision": {"enum": ["collect_more_external_evidence","resolve_external_evidence_conflict","external_binding_human_review_may_be_requested"]},
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["supporting_attestations","contradictory_attestations","indeterminate_attestations","observer_domains","evidence_classes","strong_possession_present","oldest_support_age_days"],
+      "properties": {
+        "supporting_attestations": {"type": "integer", "minimum": 0},
+        "contradictory_attestations": {"type": "integer", "minimum": 0},
+        "indeterminate_attestations": {"type": "integer", "minimum": 0},
+        "observer_domains": {"type": "integer", "minimum": 0},
+        "evidence_classes": {"type": "integer", "minimum": 0},
+        "strong_possession_present": {"type": "boolean"},
+        "oldest_support_age_days": {"type": "integer", "minimum": 0}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_sufficiency_only","external_binding_review_eligible","external_binding_established","external_control_transition_authorized","external_control_transferred","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_ownership_adjudicated","universal_identity_proven","domain_independence_proven","distributed_consensus_established"],
+      "properties": {
+        "policy_sufficiency_only": {"const": true},
+        "external_binding_review_eligible": {"type": "boolean"},
+        "external_binding_established": {"const": false},
+        "external_control_transition_authorized": {"const": false},
+        "external_control_transferred": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_ownership_adjudicated": {"const": false},
+        "universal_identity_proven": {"const": false},
+        "domain_independence_proven": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  }
+}

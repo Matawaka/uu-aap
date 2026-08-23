@@ -11,6 +11,7 @@ Current development line:
 - [`v0.3/`](v0.3/) — final human recognition, predecessor acknowledgement or protocol-unavailability alternative, final challenge contour, bounded non-exclusive dual-control handover, immutable handover outcome, and canonical-stewardship handover review eligibility.
 - [`v0.4/`](v0.4/) — human approval quorum, bounded canonical-stewardship handover authorization, authorization expiry, immutable authorizer revocation/candidate withdrawal, and executor-request eligibility without execution.
 - [`v0.5/`](v0.5/) — bounded local execution of one active v0.4 authorization, immutable CHSP canonical-stewardship state, execution receipt, freshness/replay boundaries, and explicit separation from external repository/account/origin control.
+- [`v0.6/`](v0.6/) — evidence-bound mapping of an effective CHSP steward to an external control-plane principal, multi-class attestations, conflict handling, proposal-only external binding, and human-review eligibility without external mutation.
 
 Core invariants:
 
@@ -43,6 +44,14 @@ Core invariants:
 `CHSP canonical stewardship effective != canonical origin publication`
 
 `CHSP canonical stewardship effective != KONTUR activation`
+
+`external identity claim != external identity proven`
+
+`role observed != external authority transferred`
+
+`external binding proposal != external binding established`
+
+`binding review eligible != external transition authorized`
 
 `later authorization revocation != historical execution erased`
 

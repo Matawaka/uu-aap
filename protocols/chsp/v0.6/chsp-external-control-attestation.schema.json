@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-external-control-attestation-v0.6.json",
+  "title": "CHSPExternalControlAttestation v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","attestation_id","project_id","claim_sha256","observer_id","observer_domain_id","evidence_class","result","observed_at","evidence_sha256","contains_credentials","attestation_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPExternalControlAttestation"},
+    "artifact_version": {"const": "0.6"},
+    "attestation_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "claim_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observer_id": {"type": "string", "minLength": 1},
+    "observer_domain_id": {"type": "string", "minLength": 1},
+    "evidence_class": {"enum": ["identity_match","role_visibility","challenge_response","signature_verification","repository_metadata"]},
+    "result": {"enum": ["support","contradict","indeterminate"]},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "contains_credentials": {"const": false},
+    "attestation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observation_recorded","evidence_truth_certified","observer_domain_independence_proven","external_binding_established","external_control_transferred","repository_ownership_transferred","canonical_origin_mutated","kontur_activated","legal_effect_established"],
+      "properties": {
+        "observation_recorded": {"const": true},
+        "evidence_truth_certified": {"const": false},
+        "observer_domain_independence_proven": {"const": false},
+        "external_binding_established": {"const": false},
+        "external_control_transferred": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_effect_established": {"const": false}
+      }
+    }
+  }
+}
