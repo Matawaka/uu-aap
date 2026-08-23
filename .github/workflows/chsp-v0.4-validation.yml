@@ -51,7 +51,7 @@ jobs:
         run: python3 protocols/chsp/v0.1/test_chsp.py
 
       - name: Keep Human Canonical Recognition v0.6 green
-        run: python3 protection/rescue/v0.6/test_human_canonical_recognition.py
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
 
       - name: Keep Canonical Succession Proposal v0.5 green
         run: python3 protection/rescue/v0.5/test_canonical_succession.py
