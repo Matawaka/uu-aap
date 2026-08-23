@@ -1,0 +1,33 @@
+{
+  "document_type": "uu-aap.convergence-review",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "parallel_ref": "parallel/sustainability-backlog-v0.1",
+  "reviewed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "reviewed_active_work_refs": [
+    "pull/273"
+  ],
+  "fresh_observation": true,
+  "path_overlap_checked": true,
+  "semantic_overlap_checked": true,
+  "validation_checked": true,
+  "candidate_adoptions": [
+    {
+      "source_ref": "schemas/sustainability/v0.1/capability-ceiling.schema.json",
+      "scope": [
+        "generic non-escalation invariant"
+      ],
+      "reason": "Potentially complementary to CHSP exact execution authorization, but not ready for integration while CHSP v1.0 remains active work."
+    }
+  ],
+  "recommended_disposition": "keep-isolated",
+  "recommendation_is_not_authorization": true,
+  "explicit_human_decision_required": true,
+  "automatic_pr_creation_allowed": false,
+  "automatic_merge_allowed": false,
+  "authority_effect": "none",
+  "notes": [
+    "This review records a provisional recommendation only.",
+    "Re-review is required after PR #273 changes state or main advances."
+  ]
+}
