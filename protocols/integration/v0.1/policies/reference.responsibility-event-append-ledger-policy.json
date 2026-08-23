@@ -1,0 +1,48 @@
+{
+  "$schema": "../responsibility-event-append-ledger-policy.schema.json",
+  "artifact_type": "ResponsibilityEventAppendLedgerPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:responsibility-event-append-ledger-policy:local-filesystem:1",
+  "policy_version": 1,
+  "ledger_id": "urn:uu-aap:responsibility-event-append-ledger:reference-local-v0.1",
+  "storage_scope": "local_filesystem_append_ledger",
+  "storage_model": "immutable_entry_files",
+  "atomic_publication": "temp_fsync_rename_dir_fsync",
+  "head_authority": "validated_entry_chain_replay",
+  "replay_scope": "ledger_local_history",
+  "corruption_mode": "fail_closed",
+  "accepted_append_artifact": {
+    "artifact_type": "ResponsibilityEventAppendReceipt",
+    "artifact_version": "0.1"
+  },
+  "invariants": {
+    "writer_lock_required": true,
+    "atomic_publication_required": true,
+    "file_fsync_required": true,
+    "entries_directory_fsync_required": true,
+    "immutable_committed_entries": true,
+    "contiguous_sequence_required": true,
+    "predecessor_entry_digest_required": true,
+    "predecessor_event_head_required": true,
+    "duplicate_append_receipt_rejected": true,
+    "duplicate_event_identity_rejected": true,
+    "stale_head_fork_rejected": true,
+    "recovery_validation_required": true,
+    "mutable_head_authoritative": false,
+    "temporary_file_authoritative": false,
+    "scalar_responsibility_score_allowed": false
+  },
+  "claims": {
+    "ledger_local_durable_replay_policy_defined": true,
+    "distributed_consensus_established": false,
+    "global_replay_protection_established": false,
+    "universal_canonicality_established": false,
+    "new_external_consequence_observed": false,
+    "causal_proof_certified": false,
+    "responsibility_for_outcome_adjudicated": false,
+    "legal_liability_established": false,
+    "moral_blame_assigned": false,
+    "truth_certified": false,
+    "poai_materialization_event_recorded": false
+  }
+}
