@@ -1,0 +1,35 @@
+{
+  "artifact_type": "CHSPHandoverExecutionPolicy",
+  "artifact_version": "0.5",
+  "project_id": "Matawaka/uu-aap",
+  "authorized_action": "record_protocol_canonical_stewardship_handover",
+  "maximum_active_assessment_age_minutes": 15,
+  "requirements": {
+    "v04_active_assessment_required": true,
+    "exact_authorization_binding_required": true,
+    "authorization_unexpired_at_execution": true,
+    "zero_presented_revocations_required": true,
+    "recorder_evidence_digest_required": true,
+    "execution_nonce_required": true,
+    "single_local_execution_per_authorization": true,
+    "immutable_state_and_receipt": true,
+    "atomic_local_publish": true,
+    "automatic_repository_mutation": false,
+    "automatic_account_control_transfer": false,
+    "automatic_canonical_publication": false,
+    "automatic_kontur_activation": false
+  },
+  "claims": {
+    "descriptive_execution_policy_only": true,
+    "global_revocation_absence_proven": false,
+    "global_replay_prevention_established": false,
+    "repository_ownership_transferred": false,
+    "account_control_transferred": false,
+    "canonical_origin_mutated": false,
+    "canonical_publication_executed": false,
+    "kontur_activated": false,
+    "legal_effect_established": false,
+    "distributed_consensus_established": false,
+    "universal_trust_established": false
+  }
+}
