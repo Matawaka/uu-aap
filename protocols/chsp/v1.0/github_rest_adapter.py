@@ -55,6 +55,7 @@ class GitHubRestAdapter:
         self._token = token
         self._api_base = api_base.rstrip("/")
         self._timeout = timeout_seconds
+        self._target: tuple[str, str, str] | None = None
 
     def _request(self, method: str, path: str, payload: dict[str, Any] | None = None) -> tuple[int, dict[str, Any], str | None]:
         body = None if payload is None else json.dumps(payload, separators=(",", ":")).encode("utf-8")
@@ -84,6 +85,7 @@ class GitHubRestAdapter:
 
     def observe(self, envelope: dict[str, Any]) -> dict[str, Any]:
         owner, repo, login = parse_target(envelope)
+        self._target = (owner, repo, login)
         path = "/repos/{}/{}/collaborators/{}/permission".format(
             urllib.parse.quote(owner, safe=""), urllib.parse.quote(repo, safe=""), urllib.parse.quote(login, safe="")
         )
@@ -122,12 +124,9 @@ class GitHubRestAdapter:
             raise ValueError("operation failed GitHub adapter preflight")
         if not plan["mutation_needed"]:
             return {"status":"already_satisfied","mutation_attempted":False,"mutation_performed":False,"observation":observation,"request_id":observation.get("request_id"),"reason":plan["reason"]}
-        owner, repo, login = parse_target({
-            "external_system_type":"github_repository",
-            "external_system_id":policy.get("_runtime_external_system_id", "") or "invalid/invalid",
-            "external_principal_id":policy.get("_runtime_external_principal_id", "") or "github:invalid",
-        })
-        # Runtime target is injected by bind_target() below. It is never credential material.
+        if self._target is None:
+            raise RuntimeError("provider target was not observed before mutation")
+        owner, repo, login = self._target
         target = op["intended_role"]
         path = "/repos/{}/{}/collaborators/{}".format(
             urllib.parse.quote(owner, safe=""), urllib.parse.quote(repo, safe=""), urllib.parse.quote(login, safe="")
@@ -137,8 +136,3 @@ class GitHubRestAdapter:
         if ROLE_RANK.get(after["role"], -1) < ROLE_RANK[target]:
             return {"status":"verification_failed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":request_id,"reason":"provider mutation returned but target role was not re-observed"}
         return {"status":"changed","mutation_attempted":True,"mutation_performed":True,"observation":after,"request_id":request_id,"reason":"bounded collaborator role elevation verified"}
-
-    def bind_target(self, envelope: dict[str, Any], policy: dict[str, Any]) -> None:
-        owner, repo, login = parse_target(envelope)
-        policy["_runtime_external_system_id"] = f"{owner}/{repo}"
-        policy["_runtime_external_principal_id"] = f"github:{login}"
