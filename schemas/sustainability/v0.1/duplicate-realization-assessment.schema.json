@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/duplicate-realization-assessment.schema.json",
+  "title": "UU-AAP Duplicate Realization Assessment v0.1",
+  "description": "Non-normative draft for identifying when independently evolving main-line work may already realize part or all of an isolated parallel proposal.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "assessment_id",
+    "parallel_item_ref",
+    "observed_main_sha",
+    "candidates",
+    "overall_disposition",
+    "automatic_replacement_allowed",
+    "automatic_merge_allowed",
+    "explicit_human_disposition_required",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.duplicate-realization-assessment"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "parallel_item_ref": {"type": "string", "minLength": 1},
+    "observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["main_ref", "semantic_overlap", "boundary_overlap", "evidence_refs"],
+        "properties": {
+          "main_ref": {"type": "string", "minLength": 1},
+          "semantic_overlap": {"enum": ["none", "low", "medium", "high"]},
+          "boundary_overlap": {"enum": ["none", "partial", "substantial", "unknown"]},
+          "evidence_refs": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "minItems": 1
+          },
+          "differences": {"type": "array", "items": {"type": "string"}},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "overall_disposition": {
+      "enum": [
+        "no-overlap",
+        "partial-overlap",
+        "likely-duplicate",
+        "main-supersedes-parallel-candidate",
+        "parallel-remains-distinct",
+        "needs-human-review"
+      ]
+    },
+    "automatic_replacement_allowed": {"const": false},
+    "automatic_merge_allowed": {"const": false},
+    "explicit_human_disposition_required": {"const": true},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
