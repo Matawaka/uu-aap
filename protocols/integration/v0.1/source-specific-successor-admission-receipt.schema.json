@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:source-specific-successor-admission-receipt:0.1",
+  "title": "SourceSpecificSuccessorAdmissionReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "admission_receipt_id", "evaluated_at",
+    "policy_binding", "upstream_workflow_run", "upstream_artifact", "main_binding_receipt_binding",
+    "upstream_main_revision", "original_source_revision", "source_profile", "historical_frontier_binding",
+    "evaluator_context", "decision", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "artifact_type": {"const": "SourceSpecificSuccessorAdmissionReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "admission_receipt_id": {"type": "string", "pattern": "^urn:uu-aap:source-specific-successor-admission-receipt:[0-9a-f]{24}$"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "policy_binding": {"$ref": "#/$defs/binding"},
+    "upstream_workflow_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "run_number", "run_attempt", "event", "head_branch", "head_sha", "status", "conclusion", "workflow_name"],
+      "properties": {
+        "run_id": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "run_number": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "run_attempt": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "event": {"const": "push"},
+        "head_branch": {"const": "main"},
+        "head_sha": {"const": "4c76d80ead3e0d8d3af14375a3478cc72beddefa"},
+        "status": {"const": "completed"},
+        "conclusion": {"const": "success"},
+        "workflow_name": {"const": "ConsequenceObservation Source Adapter Main Binding validation"}
+      }
+    },
+    "upstream_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "name", "size_in_bytes", "expired", "archive_digest"],
+      "properties": {
+        "artifact_id": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "name": {"const": "consequence-source-main-binding-4c76d80ead3e0d8d3af14375a3478cc72beddefa"},
+        "size_in_bytes": {"type": "integer", "minimum": 1},
+        "expired": {"const": false},
+        "archive_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "main_binding_receipt_binding": {"$ref": "#/$defs/binding"},
+    "upstream_main_revision": {"const": "4c76d80ead3e0d8d3af14375a3478cc72beddefa"},
+    "original_source_revision": {"const": "0ea85faa957cd924c250e0cea0d0758f855d4fd0"},
+    "source_profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["producer_id", "producer_artifact_type", "producer_artifact_version", "source_adapter_policy_id", "context_class"],
+      "properties": {
+        "producer_id": {"const": "urn:uu-aap:producer:github-actions-runtime"},
+        "producer_artifact_type": {"const": "GitHubActionsRuntimeObservation"},
+        "producer_artifact_version": {"const": "0.1"},
+        "source_adapter_policy_id": {"const": "urn:uu-aap:consequence-observation-source-adapter-policy:github-actions-runtime:1"},
+        "context_class": {"const": "main_push"}
+      }
+    },
+    "historical_frontier_binding": {"$ref": "#/$defs/binding"},
+    "evaluator_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_class", "event_name", "sha", "ref", "run_id"],
+      "properties": {
+        "context_class": {"enum": ["candidate_pull_request", "main_push"]},
+        "event_name": {"enum": ["pull_request", "push"]},
+        "sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "ref": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "pattern": "^[1-9][0-9]*$"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "policy_relative", "exact_main_binding_receipt_verified", "main_bound_source_binding_accepted",
+        "historical_frontier_binding_consistency_preserved", "historical_frontier_bytes_reverified",
+        "source_profile_admitted_for_successor_adapter_design", "source_semantics_admitted",
+        "future_successor_adapter_registration_may_be_proposed", "candidate_admission_receipt",
+        "main_bound_admission_receipt", "successor_adapter_registered", "successor_policy_modified",
+        "successor_append_may_proceed", "successor_append_executed",
+        "requires_separate_adapter_registration_policy", "requires_separate_append_admission"
+      ],
+      "properties": {
+        "status": {"const": "admitted_for_future_successor_adapter_design"},
+        "policy_relative": {"const": true},
+        "exact_main_binding_receipt_verified": {"const": true},
+        "main_bound_source_binding_accepted": {"const": true},
+        "historical_frontier_binding_consistency_preserved": {"const": true},
+        "historical_frontier_bytes_reverified": {"const": false},
+        "source_profile_admitted_for_successor_adapter_design": {"const": true},
+        "source_semantics_admitted": {"const": true},
+        "future_successor_adapter_registration_may_be_proposed": {"const": true},
+        "candidate_admission_receipt": {"type": "boolean"},
+        "main_bound_admission_receipt": {"type": "boolean"},
+        "successor_adapter_registered": {"const": false},
+        "successor_policy_modified": {"const": false},
+        "successor_append_may_proceed": {"const": false},
+        "successor_append_executed": {"const": false},
+        "requires_separate_adapter_registration_policy": {"const": true},
+        "requires_separate_append_admission": {"const": true}
+      },
+      "allOf": [
+        {"if": {"properties": {"candidate_admission_receipt": {"const": true}}}, "then": {"properties": {"main_bound_admission_receipt": {"const": false}}}},
+        {"if": {"properties": {"main_bound_admission_receipt": {"const": true}}}, "then": {"properties": {"candidate_admission_receipt": {"const": false}}}}
+      ]
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_specific_successor_admission_policy_applied", "exact_main_binding_receipt_verified",
+        "main_bound_source_binding_accepted", "historical_frontier_binding_consistency_preserved",
+        "historical_frontier_bytes_reverified", "source_profile_admitted_for_successor_adapter_design",
+        "source_semantics_admitted", "stronger_claims_withheld", "successor_adapter_registered",
+        "successor_policy_modified", "successor_append_may_proceed", "successor_append_executed",
+        "new_external_consequence_observed", "generalized_external_consequence_causality_established",
+        "causal_proof_certified", "responsibility_for_consequence_attributed",
+        "responsibility_for_outcome_adjudicated", "legal_liability_established", "legal_effect_established",
+        "moral_blame_assigned", "moral_correctness_established", "truth_certified",
+        "global_replay_protection_established", "distributed_consensus_established",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "source_specific_successor_admission_policy_applied": {"const": true},
+        "exact_main_binding_receipt_verified": {"const": true},
+        "main_bound_source_binding_accepted": {"const": true},
+        "historical_frontier_binding_consistency_preserved": {"const": true},
+        "historical_frontier_bytes_reverified": {"const": false},
+        "source_profile_admitted_for_successor_adapter_design": {"const": true},
+        "source_semantics_admitted": {"const": true},
+        "stronger_claims_withheld": {"const": true},
+        "successor_adapter_registered": {"const": false},
+        "successor_policy_modified": {"const": false},
+        "successor_append_may_proceed": {"const": false},
+        "successor_append_executed": {"const": false},
+        "new_external_consequence_observed": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_consequence_attributed": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
