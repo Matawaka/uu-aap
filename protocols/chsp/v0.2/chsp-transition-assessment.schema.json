@@ -4,7 +4,7 @@
   "title": "CHSPTransitionAssessment v0.2",
   "type": "object",
   "additionalProperties": false,
-  "required": ["artifact_type", "artifact_version", "assessment_id", "evaluated_at", "project_id", "candidate_id", "v01_assessment_sha256", "recognition_sha256", "policy_sha256", "challenge_set_sha256", "envelope_set_sha256", "state", "decision", "metrics", "reasons", "assessment_sha256", "claims"],
+  "required": ["artifact_type", "artifact_version", "assessment_id", "evaluated_at", "project_id", "candidate_id", "v01_assessment_sha256", "recognition_sha256", "policy_sha256", "challenge_set_sha256", "envelope_set_sha256", "outcome_set_sha256", "state", "decision", "metrics", "reasons", "assessment_sha256", "claims"],
   "properties": {
     "artifact_type": {"const": "CHSPTransitionAssessment"},
     "artifact_version": {"const": "0.2"},
@@ -17,22 +17,24 @@
     "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "challenge_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "envelope_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outcome_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "state": {"enum": ["recognition_invalid", "cooling_active", "challenge_blocked", "stage_A1_eligible", "progressive_authority_active", "next_stage_review_eligible", "progression_reset_required", "final_succession_review_eligible"]},
     "decision": {"enum": ["reject_recognition", "wait_for_cooling_and_challenge_window", "resolve_blocking_challenge", "A1_authorization_may_be_requested", "no_new_stage_while_envelope_active", "next_stage_authorization_may_be_requested", "return_to_observation_or_new_human_review", "canonical_human_succession_recognition_may_be_requested"]},
     "metrics": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["cooling_complete", "challenge_window_complete", "blocking_challenges", "resolved_challenges", "envelope_count", "completed_positive_stages", "latest_stage", "latest_status", "latest_outcome"],
+      "required": ["cooling_complete", "challenge_window_complete", "blocking_challenges", "resolved_challenges", "envelope_count", "outcome_count", "completed_positive_stages", "latest_stage", "latest_effective_state", "latest_outcome"],
       "properties": {
         "cooling_complete": {"type": "boolean"},
         "challenge_window_complete": {"type": "boolean"},
         "blocking_challenges": {"type": "integer", "minimum": 0},
         "resolved_challenges": {"type": "integer", "minimum": 0},
         "envelope_count": {"type": "integer", "minimum": 0},
+        "outcome_count": {"type": "integer", "minimum": 0},
         "completed_positive_stages": {"type": "integer", "minimum": 0},
         "latest_stage": {"enum": ["none", "A1_advisory", "A2_reversible_limited", "A3_supervised_stewardship", "A4_canonical_preparation"]},
-        "latest_status": {"enum": ["none", "active", "completed", "revoked", "expired"]},
-        "latest_outcome": {"enum": ["none", "positive", "adverse", "indeterminate"]}
+        "latest_effective_state": {"enum": ["none", "active", "completed_positive", "completed_adverse", "completed_indeterminate", "revoked", "expired_without_outcome"]},
+        "latest_outcome": {"enum": ["none", "positive", "adverse", "indeterminate", "revoked"]}
       }
     },
     "reasons": {"type": "array", "items": {"type": "string"}},
