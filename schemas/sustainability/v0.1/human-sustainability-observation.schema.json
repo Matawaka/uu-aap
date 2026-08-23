@@ -1,0 +1,124 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/human-sustainability-observation.schema.json",
+  "title": "UU-AAP Human Sustainability Observation v0.1",
+  "description": "Non-normative, non-diagnostic draft for recording reversible interaction-load observations without biometrics, medical inference, hidden psychological scoring, or authority reduction.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "observed_at",
+    "observation_scope",
+    "signals",
+    "allowed_adaptations",
+    "prohibited_interpretations",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {
+      "const": "uu-aap.human-sustainability-observation"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "status": {
+      "const": "non-normative-draft"
+    },
+    "observed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "observation_scope": {
+      "const": "interaction-load-only"
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "confidence", "evidence_scope"],
+        "properties": {
+          "kind": {
+            "enum": [
+              "repeated_recent_correction",
+              "adjacent_instruction_contradiction",
+              "task_creation_outpaces_task_closure",
+              "safeguard_bypass_request_repetition",
+              "clarification_friction",
+              "abandon_restart_frequency_increase",
+              "context_switch_frequency_increase",
+              "other_non_diagnostic_interaction_signal"
+            ]
+          },
+          "confidence": {
+            "enum": ["low", "medium", "high"]
+          },
+          "evidence_scope": {
+            "enum": [
+              "current_interaction",
+              "current_work_session",
+              "explicitly_supplied_project_history"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "allowed_adaptations": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "shorter_prompts",
+          "fewer_simultaneous_decisions",
+          "stronger_checkpointing",
+          "explicit_defer_option",
+          "explicit_archive_option",
+          "reduce_novelty_injection",
+          "summarize_before_next_branch",
+          "preserve_safe_resume_point"
+        ]
+      }
+    },
+    "prohibited_interpretations": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "enum": [
+          "medical_diagnosis",
+          "mental_health_diagnosis",
+          "incapacity_determination",
+          "authority_revocation",
+          "hidden_psychological_score",
+          "biometric_identity_inference",
+          "fitness_for_work_determination",
+          "coercive_behavioral_ranking"
+        ]
+      }
+    },
+    "authority_effect": {
+      "const": "none"
+    },
+    "raw_private_content_required": {
+      "const": false
+    },
+    "biometric_data_required": {
+      "const": false
+    },
+    "medical_data_required": {
+      "const": false
+    },
+    "scalar_human_score_allowed": {
+      "const": false
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
