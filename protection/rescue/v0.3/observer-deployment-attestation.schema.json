@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/observer-deployment-attestation-v0.3.json",
+  "title": "ObserverDeploymentAttestation v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "attestation_id", "observer_id", "observer_spec_sha256", "attestor_id", "attestor_domain_id", "issued_at", "valid_until", "deployment_domains", "evidence", "claims"],
+  "properties": {
+    "artifact_type": {"const": "ObserverDeploymentAttestation"},
+    "artifact_version": {"const": "0.3"},
+    "attestation_id": {"type": "string", "minLength": 1},
+    "observer_id": {"type": "string", "minLength": 1},
+    "observer_spec_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "attestor_id": {"type": "string", "minLength": 1},
+    "attestor_domain_id": {"type": "string", "minLength": 1},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "valid_until": {"type": "string", "format": "date-time"},
+    "deployment_domains": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observer_domain_id", "failure_domain_id", "custodian_domain_id", "provider_domain_id", "network_domain_id"],
+      "properties": {
+        "observer_domain_id": {"type": "string", "minLength": 1},
+        "failure_domain_id": {"type": "string", "minLength": 1},
+        "custodian_domain_id": {"type": "string", "minLength": 1},
+        "provider_domain_id": {"type": "string", "minLength": 1},
+        "network_domain_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["evidence_class", "evidence_ref", "evidence_sha256"],
+        "properties": {
+          "evidence_class": {"enum": ["custodian_attestation", "provider_receipt", "network_receipt", "storage_receipt", "deployment_receipt", "external_anchor"]},
+          "evidence_ref": {"type": "string", "minLength": 1},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observer_self_attestation", "deployment_evidence_reviewed", "contains_credentials", "canonical_authority_granted", "loss_confirmed", "rescue_eligible", "universal_physical_independence_proven"],
+      "properties": {
+        "observer_self_attestation": {"const": false},
+        "deployment_evidence_reviewed": {"const": true},
+        "contains_credentials": {"const": false},
+        "canonical_authority_granted": {"const": false},
+        "loss_confirmed": {"const": false},
+        "rescue_eligible": {"const": false},
+        "universal_physical_independence_proven": {"const": false}
+      }
+    }
+  }
+}
