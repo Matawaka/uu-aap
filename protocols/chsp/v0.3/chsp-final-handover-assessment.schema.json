@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-final-handover-assessment-v0.3.json",
+  "title": "CHSPFinalHandoverAssessment v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","assessment_id","evaluated_at","project_id","candidate_id","v02_transition_assessment_sha256","predecessor_disposition_sha256","final_recognition_sha256","policy_sha256","challenge_set_sha256","handover_sha256","outcome_sha256","state","decision","metrics","reasons","assessment_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPFinalHandoverAssessment"},
+    "artifact_version": {"const": "0.3"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "v02_transition_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "final_recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "challenge_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "handover_sha256": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "outcome_sha256": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["final_recognition_invalid","final_cooling_active","final_challenge_blocked","dual_control_handover_eligible","dual_control_active","handover_reset_required","canonical_stewardship_handover_review_eligible"]},
+    "decision": {"enum": ["reject_final_recognition","wait_for_final_cooling","resolve_final_challenge","dual_control_handover_may_be_requested","no_finalization_while_dual_control_active","return_to_prior_stewardship_state_or_new_human_review","canonical_stewardship_handover_may_be_requested"]},
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["final_cooling_complete","blocking_challenges","resolved_challenges","predecessor_disposition_mode","unavailability_attestations","unavailability_attestor_domains","handover_present","handover_window_days","handover_outcome"],
+      "properties": {
+        "final_cooling_complete": {"type": "boolean"},
+        "blocking_challenges": {"type": "integer", "minimum": 0},
+        "resolved_challenges": {"type": "integer", "minimum": 0},
+        "predecessor_disposition_mode": {"enum": ["acknowledged","protocol_unavailability_attested"]},
+        "unavailability_attestations": {"type": "integer", "minimum": 0},
+        "unavailability_attestor_domains": {"type": "integer", "minimum": 0},
+        "handover_present": {"type": "boolean"},
+        "handover_window_days": {"type": "integer", "minimum": 0},
+        "handover_outcome": {"enum": ["none","positive","adverse","indeterminate","revoked"]}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["policy_sufficiency_only","automatic_stewardship_transfer","exclusive_successor_authority","canonical_successor_established","canonical_origin_mutated","canonical_publication_executed","ownership_transferred","account_control_transferred","kontur_activated","legal_incapacity_certified","medical_incapacity_certified","distributed_consensus_established","universal_trust_established"],
+      "properties": {
+        "policy_sufficiency_only": {"const": true},
+        "automatic_stewardship_transfer": {"const": false},
+        "exclusive_successor_authority": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_incapacity_certified": {"const": false},
+        "medical_incapacity_certified": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
