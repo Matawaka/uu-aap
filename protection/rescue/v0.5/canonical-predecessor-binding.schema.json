@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/canonical-predecessor-binding-v0.5.json",
+  "title": "CanonicalPredecessorBinding v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "binding_id", "bound_at", "project_id", "canonical_origin_id", "canonical_frontier_ref", "canonical_frontier_commit", "canonical_frontier_tree", "canonical_ref_set_sha256", "binding_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CanonicalPredecessorBinding"},
+    "artifact_version": {"const": "0.5"},
+    "binding_id": {"type": "string", "minLength": 1},
+    "bound_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "canonical_origin_id": {"type": "string", "minLength": 1},
+    "canonical_frontier_ref": {"type": "string", "pattern": "^refs/(heads|tags)/[A-Za-z0-9._/-]+$"},
+    "canonical_frontier_commit": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "canonical_frontier_tree": {"type": "string", "pattern": "^[0-9a-f]{40,64}$"},
+    "canonical_ref_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "binding_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_scoped_canonical_predecessor_recorded", "universal_canonicality_established", "future_successor_selected", "ownership_adjudicated", "truth_certified"],
+      "properties": {
+        "repository_scoped_canonical_predecessor_recorded": {"const": true},
+        "universal_canonicality_established": {"const": false},
+        "future_successor_selected": {"const": false},
+        "ownership_adjudicated": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}

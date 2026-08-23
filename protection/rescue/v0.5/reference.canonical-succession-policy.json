@@ -1,0 +1,27 @@
+{
+  "$schema": "./canonical-succession-policy.schema.json",
+  "artifact_type": "CanonicalSuccessionProposalPolicy",
+  "artifact_version": "0.5",
+  "project_id": "Matawaka/uu-aap",
+  "requirements": {
+    "verified_v04_recovery": true,
+    "predecessor_binding_required": true,
+    "recovered_frontier_must_match_predecessor": true,
+    "candidate_local_branch_required": true,
+    "candidate_descends_from_recovered_frontier": true,
+    "candidate_repo_bare": true,
+    "candidate_repo_no_remotes": true,
+    "candidate_repo_fsck_full": true,
+    "proposal_only": true,
+    "human_recognition_required": true,
+    "canonical_origin_mutation_prohibited": true,
+    "network_prohibited": true
+  },
+  "claims": {
+    "automatic_canonical_recognition_enabled": false,
+    "automatic_origin_creation_enabled": false,
+    "ownership_transfer_enabled": false,
+    "kontur_activation_enabled": false,
+    "distributed_consensus_established": false
+  }
+}
