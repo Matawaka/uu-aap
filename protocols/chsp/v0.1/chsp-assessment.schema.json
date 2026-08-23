@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-assessment-v0.1.json",
+  "title": "CHSPAssessment v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "assessment_id", "evaluated_at", "project_id",
+    "candidate_id", "candidate_sha256", "policy_sha256", "evidence_set_sha256",
+    "delegation_set_sha256", "state", "decision", "metrics", "reasons",
+    "assessment_sha256", "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPAssessment"},
+    "artifact_version": {"const": "0.1"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "candidate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "evidence_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "delegation_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["observation_required", "delegation_eligible", "succession_eligible"]},
+    "decision": {"enum": ["continue_observation", "bounded_delegation_may_be_considered", "human_successor_recognition_may_be_requested"]},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "immersion_days", "valid_supportive_events", "observer_domains", "challenge_events",
+        "required_classes_satisfied", "successful_delegations", "blocking_adverse_events"
+      ],
+      "properties": {
+        "immersion_days": {"type": "integer", "minimum": 0},
+        "valid_supportive_events": {"type": "integer", "minimum": 0},
+        "observer_domains": {"type": "integer", "minimum": 0},
+        "challenge_events": {"type": "integer", "minimum": 0},
+        "required_classes_satisfied": {"type": "integer", "minimum": 0},
+        "successful_delegations": {"type": "integer", "minimum": 0},
+        "blocking_adverse_events": {"type": "integer", "minimum": 0}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_sufficiency_only", "observable_evidence_assessed", "automatic_authority_progression",
+        "canonical_successor_established", "ownership_transferred", "kontur_activated",
+        "legal_identity_certified", "psychological_fitness_certified", "universal_trust_established"
+      ],
+      "properties": {
+        "policy_sufficiency_only": {"const": true},
+        "observable_evidence_assessed": {"const": true},
+        "automatic_authority_progression": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_identity_certified": {"const": false},
+        "psychological_fitness_certified": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,103 @@
+name: CHSP v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate CHSP Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protocols/chsp/v0.1/chsp.py
+          python3 -m py_compile protocols/chsp/v0.1/test_chsp.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.1')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise CHSP evidence and delegation boundaries
+        run: python3 protocols/chsp/v0.1/test_chsp.py
+
+      - name: Keep Human Canonical Recognition v0.6 green
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert CHSP reference implementation is local assessment only
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('protocols/chsp/v0.1/chsp.py')
+          tree = ast.parse(path.read_text(encoding='utf-8'))
+          forbidden_roots = {'subprocess', 'socket', 'requests', 'urllib', 'http', 'ftplib'}
+          found = set()
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  for alias in node.names:
+                      if alias.name.split('.')[0] in forbidden_roots:
+                          found.add(alias.name)
+              elif isinstance(node, ast.ImportFrom):
+                  if (node.module or '').split('.')[0] in forbidden_roots:
+                      found.add(node.module or '')
+          if found:
+              raise SystemExit('CHSP v0.1 must remain local-only; forbidden imports: ' + ', '.join(sorted(found)))
+          print('CHSP v0.1 has no network/Git execution import surface')
+          PY
+
+      - name: Assert CHSP cannot silently establish successor authority
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.1')
+          policy = json.load((root / 'reference.chsp-policy.json').open(encoding='utf-8'))
+          assert policy['requirements']['automatic_authority_progression'] is False
+          assert policy['requirements']['automatic_canonical_recognition'] is False
+          assert policy['transition_safeguards']['canonical_origin_mutation_prohibited'] is True
+          assert policy['transition_safeguards']['ownership_transfer_prohibited'] is True
+          assert policy['transition_safeguards']['kontur_activation_prohibited'] is True
+          assert policy['claims']['canonical_successor_established'] is False
+          src = (root / 'chsp.py').read_text(encoding='utf-8')
+          forbidden = ['canonical_successor_established": True', "canonical_successor_established': True", 'kontur_activated": True', "kontur_activated': True"]
+          bad = [x for x in forbidden if x in src]
+          if bad:
+              raise SystemExit('unsafe CHSP authority claim: ' + ', '.join(bad))
+          print('CHSP v0.1 remains eligibility-only')
+          PY

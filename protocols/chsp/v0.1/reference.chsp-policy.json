@@ -1,0 +1,56 @@
+{
+  "artifact_type": "CHSPPolicy",
+  "artifact_version": "0.1",
+  "project_id": "Matawaka/uu-aap",
+  "minimum_immersion_days": 90,
+  "maximum_evidence_age_days": 365,
+  "minimum_evidence_events": 8,
+  "minimum_observer_domains": 3,
+  "required_evidence_classes": [
+    "protocol_comprehension",
+    "boundary_respect",
+    "conflict_of_interest_disclosure",
+    "challenged_decision_response",
+    "uncertainty_handling",
+    "reversibility_preservation",
+    "appeal_preservation",
+    "operational_stewardship"
+  ],
+  "minimum_challenge_events": 2,
+  "minimum_completed_successful_delegations": 2,
+  "countable_delegation_levels": [
+    "reversible_limited",
+    "supervised_stewardship"
+  ],
+  "requirements": {
+    "self_attestation_counts_as_independent_evidence": false,
+    "unresolved_adverse_evidence_blocks": true,
+    "candidate_must_not_be_sole_appeal_contour": true,
+    "delegation_must_be_reversible": true,
+    "delegation_must_expire": true,
+    "completed_delegation_outcome_required": true,
+    "automatic_authority_progression": false,
+    "automatic_canonical_recognition": false
+  },
+  "transition_safeguards": {
+    "historical_anchors_preserved": true,
+    "appeal_path_preserved": true,
+    "recovery_path_preserved": true,
+    "temporary_authority_reversible": true,
+    "irreversible_canon_rewrite_prohibited": true,
+    "hidden_centralization_prohibited": true,
+    "canonical_origin_mutation_prohibited": true,
+    "ownership_transfer_prohibited": true,
+    "kontur_activation_prohibited": true,
+    "automatic_failover_prohibited": true
+  },
+  "claims": {
+    "descriptive_policy_only": true,
+    "psychological_fitness_certified": false,
+    "legal_identity_certified": false,
+    "canonical_successor_established": false,
+    "ownership_transferred": false,
+    "kontur_activated": false,
+    "universal_trust_established": false
+  }
+}
