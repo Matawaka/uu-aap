@@ -18,9 +18,9 @@ For v0.1:
 - a future release MAY add a separate signed SHA-256 artifact manifest for distribution files such as PDF and EPUB;
 - a book-level UU-AAP/V record SHOULD bind the actual distributed ebook artifact, rather than infer artifact identity from this protocol-repository tag.
 
-## Later repository-scoped checkpoint anchors
+## Later repository-scoped checkpoint and release anchors
 
-Later protection, authority and licensing work is recorded as separate checkpoint tags rather than by moving `v0.1` or rewriting historical meaning.
+Later protection, authority, licensing and CCRP release work is recorded as separate immutable tags rather than by moving `v0.1` or rewriting historical meaning.
 
 Verified bindings as of 2026-08-23:
 
@@ -28,13 +28,22 @@ Verified bindings as of 2026-08-23:
 | --- | --- | --- |
 | `poai-authority-exp-v0.1` | PoAI authority-root experimental checkpoint | `2424e61846fd262f9c01ccc406931683d3c6e616` |
 | `poai-ccrp-exp-v0.1` | frozen CCRP v0.1 experimental checkpoint | `33215e251310105e2fac591b17ae2d90522488d9` |
+| `poai-ccrp-v0.1` | machine-readable CCRP v0.1 protocol release anchor | `2c98d34ebfb5e86491bffb29a27e5a55b4db707e` |
 | `uu-aap-product-protection-v0.1` | product provenance, attribution and responsibility checkpoint | `66cbeb97b512bc3d09babdfb43fbd4339bae4dda` |
 | `uu-aap-licensing-v0.1` | finalized open-licensing package checkpoint | `541d345432de851b198fa459cb33447c096aebe7` |
+
+The `poai-ccrp-v0.1` tag resolves to Git tree:
+
+- `52207c5c0c1b516462221a47a3791ad97b02cc5f`
+
+Its release-layer integrity is additionally represented by a content-addressed manifest at `protocols/ccrp/v0.1/release-manifest.json`. The post-publication successor checkpoint records the immutable tag/commit/tree binding and the Git blob identities of the release-layer artifacts without changing the tagged release bytes.
 
 Relevant committed manifests:
 
 - [`protection/checkpoints/product-provenance-responsibility-v0.1.json`](protection/checkpoints/product-provenance-responsibility-v0.1.json)
 - [`protection/checkpoints/open-licensing-v0.1.json`](protection/checkpoints/open-licensing-v0.1.json)
+- [`protocols/ccrp/v0.1/release-manifest.json`](protocols/ccrp/v0.1/release-manifest.json)
+- [`protocols/ccrp/checkpoints/ccrp-v0.1-release.json`](protocols/ccrp/checkpoints/ccrp-v0.1-release.json)
 
 The human-readable consolidated map is [`docs/CANONICAL-STATE.md`](docs/CANONICAL-STATE.md).
 
