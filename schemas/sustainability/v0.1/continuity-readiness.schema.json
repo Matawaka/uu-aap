@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/continuity-readiness.schema.json",
+  "title": "UU-AAP Continuity Readiness Matrix v0.1",
+  "description": "Non-normative multidimensional readiness record for project continuity. It intentionally forbids collapsing continuity into a single scalar score.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "assessment_id",
+    "assessed_at",
+    "observed_main_sha",
+    "dimensions",
+    "aggregate_scalar_score_allowed",
+    "overall_state",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.continuity-readiness"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "dimensions": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "state", "evidence_refs", "blocking"],
+        "properties": {
+          "name": {
+            "enum": [
+              "recoverability",
+              "authority-boundedness",
+              "context-handoff",
+              "stale-state-detection",
+              "parallel-isolation",
+              "duplicate-realization-control",
+              "inactivity-resilience",
+              "human-sustainability",
+              "validation-availability"
+            ]
+          },
+          "state": {"enum": ["established", "partial", "missing", "unknown"]},
+          "evidence_refs": {"type": "array", "items": {"type": "string"}},
+          "blocking": {"type": "boolean"},
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "aggregate_scalar_score_allowed": {"const": false},
+    "overall_state": {"enum": ["recoverable", "conditionally-recoverable", "not-established", "unknown"]},
+    "blocking_dimensions": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
