@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:consequence-observation-source-adapter-main-binding-receipt:0.1",
+  "title": "ConsequenceObservationSourceAdapterMainBindingReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "binding_receipt_id", "evaluated_at",
+    "policy_binding", "expected_source_revision", "source_workflow_run", "source_artifact",
+    "bundle_bindings", "runtime_context", "evaluator_context", "decision", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "artifact_type": {"const": "ConsequenceObservationSourceAdapterMainBindingReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "binding_receipt_id": {"type": "string", "pattern": "^urn:uu-aap:consequence-observation-source-adapter-main-binding-receipt:[0-9a-f]{24}$"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "policy_binding": {"$ref": "#/$defs/binding"},
+    "expected_source_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "source_workflow_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id", "run_number", "run_attempt", "event", "head_branch", "head_sha", "status", "conclusion", "workflow_name"],
+      "properties": {
+        "run_id": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "run_number": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "run_attempt": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "event": {"const": "push"},
+        "head_branch": {"const": "main"},
+        "head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "status": {"const": "completed"},
+        "conclusion": {"const": "success"},
+        "workflow_name": {"const": "ConsequenceObservation Source Adapter validation"}
+      }
+    },
+    "source_artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_id", "name", "size_in_bytes", "expired", "archive_digest"],
+      "properties": {
+        "artifact_id": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "name": {"type": "string", "pattern": "^consequence-source-adapter-[0-9a-f]{40}$"},
+        "size_in_bytes": {"type": "integer", "minimum": 1},
+        "expired": {"const": false},
+        "archive_digest": {
+          "type": ["string", "null"],
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "bundle_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runtime_observation", "source_evidence", "claim", "ingress_receipt", "assessment", "adapter_receipt", "summary"],
+      "properties": {
+        "runtime_observation": {"$ref": "#/$defs/binding"},
+        "source_evidence": {"$ref": "#/$defs/binding"},
+        "claim": {"$ref": "#/$defs/binding"},
+        "ingress_receipt": {"$ref": "#/$defs/binding"},
+        "assessment": {"$ref": "#/$defs/binding"},
+        "adapter_receipt": {"$ref": "#/$defs/binding"},
+        "summary": {"$ref": "#/$defs/binding"}
+      }
+    },
+    "runtime_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_class", "event_name", "repository", "workflow_name", "run_id", "sha", "ref"],
+      "properties": {
+        "context_class": {"const": "main_push"},
+        "event_name": {"const": "push"},
+        "repository": {"const": "Matawaka/uu-aap"},
+        "workflow_name": {"const": "ConsequenceObservation Source Adapter validation"},
+        "run_id": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+        "sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "ref": {"const": "refs/heads/main"}
+      }
+    },
+    "evaluator_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_class", "event_name", "sha", "ref", "run_id"],
+      "properties": {
+        "context_class": {"enum": ["candidate_pull_request", "main_push"]},
+        "event_name": {"enum": ["pull_request", "push"]},
+        "sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "ref": {"type": "string", "minLength": 1},
+        "run_id": {"type": "string", "pattern": "^[1-9][0-9]*$"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "policy_relative", "exact_push_run_verified", "exact_artifact_verified",
+        "bundle_integrity_verified", "main_bound_source_evidence_verified",
+        "source_may_be_presented_to_future_successor_policy", "candidate_binding_receipt",
+        "main_bound_binding_receipt", "successor_append_may_proceed", "successor_append_executed",
+        "requires_separate_successor_consumer_policy"
+      ],
+      "properties": {
+        "status": {"const": "verified_main_bound_source_adapter_evidence"},
+        "policy_relative": {"const": true},
+        "exact_push_run_verified": {"const": true},
+        "exact_artifact_verified": {"const": true},
+        "bundle_integrity_verified": {"const": true},
+        "main_bound_source_evidence_verified": {"const": true},
+        "source_may_be_presented_to_future_successor_policy": {"const": true},
+        "candidate_binding_receipt": {"type": "boolean"},
+        "main_bound_binding_receipt": {"type": "boolean"},
+        "successor_append_may_proceed": {"const": false},
+        "successor_append_executed": {"const": false},
+        "requires_separate_successor_consumer_policy": {"const": true}
+      },
+      "allOf": [
+        {"if": {"properties": {"candidate_binding_receipt": {"const": true}}}, "then": {"properties": {"main_bound_binding_receipt": {"const": false}}}},
+        {"if": {"properties": {"main_bound_binding_receipt": {"const": true}}}, "then": {"properties": {"candidate_binding_receipt": {"const": false}}}}
+      ]
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "main_binding_policy_applied", "exact_push_run_verified", "exact_artifact_verified",
+        "bundle_integrity_verified", "main_bound_source_evidence_verified", "stronger_claims_withheld",
+        "provider_identity_cryptographically_attested", "github_remote_truth_certified",
+        "new_external_consequence_observed", "consequence_truth_certified",
+        "generalized_external_consequence_causality_established", "causal_proof_certified",
+        "responsibility_for_consequence_attributed", "responsibility_for_outcome_adjudicated",
+        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
+        "moral_correctness_established", "truth_certified", "successor_append_may_proceed",
+        "successor_append_executed", "global_replay_protection_established",
+        "distributed_consensus_established", "poai_materialization_event_recorded",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "main_binding_policy_applied": {"const": true},
+        "exact_push_run_verified": {"const": true},
+        "exact_artifact_verified": {"const": true},
+        "bundle_integrity_verified": {"const": true},
+        "main_bound_source_evidence_verified": {"const": true},
+        "stronger_claims_withheld": {"const": true},
+        "provider_identity_cryptographically_attested": {"const": false},
+        "github_remote_truth_certified": {"const": false},
+        "new_external_consequence_observed": {"const": false},
+        "consequence_truth_certified": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_consequence_attributed": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "successor_append_may_proceed": {"const": false},
+        "successor_append_executed": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
