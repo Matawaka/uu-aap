@@ -1,0 +1,71 @@
+{
+  "artifact_type": "UUAAPOpenLicensingCheckpoint",
+  "artifact_version": "0.1",
+  "checkpoint_id": "urn:uu-aap:checkpoint:open-licensing:v0.1",
+  "repository": "Matawaka/uu-aap",
+  "canonical_repository_url": "https://github.com/Matawaka/uu-aap",
+  "checkpoint_scope": "repository-scoped-open-licensing-policy",
+  "licensing_source_commit": "8a6c8683049a9d30c2c31a01032acadbecd4d959",
+  "licensing_model": {
+    "non_software_content": "CC-BY-4.0",
+    "software_and_implementation_content": "Apache-2.0",
+    "file_specific_notice_overrides_default": true,
+    "third_party_material_silently_relicensed": false,
+    "contribution_model": "inbound-equals-outbound"
+  },
+  "bound_artifacts": [
+    {
+      "path": "LICENSE.md",
+      "git_blob_sha1": "ef6717a8847cea0333e3f52b32721c0133551912",
+      "role": "repository-licensing-map"
+    },
+    {
+      "path": "LICENSES/CC-BY-4.0.txt",
+      "git_blob_sha1": "e61df6f75c01af8b7916aa35528127af089635cc",
+      "role": "cc-by-4.0-license-text"
+    },
+    {
+      "path": "LICENSES/Apache-2.0.txt",
+      "git_blob_sha1": "11c6642e8a07fa854aa8480616692dc74b0041b9",
+      "role": "apache-2.0-license-text"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "git_blob_sha1": "d3989112d850f7b7c37bec9298848a5e3eb55f3c",
+      "role": "contribution-licensing-and-rights-responsibility"
+    }
+  ],
+  "preserved_protection_checkpoint": {
+    "tag": "uu-aap-product-protection-v0.1",
+    "commit": "66cbeb97b512bc3d09babdfb43fbd4339bae4dda"
+  },
+  "preserved_predecessor_checkpoints": [
+    {
+      "tag": "poai-authority-exp-v0.1",
+      "commit": "2424e61846fd262f9c01ccc406931683d3c6e616"
+    },
+    {
+      "tag": "poai-ccrp-exp-v0.1",
+      "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+    }
+  ],
+  "intended_protected_tag": "uu-aap-licensing-v0.1",
+  "invariants": [
+    "permission to copy != canonical succession",
+    "open license != endorsement",
+    "fork != canonical successor",
+    "commercial implementation != official implementation",
+    "attribution != legal ownership adjudication",
+    "AI assistance != responsibility transfer"
+  ],
+  "claims": {
+    "copyright_ownership_adjudicated": false,
+    "legal_identity_established": false,
+    "universal_legal_authority_established": false,
+    "universal_canonicality_established": false,
+    "truth_certified": false,
+    "causality_established": false,
+    "responsibility_for_downstream_use_established": false,
+    "poai_v_conformance_established": false
+  }
+}
