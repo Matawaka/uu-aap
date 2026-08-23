@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:github-actions-runtime-observation:0.1",
+  "title": "GitHubActionsRuntimeObservation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "observation_id", "observed_at",
+    "producer_id", "provider", "repository", "workflow_name", "event_name",
+    "run_id", "run_number", "run_attempt", "sha", "ref", "head_ref", "base_ref",
+    "server_url", "event_payload_digest", "context_class", "run_ref", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string"},
+    "artifact_type": {"const": "GitHubActionsRuntimeObservation"},
+    "artifact_version": {"const": "0.1"},
+    "observation_id": {"type": "string", "pattern": "^urn:uu-aap:github-actions-runtime-observation:[0-9a-f]{24}$"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "producer_id": {"const": "urn:uu-aap:producer:github-actions-runtime"},
+    "provider": {"const": "github_actions"},
+    "repository": {"type": "string", "minLength": 1},
+    "workflow_name": {"type": "string", "minLength": 1},
+    "event_name": {"enum": ["pull_request", "push"]},
+    "run_id": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+    "run_number": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+    "run_attempt": {"type": "string", "pattern": "^[1-9][0-9]*$"},
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "ref": {"type": "string", "minLength": 1},
+    "head_ref": {"type": ["string", "null"]},
+    "base_ref": {"type": ["string", "null"]},
+    "server_url": {"const": "https://github.com"},
+    "event_payload_digest": {"$ref": "#/$defs/rawDigest"},
+    "context_class": {"enum": ["candidate_pull_request", "main_push"]},
+    "run_ref": {"type": "string", "pattern": "^urn:github-actions:run:[1-9][0-9]*:attempt:[1-9][0-9]*$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_context_observed", "event_payload_bytes_digest_bound",
+        "provider_identity_cryptographically_attested", "github_remote_truth_certified",
+        "external_consequence_certified", "causal_proof_certified",
+        "responsibility_for_consequence_attributed", "legal_liability_established",
+        "moral_blame_assigned", "truth_certified", "remote_canonicality_established",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "runtime_context_observed": {"const": true},
+        "event_payload_bytes_digest_bound": {"const": true},
+        "provider_identity_cryptographically_attested": {"const": false},
+        "github_remote_truth_certified": {"const": false},
+        "external_consequence_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_consequence_attributed": {"const": false},
+        "legal_liability_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "remote_canonicality_established": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "rawDigest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "raw-bytes"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"event_name": {"const": "pull_request"}}},
+      "then": {
+        "properties": {
+          "context_class": {"const": "candidate_pull_request"},
+          "ref": {"pattern": "^refs/pull/[1-9][0-9]*/merge$"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"event_name": {"const": "push"}}},
+      "then": {
+        "properties": {
+          "context_class": {"const": "main_push"},
+          "ref": {"const": "refs/heads/main"}
+        }
+      }
+    }
+  ]
+}
