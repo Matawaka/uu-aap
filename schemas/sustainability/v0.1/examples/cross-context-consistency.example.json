@@ -1,0 +1,33 @@
+{
+  "document_type": "uu-aap.cross-context-consistency",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "assessment_id": "cross-context-2026-08-23-001",
+  "handoff_ref": "schemas/sustainability/v0.1/examples/recovery-handoff.example.json",
+  "source_last_observed_main_sha": "89b26161312a120b03c874968245331391c3e107",
+  "receiver_observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "relation": "main-advanced",
+  "information_frontier_preserved": true,
+  "hidden_memory_required": false,
+  "authority_transfer": false,
+  "execution_authorization_derived": false,
+  "safe_result": "reobserve-and-reconcile",
+  "consistency_findings": [
+    {
+      "field": "main_sha",
+      "result": "changed",
+      "evidence_ref": "github:main@4c609dcf8c958bc647586376a03c16f2c7166558",
+      "notes": "Receiving context observed a successor main state."
+    },
+    {
+      "field": "handoff_authority_transfer",
+      "result": "match",
+      "evidence_ref": "schemas/sustainability/v0.1/examples/recovery-handoff.example.json",
+      "notes": "The handoff remains informational and non-authorizing."
+    }
+  ],
+  "notes": [
+    "A changed main state requires reconciliation before any integration decision.",
+    "Historical source observations are preserved rather than overwritten by the receiving context."
+  ]
+}
