@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/schemas/architecture/v0.1/project-readiness-checkpoint.schema.json",
+  "title": "ProjectReadinessCheckpointReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "checkpoint_id", "recorded_at",
+    "project_id", "git_revision", "convergence_manifest_binding",
+    "current_main_frontier_verification_binding", "status", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)project-readiness-checkpoint\\.schema\\.json$"},
+    "artifact_type": {"const": "ProjectReadinessCheckpointReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "checkpoint_id": {"type": "string", "pattern": "^urn:uu-aap:architecture:readiness-checkpoint:"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "project_id": {"const": "Matawaka/uu-aap"},
+    "git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+    "convergence_manifest_binding": {"$ref": "#/$defs/binding"},
+    "current_main_frontier_verification_binding": {"$ref": "#/$defs/binding"},
+    "status": {"const": "project_readiness_checkpoint_established"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cross_plane_integration_review_eligible",
+        "current_main_frontier_verified",
+        "project_readiness_checkpoint_established",
+        "human_activation_step_still_required",
+        "kontur_activation_authorized",
+        "kontur_activated",
+        "execution_authority_granted",
+        "repository_ownership_transferred",
+        "canonical_origin_mutated",
+        "legal_authority_established",
+        "truth_certified",
+        "distributed_consensus_established",
+        "universal_architecture_completeness_proven",
+        "future_evolution_allowed"
+      ],
+      "properties": {
+        "cross_plane_integration_review_eligible": {"const": true},
+        "current_main_frontier_verified": {"const": true},
+        "project_readiness_checkpoint_established": {"const": true},
+        "human_activation_step_still_required": {"const": true},
+        "kontur_activation_authorized": {"const": false},
+        "kontur_activated": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "legal_authority_established": {"const": false},
+        "truth_certified": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "universal_architecture_completeness_proven": {"const": false},
+        "future_evolution_allowed": {"const": true}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    }
+  }
+}
