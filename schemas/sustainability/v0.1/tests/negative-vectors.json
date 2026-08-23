@@ -1,0 +1,68 @@
+{
+  "document_type": "uu-aap.sustainability-negative-vectors",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "description": "Mutation vectors that must fail schema validation. These vectors are validation-only and do not authorize or execute external actions.",
+  "vectors": [
+    {
+      "id": "handoff-must-not-transfer-authority",
+      "schema": "../recovery-handoff.schema.json",
+      "base_example": "../examples/recovery-handoff.example.json",
+      "mutation": {
+        "pointer": "/authority_transfer",
+        "value": true
+      },
+      "expected": "invalid"
+    },
+    {
+      "id": "handoff-must-reobserve-external-state",
+      "schema": "../recovery-handoff.schema.json",
+      "base_example": "../examples/recovery-handoff.example.json",
+      "mutation": {
+        "pointer": "/requires_fresh_external_observation",
+        "value": false
+      },
+      "expected": "invalid"
+    },
+    {
+      "id": "handoff-cannot-resume-in-execute-mode",
+      "schema": "../recovery-handoff.schema.json",
+      "base_example": "../examples/recovery-handoff.example.json",
+      "mutation": {
+        "pointer": "/safe_resume_mode",
+        "value": "execute"
+      },
+      "expected": "invalid"
+    },
+    {
+      "id": "capability-expansion-requires-new-authorization",
+      "schema": "../capability-ceiling.schema.json",
+      "base_example": "../examples/capability-ceiling.example.json",
+      "mutation": {
+        "pointer": "/expansion_requires_new_authorization",
+        "value": false
+      },
+      "expected": "invalid"
+    },
+    {
+      "id": "capability-forbidden-escalation-list-cannot-be-empty",
+      "schema": "../capability-ceiling.schema.json",
+      "base_example": "../examples/capability-ceiling.example.json",
+      "mutation": {
+        "pointer": "/forbidden_escalation_behaviors",
+        "value": []
+      },
+      "expected": "invalid"
+    },
+    {
+      "id": "recovery-main-sha-must-be-exact-object-id",
+      "schema": "../project-recovery-checkpoint.schema.json",
+      "base_example": "../examples/project-recovery-checkpoint.example.json",
+      "mutation": {
+        "pointer": "/observed_main_sha",
+        "value": "not-a-commit"
+      },
+      "expected": "invalid"
+    }
+  ]
+}
