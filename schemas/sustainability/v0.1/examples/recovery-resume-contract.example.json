@@ -1,0 +1,46 @@
+{
+  "document_type": "uu-aap.sustainability-recovery-resume",
+  "version": "0.1",
+  "status": "non-normative-candidate",
+  "recovery_id": "post-274-main-recovery-example",
+  "historical_frontier": {
+    "observed_ref": "0885e230872c546a395cab5c1c5319f99ba3d0c2",
+    "observed_at": "2026-08-23T17:07:43Z",
+    "notes": "Historical main before Sustainability Kernel v0.1 adoption."
+  },
+  "fresh_frontier": {
+    "observed_ref": "8186da3593156c720d8b5a6a6a586abb1612a6aa",
+    "observed_at": "2026-08-23T17:14:08Z",
+    "fresh_observation_performed": true,
+    "notes": "Fresh main after PR #274 was merged."
+  },
+  "comparison": "advanced",
+  "reconciliation": {
+    "changes_observed": [
+      "Sustainability Kernel v0.1 was selectively adopted into main",
+      "No CHSP execution or KONTUR activation is implied by the merge"
+    ],
+    "material_to_intended_work": true,
+    "intended_work_semantically_valid": true,
+    "path_or_resource_overlap_changed": false,
+    "notes": "The next sustainability layer is rebased conceptually on the new main through fresh branch creation, not by replaying the historical side-track."
+  },
+  "authority_transfer": false,
+  "authorization_reuse_allowed": false,
+  "safe_resume_mode": "prepare-only",
+  "external_execution_authorized": false,
+  "unresolved_items": [],
+  "disposition": "safe-to-prepare",
+  "prohibited_assumptions": [
+    "world_unchanged_during_pause",
+    "prior_intent_is_current_intent",
+    "prior_authorization_is_current",
+    "pause_implies_consent",
+    "branch_existence_implies_authority",
+    "denied_capability_may_be_routed_around",
+    "recovery_equals_execution_authorization"
+  ],
+  "notes": [
+    "This record prepares future work only; it does not authorize external mutation."
+  ]
+}
