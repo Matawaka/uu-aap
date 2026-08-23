@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/project-rescue-policy-v0.1.json",
+  "title": "ProjectRescuePolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "policy_id", "project_id", "thresholds", "mandatory_preventers", "claims"],
+  "properties": {
+    "artifact_type": {"const": "ProjectRescuePolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "canonical_origin": {"type": "string", "minLength": 1},
+    "thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["min_negative_observations", "min_evidence_classes", "min_observer_domains", "min_failure_domains", "min_confirmation_span_seconds", "prolonged_unavailability_seconds", "require_read_path_signal", "require_control_or_custodian_signal", "require_frontier_or_external_anchor", "min_verified_recovery_sources"],
+      "properties": {
+        "min_negative_observations": {"type": "integer", "minimum": 1},
+        "min_evidence_classes": {"type": "integer", "minimum": 1},
+        "min_observer_domains": {"type": "integer", "minimum": 1},
+        "min_failure_domains": {"type": "integer", "minimum": 1},
+        "min_confirmation_span_seconds": {"type": "integer", "minimum": 0},
+        "prolonged_unavailability_seconds": {"type": "integer", "minimum": 0},
+        "require_read_path_signal": {"type": "boolean"},
+        "require_control_or_custodian_signal": {"type": "boolean"},
+        "require_frontier_or_external_anchor": {"type": "boolean"},
+        "min_verified_recovery_sources": {"type": "integer", "minimum": 1}
+      }
+    },
+    "mandatory_preventers": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "allowed_not_applicable_preventers": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automatic_failover_enabled", "automatic_authority_transfer_enabled", "canonical_succession_established", "distributed_consensus_established"],
+      "properties": {
+        "automatic_failover_enabled": {"const": false},
+        "automatic_authority_transfer_enabled": {"const": false},
+        "canonical_succession_established": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  }
+}
