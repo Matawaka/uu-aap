@@ -40,11 +40,11 @@ async function main() {
 
   const noObservation = await Assessment.buildAssessment({
     assessmentPolicy, ingressPolicy, ingressReceipt: notYetIngress, claim: notYetClaim,
-    sourceEvidence: null, frontierEntry: frontier, assessedAt: '2026-08-23T08:43:16Z'
+    sourceEvidence: null, frontierEntry: frontier, assessedAt: '2026-08-23T11:54:16Z'
   });
   const fixtureAssessment = await Assessment.buildAssessment({
     assessmentPolicy, ingressPolicy, ingressReceipt: fixtureIngress, claim: fixtureClaim,
-    sourceEvidence: fixtureSource, frontierEntry: frontier, assessedAt: '2026-08-23T08:43:17Z'
+    sourceEvidence: fixtureSource, frontierEntry: frontier, assessedAt: '2026-08-23T11:54:17Z'
   });
 
   assert(noObservation.status === 'not_qualified_no_observation', 'no-observation assessment status mismatch');
