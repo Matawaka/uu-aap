@@ -1,0 +1,161 @@
+name: CausalAttributionAssessment validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/causal-attribution-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/causal-attribution-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  causal-attribution:
+    name: Causal attribution validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check causal attribution JavaScript
+        run: |
+          node --check protocols/integration/v0.1/assess-causality.js
+          node --check protocols/integration/v0.1/test-causal-attribution.js
+
+      - name: Validate CausalAttributionAssessment schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('protocols/integration/v0.1/causal-attribution.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: causal-attribution.schema.json')
+          PY
+
+      - name: Reproduce ResponsibilityTrace and evaluate competing causal hypotheses
+        run: node protocols/integration/v0.1/test-causal-attribution.js /tmp/causal-attribution-assessment.json
+
+      - name: Validate generated causal assessment and overclaim boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          schema = json.loads(Path('protocols/integration/v0.1/causal-attribution.schema.json').read_text(encoding='utf-8'))
+          assessment = json.loads(Path('/tmp/causal-attribution-assessment.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(assessment)
+
+          result = assessment['assessment_result']
+          assert result['status'] == 'bounded_association_supported_with_unresolved_alternatives'
+          assert result['causal_scope'] == 'bounded_transition_mechanism_only'
+          assert result['alternatives_considered'] is True
+          assert result['winner_selected'] is False
+          assert result['uncertainty_status'] == 'material_uncertainty_preserved'
+          assert result['causal_proof_established'] is False
+
+          states = {h['kind']: h['support_status'] for h in assessment['hypotheses']}
+          assert states['originating_execution_contributed'] == 'supported'
+          assert states['alternative_local_cause_contributed'] == 'insufficient'
+          assert states['insufficient_evidence_for_broader_causality'] == 'supported'
+
+          claims = assessment['claims']
+          for key in [
+              'predecessor_responsibility_trace_verified',
+              'causal_hypotheses_evaluated',
+              'evidence_horizon_fixed',
+              'evidence_classified',
+              'alternatives_explicitly_considered',
+              'bounded_transition_mechanism_association_supported',
+              'uncertainty_explicitly_preserved',
+          ]:
+              assert claims[key] is True, key
+
+          forbidden = [
+              'generalized_external_consequence_causality_established',
+              'causal_proof_certified',
+              'exclusive_cause_established',
+              'necessary_cause_established',
+              'sufficient_cause_established',
+              'counterfactual_causality_established',
+              'responsibility_for_outcome_adjudicated',
+              'legal_responsibility_determined',
+              'legal_effect_established',
+              'moral_blame_assigned',
+              'moral_correctness_established',
+              'truth_certified',
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'poai_successor_record_identity_inferred',
+              'universal_canonicality_established',
+              'poai_v_conformance_established',
+          ]
+          for key in forbidden:
+              assert claims[key] is False, key
+              bad = copy.deepcopy(assessment)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden causal overclaim: {key}')
+
+          for scalar_key in ['probability', 'score', 'percentage', 'likelihood', 'confidence_score']:
+              bad = copy.deepcopy(assessment)
+              bad['hypotheses'][0][scalar_key] = 0.9
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted prohibited scalar field: {scalar_key}')
+
+          bad = copy.deepcopy(assessment)
+          bad['assessment_result']['winner_selected'] = True
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted exclusive winner selection')
+
+          print('Competing causal hypotheses evaluated; uncertainty preserved; no causal proof or adjudication claimed')
+          PY
+
+      - name: Confirm causal assessment produced no repository mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
