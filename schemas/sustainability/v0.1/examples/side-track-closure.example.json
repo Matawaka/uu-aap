@@ -1,0 +1,27 @@
+{
+  "document_type": "uu-aap.side-track-closure",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "side_track": "parallel/sustainability-backlog-v0.1",
+  "closure_state": "frozen",
+  "reason": "Example only: freeze parallel work without requiring any main-line action.",
+  "closed_at": null,
+  "last_observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "disposition_ref": null,
+  "archive_ref": null,
+  "historical_material_preserved": true,
+  "main_line_action_required": false,
+  "automatic_reactivation_allowed": false,
+  "automatic_integration_allowed": false,
+  "branch_deletion_required": false,
+  "reentry_requires": [
+    "fresh_main_observation",
+    "fresh_semantic_overlap_review",
+    "fresh_path_overlap_review",
+    "explicit_human_decision"
+  ],
+  "authority_effect": "none",
+  "notes": [
+    "Freezing or archiving a side-track must not become a request for main to merge, review, or delete it."
+  ]
+}
