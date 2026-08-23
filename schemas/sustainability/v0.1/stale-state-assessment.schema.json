@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/stale-state-assessment.schema.json",
+  "title": "UU-AAP Stale State Assessment v0.1",
+  "description": "Non-normative draft for detecting when a previously observed project state can no longer safely support continuation assumptions.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "assessment_id",
+    "assessed_at",
+    "baseline_main_sha",
+    "current_main_sha",
+    "state_relation",
+    "stale",
+    "stale_reasons",
+    "allowed_resume_modes",
+    "execution_authorization_derived",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.stale-state-assessment"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "baseline_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "current_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "state_relation": {
+      "enum": ["unchanged", "advanced", "diverged", "unknown"]
+    },
+    "stale": {"type": "boolean"},
+    "stale_reasons": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "main_moved",
+          "branch_diverged",
+          "mutable_external_state_may_have_changed",
+          "authorization_may_be_stale",
+          "handoff_observation_gap",
+          "insufficient_evidence"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "allowed_resume_modes": {
+      "type": "array",
+      "items": {"enum": ["observe-only", "validate-only", "prepare-only"]},
+      "uniqueItems": true,
+      "minItems": 1
+    },
+    "prohibited_assumptions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "baseline_equals_current",
+          "prior_authorization_is_current",
+          "prior_intent_is_current",
+          "prepared_action_is_still_safe",
+          "absence_of_conflict_means_freshness"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "execution_authorization_derived": {"const": false},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"state_relation": {"const": "unchanged"}}},
+      "then": {"properties": {"stale": {"const": false}}}
+    },
+    {
+      "if": {"properties": {"state_relation": {"enum": ["advanced", "diverged", "unknown"]}}},
+      "then": {
+        "properties": {
+          "stale": {"const": true},
+          "stale_reasons": {"minItems": 1}
+        }
+      }
+    }
+  ]
+}
