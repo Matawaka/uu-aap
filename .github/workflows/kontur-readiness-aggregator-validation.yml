@@ -47,6 +47,8 @@ jobs:
           node --check server/kontur/v0.1/readiness-aggregator.js
           node --check server/kontur/v0.1/build-activation-frontier.js
           node --check server/kontur/v0.1/test-readiness-aggregator.js
+          node --check server/kontur/v0.1/verify-current-main-frontier.js
+          node --check server/kontur/v0.1/test-current-main-frontier-verification.js
 
       - name: Validate KONTUR readiness schemas and policies
         run: |
@@ -62,6 +64,7 @@ jobs:
               'kontur-readiness-aggregation.schema.json',
               'kontur-readiness-acceptance.schema.json',
               'kontur-activation-frontier.schema.json',
+              'kontur-current-main-frontier-verification.schema.json',
               'kontur-readiness-signal.schema.json',
               'kontur-responsibility-policy.schema.json',
           ]
@@ -84,6 +87,9 @@ jobs:
           ).validate(responsibility_policy)
           print('VALID canonical KONTUR aggregation and responsibility policies')
           PY
+
+      - name: Test current-main frontier verifier fail-closed boundary
+        run: node server/kontur/v0.1/test-current-main-frontier-verification.js
 
       - name: Reproduce independent evidence and build readiness frontier
         run: node server/kontur/v0.1/test-readiness-aggregator.js /tmp/kontur-readiness
@@ -216,6 +222,47 @@ jobs:
               raise AssertionError('activation frontier schema accepted invalid Git revision')
 
           print('Schema boundary rejects readiness/activation assurance escalation')
+          PY
+
+      - name: Emit current-main frontier verification receipt
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          KONTUR_EVENT_NAME: ${{ github.event_name }}
+          KONTUR_REF: ${{ github.ref }}
+          KONTUR_GITHUB_SHA: ${{ github.sha }}
+        run: |
+          CHECKOUT_SHA="$(git rev-parse HEAD)"
+          node server/kontur/v0.1/verify-current-main-frontier.js \
+            /tmp/kontur-readiness/activation-frontier.json \
+            /tmp/kontur-readiness/current-main-frontier-verification.json \
+            "$KONTUR_EVENT_NAME" \
+            "$KONTUR_REF" \
+            "$KONTUR_GITHUB_SHA" \
+            "$CHECKOUT_SHA"
+
+      - name: Validate current-main frontier verification receipt
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-readiness')
+          schema = json.loads((root / 'kontur-current-main-frontier-verification.schema.json').read_text(encoding='utf-8'))
+          receipt = json.loads((out / 'current-main-frontier-verification.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          assert receipt['workflow_context']['event_name'] == 'push'
+          assert receipt['workflow_context']['ref'] == 'refs/heads/main'
+          assert receipt['workflow_context']['github_sha'] == receipt['workflow_context']['checkout_sha']
+          assert receipt['frontier_git_revision'] == 'git:' + receipt['workflow_context']['github_sha']
+          assert receipt['decision'] == 'current_main_frontier_verified_for_workflow_event'
+          assert receipt['claims']['current_main_frontier_verified_for_workflow_event'] is True
+          assert receipt['claims']['human_activation_step_still_required'] is True
+          assert receipt['claims']['kernel_activated'] is False
+          assert receipt['claims']['execution_authority_granted'] is False
+          print('KONTUR current-main frontier receipt validated; human activation remains required')
           PY
 
       - name: Confirm readiness aggregation produced no repository mutation
