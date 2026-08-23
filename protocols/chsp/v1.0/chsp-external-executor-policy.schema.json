@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-external-executor-policy-v1.0.json",
+  "title": "CHSPExternalExecutorPolicy v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "project_id",
+    "maximum_v09_assessment_age_minutes",
+    "maximum_execution_request_age_minutes",
+    "maximum_execution_duration_seconds",
+    "maximum_provider_mutations",
+    "maximum_executable_role",
+    "allowed_external_system_types",
+    "requirements",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "CHSPExternalExecutorPolicy"},
+    "artifact_version": {"const": "1.0"},
+    "project_id": {"type": "string", "minLength": 1},
+    "maximum_v09_assessment_age_minutes": {"type": "integer", "minimum": 1},
+    "maximum_execution_request_age_minutes": {"type": "integer", "minimum": 1},
+    "maximum_execution_duration_seconds": {"type": "integer", "minimum": 1},
+    "maximum_provider_mutations": {"type": "integer", "minimum": 0, "maximum": 1},
+    "maximum_executable_role": {"const": "collaborator"},
+    "allowed_external_system_types": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["github_repository"]}
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "v09_active_authorization_required",
+        "exact_envelope_binding_required",
+        "exact_operations_digest_required",
+        "explicit_execution_request_required",
+        "typed_execution_confirmation_required",
+        "operator_evidence_digest_required",
+        "credentials_runtime_only",
+        "preflight_before_any_mutation",
+        "fresh_provider_observation_required",
+        "all_operations_preflight_required",
+        "post_write_verification_required",
+        "single_mutation_limit_required",
+        "ownership_transfer_prohibited",
+        "predecessor_access_removal_prohibited",
+        "credential_rotation_prohibited",
+        "canonical_origin_mutation_prohibited",
+        "canonical_publication_prohibited",
+        "kontur_activation_prohibited",
+        "automatic_execution_on_merge_or_ci"
+      ],
+      "properties": {
+        "v09_active_authorization_required": {"const": true},
+        "exact_envelope_binding_required": {"const": true},
+        "exact_operations_digest_required": {"const": true},
+        "explicit_execution_request_required": {"const": true},
+        "typed_execution_confirmation_required": {"const": true},
+        "operator_evidence_digest_required": {"const": true},
+        "credentials_runtime_only": {"const": true},
+        "preflight_before_any_mutation": {"const": true},
+        "fresh_provider_observation_required": {"const": true},
+        "all_operations_preflight_required": {"const": true},
+        "post_write_verification_required": {"const": true},
+        "single_mutation_limit_required": {"const": true},
+        "ownership_transfer_prohibited": {"const": true},
+        "predecessor_access_removal_prohibited": {"const": true},
+        "credential_rotation_prohibited": {"const": true},
+        "canonical_origin_mutation_prohibited": {"const": true},
+        "canonical_publication_prohibited": {"const": true},
+        "kontur_activation_prohibited": {"const": true},
+        "automatic_execution_on_merge_or_ci": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_policy_only",
+        "repository_ownership_transferred",
+        "account_control_transferred",
+        "predecessor_access_removed",
+        "canonical_origin_mutated",
+        "canonical_publication_executed",
+        "kontur_activated",
+        "legal_ownership_adjudicated",
+        "distributed_consensus_established"
+      ],
+      "properties": {
+        "execution_policy_only": {"const": true},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "predecessor_access_removed": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_ownership_adjudicated": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  }
+}
