@@ -7,6 +7,7 @@ It is separate from repository continuity, rescue execution, repository successi
 Current development line:
 
 - [`v0.1/`](v0.1/) — foundation: candidate registration, observable evidence, reversible delegation, appeal-contour binding, transition safeguards, and succession-readiness assessment.
+- [`v0.2/`](v0.2/) — explicit human recognition, cooling/challenge windows, immutable progressive-authority envelopes, separate authority outcomes, revocation semantics, and staged A1→A4 succession review.
 
 Core invariants:
 
@@ -17,6 +18,12 @@ Core invariants:
 `bounded delegation != succession`
 
 `succession eligibility != canonical recognition`
+
+`human recognition != authority grant`
+
+`progressive authority != canonical authority`
+
+`final succession review eligibility != canonical successor`
 
 `human recognition != canonical publication`
 

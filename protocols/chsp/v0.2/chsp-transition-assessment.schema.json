@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-transition-assessment-v0.2.json",
+  "title": "CHSPTransitionAssessment v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "assessment_id", "evaluated_at", "project_id", "candidate_id", "v01_assessment_sha256", "recognition_sha256", "policy_sha256", "challenge_set_sha256", "envelope_set_sha256", "outcome_set_sha256", "state", "decision", "metrics", "reasons", "assessment_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPTransitionAssessment"},
+    "artifact_version": {"const": "0.2"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "v01_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "challenge_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "envelope_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "outcome_set_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["recognition_invalid", "cooling_active", "challenge_blocked", "stage_A1_eligible", "progressive_authority_active", "next_stage_review_eligible", "progression_reset_required", "final_succession_review_eligible"]},
+    "decision": {"enum": ["reject_recognition", "wait_for_cooling_and_challenge_window", "resolve_blocking_challenge", "A1_authorization_may_be_requested", "no_new_stage_while_envelope_active", "next_stage_authorization_may_be_requested", "return_to_observation_or_new_human_review", "canonical_human_succession_recognition_may_be_requested"]},
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cooling_complete", "challenge_window_complete", "blocking_challenges", "resolved_challenges", "envelope_count", "outcome_count", "completed_positive_stages", "latest_stage", "latest_effective_state", "latest_outcome"],
+      "properties": {
+        "cooling_complete": {"type": "boolean"},
+        "challenge_window_complete": {"type": "boolean"},
+        "blocking_challenges": {"type": "integer", "minimum": 0},
+        "resolved_challenges": {"type": "integer", "minimum": 0},
+        "envelope_count": {"type": "integer", "minimum": 0},
+        "outcome_count": {"type": "integer", "minimum": 0},
+        "completed_positive_stages": {"type": "integer", "minimum": 0},
+        "latest_stage": {"enum": ["none", "A1_advisory", "A2_reversible_limited", "A3_supervised_stewardship", "A4_canonical_preparation"]},
+        "latest_effective_state": {"enum": ["none", "active", "completed_positive", "completed_adverse", "completed_indeterminate", "revoked", "expired_without_outcome"]},
+        "latest_outcome": {"enum": ["none", "positive", "adverse", "indeterminate", "revoked"]}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policy_sufficiency_only", "automatic_authority_progression", "authority_granted_by_assessment", "canonical_successor_established", "canonical_origin_mutated", "canonical_publication_executed", "ownership_transferred", "kontur_activated", "global_replay_prevention_established", "legal_identity_certified", "psychological_fitness_certified", "universal_trust_established"],
+      "properties": {
+        "policy_sufficiency_only": {"const": true},
+        "automatic_authority_progression": {"const": false},
+        "authority_granted_by_assessment": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "global_replay_prevention_established": {"const": false},
+        "legal_identity_certified": {"const": false},
+        "psychological_fitness_certified": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
