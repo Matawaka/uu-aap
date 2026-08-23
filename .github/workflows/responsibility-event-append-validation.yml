@@ -1,0 +1,117 @@
+name: ResponsibilityEventAppendReceipt validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-append-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-append-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  responsibility-event-append:
+    name: Immutable-chain successor append boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check append JavaScript
+        run: |
+          node --check protocols/integration/v0.1/observe-responsibility-event-chain.js
+          node --check protocols/integration/v0.1/append-responsibility-event.js
+          node --check protocols/integration/v0.1/test-responsibility-event-append.js
+
+      - name: Validate reobservation and append schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root = Path('protocols/integration/v0.1')
+          for name in ['responsibility-event-chain-reobservation.schema.json','responsibility-event-append-receipt.schema.json']:
+              schema = json.loads((root/name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+          print('VALID ResponsibilityEvent append schemas')
+          PY
+
+      - name: Build and validate reobservation plus append receipt
+        run: node protocols/integration/v0.1/test-responsibility-event-append.js /tmp/responsibility-event-append.json /tmp/responsibility-event-chain-reobservation.json
+
+      - name: Validate generated artifacts by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          pairs = [
+              ('responsibility-event-chain-reobservation.schema.json','/tmp/responsibility-event-chain-reobservation.json'),
+              ('responsibility-event-append-receipt.schema.json','/tmp/responsibility-event-append.json')
+          ]
+          for schema_name, artifact_name in pairs:
+              schema = json.loads((root/schema_name).read_text())
+              artifact = json.loads(Path(artifact_name).read_text())
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+          receipt = json.loads(Path('/tmp/responsibility-event-append.json').read_text())
+          base = json.loads(Path('/tmp/append-base-chain.json').read_text())
+          assert len(base['events']) == 6 and base['head']['sequence'] == 5
+          assert receipt['appended_event']['sequence'] == 6
+          assert receipt['appended_event']['event_kind'] == 'responsibility_event_chain_reobserved'
+          assert receipt['claims']['append_only_extension_established'] is True
+          assert receipt['claims']['new_external_consequence_observed'] is False
+          assert receipt['replay_semantics']['global_replay_protection_established'] is False
+          print('VALID ResponsibilityEvent append artifacts')
+          PY
+
+      - name: Independently reject assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          schema = json.loads(Path('protocols/integration/v0.1/responsibility-event-append-receipt.schema.json').read_text())
+          artifact = json.loads(Path('/tmp/responsibility-event-append.json').read_text())
+          def reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label); return
+              raise AssertionError('schema accepted forbidden '+label)
+          bad = copy.deepcopy(artifact); bad['appended_event']['sequence'] = 7; reject(bad,'append sequence escalation')
+          bad = copy.deepcopy(artifact); bad['claims']['legal_liability_established'] = True; reject(bad,'legal liability overclaim')
+          bad = copy.deepcopy(artifact); bad['claims']['new_external_consequence_observed'] = True; reject(bad,'external consequence overclaim')
+          bad = copy.deepcopy(artifact); bad['responsibility_score'] = 1; reject(bad,'scalar responsibility score')
+          PY
+
+      - name: Confirm KONTUR is not part of this profile
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD 2>/dev/null | grep '^server/kontur/' && exit 1 || true
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
