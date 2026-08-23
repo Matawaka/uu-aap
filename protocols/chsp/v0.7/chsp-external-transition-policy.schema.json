@@ -1,0 +1,21 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-transition-policy-v0.7.json",
+  "title":"CHSPExternalTransitionPolicy v0.7",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","project_id","minimum_recognizers","minimum_recognizer_domains","minimum_transition_authorizers","minimum_transition_authorizer_domains","maximum_source_assessment_age_hours","maximum_decision_spread_hours","maximum_recognition_days","maximum_transition_authorization_hours","requirements","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalTransitionPolicy"},"artifact_version":{"const":"0.7"},"project_id":{"type":"string","minLength":1},
+    "minimum_recognizers":{"type":"integer","minimum":2},"minimum_recognizer_domains":{"type":"integer","minimum":2},
+    "minimum_transition_authorizers":{"type":"integer","minimum":2},"minimum_transition_authorizer_domains":{"type":"integer","minimum":2},
+    "maximum_source_assessment_age_hours":{"type":"integer","minimum":1},"maximum_decision_spread_hours":{"type":"integer","minimum":1},
+    "maximum_recognition_days":{"type":"integer","minimum":1},"maximum_transition_authorization_hours":{"type":"integer","minimum":1},
+    "requirements":{"type":"object","additionalProperties":false,"required":["v06_review_eligible_required","distinct_humans_required","declared_domains_required","non_steward_recognizer_required","steward_transition_consent_required","non_steward_transition_authorizer_required","typed_confirmation_required","authority_evidence_digest_required","revocable_before_execution","automatic_external_execution","automatic_ownership_transfer","automatic_origin_mutation","automatic_kontur_activation"],"properties":{
+      "v06_review_eligible_required":{"const":true},"distinct_humans_required":{"const":true},"declared_domains_required":{"const":true},"non_steward_recognizer_required":{"const":true},"steward_transition_consent_required":{"const":true},"non_steward_transition_authorizer_required":{"const":true},"typed_confirmation_required":{"const":true},"authority_evidence_digest_required":{"const":true},"revocable_before_execution":{"const":true},
+      "automatic_external_execution":{"const":false},"automatic_ownership_transfer":{"const":false},"automatic_origin_mutation":{"const":false},"automatic_kontur_activation":{"const":false}
+    }},
+    "claims":{"type":"object","additionalProperties":false,"required":["descriptive_policy_only","external_binding_established","external_control_transferred","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated","legal_ownership_adjudicated","universal_identity_proven","domain_independence_proven","distributed_consensus_established"],"properties":{
+      "descriptive_policy_only":{"const":true},"external_binding_established":{"const":false},"external_control_transferred":{"const":false},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false},"legal_ownership_adjudicated":{"const":false},"universal_identity_proven":{"const":false},"domain_independence_proven":{"const":false},"distributed_consensus_established":{"const":false}
+    }}
+  }
+}
