@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-candidate-v0.1.json",
+  "title": "CHSPCandidate v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "candidate_id", "project_id", "subject_id", "nominated_by_id", "nominated_at", "appeal_contour_id", "candidate_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPCandidate"},
+    "artifact_version": {"const": "0.1"},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "subject_id": {"type": "string", "minLength": 1},
+    "nominated_by_id": {"type": "string", "minLength": 1},
+    "nominated_at": {"type": "string", "format": "date-time"},
+    "appeal_contour_id": {"type": "string", "minLength": 1},
+    "candidate_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nomination_recorded", "trust_established", "authority_granted", "canonical_successor_established", "legal_identity_certified", "psychological_fitness_certified"],
+      "properties": {
+        "nomination_recorded": {"const": true},
+        "trust_established": {"const": false},
+        "authority_granted": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "legal_identity_certified": {"const": false},
+        "psychological_fitness_certified": {"const": false}
+      }
+    }
+  }
+}
