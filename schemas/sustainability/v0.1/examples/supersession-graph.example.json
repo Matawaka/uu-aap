@@ -1,0 +1,41 @@
+{
+  "document_type": "uu-aap.supersession-graph",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "nodes": [
+    {
+      "id": "parallel:capability-ceiling-v0.1",
+      "kind": "parallel-artifact",
+      "state": "candidate",
+      "sha": null
+    },
+    {
+      "id": "main:chsp-v0.9",
+      "kind": "main-artifact",
+      "state": "active",
+      "sha": "4c609dcf8c958bc647586376a03c16f2c7166558"
+    }
+  ],
+  "edges": [
+    {
+      "from": "parallel:capability-ceiling-v0.1",
+      "to": "main:chsp-v0.9",
+      "relation": "overlaps_with",
+      "scope": [
+        "authorization-boundedness",
+        "freshness-sensitive external authority"
+      ],
+      "evidence_refs": [
+        "protocols/chsp/v0.9/README.md",
+        "schemas/sustainability/v0.1/capability-ceiling.schema.json"
+      ],
+      "automatic_deletion_allowed": false
+    }
+  ],
+  "historical_nodes_must_remain_addressable": true,
+  "supersession_does_not_rewrite_origin": true,
+  "authority_effect": "none",
+  "notes": [
+    "Overlap is not represented as full supersession without evidence of equivalent scope."
+  ]
+}
