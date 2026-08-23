@@ -1,0 +1,161 @@
+name: ConsequenceObservationAssessment validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-assessment-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/consequence-observation-assessment-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  consequence-observation-assessment:
+    name: Policy-bound consequence observation assessment boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check assessment JavaScript
+        run: |
+          node --check protocols/integration/v0.1/assess-consequence-observation.js
+          node --check protocols/integration/v0.1/test-consequence-observation-assessment.js
+
+      - name: Validate assessment schemas and reference policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('protocols/integration/v0.1')
+          policy_schema = json.loads((root/'consequence-observation-assessment-policy.schema.json').read_text(encoding='utf-8'))
+          assessment_schema = json.loads((root/'consequence-observation-assessment.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(policy_schema)
+          Draft202012Validator.check_schema(assessment_schema)
+
+          policy = json.loads((root/'policies/reference.consequence-observation-assessment-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
+
+          assert policy['registered_live_source_profiles'] == []
+          assert policy['invariants']['live_observation_qualification_allowed'] is False
+          assert policy['invariants']['test_fixture_live_qualification_allowed'] is False
+          assert policy['invariants']['successor_adapter_authorization_allowed'] is False
+          assert policy['invariants']['assessment_is_policy_relative'] is True
+          assert policy['claims']['new_external_consequence_observed'] is False
+          assert policy['claims']['successor_append_may_proceed'] is False
+          print('VALID ConsequenceObservationAssessment schemas and policy')
+          PY
+
+      - name: Build assessments against exact ingress and responsibility-event frontier
+        run: node protocols/integration/v0.1/test-consequence-observation-assessment.js
+
+      - name: Validate generated assessments by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('protocols/integration/v0.1')
+          schema = json.loads((root/'consequence-observation-assessment.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+
+          no_observation = json.loads(Path('/tmp/consequence-observation-assessment-no-observation.json').read_text(encoding='utf-8'))
+          fixture = json.loads(Path('/tmp/consequence-observation-assessment-fixture.json').read_text(encoding='utf-8'))
+          validator.validate(no_observation)
+          validator.validate(fixture)
+
+          assert no_observation['status'] == 'not_qualified_no_observation'
+          assert no_observation['assessment_result']['reason'] == 'no_observation'
+          assert fixture['status'] == 'not_qualified_test_fixture'
+          assert fixture['assessment_result']['reason'] == 'test_fixture'
+
+          for artifact in (no_observation, fixture):
+              assert artifact['assessment_result']['policy_relative'] is True
+              assert artifact['assessment_result']['observation_qualified'] is False
+              assert artifact['assessment_result']['source_profile_registered'] is False
+              assert artifact['assessment_result']['source_specific_adapter_required'] is True
+              assert artifact['assessment_result']['successor_adapter_eligible'] is False
+              assert artifact['assessment_result']['successor_append_may_proceed'] is False
+              assert artifact['claims']['new_external_consequence_observed'] is False
+              assert artifact['claims']['causal_proof_certified'] is False
+              assert artifact['claims']['responsibility_for_consequence_attributed'] is False
+              assert artifact['claims']['successor_adapter_authorized'] is False
+          print('VALID policy-relative non-qualifying consequence assessments')
+          PY
+
+      - name: Independently reject assessment assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+
+          root = Path('protocols/integration/v0.1')
+          schema = json.loads((root/'consequence-observation-assessment.schema.json').read_text(encoding='utf-8'))
+          artifact = json.loads(Path('/tmp/consequence-observation-assessment-fixture.json').read_text(encoding='utf-8'))
+
+          def reject(value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+
+          bad = copy.deepcopy(artifact); bad['assessment_result']['observation_qualified'] = True; reject(bad, 'observation qualification escalation')
+          bad = copy.deepcopy(artifact); bad['assessment_result']['source_profile_registered'] = True; reject(bad, 'source profile forgery')
+          bad = copy.deepcopy(artifact); bad['assessment_result']['successor_adapter_eligible'] = True; reject(bad, 'successor adapter eligibility escalation')
+          bad = copy.deepcopy(artifact); bad['assessment_result']['successor_append_may_proceed'] = True; reject(bad, 'successor append escalation')
+          bad = copy.deepcopy(artifact); bad['claims']['new_external_consequence_observed'] = True; reject(bad, 'external consequence overclaim')
+          bad = copy.deepcopy(artifact); bad['claims']['causal_proof_certified'] = True; reject(bad, 'causal proof overclaim')
+          bad = copy.deepcopy(artifact); bad['claims']['responsibility_for_consequence_attributed'] = True; reject(bad, 'responsibility attribution overclaim')
+          bad = copy.deepcopy(artifact); bad['claims']['legal_liability_established'] = True; reject(bad, 'legal liability overclaim')
+          bad = copy.deepcopy(artifact); bad['claims']['truth_certified'] = True; reject(bad, 'truth overclaim')
+          bad = copy.deepcopy(artifact); bad['claims']['successor_adapter_authorized'] = True; reject(bad, 'successor authorization overclaim')
+          bad = copy.deepcopy(artifact); bad['responsibility_score'] = 1; reject(bad, 'scalar responsibility score')
+          PY
+
+      - name: Confirm current generic consequence successor adapter remains blocked
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const Adapter = require('./protocols/integration/v0.1/consequence-observation-successor-adapter.js');
+          const ingress = JSON.parse(fs.readFileSync('/tmp/consequence-observation-ingress-observed-fixture.json','utf8'));
+          const decision = Adapter.evaluateConsequenceSuccessorAdapter({ ingressReceipt: ingress });
+          if (decision.decision !== 'blocked' || decision.successor_append_may_proceed !== false || decision.source_specific_adapter_registered !== false) process.exit(1);
+          console.log('BLOCKED generic consequence successor adapter');
+          NODE
+
+      - name: Confirm KONTUR is not part of this profile
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD 2>/dev/null | grep '^server/kontur/' && exit 1 || true
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true

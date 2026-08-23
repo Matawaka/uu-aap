@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:consequence-observation-assessment:0.1",
+  "title": "ConsequenceObservationAssessment v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "assessment_id", "assessed_at", "status",
+    "policy_binding", "ingress_policy_binding", "ingress_receipt_binding", "claim_binding",
+    "source_evidence_binding", "frontier_entry_binding", "responsibility_event_head",
+    "semantic_frontier", "effect_frontier", "gate_decisions", "assessment_result", "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./consequence-observation-assessment.schema.json"},
+    "artifact_type": {"const": "ConsequenceObservationAssessment"},
+    "artifact_version": {"const": "0.1"},
+    "assessment_id": {"type": "string", "pattern": "^urn:uu-aap:consequence-observation-assessment:[0-9a-f]{24}$"},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "status": {
+      "enum": ["not_qualified_no_observation", "not_qualified_test_fixture", "deferred_source_profile_required"]
+    },
+    "policy_binding": {"$ref": "#/$defs/binding"},
+    "ingress_policy_binding": {"$ref": "#/$defs/binding"},
+    "ingress_receipt_binding": {"$ref": "#/$defs/binding"},
+    "claim_binding": {"$ref": "#/$defs/binding"},
+    "source_evidence_binding": {"anyOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
+    "frontier_entry_binding": {"$ref": "#/$defs/binding"},
+    "responsibility_event_head": {"$ref": "#/$defs/head"},
+    "semantic_frontier": {"type": "object", "minProperties": 1},
+    "effect_frontier": {"type": "object", "minProperties": 1},
+    "gate_decisions": {
+      "type": "array", "minItems": 10, "maxItems": 10,
+      "items": {"$ref": "#/$defs/gateDecision"}
+    },
+    "assessment_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_scope", "policy_relative", "observation_qualified", "source_profile_registered",
+        "source_specific_adapter_required", "successor_adapter_eligible", "successor_append_may_proceed",
+        "reason"
+      ],
+      "properties": {
+        "assessment_scope": {"const": "urn:uu-aap:consequence-observation-assessment-scope:bounded-source-admissibility-v0.1"},
+        "policy_relative": {"const": true},
+        "observation_qualified": {"const": false},
+        "source_profile_registered": {"const": false},
+        "source_specific_adapter_required": {"const": true},
+        "successor_adapter_eligible": {"const": false},
+        "successor_append_may_proceed": {"const": false},
+        "reason": {"enum": ["no_observation", "test_fixture", "source_profile_required"]}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "assessment_policy_applied", "ingress_package_verified", "source_bytes_verified_if_present",
+        "responsibility_event_frontier_verified", "observation_admissibility_assessed",
+        "stronger_claims_withheld", "new_external_consequence_observed", "consequence_truth_certified",
+        "generalized_external_consequence_causality_established", "causal_proof_certified",
+        "responsibility_for_consequence_attributed", "responsibility_for_outcome_adjudicated",
+        "legal_liability_established", "legal_effect_established", "moral_blame_assigned",
+        "truth_certified", "successor_adapter_authorized", "successor_append_may_proceed",
+        "global_replay_protection_established", "distributed_consensus_established",
+        "poai_materialization_event_recorded", "universal_canonicality_established"
+      ],
+      "properties": {
+        "assessment_policy_applied": {"const": true},
+        "ingress_package_verified": {"const": true},
+        "source_bytes_verified_if_present": {"const": true},
+        "responsibility_event_frontier_verified": {"const": true},
+        "observation_admissibility_assessed": {"const": true},
+        "stronger_claims_withheld": {"const": true},
+        "new_external_consequence_observed": {"const": false},
+        "consequence_truth_certified": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_consequence_attributed": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_liability_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "truth_certified": {"const": false},
+        "successor_adapter_authorized": {"const": false},
+        "successor_append_may_proceed": {"const": false},
+        "global_replay_protection_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "head": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sequence", "event_id", "event_digest"],
+      "properties": {
+        "sequence": {"type": "integer", "minimum": 6},
+        "event_id": {"type": "string", "pattern": "^urn:uu-aap:responsibility-event:"},
+        "event_digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "gateDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gate", "status", "establishes_gate", "reason_codes", "evidence_refs"],
+      "properties": {
+        "gate": {
+          "enum": [
+            "ingress_package_exact", "source_bytes_exact", "producer_profile_recognized",
+            "producer_artifact_identity_exact", "observation_present", "observation_chronology_valid",
+            "observation_horizon_valid", "frontier_exact", "fixture_excluded_from_live_qualification",
+            "source_semantics_profile_satisfied"
+          ]
+        },
+        "status": {"enum": ["qualified", "not_qualified", "deferred", "out_of_scope"]},
+        "establishes_gate": {"type": "boolean"},
+        "reason_codes": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "evidence_refs": {
+          "type": "array", "minItems": 1, "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
