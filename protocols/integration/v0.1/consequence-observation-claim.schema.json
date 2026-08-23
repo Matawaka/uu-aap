@@ -3,7 +3,7 @@
   "$id":"urn:uu-aap:schema:consequence-observation-claim:0.1",
   "title":"ConsequenceObservationClaim v0.1",
   "type":"object","additionalProperties":false,
-  "required":["$schema","artifact_type","artifact_version","claim_id","environment","claimant","consequence_class","consequence_subject_ref","claimed_status","claimed_at","observation_time","evidence_cutoff","observation_method","evidence_refs","responsibility_event_head","claims"],
+  "required":["$schema","artifact_type","artifact_version","claim_id","environment","claimant","consequence_class","consequence_subject_ref","claimed_status","claimed_at","observation_time","evidence_cutoff","observation_method","evidence_refs","responsibility_event_head","semantic_frontier","effect_frontier","claims"],
   "properties":{
     "$schema":{"type":"string"},
     "artifact_type":{"const":"ConsequenceObservationClaim"},
@@ -19,8 +19,14 @@
     "evidence_cutoff":{"type":"string","format":"date-time"},
     "observation_method":{"enum":["system_record","direct_observation","document_review","multi_source","other","unknown"]},
     "evidence_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},
-    "responsibility_event_head":{"type":"object","additionalProperties":false,"required":["sequence","event_id","event_digest","semantic_binding","effect_frontier"],"properties":{"sequence":{"type":"integer","minimum":0},"event_id":{"type":"string","minLength":1},"event_digest":{"type":"object","required":["canonicalization","digest_algorithm","digest_encoding","value"],"additionalProperties":false,"properties":{"canonicalization":{"const":"RFC8785-JCS"},"digest_algorithm":{"const":"SHA-256"},"digest_encoding":{"const":"hex"},"value":{"type":"string","pattern":"^[0-9a-f]{64}$"}}},"semantic_binding":{"type":"object","minProperties":1},"effect_frontier":{"type":"object","minProperties":1}}},
+    "responsibility_event_head":{"$ref":"#/$defs/head"},
+    "semantic_frontier":{"type":"object","minProperties":1},
+    "effect_frontier":{"type":"object","minProperties":1},
     "claims":{"type":"object","additionalProperties":false,"required":["consequence_truth_certified","generalized_external_consequence_causality_established","causal_proof_certified","responsibility_for_consequence_attributed","responsibility_for_outcome_adjudicated","legal_liability_established","legal_effect_established","moral_blame_assigned","truth_certified"],"properties":{"consequence_truth_certified":{"const":false},"generalized_external_consequence_causality_established":{"const":false},"causal_proof_certified":{"const":false},"responsibility_for_consequence_attributed":{"const":false},"responsibility_for_outcome_adjudicated":{"const":false},"legal_liability_established":{"const":false},"legal_effect_established":{"const":false},"moral_blame_assigned":{"const":false},"truth_certified":{"const":false}}}
+  },
+  "$defs":{
+    "digest":{"type":"object","additionalProperties":false,"required":["canonicalization","digest_algorithm","digest_encoding","value"],"properties":{"canonicalization":{"const":"RFC8785-JCS"},"digest_algorithm":{"const":"SHA-256"},"digest_encoding":{"const":"hex"},"value":{"type":"string","pattern":"^[0-9a-f]{64}$"}}},
+    "head":{"type":"object","additionalProperties":false,"required":["sequence","event_id","event_digest"],"properties":{"sequence":{"type":"integer","minimum":6},"event_id":{"type":"string","pattern":"^urn:uu-aap:responsibility-event:"},"event_digest":{"$ref":"#/$defs/digest"}}}
   },
   "allOf":[
     {"if":{"properties":{"claimed_status":{"const":"observed"}}},"then":{"properties":{"observation_time":{"type":"string","format":"date-time"},"evidence_refs":{"minItems":1}}}},
