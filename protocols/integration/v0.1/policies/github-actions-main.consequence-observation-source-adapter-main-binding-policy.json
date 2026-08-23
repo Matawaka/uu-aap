@@ -24,6 +24,8 @@
     "artifact_not_expired_required": true,
     "bundle_schema_valid_required": true,
     "bundle_cross_digest_binding_required": true,
+    "historical_frontier_binding_consistency_required": true,
+    "historical_frontier_bytes_reverification_required": false,
     "adapter_receipt_main_bound_required": true,
     "adapter_receipt_candidate_prohibited": true,
     "source_revision_explicit_required": true,
