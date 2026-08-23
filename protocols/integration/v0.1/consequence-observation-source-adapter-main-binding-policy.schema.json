@@ -39,7 +39,8 @@
       "required": [
         "exact_push_event_required", "exact_main_ref_required", "workflow_success_required",
         "artifact_name_revision_bound", "artifact_not_expired_required", "bundle_schema_valid_required",
-        "bundle_cross_digest_binding_required", "adapter_receipt_main_bound_required",
+        "bundle_cross_digest_binding_required", "historical_frontier_binding_consistency_required",
+        "historical_frontier_bytes_reverification_required", "adapter_receipt_main_bound_required",
         "adapter_receipt_candidate_prohibited", "source_revision_explicit_required",
         "successor_append_permission_allowed", "successor_append_execution_allowed",
         "server_runtime_dependency_required", "scalar_scores_allowed"
@@ -52,6 +53,8 @@
         "artifact_not_expired_required": {"const": true},
         "bundle_schema_valid_required": {"const": true},
         "bundle_cross_digest_binding_required": {"const": true},
+        "historical_frontier_binding_consistency_required": {"const": true},
+        "historical_frontier_bytes_reverification_required": {"const": false},
         "adapter_receipt_main_bound_required": {"const": true},
         "adapter_receipt_candidate_prohibited": {"const": true},
         "source_revision_explicit_required": {"const": true},
