@@ -1,0 +1,34 @@
+{
+  "document_type": "uu-aap.parallel-observation-budget",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "scope": "parallel-side-track-only",
+  "continuous_polling_allowed": false,
+  "background_monitoring_allowed": false,
+  "mutation_during_observation_allowed": false,
+  "max_external_observations_per_work_cycle": 3,
+  "observation_triggers": [
+    "explicit_user_continuation",
+    "before_new_parallel_design_block",
+    "when_main_state_is_materially_uncertain"
+  ],
+  "permitted_observations": [
+    "main_head",
+    "active_pull_request_metadata",
+    "changed_path_surface",
+    "branch_relation"
+  ],
+  "prohibited_behaviors": [
+    "continuous_polling",
+    "background_watch",
+    "observe_then_auto_merge",
+    "observe_then_auto_comment",
+    "observe_then_auto_review",
+    "observe_then_auto_execute",
+    "treat_no_change_as_implicit_permission"
+  ],
+  "authority_effect": "none",
+  "notes": [
+    "Observation exists only to avoid stale assumptions and must not become a competing control loop around main."
+  ]
+}
