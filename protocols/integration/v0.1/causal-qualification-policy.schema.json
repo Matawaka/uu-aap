@@ -1,0 +1,192 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/causal-qualification-policy.schema.json",
+  "title": "UU-AAP CausalQualificationPolicy v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "policy_id",
+    "policy_version",
+    "qualification_scope",
+    "applies_to",
+    "allowed_statuses",
+    "predicate_rules",
+    "effective_from",
+    "effective_until",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)causal-qualification-policy\\.schema\\.json$"},
+    "artifact_type": {"const": "UU-AAPCausalQualificationPolicy"},
+    "artifact_version": {"const": "0.1"},
+    "policy_id": {"type": "string", "pattern": "^urn:uu-aap:causal-qualification-policy:"},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "qualification_scope": {"const": "urn:uu-aap:causal-qualification-scope:exact-local-git-transition-v0.1"},
+    "applies_to": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["predecessor_artifact_type", "predecessor_artifact_version", "model_scope", "effect_scope"],
+      "properties": {
+        "predecessor_artifact_type": {"const": "CounterfactualInterventionAssessment"},
+        "predecessor_artifact_version": {"const": "0.1"},
+        "model_scope": {"const": "exact_local_git_transition_mechanism"},
+        "effect_scope": {"const": "exact_local_git_transition_effect"}
+      }
+    },
+    "allowed_statuses": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "qualified"},
+        {"const": "not_qualified"},
+        {"const": "deferred"},
+        {"const": "out_of_scope"}
+      ],
+      "items": false,
+      "minItems": 4,
+      "maxItems": 4
+    },
+    "predicate_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "originating_execution_contributed_to_exact_transition",
+        "model_relative_intervention_sensitivity",
+        "necessary_cause",
+        "sufficient_cause",
+        "exclusive_cause",
+        "counterfactual_causal_proof",
+        "generalized_external_consequence_causality"
+      ],
+      "properties": {
+        "originating_execution_contributed_to_exact_transition": {"$ref": "#/$defs/contributionRule"},
+        "model_relative_intervention_sensitivity": {"$ref": "#/$defs/sensitivityRule"},
+        "necessary_cause": {"$ref": "#/$defs/necessityRule"},
+        "sufficient_cause": {"$ref": "#/$defs/sufficiencyRule"},
+        "exclusive_cause": {"$ref": "#/$defs/exclusivityRule"},
+        "counterfactual_causal_proof": {"$ref": "#/$defs/counterfactualProofRule"},
+        "generalized_external_consequence_causality": {"$ref": "#/$defs/externalCausalityRule"}
+      }
+    },
+    "effective_from": {"type": "string", "format": "date-time"},
+    "effective_until": {"type": ["string", "null"], "format": "date-time"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "policy_establishes_universal_causal_truth",
+        "policy_establishes_responsibility_adjudication",
+        "policy_establishes_legal_liability",
+        "policy_establishes_moral_blame"
+      ],
+      "properties": {
+        "policy_establishes_universal_causal_truth": {"const": false},
+        "policy_establishes_responsibility_adjudication": {"const": false},
+        "policy_establishes_legal_liability": {"const": false},
+        "policy_establishes_moral_blame": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "ruleBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "establishes_predicate", "required_conditions", "reason_codes"],
+      "properties": {
+        "status": {"enum": ["qualified", "not_qualified", "deferred", "out_of_scope"]},
+        "establishes_predicate": {"type": "boolean"},
+        "required_conditions": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "reason_codes": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "contributionRule": {
+      "allOf": [
+        {"$ref": "#/$defs/ruleBase"},
+        {
+          "properties": {
+            "status": {"const": "qualified"},
+            "establishes_predicate": {"const": true}
+          }
+        }
+      ]
+    },
+    "sensitivityRule": {
+      "allOf": [
+        {"$ref": "#/$defs/ruleBase"},
+        {
+          "properties": {
+            "status": {"const": "qualified"},
+            "establishes_predicate": {"const": true}
+          }
+        }
+      ]
+    },
+    "necessityRule": {
+      "allOf": [
+        {"$ref": "#/$defs/ruleBase"},
+        {
+          "properties": {
+            "status": {"const": "deferred"},
+            "establishes_predicate": {"const": false}
+          }
+        }
+      ]
+    },
+    "sufficiencyRule": {
+      "allOf": [
+        {"$ref": "#/$defs/ruleBase"},
+        {
+          "properties": {
+            "status": {"const": "deferred"},
+            "establishes_predicate": {"const": false}
+          }
+        }
+      ]
+    },
+    "exclusivityRule": {
+      "allOf": [
+        {"$ref": "#/$defs/ruleBase"},
+        {
+          "properties": {
+            "status": {"const": "deferred"},
+            "establishes_predicate": {"const": false}
+          }
+        }
+      ]
+    },
+    "counterfactualProofRule": {
+      "allOf": [
+        {"$ref": "#/$defs/ruleBase"},
+        {
+          "properties": {
+            "status": {"const": "not_qualified"},
+            "establishes_predicate": {"const": false}
+          }
+        }
+      ]
+    },
+    "externalCausalityRule": {
+      "allOf": [
+        {"$ref": "#/$defs/ruleBase"},
+        {
+          "properties": {
+            "status": {"const": "out_of_scope"},
+            "establishes_predicate": {"const": false}
+          }
+        }
+      ]
+    }
+  }
+}
