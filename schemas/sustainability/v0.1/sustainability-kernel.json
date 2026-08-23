@@ -1,0 +1,82 @@
+{
+  "document_type": "uu-aap.parallel-sustainability-kernel",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "branch": "parallel/sustainability-backlog-v0.1",
+  "authority_effect": "none",
+  "main_line_dependency_created": false,
+  "whole_branch_integration_required": false,
+  "invariants": [
+    {
+      "id": "K1",
+      "name": "main-line-independence",
+      "statement": "parallel may observe main; main does not depend on parallel",
+      "sources": ["dependency-firewall.schema.json", "parallel-work-isolation.schema.json"]
+    },
+    {
+      "id": "K2",
+      "name": "information-is-not-authority",
+      "statement": "state transfer, observation, recommendation, and handoff do not transfer authority",
+      "sources": ["recovery-handoff.schema.json", "cross-context-consistency.schema.json"]
+    },
+    {
+      "id": "K3",
+      "name": "freshness-before-reentry",
+      "statement": "changed mutable external state makes old assumptions stale and requires fresh observation before reentry",
+      "sources": ["stale-state-assessment.schema.json", "reentry-contract.schema.json"]
+    },
+    {
+      "id": "K4",
+      "name": "attributable-capability-expansion",
+      "statement": "capability expansion requires a new attributable authorization event",
+      "sources": ["capability-ceiling.schema.json"]
+    },
+    {
+      "id": "K5",
+      "name": "continuity-not-permission-continuity",
+      "statement": "pause preserves project history but does not preserve mutable external authorization indefinitely",
+      "sources": ["inactivity-resilience-checkpoint.schema.json", "stop-pause-resume.vectors.json"]
+    },
+    {
+      "id": "K6",
+      "name": "no-merge-entitlement",
+      "statement": "parallel work creates no automatic merge, review, or adoption obligation",
+      "sources": ["parallel-integration-gate.schema.json", "divergence-horizon.schema.json"]
+    },
+    {
+      "id": "K7",
+      "name": "selective-adoption",
+      "statement": "prefer bounded invariant or artifact adoption over whole-branch merge pressure",
+      "sources": ["selective-adoption-plan.schema.json", "convergence-review.schema.json"]
+    },
+    {
+      "id": "K8",
+      "name": "provenance-preserving-supersession",
+      "statement": "archive, rejection, and supersession preserve historical provenance and disagreement",
+      "sources": ["supersession-graph.schema.json", "archival-capsule.schema.json", "side-track-closure.schema.json"]
+    },
+    {
+      "id": "K9",
+      "name": "human-sustainability-no-authority-effect",
+      "statement": "interaction-load adaptation has no medical, biometric, scoring, or authority effect",
+      "sources": ["human-sustainability-observation.schema.json", "motivation-governor.schema.json"]
+    },
+    {
+      "id": "K10",
+      "name": "bounded-observation",
+      "statement": "observe only enough to avoid stale assumptions; no continuous polling or observe-then-auto-act loop",
+      "sources": ["observation-budget.schema.json", "non-interference-attestation.schema.json"]
+    }
+  ],
+  "future_dispositions": [
+    "keep-isolated",
+    "selective-adoption",
+    "superseded-by-main",
+    "archive",
+    "reject",
+    "defer"
+  ],
+  "notes": [
+    "This compact kernel is intended to reduce future review burden; it is not an integration request or execution authorization."
+  ]
+}
