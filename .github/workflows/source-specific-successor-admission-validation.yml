@@ -179,7 +179,7 @@ jobs:
           from pathlib import Path
           from jsonschema import Draft202012Validator, FormatChecker
           root = Path('protocols/integration/v0.1')
-          p = Path('/tmp/main-binding-evidence/consequence-observation-source-adapter-main-binding-receipt.json')
+          p = Path('/tmp/main-binding-evidence/main-source-binding/consequence-observation-source-adapter-main-binding-receipt.json')
           schema = json.loads((root/'consequence-observation-source-adapter-main-binding-receipt.schema.json').read_text())
           receipt = json.loads(p.read_text())
           Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
@@ -203,7 +203,7 @@ jobs:
       - name: Build and test source-specific successor admission
         run: |
           node protocols/integration/v0.1/test-source-specific-successor-admission.js \
-            /tmp/main-binding-evidence \
+            /tmp/main-binding-evidence/main-source-binding \
             /tmp/upstream-run.json \
             /tmp/upstream-artifact.json \
             /tmp/source-specific-successor-admission
