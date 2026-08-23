@@ -1,0 +1,221 @@
+name: KONTUR Activation Preflight validation
+
+on:
+  pull_request:
+    paths:
+      - "server/kontur/**"
+      - "protocols/registry/**"
+      - "protocols/integration/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-activation-preflight-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "server/kontur/**"
+      - "protocols/registry/**"
+      - "protocols/integration/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-activation-preflight-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  activation-preflight:
+    name: KONTUR activation intent and side-effect-free preflight
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check KONTUR activation JavaScript
+        run: |
+          node --check server/kontur/v0.1/activation-preflight.js
+          node --check server/kontur/v0.1/test-activation-preflight.js
+
+      - name: Prove preflight has no Responsibility Kernel execution path
+        run: |
+          if grep -E 'responsibility-kernel\.js|transitionResponsibility' server/kontur/v0.1/activation-preflight.js; then
+            echo "ERROR: activation preflight must not import or call the Responsibility Kernel"
+            exit 1
+          fi
+          echo "Preflight evaluator is structurally separated from kernel execution"
+
+      - name: Validate activation schemas and canonical policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('server/kontur/v0.1')
+          schemas = {}
+          for name in [
+              'kontur-activation-policy.schema.json',
+              'kontur-activation-intent.schema.json',
+              'kontur-activation-preflight.schema.json',
+              'kontur-activation-frontier.schema.json',
+              'kontur-readiness-signal.schema.json',
+              'kontur-readiness-aggregation-policy.schema.json',
+              'kontur-responsibility-policy.schema.json',
+              'kontur-server-health-observation.schema.json',
+          ]:
+              schema = json.loads((root / name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              schemas[name] = schema
+              print(f'VALID schema: {name}')
+
+          policy = json.loads((root / 'policies/reference-server.activation-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(
+              schemas['kontur-activation-policy.schema.json'],
+              format_checker=FormatChecker()
+          ).validate(policy)
+          assert policy['allowed_transition'] == 'activate'
+          assert policy['max_health_age_seconds'] == 60
+          assert policy['max_intent_age_seconds'] == 300
+          assert policy['requirements']['auto_activation_allowed'] is False
+          assert policy['requirements']['preflight_side_effect_free'] is True
+          print('VALID canonical KONTUR activation policy')
+          PY
+
+      - name: Reproduce readiness and build activation intent/preflight
+        run: node server/kontur/v0.1/test-activation-preflight.js /tmp/kontur-activation-preflight
+
+      - name: Validate generated activation artifacts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-activation-preflight')
+          intent = json.loads((out / 'activation-intent.json').read_text(encoding='utf-8'))
+          preflight = json.loads((out / 'activation-preflight.json').read_text(encoding='utf-8'))
+          summary = json.loads((out / 'summary.json').read_text(encoding='utf-8'))
+          intent_schema = json.loads((root / 'kontur-activation-intent.schema.json').read_text(encoding='utf-8'))
+          preflight_schema = json.loads((root / 'kontur-activation-preflight.schema.json').read_text(encoding='utf-8'))
+
+          Draft202012Validator(intent_schema, format_checker=FormatChecker()).validate(intent)
+          Draft202012Validator(preflight_schema, format_checker=FormatChecker()).validate(preflight)
+
+          assert intent['intended_transition'] == 'activate'
+          assert intent['claims']['human_activation_intent_declared'] is True
+          assert intent['claims']['human_identity_cryptographically_verified'] is False
+          assert preflight['decision'] == 'human_execute_step_may_proceed'
+          assert all(preflight['checks'].values())
+          assert preflight['claims']['activation_intent_verified'] is True
+          assert preflight['claims']['activation_preconditions_revalidated'] is True
+          assert preflight['claims']['human_execute_step_may_proceed'] is True
+          assert summary['kernel_activated'] is False
+          assert summary['responsibility_state_created'] is False
+          assert summary['negative_vectors'] >= 30
+
+          for artifact in [intent, preflight]:
+              claims = artifact['claims']
+              for key in [
+                  'kernel_activated', 'responsibility_state_created', 'responsibility_accepted',
+                  'execution_authority_granted', 'legal_responsibility_determined',
+                  'legal_effect_established', 'moral_blame_assigned', 'truth_certified',
+                  'poai_materialization_event_recorded', 'universal_canonicality_established'
+              ]:
+                  assert claims[key] is False, (artifact['artifact_type'], key)
+
+          print('KONTUR activation preflight admitted only a separate human execute step; kernel remains inactive')
+          PY
+
+      - name: Independently reject activation overclaims by schema
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('server/kontur/v0.1')
+          out = Path('/tmp/kontur-activation-preflight')
+          pairs = [
+              ('activation-intent.json', 'kontur-activation-intent.schema.json'),
+              ('activation-preflight.json', 'kontur-activation-preflight.schema.json'),
+          ]
+          forbidden = [
+              'kernel_activated', 'responsibility_state_created', 'responsibility_accepted',
+              'execution_authority_granted', 'legal_responsibility_determined',
+              'legal_effect_established', 'moral_blame_assigned', 'truth_certified',
+              'poai_materialization_event_recorded', 'universal_canonicality_established'
+          ]
+
+          for artifact_name, schema_name in pairs:
+              artifact = json.loads((out / artifact_name).read_text(encoding='utf-8'))
+              schema = json.loads((root / schema_name).read_text(encoding='utf-8'))
+              validator = Draft202012Validator(schema, format_checker=FormatChecker())
+              validator.validate(artifact)
+              for key in forbidden:
+                  bad = copy.deepcopy(artifact)
+                  bad['claims'][key] = True
+                  try:
+                      validator.validate(bad)
+                  except ValidationError:
+                      pass
+                  else:
+                      raise AssertionError(f'{artifact_name}: schema accepted forbidden overclaim {key}')
+
+          intent = json.loads((out / 'activation-intent.json').read_text(encoding='utf-8'))
+          intent_schema = json.loads((root / 'kontur-activation-intent.schema.json').read_text(encoding='utf-8'))
+          bad = copy.deepcopy(intent)
+          bad['intended_transition'] = 'resume'
+          try:
+              Draft202012Validator(intent_schema, format_checker=FormatChecker()).validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('activation intent schema accepted non-activate transition')
+
+          preflight = json.loads((out / 'activation-preflight.json').read_text(encoding='utf-8'))
+          preflight_schema = json.loads((root / 'kontur-activation-preflight.schema.json').read_text(encoding='utf-8'))
+          bad = copy.deepcopy(preflight)
+          bad['decision'] = 'kernel_activated'
+          try:
+              Draft202012Validator(preflight_schema, format_checker=FormatChecker()).validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('preflight schema accepted activation decision')
+
+          print('Schema boundary independently rejects activation/state/authority escalation')
+          PY
+
+      - name: Confirm preflight created no responsibility state or repository mutation
+        run: |
+          test ! -e /tmp/kontur-activation-preflight/responsibility-state.json
+          test ! -e /tmp/kontur-activation-preflight/activation-receipt.json
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+      - name: Upload KONTUR activation preflight evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: kontur-activation-preflight-${{ github.sha }}
+          path: /tmp/kontur-activation-preflight/
+          if-no-files-found: error
+          retention-days: 30
