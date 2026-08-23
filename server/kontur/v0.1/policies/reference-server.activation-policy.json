@@ -1,0 +1,43 @@
+{
+  "$schema": "../kontur-activation-policy.schema.json",
+  "artifact_type": "KONTURActivationPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:kontur:activation-policy:reference-server:1",
+  "policy_version": 1,
+  "system_id": "urn:uu-aap:kontur:system:server-responsibility",
+  "server_instance_id": "urn:uu-aap:kontur:server:reference-primary",
+  "effective_from": "2026-08-23T09:35:00Z",
+  "effective_until": null,
+  "allowed_transition": "activate",
+  "max_health_age_seconds": 60,
+  "max_intent_age_seconds": 300,
+  "requirements": {
+    "exact_git_revision": true,
+    "exact_frontier_binding": true,
+    "exact_readiness_binding": true,
+    "exact_policy_bindings": true,
+    "exact_system_server_identity": true,
+    "exact_epoch": true,
+    "healthy_server": true,
+    "live_lease": true,
+    "no_parallel_active_holder": true,
+    "explicit_human_activation_intent": true,
+    "genesis_activation_only": true,
+    "preflight_side_effect_free": true,
+    "auto_activation_allowed": false
+  },
+  "responsibility_scope_source": "exact_responsibility_policy_allowlist",
+  "claims": {
+    "activation_policy_defined": true,
+    "kernel_activated": false,
+    "responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "legal_responsibility_determined": false,
+    "legal_effect_established": false,
+    "moral_blame_assigned": false,
+    "truth_certified": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}
