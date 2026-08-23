@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/ial/v0.1/elevation-receipt.schema.json",
+  "title": "IAL ElevationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "receipt_id",
+    "assessment_id",
+    "elevation_level",
+    "effect_class",
+    "elevated_by",
+    "semantic_basis",
+    "private_reasoning_disclosed",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "../elevation-receipt.schema.json"},
+    "artifact_type": {"const": "ElevationReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "receipt_id": {"type": "string", "minLength": 1},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "elevation_level": {"enum": ["E1", "E2", "E3"]},
+    "effect_class": {
+      "enum": [
+        "externally_observable_effect",
+        "responsibility_transfer",
+        "materialization_or_canonical_commitment"
+      ]
+    },
+    "elevated_by": {"type": "string", "minLength": 1},
+    "semantic_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent_id", "action", "target"],
+      "properties": {
+        "intent_id": {"type": "string", "minLength": 1},
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1}
+      }
+    },
+    "private_reasoning_disclosed": {"const": false},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_elevation_recorded",
+        "responsibility_transfer_established",
+        "authority_established",
+        "execution_admitted",
+        "materialization_permitted",
+        "outcome_observed"
+      ],
+      "properties": {
+        "semantic_elevation_recorded": {"const": true},
+        "responsibility_transfer_established": {"const": false},
+        "authority_established": {"const": false},
+        "execution_admitted": {"const": false},
+        "materialization_permitted": {"const": false},
+        "outcome_observed": {"const": false}
+      }
+    }
+  }
+}
