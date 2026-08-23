@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-human-recognition-v0.2.json",
+  "title": "CHSPHumanRecognition v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "recognition_id", "project_id", "candidate_id", "v01_assessment_sha256", "recognizer_id", "recognizer_evidence_sha256", "recognized_at", "cooling_period_ends_at", "challenge_window_ends_at", "nonce", "confirmation_token", "recognition_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPHumanRecognition"},
+    "artifact_version": {"const": "0.2"},
+    "recognition_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "v01_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "recognizer_id": {"type": "string", "minLength": 1},
+    "recognizer_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "recognized_at": {"type": "string", "format": "date-time"},
+    "cooling_period_ends_at": {"type": "string", "format": "date-time"},
+    "challenge_window_ends_at": {"type": "string", "format": "date-time"},
+    "nonce": {"type": "string", "minLength": 16},
+    "confirmation_token": {"const": "RECOGNIZE_CHSP_SUCCESSOR_CANDIDATE_FOR_PROGRESSIVE_AUTHORITY_ONLY"},
+    "recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_recognition_recorded", "progressive_authority_consideration_only", "authority_granted", "canonical_successor_established", "canonical_publication_authorized", "ownership_transferred", "kontur_activated", "legal_identity_certified", "psychological_fitness_certified", "universal_trust_established"],
+      "properties": {
+        "human_recognition_recorded": {"const": true},
+        "progressive_authority_consideration_only": {"const": true},
+        "authority_granted": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "canonical_publication_authorized": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "legal_identity_certified": {"const": false},
+        "psychological_fitness_certified": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
