@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/canonical-succession-proposal-assessment-v0.5.json",
+  "title": "CanonicalSuccessionProposalAssessment v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "assessment_id", "evaluated_at", "project_id", "proposal_sha256", "policy_sha256", "state", "decision", "checks", "reasons", "assessment_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CanonicalSuccessionProposalAssessment"},
+    "artifact_version": {"const": "0.5"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "project_id": {"type": "string", "minLength": 1},
+    "proposal_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "policy_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "state": {"enum": ["rejected", "proposal_reviewable"]},
+    "decision": {"enum": ["reject_proposal", "human_canonical_recognition_may_be_requested"]},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v04_recovery_verified", "predecessor_binding_verified", "project_binding_match", "recovered_frontier_matches_predecessor", "candidate_ref_valid", "candidate_repo_no_remotes", "candidate_repo_fsck_full", "candidate_descends_from_recovered_frontier", "candidate_tree_match", "candidate_ref_set_match", "proposal_self_digest_match"],
+      "properties": {
+        "v04_recovery_verified": {"type": "boolean"},
+        "predecessor_binding_verified": {"type": "boolean"},
+        "project_binding_match": {"type": "boolean"},
+        "recovered_frontier_matches_predecessor": {"type": "boolean"},
+        "candidate_ref_valid": {"type": "boolean"},
+        "candidate_repo_no_remotes": {"type": "boolean"},
+        "candidate_repo_fsck_full": {"type": "boolean"},
+        "candidate_descends_from_recovered_frontier": {"type": "boolean"},
+        "candidate_tree_match": {"type": "boolean"},
+        "candidate_ref_set_match": {"type": "boolean"},
+        "proposal_self_digest_match": {"type": "boolean"}
+      }
+    },
+    "reasons": {"type": "array", "items": {"type": "string"}},
+    "assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposal_reviewability_only", "human_recognition_required", "canonical_successor_established", "canonical_origin_mutated", "ownership_transferred", "kontur_activated", "distributed_consensus_established", "legal_effect_established", "truth_certified"],
+      "properties": {
+        "proposal_reviewability_only": {"const": true},
+        "human_recognition_required": {"const": true},
+        "canonical_successor_established": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false}
+      }
+    }
+  }
+}
