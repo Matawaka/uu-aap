@@ -1,0 +1,139 @@
+name: ResponsibilityEventSuccessorAppend validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-successor-append-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/v0.1/**'
+      - '.github/workflows/responsibility-event-successor-append-validation.yml'
+      - 'protocols/registry/**'
+      - 'docs/poai/binding-receipt.js'
+
+permissions:
+  contents: read
+
+jobs:
+  responsibility-event-successor-append:
+    name: Generic typed durable successor boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate upstream protocol registry first
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check successor JavaScript
+        run: |
+          node --check protocols/integration/v0.1/observe-responsibility-event-append-ledger.js
+          node --check protocols/integration/v0.1/append-responsibility-event-successor.js
+          node --check protocols/integration/v0.1/responsibility-event-successor-ledger.js
+          node --check protocols/integration/v0.1/recover-responsibility-event-successor-ledger.js
+          node --check protocols/integration/v0.1/test-responsibility-event-successor-append.js
+
+      - name: Validate successor schemas and reference policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          names = [
+              'responsibility-event-successor-policy.schema.json',
+              'responsibility-event-append-ledger-reobservation.schema.json',
+              'responsibility-event-successor-append-receipt.schema.json',
+              'responsibility-event-successor-ledger-entry.schema.json',
+          ]
+          schemas = {}
+          for name in names:
+              schema = json.loads((root/name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              schemas[name] = schema
+          policy = json.loads((root/'policies/reference.responsibility-event-successor-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schemas['responsibility-event-successor-policy.schema.json'], format_checker=FormatChecker()).validate(policy)
+          assert policy['sequence_increment'] == 1
+          assert policy['allowed_source_adapters'] == ['responsibility_event_append_ledger_reobservation_v0.1']
+          assert policy['claims']['new_external_consequence_observed'] is False
+          print('VALID ResponsibilityEventSuccessor schemas and policy')
+          PY
+
+      - name: Build events 7 and 8, commit, restart and test fail-closed vectors
+        run: node protocols/integration/v0.1/test-responsibility-event-successor-append.js
+
+      - name: Validate generated source, append and ledger artifacts by schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('protocols/integration/v0.1')
+          pairs = [
+              ('responsibility-event-append-ledger-reobservation.schema.json', '/tmp/responsibility-event-successor-source-7.json'),
+              ('responsibility-event-successor-append-receipt.schema.json', '/tmp/responsibility-event-successor-append-7.json'),
+              ('responsibility-event-successor-ledger-entry.schema.json', '/tmp/responsibility-event-successor-ledger-entry-1.json'),
+              ('responsibility-event-append-ledger-reobservation.schema.json', '/tmp/responsibility-event-successor-source-8.json'),
+              ('responsibility-event-successor-append-receipt.schema.json', '/tmp/responsibility-event-successor-append-8.json'),
+              ('responsibility-event-successor-ledger-entry.schema.json', '/tmp/responsibility-event-successor-ledger-entry-2.json'),
+          ]
+          for schema_name, artifact_path in pairs:
+              schema = json.loads((root/schema_name).read_text(encoding='utf-8'))
+              artifact = json.loads(Path(artifact_path).read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(artifact)
+          e1 = json.loads(Path('/tmp/responsibility-event-successor-ledger-entry-1.json').read_text())
+          e2 = json.loads(Path('/tmp/responsibility-event-successor-ledger-entry-2.json').read_text())
+          assert e1['sequence'] == 1 and e1['resulting_event_head']['sequence'] == 7
+          assert e2['sequence'] == 2 and e2['resulting_event_head']['sequence'] == 8
+          assert e2['predecessor_event_head']['event_digest']['value'] == e1['resulting_event_head']['event_digest']['value']
+          print('VALID ResponsibilityEventSuccessor artifacts 7 and 8')
+          PY
+
+      - name: Independently reject successor assurance escalation by schema
+        run: |
+          python - <<'PY'
+          import copy, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, ValidationError
+          root = Path('protocols/integration/v0.1')
+          receipt_schema = json.loads((root/'responsibility-event-successor-append-receipt.schema.json').read_text())
+          entry_schema = json.loads((root/'responsibility-event-successor-ledger-entry.schema.json').read_text())
+          receipt = json.loads(Path('/tmp/responsibility-event-successor-append-8.json').read_text())
+          entry = json.loads(Path('/tmp/responsibility-event-successor-ledger-entry-2.json').read_text())
+          def reject(schema, value, label):
+              try:
+                  Draft202012Validator(schema).validate(value)
+              except ValidationError:
+                  print('REJECTED:', label)
+                  return
+              raise AssertionError('schema accepted forbidden ' + label)
+          bad = copy.deepcopy(receipt); bad['claims']['new_external_consequence_observed'] = True; reject(receipt_schema, bad, 'external consequence overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['causal_proof_certified'] = True; reject(receipt_schema, bad, 'causal proof overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['legal_liability_established'] = True; reject(receipt_schema, bad, 'legal liability overclaim')
+          bad = copy.deepcopy(receipt); bad['claims']['global_replay_protection_established'] = True; reject(receipt_schema, bad, 'global replay overclaim')
+          bad = copy.deepcopy(receipt); bad['responsibility_score'] = 1; reject(receipt_schema, bad, 'scalar responsibility score')
+          bad = copy.deepcopy(entry); bad['claims']['truth_certified'] = True; reject(entry_schema, bad, 'ledger truth overclaim')
+          PY
+
+      - name: Confirm KONTUR is not part of this profile
+        run: |
+          git diff --name-only "${{ github.event.pull_request.base.sha || github.event.before }}" HEAD 2>/dev/null | grep '^server/kontur/' && exit 1 || true
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
