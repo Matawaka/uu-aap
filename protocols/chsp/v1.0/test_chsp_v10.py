@@ -150,7 +150,9 @@ def main():
         assert final["decision"] == "external_transition_effect_may_be_recorded"
         serialized = json.dumps(receipt)
         assert "CHSP_GITHUB_TOKEN" not in serialized and "token-secret" not in serialized
-        expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, adapter, state, z(base+timedelta(minutes=8))), "executed-authorizations")
+        replay_adapter = FakeAdapter("collaborator")
+        expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, replay_adapter, state, z(base+timedelta(minutes=8))), "executed-authorizations")
+        assert replay_adapter.writes == 0
 
     # No-change execution still consumes exact authorization once.
     with tempfile.TemporaryDirectory(prefix="chsp-v10-nochange-") as td:
@@ -202,12 +204,12 @@ def main():
         assert receipt["claims"]["exact_external_transition_verified"] is False
         assert C.assess_execution(receipt, z(base+timedelta(minutes=8)))["decision"] == "investigate_provider_state_before_further_action"
 
-    # Stale request and tampered authorization are fail-closed.
+    # Stale execution request is independently fail-closed while v0.9 assessment is still just fresh enough.
     with tempfile.TemporaryDirectory(prefix="chsp-v10-stale-") as td:
         state = Path(td)
         envelope, recheck, auth, assessment = make_chain(base)
-        request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=7))
-        expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, FakeAdapter("collaborator"), state, z(base+timedelta(minutes=10))), "request too old")
+        request = make_request(envelope, auth, assessment, policy, state, base+timedelta(minutes=5))
+        expect_fail(lambda: C.execute_exact_transition(envelope, recheck, auth, assessment, request, policy, FakeAdapter("collaborator"), state, z(base+timedelta(minutes=8))), "request too old")
         bad = copy.deepcopy(auth); bad["claims"]["ownership_transfer_authorized"] = True
         expect_fail(lambda: C.validate_predecessors(envelope, recheck, bad, assessment, policy, base+timedelta(minutes=7)), "self-digest mismatch")
 
