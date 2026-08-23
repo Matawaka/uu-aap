@@ -1,0 +1,28 @@
+{
+  "$schema": "../boundary-assessment.schema.json",
+  "artifact_type": "BoundaryAssessment",
+  "artifact_version": "0.1",
+  "assessment_id": "urn:ial:boundary-assessment:e0-internal:1",
+  "subject_ref": {
+    "intent_id": "urn:ial:intent:internal-analysis:1",
+    "action": "analyze_local_state",
+    "target": "local:working-memory"
+  },
+  "effect_class": "internal_no_external_effect",
+  "elevation_level": "E0",
+  "state": "IAL_NOT_REQUIRED",
+  "responsibility_boundary_required": false,
+  "reason_codes": [
+    "no_external_effect",
+    "responsibility_unchanged"
+  ],
+  "claims": {
+    "private_reasoning_required": false,
+    "private_reasoning_disclosed": false,
+    "responsibility_transfer_established": false,
+    "authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "outcome_observed": false
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "../responsibility-handoff-offer.schema.json",
+  "artifact_type": "ResponsibilityHandoffOffer",
+  "artifact_version": "0.1",
+  "offer_id": "urn:ial:responsibility-handoff-offer:e2-ccrp:1",
+  "boundary_assessment_id": "urn:ial:boundary-assessment:e2-ccrp-handoff:1",
+  "elevation_receipt_id": "urn:ial:elevation-receipt:e2-ccrp-handoff:1",
+  "responsibility_assignment_id": "urn:ial:responsibility-assignment:e2-ccrp-handoff:source:1",
+  "source_responsible_party_id": "urn:uu-aap:party:source-coordinator",
+  "receiving_party_id": "urn:uu-aap:party:execution-recipient",
+  "executor_implementation_id": "urn:uu-aap:implementation:ccrp-reference:0.1",
+  "effect_ref": {
+    "intent_id": "urn:ial:intent:ccrp-change-preparation:1",
+    "action": "coordinate_change_preparation",
+    "target": "github:Matawaka/uu-aap:refs/heads/main"
+  },
+  "responsibility_scope": [
+    "coordinate_change_preparation",
+    "preserve_historical_frontier",
+    "return_precommit_evidence"
+  ],
+  "required_capability": {
+    "registry_id": "urn:uu-aap:protocol-registry:v0.1",
+    "protocol_id": "CCRP",
+    "version": "0.1",
+    "logical_uri": "urn:uu-aap:protocol:ccrp:0.1",
+    "release_commit": "2c98d34ebfb5e86491bffb29a27e5a55b4db707e",
+    "required_conformance_levels": ["C0", "C1", "C2", "C3", "C4", "C5"]
+  },
+  "attestation_policy": "reproducible_attestation_required",
+  "claims": {
+    "responsibility_offered": true,
+    "responsibility_accepted": false,
+    "technical_capability_is_responsibility_acceptance": false,
+    "authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "outcome_observed": false
+  }
+}

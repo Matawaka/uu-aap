@@ -1,0 +1,21 @@
+{
+  "$schema": "../responsibility-assignment.schema.json",
+  "artifact_type": "ResponsibilityAssignment",
+  "artifact_version": "0.1",
+  "assignment_id": "urn:ial:responsibility-assignment:e2-ccrp-handoff:source:1",
+  "assessment_id": "urn:ial:boundary-assessment:e2-ccrp-handoff:1",
+  "responsible_party_id": "urn:uu-aap:party:source-coordinator",
+  "responsibility_scope": [
+    "coordinate_change_preparation",
+    "preserve_historical_frontier",
+    "return_precommit_evidence"
+  ],
+  "assignment_kind": "current_owner",
+  "claims": {
+    "responsibility_assignment_recorded": true,
+    "legal_authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "outcome_observed": false
+  }
+}

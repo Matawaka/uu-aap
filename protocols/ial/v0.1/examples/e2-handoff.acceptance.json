@@ -1,0 +1,30 @@
+{
+  "$schema": "../responsibility-handoff-acceptance.schema.json",
+  "artifact_type": "ResponsibilityHandoffAcceptance",
+  "artifact_version": "0.1",
+  "acceptance_id": "urn:ial:responsibility-handoff-acceptance:e2-ccrp:1",
+  "offer_id": "urn:ial:responsibility-handoff-offer:e2-ccrp:1",
+  "receiving_party_id": "urn:uu-aap:party:execution-recipient",
+  "executor_implementation_id": "urn:uu-aap:implementation:ccrp-reference:0.1",
+  "decision": "accepted",
+  "accepted_responsibility_scope": [
+    "coordinate_change_preparation",
+    "preserve_historical_frontier",
+    "return_precommit_evidence"
+  ],
+  "attestation_ref": {
+    "path": "protocols/attestation/v0.1/attestations/ccrp-reference-implementation.v0.1.json",
+    "git_blob_sha": "1028d9f9bf7428af27b9accd665409f841b43848",
+    "attestation_id": "urn:uu-aap:attestation:ccrp-reference-implementation:0.1",
+    "subject_id": "urn:uu-aap:implementation:ccrp-reference:0.1"
+  },
+  "claims": {
+    "responsibility_acceptance_explicit": true,
+    "responsibility_accepted": true,
+    "capability_attestation_is_authority": false,
+    "authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "outcome_observed": false
+  }
+}
