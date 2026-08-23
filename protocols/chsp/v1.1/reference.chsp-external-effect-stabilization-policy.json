@@ -1,0 +1,13 @@
+{
+  "artifact_type":"CHSPExternalEffectStabilizationPolicy",
+  "artifact_version":"1.1",
+  "project_id":"Matawaka/uu-aap",
+  "minimum_stabilization_hours":24,
+  "minimum_supportive_observations":3,
+  "minimum_observer_domains":2,
+  "maximum_observation_age_days":7,
+  "minimum_acknowledgers":2,
+  "minimum_acknowledger_domains":2,
+  "requirements":{"verified_v10_effect_required":true,"credentials_prohibited":true,"drift_blocks_stabilization":true,"indeterminate_blocks_stabilization":true,"distinct_observer_domains_required":true,"human_acknowledgement_required":true,"steward_acknowledgement_required":true,"non_steward_acknowledger_required":true,"automatic_external_mutation":false,"automatic_recognition":false,"ownership_transfer_authorized":false,"predecessor_access_removal_authorized":false,"canonical_origin_mutation_authorized":false,"canonical_publication_authorized":false,"kontur_activation_authorized":false},
+  "claims":{"stabilization_policy_only":true,"external_mutation_performed":false,"repository_ownership_transferred":false,"account_control_transferred":false,"predecessor_access_removed":false,"canonical_origin_mutated":false,"canonical_publication_executed":false,"kontur_activated":false,"global_provider_state_proven":false,"distributed_consensus_established":false}
+}
