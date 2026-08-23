@@ -166,14 +166,20 @@ def main():
             "expected next stage A1_advisory",
         )
 
-        expect_fail(
-            lambda: C.issue_envelope(
-                assessment, recognition, policy, [], [], [], "A1_advisory",
-                ["canonical_publication_preparation"], "human:authorizer-1", "7" * 64,
-                "unsafe-scope-nonce-001", state, z(base + timedelta(days=15)), z(base + timedelta(days=60)),
-            ),
-            "scope is not permitted",
-        )
+        # Once an issuance reaches the reservation boundary, a later validation
+        # failure intentionally consumes that local stage reservation. Isolate
+        # such negative tests from the valid causal chain.
+        with tempfile.TemporaryDirectory(prefix="uu-aap-chsp-v02-unsafe-scope-") as td3:
+            unsafe_state = Path(td3) / "state"
+            expect_fail(
+                lambda: C.issue_envelope(
+                    assessment, recognition, policy, [], [], [], "A1_advisory",
+                    ["canonical_publication_preparation"], "human:authorizer-1", "7" * 64,
+                    "unsafe-scope-nonce-001", unsafe_state, z(base + timedelta(days=15)), z(base + timedelta(days=60)),
+                ),
+                "scope is not permitted",
+            )
+            assert list((unsafe_state / "authority-stage-reservations").glob("*.json")), "fail-closed stage reservation was not retained"
 
         a1 = C.issue_envelope(
             assessment, recognition, policy, [], [], [], "A1_advisory",
@@ -202,14 +208,17 @@ def main():
         )
         a2_out = C.record_outcome(a2, recognition, policy, "positive", "human:reviewer-1", "a" * 64, z(base + timedelta(days=76)))
 
-        expect_fail(
-            lambda: C.issue_envelope(
-                assessment, recognition, policy, [], [a1, a2], [a1_out, a2_out], "A3_supervised_stewardship",
-                ["supervised_policy_draft"], recognition["recognizer_id"], "b" * 64,
-                "a3-bad-authorizer-0001", state, z(base + timedelta(days=77)), z(base + timedelta(days=132)),
-            ),
-            "distinct from original recognizer",
-        )
+        with tempfile.TemporaryDirectory(prefix="uu-aap-chsp-v02-bad-a3-") as td4:
+            bad_a3_state = Path(td4) / "state"
+            expect_fail(
+                lambda: C.issue_envelope(
+                    assessment, recognition, policy, [], [a1, a2], [a1_out, a2_out], "A3_supervised_stewardship",
+                    ["supervised_policy_draft"], recognition["recognizer_id"], "b" * 64,
+                    "a3-bad-authorizer-0001", bad_a3_state, z(base + timedelta(days=77)), z(base + timedelta(days=132)),
+                ),
+                "distinct from original recognizer",
+            )
+            assert list((bad_a3_state / "authority-stage-reservations").glob("*.json")), "fail-closed A3 reservation was not retained"
 
         a3 = C.issue_envelope(
             assessment, recognition, policy, [], [a1, a2], [a1_out, a2_out], "A3_supervised_stewardship",
