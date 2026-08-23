@@ -1,0 +1,108 @@
+{
+  "artifact_type": "CCRPLiveCompatibleConvergenceResult",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#158",
+  "reconciled_from_main_sha": "295b4b7902ed346987c44b6d177549cdaf76d400",
+  "baseline": {
+    "path": "experiments/ccrp-v0.1/compatible-convergence/baseline.json",
+    "blob_sha": "cb832d1b9aef9c0eee3a26bfb7cfddbf5a023f75",
+    "logical_resource_id": "urn:ccrp:experiment:compatible-convergence:resource:1",
+    "baseline_generation": 0,
+    "operation_class": "commutative_addition"
+  },
+  "source_operations": [
+    {
+      "path": "experiments/ccrp-v0.1/compatible-convergence/operations/executor-a.json",
+      "blob_sha": "0c271bb6c47d7a1328f6c1f59b676d195c5a328a",
+      "operation_id": "urn:ccrp:experiment:compatible-convergence:operation:a",
+      "executor_label": "executor-a-chatgpt",
+      "contribution": "alpha"
+    },
+    {
+      "path": "experiments/ccrp-v0.1/compatible-convergence/operations/executor-b.json",
+      "blob_sha": "8a32864962ac628ff19c4c9ff83c9840ea6ff95b",
+      "operation_id": "urn:ccrp:experiment:compatible-convergence:operation:b",
+      "executor_label": "executor-b-codex",
+      "contribution": "beta"
+    }
+  ],
+  "observed_materialization_order": [
+    {
+      "operation_id": "urn:ccrp:experiment:compatible-convergence:operation:b",
+      "merge_commit": "9abe8c1fb7fa50d76e188f615e4dc31f28231186"
+    },
+    {
+      "operation_id": "urn:ccrp:experiment:compatible-convergence:operation:a",
+      "merge_commit": "295b4b7902ed346987c44b6d177549cdaf76d400"
+    }
+  ],
+  "reconciliation_rule": {
+    "deduplicate_by": "operation_id",
+    "semantic_order": "lexicographic operation_id ascending",
+    "projection": "contribution in semantic operation order"
+  },
+  "input_order_tests": [
+    {
+      "input_order": [
+        "urn:ccrp:experiment:compatible-convergence:operation:b",
+        "urn:ccrp:experiment:compatible-convergence:operation:a"
+      ],
+      "ordered_operation_ids": [
+        "urn:ccrp:experiment:compatible-convergence:operation:a",
+        "urn:ccrp:experiment:compatible-convergence:operation:b"
+      ],
+      "contributions": [
+        "alpha",
+        "beta"
+      ]
+    },
+    {
+      "input_order": [
+        "urn:ccrp:experiment:compatible-convergence:operation:a",
+        "urn:ccrp:experiment:compatible-convergence:operation:b"
+      ],
+      "ordered_operation_ids": [
+        "urn:ccrp:experiment:compatible-convergence:operation:a",
+        "urn:ccrp:experiment:compatible-convergence:operation:b"
+      ],
+      "contributions": [
+        "alpha",
+        "beta"
+      ]
+    }
+  ],
+  "semantic_result": {
+    "ordered_operation_ids": [
+      "urn:ccrp:experiment:compatible-convergence:operation:a",
+      "urn:ccrp:experiment:compatible-convergence:operation:b"
+    ],
+    "contributions": [
+      "alpha",
+      "beta"
+    ]
+  },
+  "semantic_result_canonical_string": "{\"contributions\":[\"alpha\",\"beta\"],\"ordered_operation_ids\":[\"urn:ccrp:experiment:compatible-convergence:operation:a\",\"urn:ccrp:experiment:compatible-convergence:operation:b\"]}",
+  "semantic_result_sha256": "c1114b1aa5278131ebc840c8c8530a5715a14758c7f73d90f0d93847fde5268c",
+  "observations": {
+    "accepted_operation_count": 2,
+    "duplicate_operation_count": 0,
+    "source_operations_preserved": true,
+    "input_order_invariant": true,
+    "arrival_order_differs_from_semantic_order": true,
+    "last_writer_wins_used": false,
+    "deterministic_convergence_observed": true
+  },
+  "claims": {
+    "protocol_definition": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "causality_established": false,
+    "legal_effect_established": false,
+    "poai_v_conformance_established": false,
+    "universal_ccrp_correctness_established": false,
+    "universal_crdt_semantics_established": false
+  }
+}
