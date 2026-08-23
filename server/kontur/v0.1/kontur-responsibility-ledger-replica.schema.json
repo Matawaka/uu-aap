@@ -1,0 +1,23 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:kontur:responsibility-ledger-read-only-replica:v0.1",
+  "title":"KONTUR Responsibility Ledger Read-Only Replica v0.1",
+  "type":"object",
+  "required":["artifact_type","artifact_version","snapshot_id","captured_at","ledger_id","entry_count","head_entry_digest","entry_set_sha256","entry_files","ledger_policy_file","publication_model","claims","manifest_digest"],
+  "properties":{
+    "artifact_type":{"const":"KONTURResponsibilityLedgerReadOnlyReplica"},
+    "artifact_version":{"const":"0.1"},
+    "snapshot_id":{"type":"string","pattern":"^[0-9]{12}-[0-9a-f]{32}$"},
+    "captured_at":{"type":"string"},
+    "ledger_id":{"type":"string"},
+    "entry_count":{"type":"integer","minimum":0},
+    "head_entry_digest":{"type":["string","null"],"pattern":"^[0-9a-f]{64}$"},
+    "entry_set_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "entry_files":{"type":"array","items":{"type":"object","required":["name","sha256","bytes"],"properties":{"name":{"type":"string","pattern":"^[0-9]{12}-[0-9a-f]{64}\\.json$"},"sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"bytes":{"type":"integer","minimum":1}},"additionalProperties":false}},
+    "ledger_policy_file":{"type":"object","required":["name","sha256","bytes"],"properties":{"name":{"const":"ledger-policy.json"},"sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"bytes":{"type":"integer","minimum":1}},"additionalProperties":false},
+    "publication_model":{"const":"validated_temp_snapshot_then_atomic_rename"},
+    "claims":{"type":"object","required":["source_chain_validated","exact_entry_bytes_copied","replica_head_matches_source","replica_authoritative","execution_authority_granted","distributed_consensus_established","kontur_activated","canonical_successor_created","legal_effect_established","truth_certified"],"properties":{"source_chain_validated":{"const":true},"exact_entry_bytes_copied":{"const":true},"replica_head_matches_source":{"const":true},"replica_authoritative":{"const":false},"execution_authority_granted":{"const":false},"distributed_consensus_established":{"const":false},"kontur_activated":{"const":false},"canonical_successor_created":{"const":false},"legal_effect_established":{"const":false},"truth_certified":{"const":false}},"additionalProperties":false},
+    "manifest_digest":{"type":"object","required":["canonicalization","digest_algorithm","digest_encoding","value"],"properties":{"canonicalization":{"const":"RFC8785-JCS"},"digest_algorithm":{"const":"SHA-256"},"digest_encoding":{"const":"hex"},"value":{"type":"string","pattern":"^[0-9a-f]{64}$"}},"additionalProperties":false}
+  },
+  "additionalProperties":false
+}
