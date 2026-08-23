@@ -1,0 +1,30 @@
+{
+  "document_type": "uu-aap.divergence-horizon",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "parallel_branch": "parallel/sustainability-backlog-v0.1",
+  "original_base_sha": "89b26161312a120b03c874968245331391c3e107",
+  "latest_observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "merge_base_sha": "89b26161312a120b03c874968245331391c3e107",
+  "ahead_by": 41,
+  "behind_by": 1,
+  "relation": "diverged",
+  "observed_active_main_work_refs": [
+    "pull/273"
+  ],
+  "review_triggers": [
+    "main_advanced",
+    "active_main_work_changed",
+    "semantic_overlap_detected"
+  ],
+  "age_does_not_imply_merge_priority": true,
+  "distance_does_not_imply_discard": true,
+  "fresh_review_before_disposition": true,
+  "automatic_rebase_allowed": false,
+  "automatic_merge_allowed": false,
+  "authority_effect": "none",
+  "notes": [
+    "A growing side-track remains evidence, not an integration obligation.",
+    "Fresh comparison is required after the active main-line PR changes or merges."
+  ]
+}
