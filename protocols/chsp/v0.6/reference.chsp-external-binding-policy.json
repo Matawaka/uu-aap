@@ -1,0 +1,38 @@
+{
+  "artifact_type": "CHSPExternalBindingPolicy",
+  "artifact_version": "0.6",
+  "project_id": "Matawaka/uu-aap",
+  "minimum_supporting_attestations": 3,
+  "minimum_observer_domains": 2,
+  "minimum_evidence_classes": 2,
+  "maximum_observation_age_days": 7,
+  "strong_possession_classes": ["challenge_response", "signature_verification"],
+  "allowed_external_system_types": ["github_repository", "git_host_repository", "signing_identity", "generic_control_plane"],
+  "allowed_claimed_roles": ["identity_only", "collaborator", "maintainer", "admin", "owner", "release_signer"],
+  "requirements": {
+    "v05_stewardship_state_required": true,
+    "v05_execution_receipt_required": true,
+    "claim_bound_to_exact_stewardship_state": true,
+    "attestation_evidence_digest_required": true,
+    "attestor_domain_declared": true,
+    "contradiction_blocks": true,
+    "strong_possession_required": true,
+    "automatic_external_transition": false,
+    "automatic_ownership_transfer": false,
+    "automatic_canonical_origin_mutation": false,
+    "automatic_kontur_activation": false
+  },
+  "claims": {
+    "descriptive_policy_only": true,
+    "external_binding_established": false,
+    "domain_independence_proven": false,
+    "repository_ownership_transferred": false,
+    "account_control_transferred": false,
+    "canonical_origin_mutated": false,
+    "canonical_publication_executed": false,
+    "kontur_activated": false,
+    "legal_ownership_adjudicated": false,
+    "universal_identity_proven": false,
+    "distributed_consensus_established": false
+  }
+}
