@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/commit-decision-input.schema.json",
+  "title": "CommitDecisionInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "decision_input_id",
+    "action",
+    "target",
+    "operation_ref",
+    "responsible_party_id",
+    "executor_implementation_id",
+    "evidence_refs"
+  ],
+  "properties": {
+    "$schema": {"const": "./commit-decision-input.schema.json"},
+    "artifact_type": {"const": "CommitDecisionInput"},
+    "artifact_version": {"const": "0.1"},
+    "decision_input_id": {"type": "string", "minLength": 1},
+    "action": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "operation_ref": {"type": "string", "pattern": "^urn:ccrp:operation:"},
+    "responsible_party_id": {"type": "string", "minLength": 1},
+    "executor_implementation_id": {"type": "string", "minLength": 1},
+    "evidence_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "handoff_result_ref",
+        "handoff_offer_ref",
+        "handoff_acceptance_ref",
+        "revalidation_receipt_ref",
+        "authority_verification_ref",
+        "execution_admission_ref",
+        "pre_materialization_ref"
+      ],
+      "properties": {
+        "handoff_result_ref": {"type": "string", "minLength": 1},
+        "handoff_offer_ref": {"type": "string", "minLength": 1},
+        "handoff_acceptance_ref": {"type": "string", "minLength": 1},
+        "revalidation_receipt_ref": {"type": "string", "minLength": 1},
+        "authority_verification_ref": {"type": "string", "pattern": "^urn:poai:authority-verification:"},
+        "execution_admission_ref": {"type": "string", "pattern": "^urn:ccrp:execution-admission-result:"},
+        "pre_materialization_ref": {"type": "string", "pattern": "^urn:poai-ccrp:pre-materialization:"}
+      }
+    }
+  }
+}
