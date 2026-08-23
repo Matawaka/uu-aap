@@ -60,11 +60,12 @@
         "semantic_binding": {
           "type": "object",
           "additionalProperties": false,
-          "required": ["action", "target", "operation_ref", "responsible_party_id", "executor_implementation_id"],
+          "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
           "properties": {
             "action": {"type": "string", "minLength": 1},
             "target": {"type": "string", "minLength": 1},
             "operation_ref": {"type": "string", "minLength": 1},
+            "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
             "responsible_party_id": {"type": "string", "minLength": 1},
             "executor_implementation_id": {"type": "string", "minLength": 1}
           }
@@ -165,11 +166,12 @@
     },
     "semantic_binding": {
       "type": "object", "additionalProperties": false,
-      "required": ["action", "target", "operation_ref", "responsible_party_id", "executor_implementation_id"],
+      "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
       "properties": {
         "action": {"type": "string", "minLength": 1},
         "target": {"type": "string", "minLength": 1},
         "operation_ref": {"type": "string", "minLength": 1},
+        "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
         "responsible_party_id": {"type": "string", "minLength": 1},
         "executor_implementation_id": {"type": "string", "minLength": 1}
       }
