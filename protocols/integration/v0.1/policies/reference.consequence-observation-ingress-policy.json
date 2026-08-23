@@ -9,16 +9,24 @@
   "allowed_claimed_statuses": ["observed","not_observed","not_yet_observable","indeterminate"],
   "allowed_observation_methods": ["system_record","direct_observation","document_review","multi_source","other","unknown"],
   "accepted_frontier_artifact_types": ["ResponsibilityEventAppendLedgerEntry","ResponsibilityEventSuccessorLedgerEntry"],
+  "accepted_source_wrapper": {
+    "artifact_type": "ConsequenceObservationSourceEvidence",
+    "artifact_version": "0.1"
+  },
   "invariants": {
     "observed_claim_requires_evidence": true,
+    "observed_claim_requires_source_bytes": true,
+    "source_bytes_digest_required": true,
     "frontier_binding_required": true,
     "semantic_frontier_exact": true,
     "effect_frontier_exact": true,
     "claim_is_non_certifying": true,
+    "test_fixture_successor_adapter_eligible": false,
     "scalar_scores_allowed": false
   },
   "claims": {
     "ingress_policy_defined": true,
+    "source_bytes_binding_required": true,
     "new_external_consequence_observed": false,
     "consequence_truth_certified": false,
     "generalized_external_consequence_causality_established": false,
