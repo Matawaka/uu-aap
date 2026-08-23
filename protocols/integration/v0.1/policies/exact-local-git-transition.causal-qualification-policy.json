@@ -1,0 +1,118 @@
+{
+  "$schema": "../causal-qualification-policy.schema.json",
+  "artifact_type": "UU-AAPCausalQualificationPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:causal-qualification-policy:exact-local-git-transition:1",
+  "policy_version": 1,
+  "qualification_scope": "urn:uu-aap:causal-qualification-scope:exact-local-git-transition-v0.1",
+  "applies_to": {
+    "predecessor_artifact_type": "CounterfactualInterventionAssessment",
+    "predecessor_artifact_version": "0.1",
+    "model_scope": "exact_local_git_transition_mechanism",
+    "effect_scope": "exact_local_git_transition_effect"
+  },
+  "allowed_statuses": [
+    "qualified",
+    "not_qualified",
+    "deferred",
+    "out_of_scope"
+  ],
+  "predicate_rules": {
+    "originating_execution_contributed_to_exact_transition": {
+      "status": "qualified",
+      "establishes_predicate": true,
+      "required_conditions": [
+        "originating_execution_hypothesis_supported",
+        "exact_transition_effect_bound",
+        "responsibility_trace_verified_not_adjudicated"
+      ],
+      "reason_codes": [
+        "originating_execution_hypothesis_supported",
+        "exact_transition_effect_bound",
+        "responsibility_trace_verified_not_adjudicated"
+      ]
+    },
+    "model_relative_intervention_sensitivity": {
+      "status": "qualified",
+      "establishes_predicate": true,
+      "required_conditions": [
+        "suppression_structurally_evaluated",
+        "suppression_effect_removed",
+        "suppression_sensitivity_supported",
+        "structural_model_interpretation_preserved",
+        "model_completeness_not_established"
+      ],
+      "reason_codes": [
+        "suppression_structurally_evaluated",
+        "effect_removed_under_suppression_model",
+        "sensitivity_supported_model_relative",
+        "structural_model_not_real_world_causal_proof"
+      ]
+    },
+    "necessary_cause": {
+      "status": "deferred",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "alternative_reproduction_resolved",
+        "model_completeness_established"
+      ],
+      "reason_codes": [
+        "alternative_reproduction_unresolved",
+        "model_completeness_not_established"
+      ]
+    },
+    "sufficient_cause": {
+      "status": "deferred",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "sufficiency_intervention_test_completed"
+      ],
+      "reason_codes": [
+        "sufficiency_not_tested"
+      ]
+    },
+    "exclusive_cause": {
+      "status": "deferred",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "alternative_reproduction_resolved",
+        "all_competing_mechanisms_excluded"
+      ],
+      "reason_codes": [
+        "alternative_reproduction_unresolved",
+        "competing_mechanisms_not_excluded"
+      ]
+    },
+    "counterfactual_causal_proof": {
+      "status": "not_qualified",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "executed_counterfactual_evidence_present",
+        "model_scope_sufficient_for_proof"
+      ],
+      "reason_codes": [
+        "structural_model_only",
+        "counterfactual_proof_not_certified_by_predecessor"
+      ]
+    },
+    "generalized_external_consequence_causality": {
+      "status": "out_of_scope",
+      "establishes_predicate": false,
+      "required_conditions": [
+        "external_consequence_model_present"
+      ],
+      "reason_codes": [
+        "external_consequence_model_absent",
+        "qualification_scope_bounded_to_exact_local_git_transition"
+      ]
+    }
+  },
+  "effective_from": "2026-08-23T08:38:08Z",
+  "effective_until": null,
+  "claims": {
+    "policy_establishes_universal_causal_truth": false,
+    "policy_establishes_responsibility_adjudication": false,
+    "policy_establishes_legal_liability": false,
+    "policy_establishes_moral_blame": false
+  }
+}
