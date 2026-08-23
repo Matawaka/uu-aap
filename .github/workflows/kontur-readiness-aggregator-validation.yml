@@ -110,6 +110,11 @@ jobs:
           aggregation_schema = json.loads((root / 'kontur-readiness-aggregation.schema.json').read_text(encoding='utf-8'))
           acceptance_schema = json.loads((root / 'kontur-readiness-acceptance.schema.json').read_text(encoding='utf-8'))
           frontier_schema = json.loads((root / 'kontur-activation-frontier.schema.json').read_text(encoding='utf-8'))
+          evidence_set_schema = {
+              '$schema': 'https://json-schema.org/draft/2020-12/schema',
+              '$ref': '#/$defs/evidenceSet',
+              '$defs': aggregation_schema['$defs'],
+          }
 
           health = json.loads((out / 'server-health.json').read_text(encoding='utf-8'))
           evidence_set = json.loads((out / 'evidence-set.json').read_text(encoding='utf-8'))
@@ -120,7 +125,7 @@ jobs:
 
           Draft202012Validator(health_schema, format_checker=FormatChecker()).validate(health)
           Draft202012Validator(signal_schema, format_checker=FormatChecker()).validate(signal)
-          Draft202012Validator(aggregation_schema['$defs']['evidenceSet'], format_checker=FormatChecker()).validate(evidence_set)
+          Draft202012Validator(evidence_set_schema, format_checker=FormatChecker()).validate(evidence_set)
           Draft202012Validator(aggregation_schema, format_checker=FormatChecker()).validate(aggregation)
           Draft202012Validator(acceptance_schema, format_checker=FormatChecker()).validate(acceptance)
           Draft202012Validator(frontier_schema, format_checker=FormatChecker()).validate(frontier)
