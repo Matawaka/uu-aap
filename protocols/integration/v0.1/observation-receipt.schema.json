@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/observation-receipt.schema.json",
+  "title": "UU-AAP ObservationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "artifact_type",
+    "artifact_version",
+    "receipt_id",
+    "observed_at",
+    "commit_receipt_ref",
+    "observation_mode",
+    "observation_source",
+    "outcome_scope",
+    "action",
+    "target",
+    "operation_ref",
+    "responsible_party_id",
+    "executor_implementation_id",
+    "expected",
+    "observed",
+    "readback_verification",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./observation-receipt.schema.json"},
+    "artifact_type": {"const": "ObservationReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:observation-receipt:"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "commit_receipt_ref": {"type": "string", "pattern": "^urn:uu-aap:commit-receipt:"},
+    "observation_mode": {"const": "git_object_database_readback"},
+    "observation_source": {"const": "local_git_object_database"},
+    "outcome_scope": {"const": "local_git_successor_object"},
+    "action": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "operation_ref": {"type": "string", "minLength": 1},
+    "responsible_party_id": {"type": "string", "minLength": 1},
+    "executor_implementation_id": {"type": "string", "minLength": 1},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predecessor_revision",
+        "predecessor_commit_sha",
+        "successor_revision",
+        "successor_commit_sha",
+        "successor_tree_sha",
+        "parent_commit_sha",
+        "changed_paths",
+        "changed_path_count"
+      ],
+      "properties": {
+        "predecessor_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "predecessor_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "successor_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "successor_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "successor_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "parent_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "changed_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "changed_path_count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "observed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revision",
+        "commit_sha",
+        "tree_sha",
+        "parent_commit_sha",
+        "changed_paths",
+        "changed_path_count"
+      ],
+      "properties": {
+        "revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "parent_commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "changed_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "changed_path_count": {"type": "integer", "minimum": 1}
+      }
+    },
+    "readback_verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_receipt_performed",
+        "observation_time_after_execution_receipt",
+        "predecessor_commit_exists",
+        "successor_commit_exists_at_observation",
+        "successor_revision_exact",
+        "successor_tree_exact",
+        "single_parent_exact",
+        "changed_paths_exact",
+        "semantic_binding_exact",
+        "refs_unchanged_during_observation",
+        "working_tree_unchanged_during_observation"
+      ],
+      "properties": {
+        "commit_receipt_performed": {"const": true},
+        "observation_time_after_execution_receipt": {"const": true},
+        "predecessor_commit_exists": {"const": true},
+        "successor_commit_exists_at_observation": {"const": true},
+        "successor_revision_exact": {"const": true},
+        "successor_tree_exact": {"const": true},
+        "single_parent_exact": {"const": true},
+        "changed_paths_exact": {"const": true},
+        "semantic_binding_exact": {"const": true},
+        "refs_unchanged_during_observation": {"const": true},
+        "working_tree_unchanged_during_observation": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "commit_receipt_accepted",
+        "post_execution_readback_performed",
+        "outcome_observed",
+        "successor_state_observed",
+        "observation_matches_commit_receipt",
+        "local_git_object_state_observed",
+        "remote_repository_state_observed",
+        "published_branch_or_ref_update_observed",
+        "poai_materialization_event_recorded",
+        "policy_relative_canonicality_established",
+        "universal_canonicality_established",
+        "truth_certified",
+        "causal_proof_certified",
+        "legal_effect_established",
+        "poai_v_conformance_established"
+      ],
+      "properties": {
+        "commit_receipt_accepted": {"const": true},
+        "post_execution_readback_performed": {"const": true},
+        "outcome_observed": {"const": true},
+        "successor_state_observed": {"const": true},
+        "observation_matches_commit_receipt": {"const": true},
+        "local_git_object_state_observed": {"const": true},
+        "remote_repository_state_observed": {"const": false},
+        "published_branch_or_ref_update_observed": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "policy_relative_canonicality_established": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "truth_certified": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "legal_effect_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  }
+}
