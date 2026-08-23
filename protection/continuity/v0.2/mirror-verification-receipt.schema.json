@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:continuity:mirror-verification-receipt:v0.2",
+  "title":"UU-AAP Mirror Verification Receipt v0.2",
+  "type":"object",
+  "required":["schema","observed_at","canonical_url","mirror_url","canonical_refs_sha256","mirror_refs_sha256","exact_ref_match","missing_refs","extra_refs","divergent_refs","authority_transfer","canonical_successor_created","remote_mutation_performed"],
+  "properties":{
+    "schema":{"const":"urn:uu-aap:continuity:mirror-verification-receipt:v0.2"},
+    "observed_at":{"type":"string"},
+    "canonical_url":{"type":"string"},"mirror_url":{"type":"string"},
+    "canonical_refs_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "mirror_refs_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "canonical_main":{"type":["string","null"]},"mirror_main":{"type":["string","null"]},
+    "exact_ref_match":{"type":"boolean"},
+    "missing_refs":{"type":"object"},"extra_refs":{"type":"object"},"divergent_refs":{"type":"object"},
+    "authority_transfer":{"const":false},"canonical_successor_created":{"const":false},"remote_mutation_performed":{"const":false}
+  },
+  "additionalProperties":false
+}
