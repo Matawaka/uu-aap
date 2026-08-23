@@ -33,6 +33,25 @@
     {"path": "proposals/poai/materialization/schema/materialization-policy.schema.json", "git_blob_sha": "062069fa3d654fa474a09bb8148aeed043b2e759"},
     {"path": "proposals/poai/materialization/policies/github/Matawaka.uu-aap.materialization-policy.json", "git_blob_sha": "54c4aa2d83f0440e3b4e727116b2e8a2848ec5e2"}
   ],
+  "setup_evidence": [
+    {
+      "level": "C5",
+      "harness_artifacts": [
+        {"path": "proposals/poai/authority/live/test-live-published-grant-authority.js", "git_blob_sha": "b466fd07d3fb81656acb1db9564fc386b7940ce6"},
+        {"path": "proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json", "git_blob_sha": "15b573e394e101ecd05c2d88c99d51d71fe50b09"},
+        {"path": "proposals/poai/authority/grants/github/Matawaka.uu-aap.execute-grant.json", "git_blob_sha": "1ee586779d22201d3c48267d7777b250cbecf80f"}
+      ],
+      "runner": {
+        "executable": "node",
+        "args": [
+          "proposals/poai/authority/live/test-live-published-grant-authority.js",
+          "/tmp/live-authority-verification.json",
+          "/tmp/live-published-grant-check.json"
+        ]
+      },
+      "expected_exit_code": 0
+    }
+  ],
   "attested_conformance_levels": ["C0", "C1", "C2", "C3", "C4", "C5"],
   "test_evidence": [
     {"level": "C0", "test_path": "proposals/ccrp/test-c0.js", "git_blob_sha": "e1fa68c11e80eae1dc74147f9eaa85c7a0f29cfb", "runner": {"executable": "node", "args": ["proposals/ccrp/test-c0.js"]}, "expected_exit_code": 0},
@@ -46,9 +65,10 @@
     "rerun_required": true,
     "implementation_blob_match_required": true,
     "dependency_blob_match_required": true,
+    "setup_harness_blob_match_required": true,
     "test_blob_match_required": true,
     "release_manifest_membership_required": true,
-    "command_binding": "node_single_test_path_exact"
+    "command_binding": "node_bound_paths_only"
   },
   "non_claims": [
     "production_deployment_identity_established",
