@@ -7,37 +7,32 @@ const Kernel = require('./responsibility-kernel.js');
 const Ledger = require('./responsibility-ledger.js');
 
 const FALSE_CLAIMS = [
-  'execution_authority_granted',
-  'legal_responsibility_determined',
-  'legal_effect_established',
-  'moral_blame_assigned',
-  'truth_certified',
-  'distributed_consensus_established',
-  'poai_materialization_event_recorded',
-  'universal_canonicality_established'
+  'execution_authority_granted', 'legal_responsibility_determined', 'legal_effect_established',
+  'moral_blame_assigned', 'truth_certified', 'distributed_consensus_established',
+  'poai_materialization_event_recorded', 'universal_canonicality_established'
 ];
 const SCALAR_KEYS = new Set([
   'score', 'probability', 'percentage', 'likelihood', 'confidence_score',
   'readiness_score', 'responsibility_score', 'causal_score', 'rating', 'weight'
 ]);
 
-function assert(value, message) { if (!value) throw new Error(message); }
-function clone(value) { return JSON.parse(JSON.stringify(value)); }
-function parseTime(value, label) {
-  const ms = Date.parse(value);
+function assert(v, m) { if (!v) throw new Error(m); }
+function clone(v) { return JSON.parse(JSON.stringify(v)); }
+function parseTime(v, label) {
+  const ms = Date.parse(v);
   assert(Number.isFinite(ms), `KONTUR Activation Executor: invalid ${label}`);
   return ms;
-}
-function hasScalarKey(value) {
-  if (!value || typeof value !== 'object') return false;
-  if (Array.isArray(value)) return value.some(hasScalarKey);
-  return Object.entries(value).some(([key, child]) => SCALAR_KEYS.has(key) || hasScalarKey(child));
 }
 function sameArray(a, b) {
   return Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.every((v, i) => v === b[i]);
 }
-async function digestJson(value) {
-  return Binding.sha256Hex(Binding.utf8Bytes(Binding.canonicalize(value, '$')));
+function hasScalarKey(v) {
+  if (!v || typeof v !== 'object') return false;
+  if (Array.isArray(v)) return v.some(hasScalarKey);
+  return Object.entries(v).some(([k, child]) => SCALAR_KEYS.has(k) || hasScalarKey(child));
+}
+async function digestJson(v) {
+  return Binding.sha256Hex(Binding.utf8Bytes(Binding.canonicalize(v, '$')));
 }
 function digest(value) {
   return { canonicalization: 'RFC8785-JCS', digest_algorithm: 'SHA-256', digest_encoding: 'hex', value };
@@ -53,14 +48,11 @@ async function policyBinding(policy) {
     digest: digest(await digestJson(policy))
   };
 }
-function sameBinding(left, right) {
-  return !!left && !!right && left.artifact_type === right.artifact_type &&
-    left.artifact_ref === right.artifact_ref && left.digest && right.digest &&
-    left.digest.value === right.digest.value;
+function sameBinding(a, b) {
+  return !!a && !!b && a.artifact_type === b.artifact_type && a.artifact_ref === b.artifact_ref &&
+    a.digest && b.digest && a.digest.value === b.digest.value;
 }
-function samePolicyBinding(left, right) {
-  return sameBinding(left, right) && left.policy_version === right.policy_version;
-}
+function samePolicyBinding(a, b) { return sameBinding(a, b) && a.policy_version === b.policy_version; }
 function assertFalseClaims(claims, label) {
   for (const key of FALSE_CLAIMS) assert(claims && claims[key] === false, `${label}: prohibited claim ${key}`);
 }
@@ -95,26 +87,13 @@ function assertExecutionPolicy(policy, evaluatedMs = null) {
     'KONTUR Activation Executor: execution policy not effective');
 }
 
-async function buildExecuteCommand({
-  currentGitRevision,
-  intent,
-  preflight,
-  executionPolicy,
-  declaredAt,
-  actorRef,
-  executeNonce,
-  executionMode
-}) {
+async function buildExecuteCommand({ currentGitRevision, intent, preflight, executionPolicy, declaredAt, actorRef, executeNonce, executionMode }) {
   const declaredMs = parseTime(declaredAt, 'execute command declared_at');
   assertExecutionPolicy(executionPolicy, declaredMs);
-  assert(/^git:[0-9a-f]{40}$/.test(currentGitRevision || ''),
-    'KONTUR Activation Executor: exact Git revision required');
-  assert(intent && intent.artifact_type === 'KONTURActivationIntent',
-    'KONTUR Activation Executor: activation intent required');
-  assert(preflight && preflight.artifact_type === 'KONTURActivationPreflightReceipt',
-    'KONTUR Activation Executor: activation preflight required');
-  assert(preflight.decision === 'human_execute_step_may_proceed',
-    'KONTUR Activation Executor: preflight does not admit execute');
+  assert(/^git:[0-9a-f]{40}$/.test(currentGitRevision || ''), 'KONTUR Activation Executor: exact Git revision required');
+  assert(intent && intent.artifact_type === 'KONTURActivationIntent', 'KONTUR Activation Executor: activation intent required');
+  assert(preflight && preflight.artifact_type === 'KONTURActivationPreflightReceipt' && preflight.decision === 'human_execute_step_may_proceed',
+    'KONTUR Activation Executor: positive activation preflight required');
   assert(currentGitRevision === intent.git_revision && currentGitRevision === preflight.current_git_revision,
     'KONTUR Activation Executor: Git revision drift before final command');
   assert(intent.system_id === executionPolicy.system_id && intent.server_instance_id === executionPolicy.server_instance_id &&
@@ -123,15 +102,13 @@ async function buildExecuteCommand({
   assert(intent.holder_id === preflight.holder_id && sameArray(intent.responsibility_scopes, preflight.responsibility_scopes) &&
     intent.fencing_epoch === preflight.fencing_epoch && JSON.stringify(intent.lease) === JSON.stringify(preflight.lease),
     'KONTUR Activation Executor: intent/preflight execution parameters drift');
-  assert(typeof actorRef === 'string' && actorRef.length > 0,
-    'KONTUR Activation Executor: final human actor reference required');
+  assert(typeof actorRef === 'string' && actorRef.length > 0, 'KONTUR Activation Executor: final human actor reference required');
   assert(typeof executeNonce === 'string' && executeNonce.startsWith('urn:uu-aap:kontur:activation-intent-nonce:execute:'),
     'KONTUR Activation Executor: one-shot execute nonce required');
   assert(executeNonce !== intent.human_intent.nonce,
     'KONTUR Activation Executor: execute nonce must differ from activation intent nonce');
   assert(['test_only', 'live'].includes(executionMode), 'KONTUR Activation Executor: invalid execution mode');
-  assert(!hasScalarKey({ intent, preflight, executionPolicy }),
-    'KONTUR Activation Executor: scalar score/probability fields prohibited');
+  assert(!hasScalarKey({ intent, preflight, executionPolicy }), 'KONTUR Activation Executor: scalar score/probability fields prohibited');
 
   const intentBinding = await binding('KONTURActivationIntent', intent.intent_id, intent);
   const preflightBinding = await binding('KONTURActivationPreflightReceipt', preflight.preflight_id, preflight);
@@ -141,44 +118,26 @@ async function buildExecuteCommand({
   const idHash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
   return {
     $schema: './kontur-activation-execute-command.schema.json',
-    artifact_type: 'KONTURActivationExecuteCommand',
-    artifact_version: '0.1',
+    artifact_type: 'KONTURActivationExecuteCommand', artifact_version: '0.1',
     command_id: `urn:uu-aap:kontur:activation-execute-command:${idHash.slice(0, 24)}`,
-    command: 'execute_kontur_activation',
-    execution_mode: executionMode,
-    declared_at: declaredAt,
-    valid_until: validUntil,
-    git_revision: currentGitRevision,
-    system_id: executionPolicy.system_id,
-    server_instance_id: executionPolicy.server_instance_id,
-    activation_intent_binding: intentBinding,
-    activation_preflight_binding: preflightBinding,
+    command: 'execute_kontur_activation', execution_mode: executionMode,
+    declared_at: declaredAt, valid_until: validUntil, git_revision: currentGitRevision,
+    system_id: executionPolicy.system_id, server_instance_id: executionPolicy.server_instance_id,
+    activation_intent_binding: intentBinding, activation_preflight_binding: preflightBinding,
     execution_policy_binding: executionPolicyBinding,
-    holder_id: intent.holder_id,
-    responsibility_scopes: clone(intent.responsibility_scopes),
-    fencing_epoch: intent.fencing_epoch,
-    lease: clone(intent.lease),
+    holder_id: intent.holder_id, responsibility_scopes: clone(intent.responsibility_scopes),
+    fencing_epoch: intent.fencing_epoch, lease: clone(intent.lease),
     human_execute: {
-      actor_ref: actorRef,
-      declaration_type: 'explicit_final_human_execute',
-      nonce: executeNonce,
-      explicit: true,
-      identity_assurance: 'declared_not_cryptographically_verified'
+      actor_ref: actorRef, declaration_type: 'explicit_final_human_execute', nonce: executeNonce,
+      explicit: true, identity_assurance: 'declared_not_cryptographically_verified'
     },
     claims: {
-      final_human_execute_declared: true,
-      exact_execute_parameters_bound: true,
-      human_identity_cryptographically_verified: false,
-      kernel_activated: false,
-      responsibility_state_created: false,
-      local_kontur_activation_completed: false,
-      execution_authority_granted: false,
-      legal_responsibility_determined: false,
-      legal_effect_established: false,
-      moral_blame_assigned: false,
-      truth_certified: false,
-      distributed_consensus_established: false,
-      poai_materialization_event_recorded: false,
+      final_human_execute_declared: true, exact_execute_parameters_bound: true,
+      human_identity_cryptographically_verified: false, kernel_activated: false,
+      responsibility_state_created: false, local_kontur_activation_completed: false,
+      execution_authority_granted: false, legal_responsibility_determined: false,
+      legal_effect_established: false, moral_blame_assigned: false, truth_certified: false,
+      distributed_consensus_established: false, poai_materialization_event_recorded: false,
       universal_canonicality_established: false
     }
   };
@@ -196,22 +155,18 @@ async function validateExecuteCommand({ command, currentGitRevision, intent, pre
   assert(command.claims.final_human_execute_declared === true && command.claims.exact_execute_parameters_bound === true &&
     command.claims.kernel_activated === false && command.claims.local_kontur_activation_completed === false,
     'KONTUR Activation Executor: execute command assurance boundary invalid');
-  assert(command.git_revision === currentGitRevision && currentGitRevision === intent.git_revision &&
-    currentGitRevision === preflight.current_git_revision,
+  assert(command.git_revision === currentGitRevision && currentGitRevision === intent.git_revision && currentGitRevision === preflight.current_git_revision,
     'KONTUR Activation Executor: execute command Git revision drift');
   assert(command.system_id === executionPolicy.system_id && command.server_instance_id === executionPolicy.server_instance_id,
     'KONTUR Activation Executor: execute command identity drift');
   assert(command.holder_id === intent.holder_id && command.holder_id === preflight.holder_id &&
-    sameArray(command.responsibility_scopes, intent.responsibility_scopes) &&
-    sameArray(command.responsibility_scopes, preflight.responsibility_scopes) &&
+    sameArray(command.responsibility_scopes, intent.responsibility_scopes) && sameArray(command.responsibility_scopes, preflight.responsibility_scopes) &&
     command.fencing_epoch === intent.fencing_epoch && command.fencing_epoch === preflight.fencing_epoch &&
     JSON.stringify(command.lease) === JSON.stringify(intent.lease) && JSON.stringify(command.lease) === JSON.stringify(preflight.lease),
     'KONTUR Activation Executor: execute command parameter substitution');
-  assert(command.human_execute && command.human_execute.explicit === true &&
-    command.human_execute.declaration_type === 'explicit_final_human_execute',
+  assert(command.human_execute && command.human_execute.explicit === true && command.human_execute.declaration_type === 'explicit_final_human_execute',
     'KONTUR Activation Executor: explicit final human execute missing');
-  assert(typeof command.human_execute.nonce === 'string' &&
-    command.human_execute.nonce.startsWith('urn:uu-aap:kontur:activation-intent-nonce:execute:'),
+  assert(typeof command.human_execute.nonce === 'string' && command.human_execute.nonce.startsWith('urn:uu-aap:kontur:activation-intent-nonce:execute:'),
     'KONTUR Activation Executor: invalid execute nonce');
   assert(command.human_execute.nonce !== intent.human_intent.nonce,
     'KONTUR Activation Executor: execute nonce must differ from activation intent nonce');
@@ -221,14 +176,11 @@ async function validateExecuteCommand({ command, currentGitRevision, intent, pre
     'KONTUR Activation Executor: execute command expired or future-dated');
   assert(validUntilMs - declaredMs === executionPolicy.max_execute_command_age_seconds * 1000,
     'KONTUR Activation Executor: execute command validity interval drift');
-  const expectedIntent = await binding('KONTURActivationIntent', intent.intent_id, intent);
-  const expectedPreflight = await binding('KONTURActivationPreflightReceipt', preflight.preflight_id, preflight);
-  const expectedPolicy = await policyBinding(executionPolicy);
-  assert(sameBinding(command.activation_intent_binding, expectedIntent),
+  assert(sameBinding(command.activation_intent_binding, await binding('KONTURActivationIntent', intent.intent_id, intent)),
     'KONTUR Activation Executor: execute command intent binding substitution');
-  assert(sameBinding(command.activation_preflight_binding, expectedPreflight),
+  assert(sameBinding(command.activation_preflight_binding, await binding('KONTURActivationPreflightReceipt', preflight.preflight_id, preflight)),
     'KONTUR Activation Executor: execute command preflight binding substitution');
-  assert(samePolicyBinding(command.execution_policy_binding, expectedPolicy),
+  assert(samePolicyBinding(command.execution_policy_binding, await policyBinding(executionPolicy)),
     'KONTUR Activation Executor: execute command execution-policy binding substitution');
   return true;
 }
@@ -267,33 +219,31 @@ async function validateExecutionReceipt({ receipt, command, preflight, transitio
     'KONTUR Activation Executor: invalid execution receipt');
   assert(!hasScalarKey(receipt), 'KONTUR Activation Executor: scalar fields prohibited in execution receipt');
   assertFalseClaims(receipt.claims, 'KONTURActivationExecutionReceipt');
-  assert(receipt.claims.final_human_execute_command_verified === true &&
-    receipt.claims.kernel_activation_transition_produced === true &&
-    receipt.claims.genesis_ledger_entry_durably_committed === true &&
-    receipt.claims.authoritative_active_head_recovered === true &&
-    receipt.claims.structural_responsibility_state_established === true &&
-    receipt.claims.local_kontur_activation_completed === true,
-    'KONTUR Activation Executor: positive execution claims missing');
+  for (const key of [
+    'final_human_execute_command_verified', 'kernel_activation_transition_produced',
+    'genesis_ledger_entry_durably_committed', 'authoritative_active_head_recovered',
+    'structural_responsibility_state_established', 'local_kontur_activation_completed'
+  ]) assert(receipt.claims[key] === true, `KONTUR Activation Executor: missing positive execution claim ${key}`);
   assert(receipt.claims.live_kontur_activated === (command.execution_mode === 'live'),
     'KONTUR Activation Executor: live activation claim/mode mismatch');
   assert(receipt.status === (command.execution_mode === 'live' ? 'activation_completed_live' : 'activation_completed_test_only'),
     'KONTUR Activation Executor: execution status/mode mismatch');
-  assert(recovered && recovered.head_entry && recovered.head_state,
-    'KONTUR Activation Executor: recovered authoritative head missing');
-  assert(recovered.head_entry.sequence === 1 && recovered.head_state.generation === 1 && recovered.head_state.lifecycle_state === 'active',
+  const state = recovered && recovered.authoritative_state;
+  assert(recovered && recovered.head_entry && state, 'KONTUR Activation Executor: recovered authoritative head missing');
+  assert(recovered.entries.length === 1 && recovered.head_entry.sequence === 1 && state.generation === 1 && state.lifecycle_state === 'active',
     'KONTUR Activation Executor: recovered genesis state invalid');
-  const expectedCommand = await binding('KONTURActivationExecuteCommand', command.command_id, command);
-  const expectedPreflight = await binding('KONTURActivationPreflightReceipt', preflight.preflight_id, preflight);
-  const expectedTransition = await binding('KONTURResponsibilityTransitionReceipt', transitionReceipt.receipt_id, transitionReceipt);
-  const expectedEntry = await Ledger.entryBinding(ledgerEntry);
-  const expectedHead = await binding('KONTURResponsibilityState', recovered.head_state.state_id, recovered.head_state);
-  assert(sameBinding(receipt.execute_command_binding, expectedCommand), 'KONTUR Activation Executor: receipt command binding substitution');
-  assert(sameBinding(receipt.activation_preflight_binding, expectedPreflight), 'KONTUR Activation Executor: receipt preflight binding substitution');
-  assert(sameBinding(receipt.transition_receipt_binding, expectedTransition), 'KONTUR Activation Executor: receipt transition binding substitution');
-  assert(sameBinding(receipt.ledger_entry_binding, expectedEntry), 'KONTUR Activation Executor: receipt ledger binding substitution');
-  assert(sameBinding(receipt.recovered_head_binding, expectedHead), 'KONTUR Activation Executor: receipt recovered-head binding substitution');
-  assert(receipt.holder_id === recovered.head_state.holder_id && sameArray(receipt.responsibility_scopes, recovered.head_state.responsibility_scopes) &&
-    receipt.fencing_epoch === recovered.head_state.fencing_epoch,
+  assert(sameBinding(receipt.execute_command_binding, await binding('KONTURActivationExecuteCommand', command.command_id, command)),
+    'KONTUR Activation Executor: receipt command binding substitution');
+  assert(sameBinding(receipt.activation_preflight_binding, await binding('KONTURActivationPreflightReceipt', preflight.preflight_id, preflight)),
+    'KONTUR Activation Executor: receipt preflight binding substitution');
+  assert(sameBinding(receipt.transition_receipt_binding, await binding('KONTURResponsibilityTransitionReceipt', transitionReceipt.receipt_id, transitionReceipt)),
+    'KONTUR Activation Executor: receipt transition binding substitution');
+  assert(sameBinding(receipt.ledger_entry_binding, await Ledger.entryBinding(ledgerEntry)),
+    'KONTUR Activation Executor: receipt ledger binding substitution');
+  assert(sameBinding(receipt.recovered_head_binding, await binding('KONTURResponsibilityState', state.state_id, state)),
+    'KONTUR Activation Executor: receipt recovered-head binding substitution');
+  assert(receipt.holder_id === state.holder_id && sameArray(receipt.responsibility_scopes, state.responsibility_scopes) &&
+    receipt.fencing_epoch === state.fencing_epoch,
     'KONTUR Activation Executor: receipt recovered responsibility frontier drift');
   return true;
 }
@@ -301,9 +251,8 @@ async function validateExecutionReceipt({ receipt, command, preflight, transitio
 async function executeActivation(args) {
   const {
     command, currentGitRevision, intent, preflight, frontier, readinessSignal,
-    aggregationPolicy, responsibilityPolicy, activationPolicy, health,
-    executionPolicy, ledgerPolicy, ledgerRoot, executedAt,
-    parallelActiveHolders = [],
+    aggregationPolicy, responsibilityPolicy, activationPolicy, health, executionPolicy,
+    ledgerPolicy, ledgerRoot, executedAt, parallelActiveHolders = [],
     kernelTransition = Kernel.transitionResponsibility,
     buildLedgerEntry = Ledger.buildLedgerEntry,
     commitLedgerEntry = Ledger.commitLedgerEntry,
@@ -312,10 +261,7 @@ async function executeActivation(args) {
   } = args;
   const executedMs = parseTime(executedAt, 'executed_at');
   assertExecutionPolicy(executionPolicy, executedMs);
-  await Preflight.validateActivationIntent({
-    intent, currentGitRevision, frontier, readinessSignal,
-    aggregationPolicy, responsibilityPolicy, activationPolicy, health
-  });
+  await Preflight.validateActivationIntent({ intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy, activationPolicy, health });
   await Preflight.validateActivationPreflightReceipt({
     receipt: preflight, intent, currentGitRevision, frontier, readinessSignal,
     aggregationPolicy, responsibilityPolicy, activationPolicy, health
@@ -328,7 +274,7 @@ async function executeActivation(args) {
     'KONTUR Activation Executor: ledger identity drift');
 
   const before = await initialRecoverLedger(ledgerRoot, ledgerPolicy);
-  assert(before.head_entry === null && before.head_state === null && before.entry_count === 0,
+  assert(before.head_entry === null && before.authoritative_state === null && before.entries.length === 0,
     'KONTUR Activation Executor: genesis activation requires empty durable ledger');
   const consumed = new Set(before.consumed_nonces || []);
   assert(!consumed.has(command.human_execute.nonce) && !consumed.has(intent.human_intent.nonce),
@@ -336,32 +282,18 @@ async function executeActivation(args) {
 
   let kernelCalls = 0;
   const transitionReceipt = await kernelTransition({
-    policy: responsibilityPolicy,
-    readinessSignal,
-    predecessorState: null,
-    transitionKind: 'activate',
-    evaluatedAt: executedAt,
-    holderId: command.holder_id,
-    responsibilityScopes: command.responsibility_scopes,
-    fencingEpoch: command.fencing_epoch,
-    lease: command.lease,
-    health,
-    triggerRef: command.command_id,
+    policy: responsibilityPolicy, readinessSignal, predecessorState: null, transitionKind: 'activate',
+    evaluatedAt: executedAt, holderId: command.holder_id, responsibilityScopes: command.responsibility_scopes,
+    fencingEpoch: command.fencing_epoch, lease: command.lease, health, triggerRef: command.command_id,
     parallelActiveHolders
   });
   kernelCalls += 1;
   assert(kernelCalls === 1, 'KONTUR Activation Executor: Kernel activate must execute exactly once');
 
   let entry = await buildLedgerEntry({
-    ledgerPolicy,
-    responsibilityPolicy,
-    transitionReceipt,
-    readinessSignal,
-    previousEntry: null,
-    triggerArtifact: preflight,
-    commandNonce: command.human_execute.nonce,
-    activationPreflight: preflight,
-    committedAt: executedAt
+    ledgerPolicy, responsibilityPolicy, transitionReceipt, readinessSignal, previousEntry: null,
+    triggerArtifact: preflight, commandNonce: command.human_execute.nonce,
+    activationPreflight: preflight, committedAt: executedAt
   });
   entry = await augmentGenesisEntryWithExecuteCommand(entry, command);
   const expectedCommandBinding = await binding('KONTURActivationExecuteCommand', command.command_id, command);
@@ -372,66 +304,48 @@ async function executeActivation(args) {
 
   await commitLedgerEntry(ledgerRoot, entry, ledgerPolicy);
   const recovered = await postCommitRecoverLedger(ledgerRoot, ledgerPolicy);
-  assert(recovered.head_entry && recovered.head_state,
-    'KONTUR Activation Executor: post-commit recovery did not return authoritative head');
-  assert(recovered.head_entry.entry_digest.value === entry.entry_digest.value,
+  const state = recovered && recovered.authoritative_state;
+  assert(recovered && recovered.head_entry && state, 'KONTUR Activation Executor: post-commit recovery did not return authoritative head');
+  assert(recovered.entries.length === 1 && recovered.head_entry.entry_digest.value === entry.entry_digest.value,
     'KONTUR Activation Executor: recovered ledger entry differs from committed genesis');
-  assert(recovered.head_entry.activation_execute_command_binding &&
-    sameBinding(recovered.head_entry.activation_execute_command_binding, expectedCommandBinding),
+  assert(recovered.head_entry.activation_execute_command_binding && sameBinding(recovered.head_entry.activation_execute_command_binding, expectedCommandBinding),
     'KONTUR Activation Executor: recovered execute-command binding mismatch');
-  assert(recovered.head_state.state_id === transitionReceipt.resulting_state.state_id,
+  assert(state.state_id === transitionReceipt.resulting_state.state_id,
     'KONTUR Activation Executor: recovered responsibility state differs from Kernel result');
-  assert(recovered.head_entry.sequence === 1 && recovered.head_state.generation === 1 &&
-    recovered.head_state.lifecycle_state === 'active' && recovered.head_state.holder_id === command.holder_id &&
-    sameArray(recovered.head_state.responsibility_scopes, command.responsibility_scopes) &&
-    recovered.head_state.fencing_epoch === command.fencing_epoch,
+  assert(recovered.head_entry.sequence === 1 && state.generation === 1 && state.lifecycle_state === 'active' &&
+    state.holder_id === command.holder_id && sameArray(state.responsibility_scopes, command.responsibility_scopes) &&
+    state.fencing_epoch === command.fencing_epoch,
     'KONTUR Activation Executor: recovered active responsibility frontier mismatch');
 
   const commandBinding = expectedCommandBinding;
   const preflightBinding = await binding('KONTURActivationPreflightReceipt', preflight.preflight_id, preflight);
   const transitionBinding = await binding('KONTURResponsibilityTransitionReceipt', transitionReceipt.receipt_id, transitionReceipt);
   const ledgerEntryBinding = await Ledger.entryBinding(recovered.head_entry);
-  const recoveredHeadBinding = await binding('KONTURResponsibilityState', recovered.head_state.state_id, recovered.head_state);
-  const seed = `${commandBinding.digest.value}|${ledgerEntryBinding.digest.value}|${recoveredHeadBinding.digest.value}|${executedAt}`;
-  const receiptHash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
+  const recoveredHeadBinding = await binding('KONTURResponsibilityState', state.state_id, state);
+  const receiptHash = await Binding.sha256Hex(Binding.utf8Bytes(
+    `${commandBinding.digest.value}|${ledgerEntryBinding.digest.value}|${recoveredHeadBinding.digest.value}|${executedAt}`
+  ));
   const receipt = {
     $schema: './kontur-activation-execution-receipt.schema.json',
-    artifact_type: 'KONTURActivationExecutionReceipt',
-    artifact_version: '0.1',
+    artifact_type: 'KONTURActivationExecutionReceipt', artifact_version: '0.1',
     receipt_id: `urn:uu-aap:kontur:activation-execution:${receiptHash.slice(0, 24)}`,
     execution_mode: command.execution_mode,
     status: command.execution_mode === 'live' ? 'activation_completed_live' : 'activation_completed_test_only',
-    completed_at: executedAt,
-    git_revision: currentGitRevision,
-    system_id: executionPolicy.system_id,
-    server_instance_id: executionPolicy.server_instance_id,
-    execute_command_binding: commandBinding,
-    activation_preflight_binding: preflightBinding,
-    transition_receipt_binding: transitionBinding,
-    ledger_entry_binding: ledgerEntryBinding,
-    recovered_head_binding: recoveredHeadBinding,
-    ledger_sequence: 1,
-    responsibility_generation: 1,
-    lifecycle_state: 'active',
-    holder_id: recovered.head_state.holder_id,
-    responsibility_scopes: clone(recovered.head_state.responsibility_scopes),
-    fencing_epoch: recovered.head_state.fencing_epoch,
+    completed_at: executedAt, git_revision: currentGitRevision,
+    system_id: executionPolicy.system_id, server_instance_id: executionPolicy.server_instance_id,
+    execute_command_binding: commandBinding, activation_preflight_binding: preflightBinding,
+    transition_receipt_binding: transitionBinding, ledger_entry_binding: ledgerEntryBinding,
+    recovered_head_binding: recoveredHeadBinding, ledger_sequence: 1, responsibility_generation: 1,
+    lifecycle_state: 'active', holder_id: state.holder_id,
+    responsibility_scopes: clone(state.responsibility_scopes), fencing_epoch: state.fencing_epoch,
     claims: {
-      final_human_execute_command_verified: true,
-      kernel_activation_transition_produced: true,
-      genesis_ledger_entry_durably_committed: true,
-      authoritative_active_head_recovered: true,
-      structural_responsibility_state_established: true,
-      local_kontur_activation_completed: true,
-      live_kontur_activated: command.execution_mode === 'live',
-      execution_authority_granted: false,
-      legal_responsibility_determined: false,
-      legal_effect_established: false,
-      moral_blame_assigned: false,
-      truth_certified: false,
-      distributed_consensus_established: false,
-      poai_materialization_event_recorded: false,
-      universal_canonicality_established: false
+      final_human_execute_command_verified: true, kernel_activation_transition_produced: true,
+      genesis_ledger_entry_durably_committed: true, authoritative_active_head_recovered: true,
+      structural_responsibility_state_established: true, local_kontur_activation_completed: true,
+      live_kontur_activated: command.execution_mode === 'live', execution_authority_granted: false,
+      legal_responsibility_determined: false, legal_effect_established: false,
+      moral_blame_assigned: false, truth_certified: false, distributed_consensus_established: false,
+      poai_materialization_event_recorded: false, universal_canonicality_established: false
     }
   };
   await validateExecutionReceipt({ receipt, command, preflight, transitionReceipt, ledgerEntry: recovered.head_entry, recovered });
@@ -439,10 +353,6 @@ async function executeActivation(args) {
 }
 
 module.exports = {
-  digestJson,
-  buildExecuteCommand,
-  validateExecuteCommand,
-  validateExecutionReceipt,
-  executeActivation,
-  augmentGenesisEntryWithExecuteCommand
+  digestJson, buildExecuteCommand, validateExecuteCommand, validateExecutionReceipt,
+  executeActivation, augmentGenesisEntryWithExecuteCommand
 };
