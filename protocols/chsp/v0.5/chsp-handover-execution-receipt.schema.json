@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-handover-execution-receipt-v0.5.json",
+  "title": "CHSPHandoverExecutionReceipt v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","execution_id","project_id","candidate_id","predecessor_steward_id","v04_authorization_sha256","v04_authorization_assessment_sha256","stewardship_state_sha256","executed_at","execution_nonce","recorder_id","recorder_evidence_sha256","result","receipt_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPHandoverExecutionReceipt"},
+    "artifact_version": {"const": "0.5"},
+    "execution_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "v04_authorization_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "v04_authorization_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stewardship_state_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "executed_at": {"type": "string", "format": "date-time"},
+    "execution_nonce": {"type": "string", "minLength": 16},
+    "recorder_id": {"type": "string", "minLength": 1},
+    "recorder_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "result": {"const": "recorded"},
+    "receipt_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["chsp_handover_execution_performed","chsp_stewardship_state_recorded","recorder_is_authority_source","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","external_system_mutation_performed","kontur_activated","global_revocation_absence_proven","global_replay_prevention_established","legal_effect_established","distributed_consensus_established","universal_trust_established"],
+      "properties": {
+        "chsp_handover_execution_performed": {"const": true},
+        "chsp_stewardship_state_recorded": {"const": true},
+        "recorder_is_authority_source": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "account_control_transferred": {"const": false},
+        "canonical_origin_mutated": {"const": false},
+        "canonical_publication_executed": {"const": false},
+        "external_system_mutation_performed": {"const": false},
+        "kontur_activated": {"const": false},
+        "global_revocation_absence_proven": {"const": false},
+        "global_replay_prevention_established": {"const": false},
+        "legal_effect_established": {"const": false},
+        "distributed_consensus_established": {"const": false},
+        "universal_trust_established": {"const": false}
+      }
+    }
+  }
+}
