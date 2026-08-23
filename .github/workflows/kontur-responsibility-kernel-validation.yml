@@ -1,0 +1,242 @@
+name: KONTUR Responsibility Kernel validation
+
+on:
+  pull_request:
+    paths:
+      - "server/kontur/**"
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-responsibility-kernel-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "server/kontur/**"
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/kontur-responsibility-kernel-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  kontur-responsibility-kernel:
+    name: KONTUR responsibility kernel validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check KONTUR JavaScript
+        run: |
+          node --check server/kontur/v0.1/responsibility-kernel.js
+          node --check server/kontur/v0.1/test-responsibility-kernel.js
+
+      - name: Validate KONTUR schemas and reference policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('server/kontur/v0.1')
+          readiness_schema = json.loads((root / 'kontur-readiness-signal.schema.json').read_text(encoding='utf-8'))
+          policy_schema = json.loads((root / 'kontur-responsibility-policy.schema.json').read_text(encoding='utf-8'))
+          artifacts_schema = json.loads((root / 'kontur-responsibility-artifacts.schema.json').read_text(encoding='utf-8'))
+          policy = json.loads((root / 'policies/reference-server.responsibility-policy.json').read_text(encoding='utf-8'))
+
+          for name, schema in [
+              ('readiness', readiness_schema),
+              ('responsibility-policy', policy_schema),
+              ('responsibility-artifacts', artifacts_schema),
+          ]:
+              Draft202012Validator.check_schema(schema)
+              print(f'VALID schema: {name}')
+
+          Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
+          print('VALID reference KONTURResponsibilityPolicy')
+          PY
+
+      - name: Exercise persistent responsibility state machine
+        run: node server/kontur/v0.1/test-responsibility-kernel.js /tmp/kontur-responsibility-chain.json
+
+      - name: Validate transition chain and assurance boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('server/kontur/v0.1')
+          schema = json.loads((root / 'kontur-responsibility-artifacts.schema.json').read_text(encoding='utf-8'))
+          chain = json.loads(Path('/tmp/kontur-responsibility-chain.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+
+          expected = [
+              ('activate', 1, 'active', 1),
+              ('heartbeat', 2, 'active', 1),
+              ('degrade', 3, 'degraded', 1),
+              ('suspend', 4, 'suspended', 1),
+              ('resume', 5, 'active', 2),
+              ('retire', 6, 'retired', 2),
+          ]
+
+          receipts = [
+              chain['activate'], chain['heartbeat'], chain['degrade'],
+              chain['suspend'], chain['resume'], chain['retire']
+          ]
+          assert len(receipts) == len(expected)
+
+          false_claims = [
+              'legal_responsibility_determined',
+              'legal_effect_established',
+              'moral_blame_assigned',
+              'truth_certified',
+              'universal_causality_established',
+              'poai_materialization_event_recorded',
+              'universal_canonicality_established',
+          ]
+
+          for receipt, (transition, generation, state, epoch) in zip(receipts, expected):
+              validator.validate(receipt)
+              assert receipt['transition_kind'] == transition
+              resulting = receipt['resulting_state']
+              assert resulting['generation'] == generation
+              assert resulting['lifecycle_state'] == state
+              assert resulting['fencing_epoch'] == epoch
+              assert resulting['claims']['kernel_responsibility_state_established'] is True
+              assert resulting['claims']['structural_responsibility_holder_bound'] is True
+              assert resulting['claims']['responsibility_scope_bound'] is True
+              assert resulting['claims']['lease_and_fencing_frontier_established'] is True
+              assert resulting['claims']['execution_authority_granted'] is False
+              for key in false_claims:
+                  assert receipt['claims'][key] is False, key
+                  assert resulting['claims'][key] is False, key
+
+          assert receipts[0]['predecessor_state_binding'] is None
+          for previous, current in zip(receipts, receipts[1:]):
+              assert current['predecessor_state_binding']['artifact_ref'] == previous['resulting_state']['state_id']
+              assert current['resulting_state']['predecessor_state_binding']['artifact_ref'] == previous['resulting_state']['state_id']
+              assert current['resulting_state']['generation'] == previous['resulting_state']['generation'] + 1
+
+          assert receipts[1]['readiness_binding'] == receipts[0]['readiness_binding']
+          assert receipts[2]['readiness_binding'] == receipts[1]['readiness_binding']
+          assert receipts[3]['readiness_binding'] == receipts[2]['readiness_binding']
+          assert receipts[4]['readiness_binding'] != receipts[3]['readiness_binding']
+          assert receipts[5]['readiness_binding'] == receipts[4]['readiness_binding']
+
+          for key in false_claims:
+              bad = copy.deepcopy(receipts[0])
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden transition overclaim: {key}')
+
+          bad = copy.deepcopy(receipts[0])
+          bad['resulting_state']['claims']['execution_authority_granted'] = True
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted execution-authority upgrade from responsibility state')
+
+          bad = copy.deepcopy(receipts[1])
+          bad['resulting_state']['responsibility_score'] = 0.99
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted scalar responsibility score')
+
+          print('KONTUR persistent responsibility generations validated; readiness and assurance boundaries preserved')
+          PY
+
+      - name: Independently validate readiness boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          root = Path('server/kontur/v0.1')
+          schema = json.loads((root / 'kontur-readiness-signal.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          checks = [
+              'protocol_registry_ready', 'coordination_ready', 'authority_ready',
+              'provenance_ready', 'causal_qualification_ready', 'server_health_ready'
+          ]
+          signal = {
+              '$schema': './kontur-readiness-signal.schema.json',
+              'artifact_type': 'KONTURReadinessSignal',
+              'artifact_version': '0.1',
+              'signal_id': 'urn:uu-aap:kontur:readiness:ci-reference',
+              'system_id': 'urn:uu-aap:kontur:system:server-responsibility',
+              'server_instance_id': 'urn:uu-aap:kontur:server:reference-primary',
+              'readiness_epoch': 1,
+              'emitted_at': '2026-08-23T09:06:00Z',
+              'valid_until': '2026-08-23T09:30:00Z',
+              'source_ref': 'urn:uu-aap:kontur:readiness-source:ci',
+              'checks': [
+                  {'check_id': c, 'status': 'pass', 'observed_at': '2026-08-23T09:05:00Z', 'evidence_ref': f'urn:uu-aap:evidence:ci:{c}'}
+                  for c in checks
+              ],
+              'ready': True,
+              'claims': {
+                  'readiness_observed': True,
+                  'execution_authority_granted': False,
+                  'responsibility_accepted': False,
+                  'kernel_activated': False,
+                  'legal_responsibility_determined': False,
+                  'moral_blame_assigned': False,
+                  'truth_certified': False,
+                  'poai_materialization_event_recorded': False,
+                  'universal_canonicality_established': False,
+              }
+          }
+          validator.validate(signal)
+
+          for key in ['execution_authority_granted', 'responsibility_accepted', 'kernel_activated', 'legal_responsibility_determined', 'moral_blame_assigned', 'truth_certified']:
+              bad = copy.deepcopy(signal)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'readiness schema accepted forbidden upgrade: {key}')
+
+          print('KONTUR readiness trigger remains non-authorizing and non-adjudicating')
+          PY
+
+      - name: Confirm KONTUR validation produced no repository mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
