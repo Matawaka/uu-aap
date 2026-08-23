@@ -1,0 +1,42 @@
+{
+  "document_type": "uu-aap.sustainability-human-observation",
+  "version": "0.1",
+  "status": "non-normative-contract",
+  "subject": {
+    "component_id": "uu-aap-interaction-surface",
+    "scope": "interaction-process-only"
+  },
+  "observation_window": {
+    "started_at": "2026-08-23T17:00:00Z",
+    "ended_at": "2026-08-23T17:20:00Z",
+    "event_count": 18,
+    "bounded": true,
+    "continuous_monitoring": false
+  },
+  "signals": [
+    "high_decision_density"
+  ],
+  "policy": {
+    "provocation_used": false,
+    "medical_inference": false,
+    "biometric_inference": false,
+    "hidden_psychological_scoring": false,
+    "fitness_determination": false,
+    "authority_reduction_allowed": false,
+    "automatic_external_action": false,
+    "continuous_monitoring": false,
+    "stores_sensitive_health_data": false,
+    "user_visible_adaptation_only": true
+  },
+  "assessment": {
+    "result": "adaptation-suggested",
+    "safe_effect": "reduce-decision-density"
+  },
+  "authority_effect": "none",
+  "capability_effect": "none",
+  "external_execution_authorized": false,
+  "kontur_activation_authorized": false,
+  "notes": [
+    "Operational interaction pacing only; no fatigue, psychological-state, competence, or incapacity inference."
+  ]
+}

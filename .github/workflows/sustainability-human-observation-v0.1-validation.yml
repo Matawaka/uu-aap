@@ -1,0 +1,116 @@
+name: Sustainability Human Observation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/SUSTAINABILITY-HUMAN-OBSERVATION-v0.1.md'
+      - 'schemas/sustainability/v0.1/human-observation-contract.schema.json'
+      - 'schemas/sustainability/v0.1/human_observation_assessor.py'
+      - 'schemas/sustainability/v0.1/examples/human-observation-contract.example.json'
+      - 'schemas/sustainability/v0.1/tests/test_human_observation_contract_v01.py'
+      - '.github/workflows/sustainability-human-observation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/SUSTAINABILITY-HUMAN-OBSERVATION-v0.1.md'
+      - 'schemas/sustainability/v0.1/human-observation-contract.schema.json'
+      - 'schemas/sustainability/v0.1/human_observation_assessor.py'
+      - 'schemas/sustainability/v0.1/examples/human-observation-contract.example.json'
+      - 'schemas/sustainability/v0.1/tests/test_human_observation_contract_v01.py'
+      - '.github/workflows/sustainability-human-observation-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate Python and JSON syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile schemas/sustainability/v0.1/human_observation_assessor.py
+          python3 -m py_compile schemas/sustainability/v0.1/tests/test_human_observation_contract_v01.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for path in [
+              Path('schemas/sustainability/v0.1/human-observation-contract.schema.json'),
+              Path('schemas/sustainability/v0.1/examples/human-observation-contract.example.json'),
+          ]:
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Install pinned JSON Schema validator
+        run: python3 -m pip install --disable-pip-version-check --no-input 'jsonschema==4.25.1'
+
+      - name: Exercise human observation contract
+        run: python3 schemas/sustainability/v0.1/tests/test_human_observation_contract_v01.py
+
+      - name: Exercise reference semantic assessor
+        run: >-
+          python3 schemas/sustainability/v0.1/human_observation_assessor.py
+          schemas/sustainability/v0.1/examples/human-observation-contract.example.json
+
+      - name: Keep Pause Degradation v0.1 green
+        run: python3 schemas/sustainability/v0.1/tests/test_pause_degradation_contract_v01.py
+
+      - name: Keep Recovery Resume v0.1 green
+        run: python3 schemas/sustainability/v0.1/tests/test_recovery_resume_contract_v01.py
+
+      - name: Keep Capability Ceiling v0.1 green
+        run: python3 schemas/sustainability/v0.1/tests/test_capability_ceiling_contract_v01.py
+
+      - name: Keep Exploratory Disposition v0.1 green
+        run: python3 schemas/sustainability/v0.1/tests/test_exploratory_disposition_contract_v01.py
+
+      - name: Assert assessor has no external execution surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('schemas/sustainability/v0.1/human_observation_assessor.py')
+          tree = ast.parse(path.read_text(encoding='utf-8'))
+          forbidden = {'socket','urllib','http','requests','subprocess','git','paramiko','ftplib'}
+          found = set()
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  for alias in node.names:
+                      root = alias.name.split('.')[0]
+                      if root in forbidden:
+                          found.add(root)
+              elif isinstance(node, ast.ImportFrom) and node.module:
+                  root = node.module.split('.')[0]
+                  if root in forbidden:
+                      found.add(root)
+          if found:
+              raise SystemExit(f'unexpected external execution imports: {sorted(found)}')
+          print('assessor execution surface: local-only')
+          PY
+
+      - name: Assert workflow remains read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/sustainability-human-observation-v0.1-validation.yml').read_text(encoding='utf-8')
+          assert 'contents: read' in text
+          for forbidden in [
+              ''.join(['contents', ': write']),
+              ''.join(['secrets', '.']),
+              ''.join(['pull_request', '_target']),
+              ''.join(['CHSP_GITHUB', '_TOKEN']),
+          ]:
+              assert forbidden not in text
+          print('workflow authority surface: read-only')
+          PY
