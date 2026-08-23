@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/motivation-governor.schema.json",
+  "title": "UU-AAP Motivation Governor v0.1",
+  "description": "Non-normative draft for separating idea generation from execution obligation and limiting active work to reviewable capacity.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "item_id",
+    "state",
+    "created_at",
+    "history"
+  ],
+  "properties": {
+    "document_type": {
+      "const": "uu-aap.motivation-governor-item"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "status": {
+      "const": "non-normative-draft"
+    },
+    "item_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title": {
+      "type": "string"
+    },
+    "state": {
+      "enum": [
+        "idea",
+        "candidate",
+        "committed",
+        "active",
+        "deferred",
+        "closed"
+      ]
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "commitment_created": {
+      "type": "boolean",
+      "default": false
+    },
+    "active_capacity_cost": {
+      "type": ["integer", "null"],
+      "minimum": 1
+    },
+    "capacity_unit": {
+      "type": ["string", "null"]
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from", "to", "at", "reason", "attributable_actor"],
+        "properties": {
+          "from": {
+            "type": ["string", "null"],
+            "enum": [
+              null,
+              "idea",
+              "candidate",
+              "committed",
+              "active",
+              "deferred",
+              "closed"
+            ]
+          },
+          "to": {
+            "enum": [
+              "idea",
+              "candidate",
+              "committed",
+              "active",
+              "deferred",
+              "closed"
+            ]
+          },
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "attributable_actor": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "closure": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["kind", "reason"],
+      "properties": {
+        "kind": {
+          "enum": ["completed", "rejected", "superseded"]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "successor_ref": {
+          "type": ["string", "null"]
+        }
+      }
+    },
+    "invariants": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "idea_does_not_create_execution_duty",
+          "candidate_does_not_create_execution_duty",
+          "active_requires_explicit_commitment",
+          "deferred_is_not_failed",
+          "closed_preserves_reason",
+          "capacity_limit_does_not_revoke_human_authority"
+        ]
+      }
+    }
+  }
+}
