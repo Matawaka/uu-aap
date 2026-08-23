@@ -1,0 +1,11 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-execution-authorization-revocation-v0.9.json",
+  "title":"CHSPExternalExecutionAuthorizationRevocation v0.9",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","revocation_id","project_id","steward_id","authorization_sha256","actor_id","actor_evidence_sha256","reason_code","recorded_at","nonce","revocation_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalExecutionAuthorizationRevocation"},"artifact_version":{"const":"0.9"},"revocation_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},"authorization_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"actor_id":{"type":"string","minLength":1},"actor_evidence_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"reason_code":{"enum":["external_state_changed","human_authority_withdrawn","new_conflicting_evidence","execution_deferred","safety_boundary_changed","other"]},"recorded_at":{"type":"string","format":"date-time"},"nonce":{"type":"string","minLength":16},"revocation_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["revocation_recorded","future_execution_blocked_in_supplied_evidence_context","historical_authorization_erased","external_mutation_performed"],"properties":{"revocation_recorded":{"const":true},"future_execution_blocked_in_supplied_evidence_context":{"const":true},"historical_authorization_erased":{"const":false},"external_mutation_performed":{"const":false}}}
+  }
+}
