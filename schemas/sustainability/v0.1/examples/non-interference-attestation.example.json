@@ -1,0 +1,34 @@
+{
+  "document_type": "uu-aap.parallel-non-interference-attestation",
+  "version": "0.1",
+  "status": "non-normative-draft",
+  "observed_main_sha": "4c609dcf8c958bc647586376a03c16f2c7166558",
+  "parallel_branch": "parallel/sustainability-backlog-v0.1",
+  "active_main_line_refs": ["pull/273"],
+  "claims": {
+    "main_ref_mutated": false,
+    "main_line_files_modified": false,
+    "pull_request_created_or_modified": false,
+    "review_or_comment_pressure_applied": false,
+    "workflow_or_required_check_added": false,
+    "tag_or_release_mutated": false,
+    "execution_authority_asserted": false,
+    "main_line_dependency_created": false
+  },
+  "evidence": [
+    {
+      "kind": "branch_observation",
+      "reference": "main@4c609dcf8c958bc647586376a03c16f2c7166558",
+      "note": "Observed only; no ref mutation performed."
+    },
+    {
+      "kind": "pull_request_observation",
+      "reference": "pull/273",
+      "note": "Observed active CHSP work without comment, review, reaction, edit, merge, or dependency creation."
+    }
+  ],
+  "authority_effect": "none",
+  "notes": [
+    "Attestation is evidence about the declared side-track behavior only; it is not a universal proof of absence of every external action."
+  ]
+}
