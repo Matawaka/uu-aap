@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-execution-authorization-v0.9.json",
+  "title":"CHSPExternalExecutionAuthorization v0.9",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","authorization_id","project_id","steward_id","v08_envelope_sha256","v08_dry_run_receipt_sha256","v08_dry_run_assessment_sha256","execution_recheck_sha256","operations_sha256","decision_set_sha256","decision_sha256s","authorizer_ids","authorizer_domain_ids","authorized_action","authorized_at","expires_at","nonce","authorization_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalExecutionAuthorization"},"artifact_version":{"const":"0.9"},"authorization_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},
+    "v08_envelope_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v08_dry_run_receipt_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v08_dry_run_assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"execution_recheck_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"operations_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"decision_set_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "decision_sha256s":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","pattern":"^[0-9a-f]{64}$"}},"authorizer_ids":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},"authorizer_domain_ids":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "authorized_action":{"const":"execute_exact_bounded_external_transition_envelope"},"authorized_at":{"type":"string","format":"date-time"},"expires_at":{"type":"string","format":"date-time"},"nonce":{"type":"string","minLength":16},"authorization_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["bounded_exact_external_execution_authorized","exact_envelope_operations_authorized","steward_execution_consent_recorded","unbounded_external_mutation_authorized","ownership_transfer_authorized","account_control_transfer_authorized","predecessor_access_removal_authorized","credential_rotation_authorized","canonical_origin_mutation_authorized","canonical_publication_authorized","kontur_activation_authorized","executor_invoked","execution_performed","legal_ownership_adjudicated","distributed_consensus_established"],"properties":{
+      "bounded_exact_external_execution_authorized":{"const":true},"exact_envelope_operations_authorized":{"const":true},"steward_execution_consent_recorded":{"const":true},"unbounded_external_mutation_authorized":{"const":false},"ownership_transfer_authorized":{"const":false},"account_control_transfer_authorized":{"const":false},"predecessor_access_removal_authorized":{"const":false},"credential_rotation_authorized":{"const":false},"canonical_origin_mutation_authorized":{"const":false},"canonical_publication_authorized":{"const":false},"kontur_activation_authorized":{"const":false},"executor_invoked":{"const":false},"execution_performed":{"const":false},"legal_ownership_adjudicated":{"const":false},"distributed_consensus_established":{"const":false}
+    }}
+  }
+}
