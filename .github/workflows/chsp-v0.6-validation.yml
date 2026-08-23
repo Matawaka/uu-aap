@@ -1,0 +1,128 @@
+name: CHSP v0.6 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v0.6-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v0.6-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate CHSP v0.6 Python and JSON syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protocols/chsp/v0.6/chsp_v06.py
+          python3 -m py_compile protocols/chsp/v0.6/test_chsp_v06.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.6')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise CHSP v0.6 external binding boundaries
+        run: python3 protocols/chsp/v0.6/test_chsp_v06.py
+
+      - name: Keep CHSP v0.5 green
+        run: python3 protocols/chsp/v0.5/test_chsp_v05.py
+
+      - name: Keep CHSP v0.4 green
+        run: python3 protocols/chsp/v0.4/test_chsp_v04.py
+
+      - name: Keep CHSP v0.3 green
+        run: python3 protocols/chsp/v0.3/test_chsp_v03.py
+
+      - name: Keep CHSP v0.2 green
+        run: python3 protocols/chsp/v0.2/test_chsp_v02.py
+
+      - name: Keep CHSP v0.1 green
+        run: python3 protocols/chsp/v0.1/test_chsp.py
+
+      - name: Keep Human Canonical Recognition v0.6 green
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert CHSP v0.6 has no network Git account or process execution surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('protocols/chsp/v0.6/chsp_v06.py')
+          tree = ast.parse(path.read_text(encoding='utf-8'))
+          forbidden = {'socket', 'urllib', 'http', 'requests', 'subprocess', 'git', 'paramiko'}
+          found = set()
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  found.update(alias.name.split('.')[0] for alias in node.names if alias.name.split('.')[0] in forbidden)
+              elif isinstance(node, ast.ImportFrom) and node.module:
+                  root = node.module.split('.')[0]
+                  if root in forbidden:
+                      found.add(root)
+          if found:
+              raise SystemExit(f'forbidden external execution/network imports: {sorted(found)}')
+          print('local-only external-binding surface: PASS')
+          PY
+
+      - name: Assert external binding remains proposal only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.6')
+          policy = json.load((root / 'reference.chsp-external-binding-policy.json').open())
+          req = policy['requirements']
+          assert req['automatic_external_transition'] is False
+          assert req['automatic_ownership_transfer'] is False
+          assert req['automatic_canonical_origin_mutation'] is False
+          assert req['automatic_kontur_activation'] is False
+          proposal = json.load((root / 'chsp-external-binding-proposal.schema.json').open())
+          props = proposal['properties']['claims']['properties']
+          assert props['proposal_only']['const'] is True
+          assert props['evidence_threshold_satisfied']['const'] is True
+          for key in [
+              'external_binding_established', 'external_control_transition_authorized',
+              'external_control_transferred', 'repository_ownership_transferred',
+              'account_control_transferred', 'canonical_origin_mutated',
+              'canonical_publication_executed', 'kontur_activated',
+              'legal_ownership_adjudicated', 'universal_identity_proven',
+              'distributed_consensus_established'
+          ]:
+              assert props[key]['const'] is False, key
+          print('external binding proposal-only boundary: PASS')
+          PY
