@@ -123,13 +123,13 @@ async function main() {
     const a = fresh();
     a.intentArtifact.action = 'other.action';
     await completeProvenance(a);
-  }, /Intent\/operation semantic substitution/));
+  }, /OriginEnvelope Intent binding mismatch/));
 
   vectors.push(await expectReject('intent_base_revision_substitution', async () => {
     const a = fresh();
     a.intentArtifact.base_revision = `git:${'0'.repeat(40)}`;
     await completeProvenance(a);
-  }, /Intent\/operation semantic substitution/));
+  }, /OriginEnvelope Intent binding mismatch/));
 
   vectors.push(await expectReject('origin_operation_digest_substitution', async () => {
     const a = fresh();
