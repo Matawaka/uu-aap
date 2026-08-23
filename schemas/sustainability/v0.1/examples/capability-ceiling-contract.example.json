@@ -1,0 +1,48 @@
+{
+  "document_type": "uu-aap.sustainability-capability-ceiling",
+  "version": "0.1",
+  "status": "non-normative-contract",
+  "subject": {
+    "component_id": "sustainability-recovery-resume-v0.1",
+    "scope": "post-recovery preparation boundary"
+  },
+  "observation_frontier": {
+    "main_sha": "e927e9a2855b1678506083745c33a1627c1ad46d",
+    "fresh_for_assessment": true
+  },
+  "capability_set": {
+    "allowed": [
+      "observe-current-repository-state",
+      "validate-local-evidence",
+      "prepare-non-executing-artifacts"
+    ],
+    "denied": [
+      "mutate-main-ref",
+      "change-repository-permissions",
+      "invoke-external-execution",
+      "activate-kontur",
+      "route-around-denied-permission"
+    ],
+    "unlisted_policy": "denied-until-fresh-authorization"
+  },
+  "expansion_policy": {
+    "requires_new_attributable_authorization": true,
+    "prior_authorization_implies_expansion": false,
+    "recovery_implies_expansion": false,
+    "handoff_transfers_authority": false,
+    "inactivity_is_consent": false,
+    "denial_may_be_routed_around": false
+  },
+  "assessment": {
+    "requested_capability": "prepare-non-executing-artifacts",
+    "result": "within-ceiling",
+    "safe_effect": "prepare-only"
+  },
+  "authority_effect": "none",
+  "external_execution_authorized": false,
+  "notes": [
+    "The current recovery frontier is sufficient to prepare artifacts only.",
+    "A separate exact execution authorization remains necessary for any external mutation.",
+    "Technical availability of a provider action does not place it inside this ceiling."
+  ]
+}

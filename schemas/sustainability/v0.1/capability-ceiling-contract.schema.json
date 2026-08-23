@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/sustainability/v0.1/capability-ceiling-contract.schema.json",
+  "title": "Sustainability Capability Ceiling Contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "subject",
+    "observation_frontier",
+    "capability_set",
+    "expansion_policy",
+    "assessment",
+    "authority_effect",
+    "external_execution_authorized"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.sustainability-capability-ceiling"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-contract"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["component_id", "scope"],
+      "properties": {
+        "component_id": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1}
+      }
+    },
+    "observation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["main_sha", "fresh_for_assessment"],
+      "properties": {
+        "main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "fresh_for_assessment": {"const": true}
+      }
+    },
+    "capability_set": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "denied", "unlisted_policy"],
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "denied": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "unlisted_policy": {"const": "denied-until-fresh-authorization"}
+      }
+    },
+    "expansion_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "requires_new_attributable_authorization",
+        "prior_authorization_implies_expansion",
+        "recovery_implies_expansion",
+        "handoff_transfers_authority",
+        "inactivity_is_consent",
+        "denial_may_be_routed_around"
+      ],
+      "properties": {
+        "requires_new_attributable_authorization": {"const": true},
+        "prior_authorization_implies_expansion": {"const": false},
+        "recovery_implies_expansion": {"const": false},
+        "handoff_transfers_authority": {"const": false},
+        "inactivity_is_consent": {"const": false},
+        "denial_may_be_routed_around": {"const": false}
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requested_capability", "result", "safe_effect"],
+      "properties": {
+        "requested_capability": {"type": "string", "minLength": 1},
+        "result": {
+          "enum": [
+            "within-ceiling",
+            "requires-fresh-authorization",
+            "denied"
+          ]
+        },
+        "safe_effect": {"enum": ["prepare-only", "no-action"]}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"result": {"const": "within-ceiling"}},
+            "required": ["result"]
+          },
+          "then": {
+            "properties": {"safe_effect": {"const": "prepare-only"}}
+          },
+          "else": {
+            "properties": {"safe_effect": {"const": "no-action"}}
+          }
+        }
+      ]
+    },
+    "authority_effect": {"const": "none"},
+    "external_execution_authorized": {"const": false},
+    "notes": {
+      "type": "array",
+      "items": {"type": "string"}
+    }
+  }
+}
