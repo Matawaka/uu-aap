@@ -1,0 +1,155 @@
+name: CHSP v1.0 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v1.0-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v1.0-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate CHSP v1.0 Python and JSON syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protocols/chsp/v1.0/chsp_v10.py
+          python3 -m py_compile protocols/chsp/v1.0/github_rest_adapter.py
+          python3 -m py_compile protocols/chsp/v1.0/execute_github.py
+          python3 -m py_compile protocols/chsp/v1.0/test_chsp_v10.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v1.0')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise CHSP v1.0 bounded executor with fake provider only
+        run: python3 protocols/chsp/v1.0/test_chsp_v10.py
+
+      - name: Keep CHSP v0.9 green
+        run: python3 protocols/chsp/v0.9/test_chsp_v09.py
+      - name: Keep CHSP v0.8 green
+        run: python3 protocols/chsp/v0.8/test_chsp_v08.py
+      - name: Keep CHSP v0.7 green
+        run: python3 protocols/chsp/v0.7/test_chsp_v07.py
+      - name: Keep CHSP v0.6 green
+        run: python3 protocols/chsp/v0.6/test_chsp_v06.py
+      - name: Keep CHSP v0.5 green
+        run: python3 protocols/chsp/v0.5/test_chsp_v05.py
+      - name: Keep CHSP v0.4 green
+        run: python3 protocols/chsp/v0.4/test_chsp_v04.py
+      - name: Keep CHSP v0.3 green
+        run: python3 protocols/chsp/v0.3/test_chsp_v03.py
+      - name: Keep CHSP v0.2 green
+        run: python3 protocols/chsp/v0.2/test_chsp_v02.py
+      - name: Keep CHSP v0.1 green
+        run: python3 protocols/chsp/v0.1/test_chsp.py
+
+      - name: Keep Human Canonical Recognition v0.6 green
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert network capability is isolated to GitHub adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          root = Path('protocols/chsp/v1.0')
+          forbidden = {'socket','urllib','http','requests','subprocess','git','paramiko','ftplib'}
+          for name in ['chsp_v10.py','test_chsp_v10.py']:
+              tree = ast.parse((root/name).read_text(encoding='utf-8'))
+              found = set()
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      found.update(a.name.split('.')[0] for a in node.names if a.name.split('.')[0] in forbidden)
+                  elif isinstance(node, ast.ImportFrom) and node.module:
+                      first = node.module.split('.')[0]
+                      if first in forbidden:
+                          found.add(first)
+              if found:
+                  raise SystemExit(f'{name} unexpectedly has external execution imports: {sorted(found)}')
+          adapter = (root/'github_rest_adapter.py').read_text(encoding='utf-8')
+          assert 'urllib.request' in adapter
+          print('network capability isolated to provider adapter: PASS')
+          PY
+
+      - name: Assert GitHub adapter cannot remove access or grant admin owner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('protocols/chsp/v1.0/github_rest_adapter.py').read_text(encoding='utf-8')
+          assert '_request("DELETE"' not in text
+          assert '_request("PATCH"' not in text
+          assert '_request("POST"' not in text
+          assert 'ROLE_TO_PERMISSION = {"identity_only":"pull","collaborator":"push","maintainer":"maintain"}' in text
+          assert '"owner":' not in text.split('ROLE_TO_PERMISSION =',1)[1].split('\n',1)[0]
+          assert '"admin":' not in text.split('ROLE_TO_PERMISSION =',1)[1].split('\n',1)[0]
+          print('GitHub mutation surface bounded: PASS')
+          PY
+
+      - name: Assert CI cannot trigger real CHSP v1.0 execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          workflow = Path('.github/workflows/chsp-v1.0-validation.yml').read_text(encoding='utf-8')
+          assert 'execute_github.py --' not in workflow
+          assert 'CHSP_GITHUB_TOKEN:' not in workflow
+          assert 'secrets.' not in workflow
+          assert 'pull_request_target' not in workflow
+          entry = Path('protocols/chsp/v1.0/execute_github.py').read_text(encoding='utf-8')
+          assert '--commit' in entry
+          assert '--authorization-sha256' in entry
+          assert 'CHSP_GITHUB_TOKEN' in entry
+          print('merge/CI cannot perform external execution: PASS')
+          PY
+
+      - name: Assert v1.0 strongest claims stay bounded
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v1.0')
+          policy = json.load((root/'reference.chsp-external-executor-policy.json').open())
+          assert policy['maximum_provider_mutations'] == 1
+          assert policy['maximum_executable_role'] == 'maintainer'
+          assert policy['requirements']['automatic_execution_on_merge_or_ci'] is False
+          schema = json.load((root/'chsp-external-execution-receipt.schema.json').open())
+          claims = schema['properties']['claims']['properties']
+          for key in ['credential_material_persisted','repository_ownership_transferred','account_control_transferred','predecessor_access_removed','canonical_origin_mutated','canonical_publication_executed','kontur_activated','global_provider_state_proven']:
+              assert claims[key]['const'] is False, key
+          print('v1.0 bounded execution claims: PASS')
+          PY
