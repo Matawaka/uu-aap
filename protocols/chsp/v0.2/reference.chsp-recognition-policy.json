@@ -1,0 +1,46 @@
+{
+  "artifact_type": "CHSPRecognitionPolicy",
+  "artifact_version": "0.2",
+  "project_id": "Matawaka/uu-aap",
+  "minimum_cooling_days": 14,
+  "minimum_challenge_window_days": 14,
+  "minimum_stage_observation_days": 30,
+  "maximum_envelope_days": 60,
+  "stage_order": [
+    "A1_advisory",
+    "A2_reversible_limited",
+    "A3_supervised_stewardship",
+    "A4_canonical_preparation"
+  ],
+  "stage_scopes": {
+    "A1_advisory": ["advisory_review", "issue_triage", "documentation"],
+    "A2_reversible_limited": ["proposal_preparation", "noncanonical_test_maintenance", "metadata_preparation"],
+    "A3_supervised_stewardship": ["supervised_release_preparation", "supervised_policy_draft", "supervised_incident_coordination"],
+    "A4_canonical_preparation": ["canonical_publication_preparation", "succession_package_preparation"]
+  },
+  "higher_stage_independent_authorizer_from": "A3_supervised_stewardship",
+  "requirements": {
+    "v01_succession_eligibility_required": true,
+    "recognizer_distinct_from_candidate": true,
+    "recognizer_evidence_digest_required": true,
+    "typed_confirmation_required": true,
+    "cooling_period_required": true,
+    "challenge_window_required": true,
+    "open_or_upheld_challenge_blocks_progression": true,
+    "candidate_cannot_self_authorize": true,
+    "stage_progression_must_be_sequential": true,
+    "completed_positive_predecessor_required": true,
+    "envelope_must_expire": true,
+    "envelope_must_be_revocable": true,
+    "automatic_authority_progression": false,
+    "automatic_canonical_recognition": false
+  },
+  "claims": {
+    "descriptive_policy_only": true,
+    "canonical_successor_established": false,
+    "canonical_publication_authorized": false,
+    "ownership_transferred": false,
+    "kontur_activated": false,
+    "universal_trust_established": false
+  }
+}
