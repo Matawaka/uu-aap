@@ -23,6 +23,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          persist-credentials: false
+
+      - name: Validate required frozen repository anchor is present
+        run: git rev-parse --verify 'refs/tags/poai-ccrp-v0.1^{commit}'
 
       - name: Validate syntax and schema JSON
         run: |
