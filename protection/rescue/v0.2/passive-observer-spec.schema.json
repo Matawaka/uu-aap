@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/passive-observer-spec-v0.2.json",
+  "title": "PassiveObserverSpec v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "observer_id", "observer_domain_id", "failure_domain_id", "evidence_class", "probe_method", "subject", "target", "expected", "claims"],
+  "properties": {
+    "artifact_type": {"const": "PassiveObserverSpec"},
+    "artifact_version": {"const": "0.2"},
+    "observer_id": {"type": "string", "minLength": 1},
+    "observer_domain_id": {"type": "string", "minLength": 1},
+    "failure_domain_id": {"type": "string", "minLength": 1},
+    "evidence_class": {"enum": ["canonical_read_path", "provider_status_path", "independent_replica_path", "external_content_anchor"]},
+    "probe_method": {"enum": ["file_sha256", "http_head", "http_get", "git_ls_remote"]},
+    "subject": {"type": "string", "minLength": 1},
+    "target": {"type": "string", "minLength": 1},
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "git_ref": {"type": "string", "minLength": 1},
+        "git_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "http_status": {"type": "integer", "minimum": 100, "maximum": 599}
+      }
+    },
+    "timeout_seconds": {"type": "integer", "minimum": 1, "maximum": 60, "default": 10},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["read_only", "may_mutate_target", "may_confirm_loss", "domain_independence_proven"],
+      "properties": {
+        "read_only": {"const": true},
+        "may_mutate_target": {"const": false},
+        "may_confirm_loss": {"const": false},
+        "domain_independence_proven": {"const": false}
+      }
+    }
+  }
+}
