@@ -57,7 +57,7 @@ jobs:
         run: python3 protection/rescue/v0.5/test_canonical_succession.py
 
       - name: Keep Rescue Execution Envelope v0.4 green
-        run: python3 protection/rescue/v0.4/test_rescue_executor.py
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
 
       - name: Keep Survival Plane v0.3 green
         run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
