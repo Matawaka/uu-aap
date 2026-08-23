@@ -1,0 +1,383 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/v0.1/counterfactual-intervention.schema.json",
+  "title": "UU-AAP CounterfactualInterventionAssessment v0.1",
+  "$defs": {
+    "digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "semanticBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["action", "target", "operation_ref", "base_revision", "responsible_party_id", "executor_implementation_id"],
+      "properties": {
+        "action": {"type": "string", "minLength": 1},
+        "target": {"type": "string", "minLength": 1},
+        "operation_ref": {"type": "string", "minLength": 1},
+        "base_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "responsible_party_id": {"type": "string", "minLength": 1},
+        "executor_implementation_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "effectObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "git_object_sha"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "git_object_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "effect": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scope", "relation", "revision", "commit_sha", "tree_sha", "changed_paths", "effect_objects"],
+      "properties": {
+        "scope": {"const": "exact_local_git_transition_effect"},
+        "relation": {"const": "exact_state_transition_effect"},
+        "revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "changed_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "effect_objects": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/effectObject"}
+        }
+      }
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_id", "kind", "intervention", "held_fixed", "comparison_effect_digest",
+        "test_status", "comparison_result", "relation_status", "evaluated_at", "assumptions",
+        "evidence_basis", "establishes_necessary_cause", "establishes_sufficient_cause",
+        "establishes_exclusive_cause", "establishes_counterfactual_causal_proof"
+      ],
+      "properties": {
+        "scenario_id": {"type": "string", "pattern": "^urn:uu-aap:counterfactual-scenario:"},
+        "kind": {
+          "enum": ["factual_baseline", "suppress_originating_execution", "alternative_reproduction_mechanism"]
+        },
+        "intervention": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["variable", "operation", "value"],
+          "properties": {
+            "variable": {"type": "string", "minLength": 1},
+            "operation": {"type": "string", "minLength": 1},
+            "value": {"type": "string", "minLength": 1}
+          }
+        },
+        "held_fixed": {
+          "type": "array",
+          "minItems": 2,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "comparison_effect_digest": {"$ref": "#/$defs/digest"},
+        "test_status": {"enum": ["observed_factual", "structurally_evaluated", "not_executed", "inconclusive"]},
+        "comparison_result": {"enum": ["effect_preserved", "effect_removed", "effect_changed", "unknown"]},
+        "relation_status": {"enum": ["factual_observed", "sensitivity_supported", "sensitivity_not_supported", "unresolved"]},
+        "evaluated_at": {"type": "string", "format": "date-time"},
+        "assumptions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "evidence_basis": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "source_refs"],
+          "properties": {
+            "mode": {"enum": ["observed_predecessor", "derived_structural_model", "unresolved_counterfactual"]},
+            "source_refs": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "establishes_necessary_cause": {"const": false},
+        "establishes_sufficient_cause": {"const": false},
+        "establishes_exclusive_cause": {"const": false},
+        "establishes_counterfactual_causal_proof": {"const": false}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "factual_baseline"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "intervention": {
+                "properties": {
+                  "variable": {"const": "none"},
+                  "operation": {"const": "none"},
+                  "value": {"const": "factual"}
+                }
+              },
+              "test_status": {"const": "observed_factual"},
+              "comparison_result": {"const": "effect_preserved"},
+              "relation_status": {"const": "factual_observed"},
+              "evidence_basis": {"properties": {"mode": {"const": "observed_predecessor"}}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "suppress_originating_execution"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "intervention": {
+                "properties": {
+                  "variable": {"const": "originating_execution_occurrence"},
+                  "operation": {"const": "set_absent"},
+                  "value": {"const": "absent"}
+                }
+              },
+              "test_status": {"const": "structurally_evaluated"},
+              "comparison_result": {"const": "effect_removed"},
+              "relation_status": {"const": "sensitivity_supported"},
+              "evidence_basis": {"properties": {"mode": {"const": "derived_structural_model"}}}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "alternative_reproduction_mechanism"}}, "required": ["kind"]},
+          "then": {
+            "properties": {
+              "intervention": {
+                "properties": {
+                  "variable": {"const": "transition_mechanism_identity"},
+                  "operation": {"const": "replace_with_alternative"},
+                  "value": {"const": "independent_local_mechanism"}
+                }
+              },
+              "test_status": {"const": "not_executed"},
+              "comparison_result": {"const": "unknown"},
+              "relation_status": {"const": "unresolved"},
+              "evidence_basis": {"properties": {"mode": {"const": "unresolved_counterfactual"}}}
+            }
+          }
+        }
+      ]
+    }
+  },
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "intervention_assessment_id", "assessed_at",
+    "predecessor_bindings", "semantic_binding", "effect_under_assessment", "intervention_model",
+    "evidence_horizon", "scenarios", "predicate_tests", "assessment_result", "verification", "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./counterfactual-intervention.schema.json"},
+    "artifact_type": {"const": "CounterfactualInterventionAssessment"},
+    "artifact_version": {"const": "0.1"},
+    "intervention_assessment_id": {"type": "string", "pattern": "^urn:uu-aap:counterfactual-intervention-assessment:"},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "predecessor_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["causal_attribution", "responsibility_trace", "outcome_observation"],
+      "properties": {
+        "causal_attribution": {"$ref": "#/$defs/binding"},
+        "responsibility_trace": {"$ref": "#/$defs/binding"},
+        "outcome_observation": {"$ref": "#/$defs/binding"}
+      }
+    },
+    "semantic_binding": {"$ref": "#/$defs/semanticBinding"},
+    "effect_under_assessment": {"$ref": "#/$defs/effect"},
+    "intervention_model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "model_scope", "interpretation", "held_fixed_global",
+        "external_consequence_model_present", "model_completeness_established"
+      ],
+      "properties": {
+        "model_scope": {"const": "exact_local_git_transition_mechanism"},
+        "interpretation": {"const": "structural_counterfactual_not_real_world_causal_proof"},
+        "held_fixed_global": {
+          "type": "array",
+          "minItems": 4,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "external_consequence_model_present": {"const": false},
+        "model_completeness_established": {"const": false}
+      }
+    },
+    "evidence_horizon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_cutoff", "later_evidence_admitted"],
+      "properties": {
+        "evidence_cutoff": {"type": "string", "format": "date-time"},
+        "later_evidence_admitted": {"const": false}
+      }
+    },
+    "scenarios": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/scenario"}
+    },
+    "predicate_tests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["necessity", "sufficiency", "exclusivity", "counterfactual_proof"],
+      "properties": {
+        "necessity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "model_relative_sensitivity_supported", "establishes_predicate"],
+          "properties": {
+            "status": {"const": "blocked_by_unresolved_alternative"},
+            "model_relative_sensitivity_supported": {"const": true},
+            "establishes_predicate": {"const": false}
+          }
+        },
+        "sufficiency": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "establishes_predicate"],
+          "properties": {
+            "status": {"const": "not_tested"},
+            "establishes_predicate": {"const": false}
+          }
+        },
+        "exclusivity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "establishes_predicate"],
+          "properties": {
+            "status": {"const": "blocked_by_unresolved_alternative"},
+            "establishes_predicate": {"const": false}
+          }
+        },
+        "counterfactual_proof": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["status", "establishes_proof"],
+          "properties": {
+            "status": {"const": "not_certified"},
+            "establishes_proof": {"const": false}
+          }
+        }
+      }
+    },
+    "assessment_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status", "intervention_scope", "factual_baseline_verified", "structural_suppression_evaluated",
+        "alternative_reproduction_resolved", "model_relative_sensitivity_status",
+        "causal_predicate_qualification_status", "uncertainty_status", "causal_proof_established"
+      ],
+      "properties": {
+        "status": {"const": "structural_intervention_sensitivity_with_unresolved_reproduction"},
+        "intervention_scope": {"const": "bounded_transition_mechanism_only"},
+        "factual_baseline_verified": {"const": true},
+        "structural_suppression_evaluated": {"const": true},
+        "alternative_reproduction_resolved": {"const": false},
+        "model_relative_sensitivity_status": {"const": "sensitivity_supported"},
+        "causal_predicate_qualification_status": {"const": "deferred"},
+        "uncertainty_status": {"const": "material_uncertainty_preserved"},
+        "causal_proof_established": {"const": false}
+      }
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "causal_assessment_exact", "responsibility_trace_exact", "outcome_observation_exact",
+        "semantic_frontier_exact", "effect_frontier_exact", "evidence_horizon_enforced",
+        "factual_baseline_exact", "suppression_intervention_structurally_evaluated",
+        "alternative_reproduction_explicit_and_unresolved", "held_fixed_invariants_explicit",
+        "scalar_scoring_absent", "predecessor_assurance_not_upgraded"
+      ],
+      "properties": {
+        "causal_assessment_exact": {"const": true},
+        "responsibility_trace_exact": {"const": true},
+        "outcome_observation_exact": {"const": true},
+        "semantic_frontier_exact": {"const": true},
+        "effect_frontier_exact": {"const": true},
+        "evidence_horizon_enforced": {"const": true},
+        "factual_baseline_exact": {"const": true},
+        "suppression_intervention_structurally_evaluated": {"const": true},
+        "alternative_reproduction_explicit_and_unresolved": {"const": true},
+        "held_fixed_invariants_explicit": {"const": true},
+        "scalar_scoring_absent": {"const": true},
+        "predecessor_assurance_not_upgraded": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "predecessor_causal_assessment_verified", "counterfactual_scenarios_defined", "factual_baseline_bound",
+        "intervention_assumptions_explicit", "structural_intervention_comparison_evaluated",
+        "alternative_reproduction_scenario_explicit", "model_relative_intervention_sensitivity_assessed",
+        "uncertainty_and_unresolved_alternatives_preserved", "necessary_cause_established",
+        "sufficient_cause_established", "exclusive_cause_established", "counterfactual_causal_proof_certified",
+        "generalized_external_consequence_causality_established", "causal_proof_certified",
+        "responsibility_for_outcome_adjudicated", "legal_responsibility_determined", "legal_effect_established",
+        "moral_blame_assigned", "moral_correctness_established", "truth_certified",
+        "remote_branch_or_ref_canonicality_established", "poai_materialization_event_recorded",
+        "poai_successor_record_identity_inferred", "universal_canonicality_established", "poai_v_conformance_established"
+      ],
+      "properties": {
+        "predecessor_causal_assessment_verified": {"const": true},
+        "counterfactual_scenarios_defined": {"const": true},
+        "factual_baseline_bound": {"const": true},
+        "intervention_assumptions_explicit": {"const": true},
+        "structural_intervention_comparison_evaluated": {"const": true},
+        "alternative_reproduction_scenario_explicit": {"const": true},
+        "model_relative_intervention_sensitivity_assessed": {"const": true},
+        "uncertainty_and_unresolved_alternatives_preserved": {"const": true},
+        "necessary_cause_established": {"const": false},
+        "sufficient_cause_established": {"const": false},
+        "exclusive_cause_established": {"const": false},
+        "counterfactual_causal_proof_certified": {"const": false},
+        "generalized_external_consequence_causality_established": {"const": false},
+        "causal_proof_certified": {"const": false},
+        "responsibility_for_outcome_adjudicated": {"const": false},
+        "legal_responsibility_determined": {"const": false},
+        "legal_effect_established": {"const": false},
+        "moral_blame_assigned": {"const": false},
+        "moral_correctness_established": {"const": false},
+        "truth_certified": {"const": false},
+        "remote_branch_or_ref_canonicality_established": {"const": false},
+        "poai_materialization_event_recorded": {"const": false},
+        "poai_successor_record_identity_inferred": {"const": false},
+        "universal_canonicality_established": {"const": false},
+        "poai_v_conformance_established": {"const": false}
+      }
+    }
+  }
+}

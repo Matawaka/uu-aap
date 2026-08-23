@@ -1,0 +1,204 @@
+name: CounterfactualInterventionAssessment validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/counterfactual-intervention-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/**"
+      - "protocols/ial/**"
+      - "proposals/ccrp/**"
+      - "proposals/poai/**"
+      - ".github/workflows/counterfactual-intervention-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  counterfactual-intervention:
+    name: Counterfactual intervention validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository with immutable tags
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate upstream protocol registry
+        run: node protocols/registry/v0.1/validate-registry.js
+
+      - name: Check counterfactual intervention JavaScript
+        run: |
+          node --check protocols/integration/v0.1/assess-counterfactual.js
+          node --check protocols/integration/v0.1/test-counterfactual-intervention.js
+
+      - name: Validate CounterfactualInterventionAssessment schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('protocols/integration/v0.1/counterfactual-intervention.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: counterfactual-intervention.schema.json')
+          PY
+
+      - name: Reproduce causal assessment and evaluate counterfactual interventions
+        run: |
+          node protocols/integration/v0.1/test-counterfactual-intervention.js \
+            /tmp/counterfactual-intervention-assessment.json
+
+      - name: Validate generated counterfactual assessment and overclaim boundary
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
+
+          schema = json.loads(Path('protocols/integration/v0.1/counterfactual-intervention.schema.json').read_text(encoding='utf-8'))
+          assessment = json.loads(Path('/tmp/counterfactual-intervention-assessment.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(assessment)
+
+          result = assessment['assessment_result']
+          assert result['status'] == 'structural_intervention_sensitivity_with_unresolved_reproduction'
+          assert result['intervention_scope'] == 'bounded_transition_mechanism_only'
+          assert result['factual_baseline_verified'] is True
+          assert result['structural_suppression_evaluated'] is True
+          assert result['alternative_reproduction_resolved'] is False
+          assert result['model_relative_sensitivity_status'] == 'sensitivity_supported'
+          assert result['causal_predicate_qualification_status'] == 'deferred'
+          assert result['uncertainty_status'] == 'material_uncertainty_preserved'
+          assert result['causal_proof_established'] is False
+
+          scenarios = {s['kind']: s for s in assessment['scenarios']}
+          assert set(scenarios) == {
+              'factual_baseline',
+              'suppress_originating_execution',
+              'alternative_reproduction_mechanism',
+          }
+          assert scenarios['factual_baseline']['test_status'] == 'observed_factual'
+          assert scenarios['factual_baseline']['comparison_result'] == 'effect_preserved'
+          assert scenarios['suppress_originating_execution']['test_status'] == 'structurally_evaluated'
+          assert scenarios['suppress_originating_execution']['comparison_result'] == 'effect_removed'
+          assert scenarios['suppress_originating_execution']['relation_status'] == 'sensitivity_supported'
+          assert scenarios['alternative_reproduction_mechanism']['test_status'] == 'not_executed'
+          assert scenarios['alternative_reproduction_mechanism']['comparison_result'] == 'unknown'
+          assert scenarios['alternative_reproduction_mechanism']['relation_status'] == 'unresolved'
+
+          tests = assessment['predicate_tests']
+          assert tests['necessity']['status'] == 'blocked_by_unresolved_alternative'
+          assert tests['necessity']['establishes_predicate'] is False
+          assert tests['sufficiency']['status'] == 'not_tested'
+          assert tests['sufficiency']['establishes_predicate'] is False
+          assert tests['exclusivity']['status'] == 'blocked_by_unresolved_alternative'
+          assert tests['exclusivity']['establishes_predicate'] is False
+          assert tests['counterfactual_proof']['establishes_proof'] is False
+
+          claims = assessment['claims']
+          for key in [
+              'predecessor_causal_assessment_verified',
+              'counterfactual_scenarios_defined',
+              'factual_baseline_bound',
+              'intervention_assumptions_explicit',
+              'structural_intervention_comparison_evaluated',
+              'alternative_reproduction_scenario_explicit',
+              'model_relative_intervention_sensitivity_assessed',
+              'uncertainty_and_unresolved_alternatives_preserved',
+          ]:
+              assert claims[key] is True, key
+
+          forbidden = [
+              'necessary_cause_established',
+              'sufficient_cause_established',
+              'exclusive_cause_established',
+              'counterfactual_causal_proof_certified',
+              'generalized_external_consequence_causality_established',
+              'causal_proof_certified',
+              'responsibility_for_outcome_adjudicated',
+              'legal_responsibility_determined',
+              'legal_effect_established',
+              'moral_blame_assigned',
+              'moral_correctness_established',
+              'truth_certified',
+              'remote_branch_or_ref_canonicality_established',
+              'poai_materialization_event_recorded',
+              'poai_successor_record_identity_inferred',
+              'universal_canonicality_established',
+              'poai_v_conformance_established',
+          ]
+          for key in forbidden:
+              assert claims[key] is False, key
+              bad = copy.deepcopy(assessment)
+              bad['claims'][key] = True
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted forbidden counterfactual overclaim: {key}')
+
+          bad = copy.deepcopy(assessment)
+          bad['predicate_tests']['necessity']['establishes_predicate'] = True
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted necessary-cause qualification')
+
+          bad = copy.deepcopy(assessment)
+          bad['intervention_model']['model_completeness_established'] = True
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted model-completeness overclaim')
+
+          bad = copy.deepcopy(assessment)
+          bad['scenarios'][2]['test_status'] = 'structurally_evaluated'
+          try:
+              validator.validate(bad)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('schema accepted unresolved alternative as evaluated')
+
+          for scalar_key in ['probability', 'score', 'percentage', 'likelihood', 'confidence_score']:
+              bad = copy.deepcopy(assessment)
+              bad['scenarios'][1][scalar_key] = 0.9
+              try:
+                  validator.validate(bad)
+              except ValidationError:
+                  pass
+              else:
+                  raise AssertionError(f'schema accepted prohibited scalar field: {scalar_key}')
+
+          print('Structural intervention sensitivity assessed; causal predicate qualification remains deferred')
+          PY
+
+      - name: Confirm counterfactual assessment produced no repository mutation
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
