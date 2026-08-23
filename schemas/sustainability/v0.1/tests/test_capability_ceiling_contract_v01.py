@@ -80,12 +80,21 @@ class CapabilityCeilingContractTests(unittest.TestCase):
         mutated["external_execution_authorized"] = True
         self.assert_invalid(mutated)
 
-    def test_unknown_or_denied_can_only_have_no_action(self):
+    def test_non_within_results_require_no_action(self):
         for result in ("unknown", "denied", "requires-fresh-authorization"):
-            mutated = copy.deepcopy(self.example)
-            mutated["assessment"]["result"] = result
-            mutated["assessment"]["safe_effect"] = "no-action"
-            self.validate(mutated)
+            valid = copy.deepcopy(self.example)
+            valid["assessment"]["result"] = result
+            valid["assessment"]["safe_effect"] = "no-action"
+            self.validate(valid)
+
+            invalid = copy.deepcopy(valid)
+            invalid["assessment"]["safe_effect"] = "prepare-only"
+            self.assert_invalid(invalid)
+
+    def test_within_ceiling_requires_prepare_only(self):
+        mutated = copy.deepcopy(self.example)
+        mutated["assessment"]["safe_effect"] = "no-action"
+        self.assert_invalid(mutated)
 
 
 if __name__ == "__main__":
