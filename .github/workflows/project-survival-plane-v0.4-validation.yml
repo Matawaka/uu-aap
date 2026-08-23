@@ -1,0 +1,87 @@
+name: Project Survival Plane v0.4 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/rescue/v0.4/**'
+      - '.github/workflows/project-survival-plane-v0.4-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/rescue/v0.4/**'
+      - '.github/workflows/project-survival-plane-v0.4-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protection/rescue/v0.4/rescue_execution.py
+          python3 -m py_compile protection/rescue/v0.4/test_rescue_execution.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/rescue/v0.4')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise bounded local Rescue Execution Envelope
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+
+      - name: Keep Survival Plane v0.3 boundary green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 boundary green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 decision boundary green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert executor has no network or remote-write primitive
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          paths = [Path('protection/rescue/v0.4/rescue_execution.py')]
+          forbidden = [
+              'git push', 'remote add', 'requests.', 'urllib.request', 'http.client',
+              'import socket', 'from socket', 'curl ', 'wget ', 'ssh://', 'git@',
+              'http://', 'https://'
+          ]
+          for path in paths:
+              text = path.read_text(encoding='utf-8').lower()
+              for token in forbidden:
+                  if token.lower() in text:
+                      raise SystemExit(f'forbidden network/remote-write primitive {token!r} in {path}')
+          print('network/remote-write guard: PASS')
+          PY
+
+      - name: Assert non-canonical and local replay claims remain explicit
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path('protection/rescue/v0.4/rescue_execution.py').read_text(encoding='utf-8')
+          required = [
+              'NON_CANONICAL_RECOVERY',
+              'canonical_successor_established',
+              'global_replay_prevention_established',
+              'local_state_directory',
+              'kontur_activated',
+          ]
+          for token in required:
+              if token not in text:
+                  raise SystemExit(f'missing required execution boundary token: {token}')
+          print('execution boundary guard: PASS')
+          PY
