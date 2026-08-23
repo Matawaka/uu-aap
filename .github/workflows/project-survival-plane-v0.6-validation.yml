@@ -1,0 +1,103 @@
+name: Project Survival Plane v0.6 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/rescue/v0.6/**'
+      - '.github/workflows/project-survival-plane-v0.6-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/rescue/v0.6/**'
+      - '.github/workflows/project-survival-plane-v0.6-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate Python and JSON syntax
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protection/rescue/v0.6/canonical_recognition.py
+          python3 -m py_compile protection/rescue/v0.6/test_canonical_recognition.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          for path in sorted(Path('protection/rescue/v0.6').glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise Human Canonical Recognition fail-closed boundaries
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert v0.6 cannot use network or Git execution
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('protection/rescue/v0.6/canonical_recognition.py')
+          tree = ast.parse(path.read_text(encoding='utf-8'))
+          forbidden_imports = {'subprocess', 'socket', 'requests', 'urllib', 'http.client', 'ftplib'}
+          found = []
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  for alias in node.names:
+                      if alias.name in forbidden_imports or any(alias.name.startswith(x + '.') for x in forbidden_imports):
+                          found.append(alias.name)
+              elif isinstance(node, ast.ImportFrom):
+                  mod = node.module or ''
+                  if mod in forbidden_imports or any(mod.startswith(x + '.') for x in forbidden_imports):
+                      found.append(mod)
+          if found:
+              raise SystemExit('forbidden execution/network import in v0.6: ' + ', '.join(sorted(set(found))))
+          src = path.read_text(encoding='utf-8')
+          for primitive in ['git push', 'git fetch', 'git clone', 'update-ref', 'remote add', 'requests.', 'urllib.request', 'socket.']:
+              if primitive in src:
+                  raise SystemExit('forbidden primitive in v0.6: ' + primitive)
+          print('v0.6 remains local recognition-only tooling')
+          PY
+
+      - name: Assert recognition cannot publish or establish canonicality
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/rescue/v0.6')
+          policy = json.load((root / 'reference.human-canonical-recognition-policy.json').open())
+          for key in ['automatic_recognition_enabled','automatic_publication_enabled','canonical_origin_mutation_enabled','ownership_transfer_enabled','kontur_activation_enabled','distributed_consensus_established']:
+              assert policy['claims'][key] is False, key
+          recognition = json.load((root / 'human-canonical-recognition.schema.json').open())
+          props = recognition['properties']['claims']['properties']
+          for key in ['canonical_successor_established','canonical_origin_created','canonical_origin_mutated','publication_executed','ownership_transferred','kontur_activated','distributed_consensus_established','cryptographic_or_legal_identity_proven','global_replay_prevention_established','legal_effect_established','truth_certified']:
+              assert props[key]['const'] is False, key
+          assessment = json.load((root / 'human-canonical-recognition-assessment.schema.json').open())
+          aprops = assessment['properties']['claims']['properties']
+          for key in ['canonical_successor_established','canonical_origin_created','canonical_origin_mutated','publication_executed','ownership_transferred','kontur_activated','distributed_consensus_established','legal_effect_established','truth_certified']:
+              assert aprops[key]['const'] is False, key
+          print('v0.6 authority boundary preserved')
+          PY
