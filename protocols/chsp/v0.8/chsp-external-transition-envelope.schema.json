@@ -1,0 +1,15 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-transition-envelope-v0.8.json",
+  "title":"CHSPExternalTransitionEnvelope v0.8",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","envelope_id","project_id","steward_id","v06_binding_proposal_sha256","v07_transition_authorization_sha256","v07_transition_assessment_sha256","observed_state_sha256","external_system_type","external_system_id","external_principal_id","operations","created_at","expires_at","nonce","envelope_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalTransitionEnvelope"},"artifact_version":{"const":"0.8"},"envelope_id":{"type":"string","minLength":1},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},
+    "v06_binding_proposal_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v07_transition_authorization_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"v07_transition_assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"observed_state_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "external_system_type":{"enum":["github_repository","git_host_repository","signing_identity","generic_control_plane"]},"external_system_id":{"type":"string","minLength":1},"external_principal_id":{"type":"string","minLength":1},
+    "operations":{"type":"array","minItems":1,"maxItems":16,"items":{"type":"object","additionalProperties":false,"required":["operation_id","kind","intended_role","force","destructive"],"properties":{"operation_id":{"type":"string","minLength":1},"kind":{"enum":["ensure_principal_presence","ensure_role_at_least","ensure_release_signer_binding","record_external_stewardship_mapping"]},"intended_role":{"type":["string","null"],"enum":[null,"identity_only","collaborator","maintainer","admin","release_signer"]},"force":{"const":false},"destructive":{"const":false}}}},
+    "created_at":{"type":"string","format":"date-time"},"expires_at":{"type":"string","format":"date-time"},"nonce":{"type":"string","minLength":16},"envelope_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["dry_run_only","non_destructive_plan","external_mutation_authorized","external_mutation_performed","external_control_transferred","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated"],"properties":{"dry_run_only":{"const":true},"non_destructive_plan":{"const":true},"external_mutation_authorized":{"const":false},"external_mutation_performed":{"const":false},"external_control_transferred":{"const":false},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false}}}
+  }
+}

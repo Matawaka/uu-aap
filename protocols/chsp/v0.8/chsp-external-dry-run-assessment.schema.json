@@ -1,0 +1,12 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/schema/chsp-external-dry-run-assessment-v0.8.json",
+  "title":"CHSPExternalDryRunAssessment v0.8",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","artifact_version","assessment_id","evaluated_at","project_id","steward_id","envelope_sha256","dry_run_receipt_sha256","state","decision","reasons","assessment_sha256","claims"],
+  "properties":{
+    "artifact_type":{"const":"CHSPExternalDryRunAssessment"},"artifact_version":{"const":"0.8"},"assessment_id":{"type":"string","minLength":1},"evaluated_at":{"type":"string","format":"date-time"},"project_id":{"type":"string","minLength":1},"steward_id":{"type":"string","minLength":1},"envelope_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},"dry_run_receipt_sha256":{"type":["string","null"],"pattern":"^[0-9a-f]{64}$"},
+    "state":{"enum":["dry_run_rejected","dry_run_verified","dry_run_expired"]},"decision":{"enum":["revise_transition_envelope","external_transition_execution_authorization_may_be_requested","repeat_dry_run_with_fresh_state"]},"reasons":{"type":"array","items":{"type":"string"}},"assessment_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "claims":{"type":"object","additionalProperties":false,"required":["policy_sufficiency_only","dry_run_verified","external_execution_authorized","executor_invoked","external_mutation_performed","repository_ownership_transferred","account_control_transferred","canonical_origin_mutated","canonical_publication_executed","kontur_activated"],"properties":{"policy_sufficiency_only":{"const":true},"dry_run_verified":{"type":"boolean"},"external_execution_authorized":{"const":false},"executor_invoked":{"const":false},"external_mutation_performed":{"const":false},"repository_ownership_transferred":{"const":false},"account_control_transferred":{"const":false},"canonical_origin_mutated":{"const":false},"canonical_publication_executed":{"const":false},"kontur_activated":{"const":false}}}
+  }
+}

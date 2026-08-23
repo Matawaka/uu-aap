@@ -1,0 +1,120 @@
+name: CHSP v0.8 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v0.8-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/chsp/**'
+      - '.github/workflows/chsp-v0.8-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Validate CHSP v0.8 Python and JSON syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m py_compile protocols/chsp/v0.8/chsp_v08.py
+          python3 -m py_compile protocols/chsp/v0.8/test_chsp_v08.py
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.8')
+          for path in sorted(root.glob('*.json')):
+              json.load(path.open(encoding='utf-8'))
+              print('validated', path)
+          PY
+
+      - name: Exercise CHSP v0.8 dry-run boundaries
+        run: python3 protocols/chsp/v0.8/test_chsp_v08.py
+
+      - name: Keep CHSP v0.7 green
+        run: python3 protocols/chsp/v0.7/test_chsp_v07.py
+      - name: Keep CHSP v0.6 green
+        run: python3 protocols/chsp/v0.6/test_chsp_v06.py
+      - name: Keep CHSP v0.5 green
+        run: python3 protocols/chsp/v0.5/test_chsp_v05.py
+      - name: Keep CHSP v0.4 green
+        run: python3 protocols/chsp/v0.4/test_chsp_v04.py
+      - name: Keep CHSP v0.3 green
+        run: python3 protocols/chsp/v0.3/test_chsp_v03.py
+      - name: Keep CHSP v0.2 green
+        run: python3 protocols/chsp/v0.2/test_chsp_v02.py
+      - name: Keep CHSP v0.1 green
+        run: python3 protocols/chsp/v0.1/test_chsp.py
+
+      - name: Keep Human Canonical Recognition v0.6 green
+        run: python3 protection/rescue/v0.6/test_canonical_recognition.py
+      - name: Keep Canonical Succession Proposal v0.5 green
+        run: python3 protection/rescue/v0.5/test_canonical_succession.py
+      - name: Keep Rescue Execution Envelope v0.4 green
+        run: python3 protection/rescue/v0.4/test_rescue_execution.py
+      - name: Keep Survival Plane v0.3 green
+        run: python3 protection/rescue/v0.3/test_survival_plane_v03.py
+      - name: Keep Survival Plane v0.2 green
+        run: python3 protection/rescue/v0.2/test_survival_plane.py
+      - name: Keep Project Rescue v0.1 green
+        run: python3 protection/rescue/v0.1/test_rescue_assessor.py
+
+      - name: Assert CHSP v0.8 has no network Git account or process execution surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('protocols/chsp/v0.8/chsp_v08.py')
+          tree = ast.parse(path.read_text(encoding='utf-8'))
+          forbidden = {'socket','urllib','http','requests','subprocess','git','paramiko','ftplib'}
+          found = set()
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  found.update(alias.name.split('.')[0] for alias in node.names if alias.name.split('.')[0] in forbidden)
+              elif isinstance(node, ast.ImportFrom) and node.module:
+                  root = node.module.split('.')[0]
+                  if root in forbidden:
+                      found.add(root)
+          if found:
+              raise SystemExit(f'forbidden external execution/network imports: {sorted(found)}')
+          print('CHSP v0.8 local-only surface: PASS')
+          PY
+
+      - name: Assert dry-run cannot authorize or execute external mutation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protocols/chsp/v0.8')
+          policy = json.load((root / 'reference.chsp-external-dry-run-policy.json').open())
+          req = policy['requirements']
+          for key in ['credentials_prohibited','force_prohibited','destructive_operations_prohibited','ownership_transfer_prohibited','predecessor_removal_prohibited','credential_rotation_prohibited','canonical_origin_mutation_prohibited','canonical_publication_prohibited','kontur_activation_prohibited','network_prohibited','git_mutation_prohibited','external_process_prohibited']:
+              assert req[key] is True, key
+          envelope = json.load((root / 'chsp-external-transition-envelope.schema.json').open())
+          eclaims = envelope['properties']['claims']['properties']
+          assert eclaims['dry_run_only']['const'] is True
+          assert eclaims['non_destructive_plan']['const'] is True
+          for key in ['external_mutation_authorized','external_mutation_performed','external_control_transferred','repository_ownership_transferred','account_control_transferred','canonical_origin_mutated','canonical_publication_executed','kontur_activated']:
+              assert eclaims[key]['const'] is False, key
+          roles = envelope['properties']['operations']['items']['properties']['intended_role']['enum']
+          assert 'owner' not in roles
+          receipt = json.load((root / 'chsp-external-transition-dry-run-receipt.schema.json').open())
+          rclaims = receipt['properties']['claims']['properties']
+          assert rclaims['external_execution_authorized']['const'] is False
+          assert rclaims['external_mutation_performed']['const'] is False
+          print('CHSP v0.8 dry-run-only authority boundary: PASS')
+          PY

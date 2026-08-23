@@ -13,6 +13,7 @@ Current development line:
 - [`v0.5/`](v0.5/) — bounded local execution of one active v0.4 authorization, immutable CHSP canonical-stewardship state, execution receipt, freshness/replay boundaries, and explicit separation from external repository/account/origin control.
 - [`v0.6/`](v0.6/) — evidence-bound mapping of an effective CHSP steward to an external control-plane principal, multi-class attestations, conflict handling, proposal-only external binding, and human-review eligibility without external mutation.
 - [`v0.7/`](v0.7/) — separate human-quorum recognition of one exact v0.6 external mapping and separate bounded transition-preparation authorization, with expiry, immutable revocation, replay boundaries, and no external execution.
+- [`v0.8/`](v0.8/) — exact external before-state observation, bounded non-destructive transition envelope, short-freshness dry-run verification receipt, and execution-authorization request eligibility without external mutation.
 
 Core invariants:
 
@@ -61,6 +62,14 @@ Core invariants:
 `transition preparation authorized != external control mutation authorized`
 
 `authorization active != executor invoked`
+
+`observed before-state != universal provider truth`
+
+`transition envelope != external mutation`
+
+`dry-run verified != external execution authorized`
+
+`dry-run verified != external transition executed`
 
 `later authorization revocation != historical execution erased`
 
