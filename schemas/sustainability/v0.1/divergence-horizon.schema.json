@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/divergence-horizon.schema.json",
+  "title": "UU-AAP Divergence Horizon v0.1",
+  "description": "Non-normative draft for tracking how far an isolated side-track has drifted from its original base without converting age or distance into automatic integration pressure.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "parallel_branch",
+    "original_base_sha",
+    "latest_observed_main_sha",
+    "ahead_by",
+    "behind_by",
+    "relation",
+    "age_does_not_imply_merge_priority",
+    "distance_does_not_imply_discard",
+    "fresh_review_before_disposition",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.divergence-horizon"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "parallel_branch": {"type": "string", "minLength": 1},
+    "original_base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "latest_observed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "merge_base_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+    "ahead_by": {"type": "integer", "minimum": 0},
+    "behind_by": {"type": "integer", "minimum": 0},
+    "relation": {"enum": ["equal", "ahead", "behind", "diverged", "unknown"]},
+    "observed_active_main_work_refs": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "review_triggers": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "main_advanced",
+          "active_main_work_changed",
+          "semantic_overlap_detected",
+          "side_track_scope_expanded",
+          "human_requested_review",
+          "archival_candidate"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "age_does_not_imply_merge_priority": {"const": true},
+    "distance_does_not_imply_discard": {"const": true},
+    "fresh_review_before_disposition": {"const": true},
+    "automatic_rebase_allowed": {"const": false},
+    "automatic_merge_allowed": {"const": false},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
