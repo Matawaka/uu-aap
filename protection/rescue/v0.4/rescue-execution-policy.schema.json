@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/rescue-execution-policy-v0.4.json",
+  "title": "RescueExecutionPolicy v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "project_id", "allowed_scope", "allowed_source_kinds", "requirements", "claims"],
+  "properties": {
+    "artifact_type": {"const": "RescueExecutionPolicy"},
+    "artifact_version": {"const": "0.4"},
+    "project_id": {"type": "string", "minLength": 1},
+    "allowed_scope": {"const": "reconstruct_noncanonical_git_copy"},
+    "allowed_source_kinds": {"type": "array", "const": ["git_bundle"]},
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["capsule_verified", "assessment_rescue_eligible", "authorization_unexpired", "exact_assessment_binding", "selected_source_binding", "local_regular_payload", "destination_absent", "consume_nonce_before_execution", "bare_repository_only", "no_git_remotes", "git_fsck_full", "expected_frontier_present", "network_prohibited"],
+      "properties": {
+        "capsule_verified": {"const": true},
+        "assessment_rescue_eligible": {"const": true},
+        "authorization_unexpired": {"const": true},
+        "exact_assessment_binding": {"const": true},
+        "selected_source_binding": {"const": true},
+        "local_regular_payload": {"const": true},
+        "destination_absent": {"const": true},
+        "consume_nonce_before_execution": {"const": true},
+        "bare_repository_only": {"const": true},
+        "no_git_remotes": {"const": true},
+        "git_fsck_full": {"const": true},
+        "expected_frontier_present": {"const": true},
+        "network_prohibited": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["automatic_failover_enabled", "canonical_succession_enabled", "ownership_transfer_enabled", "kontur_activation_enabled", "distributed_consensus_established"],
+      "properties": {
+        "automatic_failover_enabled": {"const": false},
+        "canonical_succession_enabled": {"const": false},
+        "ownership_transfer_enabled": {"const": false},
+        "kontur_activation_enabled": {"const": false},
+        "distributed_consensus_established": {"const": false}
+      }
+    }
+  }
+}
