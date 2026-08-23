@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/parallel-integration-gate.schema.json",
+  "title": "UU-AAP Parallel Integration Gate v0.1",
+  "description": "Non-normative draft describing the minimum evidence required before an isolated parallel branch may be proposed for integration into a moving main line.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "parallel_branch",
+    "original_base_sha",
+    "fresh_main_observation_required",
+    "path_overlap_review_required",
+    "validation_required",
+    "explicit_human_integration_decision_required",
+    "automatic_merge_allowed",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {
+      "const": "uu-aap.parallel-integration-gate"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "status": {
+      "const": "non-normative-draft"
+    },
+    "parallel_branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "original_base_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "latest_observed_main_sha": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "fresh_main_observation_required": {
+      "const": true
+    },
+    "path_overlap_review_required": {
+      "const": true
+    },
+    "validation_required": {
+      "const": true
+    },
+    "explicit_human_integration_decision_required": {
+      "const": true
+    },
+    "automatic_merge_allowed": {
+      "const": false
+    },
+    "authority_effect": {
+      "const": "none"
+    },
+    "prohibited_shortcuts": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "merge_because_parallel_work_is_older",
+          "merge_because_parallel_work_is_newer",
+          "merge_without_reobserving_main",
+          "merge_without_path_overlap_review",
+          "merge_without_validation",
+          "treat_branch_creation_as_future_merge_authorization",
+          "reinterpret_prior_authorization_after_main_changed"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "integration_state": {
+      "enum": ["isolated", "candidate", "rejected", "superseded", "integrated"]
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
