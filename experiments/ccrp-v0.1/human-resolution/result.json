@@ -1,0 +1,113 @@
+{
+  "artifact_type": "CCRPLiveHumanResolutionResult",
+  "artifact_version": "0.1-experimental",
+  "experiment_issue": "Matawaka/uu-aap#170",
+  "reconciled_from_main_sha": "db5a27ab0e25d8801aaf888a5f2d80021a522ab0",
+  "frozen_predecessor": {
+    "tag": "poai-ccrp-exp-v0.1",
+    "commit": "33215e251310105e2fac591b17ae2d90522488d9"
+  },
+  "predecessor_conflict_binding": {
+    "issue": "Matawaka/uu-aap#165",
+    "result_path": "experiments/ccrp-v0.1/semantic-conflict/result.json",
+    "result_blob_sha": "416df58dff502ee7816b34af853139a553c3c202",
+    "semantic_result_sha256": "d0ca939f6806eaa7113ad204694bdf4342cc46b9a14866d862ed710a3a7e2c5d",
+    "decision_slot": "routing_mode",
+    "predecessor_outcome": "HOLD",
+    "predecessor_conflict_resolved": false
+  },
+  "setup_binding": {
+    "baseline_path": "experiments/ccrp-v0.1/human-resolution/baseline.json",
+    "baseline_blob_sha": "6d1e4464d5f2372ab4990d11c4a270c73dc90768",
+    "setup_merge_commit": "8941e29315fcee8d0728635fb11336ee2ee1184f",
+    "selected_value_before_explicit_instruction": null,
+    "human_resolution_instruction_observed_before_explicit_instruction": false,
+    "conflict_resolved_before_explicit_instruction": false
+  },
+  "resolution_instruction_binding": {
+    "path": "experiments/ccrp-v0.1/human-resolution/resolution.json",
+    "blob_sha": "32fd9269fc036c40e4c6961d9e99548f5bc0c980",
+    "merge_commit": "db5a27ab0e25d8801aaf888a5f2d80021a522ab0",
+    "instruction_source": "interactive_chat_user_message",
+    "instruction_text_exact": "direct",
+    "observed_after_setup_merge": true,
+    "selected_value": "direct",
+    "non_selected_value": "relay",
+    "resolution_verification_was_pending_in_source_artifact": true,
+    "conflict_resolved_was_false_in_source_artifact": true
+  },
+  "source_operations": [
+    {
+      "path": "experiments/ccrp-v0.1/semantic-conflict/operations/executor-a.json",
+      "blob_sha": "5e9926ca17b177d484675fefe2c72250ab5002c7",
+      "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+      "proposed_value": "direct",
+      "selected_by_explicit_resolution": true
+    },
+    {
+      "path": "experiments/ccrp-v0.1/semantic-conflict/operations/executor-b.json",
+      "blob_sha": "c74a1f567d0a17c4498735d1f1eff0085c796779",
+      "operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+      "proposed_value": "relay",
+      "selected_by_explicit_resolution": false
+    }
+  ],
+  "verification": {
+    "exact_predecessor_conflict_binding_verified": true,
+    "exact_setup_binding_verified": true,
+    "exact_resolution_instruction_binding_verified": true,
+    "instruction_observed_after_setup_merge": true,
+    "selected_value_allowed": true,
+    "selected_value_in_predecessor_conflict_set": true,
+    "non_selected_value_preserved": true,
+    "source_operations_preserved": true,
+    "predecessor_conflict_evidence_preserved": true,
+    "resolution_by_retry": false,
+    "resolution_by_arrival_order": false,
+    "resolution_by_executor_identity": false,
+    "automatic_winner_selection": false,
+    "human_identity_cryptographically_attested": false
+  },
+  "semantic_result": {
+    "decision_slot": "routing_mode",
+    "predecessor_outcome": "HOLD",
+    "selected_value": "direct",
+    "non_selected_value": "relay",
+    "selected_operation_id": "urn:ccrp:experiment:semantic-conflict:operation:a",
+    "non_selected_operation_id": "urn:ccrp:experiment:semantic-conflict:operation:b",
+    "resolution_instruction_verified": true,
+    "conflict_resolved": true,
+    "outcome": "RESOLVED_BY_EXPLICIT_HUMAN_SELECTION",
+    "automatic_winner_selection": false
+  },
+  "semantic_result_canonical_string": "{\"automatic_winner_selection\":false,\"conflict_resolved\":true,\"decision_slot\":\"routing_mode\",\"non_selected_operation_id\":\"urn:ccrp:experiment:semantic-conflict:operation:b\",\"non_selected_value\":\"relay\",\"outcome\":\"RESOLVED_BY_EXPLICIT_HUMAN_SELECTION\",\"predecessor_outcome\":\"HOLD\",\"resolution_instruction_verified\":true,\"selected_operation_id\":\"urn:ccrp:experiment:semantic-conflict:operation:a\",\"selected_value\":\"direct\"}",
+  "semantic_result_sha256": "704157d4b6448d0b508762c1e0d8f269c5f35f785291b5d3524bda32098fcf54",
+  "observations": {
+    "explicit_post_setup_selection_observed": true,
+    "experiment_local_resolution_established": true,
+    "conflict_resolved": true,
+    "non_selected_source_operation_preserved": true,
+    "predecessor_hold_preserved_as_historical_evidence": true,
+    "automatic_materialization_performed": false,
+    "automatic_winner_selection_performed": false
+  },
+  "claims": {
+    "protocol_definition": false,
+    "human_identity_cryptographically_attested": false,
+    "universal_human_authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "canonical_state_established": false,
+    "poai_authority_established": false,
+    "truth_certified": false,
+    "causality_established": false,
+    "legal_authority_established": false,
+    "legal_effect_established": false,
+    "responsibility_established": false,
+    "moral_correctness_established": false,
+    "universal_canonicality_established": false,
+    "poai_v_conformance_established": false,
+    "universal_ccrp_correctness_established": false,
+    "universal_consensus_correctness_established": false
+  }
+}
