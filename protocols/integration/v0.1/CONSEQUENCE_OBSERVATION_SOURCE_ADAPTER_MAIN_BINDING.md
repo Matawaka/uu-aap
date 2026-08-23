@@ -37,6 +37,29 @@ consequence-source-adapter-0ea85faa957cd924c250e0cea0d0758f855d4fd0
 
 A pull-request candidate artifact is never a substitute for the required source artifact.
 
+## Historical frontier assurance boundary
+
+The canonical #249 source bundle contains the exact JCS/SHA-256 binding of its historical `ResponsibilityEventSuccessorLedgerEntry`, but it does **not** contain the bytes of that ledger entry itself.
+
+Therefore this layer must not claim that the historical predecessor bytes were independently reverified after the fact.
+
+It can and does verify that:
+
+- the same `frontier_entry_binding` appears in both the generic assessment and source-specific adapter receipt;
+- the same `responsibility_event_head` is preserved through claim, ingress, assessment, and adapter receipt;
+- the same `semantic_frontier` is preserved through those artifacts;
+- the same `effect_frontier` is preserved through those artifacts;
+- all artifacts carrying those values are themselves tied together by their existing JCS/SHA-256 bindings.
+
+The explicit assurance boundary is:
+
+```text
+historical_frontier_binding_consistency_verified = true
+historical_frontier_bytes_reverified = false
+```
+
+This is intentionally different from reconstructing the historical object by rerunning old producers. Runtime-dependent upstream evidence can make such a reconstruction produce different bytes even at the same Git revision. A historical binding is preserved evidence; a later re-execution is a new observation.
+
 ## What a positive receipt means
 
 A positive `ConsequenceObservationSourceAdapterMainBindingReceipt` establishes only that, under the exact main-binding policy:
@@ -46,6 +69,8 @@ A positive `ConsequenceObservationSourceAdapterMainBindingReceipt` establishes o
 - the exact revision-bound artifact was located and downloaded;
 - the downloaded bundle is schema-valid;
 - included artifacts match the JCS/SHA-256 bindings carried by the adapter receipt;
+- the historical frontier binding is internally consistent across the preserved evidence chain;
+- the historical predecessor bytes are **not** claimed to have been reverified;
 - the source runtime context is `main_push` and `refs/heads/main`;
 - the source-specific adapter receipt is main-bound and not candidate evidence;
 - the source may be presented to a future, separate successor-consumer policy.
@@ -56,6 +81,7 @@ The receipt does **not** establish:
 
 ```text
 main evidence verified
+  != historical predecessor bytes reverified
   != successor append permission
   != successor append execution
   != external consequence truth
