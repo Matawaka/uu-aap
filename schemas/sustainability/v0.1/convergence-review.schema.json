@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/convergence-review.schema.json",
+  "title": "UU-AAP Convergence Review v0.1",
+  "description": "Non-normative draft for reviewing whether an isolated side-track should remain independent, be selectively adopted, be archived, or be proposed for integration after main has materially evolved.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "parallel_ref",
+    "reviewed_main_sha",
+    "fresh_observation",
+    "path_overlap_checked",
+    "semantic_overlap_checked",
+    "validation_checked",
+    "recommended_disposition",
+    "recommendation_is_not_authorization",
+    "explicit_human_decision_required",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.convergence-review"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "parallel_ref": {"type": "string", "minLength": 1},
+    "reviewed_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "reviewed_active_work_refs": {"type": "array", "items": {"type": "string"}},
+    "fresh_observation": {"const": true},
+    "path_overlap_checked": {"const": true},
+    "semantic_overlap_checked": {"const": true},
+    "validation_checked": {"const": true},
+    "candidate_adoptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["source_ref", "scope", "reason"],
+        "properties": {
+          "source_ref": {"type": "string", "minLength": 1},
+          "scope": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "recommended_disposition": {
+      "enum": ["keep-isolated", "selective-adoption", "archive", "propose-integration", "reject", "defer"]
+    },
+    "recommendation_is_not_authorization": {"const": true},
+    "explicit_human_decision_required": {"const": true},
+    "automatic_pr_creation_allowed": {"const": false},
+    "automatic_merge_allowed": {"const": false},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
