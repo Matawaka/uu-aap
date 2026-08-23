@@ -42,6 +42,7 @@ jobs:
       - name: Check ingress JavaScript
         run: |
           node --check protocols/integration/v0.1/consequence-observation-ingress.js
+          node --check protocols/integration/v0.1/consequence-observation-successor-adapter.js
           node --check protocols/integration/v0.1/test-consequence-observation-ingress.js
 
       - name: Validate ingress schemas and reference policy
@@ -109,6 +110,23 @@ jobs:
           assert receipt['claims']['causal_proof_certified'] is False
           print('VALID digest-bound non-certifying consequence ingress artifacts')
           PY
+
+      - name: Prove generic ingress cannot invoke successor adapter
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const Adapter = require('./protocols/integration/v0.1/consequence-observation-successor-adapter.js');
+          const receipt = JSON.parse(fs.readFileSync('/tmp/consequence-observation-ingress-observed-fixture.json','utf8'));
+          const decision = Adapter.evaluateConsequenceSuccessorAdapter({ ingressReceipt: receipt });
+          if (decision.decision !== 'blocked' || decision.successor_append_may_proceed !== false || decision.source_specific_adapter_registered !== false) {
+            throw new Error('generic ingress unexpectedly authorized consequence successor append');
+          }
+          let rejected = false;
+          try { Adapter.assertConsequenceSuccessorAppendMayProceed({ ingressReceipt: receipt }); }
+          catch (error) { rejected = /source-specific adapter not registered/.test(error.message); }
+          if (!rejected) throw new Error('adapter invocation did not fail closed');
+          console.log('BLOCKED consequence successor adapter as required');
+          NODE
 
       - name: Independently reject ingress assurance escalation by schema
         run: |
