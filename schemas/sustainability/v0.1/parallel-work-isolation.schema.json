@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/parallel-work-isolation.schema.json",
+  "title": "UU-AAP Parallel Work Isolation Manifest v0.1",
+  "description": "Non-normative draft declaring the boundaries of a parallel side-track so it can evolve without mutating or implicitly authorizing the active main-line process.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "branch",
+    "base_sha",
+    "allowed_change_types",
+    "allowed_path_prefixes",
+    "forbidden_path_prefixes",
+    "main_ref_update_allowed",
+    "pull_request_creation_allowed",
+    "workflow_activation_allowed",
+    "tag_or_release_mutation_allowed",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {
+      "const": "uu-aap.parallel-work-isolation"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "status": {
+      "const": "non-normative-draft"
+    },
+    "branch": {
+      "type": "string",
+      "minLength": 1
+    },
+    "base_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "allowed_change_types": {
+      "type": "array",
+      "const": ["add"]
+    },
+    "allowed_path_prefixes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "forbidden_path_prefixes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "main_ref_update_allowed": {
+      "const": false
+    },
+    "pull_request_creation_allowed": {
+      "const": false
+    },
+    "workflow_activation_allowed": {
+      "const": false
+    },
+    "tag_or_release_mutation_allowed": {
+      "const": false
+    },
+    "authority_effect": {
+      "const": "none"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
