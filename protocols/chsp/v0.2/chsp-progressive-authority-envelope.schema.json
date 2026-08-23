@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-progressive-authority-envelope-v0.2.json",
+  "title": "CHSPProgressiveAuthorityEnvelope v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type", "artifact_version", "envelope_id", "project_id", "candidate_id", "recognition_sha256", "stage", "scopes", "authorized_by_human_id", "authorization_evidence_sha256", "issued_at", "expires_at", "status", "outcome", "completed_at", "predecessor_envelope_sha256", "nonce", "envelope_sha256", "claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPProgressiveAuthorityEnvelope"},
+    "artifact_version": {"const": "0.2"},
+    "envelope_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "recognition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "stage": {"enum": ["A1_advisory", "A2_reversible_limited", "A3_supervised_stewardship", "A4_canonical_preparation"]},
+    "scopes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["advisory_review", "issue_triage", "documentation", "proposal_preparation", "noncanonical_test_maintenance", "metadata_preparation", "supervised_release_preparation", "supervised_policy_draft", "supervised_incident_coordination", "canonical_publication_preparation", "succession_package_preparation"]}
+    },
+    "authorized_by_human_id": {"type": "string", "minLength": 1},
+    "authorization_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "status": {"enum": ["active", "completed", "revoked", "expired"]},
+    "outcome": {"enum": ["none", "positive", "adverse", "indeterminate"]},
+    "completed_at": {"type": ["string", "null"], "format": "date-time"},
+    "predecessor_envelope_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "nonce": {"type": "string", "minLength": 16},
+    "envelope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bounded_human_authorization_recorded", "revocable", "authority_bound_to_envelope", "external_execution_performed", "automatic_stage_progression", "canonical_authority_granted", "canonical_successor_established", "canonical_publication_authorized", "ownership_transferred", "kontur_activated"],
+      "properties": {
+        "bounded_human_authorization_recorded": {"const": true},
+        "revocable": {"const": true},
+        "authority_bound_to_envelope": {"const": true},
+        "external_execution_performed": {"const": false},
+        "automatic_stage_progression": {"const": false},
+        "canonical_authority_granted": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "canonical_publication_authorized": {"const": false},
+        "ownership_transferred": {"const": false},
+        "kontur_activated": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"stage": {"const": "A1_advisory"}}},
+      "then": {"properties": {"predecessor_envelope_sha256": {"const": null}}},
+      "else": {"properties": {"predecessor_envelope_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}
+    },
+    {
+      "if": {"properties": {"status": {"const": "completed"}}},
+      "then": {
+        "properties": {
+          "completed_at": {"type": "string", "format": "date-time"},
+          "outcome": {"enum": ["positive", "adverse", "indeterminate"]}
+        }
+      },
+      "else": {
+        "properties": {
+          "completed_at": {"type": ["string", "null"], "format": "date-time"}
+        }
+      }
+    }
+  ]
+}
