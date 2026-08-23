@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/reentry-contract.schema.json",
+  "title": "UU-AAP Parallel Re-entry Contract v0.1",
+  "description": "Non-normative draft for safely reconsidering isolated parallel work after main or active main-line work has changed.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "parallel_ref",
+    "previous_main_sha",
+    "fresh_main_sha",
+    "fresh_observation_completed",
+    "active_work_reobserved",
+    "path_overlap_recomputed",
+    "semantic_overlap_recomputed",
+    "prior_recommendations_stale",
+    "automatic_resume_allowed",
+    "explicit_human_disposition_required",
+    "authority_effect"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.parallel-reentry-contract"},
+    "version": {"const": "0.1"},
+    "status": {"const": "non-normative-draft"},
+    "parallel_ref": {"type": "string", "minLength": 1},
+    "previous_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "fresh_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "fresh_observation_completed": {"const": true},
+    "active_work_reobserved": {"const": true},
+    "path_overlap_recomputed": {"const": true},
+    "semantic_overlap_recomputed": {"const": true},
+    "validation_recomputed": {"type": "boolean"},
+    "prior_recommendations_stale": {"const": true},
+    "allowed_reentry_modes": {
+      "type": "array",
+      "items": {"enum": ["observe-only", "validate-only", "prepare-new-disposition"]},
+      "uniqueItems": true
+    },
+    "automatic_resume_allowed": {"const": false},
+    "automatic_pr_creation_allowed": {"const": false},
+    "automatic_merge_allowed": {"const": false},
+    "explicit_human_disposition_required": {"const": true},
+    "authority_effect": {"const": "none"},
+    "notes": {"type": "array", "items": {"type": "string"}}
+  }
+}
