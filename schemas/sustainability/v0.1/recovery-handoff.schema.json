@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/sustainability/v0.1/recovery-handoff.schema.json",
+  "title": "UU-AAP Recovery Handoff v0.1",
+  "description": "Non-normative draft for transferring a recoverable project state between contexts without conferring new authority or relying on hidden conversational memory.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "handoff_id",
+    "created_at",
+    "source_context",
+    "recovery_checkpoint_ref",
+    "authority_transfer",
+    "requires_fresh_external_observation",
+    "safe_resume_mode",
+    "unresolved_items"
+  ],
+  "properties": {
+    "document_type": {
+      "const": "uu-aap.recovery-handoff"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "status": {
+      "const": "non-normative-draft"
+    },
+    "handoff_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["context_id", "last_observed_main_sha"],
+      "properties": {
+        "context_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "last_observed_main_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "observer": {
+          "type": "string"
+        }
+      }
+    },
+    "recovery_checkpoint_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability_ceiling_ref": {
+      "type": ["string", "null"]
+    },
+    "authority_transfer": {
+      "const": false
+    },
+    "requires_fresh_external_observation": {
+      "const": true
+    },
+    "safe_resume_mode": {
+      "enum": ["observe-only", "validate-only", "prepare-only"]
+    },
+    "unresolved_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "state", "external_effect_possible"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "state": {
+            "enum": ["unknown", "prepared", "paused", "blocked", "aborted"]
+          },
+          "external_effect_possible": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "prohibited_resume_assumptions": {
+      "type": "array",
+      "items": {
+        "enum": [
+          "assume_main_unchanged",
+          "assume_authorization_still_valid",
+          "assume_prior_intent_equals_current_intent",
+          "assume_paused_work_is_safe_to_execute",
+          "infer_new_capability_from_handoff",
+          "treat_handoff_as_execution_authorization"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  }
+}
