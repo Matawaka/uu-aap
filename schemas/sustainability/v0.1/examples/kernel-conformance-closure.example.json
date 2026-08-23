@@ -1,0 +1,66 @@
+{
+  "schema_version": "sustainability-kernel-conformance-closure-v0.1",
+  "project_id": "Matawaka/uu-aap",
+  "kernel_version": "v0.1",
+  "frontier_sha256": "bfb3d5fe8fa5fb1064a63bdcb78679a9754c5791",
+  "components": [
+    {
+      "id": "recovery-resume-v0.1",
+      "document_path": "docs/SUSTAINABILITY-RECOVERY-RESUME-v0.1.md",
+      "schema_path": "schemas/sustainability/v0.1/recovery-resume-contract.schema.json",
+      "test_path": "schemas/sustainability/v0.1/tests/test_recovery_resume_contract_v01.py",
+      "invariants": ["K2", "K3", "K5"]
+    },
+    {
+      "id": "capability-ceiling-v0.1",
+      "document_path": "docs/SUSTAINABILITY-CAPABILITY-CEILING-v0.1.md",
+      "schema_path": "schemas/sustainability/v0.1/capability-ceiling-contract.schema.json",
+      "test_path": "schemas/sustainability/v0.1/tests/test_capability_ceiling_contract_v01.py",
+      "invariants": ["K2", "K4"]
+    },
+    {
+      "id": "pause-degradation-v0.1",
+      "document_path": "docs/SUSTAINABILITY-PAUSE-DEGRADATION-v0.1.md",
+      "schema_path": "schemas/sustainability/v0.1/pause-degradation-contract.schema.json",
+      "test_path": "schemas/sustainability/v0.1/tests/test_pause_degradation_contract_v01.py",
+      "invariants": ["K2", "K3", "K5", "K10"]
+    },
+    {
+      "id": "exploratory-disposition-v0.1",
+      "document_path": "docs/SUSTAINABILITY-EXPLORATORY-DISPOSITION-v0.1.md",
+      "schema_path": "schemas/sustainability/v0.1/exploratory-disposition-contract.schema.json",
+      "test_path": "schemas/sustainability/v0.1/tests/test_exploratory_disposition_contract_v01.py",
+      "invariants": ["K1", "K2", "K3", "K6", "K7", "K8"]
+    },
+    {
+      "id": "human-observation-v0.1",
+      "document_path": "docs/SUSTAINABILITY-HUMAN-OBSERVATION-v0.1.md",
+      "schema_path": "schemas/sustainability/v0.1/human-observation-contract.schema.json",
+      "test_path": "schemas/sustainability/v0.1/tests/test_human_observation_contract_v01.py",
+      "invariants": ["K2", "K5", "K9", "K10"]
+    }
+  ],
+  "coverage": {
+    "K1": true,
+    "K2": true,
+    "K3": true,
+    "K4": true,
+    "K5": true,
+    "K6": true,
+    "K7": true,
+    "K8": true,
+    "K9": true,
+    "K10": true
+  },
+  "result": "kernel-v0.1-operationally-covered",
+  "claims": {
+    "authority_effect": "none",
+    "external_execution_authorized": false,
+    "capability_expansion_authorized": false,
+    "canonical_authority_established": false,
+    "kontur_activation_authorized": false,
+    "universal_completeness_claimed": false,
+    "future_evolution_allowed": true,
+    "new_capability_requires_new_attributable_authorization": true
+  }
+}
