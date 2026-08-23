@@ -90,13 +90,22 @@
             "unknown"
           ]
         },
-        "safe_effect": {
-          "enum": [
-            "prepare-only",
-            "no-action"
-          ]
+        "safe_effect": {"enum": ["prepare-only", "no-action"]}
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"result": {"const": "within-ceiling"}},
+            "required": ["result"]
+          },
+          "then": {
+            "properties": {"safe_effect": {"const": "prepare-only"}}
+          },
+          "else": {
+            "properties": {"safe_effect": {"const": "no-action"}}
+          }
         }
-      }
+      ]
     },
     "authority_effect": {"const": "none"},
     "external_execution_authorized": {"const": false},
