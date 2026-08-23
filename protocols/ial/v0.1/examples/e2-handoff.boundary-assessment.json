@@ -1,0 +1,28 @@
+{
+  "$schema": "../boundary-assessment.schema.json",
+  "artifact_type": "BoundaryAssessment",
+  "artifact_version": "0.1",
+  "assessment_id": "urn:ial:boundary-assessment:e2-ccrp-handoff:1",
+  "subject_ref": {
+    "intent_id": "urn:ial:intent:ccrp-change-preparation:1",
+    "action": "coordinate_change_preparation",
+    "target": "github:Matawaka/uu-aap:refs/heads/main"
+  },
+  "effect_class": "responsibility_transfer",
+  "elevation_level": "E2",
+  "state": "ELEVATED",
+  "responsibility_boundary_required": true,
+  "reason_codes": [
+    "responsibility_transfer_requested",
+    "external_repository_target"
+  ],
+  "claims": {
+    "private_reasoning_required": false,
+    "private_reasoning_disclosed": false,
+    "responsibility_transfer_established": false,
+    "authority_established": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "outcome_observed": false
+  }
+}
