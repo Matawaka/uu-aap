@@ -1,0 +1,56 @@
+{
+  "$schema": "../kontur-responsibility-policy.schema.json",
+  "artifact_type": "KONTURResponsibilityPolicy",
+  "artifact_version": "0.1",
+  "policy_id": "urn:uu-aap:kontur:responsibility-policy:reference-server:1",
+  "policy_version": 1,
+  "responsibility_scope_id": "urn:uu-aap:kontur:responsibility-scope:server-control-plane-v0.1",
+  "system_id": "urn:uu-aap:kontur:system:server-responsibility",
+  "server_instance_id": "urn:uu-aap:kontur:server:reference-primary",
+  "required_readiness_checks": [
+    "protocol_registry_ready",
+    "coordination_ready",
+    "authority_ready",
+    "provenance_ready",
+    "causal_qualification_ready",
+    "server_health_ready"
+  ],
+  "responsibility_scope_allowlist": [
+    "server.readiness.consume",
+    "server.responsibility.maintain",
+    "server.degradation.control",
+    "server.transition.audit"
+  ],
+  "invariants": {
+    "single_active_holder": true,
+    "epoch_monotonic": true,
+    "fencing_required": true,
+    "lease_required": true,
+    "successor_generation_increment": 1,
+    "health_fail_closed": true,
+    "fresh_readiness_required_for_recovery": true,
+    "retired_terminal": true,
+    "scalar_responsibility_score_allowed": false
+  },
+  "state_machine": {
+    "states": ["inactive", "active", "degraded", "suspended", "retired"],
+    "transitions": {
+      "activate": {"from": ["inactive"], "to": "active"},
+      "heartbeat": {"from": ["active"], "to": "active"},
+      "degrade": {"from": ["active"], "to": "degraded"},
+      "suspend": {"from": ["active", "degraded"], "to": "suspended"},
+      "resume": {"from": ["degraded", "suspended"], "to": "active"},
+      "retire": {"from": ["active", "degraded", "suspended"], "to": "retired"}
+    }
+  },
+  "claims": {
+    "legal_responsibility_determined": false,
+    "legal_effect_established": false,
+    "moral_blame_assigned": false,
+    "moral_correctness_established": false,
+    "truth_certified": false,
+    "universal_causality_established": false,
+    "poai_materialization_event_recorded": false,
+    "universal_canonicality_established": false
+  }
+}
