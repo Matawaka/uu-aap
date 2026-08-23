@@ -7,10 +7,10 @@
   "required": [
     "$schema", "artifact_type", "artifact_version", "entry_id", "ledger_id", "sequence",
     "committed_at", "system_id", "server_instance_id", "previous_entry_binding", "transition_kind",
-    "responsibility_policy", "responsibility_policy_binding", "readiness_signal", "readiness_signal_binding",
-    "responsibility_state", "responsibility_state_binding", "transition_receipt", "transition_receipt_binding",
-    "trigger_binding", "command_nonce", "activation_preflight", "activation_preflight_binding",
-    "entry_digest", "claims"
+    "ledger_policy", "ledger_policy_binding", "responsibility_policy", "responsibility_policy_binding",
+    "readiness_signal", "readiness_signal_binding", "responsibility_state", "responsibility_state_binding",
+    "transition_receipt", "transition_receipt_binding", "trigger_binding", "command_nonce",
+    "activation_preflight", "activation_preflight_binding", "entry_digest", "claims"
   ],
   "properties": {
     "$schema": {"type": "string", "pattern": "(^|.*/)kontur-responsibility-ledger-entry\\.schema\\.json$"},
@@ -24,6 +24,8 @@
     "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
     "previous_entry_binding": {"oneOf": [{"type": "null"}, {"$ref": "#/$defs/binding"}]},
     "transition_kind": {"enum": ["activate", "heartbeat", "degrade", "suspend", "resume", "retire"]},
+    "ledger_policy": {"type": "object"},
+    "ledger_policy_binding": {"$ref": "#/$defs/binding"},
     "responsibility_policy": {"type": "object"},
     "responsibility_policy_binding": {"$ref": "#/$defs/binding"},
     "readiness_signal": {"oneOf": [{"type": "null"}, {"type": "object"}]},
