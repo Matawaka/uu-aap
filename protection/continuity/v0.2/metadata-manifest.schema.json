@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:continuity:github-metadata-manifest:v0.2",
+  "title":"UU-AAP GitHub Metadata Continuity Manifest v0.2",
+  "type":"object",
+  "required":["schema","captured_at","capture_mode","frontier","datasets","coverage_limits","boundaries"],
+  "properties":{
+    "schema":{"const":"urn:uu-aap:continuity:github-metadata-manifest:v0.2"},
+    "captured_at":{"type":"string"},
+    "capture_mode":{"enum":["github_api_read_only","fixture"]},
+    "frontier":{"type":"object","required":["main_sha"],"properties":{"repository_full_name":{"type":["string","null"]},"default_branch":{"type":["string","null"]},"main_sha":{"type":"string","pattern":"^[0-9a-f]{40}$"},"main_tree_sha":{"type":["string","null"],"pattern":"^[0-9a-f]{40}$"}}},
+    "datasets":{"type":"object","additionalProperties":{"type":"object","required":["status","bytes"],"properties":{"status":{"enum":["captured","unavailable"]},"file":{"type":["string","null"]},"sha256":{"type":["string","null"],"pattern":"^[0-9a-f]{64}$"},"bytes":{"type":"integer","minimum":0},"error":{"type":"string"}}}},
+    "coverage_limits":{"type":"object"},
+    "boundaries":{"type":"object"}
+  },
+  "additionalProperties":false
+}
