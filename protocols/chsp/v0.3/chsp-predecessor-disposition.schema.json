@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/schema/chsp-predecessor-disposition-v0.3.json",
+  "title": "CHSPPredecessorDisposition v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","disposition_id","project_id","candidate_id","predecessor_steward_id","v02_transition_assessment_sha256","mode","recorded_at","acknowledged_by_human_id","acknowledgement_evidence_sha256","confirmation_token","unavailability_attestations","disposition_sha256","claims"],
+  "properties": {
+    "artifact_type": {"const": "CHSPPredecessorDisposition"},
+    "artifact_version": {"const": "0.3"},
+    "disposition_id": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "candidate_id": {"type": "string", "minLength": 1},
+    "predecessor_steward_id": {"type": "string", "minLength": 1},
+    "v02_transition_assessment_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "mode": {"enum": ["acknowledged","protocol_unavailability_attested"]},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "acknowledged_by_human_id": {"type": ["string","null"]},
+    "acknowledgement_evidence_sha256": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "confirmation_token": {"type": ["string","null"]},
+    "unavailability_attestations": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["attestor_id","attestor_domain_id","observed_at","evidence_sha256"],
+        "properties": {
+          "attestor_id": {"type": "string", "minLength": 1},
+          "attestor_domain_id": {"type": "string", "minLength": 1},
+          "observed_at": {"type": "string", "format": "date-time"},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "disposition_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["disposition_recorded","predecessor_acknowledgement_recorded","protocol_unavailability_only","legal_incapacity_certified","medical_incapacity_certified","death_certified","ownership_waived","canonical_successor_established","kontur_activated"],
+      "properties": {
+        "disposition_recorded": {"const": true},
+        "predecessor_acknowledgement_recorded": {"type": "boolean"},
+        "protocol_unavailability_only": {"type": "boolean"},
+        "legal_incapacity_certified": {"const": false},
+        "medical_incapacity_certified": {"const": false},
+        "death_certified": {"const": false},
+        "ownership_waived": {"const": false},
+        "canonical_successor_established": {"const": false},
+        "kontur_activated": {"const": false}
+      }
+    }
+  }
+}
