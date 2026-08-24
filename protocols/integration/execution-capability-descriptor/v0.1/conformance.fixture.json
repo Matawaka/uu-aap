@@ -1,0 +1,93 @@
+{
+  "protocol": "UU-AAP-EXECUTION-CAPABILITY-DESCRIPTOR",
+  "version": "0.1",
+  "artifact_type": "ExecutionCapabilityDescriptor",
+  "descriptor_id": "urn:uu-aap:execution-capability:demo-write-v0.1",
+  "capability": {
+    "capability_id": "urn:uu-aap:capability:demo-write",
+    "adapter_id": "urn:uu-aap:adapter:demo-actuator",
+    "provider_neutral_schema": true,
+    "discovery_only": true
+  },
+  "operations": [
+    {
+      "operation": "apply_change",
+      "effect_class": "external_effect",
+      "reversible": true,
+      "compensation_supported": true,
+      "authority_scope": "demo:write",
+      "approval_contract": {
+        "required": true,
+        "mode": "action_specific",
+        "scope_binding_required": true,
+        "protocol_mode_consent_sufficient": false
+      },
+      "availability_contract": {
+        "advertised_capability_is_current_availability": false,
+        "availability_probe_required_before_authorization": true,
+        "availability_proof_is_authority": false
+      },
+      "lifecycle_contract": {
+        "profile": "UU-AAP-BOUNDED-EXECUTION-LIFECYCLE",
+        "version": "0.1",
+        "mode": "bounded_external_effect",
+        "required_phases": [
+          "prepare",
+          "authorize",
+          "execute",
+          "observe",
+          "close"
+        ],
+        "exact_target_binding_required": true,
+        "predecessor_freshness_required": true,
+        "fail_closed_target_guard_required": true,
+        "one_shot_supported": true,
+        "expiry_required": true,
+        "separate_observer_required": true
+      },
+      "receipt_contract": {
+        "pre_action_required": [
+          "StateReceipt",
+          "IntentReceipt",
+          "AuthorityReceipt",
+          "CoordinationReceipt",
+          "ActionPermit"
+        ],
+        "actuator_may_emit": [
+          "ActuatorObservation"
+        ],
+        "core_post_action_required": [
+          "ActionReceipt",
+          "OutcomeReceipt",
+          "SuccessorStateReceipt"
+        ],
+        "actuator_creates_core_action_permit": false,
+        "actuator_creates_core_post_action_receipts": false,
+        "advertised_receipt_support_is_receipt": false
+      },
+      "effect_contract": {
+        "expected_effect_categories": [
+          "demo_state_change"
+        ],
+        "explicit_non_effects": [
+          "authority_transfer",
+          "delete_resource"
+        ],
+        "effect_observation_is_causality_proof": false
+      }
+    }
+  ],
+  "global_non_effects": {
+    "authority_granted": false,
+    "intent_created": false,
+    "action_permit_created": false,
+    "action_authorized": false,
+    "action_performed": false,
+    "current_availability_asserted": false,
+    "causality_proven": false,
+    "truth_certified": false,
+    "liability_established": false,
+    "future_action_permission_created": false
+  },
+  "content_hash": "sha256:c77f972a2c10f660aab6f55a1af21e59b3e13a7268753f6cf35ca0543b19a5ed"
+}
