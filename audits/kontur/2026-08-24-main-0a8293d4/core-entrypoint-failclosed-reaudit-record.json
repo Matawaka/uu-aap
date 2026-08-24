@@ -1,0 +1,67 @@
+{
+  "artifact_type": "KONTURCoreEntrypointFailClosedReauditRecord",
+  "artifact_version": "0.1",
+  "result": "KONTUR_CORE_ENTRYPOINT_FAILCLOSED_REAUDIT_PASS",
+  "canonical_successor": {
+    "git_revision": "git:0a8293d4372df7ccb664739715cfe167edb586d9",
+    "tree_sha": "1fd7d237af97bbf5e5ff5c8b5179046458481225",
+    "parent_sha": "ce902c25d1e9215833248afce0172c65b6a113b9",
+    "signature_verified": true
+  },
+  "remediation_lineage": {
+    "pull_request": 313,
+    "tested_head_sha": "3893b36d89a28ad416f1ff4b5bb2f089fc8904ca",
+    "tested_tree_sha": "1fd7d237af97bbf5e5ff5c8b5179046458481225",
+    "successor_tree_matches_tested_tree": true
+  },
+  "workflow_evidence": [
+    {"name": "KONTUR Core Entrypoint Fail-Closed v0.1 validation", "run_id": 32711336606, "conclusion": "success"},
+    {"name": "KONTUR Live Host Executor Gate v0.1 validation", "run_id": 32711336752, "conclusion": "success"},
+    {"name": "KONTUR Activation Preflight validation", "run_id": 32711336677, "conclusion": "success"},
+    {"name": "KONTUR Activation Executor validation", "run_id": 32711336653, "conclusion": "success"},
+    {"name": "KONTUR Durable Responsibility Ledger validation", "run_id": 32711336735, "conclusion": "success"},
+    {"name": "KONTUR Responsibility Kernel validation", "run_id": 32711336630, "conclusion": "success"}
+  ],
+  "findings": [
+    {
+      "id": "KONTUR-CORE-M1-DIRECT-LIVE-EXECUTOR-BYPASS",
+      "severity": "Medium",
+      "status": "closed_verified",
+      "closure_basis": "Direct activation-executor-core live execution re-enters the public host-eligibility command validator before ledger recovery or Kernel invocation; regression instrumentation establishes zero mutation before rejection."
+    },
+    {
+      "id": "KONTUR-CORE-M2-TESTONLY-LIVE-LEDGER-PATH-CONFUSION",
+      "severity": "Medium",
+      "status": "closed_verified",
+      "closure_basis": "test_only execution requires an ephemeral ledger root whose nearest existing ancestor realpath remains inside the OS temporary root; non-temp and symlink-escape vectors reject before ledger recovery or Kernel invocation."
+    },
+    {
+      "id": "KONTUR-CORE-M3-DIRECT-PREFLIGHT-EVIDENCE-BYPASS",
+      "severity": "Medium",
+      "status": "closed_verified",
+      "closure_basis": "Direct activation-preflight-core positive preflight and receipt validation re-enter the public HAR-bound activation-intent validator before positive evidence is produced or accepted."
+    }
+  ],
+  "remaining_medium_high_critical_in_targeted_surface": 0,
+  "non_effects": {
+    "human_activation_review_created_or_transferred": false,
+    "live_host_designated": false,
+    "live_host_eligibility_created": false,
+    "activation_intent_created": false,
+    "activation_preflight_created": false,
+    "activation_execute_command_created": false,
+    "kernel_activated": false,
+    "live_ledger_initialized_or_written": false,
+    "permission_expansion_or_bypass": false,
+    "cryptographic_human_identity_established": false,
+    "cryptographic_host_identity_established": false,
+    "legal_authority_or_truth_established": false
+  },
+  "bounded_limits": [
+    "Human reviewer identity remains declared rather than cryptographically authenticated.",
+    "Live-host profile assurance remains human_designated_not_cryptographically_verified.",
+    "No concrete persistent live host is designated by this re-audit.",
+    "No historical HAR decision is valid for the successor revision by implication."
+  ],
+  "safe_next_step": "merge_evidence_only_closure_then_reverify_successor_before_any_fresh_HAR_or_live_host_designation"
+}
