@@ -1,8 +1,8 @@
 # UU-AAP Invocation Evidence ↔ Core ActionReceipt Binding v0.1
 
-**Status:** experimental stacked reusable execution profile  
+**Status:** experimental reusable execution profile  
 **Issue:** #369  
-**Dependency:** #367 / PR #368
+**Dependency:** #367 / PR #368 (merged)
 
 ## Purpose
 
@@ -43,6 +43,6 @@ A conforming binding does not establish outcome, successor state, causality, tru
 
 ## Conformance
 
-`validate-invocation-action-receipt-binding.js` validates the stacked envelope, invocation evidence identity, Core ActionReceipt identity/frontier/predecessor/non-effects and rejects substitution, frontier relabeling, permit mismatch, guard weakening, unconsumed execution, outcome escalation and hash laundering.
+`validate-invocation-action-receipt-binding.js` validates the merged invocation envelope, invocation evidence identity, Core ActionReceipt identity/frontier/predecessor/non-effects and rejects substitution, frontier relabeling, permit mismatch, guard weakening, unconsumed execution, outcome escalation and hash laundering.
 
 CI is read-only and invokes no actuator.
