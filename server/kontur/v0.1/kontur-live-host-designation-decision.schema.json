@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/kontur-live-host-designation-decision-v0.1.json",
+  "title": "KONTURLiveHostDesignationDecision v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "decision_id", "declared_at",
+    "designator_ref", "decision", "target", "declarations", "human_declaration",
+    "safe_effect", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-live-host-designation-decision\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURLiveHostDesignationDecision"},
+    "artifact_version": {"const": "0.1"},
+    "decision_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-designation-decision:[0-9a-f]{24}$"},
+    "declared_at": {"type": "string", "format": "date-time"},
+    "designator_ref": {"type": "string", "minLength": 1},
+    "decision": {"const": "designate_live_host"},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_id", "server_instance_id", "host_id", "operator_ref", "repository_full_name",
+        "repository_root", "durable_ledger_root", "runtime_boundary"
+      ],
+      "properties": {
+        "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+        "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+        "host_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:host:"},
+        "operator_ref": {"type": "string", "minLength": 1},
+        "repository_full_name": {"const": "Matawaka/uu-aap"},
+        "repository_root": {"type": "string", "minLength": 1},
+        "durable_ledger_root": {"type": "string", "minLength": 1},
+        "runtime_boundary": {"const": "host_local"}
+      }
+    },
+    "declarations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_root_persistent", "durable_ledger_root_persistent",
+        "durable_ledger_root_outside_repository", "ci_environment", "temporary_sandbox"
+      ],
+      "properties": {
+        "repository_root_persistent": {"const": true},
+        "durable_ledger_root_persistent": {"const": true},
+        "durable_ledger_root_outside_repository": {"const": true},
+        "ci_environment": {"const": false},
+        "temporary_sandbox": {"const": false}
+      }
+    },
+    "human_declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["declaration_type", "typed_confirmation", "nonce", "explicit", "identity_assurance"],
+      "properties": {
+        "declaration_type": {"const": "explicit_live_host_designation"},
+        "typed_confirmation": {"const": "DESIGNATE_KONTUR_LIVE_HOST"},
+        "nonce": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-designation-nonce:[A-Za-z0-9._:-]+$"},
+        "explicit": {"const": true},
+        "identity_assurance": {"const": "declared_not_cryptographically_verified"}
+      }
+    },
+    "safe_effect": {"const": "live_host_profile_may_be_built"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "human_live_host_designation_recorded", "live_host_profile_may_be_built",
+        "live_host_profile_created", "live_host_eligibility_established",
+        "execution_authority_granted", "execute_command_created", "kernel_activated",
+        "responsibility_state_created", "responsibility_accepted", "durable_ledger_written",
+        "permission_expansion_authorized", "permission_bypass_authorized",
+        "legal_authority_established", "truth_certified", "universal_canonicality_established"
+      ],
+      "properties": {
+        "human_live_host_designation_recorded": {"const": true},
+        "live_host_profile_may_be_built": {"const": true},
+        "live_host_profile_created": {"const": false},
+        "live_host_eligibility_established": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "execute_command_created": {"const": false},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "durable_ledger_written": {"const": false},
+        "permission_expansion_authorized": {"const": false},
+        "permission_bypass_authorized": {"const": false},
+        "legal_authority_established": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}

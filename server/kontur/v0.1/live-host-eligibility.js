@@ -2,8 +2,10 @@
 
 const path = require('path');
 const Binding = require(path.resolve(__dirname, '../../../docs/poai/binding-receipt.js'));
+const Designation = require('./live-host-designation.js');
 
 function assert(value, message) { if (!value) throw new Error(message); }
+function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function parseTime(value, label) {
   const ms = Date.parse(value);
   assert(Number.isFinite(ms), `KONTUR Live Host Eligibility: invalid ${label}`);
@@ -31,9 +33,18 @@ function sameBinding(a, b) {
     a.digest.digest_algorithm === b.digest.digest_algorithm && a.digest.digest_encoding === b.digest.digest_encoding &&
     a.digest.value === b.digest.value;
 }
+function sameDeclarations(a, b) {
+  return !!a && !!b &&
+    a.repository_root_persistent === b.repository_root_persistent &&
+    a.durable_ledger_root_persistent === b.durable_ledger_root_persistent &&
+    a.durable_ledger_root_outside_repository === b.durable_ledger_root_outside_repository &&
+    a.ci_environment === b.ci_environment &&
+    a.temporary_sandbox === b.temporary_sandbox;
+}
 
 const PROFILE_KEYS = [
   '$schema', 'artifact_type', 'artifact_version', 'profile_id', 'created_at',
+  'human_designation_binding', 'human_designation_evidence',
   'system_id', 'server_instance_id', 'host_id', 'operator_ref', 'repository_full_name',
   'repository_root', 'durable_ledger_root', 'runtime_boundary', 'identity_assurance',
   'declarations', 'claims'
@@ -74,6 +85,7 @@ function profileIdentitySeed(profile) {
     artifact_type: 'KONTURLiveHostProfileIdentitySeed',
     artifact_version: '0.1',
     created_at: profile.created_at,
+    human_designation_binding: profile.human_designation_binding,
     system_id: profile.system_id,
     server_instance_id: profile.server_instance_id,
     host_id: profile.host_id,
@@ -92,7 +104,16 @@ async function validateLiveHostProfile(profile) {
   assertExactKeys(profile, PROFILE_KEYS, label);
   assert(/(^|.*\/)kontur-live-host-profile\.schema\.json$/.test(profile.$schema), `${label}: schema mismatch`);
   assert(profile.artifact_type === 'KONTURLiveHostProfile' && profile.artifact_version === '0.1', `${label}: exact v0.1 profile required`);
-  parseTime(profile.created_at, 'profile created_at');
+  const createdMs = parseTime(profile.created_at, 'profile created_at');
+
+  const designation = profile.human_designation_evidence;
+  await Designation.validateLiveHostDesignationDecision(designation);
+  const designationBinding = await Designation.designationBinding(designation);
+  assert(sameBinding(profile.human_designation_binding, designationBinding),
+    `${label}: human designation binding substitution`);
+  assert(parseTime(designation.declared_at, 'designation declared_at') <= createdMs,
+    `${label}: profile cannot predate human designation`);
+
   assert(/^urn:uu-aap:kontur:system:/.test(profile.system_id || ''), `${label}: system_id required`);
   assert(/^urn:uu-aap:kontur:server:/.test(profile.server_instance_id || ''), `${label}: server_instance_id required`);
   assert(/^urn:uu-aap:kontur:host:/.test(profile.host_id || ''), `${label}: host_id required`);
@@ -103,12 +124,26 @@ async function validateLiveHostProfile(profile) {
   assert(profile.repository_root !== profile.durable_ledger_root, `${label}: repository and durable ledger roots must differ`);
   assert(profile.runtime_boundary === 'host_local', `${label}: v0.1 permits only host_local runtime boundary`);
   assert(profile.identity_assurance === 'human_designated_not_cryptographically_verified', `${label}: identity assurance mismatch`);
+
+  assert(profile.system_id === designation.target.system_id &&
+    profile.server_instance_id === designation.target.server_instance_id &&
+    profile.host_id === designation.target.host_id &&
+    profile.operator_ref === designation.target.operator_ref &&
+    profile.repository_full_name === designation.target.repository_full_name &&
+    profile.repository_root === designation.target.repository_root &&
+    profile.durable_ledger_root === designation.target.durable_ledger_root &&
+    profile.runtime_boundary === designation.target.runtime_boundary,
+    `${label}: profile target differs from explicit human designation`);
+
   assertExactKeys(profile.declarations, DECLARATION_KEYS, `${label}: declarations`);
+  assert(sameDeclarations(profile.declarations, designation.declarations),
+    `${label}: profile declarations differ from explicit human designation`);
   assert(profile.declarations.repository_root_persistent === true, `${label}: persistent repository declaration required`);
   assert(profile.declarations.durable_ledger_root_persistent === true, `${label}: persistent durable ledger declaration required`);
   assert(profile.declarations.durable_ledger_root_outside_repository === true, `${label}: ledger must be declared outside repository`);
   assert(profile.declarations.ci_environment === false, `${label}: CI cannot be designated as live host`);
   assert(profile.declarations.temporary_sandbox === false, `${label}: temporary sandbox cannot be designated as live host`);
+
   assertExactKeys(profile.claims, PROFILE_CLAIM_KEYS, `${label}: claims`);
   assert(profile.claims.live_host_designated === true, `${label}: designation claim required`);
   for (const key of PROFILE_CLAIM_KEYS.filter((key) => key !== 'live_host_designated')) {
@@ -119,25 +154,27 @@ async function validateLiveHostProfile(profile) {
   return true;
 }
 
-async function buildLiveHostProfile({
-  createdAt, systemId, serverInstanceId, hostId, operatorRef,
-  repositoryRoot, durableLedgerRoot
-}) {
+async function buildLiveHostProfile({ createdAt, designationDecision }) {
   parseTime(createdAt, 'profile created_at');
+  await Designation.validateLiveHostDesignationDecision(designationDecision);
+  const designationBinding = await Designation.designationBinding(designationDecision);
+  const target = designationDecision.target;
   const profile = {
     $schema: './kontur-live-host-profile.schema.json',
     artifact_type: 'KONTURLiveHostProfile', artifact_version: '0.1', profile_id: '',
-    created_at: createdAt, system_id: systemId, server_instance_id: serverInstanceId,
-    host_id: hostId, operator_ref: operatorRef, repository_full_name: 'Matawaka/uu-aap',
-    repository_root: repositoryRoot, durable_ledger_root: durableLedgerRoot,
-    runtime_boundary: 'host_local', identity_assurance: 'human_designated_not_cryptographically_verified',
-    declarations: {
-      repository_root_persistent: true,
-      durable_ledger_root_persistent: true,
-      durable_ledger_root_outside_repository: true,
-      ci_environment: false,
-      temporary_sandbox: false
-    },
+    created_at: createdAt,
+    human_designation_binding: designationBinding,
+    human_designation_evidence: clone(designationDecision),
+    system_id: target.system_id,
+    server_instance_id: target.server_instance_id,
+    host_id: target.host_id,
+    operator_ref: target.operator_ref,
+    repository_full_name: target.repository_full_name,
+    repository_root: target.repository_root,
+    durable_ledger_root: target.durable_ledger_root,
+    runtime_boundary: target.runtime_boundary,
+    identity_assurance: 'human_designated_not_cryptographically_verified',
+    declarations: clone(designationDecision.declarations),
     claims: {
       live_host_designated: true,
       live_host_eligibility_established: false,

@@ -5,11 +5,16 @@ on:
     paths:
       - "server/kontur/v0.1/activation-executor.js"
       - "server/kontur/v0.1/activation-executor-core.js"
+      - "server/kontur/v0.1/live-host-designation.js"
+      - "server/kontur/v0.1/live-host-eligibility.js"
       - "server/kontur/v0.1/test-live-host-executor-gate.js"
+      - "server/kontur/v0.1/kontur-live-host-designation-decision.schema.json"
+      - "server/kontur/v0.1/kontur-live-host-profile.schema.json"
       - "server/kontur/v0.1/kontur-activation-execute-command.schema.json"
       - "server/kontur/v0.1/kontur-activation-execution-policy.schema.json"
       - "server/kontur/v0.1/policies/reference-server.activation-execution-policy.json"
       - "server/kontur/v0.1/LIVE_HOST_EXECUTOR_BINDING.md"
+      - "server/kontur/v0.1/LIVE_HOST_DESIGNATION.md"
       - ".github/workflows/kontur-live-host-executor-gate-v0.1-validation.yml"
 
 permissions:
@@ -17,7 +22,7 @@ permissions:
 
 jobs:
   validate:
-    name: Live host eligibility to executor boundary
+    name: Human-designated live host eligibility to executor boundary
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout read-only
@@ -34,8 +39,10 @@ jobs:
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check "jsonschema==4.25.1"
 
-      - name: Check wrapper, guarded core and targeted tests
+      - name: Check wrapper, designation, guarded core and targeted tests
         run: |
+          node --check server/kontur/v0.1/live-host-designation.js
+          node --check server/kontur/v0.1/live-host-eligibility.js
           node --check server/kontur/v0.1/activation-executor.js
           node --check server/kontur/v0.1/activation-executor-core.js
           node --check server/kontur/v0.1/test-live-host-executor-gate.js
@@ -59,6 +66,8 @@ jobs:
           from jsonschema import Draft202012Validator, FormatChecker
           root = Path('server/kontur/v0.1')
           for name in [
+              'kontur-live-host-designation-decision.schema.json',
+              'kontur-live-host-profile.schema.json',
               'kontur-activation-execute-command.schema.json',
               'kontur-activation-execution-policy.schema.json',
           ]:
@@ -94,17 +103,19 @@ jobs:
       - name: Run fail-closed live host executor gate vectors
         run: node server/kontur/v0.1/test-live-host-executor-gate.js /tmp/kontur-live-host-executor-gate
 
-      - name: Assert targeted test never performs positive live execution
+      - name: Assert targeted test uses synthetic designation and never performs positive live execution
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
           result = json.loads(Path('/tmp/kontur-live-host-executor-gate/gate-vectors.json').read_text(encoding='utf-8'))
           assert result['synthetic_fixture_only'] is True
+          assert result['synthetic_human_designation_only'] is True
+          assert result['designation_decision_id'].startswith('urn:uu-aap:kontur:live-host-designation-decision:')
           assert result['live_execute_invoked'] is False
           assert result['kernel_activated'] is False
           assert result['durable_ledger_written'] is False
-          print('PASS: no positive live execution occurred in CI')
+          print('PASS: synthetic designation only; no positive live execution occurred in CI')
           PY
 
       - name: Assert wrapper adds no direct Kernel or ledger mutation path

@@ -3,13 +3,17 @@ name: KONTUR Live Host Runtime Re-observation v0.1 validation
 on:
   pull_request:
     paths:
+      - "server/kontur/v0.1/live-host-designation.js"
+      - "server/kontur/v0.1/live-host-eligibility.js"
       - "server/kontur/v0.1/live-host-runtime-observer.js"
       - "server/kontur/v0.1/test-live-host-runtime-reobservation.js"
       - "server/kontur/v0.1/activation-executor.js"
       - "server/kontur/v0.1/activation-executor-core.js"
-      - "server/kontur/v0.1/live-host-eligibility.js"
+      - "server/kontur/v0.1/kontur-live-host-designation-decision.schema.json"
+      - "server/kontur/v0.1/kontur-live-host-profile.schema.json"
       - "server/kontur/v0.1/kontur-activation-execution-policy.schema.json"
       - "server/kontur/v0.1/policies/reference-server.activation-execution-policy.json"
+      - "server/kontur/v0.1/LIVE_HOST_DESIGNATION.md"
       - "server/kontur/v0.1/LIVE_HOST_ELIGIBILITY.md"
       - "server/kontur/v0.1/LIVE_HOST_RUNTIME_REOBSERVATION.md"
       - ".github/workflows/kontur-live-host-runtime-reobservation-v0.1-validation.yml"
@@ -19,7 +23,7 @@ permissions:
 
 jobs:
   validate:
-    name: Runtime facts must be re-observed before live effects
+    name: Human-designated runtime facts must be re-observed before live effects
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout read-only
@@ -38,6 +42,8 @@ jobs:
 
       - name: Check modified JavaScript
         run: |
+          node --check server/kontur/v0.1/live-host-designation.js
+          node --check server/kontur/v0.1/live-host-eligibility.js
           node --check server/kontur/v0.1/live-host-runtime-observer.js
           node --check server/kontur/v0.1/activation-executor.js
           node --check server/kontur/v0.1/test-live-host-runtime-reobservation.js
@@ -49,15 +55,22 @@ jobs:
           from pathlib import Path
           from jsonschema import Draft202012Validator, FormatChecker
           root = Path('server/kontur/v0.1')
+          for name in [
+              'kontur-live-host-designation-decision.schema.json',
+              'kontur-live-host-profile.schema.json',
+              'kontur-activation-execution-policy.schema.json',
+          ]:
+              schema = json.loads((root / name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              print('VALID schema:', name)
           schema = json.loads((root / 'kontur-activation-execution-policy.schema.json').read_text(encoding='utf-8'))
           policy = json.loads((root / 'policies/reference-server.activation-execution-policy.json').read_text(encoding='utf-8'))
-          Draft202012Validator.check_schema(schema)
           Draft202012Validator(schema, format_checker=FormatChecker()).validate(policy)
           assert policy['requirements']['live_host_runtime_reobservation_before_mutation'] is True
           print('PASS: live runtime re-observation is policy-bound')
           PY
 
-      - name: Keep pure live-host eligibility vectors green
+      - name: Keep explicit designation and pure live-host eligibility vectors green
         run: node server/kontur/v0.1/test-live-host-eligibility.js /tmp/kontur-live-host-pure-evaluator
 
       - name: Run execution-time runtime re-observation vectors
@@ -69,6 +82,7 @@ jobs:
           import json
           from pathlib import Path
           result = json.loads(Path('/tmp/kontur-runtime-reobservation/runtime-reobservation-vectors.json').read_text(encoding='utf-8'))
+          assert result['synthetic_designation_decision_id'].startswith('urn:uu-aap:kontur:live-host-designation-decision:')
           assert result['caller_asserted_positive_command_validated_in_memory_only'] is True
           assert result['ci_environment_detected'] is True
           assert result['actual_runtime_decision'] == 'live_host_ineligible'
@@ -79,7 +93,7 @@ jobs:
           assert result['ledger_commit_calls'] == 0
           assert result['post_commit_recovery_calls'] == 0
           assert result['live_execute_completed'] is False
-          print('PASS: caller-asserted positive receipt cannot cross live effect boundary in CI')
+          print('PASS: designated profile still cannot cross live effect boundary without runtime match')
           PY
 
       - name: Assert observer itself has no activation path
