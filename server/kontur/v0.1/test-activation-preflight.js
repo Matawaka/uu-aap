@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const cp = require('child_process');
+const crypto = require('crypto');
 const Preflight = require('./activation-preflight.js');
 
 const repoRoot = path.resolve(__dirname, '../../..');
@@ -11,6 +12,7 @@ function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function readJson(file) { return JSON.parse(fs.readFileSync(file, 'utf8')); }
 function writeJson(file, value) { fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
 function iso(ms) { return new Date(ms).toISOString(); }
+function rawSha256(value) { return crypto.createHash('sha256').update(value, 'utf8').digest('hex'); }
 function run(command, args) {
   const result = cp.spawnSync(command, args, { cwd: repoRoot, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
   if (result.error) throw result.error;
@@ -41,7 +43,7 @@ async function makeHarApproval(currentGitRevision, baseMs) {
     $schema: './kontur-human-activation-review-packet.schema.json',
     artifact_type: 'KONTURHumanActivationReviewPacket',
     artifact_version: '0.1',
-    review_packet_id: `urn:uu-aap:kontur:human-activation-review-packet:test-${currentGitRevision.slice(-12)}`,
+    review_packet_id: '',
     prepared_at: iso(baseMs - 30000),
     expires_at: iso(baseMs - 30000 + 24 * 60 * 60 * 1000),
     project_id: 'Matawaka/uu-aap',
@@ -81,6 +83,15 @@ async function makeHarApproval(currentGitRevision, baseMs) {
       distributed_consensus_established: false
     }
   };
+  const packetSeed = [
+    packet.git_revision,
+    packet.project_readiness_checkpoint_binding.digest.value,
+    packet.current_main_frontier_verification_binding.digest.value,
+    packet.prepared_at,
+    packet.expires_at
+  ].join('|');
+  packet.review_packet_id = `urn:uu-aap:kontur:human-activation-review-packet:${rawSha256(packetSeed).slice(0, 24)}`;
+
   const reviewPacketBinding = {
     artifact_type: 'KONTURHumanActivationReviewPacket',
     artifact_ref: packet.review_packet_id,
@@ -169,8 +180,11 @@ async function main() {
   assert(frontier.git_revision === currentGitRevision, 'readiness frontier must bind current checkout');
 
   const evaluatorSource = fs.readFileSync(path.join(repoRoot, 'server/kontur/v0.1/activation-preflight.js'), 'utf8');
-  assert(!evaluatorSource.includes('responsibility-kernel.js'), 'activation preflight must not import responsibility-kernel.js');
-  assert(!evaluatorSource.includes('transitionResponsibility'), 'activation preflight must not call transitionResponsibility');
+  const coreSource = fs.readFileSync(path.join(repoRoot, 'server/kontur/v0.1/activation-preflight-core.js'), 'utf8');
+  for (const source of [evaluatorSource, coreSource]) {
+    assert(!source.includes('responsibility-kernel.js'), 'activation preflight must not import responsibility-kernel.js');
+    assert(!source.includes('transitionResponsibility'), 'activation preflight must not call transitionResponsibility');
+  }
 
   const baseMs = Math.max(
     Date.parse(frontier.recorded_at) + 1000,
@@ -215,11 +229,18 @@ async function main() {
     currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy,
     activationPolicy, humanActivationReviewPacket, humanActivationReviewDecision, health
   };
+  const embeddedOnlyContext = {
+    currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy,
+    activationPolicy, health
+  };
   const intent = await Preflight.buildActivationIntent(buildArgs);
   await Preflight.validateActivationIntent({ intent, ...validationContext });
+  // Cross-process proof: validation succeeds using only HAR evidence embedded in the intent.
+  await Preflight.validateActivationIntent({ intent, ...embeddedOnlyContext });
   const receipt = await Preflight.preflightActivation({
     intent, ...validationContext, evaluatedAt, parallelActiveHolders: [], currentResponsibilityState: null
   });
+  await Preflight.validateActivationPreflightReceipt({ receipt, intent, ...embeddedOnlyContext });
 
   writeJson(path.join(outputDir, 'activation-intent.json'), intent);
   writeJson(path.join(outputDir, 'activation-preflight.json'), receipt);
@@ -227,6 +248,10 @@ async function main() {
   assert(intent.claims.human_activation_review_approval_bound === true, 'HAR approval must be bound');
   assert(intent.human_activation_review_decision_binding.artifact_ref === humanActivationReviewDecision.decision_id,
     'intent must bind exact HAR decision');
+  assert(intent.human_activation_review_evidence.review_packet.review_packet_id === humanActivationReviewPacket.review_packet_id,
+    'intent must embed exact HAR packet');
+  assert(intent.human_activation_review_evidence.decision.decision_id === humanActivationReviewDecision.decision_id,
+    'intent must embed exact HAR decision');
   assert(receipt.decision === 'human_execute_step_may_proceed', 'positive preflight decision missing');
   assert(receipt.claims.activation_intent_verified === true, 'activation intent must be verified');
   assert(receipt.claims.activation_preconditions_revalidated === true, 'preconditions must be revalidated');
@@ -241,6 +266,9 @@ async function main() {
   const build = (overrides = {}) => Preflight.buildActivationIntent({ ...buildArgs, ...overrides });
   const validate = (changedIntent, overrides = {}) => Preflight.validateActivationIntent({
     intent: changedIntent, ...validationContext, ...overrides
+  });
+  const validateEmbeddedOnly = (changedIntent, overrides = {}) => Preflight.validateActivationIntent({
+    intent: changedIntent, ...embeddedOnlyContext, ...overrides
   });
   const preflight = (overrides = {}) => Preflight.preflightActivation({
     intent, ...validationContext, evaluatedAt, parallelActiveHolders: [], currentResponsibilityState: null,
@@ -261,16 +289,43 @@ async function main() {
   }, /decision_id binding mismatch/));
   vectors.push(await reject('har_packet_substitution', async () => {
     const changed = clone(humanActivationReviewPacket); changed.project_id = 'Matawaka/substituted'; await build({ humanActivationReviewPacket: changed });
-  }, /project drift|binding substitution/));
+  }, /project mismatch|revision drift|binding substitution/));
   vectors.push(await reject('har_revision_drift', async () => {
     const changed = clone(humanActivationReviewDecision); changed.review_context.observed_current_git_revision = `git:${'0'.repeat(40)}`;
     await build({ humanActivationReviewDecision: changed });
   }, /revision drift|decision_id/));
   vectors.push(await reject('intent_har_binding_substitution', async () => {
-    const changed = clone(intent); changed.human_activation_review_decision_binding.digest.value = '0'.repeat(64); await validate(changed);
+    const changed = clone(intent); changed.human_activation_review_decision_binding.digest.value = '0'.repeat(64); await validateEmbeddedOnly(changed);
   }, /HAR decision binding substitution/));
+  vectors.push(await reject('embedded_har_evidence_missing', async () => {
+    const changed = clone(intent); delete changed.human_activation_review_evidence; await validateEmbeddedOnly(changed);
+  }, /exact contract keys|required/));
+  vectors.push(await reject('embedded_har_packet_tamper', async () => {
+    const changed = clone(intent); changed.human_activation_review_evidence.review_packet.project_id = 'Matawaka/substituted';
+    await validateEmbeddedOnly(changed);
+  }, /project mismatch|binding substitution/));
+  vectors.push(await reject('embedded_har_decision_outcome_tamper', async () => {
+    const changed = clone(intent); changed.human_activation_review_evidence.decision.decision = 'defer';
+    await validateEmbeddedOnly(changed);
+  }, /did not approve|decision_id/));
+  vectors.push(await reject('embedded_har_decision_id_tamper', async () => {
+    const changed = clone(intent);
+    changed.human_activation_review_evidence.decision.decision_id = `urn:uu-aap:kontur:human-activation-review-decision:${'0'.repeat(24)}`;
+    await validateEmbeddedOnly(changed);
+  }, /decision_id binding mismatch/));
+  vectors.push(await reject('external_embedded_har_decision_substitution', async () => {
+    const changedDecision = clone(humanActivationReviewDecision);
+    changedDecision.human_declaration.nonce += '-substituted';
+    await Preflight.validateActivationIntent({
+      intent, ...embeddedOnlyContext, humanActivationReviewDecision: changedDecision
+    });
+  }, /external\/embedded HAR decision substitution/));
+  vectors.push(await reject('har_bound_intent_id_tamper', async () => {
+    const changed = clone(intent); changed.intent_id = `urn:uu-aap:kontur:activation-intent:${'0'.repeat(24)}`;
+    await validateEmbeddedOnly(changed);
+  }, /HAR-bound activation intent ID mismatch/));
 
-  vectors.push(await reject('git_revision_drift', () => build({ currentGitRevision: `git:${'0'.repeat(40)}` }), /Git revision|frontier/));
+  vectors.push(await reject('git_revision_drift', () => build({ currentGitRevision: `git:${'0'.repeat(40)}` }), /Git revision|frontier|HAR packet: revision drift/));
   vectors.push(await reject('frontier_status_substitution', async () => {
     const changed = clone(frontier); changed.status = 'blocked'; await build({ frontier: changed });
   }, /frontier does not admit/));
@@ -321,22 +376,22 @@ async function main() {
   vectors.push(await reject('existing_responsibility_state', () => preflight({ currentResponsibilityState: { artifact_type: 'KONTURResponsibilityState' } }), /genesis activation requires no current/));
   vectors.push(await reject('stale_human_intent', () => preflight({ evaluatedAt: iso(baseMs + (activationPolicy.max_intent_age_seconds + 1) * 1000) }), /intent is stale|readiness signal expired/));
   vectors.push(await reject('human_intent_removed', async () => {
-    const changed = clone(intent); changed.human_intent.explicit = false; await validate(changed);
+    const changed = clone(intent); changed.human_intent.explicit = false; await validateEmbeddedOnly(changed);
   }, /explicit human activation intent missing/));
   vectors.push(await reject('transition_substitution', async () => {
-    const changed = clone(intent); changed.intended_transition = 'resume'; await validate(changed);
+    const changed = clone(intent); changed.intended_transition = 'resume'; await validateEmbeddedOnly(changed);
   }, /transition substitution/));
   vectors.push(await reject('intent_frontier_digest_substitution', async () => {
-    const changed = clone(intent); changed.frontier_binding.digest.value = '0'.repeat(64); await validate(changed);
+    const changed = clone(intent); changed.frontier_binding.digest.value = '0'.repeat(64); await validateEmbeddedOnly(changed);
   }, /intent frontier binding substitution/));
   vectors.push(await reject('intent_holder_substitution', async () => {
-    const changed = clone(intent); changed.holder_id = 'urn:uu-aap:kontur:holder:other'; await validate(changed);
+    const changed = clone(intent); changed.holder_id = 'urn:uu-aap:kontur:holder:other'; await validateEmbeddedOnly(changed);
   }, /lease holder mismatch/));
   vectors.push(await reject('intent_scalar_injection', async () => {
-    const changed = clone(intent); changed.responsibility_score = 1; await validate(changed);
-  }, /scalar scores prohibited|exact contract keys/));
+    const changed = clone(intent); changed.responsibility_score = 1; await validateEmbeddedOnly(changed);
+  }, /scalar fields prohibited|exact contract keys/));
   vectors.push(await reject('intent_activation_overclaim', async () => {
-    const changed = clone(intent); changed.claims.kernel_activated = true; await validate(changed);
+    const changed = clone(intent); changed.claims.kernel_activated = true; await validateEmbeddedOnly(changed);
   }, /prohibited claim kernel_activated/));
   vectors.push(await reject('preflight_activation_overclaim', async () => {
     const changed = clone(receipt); changed.claims.kernel_activated = true; await validateReceipt(changed);
@@ -380,6 +435,7 @@ async function main() {
     suite: 'KONTUR Activation Preflight v0.1',
     git_revision: currentGitRevision,
     har_decision_bound: true,
+    embedded_har_revalidation: true,
     decision: receipt.decision,
     kernel_activated: false,
     responsibility_state_created: false,
