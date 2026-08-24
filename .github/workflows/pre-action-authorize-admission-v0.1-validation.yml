@@ -1,0 +1,45 @@
+name: Pre-Action Authorize Admission v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/pre-action-authorize-admission-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/pre-action-authorize-admission-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Fresh authorize admission without execution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Core
+        run: node protocols/core/v0.1/validate-core.js
+      - name: Validate Execution Capability Availability
+        run: node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+      - name: Validate Pre-Action Evidence Bundle
+        run: node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+      - name: Validate Bounded Execution Lifecycle
+        run: node protocols/integration/execution-lifecycle/v0.1/validate-execution-lifecycle.js
+      - name: Validate Authorize Admission Binding
+        run: node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
