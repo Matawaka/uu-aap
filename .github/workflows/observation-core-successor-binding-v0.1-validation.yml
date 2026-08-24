@@ -1,0 +1,29 @@
+name: Observation to Core Outcome Successor Binding v0.1 validation
+on:
+  pull_request:
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
+      - 'protocols/integration/observation-core-successor-binding/v0.1/**'
+      - '.github/workflows/observation-core-successor-binding-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
+      - 'protocols/integration/observation-core-successor-binding/v0.1/**'
+      - '.github/workflows/observation-core-successor-binding-v0.1-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Bind independent observation to Core successor receipts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/core/v0.1/validate-core.js
+      - run: node protocols/integration/invocation-action-receipt-binding/v0.1/validate-invocation-action-receipt-binding.js
+      - run: node protocols/integration/observation-core-successor-binding/v0.1/validate-observation-core-successor-binding.js
