@@ -1,0 +1,123 @@
+{
+  "document_type": "uu-aap.kontur-har-activation-intent-binding-targeted-re-audit-record",
+  "version": "0.1",
+  "audit_date": "2026-08-24",
+  "audited_frontier": {
+    "main_sha": "ff84ff5dc470ebd4f560eca8d1edf5003f4a7afd",
+    "tree_sha": "8a32f3d53eca552da4a69ae3e76e9faa390b6f67",
+    "parent_sha": "6ef0e97e4fcaf4d1e248959394a4beac8a3d5089",
+    "revision_gate": "pass",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid",
+    "merged_pr": 309
+  },
+  "finding": {
+    "id": "HAR-ACTIVATION-INTENT-BINDING-GAP",
+    "severity_at_discovery": "medium",
+    "status": "closed_verified"
+  },
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-ff84ff5d/har-activation-intent-binding-targeted-re-audit-report.md"
+  },
+  "tree_equivalent_ci_evidence": {
+    "pr_number": 309,
+    "tested_head_sha": "dff84d84620cb851a60ee427a7b68af5460804d2",
+    "tested_tree_sha": "8a32f3d53eca552da4a69ae3e76e9faa390b6f67",
+    "audited_main_tree_sha": "8a32f3d53eca552da4a69ae3e76e9faa390b6f67",
+    "trees_identical": true,
+    "separate_push_run_against_merge_commit_sha_asserted": false,
+    "successful_workflow_runs": [
+      {"id": 32703779763, "name": "KONTUR Activation Preflight validation", "conclusion": "success"},
+      {"id": 32703779669, "name": "KONTUR Activation Executor validation", "conclusion": "success"},
+      {"id": 32703779725, "name": "KONTUR Responsibility Kernel validation", "conclusion": "success"},
+      {"id": 32703779656, "name": "KONTUR Durable Responsibility Ledger validation", "conclusion": "success"},
+      {"id": 32703779757, "name": "KONTUR Readiness Aggregator validation", "conclusion": "success"},
+      {"id": 32703779655, "name": "PoAI Authority Root validation", "conclusion": "success"},
+      {"id": 32703779723, "name": "PoAI Genesis validation", "conclusion": "success"},
+      {"id": 32703779671, "name": "CCRP validation", "conclusion": "success"},
+      {"id": 32703779713, "name": "PoAI CCRP pre-materialization validation", "conclusion": "success"}
+    ]
+  },
+  "preserved_core": {
+    "path": "server/kontur/v0.1/activation-preflight-core.js",
+    "git_blob_sha1": "966775b9d3b114e6210420bcdfbc61023178dd38",
+    "matches_predecessor_activation_preflight_blob": true
+  },
+  "verified_properties": {
+    "activation_intent_schema_requires_har_decision_binding": true,
+    "activation_intent_schema_requires_embedded_har_evidence": true,
+    "activation_intent_schema_requires_har_approval_bound_claim": true,
+    "har_packet_exact_contract_revalidated": true,
+    "har_packet_exact_revision_required": true,
+    "har_packet_deterministic_id_recomputed": true,
+    "har_approval_outcome_required": true,
+    "har_typed_confirmation_required": true,
+    "all_eight_human_confirmations_required": true,
+    "har_decision_packet_binding_recomputed": true,
+    "har_decision_typed_identity_recomputed": true,
+    "har_decision_digest_committed_into_activation_intent_identity": true,
+    "intent_har_decision_binding_recomputed": true,
+    "embedded_har_cross_process_revalidation": true,
+    "preflight_revalidates_har_bound_intent": true,
+    "executor_path_can_revalidate_embedded_har_through_public_preflight_validator": true,
+    "existing_preflight_core_semantics_preserved_byte_for_byte": true
+  },
+  "negative_vectors": {
+    "missing_har_packet_rejected": true,
+    "missing_har_decision_rejected": true,
+    "defer_or_nonapproval_rejected": true,
+    "decision_id_tamper_rejected": true,
+    "packet_substitution_rejected": true,
+    "har_revision_drift_rejected": true,
+    "intent_har_binding_substitution_rejected": true,
+    "embedded_har_evidence_missing_rejected": true,
+    "embedded_packet_tamper_rejected": true,
+    "embedded_decision_tamper_rejected": true,
+    "external_embedded_har_substitution_rejected": true,
+    "har_bound_activation_intent_id_tamper_rejected": true
+  },
+  "remaining_limits": [
+    "reviewer_ref remains declared identity and is not cryptographically authenticated",
+    "HAR packet predecessor commitments are validated as bounded commitments but are not independently rehydrated from an external evidence store at this handoff",
+    "hosted CI evidence retention limits long-term independent execution-evidence availability",
+    "operational readiness, health, intent age, holder/scopes, fencing epoch, lease, preflight and final execute command remain separate later gates"
+  ],
+  "remaining_findings": {
+    "high_or_critical_in_targeted_surface": 0,
+    "medium_in_targeted_surface": []
+  },
+  "fresh_formal_har_allowed_now": false,
+  "fresh_formal_har_allowed_after_this_audit_evidence_is_merged_and_successor_verified": true,
+  "historical_har_decision_transfer_allowed": false,
+  "required_next_step": "merge this evidence-only targeted re-audit after CI success; then verify exact successor main and generate a fresh Human Activation Review packet for that successor revision before any activation-intent construction",
+  "non_effects": {
+    "fresh_human_review_decision_created": false,
+    "historical_human_review_decision_reused": false,
+    "activation_intent_created": false,
+    "live_preflight_run": false,
+    "execute_command_created": false,
+    "live_activation_executor_invoked": false,
+    "responsibility_kernel_called_for_live_activation": false,
+    "responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "permission_expansion_or_bypass": false,
+    "repository_ownership_transferred": false,
+    "canonical_origin_mutated": false,
+    "kontur_activated": false,
+    "legal_authority_established": false,
+    "truth_certified": false
+  },
+  "final_bounded_conclusion": "HAR_ACTIVATION_INTENT_BINDING_REAUDIT_PASS",
+  "boundary": {
+    "audit_record_is_human_review_approval": false,
+    "audit_record_is_activation_intent": false,
+    "audit_record_is_preflight": false,
+    "audit_record_is_execute_command": false,
+    "audit_record_is_activation_authorization": false,
+    "audit_record_is_kontur_activation": false,
+    "audit_record_is_cryptographic_human_identity_proof": false,
+    "audit_record_is_legal_liability_determination": false,
+    "audit_record_is_truth_certification": false
+  }
+}
