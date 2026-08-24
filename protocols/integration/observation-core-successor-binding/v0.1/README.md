@@ -1,8 +1,8 @@
 # UU-AAP Observation Evidence ↔ Core Outcome/Successor Binding v0.1
 
-**Status:** experimental stacked reusable post-execution profile  
+**Status:** experimental reusable post-execution profile  
 **Issue:** #371  
-**Dependency:** #369 / PR #370
+**Dependency:** #369 / PR #370 (merged)
 
 ## Purpose
 
