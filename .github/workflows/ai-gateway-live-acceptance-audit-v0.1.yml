@@ -1,0 +1,26 @@
+name: UU-AAP AI Gateway live acceptance audit v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'experiments/ai-gateway-live-executor-v0.1/audit/**'
+      - '.github/workflows/ai-gateway-live-acceptance-audit-v0.1.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'experiments/ai-gateway-live-executor-v0.1/audit/**'
+      - '.github/workflows/ai-gateway-live-acceptance-audit-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate live acceptance audit
+        run: node experiments/ai-gateway-live-executor-v0.1/audit/validate-audit.js
