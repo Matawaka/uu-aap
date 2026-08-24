@@ -94,6 +94,18 @@ async function main() {
   tamperedProfile.durable_ledger_root = 'D:\\substituted';
   await reject('profile_id_binding', () => Host.validateLiveHostProfile(tamperedProfile), /deterministic profile ID mismatch/);
 
+  const inconsistentRoot = clone(eligible);
+  inconsistentRoot.observations.observed_repository_root = 'D:\\substituted-repository';
+  await reject('raw_repository_root_revalidation',
+    () => Host.validateLiveHostEligibilityReceipt({ receipt: inconsistentRoot, profile }),
+    /repository-root match flag inconsistent with raw observation/);
+
+  const inconsistentRevision = clone(eligible);
+  inconsistentRevision.observations.observed_git_revision = `git:${'b'.repeat(40)}`;
+  await reject('raw_revision_revalidation',
+    () => Host.validateLiveHostEligibilityReceipt({ receipt: inconsistentRevision, profile }),
+    /Git revision match flag inconsistent with raw observation/);
+
   const tamperedReceipt = clone(eligible);
   tamperedReceipt.observations.process_identity = 'substituted-process';
   await reject('receipt_id_binding', () => Host.validateLiveHostEligibilityReceipt({ receipt: tamperedReceipt, profile }), /deterministic receipt ID mismatch/);
@@ -114,7 +126,11 @@ async function main() {
     status: 'PASS',
     eligible_receipt_id: eligible.receipt_id,
     sandbox_decision: sandbox.decision,
-    vectors: ['ci', 'sandbox', 'missing-ledger', 'revision-drift', 'ledger-root-substitution', 'profile-id-binding', 'receipt-id-binding', 'profile-binding']
+    vectors: [
+      'ci', 'sandbox', 'missing-ledger', 'revision-drift', 'ledger-root-substitution',
+      'profile-id-binding', 'raw-repository-root-revalidation', 'raw-revision-revalidation',
+      'receipt-id-binding', 'profile-binding'
+    ]
   }, null, 2));
 }
 
