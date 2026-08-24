@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/experiments/ai-gateway-live-executor-v0.1/audit/live-acceptance-audit.schema.json",
+  "title": "UU-AAP AI Gateway Live Acceptance Audit Record v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "experiment_issue",
+    "target_issue",
+    "target",
+    "authorization",
+    "pre_execution_evidence",
+    "execution",
+    "observation",
+    "assessment",
+    "non_effects",
+    "audit_generated_at",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": { "const": "UU-AAP-AI-GATEWAY-LIVE-ACCEPTANCE-AUDIT" },
+    "version": { "const": "0.1" },
+    "artifact_type": { "const": "LiveAcceptanceAuditRecord" },
+    "acceptance_id": { "type": "string", "minLength": 1 },
+    "experiment_issue": { "type": "integer", "minimum": 1 },
+    "target_issue": { "type": "integer", "minimum": 1 },
+    "remediation_issue": { "type": "integer", "minimum": 1 },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "pr_number", "expected_head_sha", "expected_base_sha", "merge_method", "marker_path"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "pr_number": { "type": "integer", "minimum": 1 },
+        "expected_head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "expected_base_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "merge_method": { "const": "squash" },
+        "marker_path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["approval_text_sha256", "action_specific", "general_authority_granted", "future_action_authorized"],
+      "properties": {
+        "approval_text_sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "approval_evidence_comment_id": { "type": "integer", "minimum": 1 },
+        "action_specific": { "const": true },
+        "general_authority_granted": { "const": false },
+        "future_action_authorized": { "const": false }
+      }
+    },
+    "pre_execution_evidence": { "type": "object", "additionalProperties": true },
+    "execution": { "type": "object", "additionalProperties": true },
+    "observation": { "type": "object", "additionalProperties": true },
+    "core_post_action": { "type": "object", "additionalProperties": true },
+    "gateway_observation": { "type": "object", "additionalProperties": true },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["status", "actuator_frontier_acceptance", "durable_pre_action_provenance_acceptance", "full_protocol_acceptance", "post_hoc_permit_forbidden"],
+      "properties": {
+        "status": { "enum": ["partial_acceptance", "full_acceptance"] },
+        "actuator_frontier_acceptance": { "type": "boolean" },
+        "durable_pre_action_provenance_acceptance": { "type": "boolean" },
+        "full_protocol_acceptance": { "type": "boolean" },
+        "post_hoc_permit_forbidden": { "const": true },
+        "core_gateway_frontier_alignment": { "type": "boolean" }
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["causality_proven", "truth_certified", "liability_established", "general_authority_created", "future_action_permission_created"],
+      "properties": {
+        "causality_proven": { "const": false },
+        "truth_certified": { "const": false },
+        "liability_established": { "const": false },
+        "general_authority_created": { "const": false },
+        "future_action_permission_created": { "const": false }
+      }
+    },
+    "audit_generated_at": { "type": "string", "format": "date-time" },
+    "content_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "assessment": { "properties": { "status": { "const": "full_acceptance" } } }
+        }
+      },
+      "then": {
+        "required": ["core_post_action", "gateway_observation"],
+        "properties": {
+          "pre_execution_evidence": {
+            "required": ["persisted_gateway_decision_receipt", "persisted_core_action_permit", "durable_typed_pre_action_bundle_complete", "pre_action_bundle_hash", "action_permit_hash", "gateway_request_hash", "gateway_decision_receipt_hash", "permit_one_shot", "permit_consumed_before_execution"],
+            "properties": {
+              "persisted_gateway_decision_receipt": { "const": true },
+              "persisted_core_action_permit": { "const": true },
+              "durable_typed_pre_action_bundle_complete": { "const": true },
+              "pre_action_bundle_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+              "action_permit_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+              "gateway_request_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "gateway_decision_receipt_hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+              "permit_one_shot": { "const": true },
+              "permit_consumed_before_execution": { "const": false }
+            }
+          },
+          "assessment": {
+            "properties": {
+              "actuator_frontier_acceptance": { "const": true },
+              "durable_pre_action_provenance_acceptance": { "const": true },
+              "core_gateway_frontier_alignment": { "const": true },
+              "full_protocol_acceptance": { "const": true }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "protocol": "UU-AAP-AI-GATEWAY-LIVE-ACCEPTANCE-AUDIT",
+  "version": "0.1",
+  "artifact_type": "LiveAcceptanceAuditRecord",
+  "acceptance_id": "ai-gateway-live-acceptance-2",
+  "experiment_issue": 332,
+  "target_issue": 345,
+  "remediation_issue": 339,
+  "target": {
+    "repository": "Matawaka/uu-aap",
+    "pr_number": 346,
+    "expected_head_sha": "9a425d6969238c7e7549b733e91f42acbd7bc9dc",
+    "expected_base_sha": "78d7e867bc642bcd7c04eac47e72d96fab309183",
+    "merge_method": "squash",
+    "marker_path": "experiments/ai-gateway-live-executor-v0.1/acceptance-target-2.json"
+  },
+  "authorization": {
+    "approval_text_sha256": "sha256:cf684aa94488575d7c0f4f42e8a4577bfd06fd9a7f51eb579e9030b1fae47cc2",
+    "approval_evidence_comment_id": 5399521943,
+    "action_specific": true,
+    "general_authority_granted": false,
+    "future_action_authorized": false
+  },
+  "pre_execution_evidence": {
+    "pre_action_bundle_comment_id": 5399539206,
+    "main_before": "78d7e867bc642bcd7c04eac47e72d96fab309183",
+    "pr_open": true,
+    "mergeable": true,
+    "target_head_actions_success": true,
+    "persisted_gateway_decision_receipt": true,
+    "persisted_core_action_permit": true,
+    "durable_typed_pre_action_bundle_complete": true,
+    "pre_action_bundle_hash": "sha256:f14d597abe3b169f6febabb2753fc5916318c1c2b898747180a16dacc7294a58",
+    "state_receipt_hash": "sha256:15ab17954cd962b77b31f7839c759fefb93427f13ffb3e5ddd1c40474ab97b48",
+    "action_permit_hash": "sha256:1d66fa1c8e76f8daa07ea787a7a19e29b9605894e7b3dd8f5ffc37740f2d7341",
+    "gateway_request_hash": "5ccf6744de636ceec7c22158843d06ae18cee502dce27469d292373862104c8a",
+    "gateway_decision_receipt_hash": "7fff88fc681c4005892a8bae760a15fce12c2ec90fa725517f7c60cd982215b8",
+    "permit_one_shot": true,
+    "permit_consumed_before_execution": false,
+    "permit_expires_at": "2026-08-24T18:31:30Z"
+  },
+  "execution": {
+    "expected_head_guard_used": true,
+    "merge_result": "merged",
+    "merge_commit_sha": "90d00fa14839bba287df6afb3b60730282934d32",
+    "merged_at": "2026-08-24T18:26:56Z",
+    "permit_consumed_after_execution": true
+  },
+  "observation": {
+    "post_action_issue_comment_id": 5399627806,
+    "main_after": "90d00fa14839bba287df6afb3b60730282934d32",
+    "successor_parent": "78d7e867bc642bcd7c04eac47e72d96fab309183",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid",
+    "marker_present": true,
+    "marker_blob_sha": "b216fc7b1bbf25cd90dae9bf5002cd169e64c973",
+    "bounded_change": {
+      "commits": 1,
+      "files_added": 1,
+      "additions": 21,
+      "deletions": 0
+    }
+  },
+  "core_post_action": {
+    "action_receipt_ref": {
+      "receipt_type": "ActionReceipt",
+      "content_hash": "sha256:34b21addf14d3683713f7e2cb83de3c721996c63538bbdd6e578815808132ca8",
+      "frontier": "git:Matawaka/uu-aap@78d7e867bc642bcd7c04eac47e72d96fab309183"
+    },
+    "outcome_receipt_ref": {
+      "receipt_type": "OutcomeReceipt",
+      "content_hash": "sha256:d968c94a8040d9ba1d9a02f2beab7dee22f5b39a5c7a24a19f7f33f471a8a60f",
+      "frontier": "git:Matawaka/uu-aap@90d00fa14839bba287df6afb3b60730282934d32"
+    },
+    "successor_state_receipt_ref": {
+      "receipt_type": "SuccessorStateReceipt",
+      "content_hash": "sha256:60773d67d80f031e106d2067d463dfcbf8868bec0253711c9fa86ca848ef6572",
+      "frontier": "git:Matawaka/uu-aap@90d00fa14839bba287df6afb3b60730282934d32"
+    }
+  },
+  "gateway_observation": {
+    "request_hash": "5ccf6744de636ceec7c22158843d06ae18cee502dce27469d292373862104c8a",
+    "request_id": "urn:uu-aap:gateway-request:second-live-acceptance:346",
+    "predecessor_frontier": "git:Matawaka/uu-aap@78d7e867bc642bcd7c04eac47e72d96fab309183",
+    "observed_frontier": "git:Matawaka/uu-aap@90d00fa14839bba287df6afb3b60730282934d32",
+    "external_effect_observed": true,
+    "core_action_receipt_ref": {
+      "receipt_type": "ActionReceipt",
+      "content_hash": "sha256:34b21addf14d3683713f7e2cb83de3c721996c63538bbdd6e578815808132ca8",
+      "frontier": "git:Matawaka/uu-aap@78d7e867bc642bcd7c04eac47e72d96fab309183"
+    },
+    "outcome_receipt_ref": {
+      "receipt_type": "OutcomeReceipt",
+      "content_hash": "sha256:d968c94a8040d9ba1d9a02f2beab7dee22f5b39a5c7a24a19f7f33f471a8a60f",
+      "frontier": "git:Matawaka/uu-aap@90d00fa14839bba287df6afb3b60730282934d32"
+    },
+    "successor_state_receipt_ref": {
+      "receipt_type": "SuccessorStateReceipt",
+      "content_hash": "sha256:60773d67d80f031e106d2067d463dfcbf8868bec0253711c9fa86ca848ef6572",
+      "frontier": "git:Matawaka/uu-aap@90d00fa14839bba287df6afb3b60730282934d32"
+    },
+    "frontier_roles_aligned_with_core": true
+  },
+  "assessment": {
+    "status": "full_acceptance",
+    "actuator_frontier_acceptance": true,
+    "durable_pre_action_provenance_acceptance": true,
+    "core_gateway_frontier_alignment": true,
+    "full_protocol_acceptance": true,
+    "post_hoc_permit_forbidden": true
+  },
+  "non_effects": {
+    "causality_proven": false,
+    "truth_certified": false,
+    "liability_established": false,
+    "general_authority_created": false,
+    "future_action_permission_created": false
+  },
+  "audit_generated_at": "2026-08-24T18:47:46Z",
+  "content_hash": "sha256:d9d16544ce988f61c69f74c6c150eacd6c71d5897c3c70fefcce2a818a4600ab"
+}
