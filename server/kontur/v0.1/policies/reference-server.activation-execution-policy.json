@@ -10,6 +10,7 @@
   "server_instance_id": "urn:uu-aap:kontur:server:reference-primary",
   "max_execute_command_age_seconds": 30,
   "max_preflight_age_seconds": 30,
+  "max_live_host_eligibility_age_seconds": 60,
   "requirements": {
     "exact_git_revision": true,
     "exact_intent_binding": true,
@@ -18,6 +19,9 @@
     "fresh_readiness": true,
     "fresh_health": true,
     "live_lease": true,
+    "live_host_eligibility_required_for_live_mode": true,
+    "live_ledger_root_matches_host_profile": true,
+    "test_only_carries_no_live_host_eligibility": true,
     "empty_genesis_ledger": true,
     "one_shot_execute_nonce": true,
     "execute_nonce_distinct_from_intent_nonce": true,
