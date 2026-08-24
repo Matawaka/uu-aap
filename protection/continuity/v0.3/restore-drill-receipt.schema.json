@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:continuity:restore-drill-receipt:v0.3",
+  "title": "UU-AAP Continuity Restore Drill Receipt v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schema_id",
+    "tool_version",
+    "observed_at_utc",
+    "source_manifest",
+    "bundle",
+    "captured_frontier",
+    "ref_integrity",
+    "drill",
+    "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./restore-drill-receipt.schema.json"},
+    "schema_id": {"const": "urn:uu-aap:continuity:restore-drill-receipt:v0.3"},
+    "tool_version": {"const": "0.3"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "source_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_id", "sha256"],
+      "properties": {
+        "schema_id": {"const": "urn:uu-aap:continuity:manifest:v0.1"},
+        "sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "bundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["file_name", "sha256", "offline_capable"],
+      "properties": {
+        "file_name": {"type": "string", "minLength": 1},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "offline_capable": {"const": true}
+      }
+    },
+    "captured_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["main_branch", "main_commit_sha", "main_tree_sha"],
+      "properties": {
+        "main_branch": {"type": "string", "minLength": 1},
+        "main_commit_sha": {"$ref": "#/$defs/gitsha"},
+        "main_tree_sha": {"$ref": "#/$defs/gitsha"}
+      }
+    },
+    "ref_integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["captured_ref_count", "bundle_ref_count", "restored_ref_count", "captured_ref_set_sha256", "bundle_ref_set_sha256", "restored_ref_set_sha256"],
+      "properties": {
+        "captured_ref_count": {"type": "integer", "minimum": 1},
+        "bundle_ref_count": {"type": "integer", "minimum": 1},
+        "restored_ref_count": {"type": "integer", "minimum": 1},
+        "captured_ref_set_sha256": {"$ref": "#/$defs/sha256"},
+        "bundle_ref_set_sha256": {"$ref": "#/$defs/sha256"},
+        "restored_ref_set_sha256": {"$ref": "#/$defs/sha256"}
+      }
+    },
+    "drill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle_digest_verified",
+        "bundle_integrity_verified",
+        "captured_refs_match_bundle",
+        "restored_refs_match_capture",
+        "restored_main_matches_capture",
+        "restored_tree_matches_capture",
+        "restored_repository_fsck_passed",
+        "temporary_restore_removed",
+        "restore_drill_verified"
+      ],
+      "properties": {
+        "bundle_digest_verified": {"const": true},
+        "bundle_integrity_verified": {"const": true},
+        "captured_refs_match_bundle": {"const": true},
+        "restored_refs_match_capture": {"const": true},
+        "restored_main_matches_capture": {"const": true},
+        "restored_tree_matches_capture": {"const": true},
+        "restored_repository_fsck_passed": {"const": true},
+        "temporary_restore_removed": {"const": true},
+        "restore_drill_verified": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "rescue_performed",
+        "recovered_noncanonical_state_created",
+        "persistent_recovery_workspace_created",
+        "canonical_successor_claimed",
+        "authority_transferred",
+        "repository_ownership_transferred",
+        "kontur_readiness_established",
+        "kontur_activated",
+        "execution_authority_granted",
+        "distributed_consensus_claimed",
+        "legal_effect_established",
+        "truth_certified",
+        "physical_independence_proven",
+        "hosted_metadata_restored"
+      ],
+      "properties": {
+        "rescue_performed": {"const": false},
+        "recovered_noncanonical_state_created": {"const": false},
+        "persistent_recovery_workspace_created": {"const": false},
+        "canonical_successor_claimed": {"const": false},
+        "authority_transferred": {"const": false},
+        "repository_ownership_transferred": {"const": false},
+        "kontur_readiness_established": {"const": false},
+        "kontur_activated": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "distributed_consensus_claimed": {"const": false},
+        "legal_effect_established": {"const": false},
+        "truth_certified": {"const": false},
+        "physical_independence_proven": {"const": false},
+        "hosted_metadata_restored": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "gitsha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
