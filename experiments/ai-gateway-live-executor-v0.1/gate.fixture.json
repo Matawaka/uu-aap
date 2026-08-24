@@ -1,0 +1,24 @@
+{
+  "protocol": "UU-AAP-AI-GATEWAY-LIVE-EXECUTOR-GATE",
+  "version": "0.1",
+  "target": {
+    "repository": "Matawaka/uu-aap",
+    "pr_number": 999,
+    "expected_head_sha": "1111111111111111111111111111111111111111",
+    "expected_base_sha": "2222222222222222222222222222222222222222",
+    "merge_method": "squash"
+  },
+  "evidence": {
+    "gateway_decision": "admissible",
+    "gateway_decision_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "action_permit_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "action_specific_approval_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  },
+  "controls": {
+    "live_execution_requested": false,
+    "ci_execution": true,
+    "credential_material_present": false,
+    "network_call_performed": false,
+    "github_mutation_performed": false
+  }
+}

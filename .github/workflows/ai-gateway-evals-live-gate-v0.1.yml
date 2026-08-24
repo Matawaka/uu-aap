@@ -1,0 +1,39 @@
+name: UU-AAP AI Gateway paired evals and live gate v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/ai-gateway/**'
+      - 'experiments/ai-gateway-live-executor-v0.1/**'
+      - '.github/workflows/ai-gateway-evals-live-gate-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/ai-gateway/**'
+      - 'experiments/ai-gateway-live-executor-v0.1/**'
+      - '.github/workflows/ai-gateway-evals-live-gate-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Core
+        run: node protocols/core/v0.1/validate-core.js
+      - name: Validate Non-Induced Intent
+        run: node protocols/core/extensions/intent-evidence/v0.1/validate-intent-evidence.js
+      - name: Validate AI Gateway
+        run: node protocols/integration/ai-gateway/v0.1/validate-gateway.js
+      - name: Validate GitHub adapter
+        run: node protocols/integration/ai-gateway/adapters/v0.1/validate-adapter.js
+      - name: Validate bounded harness
+        run: node protocols/integration/ai-gateway/harness/v0.1/validate-harness.js
+      - name: Validate paired agent evals
+        run: node protocols/integration/ai-gateway/evals/v0.1/validate-evals.js
+      - name: Execute paired eval report
+        run: node protocols/integration/ai-gateway/evals/v0.1/run-paired-evals.js
+      - name: Validate live-executor gate remains disarmed
+        run: node experiments/ai-gateway-live-executor-v0.1/validate-gate.js

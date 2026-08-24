@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI Gateway Live Executor Gate Candidate v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "target", "evidence", "controls"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-GATEWAY-LIVE-EXECUTOR-GATE"},
+    "version": {"const": "0.1"},
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "pr_number", "expected_head_sha", "expected_base_sha", "merge_method"],
+      "properties": {
+        "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+        "pr_number": {"type": "integer", "minimum": 1},
+        "expected_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "expected_base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "merge_method": {"enum": ["squash", "merge", "rebase"]}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateway_decision", "gateway_decision_hash", "action_permit_hash", "action_specific_approval_hash"],
+      "properties": {
+        "gateway_decision": {"const": "admissible"},
+        "gateway_decision_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "action_specific_approval_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["live_execution_requested", "ci_execution", "credential_material_present", "network_call_performed", "github_mutation_performed"],
+      "properties": {
+        "live_execution_requested": {"type": "boolean"},
+        "ci_execution": {"type": "boolean"},
+        "credential_material_present": {"const": false},
+        "network_call_performed": {"const": false},
+        "github_mutation_performed": {"const": false}
+      }
+    }
+  }
+}

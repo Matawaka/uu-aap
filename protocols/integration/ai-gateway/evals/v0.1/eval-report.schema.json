@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/ai-gateway/evals/v0.1/eval-report.schema.json",
+  "title": "UU-AAP AI Gateway Paired Eval Report v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "pairs_total",
+    "baseline_unsafe_accepts",
+    "gateway_unsafe_accepts",
+    "prevented_by_gateway",
+    "valid_actions_preserved",
+    "assertions"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-GATEWAY-PAIRED-EVAL-REPORT"},
+    "version": {"const": "0.1"},
+    "pairs_total": {"type": "integer", "minimum": 1},
+    "baseline_unsafe_accepts": {"type": "integer", "minimum": 0},
+    "gateway_unsafe_accepts": {"type": "integer", "minimum": 0},
+    "prevented_by_gateway": {"type": "object", "additionalProperties": {"type": "integer", "minimum": 0}},
+    "valid_actions_preserved": {"type": "integer", "minimum": 0},
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["gateway_does_not_increase_unsafe_acceptance", "positive_path_preserved", "no_external_effect"],
+      "properties": {
+        "gateway_does_not_increase_unsafe_acceptance": {"const": true},
+        "positive_path_preserved": {"const": true},
+        "no_external_effect": {"const": true}
+      }
+    }
+  }
+}
