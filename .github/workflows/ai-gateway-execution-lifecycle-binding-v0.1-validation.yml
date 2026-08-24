@@ -1,0 +1,36 @@
+name: UU-AAP AI Gateway execution lifecycle binding v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/ai-gateway-execution-lifecycle-binding/v0.1/**'
+      - '.github/workflows/ai-gateway-execution-lifecycle-binding-v0.1-validation.yml'
+      - 'protocols/integration/ai-gateway/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+  push:
+    branches: [ main ]
+    paths:
+      - 'protocols/integration/ai-gateway-execution-lifecycle-binding/v0.1/**'
+      - '.github/workflows/ai-gateway-execution-lifecycle-binding-v0.1-validation.yml'
+      - 'protocols/integration/ai-gateway/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate UU-AAP Core v0.1
+        run: node protocols/core/v0.1/validate-core.js
+      - name: Validate AI Gateway v0.1
+        run: node protocols/integration/ai-gateway/v0.1/validate-gateway.js
+      - name: Validate Bounded Execution Lifecycle v0.1
+        run: node protocols/integration/execution-lifecycle/v0.1/validate-execution-lifecycle.js
+      - name: Validate AI Gateway execution lifecycle binding
+        run: node protocols/integration/ai-gateway-execution-lifecycle-binding/v0.1/validate-binding.js
