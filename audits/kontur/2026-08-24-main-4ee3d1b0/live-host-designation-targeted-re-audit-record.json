@@ -1,0 +1,91 @@
+{
+  "artifact_type": "KONTURLiveHostDesignationTargetedReAuditRecord",
+  "artifact_version": "0.1",
+  "recorded_date": "2026-08-24",
+  "result": "KONTUR_LIVE_HOST_DESIGNATION_BINDING_REAUDIT_PASS",
+  "finding": {
+    "finding_id": "KONTUR-LIVE-HOST-DESIGNATION-BINDING-GAP",
+    "disposition": "closed_verified",
+    "scope": "explicit human live-host designation to bound host-profile derivation"
+  },
+  "canonical_successor": {
+    "git_revision": "git:4ee3d1b0725a1bb30d6eafb87920ee4391690d20",
+    "tree_sha": "67d0c43e9af456ef1b22a19978d790d16dd343a7",
+    "parent_git_revision": "git:91188043c22b4a563d460272c9a7b949769be4ae",
+    "github_signature_verified": true,
+    "github_signature_reason": "valid"
+  },
+  "merged_remediation": {
+    "pull_request": 317,
+    "tested_head_git_revision": "git:9a97e9a8a99d458da5b3368f3df20830c6bc5c7f",
+    "tested_head_tree_sha": "67d0c43e9af456ef1b22a19978d790d16dd343a7",
+    "successor_tree_equals_tested_head_tree": true
+  },
+  "enforcement_assertions": {
+    "designation_is_separate_typed_human_decision": true,
+    "designation_requires_exact_typed_confirmation": true,
+    "designation_nonce_required_and_bound_into_decision_identity": true,
+    "designation_target_binds_designated_operator_separately_from_designator": true,
+    "designation_binds_repository_ledger_runtime_and_host_declarations": true,
+    "designation_safe_effect_limited_to_live_host_profile_may_be_built": true,
+    "profile_requires_exact_designation_binding_and_embedded_evidence": true,
+    "profile_cannot_predate_designation": true,
+    "profile_target_and_declarations_must_equal_designation": true,
+    "profile_operator_ref_is_derived_from_designated_target_operator": true,
+    "profile_identity_binds_human_designation_binding": true,
+    "profile_builder_requires_designation_decision_instead_of_raw_host_parameters": true,
+    "legacy_raw_parameter_profile_build_path_rejected_by_targeted_tests": true,
+    "designation_binding_substitution_rejected_before_live_executor_boundary": true,
+    "downstream_runtime_reobservation_remains_required_before_live_effects": true
+  },
+  "targeted_workflow_evidence": [
+    {"run_id": 32715475601, "name": "KONTUR Live Host Eligibility v0.1 validation", "conclusion": "success"},
+    {"run_id": 32715475638, "name": "KONTUR Live Host Executor Gate v0.1 validation", "conclusion": "success"},
+    {"run_id": 32715475630, "name": "KONTUR Live Host Runtime Re-observation v0.1 validation", "conclusion": "success"},
+    {"run_id": 32715475623, "name": "KONTUR Activation Executor validation", "conclusion": "success"},
+    {"run_id": 32715475544, "name": "KONTUR Activation Preflight validation", "conclusion": "success"},
+    {"run_id": 32715475606, "name": "KONTUR Durable Responsibility Ledger validation", "conclusion": "success"}
+  ],
+  "targeted_vectors": {
+    "synthetic_designator_and_operator_are_distinct": true,
+    "profile_preserves_designated_operator_not_designator_identity": true,
+    "designation_binding_tamper_rejected": true,
+    "designation_evidence_target_tamper_rejected": true,
+    "designation_declaration_tamper_rejected": true,
+    "legacy_raw_parameter_profile_builder_rejected": true,
+    "ci_positive_live_execution_performed": false,
+    "kernel_activated": false,
+    "live_durable_ledger_written": false
+  },
+  "non_effects": {
+    "concrete_live_host_designated": false,
+    "concrete_operator_authenticated": false,
+    "cryptographic_designator_identity_established": false,
+    "cryptographic_operator_identity_established": false,
+    "cryptographic_host_identity_established": false,
+    "human_activation_review_approved": false,
+    "activation_intent_created": false,
+    "activation_preflight_created": false,
+    "final_human_execute_created": false,
+    "execution_authority_granted": false,
+    "kernel_activated": false,
+    "live_durable_ledger_written": false,
+    "responsibility_accepted": false,
+    "permission_expansion_authorized": false,
+    "permission_bypass_authorized": false,
+    "legal_authority_established": false,
+    "truth_certified": false,
+    "liability_established": false,
+    "universal_canonicality_established": false
+  },
+  "remaining_limitations": [
+    "designator identity remains declared_not_cryptographically_verified",
+    "designated operator authentication is not established by designation",
+    "designation nonce is identity-bound but no global nonce registry or cross-history uniqueness proof exists",
+    "persistence and non-CI/non-sandbox values are human declarations until independently observed by the runtime host observer",
+    "no TPM secure-boot hardware OS or hypervisor trust attestation is established",
+    "no concrete persistent host has been designated by this remediation or re-audit",
+    "separate push-triggered CI against the squash successor SHA is not asserted as independently inspected"
+  ],
+  "safe_next_step": "explicit_concrete_live_host_designation_then_host_local_observation_before_fresh_har"
+}
