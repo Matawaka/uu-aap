@@ -1,0 +1,26 @@
+name: CI Dependency Hardening Audit v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/ci-dependency-hardening-audit/v0.1/**'
+      - '.github/workflows/ci-dependency-hardening-audit-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/ci-dependency-hardening-audit/v0.1/**'
+      - '.github/workflows/ci-dependency-hardening-audit-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Fail-closed CI dependency evidence audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/integration/ci-dependency-hardening-audit/v0.1/validate-ci-dependency-audit.js
