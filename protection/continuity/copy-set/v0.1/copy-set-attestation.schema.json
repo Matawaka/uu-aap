@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:continuity:copy-set-attestation:v0.1",
+  "title": "UU-AAP Continuity Copy Set Attestation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "as_of_utc",
+    "policy_binding",
+    "source_frontier",
+    "copies",
+    "independence_attestations",
+    "boundary"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.continuity-copy-set-attestation"},
+    "version": {"const": "0.1"},
+    "status": {"const": "experimental-evidence"},
+    "as_of_utc": {"type": "string", "format": "date-time"},
+    "policy_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_id",
+        "minimum_independent_copies",
+        "minimum_independent_custodians",
+        "offline_copy_required",
+        "shared_credentials_allowed",
+        "capture_cadence_days",
+        "verification_cadence_days",
+        "metadata_backup_required"
+      ],
+      "properties": {
+        "schema_id": {"const": "urn:uu-aap:continuity:policy:v0.1"},
+        "minimum_independent_copies": {"const": 3},
+        "minimum_independent_custodians": {"const": 2},
+        "offline_copy_required": {"const": true},
+        "shared_credentials_allowed": {"const": false},
+        "capture_cadence_days": {"const": 7},
+        "verification_cadence_days": {"const": 30},
+        "metadata_backup_required": {"const": true}
+      }
+    },
+    "source_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["main_sha", "tree_sha"],
+      "properties": {
+        "main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "copies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "copy_id",
+          "storage_domain_id",
+          "custodian_id",
+          "credential_domain_id",
+          "access_mode",
+          "offline",
+          "source_main_sha",
+          "source_tree_sha",
+          "captured_at_utc",
+          "verified_at_utc",
+          "capture_manifest_sha256",
+          "verification_evidence_sha256",
+          "metadata_backup_present",
+          "shared_credentials_declared"
+        ],
+        "properties": {
+          "copy_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+          "storage_domain_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+          "custodian_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+          "credential_domain_id": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"}
+            ]
+          },
+          "access_mode": {
+            "enum": ["offline", "local", "remote_read_only", "remote"]
+          },
+          "offline": {"type": "boolean"},
+          "source_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "source_tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "captured_at_utc": {"type": "string", "format": "date-time"},
+          "verified_at_utc": {"type": "string", "format": "date-time"},
+          "capture_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "verification_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "metadata_backup_present": {"type": "boolean"},
+          "shared_credentials_declared": {"const": false}
+        }
+      }
+    },
+    "independence_attestations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "attestation_id",
+          "copy_a",
+          "copy_b",
+          "observer_domain_id",
+          "observed_at_utc",
+          "evidence_sha256",
+          "result"
+        ],
+        "properties": {
+          "attestation_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+          "copy_a": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+          "copy_b": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+          "observer_domain_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+          "observed_at_utc": {"type": "string", "format": "date-time"},
+          "evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "result": {"enum": ["support", "contradict", "indeterminate"]}
+        }
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "physical_independence_proven",
+        "continuity_guaranteed",
+        "canonical_successor_claimed",
+        "authority_transferred",
+        "rescue_authorized",
+        "failover_authorized",
+        "external_execution_authorized",
+        "kontur_activation_authorized"
+      ],
+      "properties": {
+        "physical_independence_proven": {"const": false},
+        "continuity_guaranteed": {"const": false},
+        "canonical_successor_claimed": {"const": false},
+        "authority_transferred": {"const": false},
+        "rescue_authorized": {"const": false},
+        "failover_authorized": {"const": false},
+        "external_execution_authorized": {"const": false},
+        "kontur_activation_authorized": {"const": false}
+      }
+    }
+  }
+}
