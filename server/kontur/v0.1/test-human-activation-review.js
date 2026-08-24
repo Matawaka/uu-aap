@@ -57,7 +57,8 @@ function checkpoint(currentMainBinding) {
     project_id: 'Matawaka/uu-aap',
     git_revision: GIT_REVISION,
     convergence_manifest_binding: {
-      artifact_type: 'ArchitectureConvergenceReadinessManifest', artifact_ref: 'test',
+      artifact_type: 'ArchitectureConvergenceReadinessManifest',
+      artifact_ref: 'schemas/architecture/v0.1/examples/architecture-convergence-readiness.example.json',
       digest: { canonicalization: 'RFC8785-JCS', digest_algorithm: 'SHA-256', digest_encoding: 'hex', value: '1'.repeat(64) }
     },
     current_main_frontier_verification_binding: currentMainBinding,
@@ -171,6 +172,16 @@ async function decisionArgs(packet, predecessorSet, overrides = {}) {
     p.projectCheckpoint.current_main_frontier_verification_binding.digest.value = 'f'.repeat(64);
     await Review.buildReviewPacket({ ...p, gitRevision: GIT_REVISION, preparedAt: NOW });
   });
+  await mustReject('structurally incomplete checkpoint claims', async () => {
+    const p = clone(predecessorSet);
+    delete p.projectCheckpoint.claims.future_evolution_allowed;
+    await Review.buildReviewPacket({ ...p, gitRevision: GIT_REVISION, preparedAt: NOW });
+  });
+  await mustReject('checkpoint unexpected top-level field', async () => {
+    const p = clone(predecessorSet);
+    p.projectCheckpoint.unexpected = true;
+    await Review.buildReviewPacket({ ...p, gitRevision: GIT_REVISION, preparedAt: NOW });
+  });
   await mustReject('frontier non-main event', async () => {
     const p = clone(predecessorSet);
     p.currentMainVerification.workflow_context.event_name = 'pull_request';
@@ -184,6 +195,16 @@ async function decisionArgs(packet, predecessorSet, overrides = {}) {
   await mustReject('frontier already activated', async () => {
     const p = clone(predecessorSet);
     p.currentMainVerification.claims.kernel_activated = true;
+    await Review.buildReviewPacket({ ...p, gitRevision: GIT_REVISION, preparedAt: NOW });
+  });
+  await mustReject('structurally incomplete current-main claims', async () => {
+    const p = clone(predecessorSet);
+    delete p.currentMainVerification.claims.workflow_context_is_main_push;
+    await Review.buildReviewPacket({ ...p, gitRevision: GIT_REVISION, preparedAt: NOW });
+  });
+  await mustReject('current-main unexpected workflow context field', async () => {
+    const p = clone(predecessorSet);
+    p.currentMainVerification.workflow_context.unexpected = true;
     await Review.buildReviewPacket({ ...p, gitRevision: GIT_REVISION, preparedAt: NOW });
   });
 
