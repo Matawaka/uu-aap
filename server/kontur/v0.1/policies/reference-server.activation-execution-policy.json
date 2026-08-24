@@ -22,6 +22,7 @@
     "live_host_eligibility_required_for_live_mode": true,
     "live_ledger_root_matches_host_profile": true,
     "test_only_carries_no_live_host_eligibility": true,
+    "test_only_ledger_root_ephemeral": true,
     "empty_genesis_ledger": true,
     "one_shot_execute_nonce": true,
     "execute_nonce_distinct_from_intent_nonce": true,
