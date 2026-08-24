@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/integration/pre-action-evidence-bundle/v0.1/pre-action-evidence-bundle.schema.json",
+  "title": "UU-AAP Pre-Action Evidence Bundle v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "bundle_id",
+    "assembled_at",
+    "subject",
+    "selection_binding",
+    "availability_binding",
+    "target",
+    "approval_binding",
+    "core_receipts",
+    "lifecycle_handoff",
+    "assertions",
+    "non_effects",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-PRE-ACTION-EVIDENCE-BUNDLE"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "PreActionEvidenceBundle"},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "assembled_at": {"type": "string", "format": "date-time"},
+    "subject": {"$ref": "#/$defs/subject"},
+    "selection_binding": {"type": "object"},
+    "availability_binding": {"type": "object"},
+    "target": {"type": "object"},
+    "approval_binding": {"type": "object"},
+    "core_receipts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "availability", "intent", "authority_or_responsibility", "coordination", "action_permit"],
+      "properties": {
+        "state": {"$ref": "#/$defs/coreReceipt"},
+        "availability": {"$ref": "#/$defs/coreReceipt"},
+        "intent": {"$ref": "#/$defs/coreReceipt"},
+        "authority_or_responsibility": {"$ref": "#/$defs/coreReceipt"},
+        "coordination": {"$ref": "#/$defs/coreReceipt"},
+        "action_permit": {"$ref": "#/$defs/coreReceipt"}
+      }
+    },
+    "lifecycle_handoff": {"type": "object"},
+    "assertions": {"type": "object", "minProperties": 1},
+    "non_effects": {"type": "object", "minProperties": 1},
+    "content_hash": {"$ref": "#/$defs/hash"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "scope"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1}
+      }
+    },
+    "coreReceipt": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "version",
+        "receipt_type",
+        "subject",
+        "frontier",
+        "predecessor_receipt_hashes",
+        "assertions",
+        "non_effects",
+        "issuer",
+        "issued_at",
+        "payload",
+        "signature_profile",
+        "content_hash"
+      ]
+    }
+  }
+}
