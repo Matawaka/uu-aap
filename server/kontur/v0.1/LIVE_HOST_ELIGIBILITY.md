@@ -9,6 +9,7 @@
 process persistence
 != durable-state persistence
 != human live-host designation
+!= designated operator identity
 != live-host eligibility
 != execution authority
 != activation
@@ -18,9 +19,9 @@ A temporary process, container, agent session or Codex sandbox does not become a
 
 ## Artifact chain
 
-The host boundary now consists of three machine-readable stages:
+The host boundary consists of three machine-readable stages:
 
-1. `KONTURLiveHostDesignationDecision v0.1` — an explicit human decision naming the exact intended persistent repository/ledger boundary and its declarations;
+1. `KONTURLiveHostDesignationDecision v0.1` — an explicit human decision naming the exact intended persistent repository/ledger boundary, designated operator and host declarations;
 2. `KONTURLiveHostProfile v0.1` — a deterministic profile derived from and cryptographically bound to that exact designation decision;
 3. `KONTURLiveHostEligibilityReceipt v0.1` — a bounded observation of whether the current runtime matches the designated profile and may attempt live preflight.
 
@@ -39,12 +40,14 @@ The profile derives and revalidates:
 
 - KONTUR `system_id` and `server_instance_id`;
 - distinct `host_id`;
-- `operator_ref = designator_ref`;
+- designated `operator_ref = designation.target.operator_ref`;
 - canonical repository `Matawaka/uu-aap`;
 - persistent repository root;
 - persistent Durable Responsibility Ledger root;
 - `runtime_boundary = host_local`;
 - the exact human-designated persistence/outside-repository/CI/sandbox declarations.
+
+`designator_ref` and `operator_ref` are distinct roles. The designation may explicitly bind them to the same actor, but the profile builder must not infer that equality.
 
 The profile creation timestamp cannot predate the designation. Its identity includes the exact human-designation binding and is deterministic under RFC 8785 JCS + SHA-256.
 
@@ -59,6 +62,7 @@ Therefore:
 ```text
 explicit human designation
 != cryptographic human identity
+!= designated operator authentication
 != cryptographic hardware identity
 != OS trust attestation
 != execution authority
@@ -134,4 +138,4 @@ The lower-level `evaluateLiveHostEligibility()` remains intentionally pure and a
 
 `LIVE_HOST_RUNTIME_REOBSERVATION.md` requires Git/filesystem/process/CI/sandbox facts to be measured again at the live effect boundary and to reproduce the bound receipt before any Kernel or durable-ledger access.
 
-This still does not provide TPM binding, secure-boot attestation, remote-host adapters, distributed host identity or cryptographic human authentication. The v0.1 assurance remains explicit-human-designated, typed and host-locally observed.
+This still does not provide TPM binding, secure-boot attestation, remote-host adapters, distributed host identity, cryptographic human authentication or cryptographic operator authentication. The v0.1 assurance remains explicit-human-designated, typed and host-locally observed.
