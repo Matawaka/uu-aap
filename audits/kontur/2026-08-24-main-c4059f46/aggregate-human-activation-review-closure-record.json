@@ -1,0 +1,97 @@
+{
+  "document_type": "uu-aap.kontur-human-activation-review-aggregate-closure-record",
+  "version": "0.1",
+  "audit_date": "2026-08-24",
+  "closure_predecessor_frontier": {
+    "main_sha": "c4059f46d8f098738778f5af425e3c0c7dbbf7a5",
+    "tree_sha": "5255eb6977a8f5bbeb95bee9e0b7a43c3824ddc5",
+    "parent_sha": "7ef92480f36507594e0c9886bff3b7640383e549",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid"
+  },
+  "scope": "aggregate closure of the original Human Activation Review Medium finding set represented by HAR-M1, HAR-M2, and HAR-M3",
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-c4059f46/aggregate-human-activation-review-closure-report.md"
+  },
+  "canonical_evidence_chain": [
+    {
+      "stage": "HAR-M1-and-HAR-M2-targeted-reaudit",
+      "pr_number": 299,
+      "merge_commit_sha": "ab0be5e4993189340053f2b42f3623788b6a9485",
+      "record_path": "audits/kontur/2026-08-24-main-cf4abd4d/targeted-re-audit-record.json",
+      "result": {
+        "HAR-M1": "closed_verified",
+        "HAR-M2": "closed_verified"
+      }
+    },
+    {
+      "stage": "HAR-M3-malformed-prior-entry-reaudit",
+      "pr_number": 301,
+      "merge_commit_sha": "db689e49e2bc4fadf3dfdb22e0d61859f40d2667",
+      "record_path": "audits/kontur/2026-08-24-main-7a085ffa/har-m3-targeted-re-audit-record.json",
+      "result": {
+        "HAR-M3-malformed-prior-entry": "closed_verified"
+      }
+    },
+    {
+      "stage": "HAR-M3-complete-packet-binding-reaudit",
+      "pr_number": 304,
+      "merge_commit_sha": "14a8213a67980e530d89d6e8d3aee5a3b446d46a",
+      "record_path": "audits/kontur/2026-08-24-main-7f6ac9c8/har-m3-decision-id-targeted-re-audit-record.json",
+      "result": {
+        "HAR-M3-packet-ref-decision-id-binding": "closed_verified"
+      }
+    },
+    {
+      "stage": "HAR-M3-canonical-deterministic-id-final-reaudit",
+      "pr_number": 306,
+      "merge_commit_sha": "c4059f46d8f098738778f5af425e3c0c7dbbf7a5",
+      "record_path": "audits/kontur/2026-08-24-main-7ef92480/har-m3-deterministic-id-final-re-audit-record.json",
+      "result": {
+        "HAR-M3-delimiter-joined-decision-id-seed": "closed_verified"
+      }
+    }
+  ],
+  "aggregate_findings": {
+    "HAR-M1": "closed_verified",
+    "HAR-M2": "closed_verified",
+    "HAR-M3-malformed-prior-entry": "closed_verified",
+    "HAR-M3-packet-ref-decision-id-binding": "closed_verified",
+    "HAR-M3-delimiter-joined-decision-id-seed": "closed_verified"
+  },
+  "remaining_findings": {
+    "high_or_critical_in_original_har_finding_set": 0,
+    "medium_in_original_har_finding_set": [],
+    "low_summary": [
+      "reviewer_ref is declared identity only and is not cryptographically authenticated",
+      "relative timestamp ordering is builder-enforced but not independently schema-enforced",
+      "hosted GitHub Actions evidence retention limits long-term availability"
+    ]
+  },
+  "all_original_har_medium_findings_closed": true,
+  "aggregate_closure_candidate_complete": true,
+  "aggregate_closure_is_canonical_before_merge": false,
+  "formal_human_activation_review_stage_may_be_prepared_after_this_record_is_canonical": true,
+  "formal_human_activation_review_outcome_predetermined": false,
+  "formal_human_activation_review_decision_created": false,
+  "activation_intent_created": false,
+  "live_preflight_run": false,
+  "execute_command_created": false,
+  "live_executor_invoked": false,
+  "kontur_activated": false,
+  "responsibility_accepted": false,
+  "execution_authority_granted": false,
+  "permission_expansion_or_bypass": false,
+  "repository_ownership_or_canonical_origin_mutated": false,
+  "required_next_stage_after_canonicalization": "prepare a fresh Formal Human Activation Review against the then-current exact canonical frontier; do not infer or preselect the human review outcome",
+  "final_bounded_conclusion": "HAR_ORIGINAL_MEDIUM_FINDINGS_AGGREGATE_CLOSURE_PASS",
+  "boundary": {
+    "closure_record_is_human_review_decision": false,
+    "closure_record_is_activation_intent": false,
+    "closure_record_is_activation_authorization": false,
+    "closure_record_is_execution_authority": false,
+    "closure_record_is_kontur_activation": false,
+    "closure_record_is_truth_certification": false,
+    "closure_record_is_legal_liability_determination": false
+  }
+}
