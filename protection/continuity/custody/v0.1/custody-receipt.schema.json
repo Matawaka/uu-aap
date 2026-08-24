@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:continuity:custody-receipt:v0.1",
+  "title": "UU-AAP Continuity Human Custody Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "envelope_digest_sha256",
+    "copy_slot",
+    "custodian_role_id",
+    "observed_at_utc",
+    "storage_domain_id",
+    "custody_evidence_sha256",
+    "copy_bytes_verified",
+    "offline_confirmed",
+    "human_attestation_required",
+    "boundary"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.continuity-human-custody-receipt"},
+    "version": {"const": "0.1"},
+    "status": {"const": "human-custody-attestation"},
+    "envelope_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "copy_slot": {
+      "enum": ["active-local-copy", "sealed-offline-copy", "independent-secondary-copy"]
+    },
+    "custodian_role_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+    "observed_at_utc": {"type": "string", "format": "date-time"},
+    "storage_domain_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+    "custody_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "copy_bytes_verified": {"const": true},
+    "offline_confirmed": {"type": "boolean"},
+    "human_attestation_required": {"const": true},
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "physical_possession_proven",
+        "custodian_is_successor",
+        "repository_authority_transferred",
+        "canonical_successor_claimed",
+        "rescue_authorized",
+        "failover_authorized",
+        "external_execution_authorized",
+        "kontur_activation_authorized"
+      ],
+      "properties": {
+        "physical_possession_proven": {"const": false},
+        "custodian_is_successor": {"const": false},
+        "repository_authority_transferred": {"const": false},
+        "canonical_successor_claimed": {"const": false},
+        "rescue_authorized": {"const": false},
+        "failover_authorized": {"const": false},
+        "external_execution_authorized": {"const": false},
+        "kontur_activation_authorized": {"const": false}
+      }
+    }
+  }
+}
