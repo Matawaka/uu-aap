@@ -1,0 +1,94 @@
+name: Runtime Portability Probe v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protection/portability/v0.1/**"
+      - ".github/workflows/runtime-portability-probe-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protection/portability/v0.1/**"
+      - ".github/workflows/runtime-portability-probe-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Runtime portability boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check "jsonschema==4.25.1"
+
+      - name: Validate source and schema
+        run: |
+          node --check protection/portability/v0.1/runtime-portability-probe.js
+          node --check protection/portability/v0.1/test-runtime-portability-probe.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('protection/portability/v0.1/runtime-portability-receipt.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: RuntimePortabilityReceipt v0.1')
+          PY
+
+      - name: Run fail-closed tests
+        run: node protection/portability/v0.1/test-runtime-portability-probe.js
+
+      - name: Probe current runner and validate receipt
+        run: |
+          node protection/portability/v0.1/runtime-portability-probe.js probe \
+            /tmp/runtime-portability-receipt.json 2026-08-24T04:00:00Z
+          node protection/portability/v0.1/runtime-portability-probe.js verify \
+            /tmp/runtime-portability-receipt.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path('protection/portability/v0.1/runtime-portability-receipt.schema.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('/tmp/runtime-portability-receipt.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          assert receipt['capabilities']['temporary_workspace']['status'] == 'observed_supported'
+          assert receipt['claims']['durability_requirement_satisfied'] is False
+          assert receipt['claims']['durability_fallback_authorized'] is False
+          assert receipt['claims']['kontur_readiness_established'] is False
+          assert receipt['claims']['kontur_activation_authorized'] is False
+          assert receipt['claims']['kontur_activated'] is False
+          print('Observed capabilities:', json.dumps(receipt['capabilities'], sort_keys=True))
+          print('PASS: runtime observation preserves bounded non-effects')
+          PY
+
+      - name: Assert probe cannot weaken durability or invoke KONTUR
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('protection/portability/v0.1/runtime-portability-probe.js').read_text(encoding='utf-8')
+          forbidden = [
+              'child_' + 'process', "require('" + 'http' + "')", "require('" + 'https' + "')",
+              "require('" + 'net' + "')", 'server/' + 'kontur', 'activation-' + 'preflight',
+              'activation-' + 'executor', 'responsibility-' + 'kernel', 'responsibility-' + 'ledger',
+              'fallback_' + 'authorized = true', 'durability_' + 'requirement_satisfied = true'
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS: probe is observation-only and KONTUR-independent')
+          PY
+
+      - name: Confirm checkout was not mutated
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
