@@ -1,49 +1,54 @@
 # KONTUR Live Host Eligibility v0.1
 
 **Status:** experimental non-activation infrastructure boundary  
-**Scope:** evidence required before a concrete environment may be treated as a live KONTUR execution host
+**Scope:** evidence required before a human-designated persistent environment may be treated as a live KONTUR execution host
 
 ## Invariant
 
 ```text
 process persistence
 != durable-state persistence
+!= human live-host designation
 != live-host eligibility
 != execution authority
 != activation
 ```
 
-A temporary process, container, agent session or Codex sandbox does not become a live KONTUR host merely because it can run the repository code. Conversely, process ephemerality is not by itself the decisive property: a future controller may act through a separately authenticated persistent host adapter. v0.1 deliberately does **not** define that remote-adapter mode and permits only `host_local` eligibility.
+A temporary process, container, agent session or Codex sandbox does not become a live KONTUR host merely because it can run the repository code. Supplying host parameters to a builder is also not a human designation. v0.1 permits only `host_local` eligibility and requires the explicit designation boundary defined in `LIVE_HOST_DESIGNATION.md`.
 
-## Why this boundary exists
+## Artifact chain
 
-The activation pipeline already distinguishes readiness, Formal Human Activation Review, Activation Intent, preflight, final human execute and durable Kernel execution. A remaining operational gap appears when those artifacts are evaluated in an environment that is only a temporary CI or sandbox filesystem.
+The host boundary now consists of three machine-readable stages:
 
-Without a typed host boundary, code could be mechanically valid while the claimed `reference-primary` server identity and durable ledger location are only assumed.
+1. `KONTURLiveHostDesignationDecision v0.1` — an explicit human decision naming the exact intended persistent repository/ledger boundary and its declarations;
+2. `KONTURLiveHostProfile v0.1` — a deterministic profile derived from and cryptographically bound to that exact designation decision;
+3. `KONTURLiveHostEligibilityReceipt v0.1` — a bounded observation of whether the current runtime matches the designated profile and may attempt live preflight.
 
-This layer therefore adds two machine-readable artifacts:
-
-1. `KONTURLiveHostProfile v0.1` — an explicit human designation of one persistent repository/ledger boundary;
-2. `KONTURLiveHostEligibilityReceipt v0.1` — a bounded observation of whether the current runtime matches that profile and may attempt live preflight.
-
-Neither artifact activates KONTUR.
+None of these artifacts activates KONTUR.
 
 ## KONTURLiveHostProfile
 
-The profile binds:
+A valid profile cannot be built from raw `hostId`, `operatorRef` and path arguments alone. It requires one exact valid `KONTURLiveHostDesignationDecision` and embeds both:
+
+```text
+human_designation_binding
+human_designation_evidence
+```
+
+The profile derives and revalidates:
 
 - KONTUR `system_id` and `server_instance_id`;
-- a distinct `host_id`;
-- declared operator reference;
+- distinct `host_id`;
+- `operator_ref = designator_ref`;
 - canonical repository `Matawaka/uu-aap`;
 - persistent repository root;
 - persistent Durable Responsibility Ledger root;
 - `runtime_boundary = host_local`;
-- declared absence of CI and temporary-sandbox status.
+- the exact human-designated persistence/outside-repository/CI/sandbox declarations.
 
-The profile identity is deterministic under RFC 8785 JCS + SHA-256.
+The profile creation timestamp cannot predate the designation. Its identity includes the exact human-designation binding and is deterministic under RFC 8785 JCS + SHA-256.
 
-Its identity assurance is deliberately:
+Its assurance remains deliberately:
 
 ```text
 human_designated_not_cryptographically_verified
@@ -52,7 +57,8 @@ human_designated_not_cryptographically_verified
 Therefore:
 
 ```text
-host profile designated
+explicit human designation
+!= cryptographic human identity
 != cryptographic hardware identity
 != OS trust attestation
 != execution authority
@@ -62,7 +68,7 @@ The ledger root must be distinct from the repository root. This keeps durable re
 
 ## KONTURLiveHostEligibilityReceipt
 
-Eligibility consumes the exact profile plus an observed runtime surface. The positive decision requires all of the following at once:
+Eligibility consumes the exact bound profile plus an observed runtime surface. A positive decision requires all of the following at once:
 
 - repository root exactly matches the profile;
 - durable ledger root exactly matches the profile;
@@ -82,14 +88,14 @@ decision = live_host_eligible
 safe_next_step = live_preflight_may_be_attempted
 ```
 
-A negative observation is represented explicitly rather than silently discarded:
+A negative observation is explicit:
 
 ```text
 decision = live_host_ineligible
 safe_next_step = stop_host_ineligible
 ```
 
-This makes a sandbox refusal a valid protocol outcome rather than an operational accident.
+Human designation cannot override a negative runtime observation.
 
 ## Non-effects
 
@@ -116,14 +122,16 @@ live_host_eligible
 
 ## CI semantics
 
-CI validates schemas, deterministic identities and fail-closed vectors only. CI itself must produce an **ineligible** result when represented as a candidate live host. The workflow must never manufacture a positive live-host receipt for the GitHub runner, create an execute command, call the Responsibility Kernel or write a live ledger.
+CI validates schemas, deterministic identities and fail-closed vectors only. It may construct synthetic designation/profile/eligibility artifacts for tests, but those artifacts do not designate the GitHub runner or any real host. CI itself must produce an **ineligible** result when its actual runtime is observed as a candidate live host.
+
+The workflow must never create a real human designation, call the Responsibility Kernel or write a live ledger.
 
 ## Current integration status
 
-The live Executor now requires an exact `KONTURLiveHostEligibilityReceipt` and binds its host/profile/ledger-root evidence into `execution_mode = live`. Direct-core execution also re-enters that public gate before mutation, and `test_only` is restricted to an ephemeral OS temporary-root ledger.
+The live Executor requires an exact `KONTURLiveHostEligibilityReceipt` and binds its host/profile/ledger-root evidence into `execution_mode = live`. Direct-core execution re-enters that public gate before mutation, and `test_only` is restricted to an ephemeral OS temporary-root ledger.
 
-The lower-level `evaluateLiveHostEligibility()` remains intentionally pure and accepts a supplied environment object for deterministic tests and external observers. Therefore a positive receipt produced from caller assertions alone must not be treated as sufficient effect-time observation.
+The lower-level `evaluateLiveHostEligibility()` remains intentionally pure and accepts a supplied environment object for deterministic fixtures and external observers. Therefore a positive receipt produced from caller assertions alone is insufficient at the effect boundary.
 
-The successor runtime-re-observation layer in `LIVE_HOST_RUNTIME_REOBSERVATION.md` measures Git/filesystem/process/CI/sandbox facts again at the live effect boundary and requires those measurements to reproduce the bound receipt before any Kernel or durable-ledger access.
+`LIVE_HOST_RUNTIME_REOBSERVATION.md` requires Git/filesystem/process/CI/sandbox facts to be measured again at the live effect boundary and to reproduce the bound receipt before any Kernel or durable-ledger access.
 
-This still does not provide cryptographic machine attestation, TPM binding, remote-host adapters or distributed host identity. The v0.1 assurance remains typed, human-designated and host-locally observed.
+This still does not provide TPM binding, secure-boot attestation, remote-host adapters, distributed host identity or cryptographic human authentication. The v0.1 assurance remains explicit-human-designated, typed and host-locally observed.
