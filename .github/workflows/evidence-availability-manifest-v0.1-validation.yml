@@ -1,0 +1,108 @@
+name: Evidence Availability Manifest v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protection/evidence/v0.1/**"
+      - ".github/workflows/evidence-availability-manifest-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protection/evidence/v0.1/**"
+      - ".github/workflows/evidence-availability-manifest-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Evidence availability boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check "jsonschema==4.25.1"
+
+      - name: Validate source and schema
+        run: |
+          node --check protection/evidence/v0.1/evidence-availability-manifest.js
+          node --check protection/evidence/v0.1/test-evidence-availability-manifest.js
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('protection/evidence/v0.1/evidence-availability-manifest.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema: EvidenceAvailabilityManifest v0.1')
+          PY
+
+      - name: Run fail-closed tests
+        run: node protection/evidence/v0.1/test-evidence-availability-manifest.js
+
+      - name: Exercise CLI on real repository bytes
+        run: |
+          HEAD_SHA="$(git rev-parse HEAD)"
+          TREE_SHA="$(git rev-parse HEAD^{tree})"
+          cat > /tmp/evidence-spec.json <<EOF
+          {
+            "source_context": {
+              "project_id": "Matawaka/uu-aap",
+              "git_revision": "git:${HEAD_SHA}",
+              "tree_sha": "${TREE_SHA}",
+              "scope": "CI smoke set: repository integrity documentation"
+            },
+            "files": [
+              {"relative_path": "FILE_HASHES.md", "role": "repository-integrity-policy"},
+              {"relative_path": "NOTICE.md", "role": "repository-notice"}
+            ]
+          }
+          EOF
+          node protection/evidence/v0.1/evidence-availability-manifest.js build \
+            . /tmp/evidence-spec.json /tmp/evidence-manifest.json 2026-08-24T04:00:00Z
+          node protection/evidence/v0.1/evidence-availability-manifest.js verify \
+            . /tmp/evidence-manifest.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema = json.loads(Path('protection/evidence/v0.1/evidence-availability-manifest.schema.json').read_text(encoding='utf-8'))
+          manifest = json.loads(Path('/tmp/evidence-manifest.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(manifest)
+          assert manifest['claims']['evidence_truth_certified'] is False
+          assert manifest['claims']['evidence_completeness_proven'] is False
+          assert manifest['claims']['authority_established'] is False
+          assert manifest['claims']['kontur_readiness_established'] is False
+          assert manifest['claims']['kontur_activation_authorized'] is False
+          assert manifest['claims']['kontur_activated'] is False
+          print('PASS: generated manifest validates and preserves non-effects')
+          PY
+
+      - name: Assert local-only implementation boundary
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('protection/evidence/v0.1/evidence-availability-manifest.js').read_text(encoding='utf-8')
+          forbidden = [
+              'child_' + 'process', "require('" + 'http' + "')", "require('" + 'https' + "')",
+              "require('" + 'net' + "')", 'server/' + 'kontur', 'activation-' + 'preflight',
+              'activation-' + 'executor', 'responsibility-' + 'kernel', 'responsibility-' + 'ledger'
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS: evidence manifest implementation is local-only and KONTUR-independent')
+          PY
+
+      - name: Confirm checkout was not mutated
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
