@@ -1,0 +1,39 @@
+name: UU-AAP non-induced intent v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/core/extensions/intent-evidence/v0.1/**"
+      - "protocols/core/v0.1/**"
+      - "protocols/core/extensions/v0.1/**"
+      - "protocols/core/extensions/composition/v0.1/**"
+      - "protocols/core/evolution/v0.1/**"
+      - ".github/workflows/non-induced-intent-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "protocols/core/extensions/intent-evidence/v0.1/**"
+      - "protocols/core/v0.1/**"
+      - "protocols/core/extensions/v0.1/**"
+      - "protocols/core/extensions/composition/v0.1/**"
+      - "protocols/core/evolution/v0.1/**"
+      - ".github/workflows/non-induced-intent-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen Core v0.1
+        run: node protocols/core/v0.1/validate-core.js
+      - name: Validate extension composition boundary
+        run: node protocols/core/extensions/v0.1/validate-extensions.js
+      - name: Validate extension composition receipt
+        run: node protocols/core/extensions/composition/v0.1/validate-composition-receipt.js
+      - name: Validate stack evolution policy
+        run: node protocols/core/evolution/v0.1/validate-evolution.js
+      - name: Validate non-induced intent profile
+        run: node protocols/core/extensions/intent-evidence/v0.1/validate-intent-evidence.js
