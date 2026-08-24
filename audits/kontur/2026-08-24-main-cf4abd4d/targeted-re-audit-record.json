@@ -11,7 +11,10 @@
     "commit_signature_reason": "valid"
   },
   "scope": "PR #294 Human Activation Review remediation targeted re-audit",
-  "report_path": "audits/kontur/2026-08-24-main-cf4abd4d/targeted-re-audit-report.md",
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-cf4abd4d/targeted-re-audit-report.md",
+    "sha256": "a2eb9bb1cb9462d82ad842a410eb29162aa1b754a74eb23f0231f7699276e7da"
+  },
   "final_bounded_conclusion": "HAR_REMEDIATION_NEEDS_MORE_TESTING",
   "findings": {
     "HAR-M1": {
