@@ -1,0 +1,109 @@
+{
+  "document_type": "uu-aap.continuity-copy-set-attestation",
+  "version": "0.1",
+  "status": "experimental-evidence",
+  "as_of_utc": "2026-08-24T00:00:00Z",
+  "policy_binding": {
+    "schema_id": "urn:uu-aap:continuity:policy:v0.1",
+    "minimum_independent_copies": 3,
+    "minimum_independent_custodians": 2,
+    "offline_copy_required": true,
+    "shared_credentials_allowed": false,
+    "capture_cadence_days": 7,
+    "verification_cadence_days": 30,
+    "metadata_backup_required": true
+  },
+  "source_frontier": {
+    "main_sha": "2a0fbd4d67e9db4913658da825336d2c4a8c2888",
+    "tree_sha": "db02276c32a374eb80bae1ed3701762a9dda7c92"
+  },
+  "copies": [
+    {
+      "copy_id": "copy-local-a",
+      "storage_domain_id": "storage-local-a",
+      "custodian_id": "custodian-a",
+      "credential_domain_id": "credential-local-a",
+      "access_mode": "local",
+      "offline": false,
+      "source_main_sha": "2a0fbd4d67e9db4913658da825336d2c4a8c2888",
+      "source_tree_sha": "db02276c32a374eb80bae1ed3701762a9dda7c92",
+      "captured_at_utc": "2026-08-23T18:00:00Z",
+      "verified_at_utc": "2026-08-23T18:30:00Z",
+      "capture_manifest_sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "verification_evidence_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "metadata_backup_present": true,
+      "shared_credentials_declared": false
+    },
+    {
+      "copy_id": "copy-offline-b",
+      "storage_domain_id": "storage-offline-b",
+      "custodian_id": "custodian-b",
+      "credential_domain_id": null,
+      "access_mode": "offline",
+      "offline": true,
+      "source_main_sha": "2a0fbd4d67e9db4913658da825336d2c4a8c2888",
+      "source_tree_sha": "db02276c32a374eb80bae1ed3701762a9dda7c92",
+      "captured_at_utc": "2026-08-23T19:00:00Z",
+      "verified_at_utc": "2026-08-23T19:20:00Z",
+      "capture_manifest_sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "verification_evidence_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "metadata_backup_present": true,
+      "shared_credentials_declared": false
+    },
+    {
+      "copy_id": "copy-remote-c",
+      "storage_domain_id": "storage-remote-c",
+      "custodian_id": "custodian-a",
+      "credential_domain_id": "credential-remote-c",
+      "access_mode": "remote_read_only",
+      "offline": false,
+      "source_main_sha": "2a0fbd4d67e9db4913658da825336d2c4a8c2888",
+      "source_tree_sha": "db02276c32a374eb80bae1ed3701762a9dda7c92",
+      "captured_at_utc": "2026-08-23T20:00:00Z",
+      "verified_at_utc": "2026-08-23T20:15:00Z",
+      "capture_manifest_sha256": "3333333333333333333333333333333333333333333333333333333333333333",
+      "verification_evidence_sha256": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "metadata_backup_present": true,
+      "shared_credentials_declared": false
+    }
+  ],
+  "independence_attestations": [
+    {
+      "attestation_id": "independence-local-offline",
+      "copy_a": "copy-local-a",
+      "copy_b": "copy-offline-b",
+      "observer_domain_id": "observer-domain-1",
+      "observed_at_utc": "2026-08-23T21:00:00Z",
+      "evidence_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "result": "support"
+    },
+    {
+      "attestation_id": "independence-local-remote",
+      "copy_a": "copy-local-a",
+      "copy_b": "copy-remote-c",
+      "observer_domain_id": "observer-domain-2",
+      "observed_at_utc": "2026-08-23T21:05:00Z",
+      "evidence_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "result": "support"
+    },
+    {
+      "attestation_id": "independence-offline-remote",
+      "copy_a": "copy-offline-b",
+      "copy_b": "copy-remote-c",
+      "observer_domain_id": "observer-domain-3",
+      "observed_at_utc": "2026-08-23T21:10:00Z",
+      "evidence_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "result": "support"
+    }
+  ],
+  "boundary": {
+    "physical_independence_proven": false,
+    "continuity_guaranteed": false,
+    "canonical_successor_claimed": false,
+    "authority_transferred": false,
+    "rescue_authorized": false,
+    "failover_authorized": false,
+    "external_execution_authorized": false,
+    "kontur_activation_authorized": false
+  }
+}
