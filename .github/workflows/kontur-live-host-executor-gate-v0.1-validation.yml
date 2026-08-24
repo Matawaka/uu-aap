@@ -1,0 +1,121 @@
+name: KONTUR Live Host Executor Gate v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "server/kontur/v0.1/activation-executor.js"
+      - "server/kontur/v0.1/activation-executor-core.js"
+      - "server/kontur/v0.1/test-live-host-executor-gate.js"
+      - "server/kontur/v0.1/kontur-activation-execute-command.schema.json"
+      - "server/kontur/v0.1/kontur-activation-execution-policy.schema.json"
+      - "server/kontur/v0.1/policies/reference-server.activation-execution-policy.json"
+      - "server/kontur/v0.1/LIVE_HOST_EXECUTOR_BINDING.md"
+      - ".github/workflows/kontur-live-host-executor-gate-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Live host eligibility to executor boundary
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check "jsonschema==4.25.1"
+
+      - name: Check wrapper, preserved core and targeted tests
+        run: |
+          node --check server/kontur/v0.1/activation-executor.js
+          node --check server/kontur/v0.1/activation-executor-core.js
+          node --check server/kontur/v0.1/test-live-host-executor-gate.js
+
+      - name: Prove executor core is byte-preserved from predecessor
+        run: |
+          test "$(git rev-parse HEAD:server/kontur/v0.1/activation-executor-core.js)" = "16ba271345a8cc74d70841c35c7039648f16d968"
+          echo "PASS: activation-executor-core.js is exact predecessor blob"
+
+      - name: Validate execution policy and command schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('server/kontur/v0.1')
+          for name in [
+              'kontur-activation-execute-command.schema.json',
+              'kontur-activation-execution-policy.schema.json',
+          ]:
+              schema = json.loads((root / name).read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              print('VALID schema:', name)
+          policy_schema = json.loads((root / 'kontur-activation-execution-policy.schema.json').read_text(encoding='utf-8'))
+          policy = json.loads((root / 'policies/reference-server.activation-execution-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator(policy_schema, format_checker=FormatChecker()).validate(policy)
+          print('VALID policy: reference-server.activation-execution-policy.json')
+          PY
+
+      - name: Keep existing test-only executor path green
+        run: node server/kontur/v0.1/test-activation-executor.js /tmp/kontur-executor-regression
+
+      - name: Validate generated test-only execute command under new schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('server/kontur/v0.1')
+          schema = json.loads((root / 'kontur-activation-execute-command.schema.json').read_text(encoding='utf-8'))
+          command = json.loads(Path('/tmp/kontur-executor-regression/activation-execute-command.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(command)
+          assert command['execution_mode'] == 'test_only'
+          assert command['live_host_eligibility_binding'] is None
+          assert command['live_host_eligibility_evidence'] is None
+          print('PASS: test_only remains host-evidence free')
+          PY
+
+      - name: Run fail-closed live host executor gate vectors
+        run: node server/kontur/v0.1/test-live-host-executor-gate.js /tmp/kontur-live-host-executor-gate
+
+      - name: Assert targeted test never performs positive live execution
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('/tmp/kontur-live-host-executor-gate/gate-vectors.json').read_text(encoding='utf-8'))
+          assert result['synthetic_fixture_only'] is True
+          assert result['live_execute_invoked'] is False
+          assert result['kernel_activated'] is False
+          assert result['durable_ledger_written'] is False
+          print('PASS: no positive live execution occurred in CI')
+          PY
+
+      - name: Assert wrapper adds no direct Kernel or ledger mutation path
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('server/kontur/v0.1/activation-executor.js').read_text(encoding='utf-8')
+          for token in [
+              'responsibility-kernel.js',
+              'responsibility-ledger.js',
+              'transitionResponsibility',
+              'commitLedgerEntry'
+          ]:
+              assert token not in source, f'wrapper gained direct mutation token: {token}'
+          assert "require('./activation-executor-core.js')" in source
+          assert "require('./live-host-eligibility.js')" in source
+          print('PASS: wrapper is gate-only; mutation remains in preserved core')
+          PY
+
+      - name: Confirm checkout was not mutated by tests
+        run: git diff --exit-code
