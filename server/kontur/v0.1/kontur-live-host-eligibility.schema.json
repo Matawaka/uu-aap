@@ -43,6 +43,7 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
+        "observed_repository_root", "observed_durable_ledger_root",
         "repository_root_matches_profile", "durable_ledger_root_matches_profile",
         "durable_ledger_root_exists", "durable_ledger_root_readable",
         "durable_ledger_root_writable", "durable_ledger_root_outside_repository",
@@ -51,6 +52,8 @@
         "workspace_root", "observed_git_revision"
       ],
       "properties": {
+        "observed_repository_root": {"type": "string", "minLength": 1},
+        "observed_durable_ledger_root": {"type": "string", "minLength": 1},
         "repository_root_matches_profile": {"type": "boolean"},
         "durable_ledger_root_matches_profile": {"type": "boolean"},
         "durable_ledger_root_exists": {"type": "boolean"},
