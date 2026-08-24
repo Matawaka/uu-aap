@@ -5,7 +5,6 @@ on:
     paths:
       - "server/kontur/**"
       - "protocols/registry/**"
-      - "protocols/integration/**"
       - "proposals/ccrp/**"
       - "proposals/poai/**"
       - ".github/workflows/kontur-responsibility-ledger-validation.yml"
@@ -15,7 +14,6 @@ on:
     paths:
       - "server/kontur/**"
       - "protocols/registry/**"
-      - "protocols/integration/**"
       - "proposals/ccrp/**"
       - "proposals/poai/**"
       - ".github/workflows/kontur-responsibility-ledger-validation.yml"
