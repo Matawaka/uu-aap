@@ -1,0 +1,114 @@
+name: Continuity Copy Set Attestation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/continuity/copy-set/v0.1/**'
+      - '.github/workflows/continuity-copy-set-attestation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/continuity/copy-set/v0.1/**'
+      - '.github/workflows/continuity-copy-set-attestation-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Parse Python and JSON
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python -m py_compile protection/continuity/copy-set/v0.1/copy_set_assessor.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('protection/continuity/copy-set/v0.1')
+          json.loads((root / 'copy-set-attestation.schema.json').read_text())
+          json.loads((root / 'reference.copy-set-attestation.json').read_text())
+          print('JSON parse OK')
+          PY
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Run copy-set evidence tests
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python protection/continuity/copy-set/v0.1/test_copy_set_attestation.py
+
+      - name: Run synthetic reference assessment
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python protection/continuity/copy-set/v0.1/copy_set_assessor.py \
+            protection/continuity/copy-set/v0.1/reference.copy-set-attestation.json \
+            > /tmp/copy-set-assessment.json
+          python - <<'PY'
+          import json
+          result = json.load(open('/tmp/copy-set-assessment.json'))
+          assert result['state'] == 'copy_set_review_eligible'
+          assert result['claims']['physical_independence_proven'] is False
+          assert result['claims']['authority_transferred'] is False
+          assert result['claims']['rescue_authorized'] is False
+          assert result['claims']['failover_authorized'] is False
+          assert result['claims']['external_execution_authorized'] is False
+          assert result['claims']['kontur_activation_authorized'] is False
+          print('bounded assessment OK')
+          PY
+
+      - name: Assert assessor has local-only surface
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          path = Path('protection/continuity/copy-set/v0.1/copy_set_assessor.py')
+          tree = ast.parse(path.read_text())
+          forbidden = {'socket', 'urllib', 'requests', 'httpx', 'subprocess', 'paramiko', 'ftplib'}
+          seen = set()
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  seen.update(alias.name.split('.')[0] for alias in node.names)
+              elif isinstance(node, ast.ImportFrom) and node.module:
+                  seen.add(node.module.split('.')[0])
+          bad = sorted(seen & forbidden)
+          assert not bad, f'forbidden external/process imports: {bad}'
+          print('local-only import surface OK')
+          PY
+
+      - name: Assert workflow remains read-only and KONTUR-independent
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/continuity-copy-set-attestation-v0.1-validation.yml').read_text()
+          required = 'contents' + ': read'
+          forbidden = [
+              'contents' + ': write',
+              'pull_request' + '_target',
+              'secrets' + '.',
+              'server/' + 'kontur',
+              'gh ' + 'api',
+              'curl' + ' ',
+              'wget' + ' ',
+          ]
+          assert required in text
+          bad = [item for item in forbidden if item in text]
+          assert not bad, f'forbidden workflow surface: {bad}'
+          print('workflow boundary OK')
+          PY
+
+      - name: Confirm checkout was not mutated
+        run: test -z "$(git status --porcelain)"
