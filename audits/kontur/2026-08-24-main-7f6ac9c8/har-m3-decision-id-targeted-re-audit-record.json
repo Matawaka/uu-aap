@@ -1,0 +1,74 @@
+{
+  "document_type": "uu-aap.kontur-har-m3-decision-id-targeted-re-audit-record",
+  "version": "0.1",
+  "audit_date": "2026-08-24",
+  "audited_frontier": {
+    "main_sha": "7f6ac9c8ac007c14449c31383f5e70d5a4093881",
+    "tree_sha": "7e9630b271578cb061cd88b28fea37ca3741ca38",
+    "parent_sha": "db689e49e2bc4fadf3dfdb22e0d61859f40d2667",
+    "revision_gate": "pass",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid"
+  },
+  "scope": "PR #302 HAR-M3 decision-ID packet-binding targeted re-audit",
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-7f6ac9c8/har-m3-decision-id-targeted-re-audit-report.md",
+    "git_blob_sha1": "40f2543d40a73c45f3d8a4f6a9211d3cf9aeb656"
+  },
+  "findings": {
+    "HAR-M1": {"status": "closed_verified"},
+    "HAR-M2": {"status": "closed_verified"},
+    "HAR-M3-malformed-prior-entry": {"status": "closed_verified"},
+    "HAR-M3-packet-ref-decision-id-binding": {"status": "closed_verified"},
+    "HAR-M3-delimiter-joined-decision-id-seed": {
+      "status": "open_medium",
+      "defect": "decision_id seed is a raw pipe-delimited tuple; contract-permitted pipe characters allow coordinated reviewer/outcome/nonce substitution to retain the old ID and bypass nonce-history detection"
+    }
+  },
+  "exact_main_workflow_runs": {
+    "har_m3_decision_id_binding": 32695091289,
+    "human_activation_review": 32695091274,
+    "readiness_aggregator": 32695091275,
+    "activation_preflight": 32695091254,
+    "activation_executor_test_only": 32695091280,
+    "responsibility_kernel": 32695091292,
+    "durable_responsibility_ledger": 32695091262,
+    "independent_audit_hardening": 32695091267,
+    "project_readiness_checkpoint": 32695091279
+  },
+  "remaining_findings": {
+    "high_or_critical": 0,
+    "medium": [
+      "HAR-M3 deterministic decision-ID seed uses ambiguous delimiter-joined tuple framing."
+    ],
+    "low_summary": [
+      "reviewer_ref is declared identity only and is not cryptographically authenticated",
+      "relative timestamp ordering is builder-enforced but not independently schema-enforced",
+      "30-day Actions evidence retention limits long-term independent availability"
+    ]
+  },
+  "required_next_step": "derive decision_id from an RFC8785/JCS canonical typed object containing every identity field, add coordinated-delimiter collision and nonce-reuse regressions, then perform another bounded HAR-M3 deterministic-ID re-audit",
+  "aggregate_closure_evidence_allowed_now": false,
+  "formal_human_activation_review_allowed_now": false,
+  "kontur_state": {
+    "kernel_activated": false,
+    "live_responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "human_review_decision_created": false,
+    "activation_intent_created": false,
+    "live_preflight_run": false,
+    "execute_command_created": false,
+    "live_executor_invoked": false,
+    "permission_expansion_or_bypass": false
+  },
+  "final_bounded_conclusion": "HAR_M3_DECISION_ID_BINDING_NEEDS_MORE_TESTING",
+  "boundary": {
+    "audit_record_is_human_review_approval": false,
+    "audit_record_is_activation_intent": false,
+    "audit_record_is_activation_authorization": false,
+    "audit_record_is_kontur_activation": false,
+    "audit_record_is_legal_liability_determination": false,
+    "audit_record_is_truth_certification": false
+  }
+}
