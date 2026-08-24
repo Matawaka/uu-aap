@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import json
 import re
@@ -115,11 +116,11 @@ def build_plan(main_sha: str, tree_sha: str) -> dict[str, Any]:
             "main_sha": main_sha,
             "tree_sha": tree_sha,
         },
-        "policy_binding": POLICY,
-        "copy_roles": COPY_ROLES,
-        "pairwise_independence_checks": PAIRWISE,
-        "operator_evidence_fields": EVIDENCE_FIELDS,
-        "boundary": BOUNDARY,
+        "policy_binding": copy.deepcopy(POLICY),
+        "copy_roles": copy.deepcopy(COPY_ROLES),
+        "pairwise_independence_checks": copy.deepcopy(PAIRWISE),
+        "operator_evidence_fields": copy.deepcopy(EVIDENCE_FIELDS),
+        "boundary": copy.deepcopy(BOUNDARY),
     }
     plan["plan_digest_sha256"] = compute_digest(plan)
     return plan
