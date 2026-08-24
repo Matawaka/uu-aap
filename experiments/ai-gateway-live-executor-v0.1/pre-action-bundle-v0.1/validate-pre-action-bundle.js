@@ -26,7 +26,7 @@ function hashObject(value, prefix = '') {
 }
 function assertHash(value, prefix = '') {
   const expected = hashObject(value, prefix);
-  if (value.content_hash !== expected) fail(`content hash mismatch for ${value.receipt_type || value.artifact_type || 'object'}`);
+  if (value.content_hash !== expected) fail(`content hash mismatch for ${value.receipt_type || value.artifact_type || 'object'}: ${value.content_hash} != ${expected}`);
 }
 function stripSha256(value) {
   return value.startsWith('sha256:') ? value.slice(7) : value;
