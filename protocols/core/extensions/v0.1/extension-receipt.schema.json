@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/core/extensions/v0.1/extension-receipt.schema.json",
+  "title": "UU-AAP ExtensionReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "extension_type", "subject", "frontier",
+    "predecessor_receipt_hashes", "assertions", "non_effects", "safe_effects", "core_binding",
+    "issuer", "issued_at", "payload", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-EXT"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "ExtensionReceipt"},
+    "extension_type": {
+      "enum": ["pic", "appeal", "readiness", "circumstantial_provenance", "sustainability"]
+    },
+    "subject": {"type": "string", "minLength": 1},
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "observed_at"],
+      "properties": {
+        "revision": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "predecessor_receipt_hashes": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+      "uniqueItems": true
+    },
+    "assertions": {"type": "object"},
+    "non_effects": {"type": "object"},
+    "safe_effects": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "core_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["may_contribute_to", "substitutes_for_core_receipt"],
+      "properties": {
+        "may_contribute_to": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "StateReceipt", "AvailabilityClaim", "IntentReceipt", "AuthorityReceipt",
+              "ResponsibilityReceipt", "CoordinationReceipt", "ActionPermit", "ActionReceipt",
+              "OutcomeReceipt", "SuccessorStateReceipt"
+            ]
+          },
+          "uniqueItems": true
+        },
+        "substitutes_for_core_receipt": {"const": false}
+      }
+    },
+    "issuer": {"type": "string", "minLength": 1},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "payload": {"type": "object"},
+    "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
