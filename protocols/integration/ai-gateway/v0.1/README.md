@@ -117,6 +117,20 @@ observed outcome != causality
 
 For a performed external effect it must reference actuator evidence plus a Core `ActionReceipt`. `OutcomeReceipt` and `SuccessorStateReceipt` references may be included when available.
 
+The frontier roles are deliberately asymmetric and MUST remain explicit:
+
+- `predecessor_frontier` is the exact frontier on which the request, ActionPermit and Core `ActionReceipt` are bound;
+- `observed_frontier` is the post-actuator frontier used by actuator evidence, `OutcomeReceipt` and `SuccessorStateReceipt`;
+- a Core `ActionReceipt` MUST NOT be relabelled onto the successor frontier merely because the effect was later observed there.
+
+```text
+ActionReceipt frontier = predecessor frontier
+OutcomeReceipt frontier = observed successor frontier
+SuccessorStateReceipt frontier = observed successor frontier
+```
+
+This preserves the Core invariant that action execution remains linked to the permit that authorized it while outcome and successor-state evidence describe what was observed after execution.
+
 ## Consent and approval
 
 Consent to use the gateway or protocol mode does not grant blanket action authority.
@@ -164,9 +178,11 @@ Reference actuator adapters and paired agent evals remain later deliverables und
 10. admissible decision without matching request permit;
 11. observe-performed external effect without actuator evidence;
 12. observe-performed external effect without Core `ActionReceipt`;
-13. observation claiming gateway performed the action;
-14. observation upgrading outcome to causality;
-15. protocol-mode consent treated as blanket action approval;
-16. unknown provider-specific mandatory dependency.
+13. Core `ActionReceipt` relabelled onto the successor frontier;
+14. actuator evidence relabelled onto the predecessor frontier;
+15. observation claiming gateway performed the action;
+16. observation upgrading outcome to causality;
+17. protocol-mode consent treated as blanket action approval;
+18. unknown provider-specific mandatory dependency.
 
 The dedicated workflow re-runs Core, extension composition, stack evolution, Non-Induced Intent and AI Gateway validators.
