@@ -1,0 +1,336 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/execution-capability-descriptor/v0.1/execution-capability-descriptor.schema.json",
+  "title": "UU-AAP Execution Capability Descriptor v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "descriptor_id",
+    "capability",
+    "operations",
+    "global_non_effects",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "UU-AAP-EXECUTION-CAPABILITY-DESCRIPTOR"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "artifact_type": {
+      "const": "ExecutionCapabilityDescriptor"
+    },
+    "descriptor_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "capability_id",
+        "adapter_id",
+        "provider_neutral_schema",
+        "discovery_only"
+      ],
+      "properties": {
+        "capability_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapter_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "provider_neutral_schema": {
+          "const": true
+        },
+        "discovery_only": {
+          "const": true
+        }
+      }
+    },
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "operation",
+          "effect_class",
+          "reversible",
+          "compensation_supported",
+          "authority_scope",
+          "approval_contract",
+          "availability_contract",
+          "lifecycle_contract",
+          "receipt_contract",
+          "effect_contract"
+        ],
+        "properties": {
+          "operation": {
+            "type": "string",
+            "minLength": 1
+          },
+          "effect_class": {
+            "enum": [
+              "read_only",
+              "external_effect"
+            ]
+          },
+          "reversible": {
+            "type": "boolean"
+          },
+          "compensation_supported": {
+            "type": "boolean"
+          },
+          "authority_scope": {
+            "type": "string"
+          },
+          "approval_contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "required",
+              "mode",
+              "scope_binding_required",
+              "protocol_mode_consent_sufficient"
+            ],
+            "properties": {
+              "required": {
+                "type": "boolean"
+              },
+              "mode": {
+                "enum": [
+                  "none",
+                  "action_specific"
+                ]
+              },
+              "scope_binding_required": {
+                "type": "boolean"
+              },
+              "protocol_mode_consent_sufficient": {
+                "const": false
+              }
+            }
+          },
+          "availability_contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "advertised_capability_is_current_availability",
+              "availability_probe_required_before_authorization",
+              "availability_proof_is_authority"
+            ],
+            "properties": {
+              "advertised_capability_is_current_availability": {
+                "const": false
+              },
+              "availability_probe_required_before_authorization": {
+                "type": "boolean"
+              },
+              "availability_proof_is_authority": {
+                "const": false
+              }
+            }
+          },
+          "lifecycle_contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "profile",
+              "version",
+              "mode",
+              "required_phases",
+              "exact_target_binding_required",
+              "predecessor_freshness_required",
+              "fail_closed_target_guard_required",
+              "one_shot_supported",
+              "expiry_required",
+              "separate_observer_required"
+            ],
+            "properties": {
+              "profile": {
+                "const": "UU-AAP-BOUNDED-EXECUTION-LIFECYCLE"
+              },
+              "version": {
+                "const": "0.1"
+              },
+              "mode": {
+                "enum": [
+                  "read_only_lightweight",
+                  "bounded_external_effect"
+                ]
+              },
+              "required_phases": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "enum": [
+                    "prepare",
+                    "authorize",
+                    "execute",
+                    "observe",
+                    "close"
+                  ]
+                }
+              },
+              "exact_target_binding_required": {
+                "type": "boolean"
+              },
+              "predecessor_freshness_required": {
+                "type": "boolean"
+              },
+              "fail_closed_target_guard_required": {
+                "type": "boolean"
+              },
+              "one_shot_supported": {
+                "type": "boolean"
+              },
+              "expiry_required": {
+                "type": "boolean"
+              },
+              "separate_observer_required": {
+                "type": "boolean"
+              }
+            }
+          },
+          "receipt_contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "pre_action_required",
+              "actuator_may_emit",
+              "core_post_action_required",
+              "actuator_creates_core_action_permit",
+              "actuator_creates_core_post_action_receipts",
+              "advertised_receipt_support_is_receipt"
+            ],
+            "properties": {
+              "pre_action_required": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "actuator_may_emit": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "core_post_action_required": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "actuator_creates_core_action_permit": {
+                "const": false
+              },
+              "actuator_creates_core_post_action_receipts": {
+                "const": false
+              },
+              "advertised_receipt_support_is_receipt": {
+                "const": false
+              }
+            }
+          },
+          "effect_contract": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "expected_effect_categories",
+              "explicit_non_effects",
+              "effect_observation_is_causality_proof"
+            ],
+            "properties": {
+              "expected_effect_categories": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "explicit_non_effects": {
+                "type": "array",
+                "uniqueItems": true,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "effect_observation_is_causality_proof": {
+                "const": false
+              }
+            }
+          }
+        }
+      }
+    },
+    "global_non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_granted",
+        "intent_created",
+        "action_permit_created",
+        "action_authorized",
+        "action_performed",
+        "current_availability_asserted",
+        "causality_proven",
+        "truth_certified",
+        "liability_established",
+        "future_action_permission_created"
+      ],
+      "properties": {
+        "authority_granted": {
+          "const": false
+        },
+        "intent_created": {
+          "const": false
+        },
+        "action_permit_created": {
+          "const": false
+        },
+        "action_authorized": {
+          "const": false
+        },
+        "action_performed": {
+          "const": false
+        },
+        "current_availability_asserted": {
+          "const": false
+        },
+        "causality_proven": {
+          "const": false
+        },
+        "truth_certified": {
+          "const": false
+        },
+        "liability_established": {
+          "const": false
+        },
+        "future_action_permission_created": {
+          "const": false
+        }
+      }
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}
