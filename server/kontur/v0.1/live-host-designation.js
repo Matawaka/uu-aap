@@ -28,7 +28,7 @@ const DECISION_KEYS = [
   'designator_ref', 'decision', 'target', 'declarations', 'human_declaration', 'safe_effect', 'claims'
 ];
 const TARGET_KEYS = [
-  'system_id', 'server_instance_id', 'host_id', 'repository_full_name',
+  'system_id', 'server_instance_id', 'host_id', 'operator_ref', 'repository_full_name',
   'repository_root', 'durable_ledger_root', 'runtime_boundary'
 ];
 const HOST_DECLARATION_KEYS = [
@@ -76,6 +76,8 @@ async function validateLiveHostDesignationDecision(decision) {
   assert(/^urn:uu-aap:kontur:system:/.test(decision.target.system_id || ''), `${label}: system_id required`);
   assert(/^urn:uu-aap:kontur:server:/.test(decision.target.server_instance_id || ''), `${label}: server_instance_id required`);
   assert(/^urn:uu-aap:kontur:host:/.test(decision.target.host_id || ''), `${label}: host_id required`);
+  assert(typeof decision.target.operator_ref === 'string' && decision.target.operator_ref.length > 0,
+    `${label}: designated operator_ref required`);
   assert(decision.target.repository_full_name === 'Matawaka/uu-aap', `${label}: canonical repository required`);
   assert(typeof decision.target.repository_root === 'string' && decision.target.repository_root.length > 0,
     `${label}: repository_root required`);
@@ -129,7 +131,7 @@ async function validateLiveHostDesignationDecision(decision) {
 }
 
 async function buildLiveHostDesignationDecision({
-  declaredAt, designatorRef, systemId, serverInstanceId, hostId,
+  declaredAt, designatorRef, systemId, serverInstanceId, hostId, operatorRef,
   repositoryRoot, durableLedgerRoot, typedConfirmation, nonce
 }) {
   parseTime(declaredAt, 'declared_at');
@@ -151,6 +153,7 @@ async function buildLiveHostDesignationDecision({
       system_id: systemId,
       server_instance_id: serverInstanceId,
       host_id: hostId,
+      operator_ref: operatorRef,
       repository_full_name: 'Matawaka/uu-aap',
       repository_root: repositoryRoot,
       durable_ledger_root: durableLedgerRoot,
