@@ -1,0 +1,21 @@
+{
+  "protocol": "UU-AAP-AI-GATEWAY-LIVE-ACCEPTANCE-TARGET",
+  "version": "0.1",
+  "acceptance_round": 2,
+  "experiment_issue": 339,
+  "parent_experiment_issue": 332,
+  "target_issue": 345,
+  "prepared_from_main": "78d7e867bc642bcd7c04eac47e72d96fab309183",
+  "expected_effect": "materialize_this_exact_second_marker_on_main_via_one_separately_authorized_gateway_merge",
+  "explicit_non_effects": [
+    "no_release",
+    "no_tag",
+    "no_branch_protection_change",
+    "no_workflow_permission_change",
+    "no_authority_transfer",
+    "no_kontur_mutation",
+    "no_other_pr_merge"
+  ],
+  "pre_action_requirement": "durable_observed_pre_action_bundle_required_before_any_write",
+  "execution_rule": "manual_merge_forbidden_reserved_for_issue_339_second_live_acceptance"
+}
