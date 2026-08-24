@@ -39,6 +39,15 @@ The manifest records:
 - Merkle root;
 - the exact hash-domain and odd-node rules.
 
+Structural verification fail-closes unless the size geometry is internally consistent:
+
+```text
+chunk_count = file_size == 0 ? 1 : ceil(file_size / chunk_size)
+leaf_hashes.length = chunk_count
+```
+
+This check does not re-read the entire file or prove that the manifest came from the claimed source; it only prevents contradictory size/chunk metadata from being accepted as a structurally valid manifest.
+
 ## Chunk proofs
 
 A proof binds one explicit chunk index and its domain-separated leaf hash to the manifest root through an ordered sibling path.

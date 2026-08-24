@@ -1,9 +1,16 @@
 'use strict';
 
 const assert = require('assert');
+const crypto = require('crypto');
 const ChunkTree = require('./evidence-chunk-tree.js');
 
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
+
+function reboundTreeId(manifest) {
+  const seed = `${manifest.file_ref}|${manifest.file_size}|${manifest.chunk_size}|${manifest.whole_file_sha256}|${manifest.merkle_root}|${manifest.created_at}`;
+  const digest = crypto.createHash('sha256').update(Buffer.from(seed, 'utf8')).digest('hex');
+  return `urn:uu-aap:evidence:chunk-tree:${digest.slice(0, 24)}`;
+}
 
 async function mustReject(label, fn) {
   let rejected = false;
@@ -81,6 +88,27 @@ async function mustReject(label, fn) {
   await mustReject('tampered tree id', () => {
     const bad = clone(manifest);
     bad.tree_id = `urn:uu-aap:evidence:chunk-tree:${'a'.repeat(24)}`;
+    ChunkTree.verifyManifestStructure(bad);
+  });
+
+  await mustReject('rebound inconsistent file-size geometry', () => {
+    const bad = clone(manifest);
+    bad.file_size = 100;
+    bad.tree_id = reboundTreeId(bad);
+    ChunkTree.verifyManifestStructure(bad);
+  });
+
+  await mustReject('rebound inconsistent chunk-size geometry', () => {
+    const bad = clone(manifest);
+    bad.chunk_size = 100;
+    bad.tree_id = reboundTreeId(bad);
+    ChunkTree.verifyManifestStructure(bad);
+  });
+
+  await mustReject('rebound zero-byte geometry mismatch', () => {
+    const bad = clone(zero);
+    bad.file_size = 9;
+    bad.tree_id = reboundTreeId(bad);
     ChunkTree.verifyManifestStructure(bad);
   });
 

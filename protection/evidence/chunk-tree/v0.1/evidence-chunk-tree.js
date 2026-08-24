@@ -82,6 +82,10 @@ function manifestIdSeed(fileRef, fileSize, chunkSize, wholeFileSha256, merkleRoo
   return `${fileRef}|${fileSize}|${chunkSize}|${wholeFileSha256}|${merkleRoot}|${createdAt}`;
 }
 
+function expectedChunkCount(fileSize, chunkSize) {
+  return fileSize === 0 ? 1 : Math.ceil(fileSize / chunkSize);
+}
+
 function buildChunkTreeManifest({ bytes, fileRef, chunkSize = 1024 * 1024, createdAt }) {
   assert(typeof fileRef === 'string' && fileRef.length > 0 && fileRef.length <= 512, 'file_ref invalid');
   assert(Number.isFinite(Date.parse(createdAt)), 'created_at invalid');
@@ -129,6 +133,7 @@ function verifyManifestStructure(manifest) {
   assert(Number.isSafeInteger(manifest.file_size) && manifest.file_size >= 0, 'file_size invalid');
   assert(Number.isSafeInteger(manifest.chunk_size) && manifest.chunk_size >= 1 && manifest.chunk_size <= 16 * 1024 * 1024, 'chunk_size invalid');
   assert(Number.isSafeInteger(manifest.chunk_count) && manifest.chunk_count >= 1, 'chunk_count invalid');
+  assert(manifest.chunk_count === expectedChunkCount(manifest.file_size, manifest.chunk_size), 'chunk geometry mismatch');
   assert(Array.isArray(manifest.leaf_hashes) && manifest.leaf_hashes.length === manifest.chunk_count, 'leaf count mismatch');
   manifest.leaf_hashes.forEach(hash => assert(/^[0-9a-f]{64}$/.test(hash), 'leaf hash invalid'));
   assert(/^[0-9a-f]{64}$/.test(manifest.whole_file_sha256), 'whole-file SHA invalid');
