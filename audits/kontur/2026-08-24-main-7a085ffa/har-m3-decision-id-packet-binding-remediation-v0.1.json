@@ -1,0 +1,30 @@
+{
+  "document_type": "uu-aap.kontur-har-m3-decision-id-packet-binding-remediation",
+  "version": "0.1",
+  "source_reaudit_frontier": "7a085ffa8c724777ef2c0b38e60350bdfb8c11cf",
+  "source_reaudit_conclusion": "HAR_M3_REPLAY_HISTORY_NEEDS_MORE_TESTING",
+  "finding": "prior decision_id does not bind review_packet_binding.artifact_ref",
+  "status": "candidate_for_targeted_decision_id_reaudit",
+  "implementation": {
+    "complete_typed_packet_binding_committed_by_decision_id": true,
+    "binding_canonicalization": "RFC8785-JCS",
+    "binding_digest_algorithm": "SHA-256",
+    "artifact_ref_tamper_regression_added": true,
+    "packet_digest_tamper_regression_added": true,
+    "valid_distinct_packet_history_regression_added": true
+  },
+  "finding_closed": false,
+  "all_original_medium_findings_closed": false,
+  "targeted_reaudit_still_required": true,
+  "formal_human_activation_review_allowed": false,
+  "kontur_activated": false,
+  "boundary": {
+    "remediation_candidate_is_audit_closure": false,
+    "remediation_candidate_is_human_review_approval": false,
+    "remediation_candidate_is_activation_intent": false,
+    "remediation_candidate_is_activation_authorization": false,
+    "remediation_candidate_is_kontur_activation": false,
+    "decision_id_binding_is_reviewer_authentication": false,
+    "decision_id_binding_is_truth_certification": false
+  }
+}
