@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:continuity:custodian-handoff-envelope:v0.1",
+  "title": "UU-AAP Continuity Custodian Handoff Envelope v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "source_frontier",
+    "copy_slot",
+    "custodian_role_id",
+    "artifacts",
+    "storage_requirements",
+    "boundary",
+    "envelope_digest_sha256"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.continuity-custodian-handoff-envelope"},
+    "version": {"const": "0.1"},
+    "status": {"const": "handoff-preparation-only"},
+    "source_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["main_sha", "tree_sha"],
+      "properties": {
+        "main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "copy_slot": {
+      "enum": ["active-local-copy", "sealed-offline-copy", "independent-secondary-copy"]
+    },
+    "custodian_role_id": {"type": "string", "pattern": "^[A-Za-z0-9._-]{1,80}$"},
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle_sha256",
+        "capture_manifest_sha256",
+        "metadata_manifest_sha256",
+        "verification_evidence_sha256"
+      ],
+      "properties": {
+        "bundle_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "capture_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "metadata_manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "verification_evidence_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "storage_requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "encrypted_storage_required",
+        "offline_required",
+        "distinct_storage_domain_required",
+        "credential_material_included",
+        "encryption_key_included",
+        "account_access_included"
+      ],
+      "properties": {
+        "encrypted_storage_required": {"const": true},
+        "offline_required": {"type": "boolean"},
+        "distinct_storage_domain_required": {"const": true},
+        "credential_material_included": {"const": false},
+        "encryption_key_included": {"const": false},
+        "account_access_included": {"const": false}
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strongest_safe_effect",
+        "handoff_executed",
+        "custodian_is_successor",
+        "repository_authority_transferred",
+        "canonical_successor_claimed",
+        "rescue_authorized",
+        "failover_authorized",
+        "external_execution_authorized",
+        "kontur_activation_authorized"
+      ],
+      "properties": {
+        "strongest_safe_effect": {"const": "prepare_human_custody_handoff_only"},
+        "handoff_executed": {"const": false},
+        "custodian_is_successor": {"const": false},
+        "repository_authority_transferred": {"const": false},
+        "canonical_successor_claimed": {"const": false},
+        "rescue_authorized": {"const": false},
+        "failover_authorized": {"const": false},
+        "external_execution_authorized": {"const": false},
+        "kontur_activation_authorized": {"const": false}
+      }
+    },
+    "envelope_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
