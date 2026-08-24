@@ -118,8 +118,12 @@ live_host_eligible
 
 CI validates schemas, deterministic identities and fail-closed vectors only. CI itself must produce an **ineligible** result when represented as a candidate live host. The workflow must never manufacture a positive live-host receipt for the GitHub runner, create an execute command, call the Responsibility Kernel or write a live ledger.
 
-## Current v0.1 limitation
+## Current integration status
 
-This layer is intentionally conservative. It does not yet provide cryptographic machine attestation, TPM binding, remote-host adapters or distributed host identity. It establishes only a typed human-designated + observed local-host boundary.
+The live Executor now requires an exact `KONTURLiveHostEligibilityReceipt` and binds its host/profile/ledger-root evidence into `execution_mode = live`. Direct-core execution also re-enters that public gate before mutation, and `test_only` is restricted to an ephemeral OS temporary-root ledger.
 
-A successor integration step may require a valid `KONTURLiveHostEligibilityReceipt` before `execution_mode = live` can enter the final Executor path. Until that integration is merged and audited, this document does **not** claim the current Executor already enforces host eligibility.
+The lower-level `evaluateLiveHostEligibility()` remains intentionally pure and accepts a supplied environment object for deterministic tests and external observers. Therefore a positive receipt produced from caller assertions alone must not be treated as sufficient effect-time observation.
+
+The successor runtime-re-observation layer in `LIVE_HOST_RUNTIME_REOBSERVATION.md` measures Git/filesystem/process/CI/sandbox facts again at the live effect boundary and requires those measurements to reproduce the bound receipt before any Kernel or durable-ledger access.
+
+This still does not provide cryptographic machine attestation, TPM binding, remote-host adapters or distributed host identity. The v0.1 assurance remains typed, human-designated and host-locally observed.
