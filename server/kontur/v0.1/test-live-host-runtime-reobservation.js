@@ -61,17 +61,22 @@ async function main() {
     systemId: executionPolicy.system_id,
     serverInstanceId: executionPolicy.server_instance_id,
     hostId: 'urn:uu-aap:kontur:host:runtime-reobservation-fixture',
+    operatorRef: 'urn:uu-aap:human-actor:runtime-reobservation-synthetic-operator',
     repositoryRoot: canonicalRepoRoot,
     durableLedgerRoot: canonicalLedgerRoot,
     typedConfirmation: 'DESIGNATE_KONTUR_LIVE_HOST',
     nonce: `urn:uu-aap:kontur:live-host-designation-nonce:runtime-${gitSha.slice(0, 12)}`
   });
+  assert(designation.designator_ref !== designation.target.operator_ref,
+    'runtime fixture must preserve designator/operator separation');
   const profile = await Host.buildLiveHostProfile({
     createdAt: iso(preflightMs - 2000),
     designationDecision: designation
   });
   assert(profile.human_designation_binding.artifact_ref === designation.decision_id,
     'runtime fixture profile must bind explicit synthetic designation');
+  assert(profile.operator_ref === designation.target.operator_ref,
+    'runtime fixture profile lost designated operator');
 
   // Deliberately forge the environment layer exactly the way the lower-level
   // pure evaluator permits for tests. This receipt is structurally positive,
@@ -172,8 +177,6 @@ async function main() {
   assert(commitCalls === 0, 'runtime rejection must precede ledger commit');
   assert(postRecoveryCalls === 0, 'runtime rejection must precede post-commit recovery');
 
-  // A raw receipt that copies the current process identity but lies only about
-  // sandbox status must also fail deterministic reconstruction.
   const observedEnvironment = RuntimeHost.observeLiveHostEnvironment({
     profile,
     ledgerRoot: canonicalLedgerRoot,
@@ -208,6 +211,7 @@ async function main() {
     artifact_version: '0.1',
     git_revision: currentGitRevision,
     synthetic_designation_decision_id: designation.decision_id,
+    designator_operator_separated: designation.designator_ref !== designation.target.operator_ref,
     caller_asserted_positive_receipt_id: callerAssertedEligibility.receipt_id,
     caller_asserted_positive_command_validated_in_memory_only: true,
     actual_runtime_decision: actualCiEligibility.decision,
