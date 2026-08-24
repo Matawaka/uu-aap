@@ -1,0 +1,125 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/experiments/ai-gateway-live-executor-v0.1/pre-action-bundle-v0.1/pre-action-bundle.schema.json",
+  "title": "UU-AAP AI Gateway Live Pre-Action Bundle v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "evidence_class",
+    "experiment_issue",
+    "frontier",
+    "target",
+    "approval",
+    "core",
+    "gateway",
+    "lifetime",
+    "execution_boundary",
+    "non_effects",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-GATEWAY-LIVE-PRE-ACTION-BUNDLE"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "LivePreActionBundle"},
+    "evidence_class": {"enum": ["synthetic_conformance", "observed_pre_action"]},
+    "experiment_issue": {"const": 339},
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "operation", "pr_number", "expected_head_sha", "expected_base_sha", "merge_method"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "operation": {"const": "merge_pr"},
+        "pr_number": {"type": "integer", "minimum": 1},
+        "expected_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "expected_base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "merge_method": {"const": "squash"}
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approval_text_sha256", "evidence_uri", "action_specific", "general_authority_granted", "future_action_authorized", "protocol_mode_consent_reused"],
+      "properties": {
+        "approval_text_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "evidence_uri": {"type": "string", "minLength": 1},
+        "action_specific": {"const": true},
+        "general_authority_granted": {"const": false},
+        "future_action_authorized": {"const": false},
+        "protocol_mode_consent_reused": {"const": false}
+      }
+    },
+    "core": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state_receipt", "intent_receipt", "authority_or_responsibility_receipt", "coordination_receipt", "action_permit"],
+      "properties": {
+        "state_receipt": {"type": "object"},
+        "intent_receipt": {"type": "object"},
+        "authority_or_responsibility_receipt": {"type": "object"},
+        "coordination_receipt": {"type": "object"},
+        "action_permit": {"type": "object"}
+      }
+    },
+    "gateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request", "decision_receipt"],
+      "properties": {
+        "request": {"type": "object"},
+        "decision_receipt": {"type": "object"}
+      }
+    },
+    "lifetime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issued_at", "expires_at", "one_shot", "consumed"],
+      "properties": {
+        "issued_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "one_shot": {"const": true},
+        "consumed": {"const": false}
+      }
+    },
+    "execution_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["prepared_before_execution", "actuator_call_emitted", "network_accessed", "github_mutation_performed", "action_performed"],
+      "properties": {
+        "prepared_before_execution": {"const": true},
+        "actuator_call_emitted": {"const": false},
+        "network_accessed": {"const": false},
+        "github_mutation_performed": {"const": false},
+        "action_performed": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["general_authority_created", "future_action_permission_created", "action_performed", "outcome_observed", "causality_proven", "truth_certified", "liability_established"],
+      "properties": {
+        "general_authority_created": {"const": false},
+        "future_action_permission_created": {"const": false},
+        "action_performed": {"const": false},
+        "outcome_observed": {"const": false},
+        "causality_proven": {"const": false},
+        "truth_certified": {"const": false},
+        "liability_established": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
