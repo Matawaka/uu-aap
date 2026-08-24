@@ -1,0 +1,40 @@
+name: Provider-Neutral Bounded Action E2E v0.1 validation
+on:
+  pull_request:
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
+      - 'protocols/integration/observation-core-successor-binding/v0.1/**'
+      - 'protocols/integration/bounded-action-lifecycle-closure/v0.1/**'
+      - 'protocols/integration/bounded-action-e2e/v0.1/**'
+      - '.github/workflows/bounded-action-e2e-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/**'
+      - '.github/workflows/bounded-action-e2e-v0.1-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Validate complete bounded action evidence chain
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/core/v0.1/validate-core.js
+      - run: node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+      - run: node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+      - run: node protocols/integration/execute-revalidation/v0.1/validate-execute-revalidation.js
+      - run: node protocols/integration/execution-invocation-envelope/v0.1/validate-invocation-envelope.js
+      - run: node protocols/integration/invocation-action-receipt-binding/v0.1/validate-invocation-action-receipt-binding.js
+      - run: node protocols/integration/observation-core-successor-binding/v0.1/validate-observation-core-successor-binding.js
+      - run: node protocols/integration/bounded-action-lifecycle-closure/v0.1/validate-bounded-action-lifecycle-closure.js
+      - run: node protocols/integration/bounded-action-e2e/v0.1/validate-bounded-action-e2e.js
