@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/kontur-live-host-eligibility-v0.1.json",
+  "title": "KONTURLiveHostEligibilityReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "receipt_id", "observed_at",
+    "expected_git_revision", "host_profile_binding", "host_id", "system_id",
+    "server_instance_id", "observations", "decision", "safe_next_step", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-live-host-eligibility\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURLiveHostEligibilityReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-eligibility:[0-9a-f]{24}$"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "expected_git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+    "host_profile_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"const": "KONTURLiveHostProfile"},
+        "artifact_ref": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-profile:[0-9a-f]{24}$"},
+        "digest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+          "properties": {
+            "canonicalization": {"const": "RFC8785-JCS"},
+            "digest_algorithm": {"const": "SHA-256"},
+            "digest_encoding": {"const": "hex"},
+            "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      }
+    },
+    "host_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:host:"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_root_matches_profile", "durable_ledger_root_matches_profile",
+        "durable_ledger_root_exists", "durable_ledger_root_readable",
+        "durable_ledger_root_writable", "durable_ledger_root_outside_repository",
+        "current_git_revision_exact", "ci_environment_detected",
+        "temporary_sandbox_detected", "runtime_boundary", "process_identity",
+        "workspace_root", "observed_git_revision"
+      ],
+      "properties": {
+        "repository_root_matches_profile": {"type": "boolean"},
+        "durable_ledger_root_matches_profile": {"type": "boolean"},
+        "durable_ledger_root_exists": {"type": "boolean"},
+        "durable_ledger_root_readable": {"type": "boolean"},
+        "durable_ledger_root_writable": {"type": "boolean"},
+        "durable_ledger_root_outside_repository": {"type": "boolean"},
+        "current_git_revision_exact": {"type": "boolean"},
+        "ci_environment_detected": {"type": "boolean"},
+        "temporary_sandbox_detected": {"type": "boolean"},
+        "runtime_boundary": {"enum": ["host_local", "unknown"]},
+        "process_identity": {"type": "string", "minLength": 1},
+        "workspace_root": {"type": "string", "minLength": 1},
+        "observed_git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"}
+      }
+    },
+    "decision": {"enum": ["live_host_eligible", "live_host_ineligible"]},
+    "safe_next_step": {"enum": ["live_preflight_may_be_attempted", "stop_host_ineligible"]},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "host_profile_bound", "live_host_eligibility_established",
+        "live_preflight_may_be_attempted", "execution_authority_granted",
+        "execute_command_created", "kernel_activated", "responsibility_state_created",
+        "responsibility_accepted", "durable_ledger_written",
+        "permission_expansion_authorized", "permission_bypass_authorized",
+        "legal_authority_established", "truth_certified", "universal_canonicality_established"
+      ],
+      "properties": {
+        "host_profile_bound": {"const": true},
+        "live_host_eligibility_established": {"type": "boolean"},
+        "live_preflight_may_be_attempted": {"type": "boolean"},
+        "execution_authority_granted": {"const": false},
+        "execute_command_created": {"const": false},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "durable_ledger_written": {"const": false},
+        "permission_expansion_authorized": {"const": false},
+        "permission_bypass_authorized": {"const": false},
+        "legal_authority_established": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"const": "live_host_eligible"}}},
+      "then": {"properties": {
+        "safe_next_step": {"const": "live_preflight_may_be_attempted"},
+        "claims": {"properties": {
+          "live_host_eligibility_established": {"const": true},
+          "live_preflight_may_be_attempted": {"const": true}
+        }}
+      }}
+    },
+    {
+      "if": {"properties": {"decision": {"const": "live_host_ineligible"}}},
+      "then": {"properties": {
+        "safe_next_step": {"const": "stop_host_ineligible"},
+        "claims": {"properties": {
+          "live_host_eligibility_established": {"const": false},
+          "live_preflight_may_be_attempted": {"const": false}
+        }}
+      }}
+    }
+  ]
+}
