@@ -1,0 +1,85 @@
+{
+  "document_type": "uu-aap.kontur-targeted-re-audit-record",
+  "version": "0.1",
+  "audit_date": "2026-08-24",
+  "audited_frontier": {
+    "main_sha": "cf4abd3932048bbcfa30c157fa887cf434b2be5e",
+    "tree_sha": "3326bec09d53553a87f54d18899719a9a7df8473",
+    "parent_sha": "c47ce529a773006292e920a7cac537de85222d03",
+    "revision_gate": "pass",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid"
+  },
+  "scope": "PR #294 Human Activation Review remediation targeted re-audit",
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-cf4abd4d/targeted-re-audit-report.md",
+    "sha256": "a2eb9bb1cb9462d82ad842a410eb29162aa1b754a74eb23f0231f7699276e7da"
+  },
+  "final_bounded_conclusion": "HAR_REMEDIATION_NEEDS_MORE_TESTING",
+  "findings": {
+    "HAR-M1": {
+      "status": "closed_verified",
+      "severity_remaining": null
+    },
+    "HAR-M2": {
+      "status": "closed_verified",
+      "severity_remaining": null
+    },
+    "HAR-M3": {
+      "status": "open_partial",
+      "severity_remaining": "medium",
+      "defect": "materially incomplete prior KONTURHumanActivationReviewDecision v0.1 history entries are accepted by replay-history validation"
+    }
+  },
+  "remaining_findings": {
+    "high_or_critical": 0,
+    "medium": [
+      "HAR-M3 replay-history validation accepts materially incomplete/malformed prior-decision entries rather than validating the complete KONTURHumanActivationReviewDecision v0.1 contract fail-closed."
+    ],
+    "low_summary": [
+      "reviewer_ref is declared identity only and is not cryptographically authenticated",
+      "relative timestamp ordering is builder-enforced but not independently schema-enforced",
+      "30-day evidence retention limits long-term independent availability"
+    ]
+  },
+  "exact_main_workflow_runs": {
+    "human_activation_review": 32688340556,
+    "independent_audit_hardening": 32688340597,
+    "project_readiness_checkpoint": 32688340566,
+    "kontur_readiness_aggregator": 32688340611,
+    "activation_preflight": 32688340573,
+    "activation_executor_test_only": 32688340577,
+    "responsibility_kernel": 32688340598,
+    "durable_responsibility_ledger": 32688340621
+  },
+  "evidence_access_gap": true,
+  "evidence_access_gap_detail": "workflow artifact metadata and logs were accessible; inner archive bytes were not independently downloaded through the available read-only interface",
+  "historical_audit": {
+    "frontier_sha": "2a0fbd4d67e9db4913658da825336d2c4a8c2888",
+    "conclusion": "READY_FOR_MORE_TESTING",
+    "full_report_sha256": "d25dff2ce7ace5936976f453123528dbc11de22f0e7e6ea0ad5d84e2659f74e7",
+    "rewritten": false
+  },
+  "required_next_step": "fully validate every prior decision entry against the complete bounded KONTURHumanActivationReviewDecision v0.1 contract and re-audit HAR-M3 replay history",
+  "formal_human_activation_review_allowed_now": false,
+  "kontur_state": {
+    "kernel_activated": false,
+    "live_responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "human_review_decision_created": false,
+    "activation_intent_created": false,
+    "live_preflight_run": false,
+    "execute_command_created": false,
+    "live_executor_invoked": false,
+    "permission_expansion_or_bypass": false
+  },
+  "boundary": {
+    "targeted_re_audit_record_is_activation_authorization": false,
+    "targeted_re_audit_record_is_activation": false,
+    "targeted_re_audit_record_is_execution_authority": false,
+    "targeted_re_audit_record_is_legal_liability_determination": false,
+    "targeted_re_audit_record_is_truth_certification": false,
+    "targeted_re_audit_record_is_canonical_succession": false
+  }
+}
