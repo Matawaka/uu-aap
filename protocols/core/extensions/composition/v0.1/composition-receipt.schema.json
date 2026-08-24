@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/core/extensions/composition/v0.1/composition-receipt.schema.json",
+  "title": "UU-AAP ExtensionCompositionReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","subject","frontier","members","relations","derived_signals","composition_assertions","core_binding","non_effects","issuer","issued_at","payload","content_hash"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-EXT-COMPOSITION-RECEIPT"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "ExtensionCompositionReceipt"},
+    "subject": {"type":"string","minLength":1},
+    "frontier": {
+      "type":"object","additionalProperties":false,"required":["revision","observed_at"],
+      "properties":{"revision":{"type":"string","minLength":1},"observed_at":{"type":"string","format":"date-time"}}
+    },
+    "members": {
+      "type":"array","minItems":1,
+      "items":{"type":"object","additionalProperties":false,"required":["receipt_hash","extension_type"],"properties":{
+        "receipt_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+        "extension_type":{"enum":["pic","appeal","readiness","circumstantial_provenance","sustainability"]}
+      }}
+    },
+    "relations": {
+      "type":"array",
+      "items":{"type":"object","additionalProperties":false,"required":["from_receipt_hash","to_receipt_hash","relation"],"properties":{
+        "from_receipt_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+        "to_receipt_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},
+        "relation":{"enum":["corroborates","challenges","conditions","contextualizes","coexists_with"]}
+      }}
+    },
+    "derived_signals": {"type":"array","items":{"enum":["conflict_present","evidence_convergence_present","intent_checkpoint_pending","readiness_condition_present","review_required"]}},
+    "composition_assertions": {
+      "type":"object","additionalProperties":false,"required":["member_semantics_preserved","aggregation_is_evidence_only","core_action_gate_required","order_independent_set_binding"],
+      "properties":{
+        "member_semantics_preserved":{"const":true},"aggregation_is_evidence_only":{"const":true},"core_action_gate_required":{"const":true},"order_independent_set_binding":{"const":true}
+      }
+    },
+    "core_binding": {
+      "type":"object","additionalProperties":false,"required":["core_predecessor_frontier","action_gate_required","substitutes_for_core_receipt"],
+      "properties":{"core_predecessor_frontier":{"type":"string","minLength":1},"action_gate_required":{"const":true},"substitutes_for_core_receipt":{"const":false}}
+    },
+    "non_effects":{"type":"object"},
+    "issuer":{"type":"string","minLength":1},
+    "issued_at":{"type":"string","format":"date-time"},
+    "payload":{"type":"object"},
+    "content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  }
+}
