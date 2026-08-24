@@ -1,0 +1,48 @@
+{
+  "document_type": "uu-aap.kontur-audit-remediation-record",
+  "version": "0.1",
+  "source_audit": {
+    "record_path": "audits/kontur/2026-08-24-main-2a0fbd4d/audit-record.json",
+    "report_sha256": "d25dff2ce7ace5936976f453123528dbc11de22f0e7e6ea0ad5d84e2659f74e7",
+    "audited_main_sha": "2a0fbd4d67e9db4913658da825336d2c4a8c2888",
+    "bounded_conclusion": "READY_FOR_MORE_TESTING"
+  },
+  "remediation_base": {
+    "main_sha": "c47ce529a773006292e920a7cac537de85222d03",
+    "tree_sha": "c416fe44388e9ffa9a8ffd337b7227889035df84"
+  },
+  "scope": "Human Activation Review v0.1 Medium findings only",
+  "findings": [
+    {
+      "id": "HAR-M1",
+      "finding": "Review packet predecessor validation allowed checkpoint/current-main receipt substitution.",
+      "remediation": "Require the checkpoint current-main verification binding to equal the supplied receipt by artifact type, artifact reference, and RFC8785-JCS SHA-256 digest; revalidate the same predecessor chain again at decision construction."
+    },
+    {
+      "id": "HAR-M2",
+      "finding": "Decision JSON Schema did not couple outcome, declaration, typed confirmation, confirmations, safe effect, and positive claim.",
+      "remediation": "Add conditional JSON Schema branches for approve/defer/reject and negative schema regression vectors."
+    },
+    {
+      "id": "HAR-M3",
+      "finding": "Decision construction shallowly revalidated the packet and lacked current-main freshness, packet expiry, timestamp ordering, and nonce replay protection.",
+      "remediation": "Add finite packet TTL, decision-time predecessor reconstruction, explicit current-main observation, ordered timestamps, complete prior-decision history requirement, nonce replay rejection, and single-decision packet rejection."
+    }
+  ],
+  "status": "candidate_for_targeted_reaudit",
+  "claims": {
+    "medium_findings_closed": false,
+    "targeted_reaudit_still_required": true,
+    "formal_human_activation_review_allowed": false,
+    "activation_authorized": false,
+    "activation_intent_created": false,
+    "preflight_requested": false,
+    "execute_command_created": false,
+    "kontur_activated": false,
+    "responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "permission_expansion_authorized": false,
+    "permission_bypass_authorized": false
+  }
+}
