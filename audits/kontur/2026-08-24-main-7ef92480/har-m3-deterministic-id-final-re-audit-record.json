@@ -1,0 +1,103 @@
+{
+  "document_type": "uu-aap.kontur-har-m3-deterministic-id-final-re-audit-record",
+  "version": "0.1",
+  "audit_date": "2026-08-24",
+  "audited_frontier": {
+    "main_sha": "7ef92480f36507594e0c9886bff3b7640383e549",
+    "tree_sha": "b53db6b2376b81107ed9e8d160947a27b26265a3",
+    "parent_sha": "14a8213a67980e530d89d6e8d3aee5a3b446d46a",
+    "revision_gate": "pass",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid",
+    "commit_signature_verified_at": "2026-08-24T06:48:27Z"
+  },
+  "scope": "PR #305 HAR-M3 canonical deterministic decision-ID seed final targeted re-audit",
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-7ef92480/har-m3-deterministic-id-final-re-audit-report.md",
+    "git_blob_sha1": "9dc785b04d45b220bf21b0db55d396a9eb3450a5"
+  },
+  "tree_equivalent_ci_evidence": {
+    "pr_number": 305,
+    "tested_head_sha": "6017b079ff9e4e09186fc76185d0f8f528a97037",
+    "tested_tree_sha": "b53db6b2376b81107ed9e8d160947a27b26265a3",
+    "audited_main_tree_sha": "b53db6b2376b81107ed9e8d160947a27b26265a3",
+    "trees_identical": true,
+    "workflow_run_id": 32698637475,
+    "workflow_name": "KONTUR HAR-M3 Canonical Decision ID Seed v0.1 validation",
+    "workflow_conclusion": "success",
+    "job_id": 97345532707,
+    "job_conclusion": "success",
+    "separate_push_run_against_merge_commit_sha_asserted": false
+  },
+  "verified_properties": {
+    "decision_identity_seed_is_typed_object": true,
+    "identity_object_type": "KONTURHumanActivationReviewDecisionIdentitySeed",
+    "identity_object_version": "0.1",
+    "canonicalization": "RFC8785-JCS",
+    "digest_algorithm": "SHA-256",
+    "complete_review_packet_binding_included": true,
+    "reviewer_ref_included": true,
+    "decision_outcome_included": true,
+    "human_declaration_nonce_included": true,
+    "reviewed_at_included": true,
+    "observed_current_git_revision_included": true,
+    "observed_at_included": true,
+    "construction_and_prior_revalidation_share_identity_digest": true,
+    "raw_delimiter_join_used_for_decision_identity": false,
+    "historical_delimiter_collision_fixture_preserved": true,
+    "historically_colliding_semantic_tuples_now_have_distinct_ids": true,
+    "coordinated_substitution_retaining_old_id_rejected": true,
+    "direct_nonce_reuse_rejected": true,
+    "complete_packet_binding_regressions_preserved": true
+  },
+  "findings": {
+    "HAR-M1": {"status": "closed_verified"},
+    "HAR-M2": {"status": "closed_verified"},
+    "HAR-M3-malformed-prior-entry": {"status": "closed_verified"},
+    "HAR-M3-packet-ref-decision-id-binding": {"status": "closed_verified"},
+    "HAR-M3-delimiter-joined-decision-id-seed": {"status": "closed_verified"}
+  },
+  "remaining_findings": {
+    "high_or_critical": 0,
+    "medium_in_targeted_har_m3_surface": [],
+    "low_summary": [
+      "reviewer_ref is declared identity only and is not cryptographically authenticated",
+      "relative timestamp ordering is builder-enforced but not independently schema-enforced",
+      "GitHub Actions retention limits long-term hosted execution evidence availability"
+    ]
+  },
+  "audit_environment": {
+    "independent_local_clone_attempted": true,
+    "independent_local_clone_completed": false,
+    "limitation": "outbound DNS resolution to github.com unavailable in audit execution container",
+    "dependency_or_policy_bypass_used": false,
+    "limitation_treated_as_repository_failure": false
+  },
+  "aggregate_closure_evidence_allowed_now": true,
+  "aggregate_closure_evidence_is_canonical_now": false,
+  "formal_human_activation_review_allowed_now": false,
+  "required_next_step": "after this audit evidence is merged, prepare and separately merge aggregate Human Activation Review closure evidence before any Formal Human Activation Review",
+  "kontur_state": {
+    "kernel_activated": false,
+    "live_responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "human_review_decision_created": false,
+    "activation_intent_created": false,
+    "live_preflight_run": false,
+    "execute_command_created": false,
+    "live_executor_invoked": false,
+    "permission_expansion_or_bypass": false,
+    "repository_ownership_or_canonical_origin_mutated": false
+  },
+  "final_bounded_conclusion": "HAR_M3_DETERMINISTIC_ID_REAUDIT_PASS",
+  "boundary": {
+    "audit_record_is_aggregate_closure": false,
+    "audit_record_is_human_review_approval": false,
+    "audit_record_is_activation_intent": false,
+    "audit_record_is_activation_authorization": false,
+    "audit_record_is_kontur_activation": false,
+    "audit_record_is_legal_liability_determination": false,
+    "audit_record_is_truth_certification": false
+  }
+}
