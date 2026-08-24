@@ -1,0 +1,78 @@
+{
+  "artifact_type": "KONTURLiveHostRuntimeReobservationTargetedReAuditRecord",
+  "artifact_version": "0.1",
+  "recorded_date": "2026-08-24",
+  "result": "KONTUR_LIVE_HOST_RUNTIME_REOBSERVATION_REAUDIT_PASS",
+  "finding": {
+    "finding_id": "KONTUR-LIVE-HOST-OBSERVATION-INTEGRITY-GAP",
+    "disposition": "closed_verified",
+    "scope": "application-level live effect-bound runtime observation integrity"
+  },
+  "canonical_successor": {
+    "git_revision": "git:0236588a46ebb0e71e95c8f18a05cee72882ee5f",
+    "tree_sha": "3e928e78af1828f0764aac95d78ae675f578b0fe",
+    "parent_git_revision": "git:d544e90d290bc02d819237134480a091f65c4335",
+    "github_signature_verified": true,
+    "github_signature_reason": "valid"
+  },
+  "merged_remediation": {
+    "pull_request": 315,
+    "tested_head_git_revision": "git:2ddb43b78a844911c08bf731a87648ebc8bf1afa",
+    "tested_head_tree_sha": "3e928e78af1828f0764aac95d78ae675f578b0fe",
+    "successor_tree_equals_tested_head_tree": true
+  },
+  "enforcement_assertions": {
+    "execution_policy_requires_runtime_reobservation_before_mutation": true,
+    "public_executor_reobserves_actual_runtime_when_live_ledger_root_is_present": true,
+    "runtime_observer_measures_git_filesystem_process_ci_and_sandbox_facts": true,
+    "reobserved_environment_must_reproduce_bound_eligibility_receipt": true,
+    "runtime_mismatch_rejected_before_kernel": true,
+    "runtime_mismatch_rejected_before_initial_ledger_recovery": true,
+    "runtime_mismatch_rejected_before_ledger_commit": true,
+    "runtime_mismatch_rejected_before_post_commit_recovery": true,
+    "direct_core_live_path_inherits_public_runtime_gate": true
+  },
+  "targeted_workflow_evidence": [
+    {"run_id": 32713047249, "name": "KONTUR Live Host Runtime Re-observation v0.1 validation", "conclusion": "success"},
+    {"run_id": 32713047240, "name": "KONTUR Live Host Executor Gate v0.1 validation", "conclusion": "success"},
+    {"run_id": 32713047162, "name": "KONTUR Activation Executor validation", "conclusion": "success"},
+    {"run_id": 32713047166, "name": "KONTUR Core Entrypoint Fail-Closed v0.1 validation", "conclusion": "success"},
+    {"run_id": 32713047280, "name": "KONTUR Durable Responsibility Ledger validation", "conclusion": "success"},
+    {"run_id": 32713047287, "name": "KONTUR Live Host Eligibility v0.1 validation", "conclusion": "success"}
+  ],
+  "dedicated_fail_closed_vector": {
+    "caller_asserted_positive_receipt_constructed": true,
+    "actual_ci_runtime_reobserved": true,
+    "actual_runtime_decision": "live_host_ineligible",
+    "kernel_calls": 0,
+    "initial_ledger_recovery_calls": 0,
+    "ledger_commit_calls": 0,
+    "post_commit_recovery_calls": 0,
+    "live_execute_completed": false
+  },
+  "non_effects": {
+    "concrete_live_host_designated": false,
+    "cryptographic_host_identity_established": false,
+    "cryptographic_human_identity_established": false,
+    "human_activation_review_approved": false,
+    "activation_intent_created": false,
+    "activation_preflight_created": false,
+    "final_human_execute_created": false,
+    "kernel_activated": false,
+    "live_durable_ledger_written": false,
+    "responsibility_accepted": false,
+    "permission_expansion_authorized": false,
+    "permission_bypass_authorized": false,
+    "legal_authority_established": false,
+    "truth_certified": false,
+    "liability_established": false,
+    "universal_canonicality_established": false
+  },
+  "remaining_limitations": [
+    "human_designated_not_cryptographically_verified remains the host-profile identity assurance",
+    "no TPM secure-boot hardware or OS trust-root attestation is established",
+    "a compromised OS Git executable privileged filesystem layer or lower trust layer is outside this closure",
+    "separate push-triggered CI against the squash successor SHA is not asserted as independently inspected"
+  ],
+  "safe_next_step": "persistent_live_host_designation_and_observation_before_fresh_har"
+}
