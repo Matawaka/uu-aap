@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protection/evidence/v0.1/evidence-availability-manifest.schema.json",
+  "title": "EvidenceAvailabilityManifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "manifest_id", "recorded_at",
+    "source_context", "coverage_mode", "files", "set_digest", "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./evidence-availability-manifest.schema.json"},
+    "artifact_type": {"const": "EvidenceAvailabilityManifest"},
+    "artifact_version": {"const": "0.1"},
+    "manifest_id": {"type": "string", "pattern": "^urn:uu-aap:evidence:availability-manifest:[0-9a-f]{24}$"},
+    "recorded_at": {"type": "string", "format": "date-time"},
+    "source_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_id", "git_revision", "tree_sha", "scope"],
+      "properties": {
+        "project_id": {"const": "Matawaka/uu-aap"},
+        "git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "scope": {"type": "string", "minLength": 1, "maxLength": 200}
+      }
+    },
+    "coverage_mode": {"const": "explicit_file_set"},
+    "files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["relative_path", "role", "size_bytes", "sha256"],
+        "properties": {
+          "relative_path": {
+            "type": "string",
+            "minLength": 1,
+            "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+          },
+          "role": {"type": "string", "minLength": 1, "maxLength": 120},
+          "size_bytes": {"type": "integer", "minimum": 0},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "set_digest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+      "properties": {
+        "canonicalization": {"const": "RFC8785-JCS"},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest_encoding": {"const": "hex"},
+        "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "explicit_files_hashed", "manifest_self_verification_supported",
+        "artifact_container_durability_proven", "long_term_availability_proven",
+        "evidence_truth_certified", "evidence_completeness_proven", "authority_established",
+        "canonicality_established", "legal_liability_determined", "kontur_readiness_established",
+        "kontur_activation_authorized", "kontur_activated"
+      ],
+      "properties": {
+        "explicit_files_hashed": {"const": true},
+        "manifest_self_verification_supported": {"const": true},
+        "artifact_container_durability_proven": {"const": false},
+        "long_term_availability_proven": {"const": false},
+        "evidence_truth_certified": {"const": false},
+        "evidence_completeness_proven": {"const": false},
+        "authority_established": {"const": false},
+        "canonicality_established": {"const": false},
+        "legal_liability_determined": {"const": false},
+        "kontur_readiness_established": {"const": false},
+        "kontur_activation_authorized": {"const": false},
+        "kontur_activated": {"const": false}
+      }
+    }
+  }
+}
