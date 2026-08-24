@@ -1,0 +1,107 @@
+name: Continuity Restore Drill v0.3 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/continuity/v0.3/**'
+      - '.github/workflows/continuity-restore-drill-v0.3-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/continuity/v0.3/**'
+      - '.github/workflows/continuity-restore-drill-v0.3-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Parse code and schemas without writing bytecode
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          for name in ('restore_drill.py', 'test_restore_drill.py'):
+              path = Path('protection/continuity/v0.3') / name
+              compile(path.read_text(encoding='utf-8'), str(path), 'exec')
+          json.loads(Path('protection/continuity/v0.3/restore-drill-receipt.schema.json').read_text(encoding='utf-8'))
+          print('Continuity v0.3 syntax/schema parse: PASS')
+          PY
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check jsonschema==4.25.1
+
+      - name: Run disposable restore drill tests
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python protection/continuity/v0.3/test_restore_drill.py
+
+      - name: Keep Continuity v0.1 capture tool syntactically valid
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('protection/continuity/v0.1/continuity.py')
+          compile(path.read_text(encoding='utf-8'), str(path), 'exec')
+          print('Continuity v0.1 regression syntax: PASS')
+          PY
+
+      - name: Assert v0.3 tool has local-only surface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src = Path('protection/continuity/v0.3/restore_drill.py').read_text(encoding='utf-8')
+          forbidden = [
+              'url' + 'lib',
+              'req' + 'uests',
+              'soc' + 'ket',
+              'http' + '.client',
+              'url' + 'open',
+              'RECOVERED_' + 'NONCANONICAL',
+          ]
+          for token in forbidden:
+              assert token not in src, f'forbidden surface in restore drill: {token}'
+          assert 'subprocess.run' in src
+          assert '["git", *args]' in src
+          print('Continuity v0.3 local-only surface: PASS')
+          PY
+
+      - name: Assert workflow remains read-only and KONTUR-independent
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          wf = Path('.github/workflows/continuity-restore-drill-v0.3-validation.yml').read_text(encoding='utf-8')
+          assert 'permissions:\n  contents: read' in wf
+          forbidden = [
+              'contents:' + ' write',
+              'pull_request' + '_target',
+              'secrets' + '.',
+              'server/' + 'kontur/',
+              'activation-' + 'executor',
+              'activation-' + 'preflight',
+          ]
+          for token in forbidden:
+              assert token not in wf, f'forbidden workflow surface: {token}'
+          print('Continuity v0.3 workflow boundary: PASS')
+          PY
+
+      - name: Confirm checkout was not mutated
+        run: |
+          test -z "$(git status --porcelain=v1)"
+          echo 'Continuity v0.3 repository mutation: NONE'
