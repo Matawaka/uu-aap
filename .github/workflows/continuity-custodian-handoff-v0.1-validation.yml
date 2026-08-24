@@ -1,0 +1,123 @@
+name: Continuity Custodian Handoff v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protection/continuity/custody/v0.1/**'
+      - '.github/workflows/continuity-custodian-handoff-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protection/continuity/custody/v0.1/**'
+      - '.github/workflows/continuity-custodian-handoff-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Parse code and schemas without bytecode writes
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+          root = Path('protection/continuity/custody/v0.1')
+          ast.parse((root / 'custodian_handoff.py').read_text())
+          ast.parse((root / 'test_custodian_handoff.py').read_text())
+          json.loads((root / 'custodian-handoff-envelope.schema.json').read_text())
+          json.loads((root / 'custody-receipt.schema.json').read_text())
+          print('parse OK')
+          PY
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Run custodian handoff tests
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python protection/continuity/custody/v0.1/test_custodian_handoff.py
+
+      - name: Generate bounded offline handoff envelope
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python protection/continuity/custody/v0.1/custodian_handoff.py envelope \
+            --main-sha 2a0fbd4d67e9db4913658da825336d2c4a8c2888 \
+            --tree-sha db02276c32a374eb80bae1ed3701762a9dda7c92 \
+            --copy-slot sealed-offline-copy \
+            --custodian-role custodian-role-b \
+            --bundle-sha256 $(printf '1%.0s' {1..64}) \
+            --capture-manifest-sha256 $(printf '2%.0s' {1..64}) \
+            --metadata-manifest-sha256 $(printf '3%.0s' {1..64}) \
+            --verification-evidence-sha256 $(printf '4%.0s' {1..64}) \
+            > /tmp/handoff-envelope.json
+          python - <<'PY'
+          import json
+          p = json.load(open('/tmp/handoff-envelope.json'))
+          assert p['status'] == 'handoff-preparation-only'
+          assert p['storage_requirements']['offline_required'] is True
+          assert p['storage_requirements']['credential_material_included'] is False
+          assert p['storage_requirements']['encryption_key_included'] is False
+          assert p['storage_requirements']['account_access_included'] is False
+          assert p['boundary']['handoff_executed'] is False
+          assert p['boundary']['repository_authority_transferred'] is False
+          assert p['boundary']['kontur_activation_authorized'] is False
+          print('bounded envelope OK')
+          PY
+
+      - name: Assert tool has local read-only surface
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          tree = ast.parse(Path('protection/continuity/custody/v0.1/custodian_handoff.py').read_text())
+          forbidden = {'socket', 'urllib', 'requests', 'httpx', 'subprocess', 'paramiko', 'ftplib'}
+          seen = set()
+          for node in ast.walk(tree):
+              if isinstance(node, ast.Import):
+                  seen.update(alias.name.split('.')[0] for alias in node.names)
+              elif isinstance(node, ast.ImportFrom) and node.module:
+                  seen.add(node.module.split('.')[0])
+          bad = sorted(seen & forbidden)
+          assert not bad, f'forbidden external/process imports: {bad}'
+          print('local read-only tool surface OK')
+          PY
+
+      - name: Assert workflow remains read-only and KONTUR-independent
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/continuity-custodian-handoff-v0.1-validation.yml').read_text()
+          required = 'contents' + ': read'
+          forbidden = [
+              'contents' + ': write',
+              'pull_request' + '_target',
+              'secrets' + '.',
+              'server/' + 'kontur',
+              'gh ' + 'api',
+              'curl' + ' ',
+              'wget' + ' ',
+          ]
+          assert required in text
+          bad = [item for item in forbidden if item in text]
+          assert not bad, f'forbidden workflow surface: {bad}'
+          print('workflow boundary OK')
+          PY
+
+      - name: Confirm checkout was not mutated
+        run: test -z "$(git status --porcelain)"
