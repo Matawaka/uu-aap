@@ -1,0 +1,26 @@
+name: Reusable Protocol Stack RC Checkpoint v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/release-candidate-checkpoint/v0.1/**'
+      - '.github/workflows/release-candidate-checkpoint-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/release-candidate-checkpoint/v0.1/**'
+      - '.github/workflows/release-candidate-checkpoint-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Checkpoint is not a release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/integration/release-candidate-checkpoint/v0.1/validate-checkpoint.js
