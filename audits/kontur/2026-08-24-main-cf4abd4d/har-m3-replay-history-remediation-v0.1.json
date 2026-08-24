@@ -1,0 +1,30 @@
+{
+  "document_type": "uu-aap.kontur-har-m3-replay-history-remediation",
+  "version": "0.1",
+  "source_targeted_re_audit_frontier": "cf4abd3932048bbcfa30c157fa887cf434b2be5e",
+  "source_targeted_re_audit_conclusion": "HAR_REMEDIATION_NEEDS_MORE_TESTING",
+  "finding": "HAR-M3 replay-history validation accepts materially incomplete/malformed prior-decision entries",
+  "status": "candidate_for_targeted_har_m3_reaudit",
+  "implementation": {
+    "complete_prior_decision_contract_validation": true,
+    "decision_id_binding_revalidated": true,
+    "decision_outcome_semantics_revalidated": true,
+    "complete_review_packet_binding_required": true,
+    "complete_confirmations_required": true,
+    "complete_human_declaration_required": true,
+    "complete_review_context_required": true,
+    "timestamp_ordering_revalidated": true,
+    "complete_claims_revalidated": true,
+    "malformed_history_regression_added": true
+  },
+  "finding_closed": false,
+  "targeted_reaudit_still_required": true,
+  "formal_human_activation_review_allowed": false,
+  "boundary": {
+    "remediation_candidate_is_audit_closure": false,
+    "remediation_candidate_is_human_review_approval": false,
+    "remediation_candidate_is_activation_intent": false,
+    "remediation_candidate_is_activation_authorization": false,
+    "remediation_candidate_is_kontur_activation": false
+  }
+}
