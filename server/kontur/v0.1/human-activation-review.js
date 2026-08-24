@@ -428,8 +428,9 @@ async function assertPriorDecisionEntry(entry) {
   assert(entry.safe_effect === expected.safe_effect, `${label}: safe_effect mismatch`);
   assertExactClaims(entry.claims, expectedDecisionClaims(expected.positive), `${label}: claims`);
 
+  const packetBindingIdentity = await digestJson(entry.review_packet_binding);
   const seed = [
-    entry.review_packet_binding.digest.value,
+    packetBindingIdentity,
     entry.reviewer_ref,
     entry.decision,
     entry.human_declaration.nonce,
@@ -505,7 +506,8 @@ async function buildReviewDecision({
     else assert(typeof confirmations[key] === 'boolean', `Human Activation Review: confirmation ${key} must be boolean`);
   }
 
-  const seed = [packetBinding.digest.value, reviewerRef, decision, nonce, reviewedAt, observedCurrentGitRevision, observedAt].join('|');
+  const packetBindingIdentity = await digestJson(packetBinding);
+  const seed = [packetBindingIdentity, reviewerRef, decision, nonce, reviewedAt, observedCurrentGitRevision, observedAt].join('|');
   const hash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
 
   return {
