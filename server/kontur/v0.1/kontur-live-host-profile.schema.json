@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/schemas/kontur-live-host-profile-v0.1.json",
+  "title": "KONTURLiveHostProfile v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "profile_id", "created_at",
+    "system_id", "server_instance_id", "host_id", "operator_ref",
+    "repository_full_name", "repository_root", "durable_ledger_root",
+    "runtime_boundary", "identity_assurance", "declarations", "claims"
+  ],
+  "properties": {
+    "$schema": {"type": "string", "pattern": "(^|.*/)kontur-live-host-profile\\.schema\\.json$"},
+    "artifact_type": {"const": "KONTURLiveHostProfile"},
+    "artifact_version": {"const": "0.1"},
+    "profile_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-profile:[0-9a-f]{24}$"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+    "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+    "host_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:host:"},
+    "operator_ref": {"type": "string", "minLength": 1},
+    "repository_full_name": {"const": "Matawaka/uu-aap"},
+    "repository_root": {"type": "string", "minLength": 1},
+    "durable_ledger_root": {"type": "string", "minLength": 1},
+    "runtime_boundary": {"const": "host_local"},
+    "identity_assurance": {"const": "human_designated_not_cryptographically_verified"},
+    "declarations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_root_persistent", "durable_ledger_root_persistent",
+        "durable_ledger_root_outside_repository", "ci_environment", "temporary_sandbox"
+      ],
+      "properties": {
+        "repository_root_persistent": {"const": true},
+        "durable_ledger_root_persistent": {"const": true},
+        "durable_ledger_root_outside_repository": {"const": true},
+        "ci_environment": {"const": false},
+        "temporary_sandbox": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "live_host_designated", "live_host_eligibility_established",
+        "execution_authority_granted", "kernel_activated", "responsibility_state_created",
+        "responsibility_accepted", "permission_expansion_authorized",
+        "permission_bypass_authorized", "legal_authority_established",
+        "truth_certified", "universal_canonicality_established"
+      ],
+      "properties": {
+        "live_host_designated": {"const": true},
+        "live_host_eligibility_established": {"const": false},
+        "execution_authority_granted": {"const": false},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "permission_expansion_authorized": {"const": false},
+        "permission_bypass_authorized": {"const": false},
+        "legal_authority_established": {"const": false},
+        "truth_certified": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    }
+  }
+}
