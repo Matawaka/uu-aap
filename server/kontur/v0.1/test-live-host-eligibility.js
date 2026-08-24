@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const Designation = require('./live-host-designation.js');
 const Host = require('./live-host-eligibility.js');
 
 function assert(value, message) { if (!value) throw new Error(message); }
@@ -15,18 +16,39 @@ async function reject(name, fn, pattern) {
 }
 function writeJson(file, value) { fs.writeFileSync(file, `${JSON.stringify(value, null, 2)}\n`); }
 
+async function syntheticDesignation(overrides = {}) {
+  return Designation.buildLiveHostDesignationDecision({
+    declaredAt: overrides.declaredAt || '2026-08-24T08:44:59.000Z',
+    designatorRef: overrides.designatorRef || 'human:reviewer:synthetic-live-host-designator',
+    systemId: overrides.systemId || 'urn:uu-aap:kontur:system:server-responsibility',
+    serverInstanceId: overrides.serverInstanceId || 'urn:uu-aap:kontur:server:reference-primary',
+    hostId: overrides.hostId || 'urn:uu-aap:kontur:host:synthetic-human-designated-primary',
+    repositoryRoot: overrides.repositoryRoot || 'C:\\KONTUR-LIVE\\uu-aap',
+    durableLedgerRoot: overrides.durableLedgerRoot || 'C:\\ProgramData\\KONTUR\\responsibility-ledger',
+    typedConfirmation: overrides.typedConfirmation || 'DESIGNATE_KONTUR_LIVE_HOST',
+    nonce: overrides.nonce || 'urn:uu-aap:kontur:live-host-designation-nonce:synthetic-eligibility-fixture-001'
+  });
+}
+
 async function main() {
   const expectedGitRevision = `git:${'a'.repeat(40)}`;
+  const designation = await syntheticDesignation();
+  await Designation.validateLiveHostDesignationDecision(designation);
+
   const profile = await Host.buildLiveHostProfile({
     createdAt: '2026-08-24T08:45:00.000Z',
-    systemId: 'urn:uu-aap:kontur:system:server-responsibility',
-    serverInstanceId: 'urn:uu-aap:kontur:server:reference-primary',
-    hostId: 'urn:uu-aap:kontur:host:human-designated-primary',
-    operatorRef: 'human:reviewer:Matawaka',
-    repositoryRoot: 'C:\\KONTUR-LIVE\\uu-aap',
-    durableLedgerRoot: 'C:\\ProgramData\\KONTUR\\responsibility-ledger'
+    designationDecision: designation
   });
   await Host.validateLiveHostProfile(profile);
+  assert(profile.human_designation_binding.artifact_ref === designation.decision_id,
+    'profile must bind exact human designation decision');
+  assert(profile.human_designation_evidence.decision_id === designation.decision_id,
+    'profile must embed exact human designation evidence');
+  assert(profile.operator_ref === designation.designator_ref,
+    'profile operator_ref must derive from human designation');
+  assert(profile.repository_root === designation.target.repository_root &&
+    profile.durable_ledger_root === designation.target.durable_ledger_root,
+    'profile paths must derive from explicit designation target');
 
   const baseEnvironment = {
     repositoryRoot: profile.repository_root,
@@ -38,7 +60,7 @@ async function main() {
     ciEnvironmentDetected: false,
     temporarySandboxDetected: false,
     runtimeBoundary: 'host_local',
-    processIdentity: 'DESKTOP-D4N4RCN\\interactive-user',
+    processIdentity: 'SYNTHETIC-HOST\\interactive-user',
     workspaceRoot: profile.repository_root,
     observedGitRevision: expectedGitRevision
   };
@@ -58,7 +80,64 @@ async function main() {
   ]) assert(eligible.claims[key] === false, `eligible receipt must preserve non-effect ${key}`);
   await Host.validateLiveHostEligibilityReceipt({ receipt: eligible, profile });
 
-  const sandboxEnv = { ...baseEnvironment, temporarySandboxDetected: true, processIdentity: 'DESKTOP-D4N4RCN\\CodexSandboxOffline' };
+  const vectors = [];
+  vectors.push(await reject('legacy_raw_parameters_cannot_designate_host', () => Host.buildLiveHostProfile({
+    createdAt: '2026-08-24T08:45:00.000Z',
+    systemId: designation.target.system_id,
+    serverInstanceId: designation.target.server_instance_id,
+    hostId: designation.target.host_id,
+    operatorRef: designation.designator_ref,
+    repositoryRoot: designation.target.repository_root,
+    durableLedgerRoot: designation.target.durable_ledger_root
+  }), /object required|decision required|exact v0\.1 decision required/));
+
+  vectors.push(await reject('wrong_typed_human_designation', () => syntheticDesignation({
+    typedConfirmation: 'DESIGNATE_KONTUR_LIVE_HOST_NOW'
+  }), /exact typed human confirmation required/));
+
+  const tamperedDecision = clone(designation);
+  tamperedDecision.target.host_id = 'urn:uu-aap:kontur:host:substituted';
+  vectors.push(await reject('designation_decision_id_binding',
+    () => Designation.validateLiveHostDesignationDecision(tamperedDecision),
+    /deterministic decision ID mismatch/));
+
+  const tamperedDecisionDeclarations = clone(designation);
+  tamperedDecisionDeclarations.declarations.temporary_sandbox = true;
+  vectors.push(await reject('designation_declaration_boundary',
+    () => Designation.validateLiveHostDesignationDecision(tamperedDecisionDeclarations),
+    /temporary sandbox cannot be designated/));
+
+  const bindingTamper = clone(profile);
+  bindingTamper.human_designation_binding.digest.value = '0'.repeat(64);
+  vectors.push(await reject('designation_binding_substitution',
+    () => Host.validateLiveHostProfile(bindingTamper),
+    /human designation binding substitution/));
+
+  const evidenceTamper = clone(profile);
+  evidenceTamper.human_designation_evidence.designator_ref = 'human:reviewer:substituted';
+  vectors.push(await reject('designation_evidence_substitution',
+    () => Host.validateLiveHostProfile(evidenceTamper),
+    /deterministic decision ID mismatch/));
+
+  const profileTargetTamper = clone(profile);
+  profileTargetTamper.repository_root = 'D:\\substituted-repository';
+  vectors.push(await reject('profile_target_must_equal_designation',
+    () => Host.validateLiveHostProfile(profileTargetTamper),
+    /profile target differs from explicit human designation/));
+
+  const profileDeclarationTamper = clone(profile);
+  profileDeclarationTamper.declarations.repository_root_persistent = false;
+  vectors.push(await reject('profile_declarations_must_equal_designation',
+    () => Host.validateLiveHostProfile(profileDeclarationTamper),
+    /profile declarations differ from explicit human designation/));
+
+  const profilePredatesDesignation = clone(profile);
+  profilePredatesDesignation.created_at = '2026-08-24T08:44:58.000Z';
+  vectors.push(await reject('profile_cannot_predate_designation',
+    () => Host.validateLiveHostProfile(profilePredatesDesignation),
+    /profile cannot predate human designation/));
+
+  const sandboxEnv = { ...baseEnvironment, temporarySandboxDetected: true, processIdentity: 'SYNTHETIC-HOST\\CodexSandboxOffline' };
   const sandbox = await Host.evaluateLiveHostEligibility({
     profile, expectedGitRevision, observedAt: '2026-08-24T08:46:01.000Z', environment: sandboxEnv
   });
@@ -92,31 +171,33 @@ async function main() {
 
   const tamperedProfile = clone(profile);
   tamperedProfile.durable_ledger_root = 'D:\\substituted';
-  await reject('profile_id_binding', () => Host.validateLiveHostProfile(tamperedProfile), /deterministic profile ID mismatch/);
+  vectors.push(await reject('profile_designation_target_binding',
+    () => Host.validateLiveHostProfile(tamperedProfile), /profile target differs from explicit human designation/));
 
   const inconsistentRoot = clone(eligible);
   inconsistentRoot.observations.observed_repository_root = 'D:\\substituted-repository';
-  await reject('raw_repository_root_revalidation',
+  vectors.push(await reject('raw_repository_root_revalidation',
     () => Host.validateLiveHostEligibilityReceipt({ receipt: inconsistentRoot, profile }),
-    /repository-root match flag inconsistent with raw observation/);
+    /repository-root match flag inconsistent with raw observation/));
 
   const inconsistentRevision = clone(eligible);
   inconsistentRevision.observations.observed_git_revision = `git:${'b'.repeat(40)}`;
-  await reject('raw_revision_revalidation',
+  vectors.push(await reject('raw_revision_revalidation',
     () => Host.validateLiveHostEligibilityReceipt({ receipt: inconsistentRevision, profile }),
-    /Git revision match flag inconsistent with raw observation/);
+    /Git revision match flag inconsistent with raw observation/));
 
   const tamperedReceipt = clone(eligible);
   tamperedReceipt.observations.process_identity = 'substituted-process';
-  await reject('receipt_id_binding', () => Host.validateLiveHostEligibilityReceipt({ receipt: tamperedReceipt, profile }), /deterministic receipt ID mismatch/);
+  vectors.push(await reject('receipt_id_binding', () => Host.validateLiveHostEligibilityReceipt({ receipt: tamperedReceipt, profile }), /deterministic receipt ID mismatch/));
 
   const tamperedBinding = clone(eligible);
   tamperedBinding.host_profile_binding.digest.value = '0'.repeat(64);
-  await reject('profile_binding', () => Host.validateLiveHostEligibilityReceipt({ receipt: tamperedBinding, profile }), /host profile binding substitution/);
+  vectors.push(await reject('profile_binding', () => Host.validateLiveHostEligibilityReceipt({ receipt: tamperedBinding, profile }), /host profile binding substitution/));
 
   const outputDir = process.argv[2];
   if (outputDir) {
     fs.mkdirSync(outputDir, { recursive: true });
+    writeJson(path.join(outputDir, 'live-host-designation-decision.json'), designation);
     writeJson(path.join(outputDir, 'live-host-profile.json'), profile);
     writeJson(path.join(outputDir, 'live-host-eligibility.json'), eligible);
     writeJson(path.join(outputDir, 'sandbox-ineligible.json'), sandbox);
@@ -124,13 +205,13 @@ async function main() {
 
   console.log(JSON.stringify({
     status: 'PASS',
+    designation_decision_id: designation.decision_id,
+    profile_id: profile.profile_id,
     eligible_receipt_id: eligible.receipt_id,
     sandbox_decision: sandbox.decision,
-    vectors: [
-      'ci', 'sandbox', 'missing-ledger', 'revision-drift', 'ledger-root-substitution',
-      'profile-id-binding', 'raw-repository-root-revalidation', 'raw-revision-revalidation',
-      'receipt-id-binding', 'profile-binding'
-    ]
+    vectors: vectors.map((item) => item.name).concat([
+      'ci', 'sandbox', 'missing-ledger', 'revision-drift', 'ledger-root-substitution'
+    ])
   }, null, 2));
 }
 
