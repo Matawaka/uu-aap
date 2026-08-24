@@ -1,0 +1,26 @@
+name: Bounded Action Lifecycle Closure v0.1 validation
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/observation-core-successor-binding/v0.1/**'
+      - 'protocols/integration/bounded-action-lifecycle-closure/v0.1/**'
+      - '.github/workflows/bounded-action-lifecycle-closure-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/observation-core-successor-binding/v0.1/**'
+      - 'protocols/integration/bounded-action-lifecycle-closure/v0.1/**'
+      - '.github/workflows/bounded-action-lifecycle-closure-v0.1-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Exhaust one bounded action scope without future authority
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/integration/observation-core-successor-binding/v0.1/validate-observation-core-successor-binding.js
+      - run: node protocols/integration/bounded-action-lifecycle-closure/v0.1/validate-bounded-action-lifecycle-closure.js
