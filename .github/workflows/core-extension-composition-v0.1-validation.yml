@@ -1,0 +1,26 @@
+name: UU-AAP Core extension composition v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/core/extensions/v0.1/**"
+      - ".github/workflows/core-extension-composition-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/core/extensions/v0.1/**"
+      - ".github/workflows/core-extension-composition-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-extension-composition:
+    name: UU-AAP Core extension composition v0.1 validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate extension composition boundary
+        run: node protocols/core/extensions/v0.1/validate-extensions.js
