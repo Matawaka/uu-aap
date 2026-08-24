@@ -1,0 +1,28 @@
+name: Reusable Protocol Interface Registry v0.1 validation
+on:
+  pull_request:
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/**'
+      - 'protocols/interface-registry/v0.1/**'
+      - '.github/workflows/reusable-protocol-interface-registry-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/**'
+      - 'protocols/interface-registry/v0.1/**'
+      - '.github/workflows/reusable-protocol-interface-registry-v0.1-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Validate reusable interfaces without release-registry conflation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/interface-registry/v0.1/validate-interface-registry.js
+      - run: node protocols/registry/v0.1/validate-registry.js
