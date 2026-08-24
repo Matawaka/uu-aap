@@ -9,8 +9,8 @@
     "intended_transition", "git_revision", "system_id", "server_instance_id",
     "readiness_epoch", "fencing_epoch", "frontier_binding", "readiness_signal_binding",
     "aggregation_policy_binding", "responsibility_policy_binding", "activation_policy_binding",
-    "human_activation_review_decision_binding", "health_binding", "holder_id", "responsibility_scopes",
-    "lease", "human_intent", "claims"
+    "human_activation_review_decision_binding", "human_activation_review_evidence", "health_binding",
+    "holder_id", "responsibility_scopes", "lease", "human_intent", "claims"
   ],
   "properties": {
     "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-intent\\.schema\\.json$"},
@@ -30,6 +30,7 @@
     "responsibility_policy_binding": {"$ref": "#/$defs/policyBinding"},
     "activation_policy_binding": {"$ref": "#/$defs/policyBinding"},
     "human_activation_review_decision_binding": {"$ref": "#/$defs/harDecisionBinding"},
+    "human_activation_review_evidence": {"$ref": "#/$defs/harEvidence"},
     "health_binding": {"$ref": "#/$defs/binding"},
     "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
     "responsibility_scopes": {
@@ -106,6 +107,14 @@
         "artifact_type": {"const": "KONTURHumanActivationReviewDecision"},
         "artifact_ref": {"type": "string", "pattern": "^urn:uu-aap:kontur:human-activation-review-decision:"},
         "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "harEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["review_packet", "decision"],
+      "properties": {
+        "review_packet": {"type": "object"},
+        "decision": {"type": "object"}
       }
     },
     "policyBinding": {
