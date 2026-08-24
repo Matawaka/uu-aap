@@ -1,0 +1,35 @@
+name: UU-AAP stack evolution compatibility v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/core/evolution/v0.1/**"
+      - "protocols/core/v0.1/**"
+      - "protocols/core/extensions/v0.1/**"
+      - "protocols/core/extensions/composition/v0.1/**"
+      - ".github/workflows/core-stack-evolution-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "protocols/core/evolution/v0.1/**"
+      - "protocols/core/v0.1/**"
+      - "protocols/core/extensions/v0.1/**"
+      - "protocols/core/extensions/composition/v0.1/**"
+      - ".github/workflows/core-stack-evolution-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate frozen Core v0.1
+        run: node protocols/core/v0.1/validate-core.js
+      - name: Validate extension composition boundary
+        run: node protocols/core/extensions/v0.1/validate-extensions.js
+      - name: Validate extension composition receipt
+        run: node protocols/core/extensions/composition/v0.1/validate-composition-receipt.js
+      - name: Validate stack evolution and compatibility
+        run: node protocols/core/evolution/v0.1/validate-evolution.js

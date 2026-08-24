@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/core/evolution/v0.1/compatibility-receipt.schema.json",
+  "title": "UU-AAP CompatibilityReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "receipt_type",
+    "manifest_hash",
+    "source",
+    "target",
+    "compatibility_class",
+    "translation_mode",
+    "frontier",
+    "assertions",
+    "non_effects",
+    "issuer",
+    "issued_at",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-COMPAT"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "CompatibilityReceipt"},
+    "manifest_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "version", "receipt_type", "content_hash", "frontier"],
+      "properties": {
+        "protocol": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "receipt_type": {"type": "string", "minLength": 1},
+        "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"},
+        "frontier": {"type": "string", "minLength": 1}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "version", "receipt_type"],
+      "properties": {
+        "protocol": {"type": "string", "minLength": 1},
+        "version": {"type": "string", "minLength": 1},
+        "receipt_type": {"type": "string", "minLength": 1}
+      }
+    },
+    "compatibility_class": {
+      "enum": [
+        "fully_compatible",
+        "adapter_compatible",
+        "semantically_compatible_syntax_breaking",
+        "breaking",
+        "historical_only"
+      ]
+    },
+    "translation_mode": {"enum": ["semantic_preservation", "reobserve_rebind", "historical_only"]},
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_revision", "effective_revision", "reobserved"],
+      "properties": {
+        "source_revision": {"type": "string", "minLength": 1},
+        "effective_revision": {"type": "string", "minLength": 1},
+        "reobserved": {"type": "boolean"}
+      }
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "explicit_adapter",
+        "historical_meaning_preserved",
+        "target_semantics_not_stronger",
+        "action_gate_still_required",
+        "freshness_not_upgraded"
+      ],
+      "properties": {
+        "explicit_adapter": {"type": "boolean"},
+        "historical_meaning_preserved": {"const": true},
+        "target_semantics_not_stronger": {"const": true},
+        "action_gate_still_required": {"const": true},
+        "freshness_not_upgraded": {"const": true}
+      }
+    },
+    "non_effects": {"type": "object"},
+    "issuer": {"type": "string", "minLength": 1},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
+  }
+}
