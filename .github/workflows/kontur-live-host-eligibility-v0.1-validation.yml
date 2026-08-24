@@ -86,13 +86,14 @@ jobs:
           profile = json.loads((out / 'live-host-profile.json').read_text(encoding='utf-8'))
           assert decision['human_declaration']['typed_confirmation'] == 'DESIGNATE_KONTUR_LIVE_HOST'
           assert decision['safe_effect'] == 'live_host_profile_may_be_built'
+          assert decision['designator_ref'] != decision['target']['operator_ref']
           assert profile['human_designation_binding']['artifact_ref'] == decision['decision_id']
           assert profile['human_designation_evidence']['decision_id'] == decision['decision_id']
-          assert profile['operator_ref'] == decision['designator_ref']
+          assert profile['operator_ref'] == decision['target']['operator_ref']
           assert profile['repository_root'] == decision['target']['repository_root']
           assert profile['durable_ledger_root'] == decision['target']['durable_ledger_root']
           assert profile['declarations'] == decision['declarations']
-          print('PASS: profile is derived from exact explicit designation')
+          print('PASS: profile is derived from exact designation with separate designator/operator roles')
           PY
 
       - name: Assert boundary has no activation path
