@@ -6,6 +6,7 @@ on:
       - "server/kontur/v0.1/HUMAN_ACTIVATION_REVIEW.md"
       - "server/kontur/v0.1/human-activation-review.js"
       - "server/kontur/v0.1/test-human-activation-review.js"
+      - "server/kontur/v0.1/test-human-activation-review-schema.py"
       - "server/kontur/v0.1/kontur-human-activation-review-*.schema.json"
       - ".github/workflows/kontur-human-activation-review-v0.1-validation.yml"
   push:
@@ -40,9 +41,10 @@ jobs:
           node --check server/kontur/v0.1/human-activation-review.js
           node --check server/kontur/v0.1/test-human-activation-review.js
           python - <<'PY'
-          import json
+          import ast, json
           from pathlib import Path
           from jsonschema import Draft202012Validator
+          ast.parse(Path('server/kontur/v0.1/test-human-activation-review-schema.py').read_text(encoding='utf-8'))
           for name in [
               'kontur-human-activation-review-packet.schema.json',
               'kontur-human-activation-review-decision.schema.json',
@@ -53,7 +55,9 @@ jobs:
           PY
 
       - name: Run human activation review fail-closed tests
-        run: node server/kontur/v0.1/test-human-activation-review.js
+        run: |
+          node server/kontur/v0.1/test-human-activation-review.js
+          python server/kontur/v0.1/test-human-activation-review-schema.py
 
       - name: Keep audit hardening green
         env:
@@ -144,6 +148,7 @@ jobs:
         run: |
           python - <<'PY'
           import json, os
+          from datetime import datetime
           from pathlib import Path
           from jsonschema import Draft202012Validator, FormatChecker
           root = Path('server/kontur/v0.1')
@@ -154,6 +159,9 @@ jobs:
           assert packet['git_revision'] == 'git:' + os.environ['REVIEW_GITHUB_SHA']
           assert packet['review_state'] == 'ready_for_human_activation_review'
           assert packet['safe_next_step'] == 'human_review_decision_only'
+          assert datetime.fromisoformat(packet['expires_at'].replace('Z', '+00:00')) > datetime.fromisoformat(packet['prepared_at'].replace('Z', '+00:00'))
+          assert packet['project_readiness_checkpoint_binding']['artifact_type'] == 'ProjectReadinessCheckpointReceipt'
+          assert packet['current_main_frontier_verification_binding']['artifact_type'] == 'KONTURCurrentMainFrontierVerificationReceipt'
           assert packet['claims']['human_activation_review_ready'] is True
           for key in [
               'human_review_decision_recorded', 'activation_intent_preparation_authorized',
@@ -165,7 +173,7 @@ jobs:
               'distributed_consensus_established'
           ]:
               assert packet['claims'][key] is False, key
-          print('KONTUR human activation review packet ready; no human decision or activation emitted')
+          print('KONTUR human activation review packet ready; predecessor-bound; expiring; no human decision or activation emitted')
           PY
 
       - name: Assert review tooling is local-only and cannot execute activation
