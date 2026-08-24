@@ -9,7 +9,8 @@
     "intended_transition", "git_revision", "system_id", "server_instance_id",
     "readiness_epoch", "fencing_epoch", "frontier_binding", "readiness_signal_binding",
     "aggregation_policy_binding", "responsibility_policy_binding", "activation_policy_binding",
-    "health_binding", "holder_id", "responsibility_scopes", "lease", "human_intent", "claims"
+    "human_activation_review_decision_binding", "health_binding", "holder_id", "responsibility_scopes",
+    "lease", "human_intent", "claims"
   ],
   "properties": {
     "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-intent\\.schema\\.json$"},
@@ -28,6 +29,7 @@
     "aggregation_policy_binding": {"$ref": "#/$defs/policyBinding"},
     "responsibility_policy_binding": {"$ref": "#/$defs/policyBinding"},
     "activation_policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "human_activation_review_decision_binding": {"$ref": "#/$defs/harDecisionBinding"},
     "health_binding": {"$ref": "#/$defs/binding"},
     "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
     "responsibility_scopes": {
@@ -53,14 +55,16 @@
       "additionalProperties": false,
       "required": [
         "human_activation_intent_declared", "exact_activation_parameters_bound",
-        "human_identity_cryptographically_verified", "kernel_activated", "responsibility_state_created",
-        "responsibility_accepted", "execution_authority_granted", "legal_responsibility_determined",
-        "legal_effect_established", "moral_blame_assigned", "truth_certified",
-        "poai_materialization_event_recorded", "universal_canonicality_established"
+        "human_activation_review_approval_bound", "human_identity_cryptographically_verified",
+        "kernel_activated", "responsibility_state_created", "responsibility_accepted",
+        "execution_authority_granted", "legal_responsibility_determined", "legal_effect_established",
+        "moral_blame_assigned", "truth_certified", "poai_materialization_event_recorded",
+        "universal_canonicality_established"
       ],
       "properties": {
         "human_activation_intent_declared": {"const": true},
         "exact_activation_parameters_bound": {"const": true},
+        "human_activation_review_approval_bound": {"const": true},
         "human_identity_cryptographically_verified": {"const": false},
         "kernel_activated": {"const": false},
         "responsibility_state_created": {"const": false},
@@ -92,6 +96,15 @@
       "properties": {
         "artifact_type": {"type": "string", "minLength": 1},
         "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "harDecisionBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"const": "KONTURHumanActivationReviewDecision"},
+        "artifact_ref": {"type": "string", "pattern": "^urn:uu-aap:kontur:human-activation-review-decision:"},
         "digest": {"$ref": "#/$defs/digest"}
       }
     },
