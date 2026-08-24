@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protection/portability/v0.1/runtime-portability-receipt.schema.json",
+  "title": "RuntimePortabilityReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "artifact_type", "artifact_version", "receipt_id", "observed_at",
+    "runtime", "capabilities", "claims"
+  ],
+  "properties": {
+    "$schema": {"const": "./runtime-portability-receipt.schema.json"},
+    "artifact_type": {"const": "RuntimePortabilityReceipt"},
+    "artifact_version": {"const": "0.1"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:portability:runtime:[0-9a-f]{24}$"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["platform", "arch", "node_version", "temp_root_strategy"],
+      "properties": {
+        "platform": {"type": "string", "minLength": 1},
+        "arch": {"type": "string", "minLength": 1},
+        "node_version": {"type": "string", "pattern": "^v[0-9]+\\.[0-9]+\\.[0-9]+"},
+        "temp_root_strategy": {"const": "os_native"}
+      }
+    },
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["temporary_workspace", "file_fsync", "directory_fsync"],
+      "properties": {
+        "temporary_workspace": {"$ref": "#/$defs/capability"},
+        "file_fsync": {"$ref": "#/$defs/capability"},
+        "directory_fsync": {"$ref": "#/$defs/capability"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_capabilities_observed", "cross_platform_equivalence_proven",
+        "durability_requirement_satisfied", "durability_fallback_authorized",
+        "authority_established", "canonicality_established", "legal_liability_determined",
+        "kontur_readiness_established", "kontur_activation_authorized", "kontur_activated"
+      ],
+      "properties": {
+        "runtime_capabilities_observed": {"const": true},
+        "cross_platform_equivalence_proven": {"const": false},
+        "durability_requirement_satisfied": {"const": false},
+        "durability_fallback_authorized": {"const": false},
+        "authority_established": {"const": false},
+        "canonicality_established": {"const": false},
+        "legal_liability_determined": {"const": false},
+        "kontur_readiness_established": {"const": false},
+        "kontur_activation_authorized": {"const": false},
+        "kontur_activated": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "capability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "error_code"],
+      "properties": {
+        "status": {"enum": ["observed_supported", "observed_unavailable"]},
+        "error_code": {"type": ["string", "null"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"status": {"const": "observed_supported"}}, "required": ["status"]},
+          "then": {"properties": {"error_code": {"const": null}}}
+        },
+        {
+          "if": {"properties": {"status": {"const": "observed_unavailable"}}, "required": ["status"]},
+          "then": {"properties": {"error_code": {"type": "string", "minLength": 1}}}
+        }
+      ]
+    }
+  }
+}
