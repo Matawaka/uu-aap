@@ -3,7 +3,9 @@ name: KONTUR Live Host Eligibility v0.1 validation
 on:
   pull_request:
     paths:
+      - "server/kontur/v0.1/LIVE_HOST_DESIGNATION.md"
       - "server/kontur/v0.1/LIVE_HOST_ELIGIBILITY.md"
+      - "server/kontur/v0.1/live-host-designation.js"
       - "server/kontur/v0.1/live-host-eligibility.js"
       - "server/kontur/v0.1/test-live-host-eligibility.js"
       - "server/kontur/v0.1/kontur-live-host-*.schema.json"
@@ -14,7 +16,7 @@ permissions:
 
 jobs:
   validate:
-    name: Live host eligibility boundary
+    name: Explicit designation to live host eligibility boundary
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout read-only
@@ -32,6 +34,7 @@ jobs:
 
       - name: Check code and schemas
         run: |
+          node --check server/kontur/v0.1/live-host-designation.js
           node --check server/kontur/v0.1/live-host-eligibility.js
           node --check server/kontur/v0.1/test-live-host-eligibility.js
           python - <<'PY'
@@ -40,6 +43,7 @@ jobs:
           from jsonschema import Draft202012Validator
           root = Path('server/kontur/v0.1')
           for name in [
+              'kontur-live-host-designation-decision.schema.json',
               'kontur-live-host-profile.schema.json',
               'kontur-live-host-eligibility.schema.json',
           ]:
@@ -48,7 +52,7 @@ jobs:
               print('VALID schema:', name)
           PY
 
-      - name: Run fail-closed host eligibility vectors
+      - name: Run explicit designation and fail-closed host eligibility vectors
         run: node server/kontur/v0.1/test-live-host-eligibility.js /tmp/kontur-live-host
 
       - name: Validate generated artifacts against schemas
@@ -60,6 +64,7 @@ jobs:
           root = Path('server/kontur/v0.1')
           out = Path('/tmp/kontur-live-host')
           checks = [
+              ('kontur-live-host-designation-decision.schema.json', 'live-host-designation-decision.json'),
               ('kontur-live-host-profile.schema.json', 'live-host-profile.json'),
               ('kontur-live-host-eligibility.schema.json', 'live-host-eligibility.json'),
               ('kontur-live-host-eligibility.schema.json', 'sandbox-ineligible.json'),
@@ -71,22 +76,42 @@ jobs:
               print('VALID artifact:', artifact_name)
           PY
 
+      - name: Require profile to bind exact explicit human designation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          out = Path('/tmp/kontur-live-host')
+          decision = json.loads((out / 'live-host-designation-decision.json').read_text(encoding='utf-8'))
+          profile = json.loads((out / 'live-host-profile.json').read_text(encoding='utf-8'))
+          assert decision['human_declaration']['typed_confirmation'] == 'DESIGNATE_KONTUR_LIVE_HOST'
+          assert decision['safe_effect'] == 'live_host_profile_may_be_built'
+          assert profile['human_designation_binding']['artifact_ref'] == decision['decision_id']
+          assert profile['human_designation_evidence']['decision_id'] == decision['decision_id']
+          assert profile['operator_ref'] == decision['designator_ref']
+          assert profile['repository_root'] == decision['target']['repository_root']
+          assert profile['durable_ledger_root'] == decision['target']['durable_ledger_root']
+          assert profile['declarations'] == decision['declarations']
+          print('PASS: profile is derived from exact explicit designation')
+          PY
+
       - name: Assert boundary has no activation path
         run: |
           python - <<'PY'
           from pathlib import Path
-          source = Path('server/kontur/v0.1/live-host-eligibility.js').read_text(encoding='utf-8')
-          forbidden = [
-              'responsibility-kernel.js',
-              'activation-executor.js',
-              'transitionResponsibility',
-              'commitLedgerEntry',
-              'buildExecuteCommand',
-              'executeActivation'
-          ]
-          for token in forbidden:
-              assert token not in source, f'forbidden activation path token: {token}'
-          print('PASS: live-host eligibility module remains non-activating')
+          for name in ['live-host-designation.js', 'live-host-eligibility.js']:
+              source = Path('server/kontur/v0.1', name).read_text(encoding='utf-8')
+              forbidden = [
+                  'responsibility-kernel.js',
+                  'activation-executor.js',
+                  'transitionResponsibility',
+                  'commitLedgerEntry',
+                  'buildExecuteCommand',
+                  'executeActivation'
+              ]
+              for token in forbidden:
+                  assert token not in source, f'{name}: forbidden activation path token: {token}'
+          print('PASS: designation/eligibility modules remain non-activating')
           PY
 
       - name: Assert CI cannot self-qualify as live host
