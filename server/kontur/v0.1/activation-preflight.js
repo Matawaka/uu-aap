@@ -204,10 +204,37 @@ async function assertFrontierBindings(frontier, readinessSignal, aggregationPoli
     'KONTUR Activation Preflight: frontier responsibility policy binding substitution');
 }
 
+function assertHumanActivationReviewDecision(decision, currentGitRevision) {
+  assert(decision && decision.artifact_type === 'KONTURHumanActivationReviewDecision' && decision.artifact_version === '0.1',
+    'KONTUR Activation Preflight: exact Human Activation Review decision v0.1 required');
+  assert(typeof decision.decision_id === 'string' && decision.decision_id.startsWith('urn:uu-aap:kontur:human-activation-review-decision:'),
+    'KONTUR Activation Preflight: invalid Human Activation Review decision ID');
+  assert(decision.decision === 'approve_intent_preparation',
+    'KONTUR Activation Preflight: Human Activation Review did not approve intent preparation');
+  assert(decision.safe_effect === 'activation_intent_preparation_may_be_requested',
+    'KONTUR Activation Preflight: Human Activation Review safe effect mismatch');
+  assert(decision.claims && decision.claims.human_review_decision_recorded === true &&
+    decision.claims.activation_intent_preparation_may_be_requested === true,
+    'KONTUR Activation Preflight: Human Activation Review approval claim missing');
+  for (const key of [
+    'activation_intent_created', 'preflight_requested', 'execute_command_created', 'kernel_activated',
+    'responsibility_state_created', 'responsibility_accepted', 'execution_authority_granted',
+    'permission_expansion_authorized', 'permission_bypass_authorized', 'repository_ownership_transferred',
+    'canonical_origin_mutated', 'legal_authority_established', 'truth_certified', 'distributed_consensus_established'
+  ]) assert(decision.claims[key] === false, `KONTUR Activation Preflight: Human Activation Review prohibited claim ${key}`);
+  assert(decision.review_context && decision.review_context.observed_current_git_revision === currentGitRevision,
+    'KONTUR Activation Preflight: Human Activation Review revision drift');
+  assert(decision.review_packet_binding && decision.review_packet_binding.artifact_type === 'KONTURHumanActivationReviewPacket',
+    'KONTUR Activation Preflight: Human Activation Review packet binding required');
+  assert(decision.human_declaration && decision.human_declaration.explicit === true &&
+    decision.human_declaration.typed_confirmation === 'APPROVE_KONTUR_ACTIVATION_INTENT_PREPARATION_ONLY',
+    'KONTUR Activation Preflight: explicit Human Activation Review approval required');
+}
+
 async function buildActivationIntent(args) {
   const {
     currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy,
-    activationPolicy, health, declaredAt, actorRef, intentNonce, holderId,
+    activationPolicy, humanActivationReviewDecision, health, declaredAt, actorRef, intentNonce, holderId,
     responsibilityScopes, fencingEpoch, lease
   } = args;
   assert(/^git:[0-9a-f]{40}$/.test(currentGitRevision || ''),
@@ -218,6 +245,7 @@ async function buildActivationIntent(args) {
   assertResponsibilityPolicy(responsibilityPolicy, activationPolicy);
   assertFrontier(frontier, currentGitRevision, activationPolicy);
   await assertFrontierBindings(frontier, readinessSignal, aggregationPolicy, responsibilityPolicy);
+  assertHumanActivationReviewDecision(humanActivationReviewDecision, currentGitRevision);
   assert(frontier.readiness_epoch === readinessSignal.readiness_epoch,
     'KONTUR Activation Preflight: frontier/readiness epoch mismatch');
   assertReadiness(readinessSignal, activationPolicy, declaredMs, frontier.readiness_epoch);
@@ -240,11 +268,16 @@ async function buildActivationIntent(args) {
   const aggregationBinding = await policyBinding(aggregationPolicy);
   const responsibilityBinding = await policyBinding(responsibilityPolicy);
   const activationBinding = await policyBinding(activationPolicy);
+  const harDecisionBinding = await binding(
+    'KONTURHumanActivationReviewDecision',
+    humanActivationReviewDecision.decision_id,
+    humanActivationReviewDecision
+  );
   const seed = [
     currentGitRevision, frontierBinding.digest.value, readinessBinding.digest.value,
     aggregationBinding.digest.value, responsibilityBinding.digest.value, activationBinding.digest.value,
-    healthBinding.digest.value, holderId, scopes.join(','), String(fencingEpoch), lease.lease_id,
-    actorRef, intentNonce, declaredAt
+    harDecisionBinding.digest.value, healthBinding.digest.value, holderId, scopes.join(','), String(fencingEpoch),
+    lease.lease_id, actorRef, intentNonce, declaredAt
   ].join('|');
   const hash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
   return {
@@ -256,7 +289,9 @@ async function buildActivationIntent(args) {
     readiness_epoch: frontier.readiness_epoch, fencing_epoch: fencingEpoch,
     frontier_binding: frontierBinding, readiness_signal_binding: readinessBinding,
     aggregation_policy_binding: aggregationBinding, responsibility_policy_binding: responsibilityBinding,
-    activation_policy_binding: activationBinding, health_binding: healthBinding,
+    activation_policy_binding: activationBinding,
+    human_activation_review_decision_binding: harDecisionBinding,
+    health_binding: healthBinding,
     holder_id: holderId, responsibility_scopes: scopes, lease: clone(lease),
     human_intent: {
       actor_ref: actorRef, declaration_type: 'explicit_human_activation_intent',
@@ -264,9 +299,11 @@ async function buildActivationIntent(args) {
       identity_assurance: 'declared_not_cryptographically_verified'
     },
     claims: {
-      human_activation_intent_declared: true, exact_activation_parameters_bound: true,
-      human_identity_cryptographically_verified: false, kernel_activated: false,
-      responsibility_state_created: false, responsibility_accepted: false,
+      human_activation_intent_declared: true,
+      exact_activation_parameters_bound: true,
+      human_activation_review_approval_bound: true,
+      human_identity_cryptographically_verified: false,
+      kernel_activated: false, responsibility_state_created: false, responsibility_accepted: false,
       execution_authority_granted: false, legal_responsibility_determined: false,
       legal_effect_established: false, moral_blame_assigned: false, truth_certified: false,
       poai_materialization_event_recorded: false, universal_canonicality_established: false
@@ -274,167 +311,154 @@ async function buildActivationIntent(args) {
   };
 }
 
-async function validateActivationIntent(ctx) {
-  const { intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy,
-    responsibilityPolicy, activationPolicy, health } = ctx;
+async function validateActivationIntent({
+  intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy,
+  activationPolicy, humanActivationReviewDecision, health
+}) {
   assert(intent && intent.artifact_type === 'KONTURActivationIntent' && intent.artifact_version === '0.1',
-    'KONTUR Activation Preflight: invalid activation intent');
-  assert(!hasScalarKey(intent), 'KONTUR Activation Preflight: scalar fields prohibited in activation intent');
-  assertNoTrueProhibitedClaims(intent.claims, 'KONTURActivationIntent');
-  assert(intent.claims.human_activation_intent_declared === true &&
-    intent.claims.exact_activation_parameters_bound === true &&
-    intent.claims.human_identity_cryptographically_verified === false,
-    'KONTUR Activation Preflight: activation intent assurance boundary invalid');
-  assert(intent.intended_transition === 'activate',
-    'KONTUR Activation Preflight: activation intent transition substitution');
-  assert(intent.git_revision === currentGitRevision && frontier.git_revision === currentGitRevision,
-    'KONTUR Activation Preflight: activation intent Git revision drift');
-  assert(intent.system_id === activationPolicy.system_id && intent.server_instance_id === activationPolicy.server_instance_id,
-    'KONTUR Activation Preflight: activation intent identity drift');
-  assert(intent.readiness_epoch === frontier.readiness_epoch && intent.fencing_epoch === intent.readiness_epoch,
-    'KONTUR Activation Preflight: activation intent epoch drift');
-  assert(intent.human_intent && intent.human_intent.explicit === true &&
-    intent.human_intent.declaration_type === 'explicit_human_activation_intent' &&
-    intent.human_intent.declared_at === intent.declared_at &&
-    intent.human_intent.identity_assurance === 'declared_not_cryptographically_verified',
-    'KONTUR Activation Preflight: explicit human activation intent missing');
-  const scopes = canonicalScopes(intent.responsibility_scopes, responsibilityPolicy);
-  assert(sameArray(scopes, intent.responsibility_scopes),
-    'KONTUR Activation Preflight: responsibility scopes not canonical');
-  assertLease(intent.lease, intent.holder_id, intent.server_instance_id, parseTime(intent.declared_at, 'intent declared_at'));
-
-  const expected = {
-    frontier: await binding('KONTURActivationFrontierReceipt', frontier.frontier_id, frontier),
-    readiness: await binding('KONTURReadinessSignal', readinessSignal.signal_id, readinessSignal),
-    health: await binding('KONTURServerHealthObservation', health.observation_id, health),
-    aggregation: await policyBinding(aggregationPolicy),
-    responsibility: await policyBinding(responsibilityPolicy),
-    activation: await policyBinding(activationPolicy)
-  };
-  assert(sameBinding(intent.frontier_binding, expected.frontier), 'KONTUR Activation Preflight: intent frontier binding substitution');
-  assert(sameBinding(intent.readiness_signal_binding, expected.readiness), 'KONTUR Activation Preflight: intent readiness binding substitution');
-  assert(sameBinding(intent.health_binding, expected.health), 'KONTUR Activation Preflight: intent health binding substitution');
-  assert(samePolicyBinding(intent.aggregation_policy_binding, expected.aggregation), 'KONTUR Activation Preflight: intent aggregation policy binding substitution');
-  assert(samePolicyBinding(intent.responsibility_policy_binding, expected.responsibility), 'KONTUR Activation Preflight: intent responsibility policy binding substitution');
-  assert(samePolicyBinding(intent.activation_policy_binding, expected.activation), 'KONTUR Activation Preflight: intent activation policy binding substitution');
-  return true;
-}
-
-async function preflightActivation(ctx) {
-  const { intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy,
-    responsibilityPolicy, activationPolicy, health, evaluatedAt,
-    parallelActiveHolders = [], currentResponsibilityState = null } = ctx;
-  const evaluatedMs = parseTime(evaluatedAt, 'preflight evaluated_at');
-  assertActivationPolicy(activationPolicy, evaluatedMs);
+    'KONTUR Activation Preflight: exact activation intent v0.1 required');
+  assert(intendedKeys(intent), 'KONTUR Activation Preflight: activation intent exact contract keys required');
+  const declaredMs = parseTime(intent.declared_at, 'intent declared_at');
+  assertActivationPolicy(activationPolicy, declaredMs);
   assertAggregationPolicy(aggregationPolicy, activationPolicy);
   assertResponsibilityPolicy(responsibilityPolicy, activationPolicy);
   assertFrontier(frontier, currentGitRevision, activationPolicy);
   await assertFrontierBindings(frontier, readinessSignal, aggregationPolicy, responsibilityPolicy);
-  await validateActivationIntent({ intent, currentGitRevision, frontier, readinessSignal,
-    aggregationPolicy, responsibilityPolicy, activationPolicy, health });
-  const declaredMs = parseTime(intent.declared_at, 'intent declared_at');
-  assert(declaredMs <= evaluatedMs && evaluatedMs - declaredMs <= activationPolicy.max_intent_age_seconds * 1000,
-    'KONTUR Activation Preflight: activation intent is stale or future-dated');
-  assertReadiness(readinessSignal, activationPolicy, evaluatedMs, intent.readiness_epoch);
-  assertHealth(health, activationPolicy, evaluatedMs);
-  assertLease(intent.lease, intent.holder_id, intent.server_instance_id, evaluatedMs);
-  assert(Array.isArray(parallelActiveHolders) && parallelActiveHolders.length === 0,
-    'KONTUR Activation Preflight: parallel active holder frontier detected');
-  assert(currentResponsibilityState === null,
-    'KONTUR Activation Preflight: genesis activation requires no current responsibility state');
-  assert(intent.intended_transition === activationPolicy.allowed_transition && intent.intended_transition === 'activate',
-    'KONTUR Activation Preflight: only activate transition is admissible');
-  assert(!hasScalarKey(ctx), 'KONTUR Activation Preflight: scalar scores prohibited');
-
-  const intentBinding = await binding('KONTURActivationIntent', intent.intent_id, intent);
-  const frontierBinding = await binding('KONTURActivationFrontierReceipt', frontier.frontier_id, frontier);
-  const readinessBinding = await binding('KONTURReadinessSignal', readinessSignal.signal_id, readinessSignal);
-  const healthBinding = await binding('KONTURServerHealthObservation', health.observation_id, health);
-  const aggregationBinding = await policyBinding(aggregationPolicy);
-  const responsibilityBinding = await policyBinding(responsibilityPolicy);
-  const activationBinding = await policyBinding(activationPolicy);
-  const hash = await Binding.sha256Hex(Binding.utf8Bytes([
-    intentBinding.digest.value, frontierBinding.digest.value, readinessBinding.digest.value,
-    healthBinding.digest.value, aggregationBinding.digest.value, responsibilityBinding.digest.value,
-    activationBinding.digest.value, currentGitRevision, evaluatedAt
-  ].join('|')));
-
-  const receipt = {
-    $schema: './kontur-activation-preflight.schema.json',
-    artifact_type: 'KONTURActivationPreflightReceipt', artifact_version: '0.1',
-    preflight_id: `urn:uu-aap:kontur:activation-preflight:${hash.slice(0, 24)}`,
-    evaluated_at: evaluatedAt, current_git_revision: currentGitRevision,
-    intent_binding: intentBinding, frontier_binding: frontierBinding,
-    readiness_signal_binding: readinessBinding, aggregation_policy_binding: aggregationBinding,
-    responsibility_policy_binding: responsibilityBinding, activation_policy_binding: activationBinding,
-    health_binding: healthBinding, system_id: intent.system_id, server_instance_id: intent.server_instance_id,
-    readiness_epoch: intent.readiness_epoch, fencing_epoch: intent.fencing_epoch,
-    holder_id: intent.holder_id, responsibility_scopes: clone(intent.responsibility_scopes), lease: clone(intent.lease),
-    checks: {
-      git_revision_exact: true, frontier_exact: true, frontier_admits_activation_prompt: true,
-      readiness_signal_exact: true, readiness_signal_current: true, aggregation_policy_exact: true,
-      responsibility_policy_exact: true, activation_policy_exact: true, activation_policy_effective: true,
-      identity_exact: true, epoch_exact: true, health_exact: true, health_current: true, health_healthy: true,
-      holder_exact: true, responsibility_scopes_exact: true, responsibility_scopes_allowed: true,
-      lease_exact: true, lease_live: true, parallel_active_holder_absent: true, human_intent_explicit: true,
-      human_intent_current: true, transition_activate_exact: true, genesis_activation_frontier: true,
-      preflight_side_effect_free: true
-    },
-    decision: 'human_execute_step_may_proceed',
-    claims: {
-      activation_intent_verified: true, activation_preconditions_revalidated: true,
-      human_execute_step_may_proceed: true, kernel_activated: false, responsibility_state_created: false,
-      responsibility_accepted: false, execution_authority_granted: false, legal_responsibility_determined: false,
-      legal_effect_established: false, moral_blame_assigned: false, truth_certified: false,
-      poai_materialization_event_recorded: false, universal_canonicality_established: false
-    }
-  };
-  await validateActivationPreflightReceipt({ receipt, intent, currentGitRevision, frontier, readinessSignal,
-    aggregationPolicy, responsibilityPolicy, activationPolicy, health });
-  return receipt;
+  assertHumanActivationReviewDecision(humanActivationReviewDecision, currentGitRevision);
+  assertReadiness(readinessSignal, activationPolicy, declaredMs, frontier.readiness_epoch);
+  assertHealth(health, activationPolicy, declaredMs);
+  assert(intent.intended_transition === 'activate', 'KONTUR Activation Preflight: transition substitution');
+  assert(intent.git_revision === currentGitRevision, 'KONTUR Activation Preflight: intent Git revision drift');
+  assert(intent.system_id === activationPolicy.system_id && intent.server_instance_id === activationPolicy.server_instance_id,
+    'KONTUR Activation Preflight: intent system/server identity substitution');
+  assert(intent.readiness_epoch === frontier.readiness_epoch && intent.fencing_epoch === frontier.readiness_epoch,
+    'KONTUR Activation Preflight: intent epoch substitution');
+  assert(sameBinding(intent.frontier_binding, await binding('KONTURActivationFrontierReceipt', frontier.frontier_id, frontier)),
+    'KONTUR Activation Preflight: intent frontier binding substitution');
+  assert(sameBinding(intent.readiness_signal_binding, await binding('KONTURReadinessSignal', readinessSignal.signal_id, readinessSignal)),
+    'KONTUR Activation Preflight: intent readiness binding substitution');
+  assert(samePolicyBinding(intent.aggregation_policy_binding, await policyBinding(aggregationPolicy)),
+    'KONTUR Activation Preflight: intent aggregation policy binding substitution');
+  assert(samePolicyBinding(intent.responsibility_policy_binding, await policyBinding(responsibilityPolicy)),
+    'KONTUR Activation Preflight: intent responsibility policy binding substitution');
+  assert(samePolicyBinding(intent.activation_policy_binding, await policyBinding(activationPolicy)),
+    'KONTUR Activation Preflight: intent activation policy binding substitution');
+  assert(sameBinding(
+    intent.human_activation_review_decision_binding,
+    await binding('KONTURHumanActivationReviewDecision', humanActivationReviewDecision.decision_id, humanActivationReviewDecision)
+  ), 'KONTUR Activation Preflight: intent Human Activation Review decision binding substitution');
+  assert(sameBinding(intent.health_binding, await binding('KONTURServerHealthObservation', health.observation_id, health)),
+    'KONTUR Activation Preflight: intent health binding substitution');
+  assert(typeof intent.holder_id === 'string' && intent.holder_id.startsWith('urn:uu-aap:kontur:holder:'),
+    'KONTUR Activation Preflight: invalid intent holder');
+  const scopes = canonicalScopes(intent.responsibility_scopes, responsibilityPolicy);
+  assert(sameArray(intent.responsibility_scopes, scopes), 'KONTUR Activation Preflight: intent scopes must be canonical');
+  assertLease(intent.lease, intent.holder_id, activationPolicy.server_instance_id, declaredMs);
+  assert(intent.human_intent && intent.human_intent.explicit === true &&
+    intent.human_intent.declaration_type === 'explicit_human_activation_intent',
+    'KONTUR Activation Preflight: explicit human activation intent missing');
+  assert(intent.human_intent.declared_at === intent.declared_at,
+    'KONTUR Activation Preflight: human intent timestamp substitution');
+  assert(typeof intent.human_intent.actor_ref === 'string' && intent.human_intent.actor_ref.length > 0,
+    'KONTUR Activation Preflight: human actor reference required');
+  assert(typeof intent.human_intent.nonce === 'string' && intent.human_intent.nonce.startsWith('urn:uu-aap:kontur:activation-intent-nonce:'),
+    'KONTUR Activation Preflight: human intent nonce required');
+  assert(intent.human_intent.identity_assurance === 'declared_not_cryptographically_verified',
+    'KONTUR Activation Preflight: unsupported human identity assurance');
+  assert(intent.claims && intent.claims.human_activation_intent_declared === true &&
+    intent.claims.exact_activation_parameters_bound === true &&
+    intent.claims.human_activation_review_approval_bound === true &&
+    intent.claims.human_identity_cryptographically_verified === false,
+    'KONTUR Activation Preflight: intent claims invalid');
+  assertNoTrueProhibitedClaims(intent.claims, 'KONTURActivationIntent');
+  assert(!hasScalarKey(intent), 'KONTUR Activation Preflight: scalar scores prohibited');
+  return true;
 }
 
-async function validateActivationPreflightReceipt(ctx) {
-  const { receipt, intent, currentGitRevision, frontier, readinessSignal,
-    aggregationPolicy, responsibilityPolicy, activationPolicy, health } = ctx;
-  assert(receipt && receipt.artifact_type === 'KONTURActivationPreflightReceipt' && receipt.artifact_version === '0.1',
-    'KONTUR Activation Preflight: invalid preflight receipt');
-  assert(!hasScalarKey(receipt), 'KONTUR Activation Preflight: scalar fields prohibited in preflight receipt');
-  assertNoTrueProhibitedClaims(receipt.claims, 'KONTURActivationPreflightReceipt');
-  assert(receipt.claims.activation_intent_verified === true && receipt.claims.activation_preconditions_revalidated === true &&
-    receipt.claims.human_execute_step_may_proceed === true,
-    'KONTUR Activation Preflight: positive preflight claims missing');
-  assert(receipt.decision === 'human_execute_step_may_proceed',
-    'KONTUR Activation Preflight: preflight decision substitution');
-  assert(receipt.current_git_revision === currentGitRevision && receipt.current_git_revision === intent.git_revision,
-    'KONTUR Activation Preflight: preflight Git revision drift');
-  assert(receipt.system_id === intent.system_id && receipt.server_instance_id === intent.server_instance_id,
-    'KONTUR Activation Preflight: preflight identity drift');
-  assert(receipt.readiness_epoch === intent.readiness_epoch && receipt.fencing_epoch === intent.fencing_epoch,
-    'KONTUR Activation Preflight: preflight epoch drift');
-  assert(receipt.holder_id === intent.holder_id && sameArray(receipt.responsibility_scopes, intent.responsibility_scopes),
-    'KONTUR Activation Preflight: holder/scope substitution');
-  assert(JSON.stringify(receipt.lease) === JSON.stringify(intent.lease),
-    'KONTUR Activation Preflight: lease substitution');
-  assert(Object.values(receipt.checks || {}).every((value) => value === true),
-    'KONTUR Activation Preflight: preflight check not established');
+function intendedKeys(intent) {
+  const expected = [
+    '$schema', 'artifact_type', 'artifact_version', 'intent_id', 'declared_at', 'intended_transition',
+    'git_revision', 'system_id', 'server_instance_id', 'readiness_epoch', 'fencing_epoch',
+    'frontier_binding', 'readiness_signal_binding', 'aggregation_policy_binding', 'responsibility_policy_binding',
+    'activation_policy_binding', 'human_activation_review_decision_binding', 'health_binding', 'holder_id',
+    'responsibility_scopes', 'lease', 'human_intent', 'claims'
+  ].sort();
+  return JSON.stringify(Object.keys(intent).sort()) === JSON.stringify(expected);
+}
 
-  const expected = {
-    intent: await binding('KONTURActivationIntent', intent.intent_id, intent),
-    frontier: await binding('KONTURActivationFrontierReceipt', frontier.frontier_id, frontier),
-    readiness: await binding('KONTURReadinessSignal', readinessSignal.signal_id, readinessSignal),
-    health: await binding('KONTURServerHealthObservation', health.observation_id, health),
-    aggregation: await policyBinding(aggregationPolicy),
-    responsibility: await policyBinding(responsibilityPolicy),
-    activation: await policyBinding(activationPolicy)
+async function preflightActivation({
+  intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy,
+  activationPolicy, humanActivationReviewDecision, health, evaluatedAt, parallelActiveHolders, currentResponsibilityState
+}) {
+  const evaluatedMs = parseTime(evaluatedAt, 'evaluated_at');
+  await validateActivationIntent({
+    intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy,
+    responsibilityPolicy, activationPolicy, humanActivationReviewDecision, health
+  });
+  assertActivationPolicy(activationPolicy, evaluatedMs);
+  assertReadiness(readinessSignal, activationPolicy, evaluatedMs, frontier.readiness_epoch);
+  assertHealth(health, activationPolicy, evaluatedMs);
+  assert(evaluatedMs - parseTime(intent.declared_at, 'intent declared_at') <= activationPolicy.max_intent_age_seconds * 1000,
+    'KONTUR Activation Preflight: activation intent is stale or future-dated');
+  assert(parseTime(intent.declared_at, 'intent declared_at') <= evaluatedMs,
+    'KONTUR Activation Preflight: activation intent is stale or future-dated');
+  assertLease(intent.lease, intent.holder_id, activationPolicy.server_instance_id, evaluatedMs);
+  assert(Array.isArray(parallelActiveHolders) && parallelActiveHolders.length === 0,
+    'KONTUR Activation Preflight: parallel active holder detected');
+  assert(currentResponsibilityState === null,
+    'KONTUR Activation Preflight: genesis activation requires no current responsibility state');
+
+  const intentBinding = await binding('KONTURActivationIntent', intent.intent_id, intent);
+  const seed = [intentBinding.digest.value, evaluatedAt, currentGitRevision].join('|');
+  const hash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
+  return {
+    $schema: './kontur-activation-preflight-receipt.schema.json',
+    artifact_type: 'KONTURActivationPreflightReceipt', artifact_version: '0.1',
+    preflight_id: `urn:uu-aap:kontur:activation-preflight:${hash.slice(0, 24)}`,
+    evaluated_at: evaluatedAt, decision: 'human_execute_step_may_proceed',
+    current_git_revision: currentGitRevision, system_id: activationPolicy.system_id,
+    server_instance_id: activationPolicy.server_instance_id, readiness_epoch: frontier.readiness_epoch,
+    fencing_epoch: intent.fencing_epoch, holder_id: intent.holder_id,
+    responsibility_scopes: [...intent.responsibility_scopes], lease: clone(intent.lease),
+    intent_binding: intentBinding,
+    claims: {
+      activation_intent_verified: true, activation_preconditions_revalidated: true,
+      human_execute_step_may_proceed: true, kernel_activated: false,
+      responsibility_state_created: false, responsibility_accepted: false,
+      execution_authority_granted: false, legal_responsibility_determined: false,
+      truth_certified: false, universal_canonicality_established: false
+    }
   };
-  assert(sameBinding(receipt.intent_binding, expected.intent), 'KONTUR Activation Preflight: preflight intent binding substitution');
-  assert(sameBinding(receipt.frontier_binding, expected.frontier), 'KONTUR Activation Preflight: preflight frontier binding substitution');
-  assert(sameBinding(receipt.readiness_signal_binding, expected.readiness), 'KONTUR Activation Preflight: preflight readiness binding substitution');
-  assert(sameBinding(receipt.health_binding, expected.health), 'KONTUR Activation Preflight: preflight health binding substitution');
-  assert(samePolicyBinding(receipt.aggregation_policy_binding, expected.aggregation), 'KONTUR Activation Preflight: preflight aggregation policy binding substitution');
-  assert(samePolicyBinding(receipt.responsibility_policy_binding, expected.responsibility), 'KONTUR Activation Preflight: preflight responsibility policy binding substitution');
-  assert(samePolicyBinding(receipt.activation_policy_binding, expected.activation), 'KONTUR Activation Preflight: preflight activation policy binding substitution');
+}
+
+async function validateActivationPreflightReceipt({
+  receipt, intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy,
+  responsibilityPolicy, activationPolicy, humanActivationReviewDecision, health
+}) {
+  assert(receipt && receipt.artifact_type === 'KONTURActivationPreflightReceipt' && receipt.artifact_version === '0.1',
+    'KONTUR Activation Preflight: exact preflight receipt v0.1 required');
+  assert(receipt.decision === 'human_execute_step_may_proceed', 'KONTUR Activation Preflight: invalid preflight decision');
+  assert(receipt.current_git_revision === currentGitRevision, 'KONTUR Activation Preflight: preflight Git revision drift');
+  await validateActivationIntent({
+    intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy,
+    responsibilityPolicy, activationPolicy, humanActivationReviewDecision, health
+  });
+  assert(sameBinding(receipt.intent_binding, await binding('KONTURActivationIntent', intent.intent_id, intent)),
+    'KONTUR Activation Preflight: preflight intent binding substitution');
+  assert(receipt.system_id === intent.system_id && receipt.server_instance_id === intent.server_instance_id,
+    'KONTUR Activation Preflight: preflight system/server substitution');
+  assert(receipt.readiness_epoch === intent.readiness_epoch && receipt.fencing_epoch === intent.fencing_epoch,
+    'KONTUR Activation Preflight: preflight epoch substitution');
+  assert(receipt.holder_id === intent.holder_id && sameArray(receipt.responsibility_scopes, intent.responsibility_scopes),
+    'KONTUR Activation Preflight: preflight holder/scope substitution');
+  assert(JSON.stringify(receipt.lease) === JSON.stringify(intent.lease),
+    'KONTUR Activation Preflight: preflight lease substitution');
+  assert(receipt.claims && receipt.claims.activation_intent_verified === true &&
+    receipt.claims.activation_preconditions_revalidated === true &&
+    receipt.claims.human_execute_step_may_proceed === true,
+    'KONTUR Activation Preflight: preflight positive claims missing');
+  assertNoTrueProhibitedClaims(receipt.claims, 'KONTURActivationPreflightReceipt');
+  assert(!hasScalarKey(receipt), 'KONTUR Activation Preflight: scalar scores prohibited');
   return true;
 }
 
