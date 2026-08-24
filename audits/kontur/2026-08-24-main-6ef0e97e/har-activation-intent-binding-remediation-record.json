@@ -1,0 +1,63 @@
+{
+  "document_type": "uu-aap.kontur-har-activation-intent-binding-remediation-record",
+  "version": "0.1",
+  "recorded_date": "2026-08-24",
+  "remediation_base": {
+    "main_sha": "6ef0e97e4fcaf4d1e248959394a4beac8a3d5089",
+    "tree_sha": "0b74c3b35275e7b9c58806614b5d6745c74652cc"
+  },
+  "finding": {
+    "id": "HAR-ACTIVATION-INTENT-BINDING-GAP",
+    "summary": "KONTURActivationIntent could be constructed without mechanically binding the preceding approved Formal Human Activation Review decision",
+    "severity_at_discovery": "medium",
+    "scope": "handoff from Human Activation Review approval to activation-intent construction and downstream preflight validation"
+  },
+  "remediation": {
+    "status": "candidate_for_targeted_reaudit",
+    "activation_intent_requires_har_decision_binding": true,
+    "har_packet_and_decision_embedded_for_cross_process_revalidation": true,
+    "har_packet_deterministic_id_revalidated": true,
+    "har_decision_deterministic_id_revalidated": true,
+    "har_decision_packet_binding_revalidated": true,
+    "har_revision_must_match_activation_revision": true,
+    "approval_outcome_and_typed_confirmation_required": true,
+    "har_decision_digest_committed_into_activation_intent_identity": true,
+    "preflight_revalidates_har_bound_intent": true,
+    "executor_can_revalidate_embedded_har_without_process_local_state": true,
+    "existing_preflight_core_semantics_preserved": true
+  },
+  "closure": {
+    "finding_closed": false,
+    "targeted_reaudit_required": true,
+    "targeted_reaudit_completed": false,
+    "targeted_reaudit_result": null
+  },
+  "successor_requirements": {
+    "fresh_har_packet_required_after_merge": true,
+    "fresh_human_review_outcome_predetermined": false,
+    "fresh_activation_intent_may_be_constructed_before_reaudit_pass": false
+  },
+  "non_effects": {
+    "activation_intent_created": false,
+    "live_preflight_requested": false,
+    "live_preflight_run": false,
+    "execute_command_created": false,
+    "activation_executor_invoked": false,
+    "responsibility_kernel_called": false,
+    "responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "permission_expansion_or_bypass": false,
+    "repository_ownership_transferred": false,
+    "canonical_origin_mutated": false,
+    "kontur_activated": false,
+    "legal_authority_established": false,
+    "truth_certified": false
+  },
+  "known_limits_unchanged": [
+    "reviewer_ref remains a declared identity and is not cryptographically authenticated",
+    "this remediation binds and revalidates the bounded HAR artifacts but does not convert HAR approval into execution authority",
+    "operational readiness, health, intent age and lease freshness remain separate later checks"
+  ],
+  "required_next_step": "merge only after CI success, then perform a bounded read-only targeted re-audit against the exact successor main before any fresh Formal Human Activation Review or activation-intent construction"
+}
