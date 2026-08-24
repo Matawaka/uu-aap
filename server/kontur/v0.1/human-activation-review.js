@@ -96,6 +96,28 @@ async function digestJson(value) {
   return Binding.sha256Hex(Binding.utf8Bytes(Binding.canonicalize(value, '$')));
 }
 
+async function decisionIdentityDigest({
+  reviewPacketBinding,
+  reviewerRef,
+  decision,
+  nonce,
+  reviewedAt,
+  observedCurrentGitRevision,
+  observedAt
+}) {
+  return digestJson({
+    artifact_type: 'KONTURHumanActivationReviewDecisionIdentitySeed',
+    artifact_version: '0.1',
+    review_packet_binding: reviewPacketBinding,
+    reviewer_ref: reviewerRef,
+    decision,
+    human_declaration_nonce: nonce,
+    reviewed_at: reviewedAt,
+    observed_current_git_revision: observedCurrentGitRevision,
+    observed_at: observedAt
+  });
+}
+
 function digest(value) {
   return {
     canonicalization: 'RFC8785-JCS',
@@ -428,17 +450,15 @@ async function assertPriorDecisionEntry(entry) {
   assert(entry.safe_effect === expected.safe_effect, `${label}: safe_effect mismatch`);
   assertExactClaims(entry.claims, expectedDecisionClaims(expected.positive), `${label}: claims`);
 
-  const packetBindingIdentity = await digestJson(entry.review_packet_binding);
-  const seed = [
-    packetBindingIdentity,
-    entry.reviewer_ref,
-    entry.decision,
-    entry.human_declaration.nonce,
-    entry.reviewed_at,
-    entry.review_context.observed_current_git_revision,
-    entry.review_context.observed_at
-  ].join('|');
-  const hash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
+  const hash = await decisionIdentityDigest({
+    reviewPacketBinding: entry.review_packet_binding,
+    reviewerRef: entry.reviewer_ref,
+    decision: entry.decision,
+    nonce: entry.human_declaration.nonce,
+    reviewedAt: entry.reviewed_at,
+    observedCurrentGitRevision: entry.review_context.observed_current_git_revision,
+    observedAt: entry.review_context.observed_at
+  });
   assert(
     entry.decision_id === `urn:uu-aap:kontur:human-activation-review-decision:${hash.slice(0, 24)}`,
     `${label}: decision_id binding mismatch`
@@ -506,9 +526,15 @@ async function buildReviewDecision({
     else assert(typeof confirmations[key] === 'boolean', `Human Activation Review: confirmation ${key} must be boolean`);
   }
 
-  const packetBindingIdentity = await digestJson(packetBinding);
-  const seed = [packetBindingIdentity, reviewerRef, decision, nonce, reviewedAt, observedCurrentGitRevision, observedAt].join('|');
-  const hash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
+  const hash = await decisionIdentityDigest({
+    reviewPacketBinding: packetBinding,
+    reviewerRef,
+    decision,
+    nonce,
+    reviewedAt,
+    observedCurrentGitRevision,
+    observedAt
+  });
 
   return {
     $schema: './kontur-human-activation-review-decision.schema.json',

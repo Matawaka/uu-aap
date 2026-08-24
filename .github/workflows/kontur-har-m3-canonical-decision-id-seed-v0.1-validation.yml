@@ -1,0 +1,90 @@
+name: KONTUR HAR-M3 Canonical Decision ID Seed v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'server/kontur/v0.1/human-activation-review.js'
+      - 'server/kontur/v0.1/test-human-activation-review-decision-id-binding.js'
+      - 'server/kontur/v0.1/HAR_M3_CANONICAL_DECISION_ID_SEED_HARDENING.md'
+      - 'audits/kontur/2026-08-24-main-7f6ac9c8/har-m3-canonical-decision-id-seed-remediation-v0.1.json'
+      - '.github/workflows/kontur-har-m3-canonical-decision-id-seed-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'server/kontur/v0.1/human-activation-review.js'
+      - 'server/kontur/v0.1/test-human-activation-review-decision-id-binding.js'
+      - 'server/kontur/v0.1/HAR_M3_CANONICAL_DECISION_ID_SEED_HARDENING.md'
+      - 'audits/kontur/2026-08-24-main-7f6ac9c8/har-m3-canonical-decision-id-seed-remediation-v0.1.json'
+      - '.github/workflows/kontur-har-m3-canonical-decision-id-seed-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check Human Activation Review
+        run: |
+          node --check server/kontur/v0.1/human-activation-review.js
+          node --check server/kontur/v0.1/test-human-activation-review.js
+          node --check server/kontur/v0.1/test-human-activation-review-decision-id-binding.js
+
+      - name: Run Human Activation Review regression suite
+        run: node server/kontur/v0.1/test-human-activation-review.js
+
+      - name: Run decision-ID canonical-seed regressions
+        run: node server/kontur/v0.1/test-human-activation-review-decision-id-binding.js
+
+      - name: Verify canonical typed decision identity framing
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('server/kontur/v0.1/human-activation-review.js')
+          s = p.read_text(encoding='utf-8')
+          assert 'KONTURHumanActivationReviewDecisionIdentitySeed' in s
+          assert 'decisionIdentityDigest' in s
+          assert 'packetBindingIdentity' not in s
+          assert s.count(".join('|')") == 1, 'only review-packet ID may retain the bounded pipe join'
+          print('canonical typed Human Review decision identity: PASS')
+          PY
+
+      - name: Verify bounded remediation record
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('audits/kontur/2026-08-24-main-7f6ac9c8/har-m3-canonical-decision-id-seed-remediation-v0.1.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['status'] == 'candidate_for_targeted_deterministic_id_reaudit'
+          assert d['implementation']['decision_identity_seed_is_typed_object'] is True
+          assert d['implementation']['canonicalization'] == 'RFC8785-JCS'
+          assert d['implementation']['raw_delimiter_join_used_for_decision_identity'] is False
+          assert d['implementation']['coordinated_delimiter_collision_regression_added'] is True
+          assert d['implementation']['nonce_reuse_regression_added'] is True
+          assert d['finding_closed'] is False
+          assert d['har_m3_closed'] is False
+          assert d['all_original_medium_findings_closed'] is False
+          assert d['targeted_reaudit_still_required'] is True
+          assert d['formal_human_activation_review_allowed'] is False
+          assert d['kontur_activated'] is False
+          print('bounded remediation record: PASS')
+          PY
+
+      - name: Guard against activation or repository mutation surface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          workflow = Path('.github/workflows/kontur-har-m3-canonical-decision-id-seed-v0.1-validation.yml').read_text(encoding='utf-8')
+          implementation = Path('server/kontur/v0.1/human-activation-review.js').read_text(encoding='utf-8').lower()
+          for token in ['contents' + ': write', 'git ' + 'push', 'merge_' + 'pull_request']:
+              assert token not in workflow, token
+          for token in ['activation-executor', 'activation-preflight', 'responsibility-kernel', 'responsibility-ledger']:
+              assert token not in implementation, token
+          print('no activation/mutation surface: PASS')
+          PY
+
+      - name: Verify checkout remains clean
+        run: git diff --exit-code
