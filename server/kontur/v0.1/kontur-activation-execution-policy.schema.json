@@ -32,6 +32,7 @@
         "live_host_eligibility_required_for_live_mode",
         "live_ledger_root_matches_host_profile",
         "test_only_carries_no_live_host_eligibility",
+        "test_only_ledger_root_ephemeral",
         "empty_genesis_ledger", "one_shot_execute_nonce", "execute_nonce_distinct_from_intent_nonce",
         "kernel_activate_exactly_once", "durable_genesis_commit", "post_commit_recovery",
         "recovered_head_exact", "automatic_retry_allowed", "auto_activation_allowed"
@@ -47,6 +48,7 @@
         "live_host_eligibility_required_for_live_mode": {"const": true},
         "live_ledger_root_matches_host_profile": {"const": true},
         "test_only_carries_no_live_host_eligibility": {"const": true},
+        "test_only_ledger_root_ephemeral": {"const": true},
         "empty_genesis_ledger": {"const": true},
         "one_shot_execute_nonce": {"const": true},
         "execute_nonce_distinct_from_intent_nonce": {"const": true},
