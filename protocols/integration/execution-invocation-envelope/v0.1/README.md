@@ -1,8 +1,8 @@
 # UU-AAP Execution Invocation Envelope v0.1
 
-**Status:** experimental stacked reusable execution profile  
+**Status:** experimental reusable execution profile  
 **Issue:** #367  
-**Dependency:** #365 / PR #366 (`execute-revalidation-gate-v0.1`)  
+**Dependency:** #365 / merged PR #366 on `main`  
 
 ## Purpose
 
@@ -45,6 +45,6 @@ Envelope creation does not invoke an actuator, create an `ActionReceipt`, consum
 
 ## Conformance
 
-`validate-invocation-envelope.js` validates the stacked positive fixture against the execute-revalidation fixture and rejects substitution, expiry extension, replay/reuse, guard weakening, adapter-role escalation and external-effect claims.
+`validate-invocation-envelope.js` validates the positive fixture against the execute-revalidation fixture and rejects substitution, expiry extension, replay/reuse, guard weakening, adapter-role escalation and external-effect claims.
 
 CI is read-only and never invokes an actuator.
