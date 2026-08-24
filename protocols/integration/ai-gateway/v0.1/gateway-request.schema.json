@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/ai-gateway/v0.1/gateway-request.schema.json",
+  "title": "UU-AAP GatewayRequest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","artifact_type","request_id","operation","subject","frontier","action","core_receipts","intent_evidence_refs","approval_ref","protocol_mode_consent","issued_at","content_hash"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-GATEWAY"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "GatewayRequest"},
+    "request_id": {"type": "string", "minLength": 1},
+    "operation": {"enum": ["inspect","qualify","authorize","observe"]},
+    "subject": {"type": "string", "minLength": 1},
+    "frontier": {"type": "string", "minLength": 1},
+    "action": {
+      "type": "object", "additionalProperties": false,
+      "required": ["action_id","read_only","external_effect","reversible","requires_approval","authority_scope","expected_effects","explicit_non_effects"],
+      "properties": {
+        "action_id": {"type": "string", "minLength": 1},
+        "read_only": {"type": "boolean"},
+        "external_effect": {"type": "boolean"},
+        "reversible": {"type": "boolean"},
+        "requires_approval": {"type": "boolean"},
+        "authority_scope": {"type": "string", "minLength": 1},
+        "expected_effects": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "explicit_non_effects": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "core_receipts": {
+      "type": "array",
+      "items": {"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}
+    },
+    "intent_evidence_refs": {
+      "type": "array",
+      "items": {"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}
+    },
+    "approval_ref": {
+      "anyOf": [
+        {"type":"null"},
+        {"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}
+      ]
+    },
+    "protocol_mode_consent": {
+      "type":"object","additionalProperties":false,"required":["enabled","blanket_action_approval"],
+      "properties":{"enabled":{"type":"boolean"},"blanket_action_approval":{"const":false}}
+    },
+    "issued_at": {"type":"string","format":"date-time"},
+    "content_hash": {"type":"string","pattern":"^[a-f0-9]{64}$"}
+  }
+}
