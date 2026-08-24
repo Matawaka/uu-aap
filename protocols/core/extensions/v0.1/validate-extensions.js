@@ -1,15 +1,65 @@
 'use strict';
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
 const NON=['intent_created','intent_inferred_from_challenge','authority_expanded','responsibility_accepted','coordination_completed','action_authorized','action_performed','outcome_established','causality_proven','truth_certified','liability_established','universal_canonicality_established'];
-const SAFE={pic:new Set(['intent_checkpoint_requested','intent_drift_concern_recorded']),appeal:new Set(['contest_recorded','reconsideration_requested','stay_review_requested']),readiness:new Set(['readiness_assessed','missing_precondition_recorded']),circumstantial_provenance:new Set(['provenance_hypothesis_recorded','converging_evidence_recorded']),sustainability:new Set(['sustainability_warning_recorded','convergence_review_requested'])};
+const SAFE={
+  pic:new Set(['intent_checkpoint_requested','intent_drift_concern_recorded']),
+  appeal:new Set(['contest_recorded','reconsideration_requested','stay_review_requested']),
+  readiness:new Set(['readiness_assessed','missing_precondition_recorded']),
+  circumstantial_provenance:new Set(['provenance_hypothesis_recorded','converging_evidence_recorded']),
+  sustainability:new Set(['sustainability_warning_recorded','convergence_review_requested']),
+  human_activation_review:new Set(['human_review_outcome_recorded','activation_intent_preparation_requested']),
+  activation_preflight:new Set(['preflight_assessed','missing_precondition_recorded']),
+  rescue_survival:new Set(['survival_risk_recorded','rescue_review_requested']),
+  durable_responsibility_ledger:new Set(['responsibility_evidence_recorded','responsibility_state_checkpointed'])
+};
+const DEFAULT_REQUIRED=['pic','appeal','readiness','circumstantial_provenance','sustainability'];
 function sort(v){if(Array.isArray(v))return v.map(sort);if(v&&typeof v==='object'){const o={};for(const k of Object.keys(v).sort())o[k]=sort(v[k]);return o}return v}
 function hash(r){const x=JSON.parse(JSON.stringify(r));delete x.content_hash;return crypto.createHash('sha256').update(JSON.stringify(sort(x))).digest('hex')}
 function bad(m){throw Error(m)}
 function obj(v,n){if(!v||typeof v!=='object'||Array.isArray(v))bad(`${n} must be object`)}
-function receipt(r){obj(r,'receipt');if(r.protocol!=='UU-AAP-EXT'||r.version!=='0.1'||r.receipt_type!=='ExtensionReceipt')bad('invalid extension envelope/core identity substitution');if(!SAFE[r.extension_type])bad('unknown extension');obj(r.frontier,'frontier');if(!r.frontier.revision||!r.frontier.observed_at)bad('frontier required');obj(r.assertions,'assertions');obj(r.non_effects,'non_effects');obj(r.core_binding,'core_binding');if(r.core_binding.substitutes_for_core_receipt!==false)bad('core substitution forbidden');if(!Array.isArray(r.safe_effects))bad('safe_effects required');for(const n of NON)if(r.non_effects[n]!==false)bad(`non_effect must be false: ${n}`);for(const e of r.safe_effects)if(!SAFE[r.extension_type].has(e))bad(`unsafe effect: ${e}`);if(hash(r)!==r.content_hash)bad('content_hash mismatch');const a=r.assertions;switch(r.extension_type){case'pic':if(a.intent_created||a.intent_inferred||a.intent_refused)bad('PIC cannot induce intent');break;case'appeal':if(a.reversal_executed||a.stay_executed)bad('appeal effect not executed');break;case'readiness':if(a.action_authorized||a.action_permit_created)bad('readiness cannot authorize');break;case'circumstantial_provenance':if(a.causality_proven||a.truth_certified)bad('provenance cannot certify');break;case'sustainability':if(a.execution_veto||a.authority_granted)bad('sustainability cannot create veto/authority')}return true}
-function composition(f){obj(f,'fixture');if(f.protocol!=='UU-AAP-EXT-COMPOSITION'||f.version!=='0.1'||!f.core_predecessor_frontier)bad('invalid fixture');if(!Array.isArray(f.extension_receipts)||!f.extension_receipts.length)bad('extensions required');for(const r of f.extension_receipts){receipt(r);if(r.frontier.revision!==f.core_predecessor_frontier)bad('frontier mismatch')}const seen=new Set(f.extension_receipts.map(r=>r.extension_type));for(const t of Object.keys(SAFE))if(!seen.has(t))bad(`missing ${t}`);const c=f.composition_result;if(!c||c.action_permit_created!==false||c.core_action_gate_required!==true||c.extension_receipts_substitute_for_core_receipts!==false)bad('Action Gate firewall violated');return true}
+function receipt(r){
+  obj(r,'receipt');
+  if(r.protocol!=='UU-AAP-EXT'||r.version!=='0.1'||r.receipt_type!=='ExtensionReceipt')bad('invalid extension envelope/core identity substitution');
+  if(!SAFE[r.extension_type])bad('unknown extension');
+  obj(r.frontier,'frontier');if(!r.frontier.revision||!r.frontier.observed_at)bad('frontier required');
+  obj(r.assertions,'assertions');obj(r.non_effects,'non_effects');obj(r.core_binding,'core_binding');
+  if(r.core_binding.substitutes_for_core_receipt!==false)bad('core substitution forbidden');
+  if(!Array.isArray(r.safe_effects))bad('safe_effects required');
+  for(const n of NON)if(r.non_effects[n]!==false)bad(`non_effect must be false: ${n}`);
+  for(const e of r.safe_effects)if(!SAFE[r.extension_type].has(e))bad(`unsafe effect: ${e}`);
+  if(hash(r)!==r.content_hash)bad('content_hash mismatch');
+  const a=r.assertions;
+  switch(r.extension_type){
+    case'pic':if(a.intent_created||a.intent_inferred||a.intent_refused)bad('PIC cannot induce intent');break;
+    case'appeal':if(a.reversal_executed||a.stay_executed)bad('appeal effect not executed');break;
+    case'readiness':if(a.action_authorized||a.action_permit_created)bad('readiness cannot authorize');break;
+    case'circumstantial_provenance':if(a.causality_proven||a.truth_certified)bad('provenance cannot certify');break;
+    case'sustainability':if(a.execution_veto||a.authority_granted)bad('sustainability cannot create veto/authority');break;
+    case'human_activation_review':if(a.activation_authorized||a.activation_performed||a.responsibility_accepted||a.authority_expanded)bad('human review cannot activate/authorize/accept responsibility');break;
+    case'activation_preflight':if(a.activation_authorized||a.activation_performed||a.action_permit_created)bad('preflight cannot authorize/activate');break;
+    case'rescue_survival':if(a.emergency_authority_granted||a.action_gate_bypassed||a.rescue_executed)bad('rescue profile cannot create emergency bypass/execute');break;
+    case'durable_responsibility_ledger':if(a.responsibility_accepted||a.authority_granted||a.liability_established)bad('ledger records evidence; it cannot accept responsibility/authority/liability');break;
+  }
+  return true
+}
+function composition(f){
+  obj(f,'fixture');
+  if(f.protocol!=='UU-AAP-EXT-COMPOSITION'||f.version!=='0.1'||!f.core_predecessor_frontier)bad('invalid fixture');
+  if(!Array.isArray(f.extension_receipts)||!f.extension_receipts.length)bad('extensions required');
+  for(const r of f.extension_receipts){receipt(r);if(r.frontier.revision!==f.core_predecessor_frontier)bad('frontier mismatch')}
+  const required=Array.isArray(f.required_extension_types)?f.required_extension_types:DEFAULT_REQUIRED;
+  const seen=new Set(f.extension_receipts.map(r=>r.extension_type));
+  for(const t of required){if(!SAFE[t])bad(`unknown required extension: ${t}`);if(!seen.has(t))bad(`missing ${t}`)}
+  const c=f.composition_result;
+  if(!c||c.action_permit_created!==false||c.core_action_gate_required!==true||c.extension_receipts_substitute_for_core_receipts!==false)bad('Action Gate firewall violated');
+  return true
+}
 function mutate(r,fn){const x=JSON.parse(JSON.stringify(r));fn(x);x.content_hash=hash(x);return x}
 function reject(n,fn){try{fn()}catch{return}bad(`negative accepted: ${n}`)}
-function negatives(f){const b=Object.fromEntries(f.extension_receipts.map(r=>[r.extension_type,r]));reject('missing non-effect',()=>receipt(mutate(b.pic,x=>delete x.non_effects.action_authorized)));reject('core identity',()=>receipt(mutate(b.readiness,x=>x.receipt_type='ActionPermit')));reject('PIC intent',()=>receipt(mutate(b.pic,x=>x.assertions.intent_inferred=true)));reject('readiness authority',()=>receipt(mutate(b.readiness,x=>x.assertions.action_authorized=true)));reject('appeal stay',()=>receipt(mutate(b.appeal,x=>x.assertions.stay_executed=true)));reject('provenance causality',()=>receipt(mutate(b.circumstantial_provenance,x=>x.assertions.causality_proven=true)));reject('sustainability veto',()=>receipt(mutate(b.sustainability,x=>x.assertions.execution_veto=true)));reject('unsafe effect',()=>receipt(mutate(b.readiness,x=>x.safe_effects.push('merge_executed'))));reject('frontier mismatch',()=>{const x=JSON.parse(JSON.stringify(f));x.extension_receipts[0]=mutate(x.extension_receipts[0],r=>r.frontier.revision='other');composition(x)})}
-const f=JSON.parse(fs.readFileSync(path.join(__dirname,'composition.fixture.json'),'utf8'));composition(f);negatives(f);console.log('UU_AAP_EXTENSION_COMPOSITION_V0_1_PASS');
+function baseNegatives(f){const b=Object.fromEntries(f.extension_receipts.map(r=>[r.extension_type,r]));reject('missing non-effect',()=>receipt(mutate(b.pic,x=>delete x.non_effects.action_authorized)));reject('core identity',()=>receipt(mutate(b.readiness,x=>x.receipt_type='ActionPermit')));reject('PIC intent',()=>receipt(mutate(b.pic,x=>x.assertions.intent_inferred=true)));reject('readiness authority',()=>receipt(mutate(b.readiness,x=>x.assertions.action_authorized=true)));reject('appeal stay',()=>receipt(mutate(b.appeal,x=>x.assertions.stay_executed=true)));reject('provenance causality',()=>receipt(mutate(b.circumstantial_provenance,x=>x.assertions.causality_proven=true)));reject('sustainability veto',()=>receipt(mutate(b.sustainability,x=>x.assertions.execution_veto=true)));reject('unsafe effect',()=>receipt(mutate(b.readiness,x=>x.safe_effects.push('merge_executed'))));reject('frontier mismatch',()=>{const x=JSON.parse(JSON.stringify(f));x.extension_receipts[0]=mutate(x.extension_receipts[0],r=>r.frontier.revision='other');composition(x)})}
+function requiredNegatives(f){const b=Object.fromEntries(f.extension_receipts.map(r=>[r.extension_type,r]));reject('human review activation',()=>receipt(mutate(b.human_activation_review,x=>x.assertions.activation_authorized=true)));reject('preflight permit',()=>receipt(mutate(b.activation_preflight,x=>x.assertions.action_permit_created=true)));reject('rescue bypass',()=>receipt(mutate(b.rescue_survival,x=>x.assertions.action_gate_bypassed=true)));reject('ledger responsibility acceptance',()=>receipt(mutate(b.durable_responsibility_ledger,x=>x.assertions.responsibility_accepted=true)));reject('missing required human review',()=>{const x=JSON.parse(JSON.stringify(f));x.extension_receipts=x.extension_receipts.filter(r=>r.extension_type!=='human_activation_review');composition(x)});reject('required profile action gate bypass',()=>{const x=JSON.parse(JSON.stringify(f));x.composition_result.action_permit_created=true;composition(x)})}
+const primary=JSON.parse(fs.readFileSync(path.join(__dirname,'composition.fixture.json'),'utf8'));
+const required=JSON.parse(fs.readFileSync(path.join(__dirname,'required-profiles.fixture.json'),'utf8'));
+composition(primary);baseNegatives(primary);composition(required);requiredNegatives(required);
+console.log('UU_AAP_EXTENSION_COMPOSITION_V0_1_PASS');
 module.exports={receipt,composition,hash};
