@@ -8,13 +8,14 @@
     "$schema", "artifact_type", "artifact_version", "command_id", "command", "execution_mode",
     "declared_at", "valid_until", "git_revision", "system_id", "server_instance_id",
     "activation_intent_binding", "activation_preflight_binding", "execution_policy_binding",
+    "live_host_eligibility_binding", "live_host_eligibility_evidence",
     "holder_id", "responsibility_scopes", "fencing_epoch", "lease", "human_execute", "claims"
   ],
   "properties": {
     "$schema": {"type": "string", "pattern": "(^|.*/)kontur-activation-execute-command\\.schema\\.json$"},
     "artifact_type": {"const": "KONTURActivationExecuteCommand"},
     "artifact_version": {"const": "0.1"},
-    "command_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-execute-command:"},
+    "command_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:activation-execute-command:[0-9a-f]{24}$"},
     "command": {"const": "execute_kontur_activation"},
     "execution_mode": {"enum": ["test_only", "live"]},
     "declared_at": {"type": "string", "format": "date-time"},
@@ -25,6 +26,18 @@
     "activation_intent_binding": {"$ref": "#/$defs/binding"},
     "activation_preflight_binding": {"$ref": "#/$defs/binding"},
     "execution_policy_binding": {"$ref": "#/$defs/policyBinding"},
+    "live_host_eligibility_binding": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/liveHostEligibilityBinding"}
+      ]
+    },
+    "live_host_eligibility_evidence": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/liveHostEligibilityEvidence"}
+      ]
+    },
     "holder_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:holder:"},
     "responsibility_scopes": {
       "type": "array", "minItems": 1, "uniqueItems": true,
@@ -73,6 +86,26 @@
       }
     }
   },
+  "allOf": [
+    {
+      "if": {"properties": {"execution_mode": {"const": "live"}}, "required": ["execution_mode"]},
+      "then": {
+        "properties": {
+          "live_host_eligibility_binding": {"$ref": "#/$defs/liveHostEligibilityBinding"},
+          "live_host_eligibility_evidence": {"$ref": "#/$defs/liveHostEligibilityEvidence"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"execution_mode": {"const": "test_only"}}, "required": ["execution_mode"]},
+      "then": {
+        "properties": {
+          "live_host_eligibility_binding": {"type": "null"},
+          "live_host_eligibility_evidence": {"type": "null"}
+        }
+      }
+    }
+  ],
   "$defs": {
     "digest": {
       "type": "object", "additionalProperties": false,
@@ -91,6 +124,45 @@
         "artifact_type": {"type": "string", "minLength": 1},
         "artifact_ref": {"type": "string", "minLength": 1},
         "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "liveHostEligibilityBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"const": "KONTURLiveHostEligibilityReceipt"},
+        "artifact_ref": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-eligibility:[0-9a-f]{24}$"},
+        "digest": {"$ref": "#/$defs/digest"}
+      }
+    },
+    "liveHostEligibilityEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["profile", "receipt"],
+      "properties": {
+        "profile": {
+          "type": "object",
+          "required": ["artifact_type", "artifact_version", "profile_id", "system_id", "server_instance_id", "durable_ledger_root"],
+          "properties": {
+            "artifact_type": {"const": "KONTURLiveHostProfile"},
+            "artifact_version": {"const": "0.1"},
+            "profile_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-profile:[0-9a-f]{24}$"},
+            "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
+            "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
+            "durable_ledger_root": {"type": "string", "minLength": 1}
+          }
+        },
+        "receipt": {
+          "type": "object",
+          "required": ["artifact_type", "artifact_version", "receipt_id", "expected_git_revision", "decision", "safe_next_step"],
+          "properties": {
+            "artifact_type": {"const": "KONTURLiveHostEligibilityReceipt"},
+            "artifact_version": {"const": "0.1"},
+            "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-eligibility:[0-9a-f]{24}$"},
+            "expected_git_revision": {"type": "string", "pattern": "^git:[0-9a-f]{40}$"},
+            "decision": {"const": "live_host_eligible"},
+            "safe_next_step": {"const": "live_preflight_may_be_attempted"}
+          }
+        }
       }
     },
     "policyBinding": {
