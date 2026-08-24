@@ -222,7 +222,108 @@ async function mustRejectWith(label, expectedMessageFragment, fn) {
     }
   );
 
-  console.log('KONTUR Human Activation Review decision-ID packet-binding hardening: PASS');
+  const noncePrefix = 'urn:uu-aap:kontur:human-activation-review-nonce:';
+  const collisionReviewerA = 'human:reviewer:delimiter-collision';
+  const collisionNonceA = `${noncePrefix}first|reject|${noncePrefix}second`;
+  const collisionReviewerB = `${collisionReviewerA}|approve_intent_preparation|${noncePrefix}first`;
+  const collisionNonceB = `${noncePrefix}second`;
+  const collisionReviewedAt = '2026-08-24T00:57:00Z';
+  const collisionObservedAt = '2026-08-24T00:58:00Z';
+
+  const historicalJoinedTailA = [
+    collisionReviewerA,
+    'approve_intent_preparation',
+    collisionNonceA,
+    collisionReviewedAt,
+    GIT_REVISION,
+    collisionObservedAt
+  ].join('|');
+  const historicalJoinedTailB = [
+    collisionReviewerB,
+    'reject',
+    collisionNonceB,
+    collisionReviewedAt,
+    GIT_REVISION,
+    collisionObservedAt
+  ].join('|');
+  assert.strictEqual(historicalJoinedTailA, historicalJoinedTailB,
+    'historical delimiter framing fixture must reproduce the ambiguous tuple');
+
+  const collisionApprove = await Review.buildReviewDecision({
+    reviewPacket: packetOne,
+    projectCheckpoint: predecessorSet.projectCheckpoint,
+    currentMainVerification: predecessorSet.currentMainVerification,
+    observedCurrentGitRevision: GIT_REVISION,
+    observedAt: collisionObservedAt,
+    priorDecisions: [],
+    priorDecisionsComplete: true,
+    reviewerRef: collisionReviewerA,
+    decision: 'approve_intent_preparation',
+    confirmations: confirmations(true),
+    typedConfirmation: 'APPROVE_KONTUR_ACTIVATION_INTENT_PREPARATION_ONLY',
+    nonce: collisionNonceA,
+    reviewedAt: collisionReviewedAt
+  });
+  const collisionReject = await Review.buildReviewDecision({
+    reviewPacket: packetOne,
+    projectCheckpoint: predecessorSet.projectCheckpoint,
+    currentMainVerification: predecessorSet.currentMainVerification,
+    observedCurrentGitRevision: GIT_REVISION,
+    observedAt: collisionObservedAt,
+    priorDecisions: [],
+    priorDecisionsComplete: true,
+    reviewerRef: collisionReviewerB,
+    decision: 'reject',
+    confirmations: confirmations(true),
+    typedConfirmation: 'REJECT_KONTUR_ACTIVATION_REVIEW',
+    nonce: collisionNonceB,
+    reviewedAt: collisionReviewedAt
+  });
+  assert.notStrictEqual(
+    collisionApprove.decision_id,
+    collisionReject.decision_id,
+    'JCS typed identity object must distinguish historically colliding tuples'
+  );
+
+  await mustRejectWith(
+    'original nonce reuse with valid prior decision',
+    'decision nonce replay detected',
+    async () => {
+      await buildApprove(
+        packetTwo,
+        predecessorSet,
+        collisionNonceA,
+        '2026-08-24T00:59:00Z',
+        '2026-08-24T01:00:00Z',
+        [collisionApprove]
+      );
+    }
+  );
+
+  await mustRejectWith(
+    'coordinated delimiter substitution cannot hide nonce reuse',
+    'decision_id binding mismatch',
+    async () => {
+      const tampered = clone(collisionApprove);
+      tampered.reviewer_ref = collisionReviewerB;
+      tampered.decision = 'reject';
+      tampered.human_declaration.declaration_type = 'reject_activation_review';
+      tampered.human_declaration.typed_confirmation = 'REJECT_KONTUR_ACTIVATION_REVIEW';
+      tampered.human_declaration.nonce = collisionNonceB;
+      tampered.safe_effect = 'no-action';
+      tampered.claims.activation_intent_preparation_may_be_requested = false;
+      await buildApprove(
+        packetTwo,
+        predecessorSet,
+        collisionNonceA,
+        '2026-08-24T01:01:00Z',
+        '2026-08-24T01:02:00Z',
+        [tampered]
+      );
+    }
+  );
+
+  console.log('KONTUR Human Activation Review decision-ID packet-binding and canonical-seed hardening: PASS');
 })().catch(error => {
   console.error(error);
   process.exit(1);
