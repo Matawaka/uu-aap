@@ -1,0 +1,28 @@
+name: UU-AAP Bounded Execution Lifecycle v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - '.github/workflows/bounded-execution-lifecycle-v0.1-validation.yml'
+  push:
+    branches: [ main ]
+    paths:
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - '.github/workflows/bounded-execution-lifecycle-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate UU-AAP Core v0.1
+        run: node protocols/core/v0.1/validate-core.js
+      - name: Validate bounded execution lifecycle
+        run: node protocols/integration/execution-lifecycle/v0.1/validate-execution-lifecycle.js
