@@ -1,0 +1,26 @@
+name: UU-AAP Core v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/core/**"
+      - ".github/workflows/core-protocol-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/core/**"
+      - ".github/workflows/core-protocol-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate-core:
+    name: UU-AAP Core v0.1 validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Validate stable core fixture and fail-closed vectors
+        run: node protocols/core/v0.1/validate-core.js

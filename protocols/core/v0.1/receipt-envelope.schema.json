@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/core/v0.1/receipt-envelope.schema.json",
+  "title": "UU-AAP Core v0.1 Receipt Envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "receipt_type",
+    "subject",
+    "frontier",
+    "predecessor_receipt_hashes",
+    "assertions",
+    "non_effects",
+    "issuer",
+    "issued_at",
+    "payload",
+    "content_hash",
+    "signature_profile"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP Core"},
+    "version": {"const": "0.1"},
+    "receipt_type": {
+      "enum": [
+        "StateReceipt",
+        "AvailabilityClaim",
+        "IntentReceipt",
+        "AuthorityReceipt",
+        "ResponsibilityReceipt",
+        "CoordinationReceipt",
+        "ActionPermit",
+        "ActionReceipt",
+        "OutcomeReceipt",
+        "SuccessorStateReceipt"
+      ]
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "scope"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "scope": {"type": "string", "minLength": 1}
+      }
+    },
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["revision", "observed_at"],
+      "properties": {
+        "revision": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "predecessor_receipt_hashes": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+    },
+    "assertions": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": ["boolean", "string", "number", "null"]}
+    },
+    "non_effects": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": ["boolean", "string", "number", "null"]}
+    },
+    "issuer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "assurance"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "assurance": {"type": "string", "minLength": 1}
+      }
+    },
+    "issued_at": {"type": "string", "format": "date-time"},
+    "payload": {"type": "object"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "signature_profile": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["mode"],
+      "properties": {"mode": {"type": "string", "minLength": 1}}
+    }
+  }
+}
