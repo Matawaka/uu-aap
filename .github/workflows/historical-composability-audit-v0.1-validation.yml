@@ -1,0 +1,26 @@
+name: Historical Composability Audit v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/historical-composability-audit/v0.1/**'
+      - '.github/workflows/historical-composability-audit-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/historical-composability-audit/v0.1/**'
+      - '.github/workflows/historical-composability-audit-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Immutable historical evidence boundary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/integration/historical-composability-audit/v0.1/validate-historical-composability.js
