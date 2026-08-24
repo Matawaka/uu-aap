@@ -1,0 +1,85 @@
+{
+  "document_type": "uu-aap.kontur-har-m3-targeted-re-audit-record",
+  "version": "0.1",
+  "audit_date": "2026-08-24",
+  "audited_frontier": {
+    "main_sha": "7a085ffa8c724777ef2c0b38e60350bdfb8c11cf",
+    "tree_sha": "c8637976f45ce4677b08afaff67a0800f4074768",
+    "parent_sha": "ab0be5e4993189340053f2b42f3623788b6a9485",
+    "revision_gate": "pass",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid"
+  },
+  "scope": "PR #300 HAR-M3 replay-history remediation targeted re-audit",
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-7a085ffa/har-m3-targeted-re-audit-report.md",
+    "git_blob_sha1": "4929ba2b91ef1faa4664aacb805e351c13892471"
+  },
+  "source_targeted_audit": {
+    "frontier_sha": "cf4abd3932048bbcfa30c157fa887cf434b2be5e",
+    "conclusion": "HAR_REMEDIATION_NEEDS_MORE_TESTING",
+    "report_sha256": "a2eb9bb1cb9462d82ad842a410eb29162aa1b754a74eb23f0231f7699276e7da",
+    "rewritten": false
+  },
+  "findings": {
+    "HAR-M1": {"status": "closed_verified"},
+    "HAR-M2": {"status": "closed_verified"},
+    "HAR-M3-malformed-prior-entry": {"status": "closed_verified"},
+    "HAR-M3-decision-id-packet-ref-binding": {
+      "status": "open_medium",
+      "defect": "decision_id derivation binds review_packet_binding digest value but not artifact_ref; syntactically valid packet artifact_ref substitution can retain old decision_id and digest"
+    }
+  },
+  "direct_test_summary": {
+    "required_rejections_passed": 53,
+    "valid_cases_accepted": 4,
+    "required_packet_artifact_ref_tamper_accepted": 1,
+    "adversarial_probe_exit": 2
+  },
+  "remaining_findings": {
+    "high_or_critical": 0,
+    "medium": [
+      "HAR-M3 decision-ID binding omits review_packet_binding.artifact_ref from deterministic identity binding."
+    ],
+    "low_summary": [
+      "reviewer_ref is declared identity only and is not cryptographically authenticated",
+      "relative timestamp ordering is builder-enforced but not independently schema-enforced",
+      "30-day evidence retention limits long-term independent availability"
+    ]
+  },
+  "exact_main_workflow_runs": {
+    "human_activation_review": 32692271321,
+    "kontur_readiness_aggregator": 32692271320,
+    "activation_preflight": 32692271322,
+    "activation_executor_test_only": 32692271298,
+    "responsibility_kernel": 32692271301,
+    "durable_responsibility_ledger": 32692271363,
+    "project_readiness_checkpoint": 32692271309,
+    "independent_audit_hardening": 32692271343
+  },
+  "evidence_access_gap": true,
+  "evidence_access_gap_detail": "inner workflow artifact archive bytes were not independently downloaded through the available read-only audit interface",
+  "required_next_step": "bind the complete typed review_packet_binding, including artifact_ref, into decision_id derivation and add independent artifact_ref and digest tamper regressions, then perform another bounded HAR-M3 decision-ID re-audit",
+  "formal_human_activation_review_allowed_now": false,
+  "kontur_state": {
+    "kernel_activated": false,
+    "live_responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "human_review_decision_created": false,
+    "activation_intent_created": false,
+    "live_preflight_run": false,
+    "execute_command_created": false,
+    "live_executor_invoked": false,
+    "permission_expansion_or_bypass": false
+  },
+  "final_bounded_conclusion": "HAR_M3_REPLAY_HISTORY_NEEDS_MORE_TESTING",
+  "boundary": {
+    "audit_record_is_human_review_approval": false,
+    "audit_record_is_activation_intent": false,
+    "audit_record_is_activation_authorization": false,
+    "audit_record_is_kontur_activation": false,
+    "audit_record_is_legal_liability_determination": false,
+    "audit_record_is_truth_certification": false
+  }
+}
