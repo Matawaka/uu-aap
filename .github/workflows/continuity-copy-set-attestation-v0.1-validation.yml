@@ -28,18 +28,20 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Parse Python and JSON
+      - name: Parse Python and JSON without writing bytecode
         env:
           PYTHONDONTWRITEBYTECODE: '1'
         run: |
-          python -m py_compile protection/continuity/copy-set/v0.1/copy_set_assessor.py
           python - <<'PY'
+          import ast
           import json
           from pathlib import Path
           root = Path('protection/continuity/copy-set/v0.1')
+          ast.parse((root / 'copy_set_assessor.py').read_text())
+          ast.parse((root / 'test_copy_set_attestation.py').read_text())
           json.loads((root / 'copy-set-attestation.schema.json').read_text())
           json.loads((root / 'reference.copy-set-attestation.json').read_text())
-          print('JSON parse OK')
+          print('Python/JSON parse OK')
           PY
 
       - name: Install pinned JSON Schema validator
