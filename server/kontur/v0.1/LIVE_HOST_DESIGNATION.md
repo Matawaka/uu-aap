@@ -8,6 +8,7 @@
 ```text
 host parameters supplied
 != explicit human live-host designation
+!= designated operator identity
 != live-host profile
 != observed live-host eligibility
 != execution authority
@@ -25,11 +26,21 @@ The decision binds the exact intended target:
 - `system_id`;
 - `server_instance_id`;
 - distinct `host_id`;
+- designated `operator_ref`;
 - canonical repository `Matawaka/uu-aap`;
 - persistent repository root;
 - persistent Durable Responsibility Ledger root;
 - `runtime_boundary = host_local`;
 - the declarations that the repository and ledger roots are persistent, the ledger is outside the repository, and the intended environment is neither CI nor a temporary sandbox.
+
+The actor who designates the host is recorded separately as `designator_ref`. The protocol does not require the designator and designated operator to be the same actor:
+
+```text
+designator_ref
+!= operator_ref
+```
+
+Either value may happen to refer to the same actor in a particular deployment, but equality must be an explicit property of that decision, not a builder assumption.
 
 The human declaration requires all of:
 
@@ -38,7 +49,7 @@ decision = designate_live_host
 declaration_type = explicit_live_host_designation
 typed_confirmation = DESIGNATE_KONTUR_LIVE_HOST
 explicit = true
-fresh one-shot designation nonce
+designation nonce bound into decision identity
 ```
 
 The designator identity assurance remains deliberately bounded:
@@ -47,7 +58,9 @@ The designator identity assurance remains deliberately bounded:
 declared_not_cryptographically_verified
 ```
 
-The deterministic decision identity is derived under RFC 8785 JCS + SHA-256 from the declaration timestamp, designator reference, decision kind, exact target, exact declarations and exact human declaration including its nonce.
+The nonce is required and is part of the deterministic decision identity. v0.1 does not claim a global nonce registry or cryptographically prove uniqueness across all independent designation histories; callers must not silently recycle a prior declaration as a new human decision.
+
+The deterministic decision identity is derived under RFC 8785 JCS + SHA-256 from the declaration timestamp, designator reference, decision kind, exact target including the designated operator, exact declarations and exact human declaration including its nonce.
 
 ## Safe effect
 
@@ -62,6 +75,7 @@ It explicitly does **not** mean:
 - the profile has already been created;
 - the environment has been observed;
 - live-host eligibility has been established;
+- the designated operator has received execution authority;
 - an Activation Intent exists;
 - preflight passed;
 - a Human Execute command exists;
@@ -83,7 +97,7 @@ The profile embeds:
 
 The profile validator independently requires:
 
-- `operator_ref == designator_ref`;
+- `operator_ref == designation.target.operator_ref`;
 - system/server/host/repository/path/runtime fields equal the designated target;
 - profile declarations equal the human-designated declarations;
 - the profile creation timestamp does not predate the designation;
@@ -115,12 +129,12 @@ Thus human designation cannot override a later observation that detects CI, a sa
 
 ## CI semantics
 
-CI may construct only **synthetic test designation decisions** using synthetic designator references, host IDs and nonces. Such fixtures validate structure and fail-closed behavior; they do not designate the GitHub runner or any real machine as a KONTUR live host.
+CI may construct only **synthetic test designation decisions** using synthetic designator references, separately named synthetic operator references, host IDs and nonces. Such fixtures validate structure and fail-closed behavior; they do not designate the GitHub runner or any real machine as a KONTUR live host.
 
 CI must not infer a real human designation from repository content, test parameters or successful validation.
 
 ## Remaining assurance boundary
 
-This layer records explicit human designation but does not authenticate the human cryptographically and does not attest the host through TPM, secure boot, hardware identity, hypervisor trust or OS trust roots.
+This layer records explicit human designation but does not authenticate the human cryptographically, authenticate the designated operator cryptographically, or attest the host through TPM, secure boot, hardware identity, hypervisor trust or OS trust roots.
 
 Those are separate possible successor layers. v0.1 deliberately states only what it can prove.
