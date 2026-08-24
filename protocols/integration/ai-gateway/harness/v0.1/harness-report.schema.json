@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/ai-gateway/harness/v0.1/harness-report.schema.json",
+  "title": "UU-AAP AI Gateway HarnessReport v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","artifact_type","scenario_id","mode","decision","reasons","actuator_call_emitted","planned_call","non_effects","content_hash"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-GATEWAY-REFERENCE-HARNESS"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "HarnessReport"},
+    "scenario_id": {"type": "string", "minLength": 1},
+    "mode": {"const": "dry_run"},
+    "decision": {"enum": ["allow_plan", "deny"]},
+    "reasons": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "actuator_call_emitted": {"const": false},
+    "planned_call": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["transport","tool_name","arguments"],
+          "properties": {
+            "transport": {"enum": ["mcp","function_call","json_rpc","native_tool","other"]},
+            "tool_name": {"const": "uu_aap.github.actuate"},
+            "arguments": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["provider","repository","operation","pr_number","expected_head_sha","expected_base_sha","merge_method","gateway_decision_hash","action_permit_hash","approval_reference"],
+              "properties": {
+                "provider": {"const": "github"},
+                "repository": {"type": "string", "pattern": "^[^/]+/[^/]+$"},
+                "operation": {"const": "merge_pr"},
+                "pr_number": {"type": "integer", "minimum": 1},
+                "expected_head_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+                "expected_base_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+                "merge_method": {"enum": ["squash","merge","rebase"]},
+                "gateway_decision_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+                "action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+                "approval_reference": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+              }
+            }
+          }
+        }
+      ]
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["network_accessed","credentials_read","github_mutation_performed","intent_created","authority_created","authority_expanded","action_permit_created","action_performed","causality_proven","truth_certified","liability_established"],
+      "properties": {
+        "network_accessed": {"const": false},
+        "credentials_read": {"const": false},
+        "github_mutation_performed": {"const": false},
+        "intent_created": {"const": false},
+        "authority_created": {"const": false},
+        "authority_expanded": {"const": false},
+        "action_permit_created": {"const": false},
+        "action_performed": {"const": false},
+        "causality_proven": {"const": false},
+        "truth_certified": {"const": false},
+        "liability_established": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

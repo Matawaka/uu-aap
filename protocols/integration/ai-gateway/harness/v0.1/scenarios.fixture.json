@@ -1,0 +1,53 @@
+{
+  "protocol": "UU-AAP-AI-GATEWAY-REFERENCE-HARNESS-CONFORMANCE",
+  "version": "0.1",
+  "base_frontier": "20d2bcca0215887bb541b6394bdec28a9bb292c9",
+  "scenarios": [
+    {
+      "scenario_id": "dry-run-allow-exact-frontier",
+      "mode": "dry_run",
+      "live_execution_enabled": false,
+      "transport": {"type":"mcp","tool_name":"uu_aap.github.actuate","transport_defines_authority":false},
+      "authorized": {
+        "decision": "admissible",
+        "decision_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "frontier": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "action_permit_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "approval_reference": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repository": "Matawaka/uu-aap",
+        "operation": "merge_pr",
+        "pr_number": 999,
+        "expected_head_sha": "1111111111111111111111111111111111111111",
+        "expected_base_sha": "2222222222222222222222222222222222222222",
+        "merge_method": "squash",
+        "authority_scope": "repository:Matawaka/uu-aap:pull_request:999:merge",
+        "expected_effects": ["pr_merged","base_ref_advanced"],
+        "explicit_non_effects": ["other_repository_modified","branch_deleted","release_published","authority_expanded"]
+      },
+      "current_state": {"repository":"Matawaka/uu-aap","pr_number":999,"head_sha":"1111111111111111111111111111111111111111","base_sha":"2222222222222222222222222222222222222222"}
+    },
+    {
+      "scenario_id": "dry-run-deny-stale-head",
+      "mode": "dry_run",
+      "live_execution_enabled": false,
+      "transport": {"type":"mcp","tool_name":"uu_aap.github.actuate","transport_defines_authority":false},
+      "authorized": {
+        "decision": "admissible",
+        "decision_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "frontier": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "action_permit_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "approval_reference": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "repository": "Matawaka/uu-aap",
+        "operation": "merge_pr",
+        "pr_number": 999,
+        "expected_head_sha": "1111111111111111111111111111111111111111",
+        "expected_base_sha": "2222222222222222222222222222222222222222",
+        "merge_method": "squash",
+        "authority_scope": "repository:Matawaka/uu-aap:pull_request:999:merge",
+        "expected_effects": ["pr_merged","base_ref_advanced"],
+        "explicit_non_effects": ["other_repository_modified","branch_deleted","release_published","authority_expanded"]
+      },
+      "current_state": {"repository":"Matawaka/uu-aap","pr_number":999,"head_sha":"9999999999999999999999999999999999999999","base_sha":"2222222222222222222222222222222222222222"}
+    }
+  ]
+}
