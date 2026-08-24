@@ -4,7 +4,6 @@ const path = require('path');
 const Binding = require(path.resolve(__dirname, '../../../docs/poai/binding-receipt.js'));
 
 function assert(value, message) { if (!value) throw new Error(message); }
-function clone(value) { return JSON.parse(JSON.stringify(value)); }
 function parseTime(value, label) {
   const ms = Date.parse(value);
   assert(Number.isFinite(ms), `KONTUR Live Host Eligibility: invalid ${label}`);
@@ -50,6 +49,7 @@ const PROFILE_CLAIM_KEYS = [
   'legal_authority_established', 'truth_certified', 'universal_canonicality_established'
 ];
 const OBSERVATION_KEYS = [
+  'observed_repository_root', 'observed_durable_ledger_root',
   'repository_root_matches_profile', 'durable_ledger_root_matches_profile',
   'durable_ledger_root_exists', 'durable_ledger_root_readable', 'durable_ledger_root_writable',
   'durable_ledger_root_outside_repository', 'current_git_revision_exact',
@@ -165,6 +165,10 @@ function normalizeEnvironment(environment) {
     'temporarySandboxDetected', 'runtimeBoundary', 'processIdentity',
     'workspaceRoot', 'observedGitRevision'
   ], 'KONTUR Live Host Eligibility: environment');
+  assert(typeof environment.repositoryRoot === 'string' && environment.repositoryRoot.length > 0,
+    'KONTUR Live Host Eligibility: observed repository root required');
+  assert(typeof environment.durableLedgerRoot === 'string' && environment.durableLedgerRoot.length > 0,
+    'KONTUR Live Host Eligibility: observed durable ledger root required');
   assert(/^git:[0-9a-f]{40}$/.test(environment.observedGitRevision || ''),
     'KONTUR Live Host Eligibility: exact observed Git revision required');
   assert(['host_local', 'unknown'].includes(environment.runtimeBoundary),
@@ -186,7 +190,8 @@ function eligibilityFromObservations(observations) {
     observations.current_git_revision_exact === true &&
     observations.ci_environment_detected === false &&
     observations.temporary_sandbox_detected === false &&
-    observations.runtime_boundary === 'host_local';
+    observations.runtime_boundary === 'host_local' &&
+    observations.workspace_root === observations.observed_repository_root;
 }
 
 function receiptIdentitySeed(receipt) {
@@ -209,6 +214,8 @@ async function evaluateLiveHostEligibility({ profile, expectedGitRevision, obser
   normalizeEnvironment(environment);
 
   const observations = {
+    observed_repository_root: environment.repositoryRoot,
+    observed_durable_ledger_root: environment.durableLedgerRoot,
     repository_root_matches_profile: environment.repositoryRoot === profile.repository_root,
     durable_ledger_root_matches_profile: environment.durableLedgerRoot === profile.durable_ledger_root,
     durable_ledger_root_exists: environment.durableLedgerRootExists === true,
@@ -270,6 +277,15 @@ async function validateLiveHostEligibilityReceipt({ receipt, profile }) {
   const expectedProfileBinding = await binding('KONTURLiveHostProfile', profile.profile_id, profile);
   assert(sameBinding(receipt.host_profile_binding, expectedProfileBinding), `${label}: host profile binding substitution`);
   assertExactKeys(receipt.observations, OBSERVATION_KEYS, `${label}: observations`);
+  assert(receipt.observations.repository_root_matches_profile ===
+    (receipt.observations.observed_repository_root === profile.repository_root),
+    `${label}: repository-root match flag inconsistent with raw observation`);
+  assert(receipt.observations.durable_ledger_root_matches_profile ===
+    (receipt.observations.observed_durable_ledger_root === profile.durable_ledger_root),
+    `${label}: ledger-root match flag inconsistent with raw observation`);
+  assert(receipt.observations.current_git_revision_exact ===
+    (receipt.observations.observed_git_revision === receipt.expected_git_revision),
+    `${label}: Git revision match flag inconsistent with raw observation`);
   assertExactKeys(receipt.claims, RECEIPT_CLAIM_KEYS, `${label}: claims`);
   assert(receipt.claims.host_profile_bound === true, `${label}: host profile bound claim required`);
   for (const key of RECEIPT_CLAIM_KEYS.filter((key) => ![
