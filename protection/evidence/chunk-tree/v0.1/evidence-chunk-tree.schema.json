@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/protection/evidence/chunk-tree/v0.1/evidence-chunk-tree.schema.json",
+  "title": "EvidenceChunkTreeManifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "artifact_version", "tree_id", "created_at", "file_ref",
+    "file_size", "chunk_size", "chunk_count", "whole_file_sha256", "leaf_hashes",
+    "merkle_root", "hash_domain", "claims"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "artifact_type": { "const": "EvidenceChunkTreeManifest" },
+    "artifact_version": { "const": "0.1" },
+    "tree_id": { "type": "string", "pattern": "^urn:uu-aap:evidence:chunk-tree:[0-9a-f]{24}$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "file_ref": { "type": "string", "minLength": 1, "maxLength": 512 },
+    "file_size": { "type": "integer", "minimum": 0 },
+    "chunk_size": { "type": "integer", "minimum": 1, "maximum": 16777216 },
+    "chunk_count": { "type": "integer", "minimum": 1 },
+    "whole_file_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "leaf_hashes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+    },
+    "merkle_root": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "hash_domain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "leaf_prefix_hex", "node_prefix_hex", "odd_node_rule"],
+      "properties": {
+        "algorithm": { "const": "SHA-256" },
+        "leaf_prefix_hex": { "const": "00" },
+        "node_prefix_hex": { "const": "01" },
+        "odd_node_rule": { "const": "duplicate_last" }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chunk_tree_structure_created",
+        "whole_file_sha256_recorded",
+        "partial_chunk_verification_supported",
+        "evidence_truth_certified",
+        "origin_established",
+        "canonicality_established",
+        "authority_established",
+        "legal_liability_determined",
+        "rescue_authorized",
+        "kontur_readiness_established",
+        "kontur_activation_authorized",
+        "kontur_activated"
+      ],
+      "properties": {
+        "chunk_tree_structure_created": { "const": true },
+        "whole_file_sha256_recorded": { "const": true },
+        "partial_chunk_verification_supported": { "const": true },
+        "evidence_truth_certified": { "const": false },
+        "origin_established": { "const": false },
+        "canonicality_established": { "const": false },
+        "authority_established": { "const": false },
+        "legal_liability_determined": { "const": false },
+        "rescue_authorized": { "const": false },
+        "kontur_readiness_established": { "const": false },
+        "kontur_activation_authorized": { "const": false },
+        "kontur_activated": { "const": false }
+      }
+    }
+  }
+}
