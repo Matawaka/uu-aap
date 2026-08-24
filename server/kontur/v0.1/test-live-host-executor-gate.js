@@ -52,17 +52,22 @@ async function main() {
     systemId: executionPolicy.system_id,
     serverInstanceId: executionPolicy.server_instance_id,
     hostId: 'urn:uu-aap:kontur:host:synthetic-live-gate-fixture',
+    operatorRef: 'urn:uu-aap:human-actor:synthetic-live-host-operator',
     repositoryRoot: repoRoot,
     durableLedgerRoot,
     typedConfirmation: 'DESIGNATE_KONTUR_LIVE_HOST',
     nonce: `urn:uu-aap:kontur:live-host-designation-nonce:synthetic-executor-${gitSha.slice(0, 12)}`
   });
+  assert(designation.designator_ref !== designation.target.operator_ref,
+    'synthetic executor fixture must preserve designator/operator separation');
   const profile = await Host.buildLiveHostProfile({
     createdAt: iso(preflightMs - 2000),
     designationDecision: designation
   });
   assert(profile.human_designation_binding.artifact_ref === designation.decision_id,
     'synthetic profile did not bind explicit designation decision');
+  assert(profile.operator_ref === designation.target.operator_ref,
+    'synthetic profile lost designated operator');
 
   const eligibility = await Host.evaluateLiveHostEligibility({
     profile,
@@ -245,6 +250,7 @@ async function main() {
     git_revision: currentGitRevision,
     synthetic_fixture_only: true,
     synthetic_human_designation_only: true,
+    designator_operator_separated: designation.designator_ref !== designation.target.operator_ref,
     live_execute_invoked: false,
     kernel_activated: false,
     durable_ledger_written: false,
