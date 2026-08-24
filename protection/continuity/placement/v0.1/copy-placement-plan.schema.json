@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:continuity:copy-placement-plan:v0.1",
+  "title": "UU-AAP Continuity Copy Placement Plan v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "document_type",
+    "version",
+    "status",
+    "source_frontier",
+    "policy_binding",
+    "copy_roles",
+    "pairwise_independence_checks",
+    "operator_evidence_fields",
+    "boundary",
+    "plan_digest_sha256"
+  ],
+  "properties": {
+    "document_type": {"const": "uu-aap.continuity-copy-placement-plan"},
+    "version": {"const": "0.1"},
+    "status": {"const": "prepare-only"},
+    "source_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["main_sha", "tree_sha"],
+      "properties": {
+        "main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "policy_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_id",
+        "minimum_independent_copies",
+        "minimum_independent_custodians",
+        "offline_copy_required",
+        "shared_credentials_allowed",
+        "capture_cadence_days",
+        "verification_cadence_days",
+        "metadata_backup_required"
+      ],
+      "properties": {
+        "schema_id": {"const": "urn:uu-aap:continuity:policy:v0.1"},
+        "minimum_independent_copies": {"const": 3},
+        "minimum_independent_custodians": {"const": 2},
+        "offline_copy_required": {"const": true},
+        "shared_credentials_allowed": {"const": false},
+        "capture_cadence_days": {"const": 7},
+        "verification_cadence_days": {"const": 30},
+        "metadata_backup_required": {"const": true}
+      }
+    },
+    "copy_roles": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "slot_id",
+          "role",
+          "custodian_role",
+          "offline_required",
+          "unique_storage_domain_required",
+          "unique_credential_domain_if_credentialed",
+          "copy_claimed_present"
+        ],
+        "properties": {
+          "slot_id": {"enum": ["copy-a", "copy-b", "copy-c"]},
+          "role": {"enum": ["active-local-copy", "sealed-offline-copy", "independent-secondary-copy"]},
+          "custodian_role": {"enum": ["custodian-role-a", "custodian-role-b", "custodian-role-a-or-b"]},
+          "offline_required": {"type": "boolean"},
+          "unique_storage_domain_required": {"const": true},
+          "unique_credential_domain_if_credentialed": {"const": true},
+          "copy_claimed_present": {"const": false}
+        }
+      }
+    },
+    "pairwise_independence_checks": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["copy_a", "copy_b", "evidence_required", "independence_claimed_proven"],
+        "properties": {
+          "copy_a": {"enum": ["copy-a", "copy-b", "copy-c"]},
+          "copy_b": {"enum": ["copy-a", "copy-b", "copy-c"]},
+          "evidence_required": {"const": true},
+          "independence_claimed_proven": {"const": false}
+        }
+      }
+    },
+    "operator_evidence_fields": {
+      "type": "array",
+      "minItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "source_main_sha",
+          "source_tree_sha",
+          "capture_manifest_sha256",
+          "verification_evidence_sha256",
+          "captured_at_utc",
+          "verified_at_utc",
+          "metadata_backup_present",
+          "storage_domain_id",
+          "custodian_id",
+          "credential_domain_id",
+          "offline"
+        ]
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strongest_safe_effect",
+        "human_completion_required",
+        "copies_claimed_present",
+        "provider_mutation_authorized",
+        "external_execution_authorized",
+        "authority_transferred",
+        "rescue_authorized",
+        "failover_authorized",
+        "canonical_successor_claimed",
+        "kontur_activation_authorized"
+      ],
+      "properties": {
+        "strongest_safe_effect": {"const": "prepare_operator_copy_placement_only"},
+        "human_completion_required": {"const": true},
+        "copies_claimed_present": {"const": false},
+        "provider_mutation_authorized": {"const": false},
+        "external_execution_authorized": {"const": false},
+        "authority_transferred": {"const": false},
+        "rescue_authorized": {"const": false},
+        "failover_authorized": {"const": false},
+        "canonical_successor_claimed": {"const": false},
+        "kontur_activation_authorized": {"const": false}
+      }
+    },
+    "plan_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
