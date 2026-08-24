@@ -25,13 +25,17 @@ function digest(value) {
 
 const DECISION_KEYS = [
   '$schema', 'artifact_type', 'artifact_version', 'decision_id', 'declared_at',
-  'designator_ref', 'decision', 'target', 'human_declaration', 'safe_effect', 'claims'
+  'designator_ref', 'decision', 'target', 'declarations', 'human_declaration', 'safe_effect', 'claims'
 ];
 const TARGET_KEYS = [
   'system_id', 'server_instance_id', 'host_id', 'repository_full_name',
   'repository_root', 'durable_ledger_root', 'runtime_boundary'
 ];
-const DECLARATION_KEYS = [
+const HOST_DECLARATION_KEYS = [
+  'repository_root_persistent', 'durable_ledger_root_persistent',
+  'durable_ledger_root_outside_repository', 'ci_environment', 'temporary_sandbox'
+];
+const HUMAN_DECLARATION_KEYS = [
   'declaration_type', 'typed_confirmation', 'nonce', 'explicit', 'identity_assurance'
 ];
 const CLAIM_KEYS = [
@@ -51,6 +55,7 @@ function decisionIdentitySeed(decision) {
     designator_ref: decision.designator_ref,
     decision: decision.decision,
     target: decision.target,
+    declarations: decision.declarations,
     human_declaration: decision.human_declaration
   };
 }
@@ -80,7 +85,19 @@ async function validateLiveHostDesignationDecision(decision) {
     `${label}: repository and durable ledger roots must differ`);
   assert(decision.target.runtime_boundary === 'host_local', `${label}: host_local target required`);
 
-  assertExactKeys(decision.human_declaration, DECLARATION_KEYS, `${label}: human_declaration`);
+  assertExactKeys(decision.declarations, HOST_DECLARATION_KEYS, `${label}: declarations`);
+  assert(decision.declarations.repository_root_persistent === true,
+    `${label}: persistent repository declaration required`);
+  assert(decision.declarations.durable_ledger_root_persistent === true,
+    `${label}: persistent durable ledger declaration required`);
+  assert(decision.declarations.durable_ledger_root_outside_repository === true,
+    `${label}: ledger-outside-repository declaration required`);
+  assert(decision.declarations.ci_environment === false,
+    `${label}: CI environment cannot be designated`);
+  assert(decision.declarations.temporary_sandbox === false,
+    `${label}: temporary sandbox cannot be designated`);
+
+  assertExactKeys(decision.human_declaration, HUMAN_DECLARATION_KEYS, `${label}: human_declaration`);
   assert(decision.human_declaration.declaration_type === 'explicit_live_host_designation',
     `${label}: declaration type mismatch`);
   assert(decision.human_declaration.typed_confirmation === 'DESIGNATE_KONTUR_LIVE_HOST',
@@ -138,6 +155,13 @@ async function buildLiveHostDesignationDecision({
       repository_root: repositoryRoot,
       durable_ledger_root: durableLedgerRoot,
       runtime_boundary: 'host_local'
+    },
+    declarations: {
+      repository_root_persistent: true,
+      durable_ledger_root_persistent: true,
+      durable_ledger_root_outside_repository: true,
+      ci_environment: false,
+      temporary_sandbox: false
     },
     human_declaration: {
       declaration_type: 'explicit_live_host_designation',
