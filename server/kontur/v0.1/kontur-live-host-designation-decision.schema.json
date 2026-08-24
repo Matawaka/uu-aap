@@ -6,7 +6,8 @@
   "additionalProperties": false,
   "required": [
     "$schema", "artifact_type", "artifact_version", "decision_id", "declared_at",
-    "designator_ref", "decision", "target", "human_declaration", "safe_effect", "claims"
+    "designator_ref", "decision", "target", "declarations", "human_declaration",
+    "safe_effect", "claims"
   ],
   "properties": {
     "$schema": {"type": "string", "pattern": "(^|.*/)kontur-live-host-designation-decision\\.schema\\.json$"},
@@ -31,6 +32,21 @@
         "repository_root": {"type": "string", "minLength": 1},
         "durable_ledger_root": {"type": "string", "minLength": 1},
         "runtime_boundary": {"const": "host_local"}
+      }
+    },
+    "declarations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repository_root_persistent", "durable_ledger_root_persistent",
+        "durable_ledger_root_outside_repository", "ci_environment", "temporary_sandbox"
+      ],
+      "properties": {
+        "repository_root_persistent": {"const": true},
+        "durable_ledger_root_persistent": {"const": true},
+        "durable_ledger_root_outside_repository": {"const": true},
+        "ci_environment": {"const": false},
+        "temporary_sandbox": {"const": false}
       }
     },
     "human_declaration": {
