@@ -1,0 +1,78 @@
+name: KONTUR HAR-M3 Decision ID Binding v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'server/kontur/v0.1/human-activation-review.js'
+      - 'server/kontur/v0.1/test-human-activation-review.js'
+      - 'server/kontur/v0.1/test-human-activation-review-decision-id-binding.js'
+      - 'server/kontur/v0.1/HAR_M3_DECISION_ID_PACKET_BINDING_HARDENING.md'
+      - 'audits/kontur/2026-08-24-main-7a085ffa/har-m3-decision-id-packet-binding-remediation-v0.1.json'
+      - '.github/workflows/kontur-har-m3-decision-id-binding-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'server/kontur/v0.1/human-activation-review.js'
+      - 'server/kontur/v0.1/test-human-activation-review.js'
+      - 'server/kontur/v0.1/test-human-activation-review-decision-id-binding.js'
+      - 'server/kontur/v0.1/HAR_M3_DECISION_ID_PACKET_BINDING_HARDENING.md'
+      - 'audits/kontur/2026-08-24-main-7a085ffa/har-m3-decision-id-packet-binding-remediation-v0.1.json'
+      - '.github/workflows/kontur-har-m3-decision-id-binding-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Syntax check Human Activation Review
+        run: |
+          node --check server/kontur/v0.1/human-activation-review.js
+          node --check server/kontur/v0.1/test-human-activation-review.js
+          node --check server/kontur/v0.1/test-human-activation-review-decision-id-binding.js
+
+      - name: Run Human Activation Review regression suite
+        run: node server/kontur/v0.1/test-human-activation-review.js
+
+      - name: Run decision-ID packet-binding regressions
+        run: node server/kontur/v0.1/test-human-activation-review-decision-id-binding.js
+
+      - name: Verify bounded remediation record
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('audits/kontur/2026-08-24-main-7a085ffa/har-m3-decision-id-packet-binding-remediation-v0.1.json')
+          d = json.loads(p.read_text(encoding='utf-8'))
+          assert d['status'] == 'candidate_for_targeted_decision_id_reaudit'
+          assert d['finding_closed'] is False
+          assert d['all_original_medium_findings_closed'] is False
+          assert d['targeted_reaudit_still_required'] is True
+          assert d['formal_human_activation_review_allowed'] is False
+          assert d['kontur_activated'] is False
+          assert d['implementation']['complete_typed_packet_binding_committed_by_decision_id'] is True
+          assert d['boundary']['remediation_candidate_is_activation_authorization'] is False
+          assert d['boundary']['remediation_candidate_is_kontur_activation'] is False
+          print('bounded remediation record: PASS')
+          PY
+
+      - name: Guard against activation/mutation surface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          workflow = Path('.github/workflows/kontur-har-m3-decision-id-binding-v0.1-validation.yml').read_text(encoding='utf-8')
+          implementation = Path('server/kontur/v0.1/human-activation-review.js').read_text(encoding='utf-8')
+          forbidden_workflow = ['contents' + ': write', 'git ' + 'push', 'merge_pull_request']
+          for token in forbidden_workflow:
+              assert token not in workflow, token
+          forbidden_impl = ['activation-executor', 'activation-preflight', 'responsibility-kernel', 'responsibility-ledger']
+          for token in forbidden_impl:
+              assert token not in implementation.lower(), token
+          print('no activation/mutation surface: PASS')
+          PY
+
+      - name: Verify checkout remains clean
+        run: git diff --exit-code
