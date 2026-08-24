@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require('fs');
+const os = require('os');
 const path = require('path');
 const Binding = require(path.resolve(__dirname, '../../../docs/poai/binding-receipt.js'));
 const Preflight = require('./activation-preflight.js');
@@ -56,6 +58,27 @@ function samePolicyBinding(a, b) { return sameBinding(a, b) && a.policy_version 
 function assertFalseClaims(claims, label) {
   for (const key of FALSE_CLAIMS) assert(claims && claims[key] === false, `${label}: prohibited claim ${key}`);
 }
+function isWithin(parent, child) {
+  const rel = path.relative(parent, child);
+  return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
+}
+function nearestExistingAncestor(value) {
+  let current = path.resolve(value);
+  while (!fs.existsSync(current)) {
+    const parent = path.dirname(current);
+    assert(parent !== current, 'KONTUR Activation Executor: test_only ledger root has no existing ancestor');
+    current = parent;
+  }
+  return current;
+}
+function assertTestOnlyLedgerRoot(ledgerRoot) {
+  assert(typeof ledgerRoot === 'string' && ledgerRoot.length > 0,
+    'KONTUR Activation Executor: test_only ledger root required');
+  const tempRoot = fs.realpathSync(os.tmpdir());
+  const existingAncestor = fs.realpathSync(nearestExistingAncestor(ledgerRoot));
+  assert(isWithin(tempRoot, existingAncestor),
+    'KONTUR Activation Executor: test_only ledger root must remain under the OS temporary root');
+}
 
 function assertExecutionPolicy(policy, evaluatedMs = null) {
   assert(policy && policy.artifact_type === 'KONTURActivationExecutionPolicy' && policy.artifact_version === '0.1',
@@ -73,7 +96,7 @@ function assertExecutionPolicy(policy, evaluatedMs = null) {
     'exact_git_revision', 'exact_intent_binding', 'exact_preflight_binding', 'fresh_preflight',
     'fresh_readiness', 'fresh_health', 'live_lease', 'empty_genesis_ledger', 'one_shot_execute_nonce',
     'execute_nonce_distinct_from_intent_nonce', 'kernel_activate_exactly_once', 'durable_genesis_commit',
-    'post_commit_recovery', 'recovered_head_exact'
+    'post_commit_recovery', 'recovered_head_exact', 'test_only_ledger_root_ephemeral'
   ]) assert(req[key] === true, `KONTUR Activation Executor: execution policy requirement weakened: ${key}`);
   assert(req.automatic_retry_allowed === false && req.auto_activation_allowed === false,
     'KONTUR Activation Executor: automatic retry/activation must remain prohibited');
@@ -259,6 +282,22 @@ async function executeActivation(args) {
     initialRecoverLedger = Ledger.recoverLedger,
     postCommitRecoverLedger = Ledger.recoverLedger
   } = args;
+
+  if (command && command.execution_mode === 'live') {
+    const PublicExecutor = require('./activation-executor.js');
+    assert(PublicExecutor && typeof PublicExecutor.validateExecuteCommand === 'function',
+      'KONTUR Activation Executor: public live-host gate unavailable');
+    await PublicExecutor.validateExecuteCommand({
+      command, currentGitRevision, intent, preflight, executionPolicy,
+      evaluatedAt: executedAt,
+      liveHostProfile: args.liveHostProfile,
+      liveHostEligibilityReceipt: args.liveHostEligibilityReceipt,
+      ledgerRoot
+    });
+  } else if (command && command.execution_mode === 'test_only') {
+    assertTestOnlyLedgerRoot(ledgerRoot);
+  }
+
   const executedMs = parseTime(executedAt, 'executed_at');
   assertExecutionPolicy(executionPolicy, executedMs);
   await Preflight.validateActivationIntent({ intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy, activationPolicy, health });

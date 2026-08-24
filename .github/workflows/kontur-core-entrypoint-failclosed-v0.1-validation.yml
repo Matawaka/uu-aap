@@ -1,0 +1,85 @@
+name: KONTUR Core Entrypoint Fail-Closed v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'server/kontur/v0.1/activation-preflight-core.js'
+      - 'server/kontur/v0.1/activation-executor-core.js'
+      - 'server/kontur/v0.1/test-core-entrypoint-failclosed.js'
+      - 'server/kontur/v0.1/kontur-activation-execution-policy.schema.json'
+      - 'server/kontur/v0.1/policies/reference-server.activation-execution-policy.json'
+      - '.github/workflows/kontur-core-entrypoint-failclosed-v0.1-validation.yml'
+      - 'server/kontur/v0.1/CORE_ENTRYPOINT_FAILCLOSED.md'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Core entrypoints cannot bypass public human/live-host gates
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout read-only
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Check modified JavaScript
+        run: |
+          node --check server/kontur/v0.1/activation-preflight-core.js
+          node --check server/kontur/v0.1/activation-executor-core.js
+          node --check server/kontur/v0.1/test-core-entrypoint-failclosed.js
+
+      - name: Validate execution policy schema and policy
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root = Path('server/kontur/v0.1')
+          schema = json.loads((root / 'kontur-activation-execution-policy.schema.json').read_text(encoding='utf-8'))
+          policy = json.loads((root / 'policies/reference-server.activation-execution-policy.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(policy)
+          assert policy['requirements']['test_only_ledger_root_ephemeral'] is True
+          assert policy['requirements']['live_host_eligibility_required_for_live_mode'] is True
+          assert policy['requirements']['live_ledger_root_matches_host_profile'] is True
+          print('VALID: execution policy keeps live gate and isolates test-only ledger root')
+          PY
+
+      - name: Run direct-core bypass and path-confusion regression vectors
+        run: node server/kontur/v0.1/test-core-entrypoint-failclosed.js /tmp/kontur-core-entrypoint-failclosed
+
+      - name: Require zero mutation before rejection
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          summary = json.loads(Path('/tmp/kontur-core-entrypoint-failclosed/summary.json').read_text())
+          assert summary['direct_live_kernel_calls'] == 0
+          assert summary['direct_live_recovery_calls'] == 0
+          assert summary['non_temp_recovery_calls'] == 0
+          assert summary['symlink_escape_recovery_calls'] == 0
+          assert summary['repository_mutated'] is False
+          assert summary['live_kontur_activated'] is False
+          assert len(summary['vectors']) == 5
+          print('PASS: direct cores fail closed before Kernel/ledger mutation')
+          PY
+
+      - name: Confirm no repository or live-state mutation
+        run: |
+          test ! -e server/kontur/v0.1/.forbidden-test-ledger
+          test ! -e server/kontur/v0.1/responsibility-state.json
+          test ! -e server/kontur/v0.1/activation-execution-receipt.json
+          test ! -d server/kontur/v0.1/ledger
+          git diff --exit-code
+          git status --porcelain=v1 | grep -q '^??' && exit 1 || true
