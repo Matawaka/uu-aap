@@ -5,6 +5,7 @@ const fsp = fs.promises;
 const path = require('path');
 const cp = require('child_process');
 const Executor = require('./activation-executor.js');
+const Designation = require('./live-host-designation.js');
 const Host = require('./live-host-eligibility.js');
 
 const repoRoot = path.resolve(__dirname, '../../..');
@@ -45,15 +46,24 @@ async function main() {
   const evaluatedAt = iso(preflightMs + 500);
   const durableLedgerRoot = path.resolve(out, 'synthetic-persistent-ledger-fixture');
 
-  const profile = await Host.buildLiveHostProfile({
-    createdAt: iso(preflightMs - 2000),
+  const designation = await Designation.buildLiveHostDesignationDecision({
+    declaredAt: iso(preflightMs - 2500),
+    designatorRef: 'urn:uu-aap:human-actor:synthetic-test-designator',
     systemId: executionPolicy.system_id,
     serverInstanceId: executionPolicy.server_instance_id,
     hostId: 'urn:uu-aap:kontur:host:synthetic-live-gate-fixture',
-    operatorRef: 'urn:uu-aap:human-actor:synthetic-test-operator',
     repositoryRoot: repoRoot,
-    durableLedgerRoot
+    durableLedgerRoot,
+    typedConfirmation: 'DESIGNATE_KONTUR_LIVE_HOST',
+    nonce: `urn:uu-aap:kontur:live-host-designation-nonce:synthetic-executor-${gitSha.slice(0, 12)}`
   });
+  const profile = await Host.buildLiveHostProfile({
+    createdAt: iso(preflightMs - 2000),
+    designationDecision: designation
+  });
+  assert(profile.human_designation_binding.artifact_ref === designation.decision_id,
+    'synthetic profile did not bind explicit designation decision');
+
   const eligibility = await Host.evaluateLiveHostEligibility({
     profile,
     expectedGitRevision: currentGitRevision,
@@ -101,6 +111,8 @@ async function main() {
     'live command did not bind exact eligibility receipt');
   assert(liveCommand.live_host_eligibility_evidence.profile.profile_id === profile.profile_id,
     'live command did not embed exact host profile');
+  assert(liveCommand.live_host_eligibility_evidence.profile.human_designation_binding.artifact_ref === designation.decision_id,
+    'live command profile lost explicit human designation binding');
   assert(liveCommand.live_host_eligibility_evidence.receipt.receipt_id === eligibility.receipt_id,
     'live command did not embed exact host receipt');
 
@@ -147,6 +159,14 @@ async function main() {
       command: changed, currentGitRevision, intent, preflight, executionPolicy, evaluatedAt
     });
   }, /live host eligibility binding substitution/));
+
+  vectors.push(await reject('designation_binding_substitution_in_embedded_profile', async () => {
+    const changed = clone(liveCommand);
+    changed.live_host_eligibility_evidence.profile.human_designation_binding.digest.value = '0'.repeat(64);
+    await Executor.validateExecuteCommand({
+      command: changed, currentGitRevision, intent, preflight, executionPolicy, evaluatedAt
+    });
+  }, /human designation binding substitution/));
 
   vectors.push(await reject('external_embedded_eligibility_substitution', async () => {
     const changed = clone(eligibility);
@@ -224,11 +244,13 @@ async function main() {
     artifact_version: '0.1',
     git_revision: currentGitRevision,
     synthetic_fixture_only: true,
+    synthetic_human_designation_only: true,
     live_execute_invoked: false,
     kernel_activated: false,
     durable_ledger_written: false,
     positive_live_command_validated_in_memory_only: true,
     test_only_command_preserved: true,
+    designation_decision_id: designation.decision_id,
     vectors
   });
 
