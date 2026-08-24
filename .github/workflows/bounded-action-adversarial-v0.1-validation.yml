@@ -1,0 +1,26 @@
+name: Bounded Action Cross-Stage Adversarial Suite v0.1
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/bounded-action-e2e/v0.1/**'
+      - 'protocols/integration/bounded-action-adversarial/v0.1/**'
+      - '.github/workflows/bounded-action-adversarial-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/bounded-action-e2e/v0.1/**'
+      - 'protocols/integration/bounded-action-adversarial/v0.1/**'
+      - '.github/workflows/bounded-action-adversarial-v0.1-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Reject cross-stage replay substitution and escalation attacks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/integration/bounded-action-e2e/v0.1/validate-bounded-action-e2e.js
+      - run: node protocols/integration/bounded-action-adversarial/v0.1/validate-bounded-action-adversarial.js
