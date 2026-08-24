@@ -125,11 +125,10 @@ async function validateLiveHostProfile(profile) {
   assert(profile.runtime_boundary === 'host_local', `${label}: v0.1 permits only host_local runtime boundary`);
   assert(profile.identity_assurance === 'human_designated_not_cryptographically_verified', `${label}: identity assurance mismatch`);
 
-  assert(profile.operator_ref === designation.designator_ref,
-    `${label}: operator/designator identity drift`);
   assert(profile.system_id === designation.target.system_id &&
     profile.server_instance_id === designation.target.server_instance_id &&
     profile.host_id === designation.target.host_id &&
+    profile.operator_ref === designation.target.operator_ref &&
     profile.repository_full_name === designation.target.repository_full_name &&
     profile.repository_root === designation.target.repository_root &&
     profile.durable_ledger_root === designation.target.durable_ledger_root &&
@@ -169,7 +168,7 @@ async function buildLiveHostProfile({ createdAt, designationDecision }) {
     system_id: target.system_id,
     server_instance_id: target.server_instance_id,
     host_id: target.host_id,
-    operator_ref: designationDecision.designator_ref,
+    operator_ref: target.operator_ref,
     repository_full_name: target.repository_full_name,
     repository_root: target.repository_root,
     durable_ledger_root: target.durable_ledger_root,
