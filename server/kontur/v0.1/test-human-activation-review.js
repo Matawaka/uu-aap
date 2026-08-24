@@ -271,6 +271,45 @@ async function decisionArgs(packet, predecessorSet, overrides = {}) {
       nonce: 'urn:uu-aap:kontur:human-activation-review-nonce:different-but-same-packet'
     }));
   });
+  await mustReject('materially incomplete prior decision entry', async () => {
+    const malformedPrior = {
+      artifact_type: 'KONTURHumanActivationReviewDecision',
+      artifact_version: '0.1',
+      review_packet_binding: {
+        artifact_type: 'KONTURHumanActivationReviewPacket',
+        digest: {
+          canonicalization: 'RFC8785-JCS',
+          digest_algorithm: 'SHA-256',
+          digest_encoding: 'hex',
+          value: '9'.repeat(64)
+        }
+      },
+      human_declaration: {
+        nonce: 'urn:uu-aap:kontur:human-activation-review-nonce:malformed-prior'
+      }
+    };
+    await Review.buildReviewDecision(await decisionArgs(packet, predecessorSet, {
+      priorDecisions: [malformedPrior],
+      nonce: 'urn:uu-aap:kontur:human-activation-review-nonce:after-malformed-prior'
+    }));
+  });
+  await mustReject('prior decision unexpected top-level field', async () => {
+    const malformedPrior = clone(approve);
+    malformedPrior.unexpected = true;
+    await Review.buildReviewDecision(await decisionArgs(packet, predecessorSet, {
+      priorDecisions: [malformedPrior],
+      nonce: 'urn:uu-aap:kontur:human-activation-review-nonce:prior-extra-field'
+    }));
+  });
+  await mustReject('prior decision semantic coupling tamper', async () => {
+    const malformedPrior = clone(approve);
+    malformedPrior.safe_effect = 'no-action';
+    malformedPrior.review_packet_binding.digest.value = '8'.repeat(64);
+    await Review.buildReviewDecision(await decisionArgs(packet, predecessorSet, {
+      priorDecisions: [malformedPrior],
+      nonce: 'urn:uu-aap:kontur:human-activation-review-nonce:prior-semantic-tamper'
+    }));
+  });
 
   await mustReject('approval wrong typed confirmation', async () => {
     await Review.buildReviewDecision(await decisionArgs(packet, predecessorSet, {
