@@ -23,6 +23,7 @@ async function syntheticDesignation(overrides = {}) {
     systemId: overrides.systemId || 'urn:uu-aap:kontur:system:server-responsibility',
     serverInstanceId: overrides.serverInstanceId || 'urn:uu-aap:kontur:server:reference-primary',
     hostId: overrides.hostId || 'urn:uu-aap:kontur:host:synthetic-human-designated-primary',
+    operatorRef: overrides.operatorRef || 'urn:uu-aap:human-actor:synthetic-live-host-operator',
     repositoryRoot: overrides.repositoryRoot || 'C:\\KONTUR-LIVE\\uu-aap',
     durableLedgerRoot: overrides.durableLedgerRoot || 'C:\\ProgramData\\KONTUR\\responsibility-ledger',
     typedConfirmation: overrides.typedConfirmation || 'DESIGNATE_KONTUR_LIVE_HOST',
@@ -34,6 +35,8 @@ async function main() {
   const expectedGitRevision = `git:${'a'.repeat(40)}`;
   const designation = await syntheticDesignation();
   await Designation.validateLiveHostDesignationDecision(designation);
+  assert(designation.designator_ref !== designation.target.operator_ref,
+    'synthetic fixture must prove designator/operator separation');
 
   const profile = await Host.buildLiveHostProfile({
     createdAt: '2026-08-24T08:45:00.000Z',
@@ -44,8 +47,8 @@ async function main() {
     'profile must bind exact human designation decision');
   assert(profile.human_designation_evidence.decision_id === designation.decision_id,
     'profile must embed exact human designation evidence');
-  assert(profile.operator_ref === designation.designator_ref,
-    'profile operator_ref must derive from human designation');
+  assert(profile.operator_ref === designation.target.operator_ref,
+    'profile operator_ref must derive from designated operator target');
   assert(profile.repository_root === designation.target.repository_root &&
     profile.durable_ledger_root === designation.target.durable_ledger_root,
     'profile paths must derive from explicit designation target');
@@ -86,7 +89,7 @@ async function main() {
     systemId: designation.target.system_id,
     serverInstanceId: designation.target.server_instance_id,
     hostId: designation.target.host_id,
-    operatorRef: designation.designator_ref,
+    operatorRef: designation.target.operator_ref,
     repositoryRoot: designation.target.repository_root,
     durableLedgerRoot: designation.target.durable_ledger_root
   }), /object required|decision required|exact v0\.1 decision required/));
@@ -99,6 +102,12 @@ async function main() {
   tamperedDecision.target.host_id = 'urn:uu-aap:kontur:host:substituted';
   vectors.push(await reject('designation_decision_id_binding',
     () => Designation.validateLiveHostDesignationDecision(tamperedDecision),
+    /deterministic decision ID mismatch/));
+
+  const tamperedOperatorDecision = clone(designation);
+  tamperedOperatorDecision.target.operator_ref = 'urn:uu-aap:human-actor:substituted-operator';
+  vectors.push(await reject('designation_operator_binding',
+    () => Designation.validateLiveHostDesignationDecision(tamperedOperatorDecision),
     /deterministic decision ID mismatch/));
 
   const tamperedDecisionDeclarations = clone(designation);
@@ -123,6 +132,12 @@ async function main() {
   profileTargetTamper.repository_root = 'D:\\substituted-repository';
   vectors.push(await reject('profile_target_must_equal_designation',
     () => Host.validateLiveHostProfile(profileTargetTamper),
+    /profile target differs from explicit human designation/));
+
+  const profileOperatorTamper = clone(profile);
+  profileOperatorTamper.operator_ref = designation.designator_ref;
+  vectors.push(await reject('profile_operator_must_equal_designated_operator',
+    () => Host.validateLiveHostProfile(profileOperatorTamper),
     /profile target differs from explicit human designation/));
 
   const profileDeclarationTamper = clone(profile);
@@ -206,6 +221,7 @@ async function main() {
   console.log(JSON.stringify({
     status: 'PASS',
     designation_decision_id: designation.decision_id,
+    designator_operator_separated: designation.designator_ref !== designation.target.operator_ref,
     profile_id: profile.profile_id,
     eligible_receipt_id: eligible.receipt_id,
     sandbox_decision: sandbox.decision,
