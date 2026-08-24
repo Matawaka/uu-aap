@@ -4,6 +4,7 @@ const path = require('path');
 const Binding = require(path.resolve(__dirname, '../../../docs/poai/binding-receipt.js'));
 const Core = require('./activation-executor-core.js');
 const Host = require('./live-host-eligibility.js');
+const RuntimeHost = require('./live-host-runtime-observer.js');
 
 function assert(value, message) { if (!value) throw new Error(message); }
 function clone(value) { return JSON.parse(JSON.stringify(value)); }
@@ -38,6 +39,8 @@ function assertLiveHostPolicy(policy) {
   const req = policy.requirements || {};
   assert(req.live_host_eligibility_required_for_live_mode === true,
     'KONTUR Activation Executor: live host eligibility requirement weakened');
+  assert(req.live_host_runtime_reobservation_before_mutation === true,
+    'KONTUR Activation Executor: live host runtime re-observation requirement weakened');
   assert(req.live_ledger_root_matches_host_profile === true,
     'KONTUR Activation Executor: live ledger-root binding requirement weakened');
   assert(req.test_only_carries_no_live_host_eligibility === true,
@@ -101,6 +104,12 @@ async function assertLiveHostGate({
       'KONTUR Activation Executor: live ledger root differs from eligible host profile');
     assert(samePath(ledgerRoot, liveHostEligibilityReceipt.observations.observed_durable_ledger_root),
       'KONTUR Activation Executor: live ledger root differs from eligibility observation');
+    await RuntimeHost.assertRuntimeMatchesEligibilityReceipt({
+      profile: liveHostProfile,
+      receipt: liveHostEligibilityReceipt,
+      expectedGitRevision: currentGitRevision,
+      ledgerRoot
+    });
   }
 
   return {
