@@ -21,13 +21,14 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "system_id", "server_instance_id", "host_id", "repository_full_name",
+        "system_id", "server_instance_id", "host_id", "operator_ref", "repository_full_name",
         "repository_root", "durable_ledger_root", "runtime_boundary"
       ],
       "properties": {
         "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
         "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
         "host_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:host:"},
+        "operator_ref": {"type": "string", "minLength": 1},
         "repository_full_name": {"const": "Matawaka/uu-aap"},
         "repository_root": {"type": "string", "minLength": 1},
         "durable_ledger_root": {"type": "string", "minLength": 1},
