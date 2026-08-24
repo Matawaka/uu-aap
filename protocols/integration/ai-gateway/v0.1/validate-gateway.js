@@ -69,7 +69,7 @@ function validateObservation(o,r){
    if(!o.core_action_receipt_ref||o.core_action_receipt_ref.receipt_type!=='ActionReceipt')bad('performed effect without Core ActionReceipt');
    for(const x of o.actuator_evidence_refs)validateRef(x,'actuator evidence');
    validateRef(o.core_action_receipt_ref,'core action receipt');
-   if(o.core_action_receipt_ref.frontier!==o.observed_frontier)bad('Core ActionReceipt observed frontier mismatch');
+   if(o.core_action_receipt_ref.frontier!==o.predecessor_frontier)bad('Core ActionReceipt predecessor frontier mismatch');
    for(const x of o.actuator_evidence_refs)if(x.frontier!==o.observed_frontier)bad('actuator evidence observed frontier mismatch');
    if(o.outcome_receipt_ref){validateRef(o.outcome_receipt_ref,'outcome receipt');if(o.outcome_receipt_ref.frontier!==o.observed_frontier)bad('OutcomeReceipt observed frontier mismatch')}
    if(o.successor_state_receipt_ref){validateRef(o.successor_state_receipt_ref,'successor state receipt');if(o.successor_state_receipt_ref.frontier!==o.observed_frontier)bad('SuccessorStateReceipt observed frontier mismatch')}
@@ -96,7 +96,8 @@ const noPermit=mutate(R,x=>x.core_receipts=x.core_receipts.filter(y=>y.receipt_t
 reject('admissible without matching permit',()=>validateDecision(mutate(D,x=>{x.request_hash=noPermit.content_hash}),noPermit));
 reject('observe without actuator evidence',()=>validateObservation(mutate(O,x=>x.actuator_evidence_refs=[]),R));
 reject('observe without Core ActionReceipt',()=>validateObservation(mutate(O,x=>x.core_action_receipt_ref=null),R));
-reject('observe frontier mismatch',()=>validateObservation(mutate(O,x=>x.core_action_receipt_ref.frontier='sha256:wrong-observed-frontier'),R));
+reject('ActionReceipt successor frontier substitution',()=>validateObservation(mutate(O,x=>x.core_action_receipt_ref.frontier=x.observed_frontier),R));
+reject('actuator evidence predecessor frontier substitution',()=>validateObservation(mutate(O,x=>x.actuator_evidence_refs[0].frontier=x.predecessor_frontier),R));
 reject('gateway claims action performance',()=>validateObservation(mutate(O,x=>x.non_effects.action_performed_by_gateway=true),R));
 reject('observation proves causality',()=>validateObservation(mutate(O,x=>x.non_effects.causality_proven=true),R));
 reject('blanket protocol consent',()=>validateRequest(mutate(R,x=>x.protocol_mode_consent.blanket_action_approval=true)));
