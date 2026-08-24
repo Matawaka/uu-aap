@@ -327,14 +327,121 @@ function expectedDeclaration(decision) {
   throw new Error('Human Activation Review: unsupported decision');
 }
 
-function assertPriorDecisionEntry(entry) {
-  assert(entry && entry.artifact_type === 'KONTURHumanActivationReviewDecision' && entry.artifact_version === '0.1',
-    'Human Activation Review: malformed prior decision history entry');
-  assert(entry.review_packet_binding && entry.review_packet_binding.artifact_type === 'KONTURHumanActivationReviewPacket',
-    'Human Activation Review: malformed prior packet binding');
-  assertDigestShape(entry.review_packet_binding.digest, 'Human Activation Review: prior packet binding');
-  assert(entry.human_declaration && /^urn:uu-aap:kontur:human-activation-review-nonce:/.test(entry.human_declaration.nonce),
-    'Human Activation Review: malformed prior decision nonce');
+function expectedDecisionClaims(positive) {
+  return {
+    human_review_decision_recorded: true,
+    activation_intent_preparation_may_be_requested: positive,
+    activation_intent_created: false,
+    preflight_requested: false,
+    execute_command_created: false,
+    kernel_activated: false,
+    responsibility_state_created: false,
+    responsibility_accepted: false,
+    execution_authority_granted: false,
+    permission_expansion_authorized: false,
+    permission_bypass_authorized: false,
+    repository_ownership_transferred: false,
+    canonical_origin_mutated: false,
+    legal_authority_established: false,
+    truth_certified: false,
+    distributed_consensus_established: false
+  };
+}
+
+async function assertPriorDecisionEntry(entry) {
+  const label = 'Human Activation Review: prior decision';
+  assertExactKeys(entry, [
+    '$schema', 'artifact_type', 'artifact_version', 'decision_id', 'reviewed_at',
+    'review_packet_binding', 'reviewer_ref', 'decision', 'confirmations',
+    'human_declaration', 'review_context', 'safe_effect', 'claims'
+  ], label);
+  assert(/(^|.*\/)kontur-human-activation-review-decision\.schema\.json$/.test(entry.$schema),
+    `${label}: schema mismatch`);
+  assert(entry.artifact_type === 'KONTURHumanActivationReviewDecision' && entry.artifact_version === '0.1',
+    `${label}: exact KONTURHumanActivationReviewDecision v0.1 required`);
+  assert(/^urn:uu-aap:kontur:human-activation-review-decision:[0-9a-f]{24}$/.test(entry.decision_id),
+    `${label}: decision_id invalid`);
+  const reviewedMs = parseTime(entry.reviewed_at, 'prior decision reviewed_at');
+
+  assertBindingShape(
+    entry.review_packet_binding,
+    'KONTURHumanActivationReviewPacket',
+    /^urn:uu-aap:kontur:human-activation-review-packet:/,
+    `${label}: review packet binding`
+  );
+
+  assert(typeof entry.reviewer_ref === 'string' && entry.reviewer_ref.length > 0,
+    `${label}: reviewer_ref required`);
+
+  const expected = expectedDeclaration(entry.decision);
+
+  assertExactKeys(entry.confirmations, REQUIRED_CONFIRMATIONS, `${label}: confirmations`);
+  for (const key of REQUIRED_CONFIRMATIONS) {
+    if (expected.positive) {
+      assert(entry.confirmations[key] === true, `${label}: approval requires ${key}=true`);
+    } else {
+      assert(typeof entry.confirmations[key] === 'boolean', `${label}: confirmation ${key} must be boolean`);
+    }
+  }
+
+  assertExactKeys(
+    entry.human_declaration,
+    ['declaration_type', 'typed_confirmation', 'nonce', 'explicit'],
+    `${label}: human declaration`
+  );
+  assert(entry.human_declaration.declaration_type === expected.declaration_type,
+    `${label}: declaration_type mismatch`);
+  assert(entry.human_declaration.typed_confirmation === expected.typed_confirmation,
+    `${label}: typed_confirmation mismatch`);
+  assert(/^urn:uu-aap:kontur:human-activation-review-nonce:/.test(entry.human_declaration.nonce),
+    `${label}: nonce invalid`);
+  assert(entry.human_declaration.explicit === true, `${label}: declaration must be explicit`);
+
+  assertExactKeys(
+    entry.review_context,
+    [
+      'observed_current_git_revision', 'observed_at', 'packet_expires_at',
+      'prior_decisions_complete', 'prior_decision_count', 'replay_guard'
+    ],
+    `${label}: review context`
+  );
+  assert(/^git:[0-9a-f]{40}$/.test(entry.review_context.observed_current_git_revision),
+    `${label}: observed_current_git_revision invalid`);
+  const observedMs = parseTime(entry.review_context.observed_at, 'prior decision observed_at');
+  const expiresMs = parseTime(entry.review_context.packet_expires_at, 'prior decision packet_expires_at');
+  assert(observedMs >= reviewedMs, `${label}: observed_at predates reviewed_at`);
+  assert(reviewedMs <= expiresMs && observedMs <= expiresMs, `${label}: decision exceeds packet expiry`);
+  assert(entry.review_context.prior_decisions_complete === true,
+    `${label}: prior decision did not assert complete prior history`);
+  assert(Number.isSafeInteger(entry.review_context.prior_decision_count) && entry.review_context.prior_decision_count >= 0,
+    `${label}: prior_decision_count invalid`);
+  assertExactKeys(
+    entry.review_context.replay_guard,
+    ['nonce_not_seen', 'packet_not_previously_decided'],
+    `${label}: replay guard`
+  );
+  assert(entry.review_context.replay_guard.nonce_not_seen === true,
+    `${label}: nonce_not_seen must be true`);
+  assert(entry.review_context.replay_guard.packet_not_previously_decided === true,
+    `${label}: packet_not_previously_decided must be true`);
+
+  assert(entry.safe_effect === expected.safe_effect, `${label}: safe_effect mismatch`);
+  assertExactClaims(entry.claims, expectedDecisionClaims(expected.positive), `${label}: claims`);
+
+  const seed = [
+    entry.review_packet_binding.digest.value,
+    entry.reviewer_ref,
+    entry.decision,
+    entry.human_declaration.nonce,
+    entry.reviewed_at,
+    entry.review_context.observed_current_git_revision,
+    entry.review_context.observed_at
+  ].join('|');
+  const hash = await Binding.sha256Hex(Binding.utf8Bytes(seed));
+  assert(
+    entry.decision_id === `urn:uu-aap:kontur:human-activation-review-decision:${hash.slice(0, 24)}`,
+    `${label}: decision_id binding mismatch`
+  );
 }
 
 async function buildReviewDecision({
@@ -383,7 +490,7 @@ async function buildReviewDecision({
 
   const packetBinding = await binding('KONTURHumanActivationReviewPacket', reviewPacket.review_packet_id, reviewPacket);
   for (const prior of priorDecisions) {
-    assertPriorDecisionEntry(prior);
+    await assertPriorDecisionEntry(prior);
     assert(prior.human_declaration.nonce !== nonce, 'Human Activation Review: decision nonce replay detected');
     assert(prior.review_packet_binding.digest.value !== packetBinding.digest.value,
       'Human Activation Review: review packet already has a recorded decision');
@@ -429,24 +536,7 @@ async function buildReviewDecision({
       }
     },
     safe_effect: expected.safe_effect,
-    claims: {
-      human_review_decision_recorded: true,
-      activation_intent_preparation_may_be_requested: expected.positive,
-      activation_intent_created: false,
-      preflight_requested: false,
-      execute_command_created: false,
-      kernel_activated: false,
-      responsibility_state_created: false,
-      responsibility_accepted: false,
-      execution_authority_granted: false,
-      permission_expansion_authorized: false,
-      permission_bypass_authorized: false,
-      repository_ownership_transferred: false,
-      canonical_origin_mutated: false,
-      legal_authority_established: false,
-      truth_certified: false,
-      distributed_consensus_established: false
-    }
+    claims: expectedDecisionClaims(expected.positive)
   };
 }
 
