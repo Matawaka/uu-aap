@@ -321,6 +321,11 @@ async function validateActivationIntent(ctx) {
 }
 
 async function preflightActivation(ctx) {
+  const PublicPreflight = require('./activation-preflight.js');
+  assert(PublicPreflight && typeof PublicPreflight.validateActivationIntent === 'function',
+    'KONTUR Activation Preflight: public HAR gate unavailable');
+  await PublicPreflight.validateActivationIntent(ctx);
+
   const { intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy,
     responsibilityPolicy, activationPolicy, health, evaluatedAt,
     parallelActiveHolders = [], currentResponsibilityState = null } = ctx;
@@ -395,6 +400,11 @@ async function preflightActivation(ctx) {
 }
 
 async function validateActivationPreflightReceipt(ctx) {
+  const PublicPreflight = require('./activation-preflight.js');
+  assert(PublicPreflight && typeof PublicPreflight.validateActivationIntent === 'function',
+    'KONTUR Activation Preflight: public HAR gate unavailable');
+  await PublicPreflight.validateActivationIntent(ctx);
+
   const { receipt, intent, currentGitRevision, frontier, readinessSignal,
     aggregationPolicy, responsibilityPolicy, activationPolicy, health } = ctx;
   assert(receipt && receipt.artifact_type === 'KONTURActivationPreflightReceipt' && receipt.artifact_version === '0.1',
