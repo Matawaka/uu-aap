@@ -6,6 +6,7 @@
   "additionalProperties": false,
   "required": [
     "$schema", "artifact_type", "artifact_version", "profile_id", "created_at",
+    "human_designation_binding", "human_designation_evidence",
     "system_id", "server_instance_id", "host_id", "operator_ref",
     "repository_full_name", "repository_root", "durable_ledger_root",
     "runtime_boundary", "identity_assurance", "declarations", "claims"
@@ -16,6 +17,35 @@
     "artifact_version": {"const": "0.1"},
     "profile_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-profile:[0-9a-f]{24}$"},
     "created_at": {"type": "string", "format": "date-time"},
+    "human_designation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"const": "KONTURLiveHostDesignationDecision"},
+        "artifact_ref": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-designation-decision:[0-9a-f]{24}$"},
+        "digest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+          "properties": {
+            "canonicalization": {"const": "RFC8785-JCS"},
+            "digest_algorithm": {"const": "SHA-256"},
+            "digest_encoding": {"const": "hex"},
+            "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      }
+    },
+    "human_designation_evidence": {
+      "type": "object",
+      "required": ["artifact_type", "artifact_version", "decision_id"],
+      "properties": {
+        "artifact_type": {"const": "KONTURLiveHostDesignationDecision"},
+        "artifact_version": {"const": "0.1"},
+        "decision_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:live-host-designation-decision:[0-9a-f]{24}$"}
+      }
+    },
     "system_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:system:"},
     "server_instance_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:server:"},
     "host_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:host:"},
