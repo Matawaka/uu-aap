@@ -65,7 +65,7 @@ jobs:
           from pathlib import Path
           workflow = Path('.github/workflows/kontur-har-m3-decision-id-binding-v0.1-validation.yml').read_text(encoding='utf-8')
           implementation = Path('server/kontur/v0.1/human-activation-review.js').read_text(encoding='utf-8')
-          forbidden_workflow = ['contents' + ': write', 'git ' + 'push', 'merge_pull_request']
+          forbidden_workflow = ['contents' + ': write', 'git ' + 'push', 'merge' + '_pull_request']
           for token in forbidden_workflow:
               assert token not in workflow, token
           forbidden_impl = ['activation-executor', 'activation-preflight', 'responsibility-kernel', 'responsibility-ledger']
