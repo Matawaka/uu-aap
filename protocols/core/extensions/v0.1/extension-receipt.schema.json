@@ -5,16 +5,38 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "protocol", "version", "receipt_type", "extension_type", "subject", "frontier",
-    "predecessor_receipt_hashes", "assertions", "non_effects", "safe_effects", "core_binding",
-    "issuer", "issued_at", "payload", "content_hash"
+    "protocol",
+    "version",
+    "receipt_type",
+    "extension_type",
+    "subject",
+    "frontier",
+    "predecessor_receipt_hashes",
+    "assertions",
+    "non_effects",
+    "safe_effects",
+    "core_binding",
+    "issuer",
+    "issued_at",
+    "payload",
+    "content_hash"
   ],
   "properties": {
     "protocol": {"const": "UU-AAP-EXT"},
     "version": {"const": "0.1"},
     "receipt_type": {"const": "ExtensionReceipt"},
     "extension_type": {
-      "enum": ["pic", "appeal", "readiness", "circumstantial_provenance", "sustainability"]
+      "enum": [
+        "pic",
+        "appeal",
+        "readiness",
+        "circumstantial_provenance",
+        "sustainability",
+        "human_activation_review",
+        "activation_preflight",
+        "rescue_survival",
+        "durable_responsibility_ledger"
+      ]
     },
     "subject": {"type": "string", "minLength": 1},
     "frontier": {
@@ -47,9 +69,16 @@
           "type": "array",
           "items": {
             "enum": [
-              "StateReceipt", "AvailabilityClaim", "IntentReceipt", "AuthorityReceipt",
-              "ResponsibilityReceipt", "CoordinationReceipt", "ActionPermit", "ActionReceipt",
-              "OutcomeReceipt", "SuccessorStateReceipt"
+              "StateReceipt",
+              "AvailabilityClaim",
+              "IntentReceipt",
+              "AuthorityReceipt",
+              "ResponsibilityReceipt",
+              "CoordinationReceipt",
+              "ActionPermit",
+              "ActionReceipt",
+              "OutcomeReceipt",
+              "SuccessorStateReceipt"
             ]
           },
           "uniqueItems": true
