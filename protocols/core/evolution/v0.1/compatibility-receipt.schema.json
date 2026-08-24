@@ -85,7 +85,40 @@
         "freshness_not_upgraded": {"const": true}
       }
     },
-    "non_effects": {"type": "object"},
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intent_created",
+        "intent_inferred",
+        "authority_created",
+        "authority_expanded",
+        "responsibility_accepted",
+        "coordination_completed",
+        "action_permit_created",
+        "action_performed",
+        "frontier_refreshed",
+        "causality_proven",
+        "truth_certified",
+        "liability_established",
+        "universal_canonicality_established"
+      ],
+      "properties": {
+        "intent_created": {"const": false},
+        "intent_inferred": {"const": false},
+        "authority_created": {"const": false},
+        "authority_expanded": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "coordination_completed": {"const": false},
+        "action_permit_created": {"const": false},
+        "action_performed": {"const": false},
+        "frontier_refreshed": {"const": false},
+        "causality_proven": {"const": false},
+        "truth_certified": {"const": false},
+        "liability_established": {"const": false},
+        "universal_canonicality_established": {"const": false}
+      }
+    },
     "issuer": {"type": "string", "minLength": 1},
     "issued_at": {"type": "string", "format": "date-time"},
     "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}

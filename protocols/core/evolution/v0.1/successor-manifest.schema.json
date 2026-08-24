@@ -17,6 +17,8 @@
     "deprecations",
     "major_version_required",
     "rationale",
+    "conformance",
+    "independence",
     "issued_at",
     "content_hash"
   ],
@@ -107,6 +109,34 @@
     },
     "major_version_required": {"type": "boolean"},
     "rationale": {"type": "string", "minLength": 1},
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "positive_fixture_required",
+        "negative_fixture_required",
+        "cross_version_compatibility_vectors_required",
+        "action_gate_bypass_vectors_required",
+        "historical_non_reinterpretation_vectors_required"
+      ],
+      "properties": {
+        "positive_fixture_required": {"const": true},
+        "negative_fixture_required": {"const": true},
+        "cross_version_compatibility_vectors_required": {"const": true},
+        "action_gate_bypass_vectors_required": {"const": true},
+        "historical_non_reinterpretation_vectors_required": {"const": true}
+      }
+    },
+    "independence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["external_contour_required", "runtime_vendor_required", "kontur_required"],
+      "properties": {
+        "external_contour_required": {"const": false},
+        "runtime_vendor_required": {"const": false},
+        "kontur_required": {"const": false}
+      }
+    },
     "issued_at": {"type": "string", "format": "date-time"},
     "content_hash": {"type": "string", "pattern": "^[a-f0-9]{64}$"}
   }
