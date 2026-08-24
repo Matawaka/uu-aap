@@ -1,0 +1,52 @@
+{
+  "document_type": "uu-aap.kontur-audit-record",
+  "version": "0.1",
+  "audit_date": "2026-08-24",
+  "audited_frontier": {
+    "main_sha": "2a0fbd4d67e9db4913658da825336d2c4a8c2888",
+    "tree_sha": "db02276c32a374eb80bae1ed3701762a9dda7c92",
+    "parent_sha": "8a7f3d090cce6eeb4bbe3b281e6c1699fc7eb95e",
+    "revision_gate": "pass"
+  },
+  "report": {
+    "path": "audits/kontur/2026-08-24-main-2a0fbd4d/full-audit-report.md",
+    "sha256": "d25dff2ce7ace5936976f453123528dbc11de22f0e7e6ea0ad5d84e2659f74e7"
+  },
+  "final_bounded_conclusion": "READY_FOR_MORE_TESTING",
+  "remaining_findings": {
+    "high_or_critical": 0,
+    "medium": [
+      "Human Activation Review packet predecessor validation is incomplete, including confirmed checkpoint/frontier substitution acceptance.",
+      "Human Activation Review decision JSON Schema does not enforce decision/declaration/token/confirmation/safe-effect/claim coupling.",
+      "Human Activation Review decision construction shallowly revalidates its packet and does not enforce current-main freshness, packet expiry, timestamp order, or nonce replay protection."
+    ],
+    "low_summary": [
+      "reviewer_ref is declared identity only and is not cryptographically authenticated",
+      "packet/decision binding artifact_type values are not fixed to expected predecessor types",
+      "packet/decision timestamp ordering is not schema-constrained",
+      "30-day evidence retention weakens long-term independent availability"
+    ]
+  },
+  "evidence_access_gap": true,
+  "portability_gaps_observed": true,
+  "formal_human_activation_review_allowed_now": false,
+  "repository_change_required_before_formal_human_activation_review": true,
+  "kontur_state": {
+    "kernel_activated": false,
+    "live_responsibility_state_created": false,
+    "responsibility_accepted": false,
+    "execution_authority_granted": false,
+    "activation_intent_created": false,
+    "live_preflight_run": false,
+    "execute_command_created": false,
+    "live_executor_invoked": false
+  },
+  "boundary": {
+    "audit_record_is_activation_authorization": false,
+    "audit_record_is_activation": false,
+    "audit_record_is_execution_authority": false,
+    "audit_record_is_legal_liability_determination": false,
+    "audit_record_is_truth_certification": false,
+    "audit_record_is_canonical_succession": false
+  }
+}
