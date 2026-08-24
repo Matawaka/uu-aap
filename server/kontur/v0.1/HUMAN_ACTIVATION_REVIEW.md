@@ -23,9 +23,11 @@ No step in this document activates KONTUR.
 
 ## Why this layer exists
 
-Independent bounded KONTUR audit and targeted re-audit reached `READY_FOR_HUMAN_ACTIVATION_REVIEW` / `AUDIT_HARDENING_VERIFIED_READY_FOR_HUMAN_ACTIVATION_REVIEW` while preserving that readiness is not activation.
+Independent bounded KONTUR audit and targeted re-audit reached readiness for human activation review while preserving that readiness is not activation.
 
-Those audit conclusions motivate this review layer but are not silently converted into machine authority. Repository evidence and human decision remain distinct.
+The later long-run bounded audit recorded in `audits/kontur/2026-08-24-main-2a0fbd4d/` found three Medium defects in this review contract and concluded `READY_FOR_MORE_TESTING`. This contract was then hardened to address those findings without changing Activation Preflight, Activation Executor, Responsibility Kernel, or Durable Responsibility Ledger behavior.
+
+Audit evidence and human decision remain distinct. Audit remediation is not activation authorization.
 
 ## Review packet
 
@@ -33,7 +35,9 @@ Those audit conclusions motivate this review layer but are not silently converte
 
 - the exact `ProjectReadinessCheckpointReceipt v0.1` is established for the same Git revision;
 - the exact `KONTURCurrentMainFrontierVerificationReceipt v0.1` proves `push -> refs/heads/main` for that revision;
-- both predecessor artifacts still preserve the human activation boundary and deny activation/execution/ownership/legal/truth overclaims.
+- the checkpoint's own current-main verification binding exactly matches the supplied current-main verification receipt by artifact type, artifact reference, and RFC8785/JCS SHA-256 digest;
+- both predecessor artifacts still preserve the human activation boundary and deny activation/execution/ownership/legal/truth overclaims;
+- packet preparation occurs after both predecessor timestamps.
 
 The packet's strongest state is:
 
@@ -42,6 +46,8 @@ The packet's strongest state is:
 and its only safe next step is:
 
 `human_review_decision_only`
+
+The packet has a finite 24-hour validity interval. Expiry does not authorize refresh, inheritance, or fallback. A successor packet must be reconstructed from fresh predecessor evidence.
 
 The packet itself must keep false:
 
@@ -83,6 +89,8 @@ The decision artifact supports exactly three outcomes:
 - `defer`
 - `reject`
 
+The JSON Schema couples each outcome to its exact declaration type, typed confirmation, safe effect, and positive/negative claim. A syntactically valid but semantically contradictory decision must fail validation.
+
 A positive decision requires the exact typed confirmation:
 
 `APPROVE_KONTUR_ACTIVATION_INTENT_PREPARATION_ONLY`
@@ -94,6 +102,25 @@ Its strongest effect is only:
 It still does not create `KONTURActivationIntent`, run preflight, create an execute command, call the Responsibility Kernel, write the Durable Responsibility Ledger, or activate KONTUR.
 
 `defer` and `reject` both have `safe_effect = no-action`.
+
+## Decision-time revalidation
+
+Decision construction is not allowed to trust the packet by shape alone.
+
+It must:
+
+- revalidate the packet's complete bounded semantics;
+- reconstruct the packet from the exact checkpoint and current-main verification predecessors and require an identical RFC8785/JCS SHA-256 digest;
+- require a fresh observed current Git revision exactly equal to the packet revision;
+- require `prepared_at <= reviewed_at <= observed_at <= expires_at`;
+- fail after packet expiry;
+- require an explicit complete prior-decision history;
+- reject a reused decision nonce;
+- reject a second decision for a packet that already has a recorded prior decision.
+
+The review decision records this bounded context as `review_context`, including current revision observation, packet expiry, complete-history assertion, prior-decision count, and positive replay-guard results.
+
+This is fail-closed replay protection relative to the supplied complete decision history. It does not claim universal knowledge of decision artifacts outside that history.
 
 ## Permission ceiling
 
@@ -116,6 +143,19 @@ A successor packet must be produced from a fresh current-main frontier/checkpoin
 
 `reviewed once != current forever`
 
+## Single-decision packet boundary
+
+A packet is single-decision within the supplied complete decision history.
+
+```text
+packet prepared != decision recorded
+first decision recorded != permission to overwrite decision
+same nonce again != new decision
+same packet with different nonce != second decision
+```
+
+A changed human conclusion requires a successor review packet rather than mutation or replay of the prior packet.
+
 ## CI boundary
 
 The validation workflow may automatically generate a **review packet** on canonical `push` to `main`.
@@ -131,3 +171,18 @@ The workflow is read-only with respect to the repository and must not invoke:
 - GitHub/repository permission mutations.
 
 The human decision remains outside automatic CI execution.
+
+## Preserved non-equivalences
+
+```text
+readiness != activation
+review packet != human decision
+review approval != activation intent
+review approval != preflight
+review approval != execute command
+review approval != responsibility acceptance
+review approval != execution authority
+review approval != permission expansion
+review approval != legal liability
+review approval != truth certification
+```
