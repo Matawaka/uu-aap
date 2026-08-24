@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/ai-gateway/v0.1/gateway-observation-receipt.schema.json",
+  "title": "UU-AAP GatewayObservationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","request_hash","request_id","subject","predecessor_frontier","observed_frontier","external_effect_observed","actuator_evidence_refs","core_action_receipt_ref","outcome_receipt_ref","successor_state_receipt_ref","assertions","non_effects","observed_at","content_hash"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-GATEWAY"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "GatewayObservationReceipt"},
+    "request_hash": {"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "request_id": {"type":"string","minLength":1},
+    "subject": {"type":"string","minLength":1},
+    "predecessor_frontier": {"type":"string","minLength":1},
+    "observed_frontier": {"type":"string","minLength":1},
+    "external_effect_observed": {"type":"boolean"},
+    "actuator_evidence_refs": {
+      "type":"array",
+      "items":{"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}
+    },
+    "core_action_receipt_ref": {"anyOf":[{"type":"null"},{"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}]},
+    "outcome_receipt_ref": {"anyOf":[{"type":"null"},{"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}]},
+    "successor_state_receipt_ref": {"anyOf":[{"type":"null"},{"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}]},
+    "assertions": {
+      "type":"object","additionalProperties":false,
+      "required":["observation_not_execution","actuator_evidence_not_core_receipt","outcome_not_causality"],
+      "properties":{"observation_not_execution":{"const":true},"actuator_evidence_not_core_receipt":{"const":true},"outcome_not_causality":{"const":true}}
+    },
+    "non_effects": {
+      "type":"object","additionalProperties":false,
+      "required":["action_performed_by_gateway","frontier_refreshed","causality_proven","truth_certified","liability_established","universal_canonicality_established"],
+      "properties":{
+        "action_performed_by_gateway":{"const":false},
+        "frontier_refreshed":{"const":false},
+        "causality_proven":{"const":false},
+        "truth_certified":{"const":false},
+        "liability_established":{"const":false},
+        "universal_canonicality_established":{"const":false}
+      }
+    },
+    "observed_at":{"type":"string","format":"date-time"},
+    "content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  }
+}

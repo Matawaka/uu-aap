@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/ai-gateway/v0.1/gateway-decision-receipt.schema.json",
+  "title": "UU-AAP GatewayDecisionReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","request_hash","request_id","operation","subject","frontier","result","evidence_refs","assertions","non_effects","issued_at","content_hash"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-GATEWAY"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "GatewayDecisionReceipt"},
+    "request_hash": {"type":"string","pattern":"^[a-f0-9]{64}$"},
+    "request_id": {"type":"string","minLength":1},
+    "operation": {"enum":["inspect","qualify","authorize"]},
+    "subject": {"type":"string","minLength":1},
+    "frontier": {"type":"string","minLength":1},
+    "result": {"enum":["inspected","qualified","admissible","denied","approval_required"]},
+    "evidence_refs": {
+      "type":"array",
+      "items":{"type":"object","additionalProperties":false,"required":["receipt_type","content_hash","frontier"],"properties":{"receipt_type":{"type":"string","minLength":1},"content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"},"frontier":{"type":"string","minLength":1}}}
+    },
+    "assertions": {
+      "type":"object","additionalProperties":false,
+      "required":["exact_frontier_bound","core_action_gate_preserved","intent_evidence_not_substituted","protocol_mode_consent_not_blanket_approval"],
+      "properties": {
+        "exact_frontier_bound":{"const":true},
+        "core_action_gate_preserved":{"const":true},
+        "intent_evidence_not_substituted":{"const":true},
+        "protocol_mode_consent_not_blanket_approval":{"const":true}
+      }
+    },
+    "non_effects": {
+      "type":"object","additionalProperties":false,
+      "required":["intent_created","intent_inferred","authority_created","authority_expanded","responsibility_accepted","coordination_completed","action_permit_created","action_performed_by_gateway","frontier_refreshed","truth_certified","causality_proven","liability_established","universal_canonicality_established"],
+      "properties": {
+        "intent_created":{"const":false},
+        "intent_inferred":{"const":false},
+        "authority_created":{"const":false},
+        "authority_expanded":{"const":false},
+        "responsibility_accepted":{"const":false},
+        "coordination_completed":{"const":false},
+        "action_permit_created":{"const":false},
+        "action_performed_by_gateway":{"const":false},
+        "frontier_refreshed":{"const":false},
+        "truth_certified":{"const":false},
+        "causality_proven":{"const":false},
+        "liability_established":{"const":false},
+        "universal_canonicality_established":{"const":false}
+      }
+    },
+    "issued_at":{"type":"string","format":"date-time"},
+    "content_hash":{"type":"string","pattern":"^[a-f0-9]{64}$"}
+  }
+}
