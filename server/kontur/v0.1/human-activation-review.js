@@ -16,16 +16,80 @@ const REQUIRED_CONFIRMATIONS = [
   'activation_does_not_establish_legal_truth_or_universal_authority'
 ];
 
-const PACKET_FALSE_CLAIMS = [
-  'human_review_decision_recorded', 'activation_intent_preparation_authorized', 'activation_intent_created',
-  'preflight_requested', 'execute_command_created', 'kernel_activated', 'responsibility_state_created',
-  'responsibility_accepted', 'execution_authority_granted', 'permission_expansion_authorized',
-  'permission_bypass_authorized', 'repository_ownership_transferred', 'canonical_origin_mutated',
-  'legal_authority_established', 'truth_certified', 'distributed_consensus_established'
-];
+const CHECKPOINT_CLAIMS = {
+  cross_plane_integration_review_eligible: true,
+  current_main_frontier_verified: true,
+  project_readiness_checkpoint_established: true,
+  human_activation_step_still_required: true,
+  kontur_activation_authorized: false,
+  kontur_activated: false,
+  execution_authority_granted: false,
+  repository_ownership_transferred: false,
+  canonical_origin_mutated: false,
+  legal_authority_established: false,
+  truth_certified: false,
+  distributed_consensus_established: false,
+  universal_architecture_completeness_proven: false,
+  future_evolution_allowed: true
+};
+
+const CURRENT_MAIN_CLAIMS = {
+  workflow_context_is_main_push: true,
+  github_sha_matches_checkout_sha: true,
+  frontier_revision_matches_github_sha: true,
+  frontier_revision_matches_checkout_sha: true,
+  current_main_frontier_verified_for_workflow_event: true,
+  activation_prompt_may_be_requested: true,
+  human_activation_step_still_required: true,
+  kernel_activated: false,
+  responsibility_state_created: false,
+  responsibility_accepted: false,
+  execution_authority_granted: false,
+  repository_ownership_transferred: false,
+  canonical_origin_mutated: false,
+  legal_responsibility_determined: false,
+  truth_certified: false,
+  universal_canonicality_established: false
+};
+
+const PACKET_CLAIMS = {
+  project_readiness_checkpoint_verified: true,
+  current_main_frontier_verified: true,
+  human_activation_review_ready: true,
+  human_review_decision_recorded: false,
+  activation_intent_preparation_authorized: false,
+  activation_intent_created: false,
+  preflight_requested: false,
+  execute_command_created: false,
+  kernel_activated: false,
+  responsibility_state_created: false,
+  responsibility_accepted: false,
+  execution_authority_granted: false,
+  permission_expansion_authorized: false,
+  permission_bypass_authorized: false,
+  repository_ownership_transferred: false,
+  canonical_origin_mutated: false,
+  legal_authority_established: false,
+  truth_certified: false,
+  distributed_consensus_established: false
+};
 
 function assert(value, message) {
   if (!value) throw new Error(message);
+}
+
+function assertExactKeys(value, expectedKeys, label) {
+  assert(value && typeof value === 'object' && !Array.isArray(value), `${label}: object required`);
+  const actual = Object.keys(value).sort();
+  const expected = [...expectedKeys].sort();
+  assert(JSON.stringify(actual) === JSON.stringify(expected), `${label}: exact contract keys required`);
+}
+
+function assertExactClaims(actual, expected, label) {
+  assertExactKeys(actual, Object.keys(expected), label);
+  for (const [key, value] of Object.entries(expected)) {
+    assert(actual[key] === value, `${label}: claim ${key} mismatch`);
+  }
 }
 
 async function digestJson(value) {
@@ -50,16 +114,21 @@ async function binding(artifactType, artifactRef, artifact) {
 }
 
 function assertDigestShape(value, label) {
-  assert(value && value.canonicalization === 'RFC8785-JCS', `${label}: canonicalization mismatch`);
+  assertExactKeys(value, ['canonicalization', 'digest_algorithm', 'digest_encoding', 'value'], label);
+  assert(value.canonicalization === 'RFC8785-JCS', `${label}: canonicalization mismatch`);
   assert(value.digest_algorithm === 'SHA-256' && value.digest_encoding === 'hex', `${label}: digest algorithm mismatch`);
   assert(/^[0-9a-f]{64}$/.test(value.value), `${label}: invalid digest`);
 }
 
+function assertBindingShape(value, artifactType, artifactRefPattern, label) {
+  assertExactKeys(value, ['artifact_type', 'artifact_ref', 'digest'], label);
+  assert(value.artifact_type === artifactType, `${label}: artifact_type mismatch`);
+  assert(artifactRefPattern.test(value.artifact_ref), `${label}: artifact_ref mismatch`);
+  assertDigestShape(value.digest, `${label} digest`);
+}
+
 function assertBindingEquals(actual, expected, label) {
-  assert(actual && typeof actual === 'object', `${label}: binding required`);
-  assert(actual.artifact_type === expected.artifact_type, `${label}: artifact_type mismatch`);
-  assert(actual.artifact_ref === expected.artifact_ref, `${label}: artifact_ref mismatch`);
-  assertDigestShape(actual.digest, label);
+  assertBindingShape(actual, expected.artifact_type, new RegExp(`^${expected.artifact_ref.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`), label);
   assert(actual.digest.value === expected.digest.value, `${label}: digest mismatch`);
 }
 
@@ -70,47 +139,69 @@ function parseTime(value, label) {
 }
 
 function assertCheckpoint(checkpoint, gitRevision) {
-  assert(checkpoint && checkpoint.artifact_type === 'ProjectReadinessCheckpointReceipt' && checkpoint.artifact_version === '0.1',
+  assertExactKeys(checkpoint, [
+    '$schema', 'artifact_type', 'artifact_version', 'checkpoint_id', 'recorded_at', 'project_id',
+    'git_revision', 'convergence_manifest_binding', 'current_main_frontier_verification_binding',
+    'status', 'claims'
+  ], 'Human Activation Review: checkpoint');
+  assert(/(^|.*\/)project-readiness-checkpoint\.schema\.json$/.test(checkpoint.$schema),
+    'Human Activation Review: checkpoint schema mismatch');
+  assert(checkpoint.artifact_type === 'ProjectReadinessCheckpointReceipt' && checkpoint.artifact_version === '0.1',
     'Human Activation Review: exact ProjectReadinessCheckpointReceipt v0.1 required');
+  assert(/^urn:uu-aap:architecture:readiness-checkpoint:/.test(checkpoint.checkpoint_id),
+    'Human Activation Review: checkpoint id mismatch');
+  parseTime(checkpoint.recorded_at, 'checkpoint recorded_at');
   assert(checkpoint.project_id === 'Matawaka/uu-aap', 'Human Activation Review: checkpoint project mismatch');
   assert(checkpoint.git_revision === gitRevision, 'Human Activation Review: checkpoint revision drift');
+  assertBindingShape(
+    checkpoint.convergence_manifest_binding,
+    'ArchitectureConvergenceReadinessManifest',
+    /^schemas\/architecture\/v0\.1\/examples\/architecture-convergence-readiness\.example\.json$/,
+    'Human Activation Review: checkpoint convergence binding'
+  );
+  assertBindingShape(
+    checkpoint.current_main_frontier_verification_binding,
+    'KONTURCurrentMainFrontierVerificationReceipt',
+    /^urn:uu-aap:kontur:current-main-frontier-verification:/,
+    'Human Activation Review: checkpoint current-main binding'
+  );
   assert(checkpoint.status === 'project_readiness_checkpoint_established',
     'Human Activation Review: project readiness checkpoint not established');
-  const claims = checkpoint.claims || {};
-  assert(claims.project_readiness_checkpoint_established === true, 'Human Activation Review: checkpoint positive claim missing');
-  assert(claims.current_main_frontier_verified === true, 'Human Activation Review: current-main frontier not verified');
-  assert(claims.human_activation_step_still_required === true, 'Human Activation Review: human activation boundary missing');
-  for (const key of [
-    'kontur_activation_authorized', 'kontur_activated', 'execution_authority_granted',
-    'repository_ownership_transferred', 'canonical_origin_mutated', 'legal_authority_established',
-    'truth_certified', 'distributed_consensus_established', 'universal_architecture_completeness_proven'
-  ]) assert(claims[key] === false, `Human Activation Review: unsafe checkpoint claim ${key}`);
+  assertExactClaims(checkpoint.claims, CHECKPOINT_CLAIMS, 'Human Activation Review: checkpoint claims');
 }
 
 function assertCurrentMainVerification(receipt, gitRevision) {
-  assert(receipt && receipt.artifact_type === 'KONTURCurrentMainFrontierVerificationReceipt' && receipt.artifact_version === '0.1',
+  assertExactKeys(receipt, [
+    '$schema', 'artifact_type', 'artifact_version', 'verification_id', 'verified_at', 'repository',
+    'workflow_context', 'frontier_binding', 'frontier_git_revision', 'decision', 'claims'
+  ], 'Human Activation Review: current-main receipt');
+  assert(/(^|.*\/)kontur-current-main-frontier-verification\.schema\.json$/.test(receipt.$schema),
+    'Human Activation Review: current-main schema mismatch');
+  assert(receipt.artifact_type === 'KONTURCurrentMainFrontierVerificationReceipt' && receipt.artifact_version === '0.1',
     'Human Activation Review: exact current-main verification receipt required');
+  assert(/^urn:uu-aap:kontur:current-main-frontier-verification:/.test(receipt.verification_id),
+    'Human Activation Review: current-main verification id mismatch');
+  parseTime(receipt.verified_at, 'current-main verified_at');
   assert(receipt.repository === 'Matawaka/uu-aap', 'Human Activation Review: receipt repository mismatch');
-  assert(receipt.decision === 'current_main_frontier_verified_for_workflow_event',
-    'Human Activation Review: current-main frontier decision not verified');
-  assert(receipt.frontier_git_revision === gitRevision, 'Human Activation Review: frontier revision drift');
-  const ctx = receipt.workflow_context || {};
+  assertExactKeys(receipt.workflow_context, ['event_name', 'ref', 'github_sha', 'checkout_sha'],
+    'Human Activation Review: workflow context');
+  const ctx = receipt.workflow_context;
   assert(ctx.event_name === 'push' && ctx.ref === 'refs/heads/main',
     'Human Activation Review: canonical main push context required');
+  assert(/^[0-9a-f]{40}$/.test(ctx.github_sha) && /^[0-9a-f]{40}$/.test(ctx.checkout_sha),
+    'Human Activation Review: invalid workflow SHA');
   assert(`git:${ctx.github_sha}` === gitRevision && ctx.github_sha === ctx.checkout_sha,
     'Human Activation Review: workflow SHA drift');
-  const claims = receipt.claims || {};
-  assert(claims.current_main_frontier_verified_for_workflow_event === true,
-    'Human Activation Review: positive current-main verification claim required');
-  assert(claims.activation_prompt_may_be_requested === true,
-    'Human Activation Review: activation prompt eligibility missing');
-  assert(claims.human_activation_step_still_required === true,
-    'Human Activation Review: human activation step no longer required');
-  for (const key of [
-    'kernel_activated', 'responsibility_state_created', 'responsibility_accepted',
-    'execution_authority_granted', 'repository_ownership_transferred', 'canonical_origin_mutated',
-    'legal_responsibility_determined', 'truth_certified', 'universal_canonicality_established'
-  ]) assert(claims[key] === false, `Human Activation Review: unsafe frontier claim ${key}`);
+  assertBindingShape(
+    receipt.frontier_binding,
+    'KONTURActivationFrontierReceipt',
+    /^urn:uu-aap:kontur:activation-frontier:/,
+    'Human Activation Review: frontier binding'
+  );
+  assert(receipt.frontier_git_revision === gitRevision, 'Human Activation Review: frontier revision drift');
+  assert(receipt.decision === 'current_main_frontier_verified_for_workflow_event',
+    'Human Activation Review: current-main frontier decision not verified');
+  assertExactClaims(receipt.claims, CURRENT_MAIN_CLAIMS, 'Human Activation Review: current-main claims');
 }
 
 async function assertCheckpointBindsVerification(projectCheckpoint, currentMainVerification) {
@@ -128,16 +219,36 @@ async function assertCheckpointBindsVerification(projectCheckpoint, currentMainV
 }
 
 function assertReviewPacketSemantics(reviewPacket) {
-  assert(reviewPacket && reviewPacket.artifact_type === 'KONTURHumanActivationReviewPacket' && reviewPacket.artifact_version === '0.1',
+  assertExactKeys(reviewPacket, [
+    '$schema', 'artifact_type', 'artifact_version', 'review_packet_id', 'prepared_at', 'expires_at',
+    'project_id', 'git_revision', 'project_readiness_checkpoint_binding',
+    'current_main_frontier_verification_binding', 'required_human_confirmations', 'review_state',
+    'safe_next_step', 'claims'
+  ], 'Human Activation Review: review packet');
+  assert(/(^|.*\/)kontur-human-activation-review-packet\.schema\.json$/.test(reviewPacket.$schema),
+    'Human Activation Review: packet schema mismatch');
+  assert(reviewPacket.artifact_type === 'KONTURHumanActivationReviewPacket' && reviewPacket.artifact_version === '0.1',
     'Human Activation Review: exact review packet required');
+  assert(/^urn:uu-aap:kontur:human-activation-review-packet:/.test(reviewPacket.review_packet_id),
+    'Human Activation Review: packet id mismatch');
   assert(reviewPacket.project_id === 'Matawaka/uu-aap', 'Human Activation Review: packet project mismatch');
   assert(/^git:[0-9a-f]{40}$/.test(reviewPacket.git_revision), 'Human Activation Review: packet git revision invalid');
   const prepared = parseTime(reviewPacket.prepared_at, 'packet prepared_at');
   const expires = parseTime(reviewPacket.expires_at, 'packet expires_at');
   assert(expires > prepared, 'Human Activation Review: packet expiry must follow preparation');
   assert(expires - prepared === REVIEW_PACKET_TTL_MS, 'Human Activation Review: packet TTL mismatch');
-  assert(reviewPacket.review_state === 'ready_for_human_activation_review' && reviewPacket.safe_next_step === 'human_review_decision_only',
-    'Human Activation Review: packet not review-ready');
+  assertBindingShape(
+    reviewPacket.project_readiness_checkpoint_binding,
+    'ProjectReadinessCheckpointReceipt',
+    /^urn:uu-aap:architecture:readiness-checkpoint:/,
+    'Human Activation Review: packet checkpoint binding'
+  );
+  assertBindingShape(
+    reviewPacket.current_main_frontier_verification_binding,
+    'KONTURCurrentMainFrontierVerificationReceipt',
+    /^urn:uu-aap:kontur:current-main-frontier-verification:/,
+    'Human Activation Review: packet current-main binding'
+  );
   assert(Array.isArray(reviewPacket.required_human_confirmations), 'Human Activation Review: packet confirmations list required');
   assert(reviewPacket.required_human_confirmations.length === REQUIRED_CONFIRMATIONS.length,
     'Human Activation Review: packet confirmations list length mismatch');
@@ -145,21 +256,9 @@ function assertReviewPacketSemantics(reviewPacket) {
     assert(reviewPacket.required_human_confirmations[index] === key,
       `Human Activation Review: packet confirmation order/content mismatch at ${key}`);
   });
-  assert(reviewPacket.project_readiness_checkpoint_binding &&
-    reviewPacket.project_readiness_checkpoint_binding.artifact_type === 'ProjectReadinessCheckpointReceipt',
-  'Human Activation Review: packet checkpoint binding type mismatch');
-  assert(reviewPacket.current_main_frontier_verification_binding &&
-    reviewPacket.current_main_frontier_verification_binding.artifact_type === 'KONTURCurrentMainFrontierVerificationReceipt',
-  'Human Activation Review: packet current-main binding type mismatch');
-  assertDigestShape(reviewPacket.project_readiness_checkpoint_binding.digest, 'Human Activation Review: packet checkpoint binding');
-  assertDigestShape(reviewPacket.current_main_frontier_verification_binding.digest, 'Human Activation Review: packet current-main binding');
-  const claims = reviewPacket.claims || {};
-  assert(claims.project_readiness_checkpoint_verified === true, 'Human Activation Review: packet checkpoint claim missing');
-  assert(claims.current_main_frontier_verified === true, 'Human Activation Review: packet current-main claim missing');
-  assert(claims.human_activation_review_ready === true, 'Human Activation Review: packet review-ready claim missing');
-  for (const key of PACKET_FALSE_CLAIMS) {
-    assert(claims[key] === false, `Human Activation Review: unsafe packet claim ${key}`);
-  }
+  assert(reviewPacket.review_state === 'ready_for_human_activation_review' && reviewPacket.safe_next_step === 'human_review_decision_only',
+    'Human Activation Review: packet not review-ready');
+  assertExactClaims(reviewPacket.claims, PACKET_CLAIMS, 'Human Activation Review: packet claims');
 }
 
 async function buildReviewPacket({ projectCheckpoint, currentMainVerification, gitRevision, preparedAt }) {
@@ -196,27 +295,7 @@ async function buildReviewPacket({ projectCheckpoint, currentMainVerification, g
     required_human_confirmations: REQUIRED_CONFIRMATIONS.slice(),
     review_state: 'ready_for_human_activation_review',
     safe_next_step: 'human_review_decision_only',
-    claims: {
-      project_readiness_checkpoint_verified: true,
-      current_main_frontier_verified: true,
-      human_activation_review_ready: true,
-      human_review_decision_recorded: false,
-      activation_intent_preparation_authorized: false,
-      activation_intent_created: false,
-      preflight_requested: false,
-      execute_command_created: false,
-      kernel_activated: false,
-      responsibility_state_created: false,
-      responsibility_accepted: false,
-      execution_authority_granted: false,
-      permission_expansion_authorized: false,
-      permission_bypass_authorized: false,
-      repository_ownership_transferred: false,
-      canonical_origin_mutated: false,
-      legal_authority_established: false,
-      truth_certified: false,
-      distributed_consensus_established: false
-    }
+    claims: { ...PACKET_CLAIMS }
   };
 }
 
@@ -313,8 +392,8 @@ async function buildReviewDecision({
   const expected = expectedDeclaration(decision);
   assert(typedConfirmation === expected.typed_confirmation, 'Human Activation Review: typed confirmation mismatch');
   assert(confirmations && typeof confirmations === 'object', 'Human Activation Review: confirmations required');
+  assertExactKeys(confirmations, REQUIRED_CONFIRMATIONS, 'Human Activation Review: confirmations');
   for (const key of REQUIRED_CONFIRMATIONS) {
-    assert(Object.prototype.hasOwnProperty.call(confirmations, key), `Human Activation Review: missing confirmation ${key}`);
     if (expected.positive) assert(confirmations[key] === true, `Human Activation Review: approval requires ${key}=true`);
     else assert(typeof confirmations[key] === 'boolean', `Human Activation Review: confirmation ${key} must be boolean`);
   }
