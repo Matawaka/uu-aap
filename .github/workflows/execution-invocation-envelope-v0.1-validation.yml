@@ -1,0 +1,26 @@
+name: Execution Invocation Envelope v0.1 validation
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - '.github/workflows/execution-invocation-envelope-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - '.github/workflows/execution-invocation-envelope-v0.1-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    name: Bind one prospective invocation without invoking actuator
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node protocols/integration/execute-revalidation/v0.1/validate-execute-revalidation.js
+      - run: node protocols/integration/execution-invocation-envelope/v0.1/validate-invocation-envelope.js
