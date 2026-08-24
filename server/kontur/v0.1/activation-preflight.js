@@ -23,6 +23,27 @@ const HAR_CONFIRMATIONS = [
   'holder_scopes_and_lease_must_be_explicit_before_intent',
   'activation_does_not_establish_legal_truth_or_universal_authority'
 ];
+const HAR_PACKET_CLAIMS = {
+  project_readiness_checkpoint_verified: true,
+  current_main_frontier_verified: true,
+  human_activation_review_ready: true,
+  human_review_decision_recorded: false,
+  activation_intent_preparation_authorized: false,
+  activation_intent_created: false,
+  preflight_requested: false,
+  execute_command_created: false,
+  kernel_activated: false,
+  responsibility_state_created: false,
+  responsibility_accepted: false,
+  execution_authority_granted: false,
+  permission_expansion_authorized: false,
+  permission_bypass_authorized: false,
+  repository_ownership_transferred: false,
+  canonical_origin_mutated: false,
+  legal_authority_established: false,
+  truth_certified: false,
+  distributed_consensus_established: false
+};
 const HAR_DECISION_CLAIMS = {
   human_review_decision_recorded: true,
   activation_intent_preparation_may_be_requested: true,
@@ -263,15 +284,7 @@ function assertHumanActivationReviewPacket(packet, currentGitRevision) {
     'KONTUR Activation Preflight: HAR packet confirmations mismatch');
   assert(packet.review_state === 'ready_for_human_activation_review' && packet.safe_next_step === 'human_review_decision_only',
     'KONTUR Activation Preflight: HAR packet state mismatch');
-  assert(packet.claims && packet.claims.human_activation_review_ready === true &&
-    packet.claims.human_review_decision_recorded === false &&
-    packet.claims.activation_intent_preparation_authorized === false &&
-    packet.claims.activation_intent_created === false && packet.claims.preflight_requested === false &&
-    packet.claims.execute_command_created === false && packet.claims.kernel_activated === false &&
-    packet.claims.responsibility_state_created === false && packet.claims.responsibility_accepted === false &&
-    packet.claims.execution_authority_granted === false && packet.claims.permission_expansion_authorized === false &&
-    packet.claims.permission_bypass_authorized === false,
-    'KONTUR Activation Preflight: HAR packet assurance boundary invalid');
+  assertExactClaims(packet.claims, HAR_PACKET_CLAIMS, 'KONTUR Activation Preflight: HAR packet claims');
 }
 
 async function assertHumanActivationReviewApproval(packet, decision, currentGitRevision) {
@@ -284,6 +297,8 @@ async function assertHumanActivationReviewApproval(packet, decision, currentGitR
     'KONTUR Activation Preflight: exact HAR decision v0.1 required');
   assert(/^urn:uu-aap:kontur:human-activation-review-decision:[0-9a-f]{24}$/.test(decision.decision_id || ''),
     'KONTUR Activation Preflight: invalid HAR decision ID');
+  assert(typeof decision.reviewer_ref === 'string' && decision.reviewer_ref.length > 0,
+    'KONTUR Activation Preflight: HAR reviewer_ref required');
   assert(decision.decision === 'approve_intent_preparation' &&
     decision.safe_effect === 'activation_intent_preparation_may_be_requested',
     'KONTUR Activation Preflight: HAR did not approve intent preparation');
@@ -303,10 +318,11 @@ async function assertHumanActivationReviewApproval(packet, decision, currentGitR
   ], 'KONTUR Activation Preflight: HAR review context');
   assert(decision.review_context.observed_current_git_revision === currentGitRevision,
     'KONTUR Activation Preflight: HAR decision revision drift');
+  const prepared = parseTime(packet.prepared_at, 'HAR packet prepared_at');
   const reviewed = parseTime(decision.reviewed_at, 'HAR decision reviewed_at');
   const observed = parseTime(decision.review_context.observed_at, 'HAR decision observed_at');
   const expires = parseTime(packet.expires_at, 'HAR packet expires_at');
-  assert(observed >= reviewed && reviewed <= expires && observed <= expires &&
+  assert(reviewed >= prepared && observed >= reviewed && reviewed <= expires && observed <= expires &&
     decision.review_context.packet_expires_at === packet.expires_at,
     'KONTUR Activation Preflight: HAR decision time/expiry mismatch');
   assert(decision.review_context.prior_decisions_complete === true &&
@@ -399,6 +415,10 @@ async function buildActivationIntent(args) {
     aggregation_policy_binding: aggregationBinding, responsibility_policy_binding: responsibilityBinding,
     activation_policy_binding: activationBinding,
     human_activation_review_decision_binding: harDecisionBinding,
+    human_activation_review_evidence: {
+      review_packet: clone(humanActivationReviewPacket),
+      decision: clone(humanActivationReviewDecision)
+    },
     health_binding: healthBinding,
     holder_id: holderId, responsibility_scopes: scopes, lease: clone(lease),
     human_intent: {
@@ -421,18 +441,31 @@ async function buildActivationIntent(args) {
 
 async function validateActivationIntent({
   intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy,
-  activationPolicy, humanActivationReviewPacket, humanActivationReviewDecision, health
+  activationPolicy, humanActivationReviewPacket = null, humanActivationReviewDecision = null, health
 }) {
   assert(intent && intent.artifact_type === 'KONTURActivationIntent' && intent.artifact_version === '0.1',
     'KONTUR Activation Preflight: exact activation intent v0.1 required');
   assert(intendedKeys(intent), 'KONTUR Activation Preflight: activation intent exact contract keys required');
+  assertExactKeys(intent.human_activation_review_evidence, ['review_packet', 'decision'],
+    'KONTUR Activation Preflight: embedded HAR evidence');
+  const embeddedPacket = intent.human_activation_review_evidence.review_packet;
+  const embeddedDecision = intent.human_activation_review_evidence.decision;
+  if (humanActivationReviewPacket !== null) {
+    assert(await digestJson(humanActivationReviewPacket) === await digestJson(embeddedPacket),
+      'KONTUR Activation Preflight: external/embedded HAR packet substitution');
+  }
+  if (humanActivationReviewDecision !== null) {
+    assert(await digestJson(humanActivationReviewDecision) === await digestJson(embeddedDecision),
+      'KONTUR Activation Preflight: external/embedded HAR decision substitution');
+  }
+
   const declaredMs = parseTime(intent.declared_at, 'intent declared_at');
   assertActivationPolicy(activationPolicy, declaredMs);
   assertAggregationPolicy(aggregationPolicy, activationPolicy);
   assertResponsibilityPolicy(responsibilityPolicy, activationPolicy);
   assertFrontier(frontier, currentGitRevision, activationPolicy);
   await assertFrontierBindings(frontier, readinessSignal, aggregationPolicy, responsibilityPolicy);
-  await assertHumanActivationReviewApproval(humanActivationReviewPacket, humanActivationReviewDecision, currentGitRevision);
+  await assertHumanActivationReviewApproval(embeddedPacket, embeddedDecision, currentGitRevision);
   assertReadiness(readinessSignal, activationPolicy, declaredMs, frontier.readiness_epoch);
   assertHealth(health, activationPolicy, declaredMs);
   assert(intent.intended_transition === 'activate', 'KONTUR Activation Preflight: transition substitution');
@@ -453,7 +486,7 @@ async function validateActivationIntent({
     'KONTUR Activation Preflight: intent activation policy binding substitution');
   assert(sameBinding(
     intent.human_activation_review_decision_binding,
-    await binding('KONTURHumanActivationReviewDecision', humanActivationReviewDecision.decision_id, humanActivationReviewDecision)
+    await binding('KONTURHumanActivationReviewDecision', embeddedDecision.decision_id, embeddedDecision)
   ), 'KONTUR Activation Preflight: intent HAR decision binding substitution');
   assert(sameBinding(intent.health_binding, await binding('KONTURServerHealthObservation', health.observation_id, health)),
     'KONTUR Activation Preflight: intent health binding substitution');
@@ -488,15 +521,15 @@ function intendedKeys(intent) {
     '$schema', 'artifact_type', 'artifact_version', 'intent_id', 'declared_at', 'intended_transition',
     'git_revision', 'system_id', 'server_instance_id', 'readiness_epoch', 'fencing_epoch',
     'frontier_binding', 'readiness_signal_binding', 'aggregation_policy_binding', 'responsibility_policy_binding',
-    'activation_policy_binding', 'human_activation_review_decision_binding', 'health_binding', 'holder_id',
-    'responsibility_scopes', 'lease', 'human_intent', 'claims'
+    'activation_policy_binding', 'human_activation_review_decision_binding', 'human_activation_review_evidence',
+    'health_binding', 'holder_id', 'responsibility_scopes', 'lease', 'human_intent', 'claims'
   ].sort();
   return JSON.stringify(Object.keys(intent).sort()) === JSON.stringify(expected);
 }
 
 async function preflightActivation({
   intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy, responsibilityPolicy,
-  activationPolicy, humanActivationReviewPacket, humanActivationReviewDecision, health,
+  activationPolicy, humanActivationReviewPacket = null, humanActivationReviewDecision = null, health,
   evaluatedAt, parallelActiveHolders, currentResponsibilityState
 }) {
   const evaluatedMs = parseTime(evaluatedAt, 'evaluated_at');
@@ -542,7 +575,8 @@ async function preflightActivation({
 
 async function validateActivationPreflightReceipt({
   receipt, intent, currentGitRevision, frontier, readinessSignal, aggregationPolicy,
-  responsibilityPolicy, activationPolicy, humanActivationReviewPacket, humanActivationReviewDecision, health
+  responsibilityPolicy, activationPolicy, humanActivationReviewPacket = null,
+  humanActivationReviewDecision = null, health
 }) {
   assert(receipt && receipt.artifact_type === 'KONTURActivationPreflightReceipt' && receipt.artifact_version === '0.1',
     'KONTUR Activation Preflight: exact preflight receipt v0.1 required');
