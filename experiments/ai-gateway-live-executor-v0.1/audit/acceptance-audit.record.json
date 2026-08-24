@@ -1,0 +1,63 @@
+{
+  "protocol": "UU-AAP-AI-GATEWAY-LIVE-ACCEPTANCE-AUDIT",
+  "version": "0.1",
+  "artifact_type": "LiveAcceptanceAuditRecord",
+  "experiment_issue": 332,
+  "target_issue": 337,
+  "remediation_issue": 339,
+  "target": {
+    "repository": "Matawaka/uu-aap",
+    "pr_number": 338,
+    "expected_head_sha": "c53871937767f33919453c47dc667351455447f2",
+    "expected_base_sha": "da0f964e39f83849ea9ddb34daef5839cb57f66f",
+    "merge_method": "squash",
+    "marker_path": "experiments/ai-gateway-live-executor-v0.1/acceptance-target.json"
+  },
+  "authorization": {
+    "approval_text_sha256": "sha256:71f6d6e2ce0f8bad41b02ba112e8480720414a3ef796b1fa7743941980bfbcd9",
+    "action_specific": true,
+    "general_authority_granted": false,
+    "future_action_authorized": false
+  },
+  "pre_execution_evidence": {
+    "preparation_issue_comment_id": 5398589449,
+    "main_before": "da0f964e39f83849ea9ddb34daef5839cb57f66f",
+    "pr_open": true,
+    "mergeable": true,
+    "target_head_actions_success": true,
+    "persisted_gateway_decision_receipt": false,
+    "persisted_core_action_permit": false,
+    "durable_typed_pre_action_bundle_complete": false
+  },
+  "execution": {
+    "expected_head_guard_used": true,
+    "merge_result": "merged",
+    "merge_commit_sha": "7fc2d1a459fa0e494e97b33491aa9ae984ebe3e5",
+    "merged_at": "2026-08-24T17:13:33Z"
+  },
+  "observation": {
+    "post_action_issue_comment_id": 5398745177,
+    "main_after": "7fc2d1a459fa0e494e97b33491aa9ae984ebe3e5",
+    "successor_parent": "da0f964e39f83849ea9ddb34daef5839cb57f66f",
+    "commit_signature_verified": true,
+    "commit_signature_reason": "valid",
+    "marker_present": true,
+    "marker_blob_sha": "be93850ff9bdbe024f9b135f1d746dd96da13683"
+  },
+  "assessment": {
+    "status": "partial_acceptance",
+    "actuator_frontier_acceptance": true,
+    "durable_pre_action_provenance_acceptance": false,
+    "full_protocol_acceptance": false,
+    "post_hoc_permit_forbidden": true
+  },
+  "non_effects": {
+    "causality_proven": false,
+    "truth_certified": false,
+    "liability_established": false,
+    "general_authority_created": false,
+    "future_action_permission_created": false
+  },
+  "audit_generated_at": "2026-08-24T17:16:27Z",
+  "content_hash": "sha256:70547fe1c2d45a1e83c73333396f601de0745c6ee6f55a22740553505d952f96"
+}
