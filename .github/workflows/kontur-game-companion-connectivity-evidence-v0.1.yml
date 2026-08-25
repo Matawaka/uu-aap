@@ -1,0 +1,34 @@
+name: KONTUR Game Companion connectivity evidence v0.1
+
+on:
+  pull_request:
+    paths:
+      - "protocols/core/v0.1/**"
+      - "pilots/kontur-game-companion/**"
+      - ".github/workflows/core-protocol-v0.1-validation.yml"
+      - ".github/workflows/kontur-game-companion-*.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/core/v0.1/**"
+      - "pilots/kontur-game-companion/**"
+      - ".github/workflows/core-protocol-v0.1-validation.yml"
+      - ".github/workflows/kontur-game-companion-*.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate exact Game Companion connectivity evidence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify artifact bindings and non-authority boundaries
+        run: node pilots/kontur-game-companion/connectivity-evidence/v0.1/validate-game-companion-connectivity.js
+
+
