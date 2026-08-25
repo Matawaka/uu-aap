@@ -124,7 +124,8 @@
             "PATENT_CANDIDATE_REVIEW_REQUIRED",
             "PATENT_FILING_FIRST",
             "PATENT_DECLINED_THEN_PUBLISH",
-            "ALREADY_PUBLIC_DISCLOSURE_REVIEW_REQUIRED"
+            "ALREADY_PUBLIC_DISCLOSURE_REVIEW_REQUIRED",
+            "SEPARATE_PATENT_TRACK"
           ]
         },
         "reviewed_at": {"type": ["string", "null"], "format": "date-time"},

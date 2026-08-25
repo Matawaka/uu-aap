@@ -1,0 +1,48 @@
+{
+  "record_version": "0.1",
+  "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
+  "title_ru": "Валидатор цепочек квитанций UU-AAP Core v0.1",
+  "title_en": "UU-AAP Core v0.1 Receipt Chain Validator",
+  "freeze_frontier": "8aec7684a54e2570c285720a22d30d99f958131a",
+  "first_public_disclosure": "2026-08-24T19:01:17+05:00",
+  "patent_screen": {
+    "software_registration_scope": "PROGRAM_EXPRESSION_ONLY",
+    "public_disclosure_status": "ALREADY_PUBLIC",
+    "separate_patent_track_issue": 492,
+    "technical_patent_rights_effect": "PRESERVED_FOR_SEPARATE_REVIEW"
+  },
+  "programming_languages": [
+    "JavaScript (Node.js)"
+  ],
+  "program_size_bytes": 15144,
+  "deposit_support_size_bytes": 12240,
+  "deposit_total_size_bytes": 27384,
+  "canonicalization": "UU-AAP-DEPOSIT-INVENTORY-v0.1",
+  "package_digest_algorithm": "SHA-256",
+  "package_digest": "sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8",
+  "files": [
+    {
+      "path": "protocols/core/v0.1/end-to-end.fixture.json",
+      "role": "CONFORMANCE_FIXTURE",
+      "size_bytes": 9661,
+      "git_blob_sha1": "9ed65bfae43f157f6fb051bf6460ebaec13ea480",
+      "sha256": "1f570095355dbef1b87a33edd11c69ec9a6a58ac2756420df7b0e022fa8e3fc5"
+    },
+    {
+      "path": "protocols/core/v0.1/receipt-envelope.schema.json",
+      "role": "IDENTIFYING_SCHEMA",
+      "size_bytes": 2579,
+      "git_blob_sha1": "38d2d439ad6a1065da96cc9e5f2190734fd2cd7b",
+      "sha256": "1e8c38e31975617ac4ce89bda39347423f0cc56c346abd1350980663ddba3f65"
+    },
+    {
+      "path": "protocols/core/v0.1/validate-core.js",
+      "role": "PROGRAM_SOURCE",
+      "size_bytes": 15144,
+      "git_blob_sha1": "19b8cc90f34ad2eb3819d02d6335f584c65caa46",
+      "sha256": "4315bc0661698de4946a0f24478c8f98dcdfadca7289178a04e436232acd5fd7"
+    }
+  ],
+  "abstract_ru": "Валидатор цепочек квитанций UU-AAP Core v0.1 предназначен для проверки машиночитаемых цепочек квитанций протокола UU-AAP Core. Программа проверяет структуру квитанций, типы семи протокольных примитивов, связи с предшествующими квитанциями, контрольные хэши, утверждения и явно заданные non-effects, а также fail-closed условия переходов от состояния через возможность, намерение, полномочия/ответственность, координацию и действие к результату и последующему состоянию. Область применения: системы provenance, accountability и доказуемого взаимодействия человека, искусственного интеллекта и цифровых сервисов. Язык программирования: JavaScript (Node.js). Объем программы: 15144 байта.",
+  "abstract_characters": 685
+}
