@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-001:action-permit:v0.1",
+  "title": "Core Pilot 001 Action Permit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","pilot_id","permit_id","single_use","origin","destinations","allowed_effects","forbidden_effects","human_authorized"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "pilot_id": {"const": "core-pilot-001"},
+    "permit_id": {"type": "string", "minLength": 1},
+    "single_use": {"const": true},
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository","main_commit","main_tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "main_commit": {"const": "9ed03f99d4ccab7896b62664ecd273f2919c5bb8"},
+        "main_tree": {"const": "3719b1a3a4d785b1f9a58586e8b1fa7cefa954fb"}
+      }
+    },
+    "destinations": {
+      "type": "object", "additionalProperties": false,
+      "required": ["continuity_root","recovery_root"],
+      "properties": {
+        "continuity_root": {"type": "string", "minLength": 1},
+        "recovery_root": {"type": "string", "minLength": 1}
+      }
+    },
+    "allowed_effects": {
+      "type": "array", "uniqueItems": true,
+      "items": {"enum": ["read_canonical_git","write_local_continuity_root","write_disposable_recovery_root","compute_verification_evidence"]},
+      "allOf": [
+        {"contains":{"const":"read_canonical_git"}},
+        {"contains":{"const":"write_local_continuity_root"}},
+        {"contains":{"const":"write_disposable_recovery_root"}},
+        {"contains":{"const":"compute_verification_evidence"}}
+      ], "minItems": 4, "maxItems": 4
+    },
+    "forbidden_effects": {
+      "type": "array", "uniqueItems": true,
+      "items": {"enum": ["git_push","remote_ref_mutation","github_settings_mutation","permission_or_secret_mutation","release_or_tag_creation","canonical_worktree_write","kontur_activation_or_mutation","authority_transfer","permit_reuse"]},
+      "minItems": 9, "maxItems": 9
+    },
+    "human_authorized": {"const": true}
+  }
+}
