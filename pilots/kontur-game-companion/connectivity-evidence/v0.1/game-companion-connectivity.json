@@ -1,0 +1,450 @@
+{
+  "protocol": "UU-AAP-KONTUR-GAME-COMPANION-CONNECTIVITY-EVIDENCE",
+  "version": "0.1",
+  "artifact_type": "GameCompanionConnectivityEvidence",
+  "evidence_frontier": {
+    "observed_main_sha": "d8500cdcbf9355cce71ce52beaea01c70e1a1c54",
+    "source_issue": 445,
+    "source_audit_pr": 458,
+    "source_audit_frontier": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+    "generated_at": "2026-08-26T00:00:00+05:00"
+  },
+  "stable_direction": [
+    "State / Evidence Anchor",
+    "Possibility / Availability",
+    "Intent",
+    "Authority / Responsibility",
+    "Coordination / CCRP",
+    "Action Gate",
+    "Outcome / Provenance / Successor State"
+  ],
+  "layers": [
+    {
+      "id": "stable-core",
+      "layer_class": "stable-primitive",
+      "predecessor_layer": null,
+      "origin_pr": null,
+      "origin_commit": null,
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "protocols/core/v0.1/README.md",
+          "git_blob_sha": "290483f9704704160337d5c06800f3e66d32e05a"
+        },
+        {
+          "role": "fixture",
+          "path": "protocols/core/v0.1/end-to-end.fixture.json",
+          "git_blob_sha": "9ed65bfae43f157f6fb051bf6460ebaec13ea480"
+        },
+        {
+          "role": "validator",
+          "path": "protocols/core/v0.1/validate-core.js",
+          "git_blob_sha": "19b8cc90f34ad2eb3819d02d6335f584c65caa46"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/core-protocol-v0.1-validation.yml",
+          "git_blob_sha": "e0fb67c575230f37217c1df51cf82b7c19872177"
+        }
+      ]
+    },
+    {
+      "id": "observational-lane",
+      "layer_class": "optional-synthetic-pilot",
+      "predecessor_layer": "stable-core",
+      "origin_pr": 446,
+      "origin_commit": "75c150a192db68d0c167d2408bd436e54b71d475",
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "pilots/kontur-game-companion/observational-lane/README.md",
+          "git_blob_sha": "504f036ba65d11ce9c643e6118c7827c09ec4318"
+        },
+        {
+          "role": "fixture",
+          "path": "pilots/kontur-game-companion/observational-lane/observation-cases.json",
+          "git_blob_sha": "8e7d7f2b2a2501751ff2735ff2f6b63014efcae5"
+        },
+        {
+          "role": "validator",
+          "path": "pilots/kontur-game-companion/observational-lane/validate.py",
+          "git_blob_sha": "2fe7932c03b480e1f97c2dc51d52cd83d7516497"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/kontur-game-companion-observational-lane.yml",
+          "git_blob_sha": "c525fb7ed4536e35508f2a271d29de7aa8754d3d"
+        }
+      ]
+    },
+    {
+      "id": "assistance-gate",
+      "layer_class": "optional-synthetic-pilot",
+      "predecessor_layer": "observational-lane",
+      "origin_pr": 452,
+      "origin_commit": "3fc4b66d6eebe90321baea3c92dbad80f3b0afc0",
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "pilots/kontur-game-companion/assistance-gate/README.md",
+          "git_blob_sha": "bf6e603f85da7e1c6f52f22bf98e47340f8e5cc9"
+        },
+        {
+          "role": "fixture",
+          "path": "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json",
+          "git_blob_sha": "d5846047d9e362ea7ff707cfe811e1c43c4166fe"
+        },
+        {
+          "role": "validator",
+          "path": "pilots/kontur-game-companion/assistance-gate/validate.py",
+          "git_blob_sha": "ea9a614516202a49ebebe0b3aeaa55bd0095830d"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/kontur-game-companion-assistance-gate.yml",
+          "git_blob_sha": "68709230748c0541d3a361a7191c0fb5f54fbaa3"
+        }
+      ]
+    },
+    {
+      "id": "shared-discovery-memory",
+      "layer_class": "optional-synthetic-pilot",
+      "predecessor_layer": "assistance-gate",
+      "origin_pr": 453,
+      "origin_commit": "b3df9ac63171e6596421a5e7e1dd20cb6a5df615",
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+          "git_blob_sha": "025e0eaf768e28a596febedf7a7fef3951b7e838"
+        },
+        {
+          "role": "fixture",
+          "path": "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json",
+          "git_blob_sha": "206b5d359374c0defece459e07acd26377d5e34e"
+        },
+        {
+          "role": "validator",
+          "path": "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+          "git_blob_sha": "80aadcc0170619dfadc5718fd082e4ab67feda91"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/kontur-game-companion-shared-discovery-memory.yml",
+          "git_blob_sha": "5a7a1bcca8cf1c74566991aae86a07138cac92fb"
+        }
+      ]
+    },
+    {
+      "id": "bounded-initiative",
+      "layer_class": "optional-synthetic-pilot",
+      "predecessor_layer": "shared-discovery-memory",
+      "origin_pr": 454,
+      "origin_commit": "282f1320b8fffbb1f4beb388082ec8d59924f67a",
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "pilots/kontur-game-companion/bounded-initiative/README.md",
+          "git_blob_sha": "0dcf5d4b3022b5cec35e59ba62fd23e81a17628b"
+        },
+        {
+          "role": "fixture",
+          "path": "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+          "git_blob_sha": "7b41e188842dd3bdba6cfc6d82e1da33c659c295"
+        },
+        {
+          "role": "validator",
+          "path": "pilots/kontur-game-companion/bounded-initiative/validate.py",
+          "git_blob_sha": "755b9226ce804dbfd577ee51cb0a0fc9306af135"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/kontur-game-companion-bounded-initiative.yml",
+          "git_blob_sha": "48ce6a9875ee6db59b38c4a75152fdb173687b88"
+        }
+      ]
+    },
+    {
+      "id": "focus-diversity",
+      "layer_class": "optional-synthetic-pilot",
+      "predecessor_layer": "bounded-initiative",
+      "origin_pr": 455,
+      "origin_commit": "b45eaf9ba8864023d822340181ae129f1245beb1",
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "pilots/kontur-game-companion/focus-diversity/README.md",
+          "git_blob_sha": "86ab858f84381dbeb164632d5bbd8ef33ddafc2f"
+        },
+        {
+          "role": "fixture",
+          "path": "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+          "git_blob_sha": "cf1d3eb84cfc0ca67e03aa66dbdb0ace516acf0f"
+        },
+        {
+          "role": "validator",
+          "path": "pilots/kontur-game-companion/focus-diversity/validate.py",
+          "git_blob_sha": "55087b5e4fab9e99e13d0169fa6f08f73b6dc9b6"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/kontur-game-companion-focus-diversity.yml",
+          "git_blob_sha": "030840b935df637c98af2226dc40c24da7252848"
+        }
+      ]
+    },
+    {
+      "id": "interaction-receipt",
+      "layer_class": "optional-synthetic-pilot",
+      "predecessor_layer": "focus-diversity",
+      "origin_pr": 456,
+      "origin_commit": "7c97e26aa3b7504d48b9ded6f0dfdccab444f8bd",
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "pilots/kontur-game-companion/interaction-receipt/README.md",
+          "git_blob_sha": "8e61acf44ed868e581977cc94289080bd964c612"
+        },
+        {
+          "role": "fixture",
+          "path": "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+          "git_blob_sha": "6b39625d302f2ddc76f9a4fda3c4fcf730d984f9"
+        },
+        {
+          "role": "validator",
+          "path": "pilots/kontur-game-companion/interaction-receipt/validate.py",
+          "git_blob_sha": "41b770ebb67a5edfc923aeb3af1a6c96e485923c"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/kontur-game-companion-interaction-receipt.yml",
+          "git_blob_sha": "31a9ebb475ce370d4c54c6d7702669e8e9613d5a"
+        }
+      ]
+    },
+    {
+      "id": "pause-resume",
+      "layer_class": "optional-synthetic-pilot",
+      "predecessor_layer": "interaction-receipt",
+      "origin_pr": 457,
+      "origin_commit": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "artifacts": [
+        {
+          "role": "specification",
+          "path": "pilots/kontur-game-companion/pause-resume/README.md",
+          "git_blob_sha": "d4c9dab4563ff191edf4323f22e7b60c32bf747d"
+        },
+        {
+          "role": "fixture",
+          "path": "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+          "git_blob_sha": "13e38184c7302aff5584832ab960adfa8d067ed4"
+        },
+        {
+          "role": "validator",
+          "path": "pilots/kontur-game-companion/pause-resume/validate.py",
+          "git_blob_sha": "63885d9d3f8c88ee3a02b29f1f7c1c7bd749dc65"
+        },
+        {
+          "role": "workflow",
+          "path": ".github/workflows/kontur-game-companion-pause-resume.yml",
+          "git_blob_sha": "65872b9d4904e623276493ec563c086fc6bf7810"
+        }
+      ]
+    }
+  ],
+  "relations": [
+    {
+      "id": "GC-REL-001",
+      "source": "stable-core",
+      "target": "observational-lane",
+      "relation_type": "optional_adapter_reuse",
+      "classification": "DOCUMENTED",
+      "source_artifact_paths": [
+        "protocols/core/v0.1/README.md",
+        "protocols/core/v0.1/end-to-end.fixture.json",
+        "protocols/core/v0.1/validate-core.js",
+        ".github/workflows/core-protocol-v0.1-validation.yml"
+      ],
+      "target_artifact_paths": [
+        "pilots/kontur-game-companion/observational-lane/README.md",
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json",
+        "pilots/kontur-game-companion/observational-lane/validate.py",
+        ".github/workflows/kontur-game-companion-observational-lane.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Records forward optional reuse only; it does not register or promote the pilot into Stable Core."
+    },
+    {
+      "id": "GC-REL-002",
+      "source": "observational-lane",
+      "target": "assistance-gate",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "source_artifact_paths": [
+        "pilots/kontur-game-companion/observational-lane/README.md",
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json",
+        "pilots/kontur-game-companion/observational-lane/validate.py",
+        ".github/workflows/kontur-game-companion-observational-lane.yml"
+      ],
+      "target_artifact_paths": [
+        "pilots/kontur-game-companion/assistance-gate/README.md",
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json",
+        "pilots/kontur-game-companion/assistance-gate/validate.py",
+        ".github/workflows/kontur-game-companion-assistance-gate.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Binds the declared predecessor evidence without granting runtime, action, or successor authority."
+    },
+    {
+      "id": "GC-REL-003",
+      "source": "assistance-gate",
+      "target": "shared-discovery-memory",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "source_artifact_paths": [
+        "pilots/kontur-game-companion/assistance-gate/README.md",
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json",
+        "pilots/kontur-game-companion/assistance-gate/validate.py",
+        ".github/workflows/kontur-game-companion-assistance-gate.yml"
+      ],
+      "target_artifact_paths": [
+        "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Binds the declared predecessor evidence without granting runtime, action, or successor authority."
+    },
+    {
+      "id": "GC-REL-004",
+      "source": "shared-discovery-memory",
+      "target": "bounded-initiative",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "source_artifact_paths": [
+        "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml"
+      ],
+      "target_artifact_paths": [
+        "pilots/kontur-game-companion/bounded-initiative/README.md",
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+        "pilots/kontur-game-companion/bounded-initiative/validate.py",
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Binds the declared predecessor evidence without granting runtime, action, or successor authority."
+    },
+    {
+      "id": "GC-REL-005",
+      "source": "bounded-initiative",
+      "target": "focus-diversity",
+      "relation_type": "declared_predecessor",
+      "classification": "DOCUMENTED",
+      "source_artifact_paths": [
+        "pilots/kontur-game-companion/bounded-initiative/README.md",
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+        "pilots/kontur-game-companion/bounded-initiative/validate.py",
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml"
+      ],
+      "target_artifact_paths": [
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py",
+        ".github/workflows/kontur-game-companion-focus-diversity.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Binds the declared predecessor evidence without granting runtime, action, or successor authority."
+    },
+    {
+      "id": "GC-REL-006",
+      "source": "focus-diversity",
+      "target": "interaction-receipt",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "source_artifact_paths": [
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py",
+        ".github/workflows/kontur-game-companion-focus-diversity.yml"
+      ],
+      "target_artifact_paths": [
+        "pilots/kontur-game-companion/interaction-receipt/README.md",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py",
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Binds the declared predecessor evidence without granting runtime, action, or successor authority."
+    },
+    {
+      "id": "GC-REL-007",
+      "source": "interaction-receipt",
+      "target": "pause-resume",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "source_artifact_paths": [
+        "pilots/kontur-game-companion/interaction-receipt/README.md",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py",
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml"
+      ],
+      "target_artifact_paths": [
+        "pilots/kontur-game-companion/pause-resume/README.md",
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+        "pilots/kontur-game-companion/pause-resume/validate.py",
+        ".github/workflows/kontur-game-companion-pause-resume.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Binds the declared predecessor evidence without granting runtime, action, or successor authority."
+    }
+  ],
+  "trigger_scope": {
+    "watch_paths": [
+      "protocols/core/v0.1/**",
+      "pilots/kontur-game-companion/**",
+      ".github/workflows/core-protocol-v0.1-validation.yml",
+      ".github/workflows/kontur-game-companion-*.yml"
+    ],
+    "excluded_process_paths": [
+      "LICENSE*",
+      "NOTICE*",
+      "legal/**",
+      "governance/ip/**",
+      "docs/ip/**",
+      "docs/legal/**"
+    ],
+    "parallel_ip_process_is_dependency": false
+  },
+  "assertions": {
+    "exact_artifact_binding_required": true,
+    "repository_proximity_is_not_relation": true,
+    "ci_green_is_not_semantic_proof": true,
+    "receipt_is_not_authority": true,
+    "optional_pilot_is_not_stable_core_requirement": true,
+    "reverse_authority_forbidden": true,
+    "changes_fail_closed_until_evidence_refresh": true
+  },
+  "non_effects": {
+    "existing_architecture_artifact_modified": false,
+    "stable_core_modified": false,
+    "existing_pilot_behavior_modified": false,
+    "existing_workflow_modified": false,
+    "live_response_generation": false,
+    "proactive_messaging": false,
+    "autonomous_gameplay": false,
+    "game_account_control": false,
+    "external_effect_authorized": false,
+    "action_permit_created": false,
+    "successor_permit_created": false,
+    "automatic_stable_core_promotion": false,
+    "copyright_process_modified": false,
+    "license_or_notice_modified": false,
+    "legal_author_identity_modified": false,
+    "pseudonym_publication_process_modified": false
+  }
+}
+
+
