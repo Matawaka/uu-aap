@@ -7,6 +7,7 @@ on:
       - 'docs/legal/ROSPATENT-WAVE-1-v0.1.md'
       - 'docs/legal/IP-WAVE-1-AUTHORSHIP-EVIDENCE-GATE-v0.1.md'
       - 'docs/legal/IP-WAVE-1-PRIVATE-EVIDENCE-CHECKPOINT-v0.1.md'
+      - 'docs/legal/IP-WAVE-1-RIGHTS-CLEARANCE-v0.1.md'
       - 'schemas/ip/v0.1/**'
       - '.github/workflows/ip-rights-registration-v0.1-validation.yml'
   workflow_dispatch:
@@ -59,11 +60,16 @@ jobs:
           record = json.loads((root / 'examples/uu-aap-core-authorship-review.json').read_text())
           Draft202012Validator(schema, format_checker=FormatChecker()).validate(record)
 
-          assert record['outcome']['rights_gate_effect'] == 'KEEP_RIGHTS_REVIEW'
-          assert record['human_creative_contribution']['status'] != 'EVIDENCED'
-          assert record['ai_assistance']['generated_expression_scope'] == 'UNKNOWN'
-          assert record['employment_and_contract']['status'] != 'CLEAR'
-          print('human authorship evidence record: valid and fail-closed')
+          assert record['human_creative_contribution']['status'] == 'EVIDENCED'
+          assert record['ai_assistance']['status'] == 'AI_USED'
+          assert record['ai_assistance']['generated_expression_scope'] == 'SUBSTANTIAL'
+          assert record['ai_assistance']['human_transformation_status'] == 'EVIDENCED'
+          assert record['employment_and_contract']['status'] == 'CLEAR'
+          assert record['coauthor_and_third_party']['coauthor_status'] == 'NONE_EVIDENCED'
+          assert record['coauthor_and_third_party']['source_origin_status'] == 'CLEAR'
+          assert record['outcome']['classification'] == 'AI_ASSISTED_HUMAN_CREATION_EVIDENCED'
+          assert record['outcome']['rights_gate_effect'] == 'MAY_ADVANCE_AFTER_RIGHTS_BASIS'
+          print('human authorship evidence record: evidenced and bounded')
           PY
 
       - name: Validate private evidence checkpoint
@@ -80,30 +86,38 @@ jobs:
           validator = Draft202012Validator(schema, format_checker=FormatChecker())
           validator.validate(record)
 
-          answers = record['factual_answers']
-          assert record['private_declaration']['status'] == 'AWAITING_PRIVATE_DECLARATION'
-          assert record['private_declaration']['digest'] is None
-          assert record['classification'] == 'UNRESOLVED'
-          assert record['gate_result']['effect'] == 'KEEP_RIGHTS_REVIEW'
-          assert any(value == 'UNKNOWN' for value in answers.values())
+          def advance_allowed(candidate):
+              answers = candidate['factual_answers']
+              return (
+                  candidate['private_declaration']['status'] == 'COMPLETED'
+                  and candidate['private_declaration']['digest'] is not None
+                  and candidate['classification'] in {'HUMAN_AUTHORED', 'AI_ASSISTED_HUMAN_CREATION'}
+                  and all(value != 'UNKNOWN' for value in answers.values())
+                  and answers['other_human_creative_contributors'] == 'NONE'
+                  and answers['within_employment_duties'] == 'NO'
+                  and answers['commission_or_customer_contract_affects_rights'] == 'NO'
+                  and answers['exclusive_right_assignment_affects_scope'] == 'NO'
+                  and answers['third_party_expression_incorporated'] == 'NO'
+              )
 
-          # Fail closed: a public record must not claim advancement while the
-          # private declaration/digest or required factual answers are unresolved.
-          forged = copy.deepcopy(record)
-          forged['gate_result']['effect'] = 'MAY_ADVANCE_TO_RIGHTS_CLEARED'
-          advance_allowed = (
-              forged['private_declaration']['status'] == 'COMPLETED'
-              and forged['private_declaration']['digest'] is not None
-              and forged['classification'] in {'HUMAN_AUTHORED', 'AI_ASSISTED_HUMAN_CREATION'}
-              and all(value != 'UNKNOWN' for value in forged['factual_answers'].values())
-              and forged['factual_answers']['other_human_creative_contributors'] == 'NONE'
-              and forged['factual_answers']['within_employment_duties'] == 'NO'
-              and forged['factual_answers']['commission_or_customer_contract_affects_rights'] == 'NO'
-              and forged['factual_answers']['exclusive_right_assignment_affects_scope'] == 'NO'
-              and forged['factual_answers']['third_party_expression_incorporated'] == 'NO'
-          )
-          assert not advance_allowed
-          print('private evidence checkpoint: valid and fail-closed')
+          assert record['private_declaration']['status'] == 'COMPLETED'
+          assert record['private_declaration']['digest'].startswith('sha256:')
+          assert record['classification'] == 'AI_ASSISTED_HUMAN_CREATION'
+          assert record['gate_result']['effect'] == 'MAY_ADVANCE_TO_RIGHTS_CLEARED'
+          assert record['gate_result']['unresolved_items'] == []
+          assert advance_allowed(record)
+
+          # Fail closed: removing the retained private digest must revoke advancement.
+          missing_digest = copy.deepcopy(record)
+          missing_digest['private_declaration']['digest'] = None
+          assert not advance_allowed(missing_digest)
+
+          # Fail closed: introducing a rights-allocation uncertainty must revoke advancement.
+          uncertain_employment = copy.deepcopy(record)
+          uncertain_employment['factual_answers']['within_employment_duties'] = 'UNKNOWN'
+          assert not advance_allowed(uncertain_employment)
+
+          print('private evidence checkpoint: completed, advancement justified, fail-closed preserved')
           PY
 
       - name: Exercise fail-closed legal readiness gates
