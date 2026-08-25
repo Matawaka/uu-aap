@@ -1,0 +1,34 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-005",
+  "run_id": "synthetic-run-000",
+  "origin_frontier": "0edc5ef0538b56f96d174bb2dfc94a842e65209b",
+  "attempt": {
+    "effect_type": "issue_comment_create",
+    "repository": "Matawaka/uu-aap",
+    "issue_number": 435,
+    "payload_sha256": "f3fa252bd30068853d15c730eb0d805cef53816fcfba04b89d30bb82c3eed2d0",
+    "permit_id": "synthetic-consumed-permit-000",
+    "permit_consumed": true,
+    "acknowledgement": "timeout",
+    "outcome_state": "UNKNOWN"
+  },
+  "observation": {
+    "mode": "read_only",
+    "repository": "Matawaka/uu-aap",
+    "issue_number": 435,
+    "frontier_context": "0edc5ef0538b56f96d174bb2dfc94a842e65209b",
+    "scope_complete": true,
+    "matching_effect_count": 1,
+    "conflicting_effect_count": 0,
+    "observed_payload_sha256": "f3fa252bd30068853d15c730eb0d805cef53816fcfba04b89d30bb82c3eed2d0",
+    "external_mutation_performed": false
+  },
+  "reconciliation": {
+    "status": "CONFIRMED",
+    "retry_authorized": false,
+    "fresh_human_authorization_present": false,
+    "fresh_permit_present": false,
+    "successor_permit_created": false
+  }
+}
