@@ -1,5 +1,7 @@
 # Public Review — UU-AAP v0.1
 
+**[Русский быстрый маршрут / Russian quick path](PUBLIC_REVIEW.ru.md)**
+
 **Opening:** 22 August 2026  
 **First disposition cutoff:** 6 October 2026
 
@@ -8,6 +10,7 @@ This is a Request for Comment, not a request for endorsement.
 ## Live review channels
 
 - **Core Pilot 002 — one concrete external review:** [Issue #422 — External Review Entry](https://github.com/Matawaka/uu-aap/issues/422)
+- **Russian quick review path:** [PUBLIC_REVIEW.ru.md](PUBLIC_REVIEW.ru.md)
 - **Broad design discussion:** [Discussion #8 — What should accountable AI-augmented authorship mean?](https://github.com/Matawaka/uu-aap/discussions/8)
 - **Main RFC:** [Issue #1 — UU-AAP v0.1 Public Review](https://github.com/Matawaka/uu-aap/issues/1)
 - **Concrete defects and change proposals:** [Repository Issues](https://github.com/Matawaka/uu-aap/issues)
@@ -44,6 +47,7 @@ Reviewers are encouraged to test the protocol against the pilot rather than only
 Core Pilot 002 tests whether the reusable core can process one real external review without collapsing submission, identity, authority, interpretation, disposition and implementation into one event.
 
 - [Pilot 002 protocol](pilots/core-pilot-002/README.md)
+- [Russian Pilot 002 guide](pilots/core-pilot-002/README.ru.md)
 - [Run Admission Gate](pilots/core-pilot-002/run-admission/README.md)
 - [External Review Entry — Issue #422](https://github.com/Matawaka/uu-aap/issues/422)
 
