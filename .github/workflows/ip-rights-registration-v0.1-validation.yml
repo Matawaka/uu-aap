@@ -53,8 +53,8 @@ jobs:
               'contents:' + ' write',
               'pull_request' + '_target',
               'secrets' + '.',
-              'gh api',
-              'curl ',
+              'gh' + ' api',
+              'cu' + 'rl ',
           ]
           for token in forbidden:
               assert token not in text, token
