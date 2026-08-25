@@ -11,6 +11,27 @@ Exercise the reusable UU-AAP core over one review input that may come from an ex
 
 The pilot tests a boundary that Core Pilot 001 did not directly exercise: another participant may submit a claim, objection or proposal whose identity, authority, standing, interpretation and desired remedy must remain separate.
 
+## External review entry point
+
+The dedicated low-friction public intake surface for the first real run is **Issue #422 — External Review Entry — Core Pilot 002 Run 001**:
+
+https://github.com/Matawaka/uu-aap/issues/422
+
+An external reviewer does not need to understand the whole stack or propose a patch. One short, concrete counterexample is useful. The reviewer may comment on #422 or open a separate issue using the Core Pilot 002 external-review issue template.
+
+Useful input includes a realistic case where the protocol or pilot could assign responsibility unfairly, infer authority from identity/account presence, erase dissent, over-disclose information, mishandle conflicting interpretations, create unnecessary adoption burden, or imply truth/fault/liability from a review outcome.
+
+The project-authored text of #422 is not itself external evidence. A real run remains fail-closed until a directly observable submission from another account satisfies the Run Admission Gate.
+
+```text
+public surface exists != external input exists
+external comment != verified identity
+external comment != authority or standing
+eligible input != accepted claim
+```
+
+Please do not publish secrets, private credentials, personal contact details, private prompts, or evidence you do not want public.
+
 ## Core path
 
 ```text
@@ -83,6 +104,8 @@ A successful pilot run records a bounded review disposition receipt while preser
 ## First live-vector rule
 
 The specification uses only a synthetic fixture. Selection of a real Public Review item is a separate human-gated run-materialization step after this protocol is merged.
+
+The Run Admission Gate is intentionally allowed to remain `waiting_for_external_input`. No synthetic fixture, project-authored prompt, or self-comment may be promoted into external participant evidence merely to start the pilot.
 
 ## Non-effects
 
