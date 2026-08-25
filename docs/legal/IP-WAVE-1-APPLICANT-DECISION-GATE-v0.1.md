@@ -21,35 +21,31 @@ Wave 1 already has:
 
 The registration state remains `PATENT_SCREEN` and the filing-readiness state remains `PRIVATE_PACKET_IN_PROGRESS`.
 
-## 2. Filing route
+## 2. Filing route — applicant decision recorded
 
-Operational recommendation: **EPGU**.
+Selected route: **EPGU**.
 
-Rationale:
+The applicant explicitly chose self-filing through the Unified Portal of State and Municipal Services.
 
-- Rospatent exposes EPGU as an electronic filing path for program/database registration;
-- current Rospatent service documentation indicates that information about the filing person may be populated from ESIA;
-- electronic notifications and fee handling are integrated into the government-service flow.
+Public search of official government sources on 2026-08-25 found documented EPGU/SMEV and ESIA integration interfaces for connected government/institutional information systems, including registered SMEV information types and REST/OpenAPI surfaces of specific subsystems. No supported public citizen API was found that allows an arbitrary external client to submit this Rospatent program-registration application on behalf of a natural person.
 
-This is a recommendation, not an applicant decision.
+Therefore the operational boundary is:
 
-The actual authentication/signature method must be confirmed in the live route immediately before filing and must not be invented in advance.
+`PREPARE_AND_VALIDATE_LOCALLY -> HUMAN_SUBMISSION_THROUGH_EPGU_UI`
 
-Decision values:
+and not:
 
-- `EPGU`
-- `FIPS`
-- `PAPER`
+`UNSUPPORTED_CALL_TO_INTERNAL_EPGU_ENDPOINTS`.
 
-## 3. Representation
+The actual authentication/signature method must still be confirmed in the live EPGU flow immediately before filing.
 
-If the right holder personally submits the application, `SELF` is operationally simplest and requires no representative power of attorney.
+## 3. Representation — applicant decision recorded
 
-If another person files, select `REPRESENTATIVE` and retain the required authority/POA evidence privately.
+Selected representation: **SELF**.
 
-No representative is inferred from repository roles.
+The applicant will personally submit the application. No representative or power of attorney is expected for this route unless the live filing circumstances change.
 
-## 4. Author visibility
+## 4. Author visibility — still unresolved
 
 Current Rospatent rules allow the author to be included in the application or to refuse being mentioned as author.
 
@@ -68,55 +64,65 @@ Supported decision states:
 
 The live form controls the exact representation if a pseudonym is selected.
 
-## 5. First publication / release
+## 5. First publication / release — applicant value recorded
 
 Rospatent Rule 17 for application field 5 asks for country and year of first publication (release) under Article 1268 of the Civil Code if such publication occurred before filing.
 
-Article 1268 distinguishes:
+Article 1268 distinguishes broad public disclosure from publication/release as circulation of copies. The repository therefore did not infer a country from GitHub hosting, server location, IP geolocation, or applicant residence.
 
-- **obnarodovanie / making the work available to the public** — broad first public availability by publication or other means;
-- **publication / release** — release into circulation of copies in a quantity sufficient for reasonable public needs considering the nature of the work.
+The applicant has now explicitly instructed the filing record to use:
 
-Therefore:
+- country: **Russia / RU**;
+- year: **2026**;
+- publication classification for the filing field: **YES**.
 
-`PUBLIC_GITHUB_DISCLOSURE != AUTOMATICLY_PROVED_ARTICLE_1268_PUBLICATION_COUNTRY`
+This is recorded as an applicant-confirmed filing value, not as an independent adjudication by GitHub, the repository, or CI.
 
-Known evidence:
+Known evidence also remains preserved separately:
 
 - the selected Core was publicly accessible in the canonical GitHub repository from `2026-08-24`;
-- this proves public disclosure for the UU-AAP evidence chain;
-- it does not by itself establish which country must be entered in Rospatent field 5.
-
-Do not infer the publication country from:
-
-- GitHub server location;
-- repository hosting jurisdiction;
-- IP geolocation;
-- applicant residence alone.
-
-If field 5 is used, the applicant must factually support the country/year characterization applied in the live form.
+- this proves public disclosure for the UU-AAP evidence chain.
 
 ## 6. Gate completion
 
-The applicant-decision gate may advance only after:
+Already completed by explicit applicant decision:
 
-1. filing route selected;
-2. `SELF` or `REPRESENTATIVE` selected;
-3. author visibility selected;
-4. first-publication classification resolved for Article 1268 purposes;
-5. if publication is classified `YES`, country and year are supplied on a factual basis;
-6. live route signature/authentication method is confirmed when the filing flow is opened.
+1. filing route: `EPGU`;
+2. representation: `SELF`;
+3. first-publication classification: `YES`;
+4. first-publication country/year: `RU / 2026`.
 
-Only then may the private filing packet be finalized and hashed.
+Still required:
 
-## 7. Non-effects
+1. author visibility: `NAMED`, `PSEUDONYM`, or `NON_MENTION`;
+2. live EPGU signature/authentication method confirmed when the actual filing flow is opened.
+
+Only after those remaining decisions/evidence may the private filing packet be finalized and hashed.
+
+## 7. API boundary
+
+Official public search found machine interfaces in the electronic-government infrastructure, but they are integration surfaces for registered/connected information systems rather than a documented public API for arbitrary natural-person filing.
+
+Examples include:
+
+- SMEV information types for EPGU-to-agency application exchange;
+- ESIA REST/API functions requiring registered information-system participation/access;
+- Rospatent SMEV integration namespaces for specific state services;
+- the official EPGU user-facing route for program/database registration.
+
+Invariant:
+
+`PUBLICLY_DOCUMENTED_INTEGRATION_INTERFACE != PUBLIC_CITIZEN_SUBMISSION_API`.
+
+No endpoint probing, reverse engineering, session extraction, or reuse of internal browser APIs is authorized by this Wave 1 process.
+
+## 8. Non-effects
 
 This gate does not:
 
 - submit an application;
-- select personal preferences on behalf of the applicant;
 - publish applicant identifiers;
-- determine a publication country from GitHub;
+- call internal EPGU endpoints;
 - mark `READY_TO_FILE`;
 - mark `FILED`;
 - alter patent-track issue #492.
