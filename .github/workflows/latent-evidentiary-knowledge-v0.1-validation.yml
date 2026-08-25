@@ -1,12 +1,11 @@
 name: Latent Evidentiary Knowledge v0.1 validation
 
 on:
-  pull_request:
+  push:
     paths:
       - 'protocols/integration/latent-evidentiary-knowledge/v0.1/**'
       - '.github/workflows/latent-evidentiary-knowledge-v0.1-validation.yml'
-  push:
-    branches: [main]
+  pull_request:
     paths:
       - 'protocols/integration/latent-evidentiary-knowledge/v0.1/**'
       - '.github/workflows/latent-evidentiary-knowledge-v0.1-validation.yml'
@@ -16,11 +15,11 @@ permissions:
 
 jobs:
   validate:
-    name: Validate fail-closed latent evidence activation gate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node protocols/integration/latent-evidentiary-knowledge/v0.1/validate.js
+      - name: Validate Latent Evidentiary Knowledge v0.1
+        run: node protocols/integration/latent-evidentiary-knowledge/v0.1/validate-latent-evidentiary-knowledge.js

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:latent-evidentiary-knowledge:v0.1",
+  "title": "Latent Evidentiary Knowledge v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile","request_id","purpose","authority","identity_need","minimal_challenge","proof_sufficiency","scope","correlation","disclosure","decision","non_effects"],
+  "properties": {
+    "profile": {"const":"uu-aap.latent-evidentiary-knowledge.v0.1"},
+    "request_id": {"type":"string","minLength":1},
+    "purpose": {"type":"object","additionalProperties":false,"required":["id","declared","satisfied"],"properties":{"id":{"type":"string","minLength":1},"declared":{"type":"string","minLength":1},"satisfied":{"const":true}}},
+    "authority": {"type":"object","additionalProperties":false,"required":["evidence_ref","scope","satisfied"],"properties":{"evidence_ref":{"type":"string","minLength":1},"scope":{"type":"array","minItems":1,"items":{"type":"string","minLength":1},"uniqueItems":true},"satisfied":{"const":true}}},
+    "identity_need": {"type":"object","additionalProperties":false,"required":["necessary","reason","satisfied"],"properties":{"necessary":{"const":true},"reason":{"type":"string","minLength":1},"satisfied":{"const":true}}},
+    "minimal_challenge": {"type":"object","additionalProperties":false,"required":["requested_attributes","minimum_attributes","satisfied"],"properties":{"requested_attributes":{"type":"array","minItems":1,"items":{"type":"string"},"uniqueItems":true},"minimum_attributes":{"type":"array","minItems":1,"items":{"type":"string"},"uniqueItems":true},"satisfied":{"const":true}}},
+    "proof_sufficiency": {"type":"object","additionalProperties":false,"required":["result","evidence_refs","satisfied"],"properties":{"result":{"const":"sufficient"},"evidence_refs":{"type":"array","minItems":1,"items":{"type":"string","minLength":1},"uniqueItems":true},"satisfied":{"const":true}}},
+    "scope": {"type":"object","additionalProperties":false,"required":["fields","audience","contexts","satisfied"],"properties":{"fields":{"type":"array","minItems":1,"items":{"type":"string"},"uniqueItems":true},"audience":{"type":"array","minItems":1,"items":{"type":"string"},"uniqueItems":true},"contexts":{"type":"array","minItems":1,"items":{"type":"string"},"uniqueItems":true},"satisfied":{"const":true}}},
+    "correlation": {"type":"object","additionalProperties":false,"required":["requested","authorized","contexts"],"properties":{"requested":{"type":"boolean"},"authorized":{"type":"boolean"},"contexts":{"type":"array","items":{"type":"string"},"uniqueItems":true}}},
+    "disclosure": {"type":"object","additionalProperties":false,"required":["fields","audience","performed"],"properties":{"fields":{"type":"array","items":{"type":"string"},"uniqueItems":true},"audience":{"type":"array","items":{"type":"string"},"uniqueItems":true},"performed":{"const":false}}},
+    "decision": {"enum":["activation-permitted","latent"]},
+    "non_effects": {"type":"object","additionalProperties":false,"required":["identity_lookup_performed","profile_constructed","external_disclosure_performed","responsibility_attributed","authority_expanded","actuator_invoked","kontur_mutated"],"properties":{"identity_lookup_performed":{"const":false},"profile_constructed":{"const":false},"external_disclosure_performed":{"const":false},"responsibility_attributed":{"const":false},"authority_expanded":{"const":false},"actuator_invoked":{"const":false},"kontur_mutated":{"const":false}}}
+  }
+}
