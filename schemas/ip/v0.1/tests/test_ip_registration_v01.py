@@ -55,9 +55,12 @@ def make_ready_to_file(record: dict) -> dict:
     return r
 
 
-def test_current_rights_cleared_example_is_valid() -> None:
+def test_current_patent_screen_example_is_valid() -> None:
     record = base_record()
-    assert record["state"] == "RIGHTS_CLEARED"
+    assert record["state"] == "PATENT_SCREEN"
+    assert record["rights_review"]["status"] == "CLEARED"
+    assert record["patentability"]["status"] == "SEPARATE_PATENT_TRACK"
+    assert record["evidence_anchor"]["package_digest"].startswith("sha256:")
     assert module.validate_record(EXAMPLE_PATH) == []
 
 
@@ -87,12 +90,13 @@ def test_ready_to_file_fails_closed_if_rights_are_reopened() -> None:
     assert any("rights_review.status=CLEARED" in error for error in errors)
     assert any("third-party material CLEARED or EXCLUDED" in error for error in errors)
     assert any("unresolved author/right-holder identity or basis" in error for error in errors)
-    assert any("frozen package digest" in error for error in errors)
 
 
 def test_ready_to_file_still_requires_patent_screen_and_frozen_digest() -> None:
     record = base_record()
     record["state"] = "READY_TO_FILE"
+    record["patentability"]["status"] = "ALREADY_PUBLIC_DISCLOSURE_REVIEW_REQUIRED"
+    record["evidence_anchor"]["package_digest"] = "TO_BE_FROZEN"
     errors = module.semantic_errors(record)
     assert any("patentability/public-disclosure review" in error for error in errors)
     assert any("frozen package digest" in error for error in errors)
@@ -100,6 +104,13 @@ def test_ready_to_file_still_requires_patent_screen_and_frozen_digest() -> None:
 
 def test_ready_to_file_accepts_resolved_evidence() -> None:
     record = make_ready_to_file(base_record())
+    assert module.semantic_errors(record) == []
+
+
+def test_separate_patent_track_is_resolved_for_software_filing_gate() -> None:
+    record = base_record()
+    record["state"] = "READY_TO_FILE"
+    record["patentability"]["status"] = "SEPARATE_PATENT_TRACK"
     assert module.semantic_errors(record) == []
 
 
