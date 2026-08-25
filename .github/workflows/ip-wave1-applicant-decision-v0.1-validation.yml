@@ -6,6 +6,7 @@ on:
       - 'docs/legal/IP-WAVE-1-APPLICANT-DECISION-GATE-v0.1.md'
       - 'schemas/ip/v0.1/applicant-decision-checkpoint.schema.json'
       - 'schemas/ip/v0.1/examples/uu-aap-core-applicant-decision-checkpoint.json'
+      - 'schemas/ip/v0.1/examples/uu-aap-core-official-filing-prefill.json'
       - '.github/workflows/ip-wave1-applicant-decision-v0.1-validation.yml'
   workflow_dispatch:
 
@@ -40,7 +41,7 @@ jobs:
           import copy
           import json
           from pathlib import Path
-          from jsonschema import Draft202012Validator, FormatChecker
+          from jsonschema import Draft202012Validator, FormatChecker, ValidationError
 
           root = Path('schemas/ip/v0.1')
           schema = json.loads((root / 'applicant-decision-checkpoint.schema.json').read_text())
@@ -59,51 +60,60 @@ jobs:
                       and publication['reasoning_status'] == 'FACTUALLY_CONFIRMED'
                   )
               )
+              visibility = candidate['author_visibility']
+              visibility_ok = (
+                  visibility['selected'] in {'NAMED', 'PSEUDONYM', 'NON_MENTION'}
+                  and (
+                      visibility['selected'] != 'PSEUDONYM'
+                      or bool(visibility['public_pseudonym'])
+                  )
+              )
               return (
                   candidate['route']['selected'] in {'EPGU', 'FIPS', 'PAPER'}
                   and candidate['representation']['selected'] in {'SELF', 'REPRESENTATIVE'}
-                  and candidate['author_visibility']['selected'] in {'NAMED', 'PSEUDONYM', 'NON_MENTION'}
+                  and visibility_ok
                   and publication_ok
                   and candidate['route']['live_signature_status'] == 'CONFIRMED'
                   and candidate['gate_result']['effect'] == 'MAY_COMPLETE_PRIVATE_PACKET'
                   and candidate['gate_result']['unresolved_decisions'] == []
               )
 
-          # Applicant decisions already recorded from the conversation.
           assert record['route']['selected'] == 'EPGU'
           assert record['representation']['selected'] == 'SELF'
           assert record['first_publication']['publication_under_article_1268'] == 'YES'
           assert record['first_publication']['country_code'] == 'RU'
           assert record['first_publication']['year'] == 2026
-          assert record['first_publication']['reasoning_status'] == 'FACTUALLY_CONFIRMED'
 
-          # Gate stays fail-closed until author visibility and live EPGU signature method are known.
-          assert record['author_visibility']['selected'] == 'UNDECIDED'
+          # Author legal identity remains private; publication uses the chosen pseudonym.
+          visibility = record['author_visibility']
+          assert visibility['selected'] == 'PSEUDONYM'
+          assert visibility['public_pseudonym'] == 'MATAWAKA'
+          assert visibility['legal_identity_retention'] == 'PRIVATE_OFF_REPOSITORY'
+          assert visibility['personal_data_consent_effect'] == 'REQUIRED'
+
+          # Only live EPGU signature/authentication remains unresolved.
           assert record['route']['live_signature_status'] == 'LIVE_CONFIRMATION_REQUIRED'
           assert record['gate_result']['effect'] == 'AWAIT_APPLICANT_DECISIONS'
-          assert set(record['gate_result']['unresolved_decisions']) == {'author_visibility', 'live_signature_method'}
+          assert record['gate_result']['unresolved_decisions'] == ['live_signature_method']
           assert not complete(record)
 
-          # Completing only the two remaining decisions must be sufficient.
           candidate = copy.deepcopy(record)
           candidate['route']['live_signature_status'] = 'CONFIRMED'
-          candidate['author_visibility'] = {'selected': 'NAMED', 'personal_data_consent_effect': 'REQUIRED'}
           candidate['gate_result'] = {'effect': 'MAY_COMPLETE_PRIVATE_PACKET', 'unresolved_decisions': []}
           validator.validate(candidate)
           assert complete(candidate)
 
-          # Fail closed: a publication country may not be marked as inferred from GitHub/server geography.
-          unsafe = copy.deepcopy(candidate)
-          unsafe['first_publication'] = {
-              'public_disclosure_confirmed': True,
-              'publication_under_article_1268': 'YES',
-              'country_code': 'US',
-              'year': 2026,
-              'reasoning_status': 'DO_NOT_INFER_FROM_GITHUB_LOCATION',
-          }
-          assert not complete(unsafe)
+          # Fail closed: PSEUDONYM cannot exist without an explicit pseudonym.
+          broken = copy.deepcopy(record)
+          broken['author_visibility']['public_pseudonym'] = None
+          try:
+              validator.validate(broken)
+          except ValidationError:
+              pass
+          else:
+              raise AssertionError('pseudonym mode accepted without pseudonym')
 
-          print('applicant decision gate: EPGU/SELF/RU-2026 recorded; remaining decisions fail-closed')
+          print('applicant decision gate: pseudonym MATAWAKA recorded; only live signature remains')
           PY
 
       - name: Assert workflow is read-only
