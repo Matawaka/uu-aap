@@ -2,12 +2,18 @@
 
 **DO NOT COMMIT A COMPLETED COPY TO THE PUBLIC REPOSITORY.**
 
-Use this blank worksheet locally only. The live Rospatent form/EPGU flow controls if any field differs from this worksheet.
+Use this worksheet locally only. The live Rospatent/EPGU form controls if any field differs from this worksheet.
 
 Object: **«Валидатор цепочек квитанций UU-AAP Core v0.1»**  
 Frozen package digest: `sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8`
 
 ## A. Applicant / right holder — private
+
+Applicant decisions already fixed:
+
+- Filing route: `EPGU`
+- Filing mode: `SELF`
+- First publication country/year for filing field: `Russia / 2026`
 
 Current Wave 1 model expects one individual applicant/right holder.
 
@@ -30,6 +36,14 @@ Do not paste INN, document details, SNILS, address, signature or portal credenti
 
 Current Wave 1 rights evidence expects one natural-person author for the bounded human creative contribution.
 
+Still choose one visibility mode:
+
+- `[ ] NAMED`
+- `[ ] PSEUDONYM`
+- `[ ] NON_MENTION`
+
+If applicable fill locally:
+
 - Full legal name: `[PRIVATE]`
 - Country / country code: `[PRIVATE]`
 - Residence address required by live form: `[PRIVATE]`
@@ -38,16 +52,7 @@ Current Wave 1 rights evidence expects one natural-person author for the bounded
 - Number of authors: `[1]`
 - Same natural person as applicant/right holder: `[YES/NO]`
 - Actual creative contribution scope matches Wave 1 declaration: `[YES/NO]`
-
-### Author mention/publication choice
-
-Select the option actually available and intended in the live form:
-
-- `[ ]` mention/publish under legal name;
-- `[ ]` use an allowed pseudonym option;
-- `[ ]` lawful non-mention/non-publication option.
-
-- Personal-data consent completed: `[YES/NO]`
+- Personal-data consent completed: `[YES/NO/NOT_APPLICABLE per selected mode]`
 - Author-information consent completed if author is named: `[YES/NO/NOT_APPLICABLE]`
 
 ## C. Program bibliographic fields
@@ -62,33 +67,36 @@ These public values are evidence-bound:
 - Frozen selected surface: `27384 байт`
 - Deposit package digest: `sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8`
 - GIS component: `NO`
+- First-publication classification for filing field: `YES`
+- First-publication country: `Russia / RU`
+- First-publication year: `2026`
 
-### First publication / release
-
-Known public repository disclosure: `2026-08-24`.
-
-- First-publication year if the live form treats that disclosure as publication/release: `[2026]`
-- First-publication country: `[CONFIRM IN LIVE FORM / FACTUAL CIRCUMSTANCES]`
-
-Do not invent a country solely from the location of the repository owner, GitHub infrastructure or current residence.
+`RU / 2026` is an applicant-confirmed filing value, not an inference from GitHub infrastructure.
 
 ## D. Representative
 
-- Filing mode: `[SELF / REPRESENTATIVE]`
-- If `SELF`: power of attorney: `[NOT_APPLICABLE]`
-- If `REPRESENTATIVE`: representative details: `[PRIVATE]`
-- Power of attorney required/completed: `[YES/NO/NOT_APPLICABLE]`
+Selected filing mode: `SELF`.
+
+- Representative details: `NOT_APPLICABLE`
+- Power of attorney: `NOT_APPLICABLE`
+
+If filing circumstances later change, reopen this branch rather than silently using the SELF assumption.
 
 ## E. Filing route and signature
 
-Operational recommendation: `EPGU`, because current Rospatent guidance supports EPGU electronic filing and indicates that applicant data may be populated from ESIA; notifications and fee handling are integrated into the electronic-service flow.
+Selected route: `EPGU`.
 
-- Route actually selected: `[EPGU / FIPS / PAPER]`
-- Live route opened/rechecked immediately before filing: `[YES/NO]`
+Official public search found documented EPGU/SMEV and ESIA integration interfaces for connected information systems, but no supported public citizen API for arbitrary external submission of this Rospatent application.
+
+Therefore:
+
+`PREPARE_AND_VALIDATE_LOCALLY -> SELF_SUBMIT_THROUGH_EPGU_UI`
+
+- Live EPGU route opened/rechecked immediately before filing: `[YES/NO]`
 - Authentication/signature method shown by live route: `[PRIVATE/TECHNICAL]`
 - Method available and tested: `[YES/NO]`
 
-Do not guess signature requirements from an older instruction if the live route displays a different current requirement.
+Do not use undocumented/internal browser endpoints to automate filing.
 
 ## F. Frozen Russian abstract
 
@@ -101,10 +109,11 @@ Before submission verify:
 - `[ ]` language match;
 - `[ ]` program-size match;
 - `[ ]` deposit digest match;
+- `[ ]` first-publication field shows Russia / 2026;
 - `[ ]` right-holder identity matches the rights-cleared private declaration;
-- `[ ]` author identity/mention choice matches the private author evidence;
+- `[ ]` author identity/visibility choice matches the private author evidence;
 - `[ ]` no unintended personal data is present in deposited source/material;
-- `[ ]` live Rospatent form revision rechecked.
+- `[ ]` live Rospatent/EPGU form revision rechecked.
 
 ## G. State fee
 
@@ -121,9 +130,8 @@ Recommended private directory contents after finalization:
 1. saved/exported application form or portal-generated application copy;
 2. personal-data consent evidence/document;
 3. author-information consent or retained evidence of the lawful non-mention choice;
-4. representative/POA material if applicable;
-5. fee/payment or exemption evidence;
-6. private operator note recording route, signature method, first-publication treatment and final consistency check.
+4. fee/payment or exemption evidence;
+5. private operator note recording EPGU, SELF, Russia/2026, the live signature method and final consistency check.
 
 The frozen source/deposit package may be retained in the same private archive or in a linked immutable archive, but its public digest must remain the already frozen value above.
 
@@ -139,14 +147,15 @@ After all private documents are final:
 
 ## J. Final local declaration
 
-- `[ ]` I reviewed the live official Rospatent form/EPGU flow immediately before filing.
+- `[ ]` I reviewed the live official Rospatent/EPGU flow immediately before filing.
 - `[ ]` Applicant/right-holder identity is correct.
 - `[ ]` Applicant identifiers and address are complete locally.
-- `[ ]` Author information/mention choice is correct.
+- `[ ]` Author information/visibility choice is correct.
 - `[ ]` Required consent documents are complete.
-- `[ ]` First-publication country/year treatment is factually correct.
-- `[ ]` Representative/POA state is coherent.
-- `[ ]` Filing route/signature method is available.
+- `[x]` First-publication filing value selected as Russia / 2026.
+- `[x]` Representative/POA branch selected as SELF / NOT_APPLICABLE.
+- `[x]` Filing route selected as EPGU.
+- `[ ]` Live EPGU signature/authentication method confirmed.
 - `[ ]` Fee state is ready for the selected route.
 - `[ ]` Frozen title, 685-character abstract, 15144-byte program size and deposit digest match exactly.
 - `[ ]` The private packet is hashed and retained outside the public repository.
