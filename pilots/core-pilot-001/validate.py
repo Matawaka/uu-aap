@@ -6,6 +6,7 @@ ROOT = Path(__file__).resolve().parent
 EXPECTED_COMMIT = "9ed03f99d4ccab7896b62664ecd273f2919c5bb8"
 EXPECTED_TREE = "3719b1a3a4d785b1f9a58586e8b1fa7cefa954fb"
 CORE = ["state_evidence_anchor","possibility_availability","intent","authority_responsibility","coordination_ccrp","action_gate","outcome_provenance_successor_state"]
+HEX40 = "^[0-9a-f]{40}$"
 
 
 def load(name):
@@ -32,6 +33,15 @@ def main():
     assert permit["properties"]["origin"]["properties"]["main_commit"]["const"] == EXPECTED_COMMIT
     assert permit["properties"]["origin"]["properties"]["main_tree"]["const"] == EXPECTED_TREE
     assert permit["properties"]["forbidden_effects"]["minItems"] == 9
+
+    run_permit = load("run-permit.schema.json")
+    assert run_permit["properties"]["pilot_origin"]["properties"]["commit"]["const"] == EXPECTED_COMMIT
+    assert run_permit["properties"]["pilot_origin"]["properties"]["tree"]["const"] == EXPECTED_TREE
+    assert run_permit["properties"]["execution_target"]["properties"]["commit"]["pattern"] == HEX40
+    assert run_permit["properties"]["execution_target"]["properties"]["tree"]["pattern"] == HEX40
+    assert run_permit["properties"]["single_use"]["const"] is True
+    assert run_permit["properties"]["human_authorized"]["const"] is True
+    assert run_permit["properties"]["forbidden_effects"]["minItems"] == 9
 
     receipt = load("receipt.schema.json")
     assert receipt["properties"]["origin"]["properties"]["main_commit"]["const"] == EXPECTED_COMMIT

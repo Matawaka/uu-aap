@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-001:run-permit:v0.1",
+  "title": "Core Pilot 001 Run Permit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","pilot_id","run_id","pilot_origin","execution_target","destinations","single_use","human_authorized","allowed_effects","forbidden_effects"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "pilot_id": {"const": "core-pilot-001"},
+    "run_id": {"type":"string","minLength":1},
+    "pilot_origin": {
+      "type":"object","additionalProperties":false,
+      "required":["commit","tree"],
+      "properties": {
+        "commit":{"const":"9ed03f99d4ccab7896b62664ecd273f2919c5bb8"},
+        "tree":{"const":"3719b1a3a4d785b1f9a58586e8b1fa7cefa954fb"}
+      }
+    },
+    "execution_target": {
+      "type":"object","additionalProperties":false,
+      "required":["repository","branch","commit","tree"],
+      "properties": {
+        "repository":{"const":"Matawaka/uu-aap"},
+        "branch":{"const":"main"},
+        "commit":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "tree":{"type":"string","pattern":"^[0-9a-f]{40}$"}
+      }
+    },
+    "destinations": {
+      "type":"object","additionalProperties":false,
+      "required":["continuity_root","recovery_root"],
+      "properties": {
+        "continuity_root":{"type":"string","minLength":1},
+        "recovery_root":{"type":"string","minLength":1}
+      }
+    },
+    "single_use":{"const":true},
+    "human_authorized":{"const":true},
+    "allowed_effects": {
+      "type":"array","uniqueItems":true,"minItems":4,"maxItems":4,
+      "items":{"enum":["read_canonical_git","write_local_continuity_root","write_disposable_recovery_root","compute_verification_evidence"]}
+    },
+    "forbidden_effects": {
+      "type":"array","uniqueItems":true,"minItems":9,"maxItems":9,
+      "items":{"enum":["git_push","remote_ref_mutation","github_settings_mutation","permission_or_secret_mutation","release_or_tag_creation","canonical_worktree_write","kontur_activation_or_mutation","authority_transfer","permit_reuse"]}
+    }
+  }
+}
