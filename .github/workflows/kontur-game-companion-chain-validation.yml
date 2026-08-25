@@ -98,3 +98,6 @@ jobs:
 
       - name: Validate runtime transport binding challenge
         run: python pilots/kontur-game-companion/runtime-transport-binding-challenge/validate.py
+
+      - name: Validate runtime transport binding review receipt
+        run: python pilots/kontur-game-companion/runtime-transport-binding-review/validate.py
