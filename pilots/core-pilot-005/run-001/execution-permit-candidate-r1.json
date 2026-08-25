@@ -1,0 +1,29 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-005",
+  "run_id": "core-pilot-005-run-001",
+  "permit_id": "core-pilot-005-run-001-comment-001-r1",
+  "repository": "Matawaka/uu-aap",
+  "effect_type": "issue_comment_create",
+  "target": {
+    "issue_number": 440,
+    "expected_state": "open",
+    "expected_comment_count_before_attempt": 0
+  },
+  "payload": {
+    "body": "Core Pilot 005 Run 001 execution marker.\n\nThis comment is the single attempted external effect for run `core-pilot-005-run-001`.\n\nThe execution adapter must deliberately treat acknowledgement as `UNKNOWN` and must not use the write response itself as proof of success.\n\nA separate read-only observation step must reconcile the target as `CONFIRMED`, `ABSENT`, or `CONFLICT`.\n\nNo retry is authorized by this comment or by any reconciliation result.\n\n`unknown outcome != permission to retry`\n`observation != mutation authority`\n`reconciliation != successor permit`",
+    "sha256": "2ab6bb1a99b7839062a02a27b41a0dc472581b8bf9218d5e356ab23719688226"
+  },
+  "execution_frontier": "54a47ffc2c08a8ddf5c7ec6814d7411960634b4a",
+  "single_use": true,
+  "max_effect_count": 1,
+  "human_authorized": false,
+  "execution_authorized": false,
+  "retry_authorized": false,
+  "write_response_is_final_evidence": false,
+  "immediate_state_after_attempt": "UNKNOWN",
+  "observation_read_only": true,
+  "allowed_reconciliation_classes": ["CONFIRMED", "ABSENT", "CONFLICT"],
+  "successor_permit_created": false,
+  "status": "awaiting_explicit_human_authorization"
+}
