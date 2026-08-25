@@ -6,6 +6,7 @@ on:
       - 'docs/legal/IP-RIGHTS-REGISTRATION-PROTOCOL-v0.1.md'
       - 'docs/legal/ROSPATENT-WAVE-1-v0.1.md'
       - 'docs/legal/IP-WAVE-1-AUTHORSHIP-EVIDENCE-GATE-v0.1.md'
+      - 'docs/legal/IP-WAVE-1-PRIVATE-EVIDENCE-CHECKPOINT-v0.1.md'
       - 'schemas/ip/v0.1/**'
       - '.github/workflows/ip-rights-registration-v0.1-validation.yml'
   workflow_dispatch:
@@ -33,8 +34,10 @@ jobs:
           python -m py_compile schemas/ip/v0.1/tests/test_ip_registration_v01.py
           python -m json.tool schemas/ip/v0.1/ip-rights-registration-record.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/human-authorship-evidence-record.schema.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/private-evidence-checkpoint.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-authorship-review.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-private-evidence-checkpoint.json >/dev/null
 
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
@@ -61,6 +64,46 @@ jobs:
           assert record['ai_assistance']['generated_expression_scope'] == 'UNKNOWN'
           assert record['employment_and_contract']['status'] != 'CLEAR'
           print('human authorship evidence record: valid and fail-closed')
+          PY
+
+      - name: Validate private evidence checkpoint
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('schemas/ip/v0.1')
+          schema = json.loads((root / 'private-evidence-checkpoint.schema.json').read_text())
+          record = json.loads((root / 'examples/uu-aap-core-private-evidence-checkpoint.json').read_text())
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(record)
+
+          answers = record['factual_answers']
+          assert record['private_declaration']['status'] == 'AWAITING_PRIVATE_DECLARATION'
+          assert record['private_declaration']['digest'] is None
+          assert record['classification'] == 'UNRESOLVED'
+          assert record['gate_result']['effect'] == 'KEEP_RIGHTS_REVIEW'
+          assert any(value == 'UNKNOWN' for value in answers.values())
+
+          # Fail closed: a public record must not claim advancement while the
+          # private declaration/digest or required factual answers are unresolved.
+          forged = copy.deepcopy(record)
+          forged['gate_result']['effect'] = 'MAY_ADVANCE_TO_RIGHTS_CLEARED'
+          advance_allowed = (
+              forged['private_declaration']['status'] == 'COMPLETED'
+              and forged['private_declaration']['digest'] is not None
+              and forged['classification'] in {'HUMAN_AUTHORED', 'AI_ASSISTED_HUMAN_CREATION'}
+              and all(value != 'UNKNOWN' for value in forged['factual_answers'].values())
+              and forged['factual_answers']['other_human_creative_contributors'] == 'NONE'
+              and forged['factual_answers']['within_employment_duties'] == 'NO'
+              and forged['factual_answers']['commission_or_customer_contract_affects_rights'] == 'NO'
+              and forged['factual_answers']['exclusive_right_assignment_affects_scope'] == 'NO'
+              and forged['factual_answers']['third_party_expression_incorporated'] == 'NO'
+          )
+          assert not advance_allowed
+          print('private evidence checkpoint: valid and fail-closed')
           PY
 
       - name: Exercise fail-closed legal readiness gates
