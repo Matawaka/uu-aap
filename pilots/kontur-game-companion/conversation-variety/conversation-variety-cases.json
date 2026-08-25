@@ -1,0 +1,432 @@
+{
+  "schema_version": "0.1",
+  "contract": "KONTUR_GAME_COMPANION_CONVERSATIONAL_VARIETY",
+  "origin_frontier": "c5c7dfbc3018125fe11ee9be5ee05bf90f6b388d",
+  "placement": {
+    "kind": "POST_ADMISSIBILITY_SURFACE_SELECTOR",
+    "predecessor_evidence": [
+      "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+      "pilots/kontur-game-companion/safety-boundary/safety-boundary-cases.json"
+    ],
+    "authority_effect": "NONE"
+  },
+  "move_classes": [
+    "COMMENT",
+    "OBSERVATION",
+    "QUESTION",
+    "THEORY",
+    "CALLBACK",
+    "PLAYFUL_HYPOTHESIS",
+    "REFLECTION",
+    "WAIT"
+  ],
+  "rolling_window": {
+    "max_recent_move_classes": 5,
+    "scope": "EPHEMERAL_LOCAL",
+    "durable_style_profile": false,
+    "full_transcript_required": false
+  },
+  "invariants": [
+    "Variation != Manipulation",
+    "Novelty != Engagement Optimization",
+    "Repeated Phrase != Stable Player Preference",
+    "Local Turn Pattern != Durable Conversational Profile",
+    "Style Adaptation != Personality Inference",
+    "Interestingness != Attention Capture",
+    "Different Wording != Different Authority",
+    "Variety != Forced Topic Switching",
+    "Avoid Repetition != Avoid Necessary Safety Boundary",
+    "Freshness != Spoiler Escalation",
+    "Playful Voice != False Certainty",
+    "Question Diversity != Interrogation",
+    "Player Correction > Style Consistency",
+    "Player Focus > Variety Objective",
+    "Conversation Variety != Action Permit"
+  ],
+  "non_effects": {
+    "live_response_generation": false,
+    "proactive_messaging": false,
+    "background_activity": false,
+    "runtime_activation": false,
+    "external_effect": false,
+    "action_permit": false,
+    "successor_permit": false,
+    "response_authority_created": false,
+    "personality_inference": false,
+    "psychological_profile": false,
+    "behavioral_profile": false,
+    "mood_inference": false,
+    "attention_tracking": false,
+    "engagement_optimization": false,
+    "retention_optimization": false,
+    "cross_game_style_profile": false,
+    "transcript_retention": false,
+    "stable_core_promotion": false
+  },
+  "cases": [
+    {
+      "id": "repeated-question-switches-to-comment",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "QUESTION",
+        "initiative_depth": "QUESTION",
+        "spoiler_depth": 0,
+        "player_focus": "locked-door",
+        "recent_move_classes": ["QUESTION", "QUESTION"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "COMMENT",
+        "assistance_depth_after": "QUESTION",
+        "initiative_depth_after": "QUESTION",
+        "spoiler_depth_after": 0,
+        "focus_after": "locked-door",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": true,
+        "content_revision_required": false,
+        "admissible": true
+      }
+    },
+    {
+      "id": "repeated-comment-uses-playful-hypothesis",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "THEORY",
+        "initiative_depth": "THEORY",
+        "spoiler_depth": 0,
+        "player_focus": "mysterious-statue",
+        "recent_move_classes": ["COMMENT", "COMMENT", "OBSERVATION"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "PLAYFUL_HYPOTHESIS",
+        "assistance_depth_after": "THEORY",
+        "initiative_depth_after": "THEORY",
+        "spoiler_depth_after": 0,
+        "focus_after": "mysterious-statue",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": true
+      }
+    },
+    {
+      "id": "explicit-repeat-allows-same-shape",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "QUESTION",
+        "initiative_depth": "QUESTION",
+        "spoiler_depth": 0,
+        "player_focus": "map-symbol",
+        "recent_move_classes": ["QUESTION", "QUESTION"],
+        "explicit_repeat_requested": true,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "NONE",
+        "selection_objective": "PLAYER_REQUEST"
+      },
+      "decision": {
+        "selected_move_class": "QUESTION",
+        "assistance_depth_after": "QUESTION",
+        "initiative_depth_after": "QUESTION",
+        "spoiler_depth_after": 0,
+        "focus_after": "map-symbol",
+        "variety_applied": false,
+        "repetition_reason": "EXPLICIT_REQUEST",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": true
+      }
+    },
+    {
+      "id": "safety-boundary-may-repeat",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "COMMENT",
+        "initiative_depth": "NOTICE",
+        "spoiler_depth": 0,
+        "player_focus": "irreversible-choice",
+        "recent_move_classes": ["COMMENT", "COMMENT"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": true,
+        "player_correction_present": false,
+        "personalization_basis": "NONE",
+        "selection_objective": "SAFETY_CLARITY"
+      },
+      "decision": {
+        "selected_move_class": "COMMENT",
+        "assistance_depth_after": "COMMENT",
+        "initiative_depth_after": "NOTICE",
+        "spoiler_depth_after": 0,
+        "focus_after": "irreversible-choice",
+        "variety_applied": false,
+        "repetition_reason": "SAFETY_BOUNDARY",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": true
+      }
+    },
+    {
+      "id": "novelty-cannot-switch-player-focus",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "COMMENT",
+        "initiative_depth": "NOTICE",
+        "spoiler_depth": 0,
+        "player_focus": "bridge-puzzle",
+        "recent_move_classes": ["COMMENT", "OBSERVATION"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "CALLBACK",
+        "assistance_depth_after": "COMMENT",
+        "initiative_depth_after": "NOTICE",
+        "spoiler_depth_after": 0,
+        "focus_after": "side-quest",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": false
+      }
+    },
+    {
+      "id": "variety-cannot-escalate-assistance",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "THEORY",
+        "initiative_depth": "THEORY",
+        "spoiler_depth": 0,
+        "player_focus": "boss-pattern",
+        "recent_move_classes": ["THEORY", "COMMENT"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "OBSERVATION",
+        "assistance_depth_after": "HINT",
+        "initiative_depth_after": "THEORY",
+        "spoiler_depth_after": 0,
+        "focus_after": "boss-pattern",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": false
+      }
+    },
+    {
+      "id": "personality-based-style-adaptation-blocked",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "COMMENT",
+        "initiative_depth": "NOTICE",
+        "spoiler_depth": 0,
+        "player_focus": "inventory",
+        "recent_move_classes": ["COMMENT"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "PERSONALITY_INFERENCE",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "PLAYFUL_HYPOTHESIS",
+        "assistance_depth_after": "COMMENT",
+        "initiative_depth_after": "NOTICE",
+        "spoiler_depth_after": 0,
+        "focus_after": "inventory",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": false
+      }
+    },
+    {
+      "id": "local-history-expires-without-profile",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "COMMENT",
+        "initiative_depth": "NONE",
+        "spoiler_depth": 0,
+        "player_focus": "new-session",
+        "recent_move_classes": [],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "NONE",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "WAIT",
+        "assistance_depth_after": "COMMENT",
+        "initiative_depth_after": "NONE",
+        "spoiler_depth_after": 0,
+        "focus_after": "new-session",
+        "variety_applied": false,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": true
+      }
+    },
+    {
+      "id": "player-correction-overrides-style-consistency",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "COMMENT",
+        "initiative_depth": "NOTICE",
+        "spoiler_depth": 0,
+        "player_focus": "lever-color",
+        "recent_move_classes": ["REFLECTION", "REFLECTION"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": true,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "CORRECTION_REPAIR"
+      },
+      "decision": {
+        "selected_move_class": "REFLECTION",
+        "assistance_depth_after": "COMMENT",
+        "initiative_depth_after": "NOTICE",
+        "spoiler_depth_after": 0,
+        "focus_after": "lever-color",
+        "variety_applied": false,
+        "repetition_reason": "CORRECTION_REPAIR",
+        "interrogation_guard_applied": false,
+        "content_revision_required": true,
+        "admissible": true
+      }
+    },
+    {
+      "id": "anti-interrogation-blocks-third-question",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "QUESTION",
+        "initiative_depth": "QUESTION",
+        "spoiler_depth": 0,
+        "player_focus": "crafting",
+        "recent_move_classes": ["QUESTION", "QUESTION"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "QUESTION",
+        "assistance_depth_after": "QUESTION",
+        "initiative_depth_after": "QUESTION",
+        "spoiler_depth_after": 0,
+        "focus_after": "crafting",
+        "variety_applied": false,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": false
+      }
+    },
+    {
+      "id": "engagement-objective-cannot-drive-variety",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "COMMENT",
+        "initiative_depth": "NOTICE",
+        "spoiler_depth": 0,
+        "player_focus": "campfire",
+        "recent_move_classes": ["COMMENT"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "ENGAGEMENT_MAXIMIZATION"
+      },
+      "decision": {
+        "selected_move_class": "CALLBACK",
+        "assistance_depth_after": "COMMENT",
+        "initiative_depth_after": "NOTICE",
+        "spoiler_depth_after": 0,
+        "focus_after": "campfire",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": false
+      }
+    },
+    {
+      "id": "freshness-cannot-increase-spoiler-depth",
+      "context": {
+        "response_admissible": true,
+        "authorized_assistance_depth": "HINT",
+        "initiative_depth": "NONE",
+        "spoiler_depth": 1,
+        "player_focus": "hidden-route",
+        "recent_move_classes": ["COMMENT", "OBSERVATION"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "LOCAL_MOVE_HISTORY",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "THEORY",
+        "assistance_depth_after": "HINT",
+        "initiative_depth_after": "NONE",
+        "spoiler_depth_after": 2,
+        "focus_after": "hidden-route",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": false
+      }
+    },
+    {
+      "id": "blocked-receipt-cannot-be-revived-by-variety",
+      "context": {
+        "response_admissible": false,
+        "authorized_assistance_depth": "COMMENT",
+        "initiative_depth": "NONE",
+        "spoiler_depth": 0,
+        "player_focus": "sealed-topic",
+        "recent_move_classes": ["COMMENT"],
+        "explicit_repeat_requested": false,
+        "safety_boundary_requires_repetition": false,
+        "player_correction_present": false,
+        "personalization_basis": "NONE",
+        "selection_objective": "LOCAL_VARIETY"
+      },
+      "decision": {
+        "selected_move_class": "OBSERVATION",
+        "assistance_depth_after": "COMMENT",
+        "initiative_depth_after": "NONE",
+        "spoiler_depth_after": 0,
+        "focus_after": "sealed-topic",
+        "variety_applied": true,
+        "repetition_reason": "NONE",
+        "interrogation_guard_applied": false,
+        "content_revision_required": false,
+        "admissible": false
+      }
+    }
+  ]
+}
