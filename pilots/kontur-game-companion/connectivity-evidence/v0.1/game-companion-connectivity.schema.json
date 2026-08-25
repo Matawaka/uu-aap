@@ -1,0 +1,381 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/blob/main/pilots/kontur-game-companion/connectivity-evidence/v0.1/game-companion-connectivity.schema.json",
+  "title": "UU-AAP KONTUR Game Companion Connectivity Evidence v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "evidence_frontier",
+    "stable_direction",
+    "layers",
+    "relations",
+    "trigger_scope",
+    "assertions",
+    "non_effects"
+  ],
+  "properties": {
+    "protocol": {
+      "const": "UU-AAP-KONTUR-GAME-COMPANION-CONNECTIVITY-EVIDENCE"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "artifact_type": {
+      "const": "GameCompanionConnectivityEvidence"
+    },
+    "evidence_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "observed_main_sha",
+        "source_issue",
+        "source_audit_pr",
+        "source_audit_frontier",
+        "generated_at"
+      ],
+      "properties": {
+        "observed_main_sha": {
+          "const": "d8500cdcbf9355cce71ce52beaea01c70e1a1c54"
+        },
+        "source_issue": {
+          "const": 445
+        },
+        "source_audit_pr": {
+          "const": 458
+        },
+        "source_audit_frontier": {
+          "const": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee"
+        },
+        "generated_at": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "stable_direction": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "layer_class",
+          "predecessor_layer",
+          "origin_pr",
+          "origin_commit",
+          "artifacts"
+        ],
+        "properties": {
+          "id": {
+            "enum": [
+              "stable-core",
+              "observational-lane",
+              "assistance-gate",
+              "shared-discovery-memory",
+              "bounded-initiative",
+              "focus-diversity",
+              "interaction-receipt",
+              "pause-resume"
+            ]
+          },
+          "layer_class": {
+            "enum": [
+              "stable-primitive",
+              "optional-synthetic-pilot"
+            ]
+          },
+          "predecessor_layer": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "origin_pr": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1
+          },
+          "origin_commit": {
+            "anyOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "string",
+                "pattern": "^[0-9a-f]{40}$"
+              }
+            ]
+          },
+          "artifacts": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "role",
+                "path",
+                "git_blob_sha"
+              ],
+              "properties": {
+                "role": {
+                  "enum": [
+                    "specification",
+                    "fixture",
+                    "validator",
+                    "workflow"
+                  ]
+                },
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "git_blob_sha": {
+                  "type": "string",
+                  "pattern": "^[0-9a-f]{40}$"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "relations": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "source",
+          "target",
+          "relation_type",
+          "classification",
+          "source_artifact_paths",
+          "target_artifact_paths",
+          "authority_effect",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^GC-REL-[0-9]{3}$"
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "target": {
+            "type": "string",
+            "minLength": 1
+          },
+          "relation_type": {
+            "enum": [
+              "optional_adapter_reuse",
+              "declared_predecessor"
+            ]
+          },
+          "classification": {
+            "enum": [
+              "PROVEN",
+              "DOCUMENTED",
+              "IMPLIED",
+              "MISSING",
+              "CONFLICTING",
+              "OUT_OF_SCOPE"
+            ]
+          },
+          "source_artifact_paths": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "target_artifact_paths": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "authority_effect": {
+            "const": "none"
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "trigger_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "watch_paths",
+        "excluded_process_paths",
+        "parallel_ip_process_is_dependency"
+      ],
+      "properties": {
+        "watch_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "excluded_process_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "parallel_ip_process_is_dependency": {
+          "const": false
+        }
+      }
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_artifact_binding_required",
+        "repository_proximity_is_not_relation",
+        "ci_green_is_not_semantic_proof",
+        "receipt_is_not_authority",
+        "optional_pilot_is_not_stable_core_requirement",
+        "reverse_authority_forbidden",
+        "changes_fail_closed_until_evidence_refresh"
+      ],
+      "properties": {
+        "exact_artifact_binding_required": {
+          "const": true
+        },
+        "repository_proximity_is_not_relation": {
+          "const": true
+        },
+        "ci_green_is_not_semantic_proof": {
+          "const": true
+        },
+        "receipt_is_not_authority": {
+          "const": true
+        },
+        "optional_pilot_is_not_stable_core_requirement": {
+          "const": true
+        },
+        "reverse_authority_forbidden": {
+          "const": true
+        },
+        "changes_fail_closed_until_evidence_refresh": {
+          "const": true
+        }
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "existing_architecture_artifact_modified",
+        "stable_core_modified",
+        "existing_pilot_behavior_modified",
+        "existing_workflow_modified",
+        "live_response_generation",
+        "proactive_messaging",
+        "autonomous_gameplay",
+        "game_account_control",
+        "external_effect_authorized",
+        "action_permit_created",
+        "successor_permit_created",
+        "automatic_stable_core_promotion",
+        "copyright_process_modified",
+        "license_or_notice_modified",
+        "legal_author_identity_modified",
+        "pseudonym_publication_process_modified"
+      ],
+      "properties": {
+        "existing_architecture_artifact_modified": {
+          "const": false
+        },
+        "stable_core_modified": {
+          "const": false
+        },
+        "existing_pilot_behavior_modified": {
+          "const": false
+        },
+        "existing_workflow_modified": {
+          "const": false
+        },
+        "live_response_generation": {
+          "const": false
+        },
+        "proactive_messaging": {
+          "const": false
+        },
+        "autonomous_gameplay": {
+          "const": false
+        },
+        "game_account_control": {
+          "const": false
+        },
+        "external_effect_authorized": {
+          "const": false
+        },
+        "action_permit_created": {
+          "const": false
+        },
+        "successor_permit_created": {
+          "const": false
+        },
+        "automatic_stable_core_promotion": {
+          "const": false
+        },
+        "copyright_process_modified": {
+          "const": false
+        },
+        "license_or_notice_modified": {
+          "const": false
+        },
+        "legal_author_identity_modified": {
+          "const": false
+        },
+        "pseudonym_publication_process_modified": {
+          "const": false
+        }
+      }
+    }
+  }
+}
+
+
