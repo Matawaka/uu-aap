@@ -1,278 +1,207 @@
 # Rospatent Wave 1 — UU-AAP Core validator registration preparation v0.1
 
-Status: **PRE-FILING / RIGHTS_REVIEW**  
+Status: **PRE-FILING / PATENT_SCREEN / DEPOSIT_FROZEN**  
 Legal snapshot: **2026-08-25**  
 Canonical repository: `https://github.com/Matawaka/uu-aap`
 
-## 1. Filing objective
+## 1. Registration object
 
-Prepare the first Russian state-registration filing for one coherent **program for computers** from the UU-AAP reusable core.
+Russian filing title — use exactly this spelling in the application, abstract, title sheet and deposited materials:
 
-Wave 1 is deliberately narrower than the whole UU-AAP/PoAI/CCRP/KONTUR repository. The filing must identify a concrete software expression and must not attempt to claim exclusive copyright in abstract UU-AAP architecture, concepts, principles, protocol methods or future applications.
+**«Валидатор цепочек квитанций UU-AAP Core v0.1»**
 
-Selected working title:
+English identification only:
 
-**«Валидатор цепочек квитанций UU-AAP Core v0.1»**  
-English identification: **UU-AAP Core v0.1 Receipt Chain Validator**
+**UU-AAP Core v0.1 Receipt Chain Validator**
 
-Final title must remain identical across the application, abstract, title sheet and deposit materials.
+Wave 1 concerns one concrete program for computers. It does not claim exclusive copyright in abstract UU-AAP ideas, the seven-layer architecture as an idea, CCRP, KONTUR, PoAI, future applications or unrelated implementations.
 
-## 2. Current evidence frontier
+## 2. Rights-cleared and frozen frontier
 
-Post-#487 canonical `main` frontier used for this narrowed Wave 1 audit:
+Rights-cleared / deposit-freeze frontier:
 
-`68588d0db347f168f6b3a6a13dbd5b479a49e6eb`
+`8aec7684a54e2570c285720a22d30d99f958131a`
 
-Origin of the selected Core v0.1 surface:
+Origin of the selected Core surface:
 
-- PR #320 — `Add UU-AAP Core v0.1 reusable protocol stack`;
-- origin merge commit `fd3a3fa7e84c11a80d2af5ff389fe10979720ef9`;
-- earliest known public repository timestamp: `2026-08-24T19:01:17+05:00`.
+- issue #303 — pre-implementation stable-core requirements;
+- PR #320 — Core v0.1 implementation;
+- origin merge `fd3a3fa7e84c11a80d2af5ff389fe10979720ef9`;
+- earliest known public disclosure `2026-08-24T19:01:17+05:00`.
 
-The observed `main` SHA is an **evidence frontier**, not yet the final deposit-package digest.
+Human-authorship/right-holder evidence was resolved through the private-evidence pipeline and is bound publicly by the retained declaration digest rather than by publishing private personal material.
 
-The final filing package must bind to a later explicit frozen filing checkpoint after:
+Private declaration digest:
 
-1. authorship/right-holder review is complete;
-2. third-party-only and unresolved material is excluded or correctly represented;
-3. the already-public patent/public-disclosure screen is resolved;
-4. the exact deposit archive is hashed.
+`sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b`
 
-`observed main != final filing deposit`
+Classification:
 
-## 3. Selected legal/software object boundary
+`AI_ASSISTED_HUMAN_CREATION`
 
-### Executable program
+## 3. Exact deposit boundary
+
+### Program source
 
 - `protocols/core/v0.1/validate-core.js`
 
-### Identifying/deposit-support material
+### Identifying/support materials
 
 - `protocols/core/v0.1/receipt-envelope.schema.json`
 - `protocols/core/v0.1/end-to-end.fixture.json`
 
-### Context/provenance material, currently outside the claimed executable deposit scope
+### Excluded from the registered program object
 
-- `protocols/core/v0.1/README.md`
-- `.github/workflows/core-protocol-v0.1-validation.yml`
-- PR #320 and its merge history.
+- `README.md` and repository documentation as specification/provenance context;
+- workflows and CI infrastructure;
+- unrelated protocol families and applications;
+- abstract architecture, methods, policies and legal/philosophical prose;
+- separate technical patent candidates tracked in issue #492.
 
-The earlier broad candidate spanning `schema/`, `schemas/` and `proposals/poai/` is superseded for Wave 1. There is no `tools/` directory in the current repository root; it must not appear in a reproducible deposit definition.
+## 4. Frozen cryptographic manifest
 
-### Not claimed as the registered software object
+Canonical manifest:
 
-- the abstract idea of UU-AAP;
-- the seven-layer architectural sequence as a concept;
-- general principles, methods, rules, processes or systems as such;
-- legal/philosophical concepts stated only in prose;
-- CCRP, KONTUR, PoAI or unrelated protocol families;
-- future applications that do not yet exist as the same registered software object;
-- third-party material for which the applicant lacks the required rights;
-- contributor-owned material for which the project has only an open inbound license unless the filing accurately reflects the relevant authors/right holders and legal basis.
+`schemas/ip/v0.1/examples/uu-aap-core-deposit-freeze.json`
 
-## 4. Functional identity of the selected program
+Reproducible builder:
 
-The selected Node.js command-line validator checks machine-readable UU-AAP Core v0.1 receipt chains. Its current semantics include:
+`schemas/ip/v0.1/build_wave1_deposit_manifest.py`
+
+Canonicalization profile:
+
+`UU-AAP-DEPOSIT-INVENTORY-v0.1`
+
+Package digest:
+
+`sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8`
+
+| Path | Role | Bytes | Git blob SHA-1 | SHA-256 |
+| --- | --- | ---: | --- | --- |
+| `protocols/core/v0.1/validate-core.js` | program source | 15144 | `19b8cc90f34ad2eb3819d02d6335f584c65caa46` | `4315bc0661698de4946a0f24478c8f98dcdfadca7289178a04e436232acd5fd7` |
+| `protocols/core/v0.1/receipt-envelope.schema.json` | identifying schema | 2579 | `38d2d439ad6a1065da96cc9e5f2190734fd2cd7b` | `1e8c38e31975617ac4ce89bda39347423f0cc56c346abd1350980663ddba3f65` |
+| `protocols/core/v0.1/end-to-end.fixture.json` | conformance fixture | 9661 | `9ed65bfae43f157f6fb051bf6460ebaec13ea480` | `1f570095355dbef1b87a33edd11c69ec9a6a58ac2756420df7b0e022fa8e3fc5` |
+
+Program source volume for the Rospatent abstract: **15144 bytes**.
+
+Identifying/support-material volume: **12240 bytes**.
+
+Total frozen three-file evidence surface: **27384 bytes**.
+
+Programming language: **JavaScript (Node.js)**.
+
+The package digest binds path, role, byte size and per-file SHA-256 in lexicographic path order. It is intentionally independent of archive timestamps and filesystem metadata.
+
+## 5. Functional identity
+
+The selected validator checks machine-readable UU-AAP Core v0.1 receipt chains, including:
 
 - allowed receipt types and required envelope fields;
-- exact required `non_effects`;
+- exact `non_effects` boundaries;
 - SHA-256 content-hash validation;
-- predecessor hash existence and ordering;
-- subject continuity;
+- predecessor existence and ordering;
+- subject/frontier continuity;
 - required predecessor receipt-type relationships;
 - shared predecessor frontier at bounded action gates;
 - prohibition of implicit authority/permission expansion;
-- action/outcome/successor ordering and frontier consistency;
+- action/outcome/successor ordering and state consistency;
 - positive and negative conformance vectors.
 
-The selected executable directly imports only Node.js built-in modules `crypto`, `fs` and `path`. No package-manager runtime dependency is required by this candidate program surface.
+Its direct runtime imports are Node.js built-ins `crypto`, `fs` and `path`.
 
-This technical dependency finding does not by itself complete third-party legal clearance.
+## 6. Patent/public-disclosure separation
 
-## 5. Current file anchors
+Wave 1 is a software-registration filing, not a patent filing.
 
-At post-#487 frontier `68588d0db347f168f6b3a6a13dbd5b479a49e6eb`:
+The selected Core surface was already public on 2026-08-24. Federal Law No. 296-FZ, signed 2026-08-04 and effective 2027-01-01, changes the Russian patent-law treatment of programmable means / IT solutions. Therefore Wave 1 does not label underlying technical UU-AAP mechanisms as globally non-patentable.
 
-| Path | Git blob SHA | Current size / role |
-| --- | --- | --- |
-| `protocols/core/v0.1/validate-core.js` | `19b8cc90f34ad2eb3819d02d6335f584c65caa46` | 15144 bytes; executable JavaScript |
-| `protocols/core/v0.1/receipt-envelope.schema.json` | `38d2d439ad6a1065da96cc9e5f2190734fd2cd7b` | 2579 bytes; identifying schema |
-| `protocols/core/v0.1/end-to-end.fixture.json` | `9ed65bfae43f157f6fb051bf6460ebaec13ea480` | 9661 bytes; conformance/identifying fixture |
-| `protocols/core/v0.1/README.md` | `290483f9704704160337d5c06800f3e66d32e05a` | 7573 bytes; provenance/specification context |
+Separate patent review is tracked in issue #492.
 
-These Git blob SHAs are evidence anchors. They are not the final Rospatent archive digest.
+Current Russian Civil Code Article 1350 provides a twelve-month grace period for qualifying own disclosure of invention information, subject to the applicant proving the statutory conditions. The date `2027-08-24` is recorded only as a conservative Russian outer date associated with the known 2026-08-24 disclosure; it is not a guarantee of patentability and is not assumed to preserve foreign patent rights.
 
-## 6. Mandatory rights audit before filing
+Machine status:
 
-For the selected program expression establish:
+`SEPARATE_PATENT_TRACK`
 
-- natural-person creative author(s), where legally relevant;
-- actual contribution scope of every author/coauthor;
-- proposed right holder(s);
-- exclusive-right basis;
-- whether authorship/right ownership could be affected by employment duties, employer assignment, customer commission or another contract;
-- whether any assignment exists;
-- whether only a license exists for any material;
-- whether another contributor owns copyright-relevant expression in the selected surface;
-- whether any third-party creative material was incorporated;
-- how AI assistance/generated material relates to the factual basis for any human-authorship statement;
-- whether the complete selected material can be truthfully presented under one filing.
+## 7. Final Russian abstract
 
-A repository account, PR submitter, commit author field, merge right or maintainer role is useful provenance evidence but must not be treated alone as conclusive proof of natural-person creative authorship or exclusive ownership.
+The following abstract is frozen with the manifest and is **685 characters**, below the current 900-character limit:
 
-`PR submitter != author`
+> Валидатор цепочек квитанций UU-AAP Core v0.1 предназначен для проверки машиночитаемых цепочек квитанций протокола UU-AAP Core. Программа проверяет структуру квитанций, типы семи протокольных примитивов, связи с предшествующими квитанциями, контрольные хэши, утверждения и явно заданные non-effects, а также fail-closed условия переходов от состояния через возможность, намерение, полномочия/ответственность, координацию и действие к результату и последующему состоянию. Область применения: системы provenance, accountability и доказуемого взаимодействия человека, искусственного интеллекта и цифровых сервисов. Язык программирования: JavaScript (Node.js). Объем программы: 15144 байта.
 
-`repository owner != exclusive right holder`
+If any deposited program-source bytes change, this abstract, byte count and manifest must be regenerated rather than edited independently.
 
-`merge != assignment`
+## 8. Current machine state
 
-## 7. Applicant/author fields — currently blocked
+`PATENT_SCREEN`
 
-Do **not** submit until these facts are explicitly verified.
+The patent/public-disclosure boundary is now resolved for the software-registration path and the deposit content is frozen. `FILED` remains false.
 
-### Applicant / right holder
+The next transition is permitted only after the private filing packet is completed and reviewed:
 
-- full legal name or legal-entity name;
-- applicant type: individual / legal entity / multiple right holders;
-- address/place of residence or location required by the application;
-- country/state identifiers required by the form;
-- legal basis for holding the exclusive right to the complete deposited software scope;
-- whether an employment, commissioning, collaboration or assignment agreement affects ownership.
+`PATENT_SCREEN → READY_TO_FILE`
 
-### Author(s)
+Then, only after actual external submission and receipt:
 
-For each author to be named:
+`READY_TO_FILE → FILED`
 
-- full legal name;
-- authorship basis and actual creative contribution scope;
-- required address/residence information;
-- consent to personal-data processing;
-- consent to publication/mention of author details as required by the filing process;
-- decision whether the author will be mentioned where the law permits refusal to be mentioned.
+## 9. Remaining private filing packet
 
-`TO_BE_VERIFIED` must never be converted to a guessed name in a filing form.
+Keep the following outside the public repository:
 
-## 8. AI-assistance evidence boundary
+- applicant/right-holder legal identity fields required by the official form;
+- author identity fields required by the official form;
+- address/place-of-residence data;
+- personal-data consent;
+- author-information consent;
+- signature or qualified electronic signature material;
+- representative power of attorney if used;
+- payment details/evidence.
 
-Because UU-AAP itself distinguishes provenance, authority and authorship, the filing evidence must not equate an AI-generated code fragment with a natural-person author merely because a person requested, selected or merged it.
+Do not commit passport details, addresses, signatures, portal credentials, unredacted contracts or payment data.
 
-Before naming a human author, preserve enough evidence to support the claimed creative contribution, which may include human-originated architecture choices, constraints, selection, editing, integration, debugging and other protectable expression where applicable.
+## 10. Official filing checklist
 
-The public repository should record the conclusion and evidence references, not unnecessary private prompt history.
+Before `READY_TO_FILE`:
 
-## 9. Draft abstract for Rospatent
+- [x] one coherent program selected;
+- [x] human-authorship/AI-assistance boundary evidenced;
+- [x] right-holder basis cleared;
+- [x] employment/customer/assignment/coauthor boundary cleared;
+- [x] third-party source-expression boundary cleared;
+- [x] public-disclosure/patent-path separation recorded;
+- [x] separate patent track created (#492);
+- [x] exact deposit frontier frozen;
+- [x] per-file SHA-256 values computed;
+- [x] canonical package digest computed;
+- [x] programming language fixed;
+- [x] program byte volume fixed;
+- [x] <=900-character abstract fixed;
+- [ ] private official applicant/right-holder fields completed;
+- [ ] private author fields/consents completed;
+- [ ] final human comparison of official form title/abstract/deposit against this manifest;
+- [ ] state fee paid or lawful exemption recorded;
+- [ ] authorized applicant/representative signs and submits.
 
-Working draft for the narrowed object:
+After actual submission only:
 
-> «Валидатор цепочек квитанций UU-AAP Core v0.1 предназначен для проверки машиночитаемых цепочек доказательных квитанций протокола UU-AAP Core. Программа контролирует структуру записей, SHA-256 хэши, связи с предшествующими квитанциями, непрерывность субъекта и состояния, обязательные ограничения non-effects, допустимость переходов полномочий, координации, действия, результата и следующего состояния; при несоответствии применяется fail-closed отказ. Область применения: проверка provenance и доказуемых протокольных переходов. Язык программирования: JavaScript. Объем программы: [УТОЧНИТЬ ПО ФИНАЛЬНОМУ ДЕПОЗИТУ] байт.»
+- [ ] capture application number;
+- [ ] capture filing date;
+- [ ] retain external receipt/reference;
+- [ ] change machine state to `FILED`;
+- [ ] track office actions;
+- [ ] record registration number/certificate or terminal outcome.
 
-Before filing verify that the abstract:
+## 11. Fee and route
 
-- uses the exact filing title;
-- is no longer than the applicable 900-character limit;
-- states purpose, application area and functionality;
-- identifies every programming language represented in the final deposited source;
-- states machine-readable program size under the filing convention selected for the final package;
-- discloses personal-data presence if applicable;
-- does not accidentally claim patent scope or ownership of abstract ideas.
+Current state-fee baseline for consideration of one program/database registration application and decision: **5,000 RUB**.
 
-## 10. Deposit-material construction
+Preferred electronic route: official FIPS/Rospatent service or the Unified Portal of State and Municipal Services where applicable.
 
-After `RIGHTS_CLEARED`, create an immutable directory/archive containing only the frozen filing scope.
+Actual submission is an external legal act and is not performed by repository CI.
 
-Required internal manifest fields:
+## 12. Successor applications
 
-- filing candidate title;
-- canonical repository;
-- canonical commit SHA;
-- selected paths/blobs;
-- exclusions and reasons;
-- author/right-holder mapping per material group;
-- third-party inventory;
-- source-language list;
-- total machine-readable size;
-- SHA-256 for every included file;
-- root SHA-256 for the filing package;
-- generation timestamp;
-- tool/script version used to generate the package.
+This Wave 1 registration does not cover future UU-AAP applications. Independently valuable CCRP, KONTUR, PoAI and other executable products require their own evidence records and filing decisions.
 
-For official deposited identifying materials, select full source or source fragments sufficient to identify the program. Preserve the full frozen source package privately even if the submitted identifying material is smaller.
-
-## 11. Official filing package checklist
-
-Current Rospatent route requires, as applicable:
-
-- application for state registration of a program for computers;
-- right-holder/applicant information;
-- author information unless an author lawfully declines mention;
-- deposited materials identifying the software;
-- abstract;
-- consent to personal-data processing for persons identified in the application;
-- author consent concerning author information;
-- representative power of attorney if a representative is used;
-- state-fee payment evidence or applicable exemption basis;
-- electronic-signature/portal authorization requirements of the selected filing channel.
-
-Current state fee for consideration of one program/database registration application and decision is **5,000 RUB**. One application must relate to one program for computers or one database.
-
-## 12. Filing route
-
-Preferred digital paths:
-
-1. electronic filing through the FIPS/Rospatent service; or
-2. the Russian Unified Portal of State and Municipal Services where available for the filing.
-
-External portal submission is an irreversible legal act relative to this repository preparation process and requires the authorized applicant/representative to review and sign the final package.
-
-## 13. Expected processing state
-
-Baseline official service term for registration/issuance of a certificate is currently stated as **62 working days from acceptance of the application**, subject to extension when corrected/additional materials, fee processing or applicant motions are required.
-
-Model the office interaction as:
-
-`READY_TO_FILE → FILED → [OFFICE_ACTION ↔ RESPONSE] → REGISTERED | REFUSED | WITHDRAWN`
-
-Every external receipt must be preserved in the IP record.
-
-## 14. Wave 1 completion criteria
-
-Current progress:
-
-- [x] narrow candidate program selected;
-- [x] origin PR/merge provenance located;
-- [x] current file/blob boundary recorded;
-- [x] direct runtime dependency surface preliminarily reviewed;
-- [ ] natural-person author list verified;
-- [ ] AI-assistance/human creative contribution boundary evidenced;
-- [ ] right-holder/applicant list and legal bases verified;
-- [ ] employment/commission/assignment conflicts resolved or excluded;
-- [ ] coauthor/contributor rights resolved or excluded;
-- [ ] third-party/licensed-only material legally cleared or excluded;
-- [ ] patent-sensitive/public-disclosure review completed;
-- [ ] final deposit checkpoint/tag frozen;
-- [ ] reproducible deposit archive created;
-- [ ] per-file hashes and package hash computed;
-- [ ] final programming-language/size declaration calculated;
-- [ ] final <=900-character abstract verified;
-- [ ] official application fields completed;
-- [ ] personal-data/author consents completed;
-- [ ] 5,000 RUB state fee paid or exemption documented;
-- [ ] authorized applicant/representative signs and files;
-- [ ] filing/application receipt captured;
-- [ ] Rospatent correspondence captured;
-- [ ] registration number/certificate or terminal outcome captured;
-- [ ] successor-state record committed without publishing protected personal data.
-
-## 15. Privacy boundary
-
-Do not commit passport data, home addresses, signatures, portal credentials, payment details, powers of attorney containing unnecessary personal data, or unredacted official filing forms to the public repository.
-
-Public repository records should contain only non-sensitive evidence needed to establish object identity, provenance, filing state and successor linkage.
-
-Private filing artifacts must be retained outside the public repository, with digests bound into the public evidence chain where useful.
-
-## 16. Successor applications
-
-Wave 1 does not cover every future application. CCRP, KONTUR, PoAI executable packages and other independently valuable applications should receive separate IP records and filing decisions.
-
-For a planned rate above 10 applications/year, government filings may be batched administratively while evidence anchoring remains continuous per release.
+For a portfolio exceeding ten releasable applications per year, evidence anchoring remains continuous per release while government filings may be batched administratively.
