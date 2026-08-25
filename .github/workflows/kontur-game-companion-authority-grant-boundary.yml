@@ -1,0 +1,27 @@
+name: KONTUR Game Companion authority grant boundary validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/authority-grant-boundary/**'
+      - '.github/workflows/kontur-game-companion-authority-grant-boundary.yml'
+      - 'pilots/kontur-game-companion/authority-review-receipt/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-authority-grant-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate authority grant boundary
+        run: python pilots/kontur-game-companion/authority-grant-boundary/validate.py
