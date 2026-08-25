@@ -21,10 +21,26 @@ def base_record() -> dict:
     return json.loads(EXAMPLE_PATH.read_text(encoding="utf-8"))
 
 
+def complete_readiness() -> dict:
+    return {
+        "status": "COMPLETE",
+        "checkpoint_ref": "schemas/ip/v0.1/examples/test-complete-checkpoint.json",
+        "private_packet_digest": "sha256:" + "b" * 64,
+        "official_form_finalized": True,
+        "personal_data_consent_complete": True,
+        "author_consent_resolved": True,
+        "representative_authority_resolved": True,
+        "route_selected": True,
+        "signature_method_confirmed": True,
+        "fee_status": "PAYMENT_READY",
+        "consistency_verified": True,
+    }
+
+
 def make_ready_to_file(record: dict) -> dict:
     r = copy.deepcopy(record)
     r["state"] = "READY_TO_FILE"
-    r["evidence_anchor"]["package_digest"] = "a" * 64
+    r["evidence_anchor"]["package_digest"] = "sha256:" + "a" * 64
     r["rights_review"] = {
         "status": "CLEARED",
         "authors": [
@@ -52,6 +68,7 @@ def make_ready_to_file(record: dict) -> dict:
         "reviewer_or_authority": "recorded-review",
         "notes": "Software-registration scope only."
     }
+    r["filing_readiness"] = complete_readiness()
     return r
 
 
@@ -61,12 +78,12 @@ def test_current_patent_screen_example_is_valid() -> None:
     assert record["rights_review"]["status"] == "CLEARED"
     assert record["patentability"]["status"] == "SEPARATE_PATENT_TRACK"
     assert record["evidence_anchor"]["package_digest"].startswith("sha256:")
+    assert record["filing_readiness"]["status"] == "PRIVATE_PACKET_IN_PROGRESS"
     assert module.validate_record(EXAMPLE_PATH) == []
 
 
 def test_ready_to_file_fails_closed_if_rights_are_reopened() -> None:
-    record = base_record()
-    record["state"] = "READY_TO_FILE"
+    record = make_ready_to_file(base_record())
     record["rights_review"]["status"] = "IN_REVIEW"
     record["rights_review"]["third_party_status"] = "UNKNOWN"
     record["rights_review"]["authors"] = [
@@ -93,13 +110,26 @@ def test_ready_to_file_fails_closed_if_rights_are_reopened() -> None:
 
 
 def test_ready_to_file_still_requires_patent_screen_and_frozen_digest() -> None:
-    record = base_record()
-    record["state"] = "READY_TO_FILE"
+    record = make_ready_to_file(base_record())
     record["patentability"]["status"] = "ALREADY_PUBLIC_DISCLOSURE_REVIEW_REQUIRED"
     record["evidence_anchor"]["package_digest"] = "TO_BE_FROZEN"
     errors = module.semantic_errors(record)
     assert any("patentability/public-disclosure review" in error for error in errors)
     assert any("frozen package digest" in error for error in errors)
+
+
+def test_ready_to_file_fails_without_complete_private_checkpoint() -> None:
+    record = base_record()
+    record["state"] = "READY_TO_FILE"
+    errors = module.semantic_errors(record)
+    assert any("filing_readiness.status=COMPLETE" in error for error in errors)
+    assert any("private filing packet digest" in error for error in errors)
+    assert any("official form must be finalized" in error for error in errors)
+    assert any("personal-data consent" in error for error in errors)
+    assert any("filing route must be selected" in error for error in errors)
+    assert any("signature method must be confirmed" in error for error in errors)
+    assert any("fee status" in error for error in errors)
+    assert any("consistency" in error for error in errors)
 
 
 def test_ready_to_file_accepts_resolved_evidence() -> None:
@@ -108,10 +138,30 @@ def test_ready_to_file_accepts_resolved_evidence() -> None:
 
 
 def test_separate_patent_track_is_resolved_for_software_filing_gate() -> None:
-    record = base_record()
-    record["state"] = "READY_TO_FILE"
+    record = make_ready_to_file(base_record())
     record["patentability"]["status"] = "SEPARATE_PATENT_TRACK"
     assert module.semantic_errors(record) == []
+
+
+def test_private_packet_digest_is_mandatory() -> None:
+    record = make_ready_to_file(base_record())
+    record["filing_readiness"]["private_packet_digest"] = None
+    errors = module.semantic_errors(record)
+    assert any("private filing packet digest" in error for error in errors)
+
+
+def test_personal_data_consent_is_mandatory() -> None:
+    record = make_ready_to_file(base_record())
+    record["filing_readiness"]["personal_data_consent_complete"] = False
+    errors = module.semantic_errors(record)
+    assert any("personal-data consent" in error for error in errors)
+
+
+def test_fee_must_be_ready_paid_or_exempt() -> None:
+    record = make_ready_to_file(base_record())
+    record["filing_readiness"]["fee_status"] = "NOT_READY"
+    errors = module.semantic_errors(record)
+    assert any("fee status" in error for error in errors)
 
 
 def test_licensed_only_holder_cannot_be_claimed_as_exclusive_holder() -> None:
@@ -129,7 +179,7 @@ def test_filed_requires_external_receipt() -> None:
         "application_number": "2026999999",
         "filing_date": "2026-08-25",
         "fee_rub": 5000,
-        "package_digest": "a" * 64,
+        "package_digest": "sha256:" + "a" * 64,
         "external_receipt_ref": None
     }
     errors = module.semantic_errors(record)
@@ -144,7 +194,7 @@ def test_registered_requires_registration_outcome() -> None:
         "application_number": "2026999999",
         "filing_date": "2026-08-25",
         "fee_rub": 5000,
-        "package_digest": "a" * 64,
+        "package_digest": "sha256:" + "a" * 64,
         "external_receipt_ref": "private-filing-receipt:2026999999"
     }
     record["outcome"] = {
