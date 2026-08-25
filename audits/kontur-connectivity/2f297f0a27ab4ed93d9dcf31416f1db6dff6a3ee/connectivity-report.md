@@ -270,8 +270,9 @@ gaps, not reinterpreted as cycles.
   meaning.
 - The absence of a typed optional-adapter registry edge leaves the exact forward
   Core-to-KONTUR interface unspecified.
-- Publication itself is unavailable under existing permissions; the complete evidence
-  package is prepared locally and no permission expansion was sought.
+- The audit was recovered after a network interruption and published in PR #458 using
+  an already-authorized GitHub connector. No permission expansion was sought, no
+  duplicate audit was created, and the PR remains unmerged.
 
 ## Exact findings
 
@@ -303,6 +304,5 @@ No remediation is authorized by any finding.
 **Audit Publication != Architecture Change**
 
 **This report contains evidence only and authorizes no remediation.**
-
 
 
