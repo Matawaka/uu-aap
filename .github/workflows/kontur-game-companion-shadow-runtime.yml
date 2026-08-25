@@ -1,0 +1,28 @@
+name: KONTUR Game Companion shadow runtime null transport validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/shadow-runtime/**'
+      - 'pilots/kontur-game-companion/response-dispatch-gate/**'
+      - 'pilots/kontur-game-companion/candidate-materializer/**'
+      - '.github/workflows/kontur-game-companion-shadow-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-shadow-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate shadow runtime null transport harness
+        run: python pilots/kontur-game-companion/shadow-runtime/validate.py
