@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-002:review-case:v0.1",
+  "title": "Core Pilot 002 Review Case",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","pilot_id","case_id","source","intake","interpretation","authority","disposition","non_effects"],
+  "properties": {
+    "schema_version": {"const":"0.1"},
+    "pilot_id": {"const":"core-pilot-002"},
+    "case_id": {"type":"string","minLength":1},
+    "source": {
+      "type":"object","additionalProperties":false,
+      "required":["kind","repository","reference","text_sha256"],
+      "properties": {
+        "kind":{"enum":["github_issue","github_comment","discussion_comment","synthetic_fixture"]},
+        "repository":{"const":"Matawaka/uu-aap"},
+        "reference":{"type":"string","minLength":1},
+        "text_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}
+      }
+    },
+    "intake": {
+      "type":"object","additionalProperties":false,
+      "required":["purpose","requested_remedy","disclosure_scope","identity_resolution_performed","cross_context_correlation_performed"],
+      "properties": {
+        "purpose":{"const":"public_review_contestability"},
+        "requested_remedy":{"enum":["clarify","change_spec","record_objection","request_evidence","other","none"]},
+        "disclosure_scope":{"enum":["public_source_only","source_plus_explicitly_supplied_evidence"]},
+        "identity_resolution_performed":{"const":false},
+        "cross_context_correlation_performed":{"const":false}
+      }
+    },
+    "interpretation": {
+      "type":"object","additionalProperties":false,
+      "required":["state","accepted_as_truth","motive_inferred","liability_inferred"],
+      "properties": {
+        "state":{"enum":["understood","ambiguous","disputed","needs_more_evidence"]},
+        "accepted_as_truth":{"const":false},
+        "motive_inferred":{"const":false},
+        "liability_inferred":{"const":false}
+      }
+    },
+    "authority": {
+      "type":"object","additionalProperties":false,
+      "required":["reviewer_authority_status","standing_status","project_disposition_scope","normative_change_authorized"],
+      "properties": {
+        "reviewer_authority_status":{"enum":["unknown","self_declared","externally_evidenced"]},
+        "standing_status":{"enum":["unknown","not_required_for_public_review","separately_evidenced"]},
+        "project_disposition_scope":{"const":"analyze_and_recommend_only"},
+        "normative_change_authorized":{"const":false}
+      }
+    },
+    "disposition": {
+      "type":"object","additionalProperties":false,
+      "required":["state","rationale_present","human_gate_required_for_external_mutation","objection_preserved"],
+      "properties": {
+        "state":{"enum":["accept_for_followup","request_clarification","decline_with_rationale","defer_unresolved","duplicate_or_already_covered"]},
+        "rationale_present":{"const":true},
+        "human_gate_required_for_external_mutation":{"const":true},
+        "objection_preserved":{"const":true}
+      }
+    },
+    "non_effects": {
+      "type":"object","additionalProperties":false,
+      "required":["issue_mutated","normative_text_changed","reviewer_contacted","identity_profile_built","kontur_mutated","release_or_tag_created","liability_assigned"],
+      "properties": {
+        "issue_mutated":{"const":false},
+        "normative_text_changed":{"const":false},
+        "reviewer_contacted":{"const":false},
+        "identity_profile_built":{"const":false},
+        "kontur_mutated":{"const":false},
+        "release_or_tag_created":{"const":false},
+        "liability_assigned":{"const":false}
+      }
+    }
+  }
+}

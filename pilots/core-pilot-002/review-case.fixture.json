@@ -1,0 +1,45 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-002",
+  "case_id": "synthetic-public-review-case-001",
+  "source": {
+    "kind": "synthetic_fixture",
+    "repository": "Matawaka/uu-aap",
+    "reference": "synthetic:review:001",
+    "text_sha256": "5d6f3c73a7b1d3b5b07976653d817263717c74979bd6c3b3349d7eb16f0c5af1"
+  },
+  "intake": {
+    "purpose": "public_review_contestability",
+    "requested_remedy": "clarify",
+    "disclosure_scope": "public_source_only",
+    "identity_resolution_performed": false,
+    "cross_context_correlation_performed": false
+  },
+  "interpretation": {
+    "state": "understood",
+    "accepted_as_truth": false,
+    "motive_inferred": false,
+    "liability_inferred": false
+  },
+  "authority": {
+    "reviewer_authority_status": "unknown",
+    "standing_status": "not_required_for_public_review",
+    "project_disposition_scope": "analyze_and_recommend_only",
+    "normative_change_authorized": false
+  },
+  "disposition": {
+    "state": "accept_for_followup",
+    "rationale_present": true,
+    "human_gate_required_for_external_mutation": true,
+    "objection_preserved": true
+  },
+  "non_effects": {
+    "issue_mutated": false,
+    "normative_text_changed": false,
+    "reviewer_contacted": false,
+    "identity_profile_built": false,
+    "kontur_mutated": false,
+    "release_or_tag_created": false,
+    "liability_assigned": false
+  }
+}
