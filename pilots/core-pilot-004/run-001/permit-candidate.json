@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-004",
+  "run_id": "core-pilot-004-run-001",
+  "permit_id": "core-pilot-004-run-001-comment-001",
+  "repository": "Matawaka/uu-aap",
+  "effect_type": "issue_comment_create",
+  "target": {
+    "issue_number": 435,
+    "expected_state": "open"
+  },
+  "payload": {
+    "body": "Core Pilot 004 Run 001 execution marker.\n\nThis comment is the single permitted external effect for run `core-pilot-004-run-001`.\n\nIt records only that the exact single-use effect was executed against the authorized target.\n\nIt does not authorize any further issue/PR mutation, push, merge, release/tag, permission/secret/protection change, KONTUR effect, external publication, or successor permit.\n\n`successful effect != successor permit`\n`permit consumed != authority retained`",
+    "sha256": "f3fa252bd30068853d15c730eb0d805cef53816fcfba04b89d30bb82c3eed2d0"
+  },
+  "canonical_frontier": "d9cfe44aa327e81dcb1a7e8823f0e9eee2322e74",
+  "human_authorized": false,
+  "execution_authorized": false,
+  "single_use": true,
+  "max_effect_count": 1,
+  "consumed": false,
+  "allowed_external_effects": ["issue_comment_create"],
+  "forbidden_effects": [
+    "issue_create",
+    "issue_edit",
+    "issue_close",
+    "pr_create",
+    "pr_edit",
+    "push",
+    "merge",
+    "release_or_tag",
+    "permission_change",
+    "secret_change",
+    "protection_change",
+    "kontur_effect",
+    "external_publish",
+    "successor_permit_creation"
+  ],
+  "expected_execution_receipt": {
+    "effect_count": 1,
+    "effect_type": "issue_comment_create",
+    "repository": "Matawaka/uu-aap",
+    "issue_number": 435,
+    "payload_sha256": "f3fa252bd30068853d15c730eb0d805cef53816fcfba04b89d30bb82c3eed2d0",
+    "successor_permit_created": false,
+    "permit_consumed_after_success": true
+  },
+  "status": "awaiting_explicit_human_authorization"
+}
