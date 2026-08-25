@@ -98,7 +98,15 @@ def main():
             if mutate_receipt:
                 mutate_receipt(r)
                 evl.validate_receipt(st, event, env, ctx, r)
-        except (evl.PolicyEvaluationError, gen.EnvelopeError, runner.ReductionError, AssertionError, KeyError, TypeError):
+        except (
+            evl.PolicyEvaluationError,
+            evl.gen.EnvelopeError,
+            gen.EnvelopeError,
+            runner.ReductionError,
+            AssertionError,
+            KeyError,
+            TypeError,
+        ):
             mutations += 1
             return
         raise AssertionError(f"unsafe mutation accepted at turn {turn}")
