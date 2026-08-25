@@ -1,0 +1,50 @@
+{
+  "$schema": "./canonical-stability-checkpoint.schema.json",
+  "artifact_type": "CanonicalStabilityCheckpoint",
+  "artifact_version": "0.1",
+  "checkpoint_id": "urn:uu-aap:canonical-stability-checkpoint:v0.1:676b8c3b",
+  "canonical_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "branch": "main",
+    "commit_sha": "676b8c3bfc7d10595a17f4595a88bf477cf8fc48",
+    "tree_sha": "2477f354a8fd117108e7108ba4719f9129ef7fe6"
+  },
+  "predecessor_stability": {
+    "pr_number": 406,
+    "profile_path": "protocols/experimental/cross-layer-invariant-stability/v0.1/stability.fixture.json",
+    "validator_path": "protocols/experimental/cross-layer-invariant-stability/v0.1/validate.js",
+    "post_merge_green_observed": true
+  },
+  "representative_layers": [
+    "core-v0.1",
+    "non-induced-intent-v0.1",
+    "ambient-observability-non-identification-v0.1",
+    "event-hash-minimalism-v0.1",
+    "latent-evidentiary-knowledge-v0.1",
+    "three-layer-commitment-root-v0.1",
+    "preventive-intent-challenge-v0.1",
+    "ambient-pressure-by-uncertainty-v0.1",
+    "future-optionality-non-commitment-v0.1"
+  ],
+  "claims": {
+    "tested_frontier_bound": true,
+    "representative_stability_preserved": true,
+    "universal_correctness_proven": false,
+    "complete_historical_coverage_proven": false,
+    "external_runtime_state_proven": false,
+    "future_successor_authorized": false,
+    "release_ready": false,
+    "publication_claim": false
+  },
+  "non_effects": {
+    "release_or_tag_created": false,
+    "kontur_mutated": false,
+    "authority_transferred": false,
+    "action_authorized": false,
+    "action_performed": false,
+    "liability_established": false,
+    "permissions_changed": false,
+    "history_rewritten": false,
+    "canonical_origin_mutated": false
+  }
+}
