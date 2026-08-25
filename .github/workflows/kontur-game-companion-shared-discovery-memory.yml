@@ -1,0 +1,22 @@
+name: KONTUR Game Companion shared discovery memory validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/shared-discovery-memory/**'
+      - '.github/workflows/kontur-game-companion-shared-discovery-memory.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate bounded shared discovery memory
+        run: python pilots/kontur-game-companion/shared-discovery-memory/validate.py
