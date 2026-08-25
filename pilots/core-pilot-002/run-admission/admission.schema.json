@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-002:run-admission:v0.1",
+  "title": "Core Pilot 002 Run Admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","pilot_id","status","review_surfaces_checked","eligible_external_input_present","identity_inference","authority_status","standing_status","effects"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "pilot_id": {"const": "core-pilot-002"},
+    "status": {"enum": ["waiting_for_external_input","admissible"]},
+    "review_surfaces_checked": {
+      "type": "array",
+      "minItems": 7,
+      "uniqueItems": true,
+      "items": {"type": "string", "pattern": "^https://github.com/Matawaka/uu-aap/issues/[1-7]$"}
+    },
+    "eligible_external_input_present": {"type": "boolean"},
+    "source": {
+      "type": ["object","null"],
+      "additionalProperties": false,
+      "required": ["url","source_id","author_account_identifier","text_sha256","observed_at"],
+      "properties": {
+        "url": {"type": "string", "minLength": 1},
+        "source_id": {"type": "string", "minLength": 1},
+        "author_account_identifier": {"type": "string", "minLength": 1},
+        "text_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "identity_inference": {"const": "none"},
+    "authority_status": {"const": "unknown"},
+    "standing_status": {"const": "unknown"},
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["issue_mutation","normative_change","kontur_mutation","release_or_tag","sanction","liability_assignment"],
+      "properties": {
+        "issue_mutation": {"const": false},
+        "normative_change": {"const": false},
+        "kontur_mutation": {"const": false},
+        "release_or_tag": {"const": false},
+        "sanction": {"const": false},
+        "liability_assignment": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"eligible_external_input_present": {"const": false}}},
+      "then": {
+        "properties": {"status": {"const": "waiting_for_external_input"}, "source": {"type": "null"}},
+        "required": ["source"]
+      }
+    },
+    {
+      "if": {"properties": {"eligible_external_input_present": {"const": true}}},
+      "then": {
+        "properties": {"status": {"const": "admissible"}, "source": {"type": "object"}},
+        "required": ["source"]
+      }
+    }
+  ]
+}
