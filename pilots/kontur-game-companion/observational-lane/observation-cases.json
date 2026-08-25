@@ -1,0 +1,66 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "kontur-game-companion-observational-lane",
+  "origin_frontier": "06cd94208f43f3fe44956eee532d39f4a378f953",
+  "shared": {
+    "repository": "Matawaka/uu-aap",
+    "source_issue": 445,
+    "mode": "CAUTIOUS_PARALLEL_OBSERVATION",
+    "mainline_authority_created": false,
+    "external_game_control_authorized": false,
+    "behavioral_profile_authorized": false,
+    "total_history_required": false,
+    "engagement_maximization_authorized": false,
+    "stable_core_change_implied": false
+  },
+  "cases": [
+    {
+      "case_id": "reversible-playful-guess",
+      "assistance_depth": "THEORY",
+      "epistemic_mode": "PLAYFUL_THEORY",
+      "reversibility_class": "REVERSIBLE",
+      "player_solution_request": false,
+      "spoiler_level": 0,
+      "player_agency_preserved": true,
+      "direct_solution_revealed": false,
+      "irreversible_loss_risk": false,
+      "allowed": true
+    },
+    {
+      "case_id": "player-corrects-guess",
+      "assistance_depth": "THEORY",
+      "epistemic_mode": "GUESS",
+      "reversibility_class": "REVERSIBLE",
+      "player_solution_request": false,
+      "spoiler_level": 0,
+      "player_agency_preserved": true,
+      "correction_observed": true,
+      "model_revision_required": true,
+      "old_claim_retained_as_fact": false,
+      "allowed": true
+    },
+    {
+      "case_id": "known-answer-withheld-without-request",
+      "assistance_depth": "HINT",
+      "epistemic_mode": "KNOWN",
+      "reversibility_class": "REVERSIBLE",
+      "player_solution_request": false,
+      "spoiler_level": 1,
+      "player_agency_preserved": true,
+      "direct_solution_revealed": false,
+      "allowed": true
+    },
+    {
+      "case_id": "irreversible-guess-blocked",
+      "assistance_depth": "SOLUTION",
+      "epistemic_mode": "GUESS",
+      "reversibility_class": "IRREVERSIBLE",
+      "player_solution_request": true,
+      "spoiler_level": 2,
+      "player_agency_preserved": false,
+      "direct_solution_revealed": true,
+      "irreversible_loss_risk": true,
+      "allowed": false
+    }
+  ]
+}
