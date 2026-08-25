@@ -10,6 +10,7 @@ on:
       - 'docs/legal/IP-WAVE-1-RIGHTS-CLEARANCE-v0.1.md'
       - 'docs/legal/IP-WAVE-1-FILING-READINESS-GATE-v0.1.md'
       - 'docs/legal/IP-WAVE-1-PRIVATE-FILING-WORKSHEET-v0.1.md'
+      - 'docs/legal/IP-WAVE-1-OFFICIAL-FIELD-MAP-v0.1.md'
       - 'schemas/ip/v0.1/**'
       - '.github/workflows/ip-rights-registration-v0.1-validation.yml'
   workflow_dispatch:
@@ -40,10 +41,12 @@ jobs:
           python -m json.tool schemas/ip/v0.1/human-authorship-evidence-record.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/private-evidence-checkpoint.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/filing-readiness-checkpoint.schema.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/official-filing-prefill.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-authorship-review.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-private-evidence-checkpoint.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-filing-readiness-checkpoint.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-official-filing-prefill.json >/dev/null
 
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
@@ -52,6 +55,36 @@ jobs:
         run: |
           python schemas/ip/v0.1/ip_registration_validator.py \
             schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json
+
+      - name: Validate official filing public prefill
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('schemas/ip/v0.1')
+          schema = json.loads((root / 'official-filing-prefill.schema.json').read_text())
+          record = json.loads((root / 'examples/uu-aap-core-official-filing-prefill.json').read_text())
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(record)
+
+          fixed = record['public_fixed_fields']
+          assert fixed['title_ru'] == 'Валидатор цепочек квитанций UU-AAP Core v0.1'
+          assert fixed['creation_year'] == 2026
+          assert fixed['program_size_bytes'] == 15144
+          assert fixed['frozen_package_digest'] == 'sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8'
+          assert fixed['applicant_count'] == 1
+          assert fixed['author_count'] == 1
+          assert fixed['gis_component'] is False
+          assert record['route_guidance']['recommended_route'] == 'EPGU'
+          assert record['route_guidance']['signature_status'] == 'LIVE_ROUTE_CONFIRMATION_REQUIRED'
+          assert record['privacy_boundary']['contains_personal_identifiers'] is False
+          assert record['privacy_boundary']['safe_for_public_repository'] is True
+
+          required_private = set(record['private_required_fields']['applicant'])
+          assert {'inn', 'identity_document_series_and_number', 'snils_if_available'} <= required_private
+          print('official filing public prefill: schema-valid, privacy-safe, frozen fields consistent')
+          PY
 
       - name: Validate human authorship evidence records
         run: |
