@@ -1,0 +1,104 @@
+{
+  "profile": "uu-aap.personal-sovereign-root.v0.1",
+  "origin_frontier": "75c150a192db68d0c167d2408bd436e54b71d475",
+  "root_id": "psr:synthetic:alice-example:001",
+  "root_model": {
+    "single_secret": false,
+    "person_equated_to_key": false,
+    "centralized_identity_database_required": false,
+    "cryptography_creates_human_uniqueness": false
+  },
+  "evidence_fabric": {
+    "opaque_trust_score_used": false,
+    "sources": [
+      {
+        "source_id": "src-origin-record-commitment",
+        "source_class": "record_commitment",
+        "commitment_ref": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "provenance_ref": "urn:example:provenance:origin-record",
+        "independence_group": "institutional-origin-record",
+        "universally_sufficient_identity_proof": false
+      },
+      {
+        "source_id": "src-witness-receipt-a",
+        "source_class": "witness_receipt",
+        "commitment_ref": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "provenance_ref": "urn:example:provenance:witness-a",
+        "independence_group": "independent-witness-a",
+        "universally_sufficient_identity_proof": false
+      },
+      {
+        "source_id": "src-control-history",
+        "source_class": "device_or_key_control",
+        "commitment_ref": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "provenance_ref": "urn:example:provenance:control-history",
+        "independence_group": "sovereign-control-history",
+        "universally_sufficient_identity_proof": false
+      }
+    ]
+  },
+  "current_root_state": {
+    "root_state_id": "psr-state:002",
+    "active_control_refs": ["key:rotated-a", "recovery-factor:bounded-b"],
+    "control_mode": "threshold-or-recovery-bounded",
+    "personhood_claimed_by_root": false,
+    "legal_identity_claimed_by_root": false
+  },
+  "successor_transition": {
+    "transition_type": "key_rotation",
+    "predecessor_root_state_id": "psr-state:001",
+    "successor_root_state_id": "psr-state:002",
+    "continuity_policy_ref": "urn:uu-aap:psr-continuity-policy:synthetic-v0.1",
+    "continuity_evidence_source_ids": [
+      "src-origin-record-commitment",
+      "src-witness-receipt-a",
+      "src-control-history"
+    ],
+    "accepted": true,
+    "new_person_claimed": false
+  },
+  "recovery_policy": {
+    "key_loss_means_personhood_loss": false,
+    "single_compromised_key_means_conclusive_takeover": false,
+    "continuity_assessment_required": true,
+    "minimum_independence_groups": 2
+  },
+  "retention_policy": {
+    "full_history_required": false,
+    "commitment_only_permitted": true,
+    "total_telemetry_required": false
+  },
+  "correlation_policy": {
+    "cross_context_default_allowed": false,
+    "purpose_bounded": true,
+    "performed": false
+  },
+  "disclosure_policy": {
+    "right_to_inspect_all_sources": false,
+    "default_disclosure": false,
+    "performed": false
+  },
+  "claims": {
+    "bounded_continuity_established": true,
+    "legal_identity_established": false,
+    "universal_identity_proof": false,
+    "authority_established": false,
+    "intent_established": false,
+    "action_established": false,
+    "authorship_established": false,
+    "responsibility_established": false,
+    "liability_established": false
+  },
+  "non_effects": {
+    "identity_lookup_performed": false,
+    "biometric_processing_performed": false,
+    "profile_constructed": false,
+    "external_correlation_performed": false,
+    "credential_issued": false,
+    "account_recovered": false,
+    "legal_identity_determined": false,
+    "authority_expanded": false,
+    "actuator_invoked": false,
+    "kontur_mutated": false
+  }
+}
