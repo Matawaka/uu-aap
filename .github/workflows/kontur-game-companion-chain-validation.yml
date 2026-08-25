@@ -68,3 +68,6 @@ jobs:
 
       - name: Validate deterministic synthetic session runner
         run: python pilots/kontur-game-companion/session-runner/validate.py
+
+      - name: Validate candidate policy-request envelope generator
+        run: python pilots/kontur-game-companion/candidate-envelope/validate.py
