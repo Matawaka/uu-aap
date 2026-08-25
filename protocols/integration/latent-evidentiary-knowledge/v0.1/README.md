@@ -1,36 +1,51 @@
-# Latent Evidentiary Knowledge Activation Gate v0.1
+# UU-AAP Latent Evidentiary Knowledge v0.1
 
-**Status:** experimental integration profile; non-actuating  
-**Issue:** #387
+**Status:** experimental reusable privacy/evidence-activation profile  
+**Issue:** #393
 
 ## Purpose
 
-Evidence may be available without becoming active personalized knowledge. This gate records the minimum explicit sequence required before any bounded disclosure can be considered by a downstream implementation:
+Keep evidence, relations and identification capability latent until a purpose-bounded and authority-backed request satisfies the complete activation sequence.
 
 ```text
-Purpose -> Authority -> Identity Need -> Minimal Challenge -> Proof Sufficiency -> Scope -> Disclosure
+available evidence / stored relations
+  -> Purpose
+  -> Authority
+  -> Identity Need
+  -> Minimal Challenge
+  -> Proof Sufficiency
+  -> Scope
+  -> Disclosure
+  != automatic profiling
+  != automatic correlation
+  != unlimited inspection
 ```
 
-Every stage is explicit, ordered and fail-closed. A later stage cannot be inferred from evidence availability or from completion of an earlier stage.
+## Normative separations
 
-## Invariants
+- `Available Evidence != Active Knowledge`
+- `Possible Identification != Performed Identification`
+- `Stored Relation != Permitted Correlation`
+- `Proof Availability != Right to Inspect`
+- `Identity Verification != Unlimited Disclosure`
+- `Knowledge of Fact != Attribution of Responsibility`
 
-```text
-Available Evidence != Active Knowledge
-Possible Identification != Performed Identification
-Stored Relation != Permitted Correlation
-Proof Availability != Right to Inspect
-Identity Verification != Unlimited Disclosure
-Knowledge of Fact != Attribution of Responsibility
-Observation != Identification != Attribution != Intent != Liability
-```
+## Activation rule
 
-A conforming artifact describes a prospective, bounded activation decision only. `disclosure.authorized=false` in the base fixture means no disclosure is performed by this profile. Even where a future profile records `authorized=true`, that would remain a scoped protocol decision, not the disclosure event itself.
+A conforming decision remains `latent` unless all seven stages are explicit and satisfied. Identity resolution MUST be necessary for the declared purpose, the challenge MUST be minimal for that need, proof MUST be sufficient for the requested scope, and disclosure MUST remain within that scope.
 
-## Minimality
+Cross-context correlation is separately controlled. Evidence may exist and relations may be stored without permission to join contexts or construct a profile.
 
-The challenge set must be explicitly marked minimal for the declared identity need. Proof sufficiency must bind only the challenge evidence needed for that purpose. Scope must not exceed purpose, authority or identity need. Cross-context correlation, profiling, attribution, intent inference and liability inference are false by default and cannot be activated implicitly.
+## Fail-closed conditions
+
+Activation is denied when purpose or authority is absent, identity is unnecessary, challenge exceeds the minimum, proof is insufficient, scope expands beyond authority, correlation is not authorized, or disclosure exceeds the approved fields/audience.
 
 ## Non-effects
 
-This profile performs no identity resolution, correlation, profiling, disclosure, external lookup, actuator invocation or KONTUR mutation. It creates no authority, responsibility, liability, release, publication or successor permission, and rewrites no historical evidence.
+This profile performs no identity lookup, profile construction, cross-context join, external evidence acquisition, disclosure, actuator invocation, KONTUR mutation, authority transfer, release or publication. A valid record is only an evidence-activation assessment.
+
+## Conformance
+
+`validate-latent-evidentiary-knowledge.js` validates the positive fixture and rejects missing activation stages, over-broad challenges, insufficient proof, unauthorized correlation, scope/disclosure expansion, responsibility attribution, and external-effect claims.
+
+CI is read-only.
