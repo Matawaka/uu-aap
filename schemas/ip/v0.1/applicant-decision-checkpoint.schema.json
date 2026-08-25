@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/ip/v0.1/applicant-decision-checkpoint.schema.json",
+  "title": "UU-AAP Applicant Decision Checkpoint v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["checkpoint_version","object_id","legal_snapshot","route","representation","author_visibility","first_publication","gate_result","privacy_boundary"],
+  "properties": {
+    "checkpoint_version": {"const": "0.1"},
+    "object_id": {"type": "string", "minLength": 1},
+    "legal_snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified_at","publication_rule","author_rule"],
+      "properties": {
+        "verified_at": {"type": "string", "format": "date-time"},
+        "publication_rule": {"type": "string", "minLength": 1},
+        "author_rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommended","selected","live_signature_status"],
+      "properties": {
+        "recommended": {"const": "EPGU"},
+        "selected": {"enum": ["UNDECIDED","EPGU","FIPS","PAPER"]},
+        "live_signature_status": {"enum": ["LIVE_CONFIRMATION_REQUIRED","CONFIRMED"]}
+      }
+    },
+    "representation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recommended","selected"],
+      "properties": {
+        "recommended": {"const": "SELF_IF_PERSONALLY_FILING"},
+        "selected": {"enum": ["UNDECIDED","SELF","REPRESENTATIVE"]}
+      }
+    },
+    "author_visibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["selected","personal_data_consent_effect"],
+      "properties": {
+        "selected": {"enum": ["UNDECIDED","NAMED","PSEUDONYM","NON_MENTION"]},
+        "personal_data_consent_effect": {"enum": ["UNRESOLVED","REQUIRED","NOT_REQUIRED_FOR_AUTHOR_NON_MENTION"]}
+      }
+    },
+    "first_publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public_disclosure_confirmed","publication_under_article_1268","country_code","year","reasoning_status"],
+      "properties": {
+        "public_disclosure_confirmed": {"const": true},
+        "publication_under_article_1268": {"enum": ["UNRESOLVED","YES","NO"]},
+        "country_code": {"type": ["string","null"], "pattern": "^[A-Z]{2}$"},
+        "year": {"type": ["integer","null"], "minimum": 2026, "maximum": 2026},
+        "reasoning_status": {"enum": ["DO_NOT_INFER_FROM_GITHUB_LOCATION","FACTUALLY_CONFIRMED"]}
+      }
+    },
+    "gate_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effect","unresolved_decisions"],
+      "properties": {
+        "effect": {"enum": ["AWAIT_APPLICANT_DECISIONS","MAY_COMPLETE_PRIVATE_PACKET"]},
+        "unresolved_decisions": {
+          "type": "array",
+          "items": {"enum": ["route","representation","author_visibility","first_publication_classification","first_publication_country_if_applicable","live_signature_method"]},
+          "uniqueItems": true
+        }
+      }
+    },
+    "privacy_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contains_personal_identifiers","safe_for_public_repository"],
+      "properties": {
+        "contains_personal_identifiers": {"const": false},
+        "safe_for_public_repository": {"const": true}
+      }
+    }
+  }
+}
