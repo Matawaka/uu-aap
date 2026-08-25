@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/experimental/post-checkpoint-successor-evolution/v0.1/post-checkpoint-successor-evolution.schema.json",
+  "title": "Post-Checkpoint Successor Evolution Test v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema","artifact_type","artifact_version","test_id","checkpoint_binding","post_checkpoint_frontier","successor_proposal","inherited_from_checkpoint","claims","non_effects"],
+  "properties": {
+    "$schema": {"const": "./post-checkpoint-successor-evolution.schema.json"},
+    "artifact_type": {"const": "PostCheckpointSuccessorEvolutionTest"},
+    "artifact_version": {"const": "0.1"},
+    "test_id": {"type": "string", "minLength": 1},
+    "checkpoint_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pr_number","fixture_path","validator_path","checkpoint_id","bound_commit_sha","bound_tree_sha"],
+      "properties": {
+        "pr_number": {"const": 408},
+        "fixture_path": {"const": "protocols/experimental/canonical-stability-checkpoint/v0.1/fixture.json"},
+        "validator_path": {"const": "protocols/experimental/canonical-stability-checkpoint/v0.1/validate.js"},
+        "checkpoint_id": {"const": "urn:uu-aap:canonical-stability-checkpoint:v0.1:676b8c3b"},
+        "bound_commit_sha": {"const": "676b8c3bfc7d10595a17f4595a88bf477cf8fc48"},
+        "bound_tree_sha": {"const": "2477f354a8fd117108e7108ba4719f9129ef7fe6"}
+      }
+    },
+    "post_checkpoint_frontier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository","branch","commit_sha","tree_sha"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "branch": {"const": "main"},
+        "commit_sha": {"const": "4f24a966f70f96673995c775fa350af4e0f8f0f0"},
+        "tree_sha": {"const": "696bb0e3db63255ee52b821a47d53c9b5c8897d4"}
+      }
+    },
+    "successor_proposal": {
+      "type": "object", "additionalProperties": false,
+      "required": ["proposal_id","synthetic","state","compatibility_state","fresh_evidence_refs","semantic_strengthening"],
+      "properties": {
+        "proposal_id": {"type": "string", "minLength": 1},
+        "synthetic": {"const": true},
+        "state": {"const": "proposed"},
+        "compatibility_state": {"const": "requires_fresh_validation"},
+        "fresh_evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "semantic_strengthening": {"const": false}
+      }
+    },
+    "inherited_from_checkpoint": {
+      "type": "object", "additionalProperties": false,
+      "required": ["intent","authority","identity","action_permit","obligation","liability","canonicality","execution"],
+      "properties": {
+        "intent": {"const": false}, "authority": {"const": false}, "identity": {"const": false}, "action_permit": {"const": false},
+        "obligation": {"const": false}, "liability": {"const": false}, "canonicality": {"const": false}, "execution": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["checkpoint_preserved","fresh_successor_evidence_present","post_checkpoint_evolution_test_passed","successor_compatibility_proven","successor_canonical","action_authorized","action_performed","universal_future_safety_proven"],
+      "properties": {
+        "checkpoint_preserved": {"const": true},
+        "fresh_successor_evidence_present": {"const": true},
+        "post_checkpoint_evolution_test_passed": {"const": true},
+        "successor_compatibility_proven": {"const": false},
+        "successor_canonical": {"const": false},
+        "action_authorized": {"const": false},
+        "action_performed": {"const": false},
+        "universal_future_safety_proven": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["checkpoint_rewritten","release_or_tag_created","kontur_mutated","authority_transferred","permissions_changed","history_rewritten","canonical_origin_mutated"],
+      "properties": {
+        "checkpoint_rewritten": {"const": false}, "release_or_tag_created": {"const": false}, "kontur_mutated": {"const": false},
+        "authority_transferred": {"const": false}, "permissions_changed": {"const": false}, "history_rewritten": {"const": false}, "canonical_origin_mutated": {"const": false}
+      }
+    }
+  }
+}
