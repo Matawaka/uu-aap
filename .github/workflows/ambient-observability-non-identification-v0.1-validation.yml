@@ -1,0 +1,27 @@
+name: Ambient Observability / Non-Identification v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/ambient-observability-non-identification/v0.1/**'
+      - '.github/workflows/ambient-observability-non-identification-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/ambient-observability-non-identification/v0.1/**'
+      - '.github/workflows/ambient-observability-non-identification-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Observation does not imply identification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check protocols/integration/ambient-observability-non-identification/v0.1/validate-ambient-observability.js
+      - run: node protocols/integration/ambient-observability-non-identification/v0.1/validate-ambient-observability.js
