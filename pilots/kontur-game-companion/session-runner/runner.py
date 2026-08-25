@@ -77,11 +77,15 @@ def companion(s,t):
     req(auth in DEPTH and chosen in DEPTH and DEPTH[chosen]<=DEPTH[auth],"initiative boundary")
     if i.get("companion_led") is False: req(chosen in {"NONE","COMMENT"},"invented initiative")
 
-    d=t.get("discovery",{}); req(d.get("hidden_answer") is False,"hidden discovery answer")
-    if d.get("outcome")=="ALLOW_PROMPT":
-        req(d.get("focus_preserved") is True and d.get("reversible") is True and d.get("low_cost") is True,"unsafe discovery prompt")
-    if d.get("outcome")=="BYPASS_DISCOVERY":
-        req(p["intent"]=="SOLUTION_REQUEST" and sel=="SOLUTION","invalid discovery bypass")
+    d=t.get("discovery")
+    if d is None:
+        d={}
+    else:
+        req(d.get("hidden_answer") is False,"hidden discovery answer")
+        if d.get("outcome")=="ALLOW_PROMPT":
+            req(d.get("focus_preserved") is True and d.get("reversible") is True and d.get("low_cost") is True,"unsafe discovery prompt")
+        if d.get("outcome")=="BYPASS_DISCOVERY":
+            req(p["intent"]=="SOLUTION_REQUEST" and sel=="SOLUTION","invalid discovery bypass")
 
     v=t.get("variety",{}); req(v.get("objective")=="CONVERSATIONAL_QUALITY" and v.get("focus_preserved") is True,"variety boundary")
     play=t.get("playfulness",{})
