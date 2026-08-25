@@ -1,5 +1,7 @@
 # UU-AAP — Augmented Authorship & Accountability Protocol
 
+**[Русский / Russian](README.ru.md)**
+
 **Public Draft v0.1 · Request for Comment**  
 **Review window:** 22 August 2026 — 6 October 2026
 
@@ -81,7 +83,9 @@ PoAI does **not** change UU-AAP v0.1 conformance. It is being developed under [`
 ## Join the public review
 
 - **Fastest concrete review / Core Pilot 002:** [External Review Entry — Issue #422](https://github.com/Matawaka/uu-aap/issues/422)
+- **Russian quick review path:** [PUBLIC_REVIEW.ru.md](PUBLIC_REVIEW.ru.md)
 - **Core Pilot 002 protocol:** [Public Review Intake & Contestable Resolution](pilots/core-pilot-002/README.md)
+- **Russian Pilot 002 guide:** [pilots/core-pilot-002/README.ru.md](pilots/core-pilot-002/README.ru.md)
 - **UU-AAP broad design discussion:** [What should accountable AI-augmented authorship mean? — Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8)
 - **PoAI Genesis RFC:** [Proof of Available Intelligence v0.0 — Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10)
 - **Main UU-AAP RFC:** [UU-AAP v0.1 Public Review — Issue #1](https://github.com/Matawaka/uu-aap/issues/1)
@@ -134,7 +138,7 @@ UU-AAP is intended to reuse established infrastructure where practical, especial
 
 This draft is intentionally contestable. Please submit concrete failure cases: privacy harms, coercive uses, ambiguous responsibility, unverifiable claims, interoperability failures, accessibility problems, or unnecessary implementation burden.
 
-For a short concrete review, use [Core Pilot 002 Issue #422](https://github.com/Matawaka/uu-aap/issues/422). For broad UU-AAP questions and competing design models, use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8). For PoAI Genesis, use [Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10). For a concrete protocol defect or proposed normative change, open an Issue.
+For a short concrete review, use [Core Pilot 002 Issue #422](https://github.com/Matawaka/uu-aap/issues/422). Russian-speaking reviewers can start with [PUBLIC_REVIEW.ru.md](PUBLIC_REVIEW.ru.md). For broad UU-AAP questions and competing design models, use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8). For PoAI Genesis, use [Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10). For a concrete protocol defect or proposed normative change, open an Issue.
 
 **Initial proposer/editor:** [Matawaka](https://github.com/Matawaka)  
 This attribution identifies the initial public proposer; it does not grant unilateral authority over future protocol meaning.
