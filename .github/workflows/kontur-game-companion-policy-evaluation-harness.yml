@@ -1,0 +1,25 @@
+name: KONTUR Game Companion policy evaluation harness validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/policy-evaluation-harness/**'
+      - 'pilots/kontur-game-companion/candidate-envelope/**'
+      - 'pilots/kontur-game-companion/session-runner/**'
+      - 'pilots/kontur-game-companion/integrated-conversation-trace/**'
+      - '.github/workflows/kontur-game-companion-policy-evaluation-harness.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-policy-evaluation-harness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate pre-text policy evaluation harness
+        run: python pilots/kontur-game-companion/policy-evaluation-harness/validate.py
