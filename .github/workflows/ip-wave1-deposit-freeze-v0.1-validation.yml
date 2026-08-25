@@ -1,0 +1,82 @@
+name: IP Wave 1 deposit freeze v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/core/v0.1/validate-core.js'
+      - 'protocols/core/v0.1/receipt-envelope.schema.json'
+      - 'protocols/core/v0.1/end-to-end.fixture.json'
+      - 'docs/legal/IP-WAVE-1-PATENT-DISCLOSURE-SCREEN-v0.1.md'
+      - 'schemas/ip/v0.1/deposit-freeze-manifest.schema.json'
+      - 'schemas/ip/v0.1/build_wave1_deposit_manifest.py'
+      - 'schemas/ip/v0.1/examples/uu-aap-core-deposit-freeze.json'
+      - '.github/workflows/ip-wave1-deposit-freeze-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate builder syntax and schema
+        run: |
+          python -m py_compile schemas/ip/v0.1/build_wave1_deposit_manifest.py
+          python -m json.tool schemas/ip/v0.1/deposit-freeze-manifest.schema.json >/dev/null
+
+      - name: Build deterministic deposit manifest candidate
+        run: |
+          python schemas/ip/v0.1/build_wave1_deposit_manifest.py > /tmp/uu-aap-core-deposit-freeze.json
+          cat /tmp/uu-aap-core-deposit-freeze.json
+
+      - name: Validate fixed Wave 1 boundaries
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          record = json.loads(Path('/tmp/uu-aap-core-deposit-freeze.json').read_text())
+          assert record['freeze_frontier'] == '8aec7684a54e2570c285720a22d30d99f958131a'
+          assert record['program_size_bytes'] == 15144
+          assert record['deposit_support_size_bytes'] == 12240
+          assert record['deposit_total_size_bytes'] == 27384
+          assert record['programming_languages'] == ['JavaScript (Node.js)']
+          assert record['abstract_characters'] <= 900
+          assert record['patent_screen']['separate_patent_track_issue'] == 492
+          expected_blobs = {
+              'protocols/core/v0.1/validate-core.js': '19b8cc90f34ad2eb3819d02d6335f584c65caa46',
+              'protocols/core/v0.1/receipt-envelope.schema.json': '38d2d439ad6a1065da96cc9e5f2190734fd2cd7b',
+              'protocols/core/v0.1/end-to-end.fixture.json': '9ed65bfae43f157f6fb051bf6460ebaec13ea480',
+          }
+          for entry in record['files']:
+              assert entry['git_blob_sha1'] == expected_blobs[entry['path']]
+          print('Wave 1 file boundary, sizes, blob identities and abstract: valid')
+          PY
+
+      - name: Assert workflow is read-only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/ip-wave1-deposit-freeze-v0.1-validation.yml').read_text()
+          forbidden = [
+              'contents:' + ' write',
+              'pull_request' + '_target',
+              'secrets' + '.',
+              'gh' + ' api',
+              'cu' + 'rl ',
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          assert 'permissions:\n  contents: read' in text
+          print('workflow boundary: read-only')
+          PY
