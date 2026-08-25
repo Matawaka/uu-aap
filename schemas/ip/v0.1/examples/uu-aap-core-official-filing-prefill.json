@@ -1,0 +1,53 @@
+{
+  "prefill_version": "0.1",
+  "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
+  "authority": "ROSPATENT",
+  "object_type": "PROGRAM_FOR_COMPUTER",
+  "public_fixed_fields": {
+    "title_ru": "Валидатор цепочек квитанций UU-AAP Core v0.1",
+    "creation_year": 2026,
+    "programming_language": "JavaScript (Node.js)",
+    "program_size_bytes": 15144,
+    "frozen_package_digest": "sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8",
+    "applicant_count": 1,
+    "author_count": 1,
+    "gis_component": false
+  },
+  "private_required_fields": {
+    "applicant": [
+      "full_legal_name",
+      "country_code",
+      "residence_and_postal_address",
+      "inn",
+      "identity_document_series_and_number",
+      "snils_if_available",
+      "correspondence_contact_if_required_by_live_route"
+    ],
+    "author": [
+      "full_legal_name",
+      "country_code",
+      "residence_address",
+      "inn",
+      "snils_if_available",
+      "author_publication_choice",
+      "personal_data_consent",
+      "author_information_consent_if_author_is_named"
+    ]
+  },
+  "route_guidance": {
+    "recommended_route": "EPGU",
+    "reason": "Current Rospatent guidance supports EPGU electronic filing; applicant data may be populated from ESIA and fee handling/notifications are integrated. Actual authentication/signature requirements must be confirmed in the live EPGU flow immediately before submission.",
+    "signature_status": "LIVE_ROUTE_CONFIRMATION_REQUIRED"
+  },
+  "unresolved_form_fields": [
+    "country_and_year_of_first_publication_if_the_form_treats_the_public GitHub release as publication for this field",
+    "author publication choice: own name, pseudonym, or non-publication option available in the live form",
+    "route-specific authentication/signature method shown by the live EPGU flow",
+    "correspondence address/contact fields if not populated from ESIA",
+    "fee state and payment evidence"
+  ],
+  "privacy_boundary": {
+    "contains_personal_identifiers": false,
+    "safe_for_public_repository": true
+  }
+}
