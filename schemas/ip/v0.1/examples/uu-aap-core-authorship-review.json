@@ -4,8 +4,8 @@
   "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
   "evidence_frontier": {
     "repository": "https://github.com/Matawaka/uu-aap",
-    "commit_sha": "987207645b7732e35a2cf153117aaaa230e2be45",
-    "observed_at": "2026-08-25T16:44:00Z"
+    "commit_sha": "42fcbb46fbd2f2cd6efac44e17c825c4a4a73590",
+    "observed_at": "2026-08-25T17:00:00Z"
   },
   "repository_provenance": {
     "origin_pr": 320,
@@ -19,76 +19,84 @@
     "evidence_refs": [
       "GitHub issue #303",
       "GitHub PR #320",
-      "Git commit history for protocols/core/v0.1/validate-core.js"
+      "Git commit history for protocols/core/v0.1/validate-core.js",
+      "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
     ]
   },
   "human_creative_contribution": {
-    "status": "UNRESOLVED",
+    "status": "EVIDENCED",
     "requirements_and_architecture": {
-      "status": "PARTIALLY_EVIDENCED",
-      "description": "Issue #303 records the seven-primitives architecture, typed receipt interfaces, assertions/non-effects and fail-closed requirements before the Core implementation merge; repository evidence does not by itself identify the natural-person creative author of those choices.",
+      "status": "EVIDENCED",
+      "description": "Repository issue #303 records the Core architecture before implementation; the private declarant additionally attests to personally making the architecture choices for the selected Core scope.",
       "evidence_refs": [
-        "https://github.com/Matawaka/uu-aap/issues/303"
+        "https://github.com/Matawaka/uu-aap/issues/303",
+        "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
       ]
     },
     "source_code_expression": {
-      "status": "NOT_EVIDENCED",
-      "description": "Git history establishes origin and continuity of the selected source file but does not establish which natural person personally created the protected source-code expression.",
+      "status": "EVIDENCED",
+      "description": "The declarant attests to personally participating in writing the selected source with generative-AI assistance. AI generated a substantial portion, so the claim relies on the combined human-authorship and material-transformation evidence rather than claiming every generated token as independently human-authored.",
       "evidence_refs": [
         "https://github.com/Matawaka/uu-aap/pull/320",
-        "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9"
+        "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9",
+        "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
       ]
     },
     "selection_editing_integration": {
-      "status": "UNKNOWN",
-      "description": "Private working history or a natural-person declaration is required to distinguish creative human selection/editing/integration from technical approval or repository merge activity.",
-      "evidence_refs": []
-    },
-    "debugging_testing_choices": {
-      "status": "UNKNOWN",
-      "description": "The repository records conformance and fail-closed tests, but current public evidence does not attribute creative debugging/testing choices to a verified natural person.",
+      "status": "EVIDENCED",
+      "description": "The declarant attests to materially changing code, structure, algorithm and validation checks after/during AI-assisted creation.",
       "evidence_refs": [
-        "https://github.com/Matawaka/uu-aap/pull/320"
+        "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
       ]
     },
-    "candidate_natural_person_authors": []
+    "debugging_testing_choices": {
+      "status": "EVIDENCED",
+      "description": "The declarant attests to participation in audits and validation-oriented development choices affecting the selected software trajectory.",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/320",
+        "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
+      ]
+    },
+    "candidate_natural_person_authors": [
+      {
+        "party_ref": "private-party:wave1-declarant-01",
+        "claim_status": "DECLARED",
+        "private_evidence_digest": "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
+      }
+    ]
   },
   "ai_assistance": {
-    "status": "AI_USE_UNKNOWN",
-    "systems": [],
-    "generated_expression_scope": "UNKNOWN",
-    "human_transformation_status": "UNKNOWN",
+    "status": "AI_USED",
+    "systems": [
+      "generative-ai-system-unspecified-in-public-record"
+    ],
+    "generated_expression_scope": "SUBSTANTIAL",
+    "human_transformation_status": "EVIDENCED",
     "excluded_uncertain_paths_or_fragments": [],
-    "private_working_history_digest": null
+    "private_working_history_digest": "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
   },
   "employment_and_contract": {
-    "status": "UNRESOLVED",
-    "employment_duty_review": "UNKNOWN",
-    "commissioning_review": "UNKNOWN",
-    "assignment_review": "UNKNOWN",
-    "private_evidence_digest": null
+    "status": "CLEAR",
+    "employment_duty_review": "CLEAR",
+    "commissioning_review": "CLEAR",
+    "assignment_review": "CLEAR",
+    "private_evidence_digest": "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
   },
   "coauthor_and_third_party": {
-    "coauthor_status": "UNCERTAIN",
+    "coauthor_status": "NONE_EVIDENCED",
     "direct_runtime_dependencies": "BUILTINS_ONLY",
-    "source_origin_status": "REVIEW_REQUIRED",
-    "notes": "The selected validator directly imports only Node.js built-in crypto, fs and path. That narrows dependency risk but does not prove source-expression authorship or exclude copied/adapted/generated expression."
+    "source_origin_status": "CLEAR",
+    "notes": "The declarant reports no other human creative contributor and no incorporated third-party protected expression in the selected files. Direct runtime imports remain Node.js built-ins only."
   },
   "outcome": {
-    "classification": "MORE_EVIDENCE_REQUIRED",
-    "rights_gate_effect": "KEEP_RIGHTS_REVIEW",
-    "unresolved_items": [
-      "Obtain a private natural-person creative-contribution declaration for the selected source scope.",
-      "Classify generative-AI use and the scope of any AI-generated source expression.",
-      "Evidence any human selection, editing, restructuring, correction or integration claimed as creative contribution.",
-      "Resolve employment-duty, commissioning and assignment allocation for the creation period.",
-      "Resolve any coauthor or contributor contribution touching the selected deposit scope.",
-      "Complete source-origin clearance beyond direct runtime dependency review."
-    ],
+    "classification": "AI_ASSISTED_HUMAN_CREATION_EVIDENCED",
+    "rights_gate_effect": "MAY_ADVANCE_AFTER_RIGHTS_BASIS",
+    "unresolved_items": [],
     "public_evidence_refs": [
       "https://github.com/Matawaka/uu-aap/issues/303",
       "https://github.com/Matawaka/uu-aap/pull/320",
-      "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9"
+      "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9",
+      "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
     ]
   }
 }
