@@ -1,0 +1,35 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-004",
+  "run_id": "core-pilot-004-run-001",
+  "permit_id": "core-pilot-004-run-001-comment-001-r1",
+  "authorized_frontier": "365c846d6c5bb0082a46350059392ecddfa1f854",
+  "repository": "Matawaka/uu-aap",
+  "effect_type": "issue_comment_create",
+  "target": {
+    "issue_number": 435,
+    "expected_state_before_execution": "open"
+  },
+  "payload_sha256": "f3fa252bd30068853d15c730eb0d805cef53816fcfba04b89d30bb82c3eed2d0",
+  "human_authorization": {
+    "explicit": true,
+    "authorization_text": "Approve refreshed permit core-pilot-004-run-001-comment-001-r1"
+  },
+  "precondition_revalidation": {
+    "frontier_match": true,
+    "target_state_match": true,
+    "prior_effect_absent": true
+  },
+  "observed_effect": {
+    "effect_count": 1,
+    "comment_id": 5406621775,
+    "comment_url": "https://github.com/Matawaka/uu-aap/issues/435#issuecomment-5406621775",
+    "body_match": true,
+    "target_match": true
+  },
+  "permit_consumed": true,
+  "external_action_authorized_after_execution": false,
+  "successor_permit_created": false,
+  "additional_effects_observed": 0,
+  "result": "pass"
+}
