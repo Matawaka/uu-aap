@@ -12,11 +12,7 @@ from jsonschema import Draft202012Validator, FormatChecker
 
 SCHEMA_PATH = Path(__file__).with_name("ip-rights-registration-record.schema.json")
 
-STATE_ORDER = [
-    "DISCOVERED",
-    "CLASSIFIED",
-    "EVIDENCE_ANCHORED",
-    "RIGHTS_REVIEW",
+RIGHTS_CLEARED_STATES = {
     "RIGHTS_CLEARED",
     "PATENT_SCREEN",
     "READY_TO_FILE",
@@ -25,8 +21,24 @@ STATE_ORDER = [
     "REGISTERED",
     "REFUSED",
     "WITHDRAWN",
-    "SUPERSEDED",
-]
+}
+
+FILING_READY_STATES = {
+    "READY_TO_FILE",
+    "FILED",
+    "OFFICE_ACTION",
+    "REGISTERED",
+    "REFUSED",
+    "WITHDRAWN",
+}
+
+FILED_STATES = {
+    "FILED",
+    "OFFICE_ACTION",
+    "REGISTERED",
+    "REFUSED",
+    "WITHDRAWN",
+}
 
 UNRESOLVED_PATENT_STATES = {
     "PATENT_CANDIDATE_REVIEW_REQUIRED",
@@ -45,10 +57,6 @@ def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _at_or_after(state: str, threshold: str) -> bool:
-    return STATE_ORDER.index(state) >= STATE_ORDER.index(threshold)
-
-
 def semantic_errors(record: dict) -> list[str]:
     errors: list[str] = []
     state = record["state"]
@@ -56,38 +64,38 @@ def semantic_errors(record: dict) -> list[str]:
     patent = record["patentability"]
     anchor = record["evidence_anchor"]
 
-    if _at_or_after(state, "RIGHTS_CLEARED"):
+    if state in RIGHTS_CLEARED_STATES:
         if rights["status"] != "CLEARED":
-            errors.append("RIGHTS_CLEARED or later requires rights_review.status=CLEARED")
+            errors.append("RIGHTS_CLEARED or filing-lifecycle state requires rights_review.status=CLEARED")
         if rights["third_party_status"] not in {"CLEARED", "EXCLUDED"}:
-            errors.append("RIGHTS_CLEARED or later requires third-party material CLEARED or EXCLUDED")
+            errors.append("RIGHTS_CLEARED or filing-lifecycle state requires third-party material CLEARED or EXCLUDED")
         if not rights["authors"]:
-            errors.append("RIGHTS_CLEARED or later requires at least one verified author record")
+            errors.append("RIGHTS_CLEARED or filing-lifecycle state requires at least one verified author record")
         if not rights["right_holders"]:
-            errors.append("RIGHTS_CLEARED or later requires at least one verified right-holder record")
+            errors.append("RIGHTS_CLEARED or filing-lifecycle state requires at least one verified right-holder record")
         for party in rights["authors"] + rights["right_holders"]:
             if party["basis"] == "UNKNOWN" or party["name"].startswith("TO_BE_"):
-                errors.append("RIGHTS_CLEARED or later cannot contain unresolved author/right-holder identity or basis")
+                errors.append("RIGHTS_CLEARED or filing-lifecycle state cannot contain unresolved author/right-holder identity or basis")
                 break
 
-    if _at_or_after(state, "READY_TO_FILE"):
+    if state in FILING_READY_STATES:
         if patent["status"] in UNRESOLVED_PATENT_STATES:
-            errors.append("READY_TO_FILE or later requires the patentability/public-disclosure review to be resolved")
+            errors.append("READY_TO_FILE or filing-lifecycle state requires the patentability/public-disclosure review to be resolved")
         if str(anchor["package_digest"]).startswith("TO_BE_"):
-            errors.append("READY_TO_FILE or later requires a frozen package digest")
+            errors.append("READY_TO_FILE or filing-lifecycle state requires a frozen package digest")
         for holder in rights["right_holders"]:
             if holder["basis"] in INVALID_RIGHT_HOLDER_BASES_FOR_EXCLUSIVE_FILING:
                 errors.append(
-                    "READY_TO_FILE or later cannot present LICENSED_ONLY, PUBLIC_DOMAIN, THIRD_PARTY, or UNKNOWN basis as an exclusive right holder"
+                    "READY_TO_FILE or filing-lifecycle state cannot present LICENSED_ONLY, PUBLIC_DOMAIN, THIRD_PARTY, or UNKNOWN basis as an exclusive right holder"
                 )
                 break
         if record["registration_intent"]["decision"] not in {"PLANNED", "FILED"}:
-            errors.append("READY_TO_FILE or later requires an active filing decision")
+            errors.append("READY_TO_FILE or filing-lifecycle state requires an active filing decision")
 
-    if _at_or_after(state, "FILED") and state not in {"REFUSED", "WITHDRAWN", "SUPERSEDED"}:
+    if state in FILED_STATES:
         filing = record.get("filing")
         if not filing:
-            errors.append("FILED/OFFICE_ACTION/REGISTERED requires a filing receipt")
+            errors.append("FILED/OFFICE_ACTION/terminal filing state requires a filing receipt")
         else:
             if not filing.get("application_number"):
                 errors.append("filed state requires filing.application_number")
