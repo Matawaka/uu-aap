@@ -78,21 +78,25 @@ Then inspect every graph edge through its `evidence_refs`; resolve repository pa
 against the exact observed commit and public references against the listed GitHub
 commit, PR, or issue.
 
-## Publication status
+## Recovery and publication status
 
-Status: `PREPARED_NOT_PUBLISHED`.
+Status: `PUBLISHED`.
 
-The required GitHub mutation surface was not available under existing permissions:
-Git HTTPS access from the shell could not connect, GitHub CLI had no authenticated
-session, and the available in-app GitHub view was unauthenticated. No additional
-permission was requested, no branch was pushed, and no pull request was opened.
+After a network interruption, remote `main` was re-observed and still matched the
+frozen frontier. No pre-existing audit branch or PR was found, while the local partial
+package passed its deterministic checks. Recovery details are in
+`recovery-state.json`.
 
-The intended branch name, if an already-authorized publication surface had existed,
-was `audit/kontur-connectivity-2f297f0`. The actual audit branch is `NONE`.
+- Branch: `audit/kontur-connectivity-2f297f0`
+- Pull request: https://github.com/Matawaka/uu-aap/pull/458
+- Pull request merged: `false`
+- Duplicate audit publication created: `false`
+
+Publication used an already-authorized GitHub connector. No additional permission was
+requested. Parallel unmerged work was not included in the frozen audited architecture.
 
 **Audit Publication != Architecture Change**
 
 **This audit contains evidence only and authorizes no remediation.**
-
 
 
