@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-001:run-receipt:v0.1",
+  "title": "Core Pilot 001 Run Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","pilot_id","run_id","receipt_type","pilot_origin","execution_target","status","evidence","non_effects"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "pilot_id": {"const": "core-pilot-001"},
+    "run_id": {"const": "core-pilot-001-run-001"},
+    "receipt_type": {"enum": ["capture_outcome","recovery_outcome"]},
+    "pilot_origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commit","tree"],
+      "properties": {
+        "commit": {"const": "9ed03f99d4ccab7896b62664ecd273f2919c5bb8"},
+        "tree": {"const": "3719b1a3a4d785b1f9a58586e8b1fa7cefa954fb"}
+      }
+    },
+    "execution_target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository","branch","commit","tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "branch": {"const": "main"},
+        "commit": {"const": "e134e612d1913aa9c26ea88ebe6ab3b3ae6c6741"},
+        "tree": {"const": "6bb35b96eab93251e61060c464d1bf4787fdc2cd"}
+      }
+    },
+    "status": {"const": "success"},
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bundle_sha256","bundle_verify","git_fsck_full","main_matches","tree_matches"],
+      "properties": {
+        "bundle_sha256": {"const": "babe9fac8cf2c04a26dd788296e63abae6ac66cac7c45c190394b2f921b93e93"},
+        "bundle_verify": {"const": "pass"},
+        "git_fsck_full": {"const": "pass"},
+        "main_matches": {"const": true},
+        "tree_matches": {"const": true},
+        "bundle_records_complete_history": {"type": "boolean"},
+        "recovery_clone_completed": {"type": "boolean"},
+        "dangling_commits_observed": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+        }
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["git_push","remote_ref_mutation","github_authority_mutation","kontur_mutation","release_or_tag_creation","canonicality_transfer","permit_reuse"],
+      "properties": {
+        "git_push": {"const": false},
+        "remote_ref_mutation": {"const": false},
+        "github_authority_mutation": {"const": false},
+        "kontur_mutation": {"const": false},
+        "release_or_tag_creation": {"const": false},
+        "canonicality_transfer": {"const": false},
+        "permit_reuse": {"const": false}
+      }
+    }
+  }
+}

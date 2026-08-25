@@ -1,0 +1,39 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-001",
+  "run_id": "core-pilot-001-run-001",
+  "receipt_type": "recovery_outcome",
+  "pilot_origin": {
+    "commit": "9ed03f99d4ccab7896b62664ecd273f2919c5bb8",
+    "tree": "3719b1a3a4d785b1f9a58586e8b1fa7cefa954fb"
+  },
+  "execution_target": {
+    "repository": "Matawaka/uu-aap",
+    "branch": "main",
+    "commit": "e134e612d1913aa9c26ea88ebe6ab3b3ae6c6741",
+    "tree": "6bb35b96eab93251e61060c464d1bf4787fdc2cd"
+  },
+  "status": "success",
+  "evidence": {
+    "bundle_sha256": "babe9fac8cf2c04a26dd788296e63abae6ac66cac7c45c190394b2f921b93e93",
+    "bundle_verify": "pass",
+    "git_fsck_full": "pass",
+    "main_matches": true,
+    "tree_matches": true,
+    "bundle_records_complete_history": true,
+    "recovery_clone_completed": true,
+    "dangling_commits_observed": [
+      "4592c24ff8914b8faa2b035458eb7e373dcd470a",
+      "58e901d7aabc48511510347e83cea5690c57f4f0"
+    ]
+  },
+  "non_effects": {
+    "git_push": false,
+    "remote_ref_mutation": false,
+    "github_authority_mutation": false,
+    "kontur_mutation": false,
+    "release_or_tag_creation": false,
+    "canonicality_transfer": false,
+    "permit_reuse": false
+  }
+}
