@@ -1,0 +1,173 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/ip/v0.1/human-authorship-evidence-record.schema.json",
+  "title": "UU-AAP Human Authorship Evidence Record v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_version",
+    "record_id",
+    "object_id",
+    "evidence_frontier",
+    "repository_provenance",
+    "human_creative_contribution",
+    "ai_assistance",
+    "employment_and_contract",
+    "coauthor_and_third_party",
+    "outcome"
+  ],
+  "properties": {
+    "record_version": {"const": "0.1"},
+    "record_id": {"type": "string", "minLength": 1},
+    "object_id": {"type": "string", "minLength": 1},
+    "evidence_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha", "observed_at"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "repository_provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin_pr", "origin_merge_sha", "selected_paths", "history_status"],
+      "properties": {
+        "origin_pr": {"type": ["integer", "null"], "minimum": 1},
+        "origin_merge_sha": {"type": ["string", "null"], "pattern": "^[0-9a-f]{40}$"},
+        "selected_paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "history_status": {
+          "enum": ["SINGLE_ORIGIN_COMMIT", "MULTIPLE_COMMITS", "UNKNOWN"]
+        },
+        "evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "human_creative_contribution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "requirements_and_architecture", "source_code_expression", "selection_editing_integration", "debugging_testing_choices"],
+      "properties": {
+        "status": {
+          "enum": ["UNRESOLVED", "EVIDENCED", "PARTIALLY_EVIDENCED", "NO_HUMAN_CREATIVE_CONTRIBUTION_ESTABLISHED"]
+        },
+        "requirements_and_architecture": {"$ref": "#/$defs/contributionClaim"},
+        "source_code_expression": {"$ref": "#/$defs/contributionClaim"},
+        "selection_editing_integration": {"$ref": "#/$defs/contributionClaim"},
+        "debugging_testing_choices": {"$ref": "#/$defs/contributionClaim"},
+        "candidate_natural_person_authors": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/privatePartyRef"}
+        }
+      }
+    },
+    "ai_assistance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "generated_expression_scope", "human_transformation_status"],
+      "properties": {
+        "status": {
+          "enum": ["NO_AI_EVIDENCED", "AI_USED", "AI_USE_UNKNOWN", "AI_GENERATION_CONFIRMED_SCOPE_UNRESOLVED"]
+        },
+        "systems": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "generated_expression_scope": {
+          "enum": ["NONE_EVIDENCED", "PARTIAL", "SUBSTANTIAL", "FULL", "UNKNOWN"]
+        },
+        "human_transformation_status": {
+          "enum": ["EVIDENCED", "PARTIALLY_EVIDENCED", "NOT_EVIDENCED", "UNKNOWN"]
+        },
+        "excluded_uncertain_paths_or_fragments": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "private_working_history_digest": {"type": ["string", "null"]}
+      }
+    },
+    "employment_and_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "employment_duty_review", "commissioning_review", "assignment_review"],
+      "properties": {
+        "status": {"enum": ["UNRESOLVED", "CLEAR", "REVIEW_REQUIRED", "BLOCKED"]},
+        "employment_duty_review": {"enum": ["NOT_APPLICABLE", "CLEAR", "REVIEW_REQUIRED", "UNKNOWN"]},
+        "commissioning_review": {"enum": ["NOT_APPLICABLE", "CLEAR", "REVIEW_REQUIRED", "UNKNOWN"]},
+        "assignment_review": {"enum": ["NOT_APPLICABLE", "CLEAR", "REVIEW_REQUIRED", "UNKNOWN"]},
+        "private_evidence_digest": {"type": ["string", "null"]}
+      }
+    },
+    "coauthor_and_third_party": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["coauthor_status", "direct_runtime_dependencies", "source_origin_status"],
+      "properties": {
+        "coauthor_status": {"enum": ["NONE_EVIDENCED", "PRESENT", "UNCERTAIN"]},
+        "direct_runtime_dependencies": {"enum": ["BUILTINS_ONLY", "THIRD_PARTY_PRESENT", "UNKNOWN"]},
+        "source_origin_status": {"enum": ["CLEAR", "REVIEW_REQUIRED", "UNKNOWN"]},
+        "notes": {"type": ["string", "null"]}
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classification", "rights_gate_effect", "unresolved_items"],
+      "properties": {
+        "classification": {
+          "enum": [
+            "HUMAN_AUTHORED_CODE_EVIDENCED",
+            "AI_ASSISTED_HUMAN_CREATION_EVIDENCED",
+            "AUTHORSHIP_CLAIM_NARROWING_REQUIRED",
+            "MORE_EVIDENCE_REQUIRED",
+            "NO_HUMAN_AUTHORSHIP_ESTABLISHED",
+            "BLOCKED"
+          ]
+        },
+        "rights_gate_effect": {"enum": ["MAY_ADVANCE_AFTER_RIGHTS_BASIS", "KEEP_RIGHTS_REVIEW", "BLOCK_ADVANCE"]},
+        "unresolved_items": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "public_evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  },
+  "$defs": {
+    "contributionClaim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {"enum": ["EVIDENCED", "PARTIALLY_EVIDENCED", "NOT_EVIDENCED", "UNKNOWN"]},
+        "description": {"type": ["string", "null"]},
+        "evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "privatePartyRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["party_ref", "claim_status"],
+      "properties": {
+        "party_ref": {"type": "string", "minLength": 1},
+        "claim_status": {"enum": ["CANDIDATE", "DECLARED", "VERIFIED"]},
+        "private_evidence_digest": {"type": ["string", "null"]}
+      }
+    }
+  }
+}

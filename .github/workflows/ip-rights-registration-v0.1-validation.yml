@@ -5,6 +5,7 @@ on:
     paths:
       - 'docs/legal/IP-RIGHTS-REGISTRATION-PROTOCOL-v0.1.md'
       - 'docs/legal/ROSPATENT-WAVE-1-v0.1.md'
+      - 'docs/legal/IP-WAVE-1-AUTHORSHIP-EVIDENCE-GATE-v0.1.md'
       - 'schemas/ip/v0.1/**'
       - '.github/workflows/ip-rights-registration-v0.1-validation.yml'
   workflow_dispatch:
@@ -31,7 +32,9 @@ jobs:
           python -m py_compile schemas/ip/v0.1/ip_registration_validator.py
           python -m py_compile schemas/ip/v0.1/tests/test_ip_registration_v01.py
           python -m json.tool schemas/ip/v0.1/ip-rights-registration-record.schema.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/human-authorship-evidence-record.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-authorship-review.json >/dev/null
 
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
@@ -40,6 +43,25 @@ jobs:
         run: |
           python schemas/ip/v0.1/ip_registration_validator.py \
             schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json
+
+      - name: Validate human authorship evidence records
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('schemas/ip/v0.1')
+          schema = json.loads((root / 'human-authorship-evidence-record.schema.json').read_text())
+          record = json.loads((root / 'examples/uu-aap-core-authorship-review.json').read_text())
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(record)
+
+          assert record['outcome']['rights_gate_effect'] == 'KEEP_RIGHTS_REVIEW'
+          assert record['human_creative_contribution']['status'] != 'EVIDENCED'
+          assert record['ai_assistance']['generated_expression_scope'] == 'UNKNOWN'
+          assert record['employment_and_contract']['status'] != 'CLEAR'
+          print('human authorship evidence record: valid and fail-closed')
+          PY
 
       - name: Exercise fail-closed legal readiness gates
         run: python schemas/ip/v0.1/tests/test_ip_registration_v01.py
