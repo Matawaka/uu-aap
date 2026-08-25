@@ -1,0 +1,49 @@
+name: KONTUR Game Companion cross-layer chain validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/**'
+      - '.github/workflows/kontur-game-companion-*.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-chain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full repository history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate exact cross-layer dependency bindings
+        run: python pilots/kontur-game-companion/dependency-contract/validate.py
+
+      - name: Validate Observational Lane
+        run: python pilots/kontur-game-companion/observational-lane/validate.py
+
+      - name: Validate Assistance Gate
+        run: python pilots/kontur-game-companion/assistance-gate/validate.py
+
+      - name: Validate Shared Discovery Memory
+        run: python pilots/kontur-game-companion/shared-discovery-memory/validate.py
+
+      - name: Validate Bounded Initiative
+        run: python pilots/kontur-game-companion/bounded-initiative/validate.py
+
+      - name: Validate Focus Diversity
+        run: python pilots/kontur-game-companion/focus-diversity/validate.py
+
+      - name: Validate Interaction Receipt
+        run: python pilots/kontur-game-companion/interaction-receipt/validate.py
+
+      - name: Validate Pause / Resume
+        run: python pilots/kontur-game-companion/pause-resume/validate.py
