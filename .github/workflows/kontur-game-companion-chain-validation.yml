@@ -92,3 +92,6 @@ jobs:
 
       - name: Validate authority review receipt
         run: python pilots/kontur-game-companion/authority-review-receipt/validate.py
+
+      - name: Validate separate authority grant boundary
+        run: python pilots/kontur-game-companion/authority-grant-boundary/validate.py
