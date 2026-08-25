@@ -1,0 +1,77 @@
+{
+  "record_version": "0.1",
+  "record_id": "urn:uu-aap:ip:registration:uu-aap-core:wave-1",
+  "state": "RIGHTS_REVIEW",
+  "object": {
+    "object_id": "urn:uu-aap:software:reference-validation-stack:wave-1",
+    "title": "UU-AAP reference implementation and validation stack",
+    "version": "wave-1",
+    "classes": [
+      "SOFTWARE",
+      "COPYRIGHT_EXPRESSION"
+    ],
+    "description": "Candidate filing scope for a rights-cleared coherent software object implementing and validating UU-AAP/PoAI-related machine-readable protocol records. Abstract protocol ideas and third-party-only material are outside the claimed software object."
+  },
+  "evidence_anchor": {
+    "repository": "https://github.com/Matawaka/uu-aap",
+    "commit_sha": "b33920794af1c8f603871392fbd1ae26f630adcb",
+    "tag": null,
+    "paths": [
+      "schema/",
+      "schemas/",
+      "proposals/poai/"
+    ],
+    "digest_algorithm": "SHA-256",
+    "package_digest": "TO_BE_COMPUTED_AFTER_RIGHTS_CLEARED_DEPOSIT_SCOPE_IS_FROZEN",
+    "claimed_creation_date": null,
+    "first_public_disclosure": null
+  },
+  "rights_review": {
+    "status": "IN_REVIEW",
+    "authors": [
+      {
+        "name": "TO_BE_VERIFIED_FROM_CREATIVE_CONTRIBUTION_PROVENANCE",
+        "basis": "UNKNOWN",
+        "contribution_scope": "Do not infer authorship merely from repository control, merge authority, or initial-proposer status.",
+        "evidence_ref": "Git history, PRs, issues, agreements and retained creation evidence"
+      }
+    ],
+    "right_holders": [
+      {
+        "name": "TO_BE_VERIFIED",
+        "basis": "UNKNOWN",
+        "contribution_scope": "Filing must be narrowed to material for which the applicant can establish the exclusive-right basis.",
+        "evidence_ref": "Rights audit required before READY_TO_FILE"
+      }
+    ],
+    "third_party_status": "UNKNOWN",
+    "unresolved_items": [
+      "Determine exact software/deposit scope that forms one coherent program for computers.",
+      "Identify creative human authors for the selected source/deposit material.",
+      "Determine exclusive-right basis for each selected contribution.",
+      "Exclude or accurately classify inbound=outbound contributor material not assigned exclusively.",
+      "Identify third-party libraries, generated material and file-specific licenses.",
+      "Freeze a reproducible deposit package and compute its SHA-256 digest."
+    ]
+  },
+  "public_disclosure": {
+    "status": "PUBLIC",
+    "earliest_known_at": null,
+    "evidence_ref": "Public canonical GitHub repository and preserved release/checkpoint history"
+  },
+  "patentability": {
+    "status": "ALREADY_PUBLIC_DISCLOSURE_REVIEW_REQUIRED",
+    "reviewed_at": null,
+    "reviewer_or_authority": null,
+    "notes": "The software-registration candidate is distinct from any potentially patentable technical solution. Any patent candidate requires a separate novelty/public-disclosure review."
+  },
+  "registration_intent": {
+    "jurisdiction": "RU",
+    "route": "ROSPATENT_PROGRAM",
+    "decision": "PLANNED",
+    "rationale": "Create an official registry record and reproducible deposit/evidence boundary for the rights-cleared UU-AAP software stack while preserving the distinction between software expression and abstract architecture.",
+    "target_filing_date": null
+  },
+  "filing": null,
+  "outcome": null
+}
