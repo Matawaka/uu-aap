@@ -1,0 +1,30 @@
+name: Three-Layer Commitment Root v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/three-layer-commitment-root/v0.1/**"
+      - ".github/workflows/three-layer-commitment-root-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/three-layer-commitment-root/v0.1/**"
+      - ".github/workflows/three-layer-commitment-root-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check schema JSON
+        run: node -e "JSON.parse(require('fs').readFileSync('protocols/integration/three-layer-commitment-root/v0.1/three-layer-commitment-root.schema.json','utf8')); console.log('VALID schema JSON')"
+      - name: Validate Three-Layer Commitment Root v0.1
+        run: node protocols/integration/three-layer-commitment-root/v0.1/validate-three-layer-commitment-root.js
+      - name: Confirm workflow is read-only
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
