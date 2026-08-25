@@ -1,0 +1,27 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-002",
+  "status": "waiting_for_external_input",
+  "review_surfaces_checked": [
+    "https://github.com/Matawaka/uu-aap/issues/1",
+    "https://github.com/Matawaka/uu-aap/issues/2",
+    "https://github.com/Matawaka/uu-aap/issues/3",
+    "https://github.com/Matawaka/uu-aap/issues/4",
+    "https://github.com/Matawaka/uu-aap/issues/5",
+    "https://github.com/Matawaka/uu-aap/issues/6",
+    "https://github.com/Matawaka/uu-aap/issues/7"
+  ],
+  "eligible_external_input_present": false,
+  "source": null,
+  "identity_inference": "none",
+  "authority_status": "unknown",
+  "standing_status": "unknown",
+  "effects": {
+    "issue_mutation": false,
+    "normative_change": false,
+    "kontur_mutation": false,
+    "release_or_tag": false,
+    "sanction": false,
+    "liability_assignment": false
+  }
+}
