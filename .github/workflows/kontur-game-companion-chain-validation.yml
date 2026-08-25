@@ -71,3 +71,6 @@ jobs:
 
       - name: Validate candidate policy-request envelope generator
         run: python pilots/kontur-game-companion/candidate-envelope/validate.py
+
+      - name: Validate pre-text policy evaluation harness
+        run: python pilots/kontur-game-companion/policy-evaluation-harness/validate.py
