@@ -1,0 +1,54 @@
+{
+  "$schema": "./cross-layer-invariant-stability.schema.json",
+  "artifact_type": "CrossLayerInvariantStabilityMatrix",
+  "artifact_version": "0.1",
+  "checkpoint_id": "urn:uu-aap:stability:cross-layer:v0.1:79e18451985963ed93ac0a9a7d1df93da2108ff7",
+  "baseline_main_sha": "79e18451985963ed93ac0a9a7d1df93da2108ff7",
+  "scope_class": "representative_cross_layer",
+  "layers": [
+    {"layer_id": "core-v0.1", "validator_path": "protocols/core/v0.1/validate-core.js", "required": true},
+    {"layer_id": "non-induced-intent-v0.1", "validator_path": "protocols/core/extensions/intent-evidence/v0.1/validate-intent-evidence.js", "required": true},
+    {"layer_id": "ambient-observability-non-identification-v0.1", "validator_path": "protocols/integration/ambient-observability-non-identification/v0.1/validate-ambient-observability.js", "required": true},
+    {"layer_id": "event-hash-minimalism-v0.1", "validator_path": "protocols/integration/event-hash-minimalism/v0.1/validate-event-hash-minimalism.js", "required": true},
+    {"layer_id": "latent-evidentiary-knowledge-v0.1", "validator_path": "protocols/integration/latent-evidentiary-knowledge/v0.1/validate-latent-evidentiary-knowledge.js", "required": true},
+    {"layer_id": "three-layer-commitment-root-v0.1", "validator_path": "protocols/integration/three-layer-commitment-root/v0.1/validate-three-layer-commitment-root.js", "required": true},
+    {"layer_id": "preventive-intent-challenge-v0.1", "validator_path": "protocols/integration/preventive-intent-challenge-v0.1/validate-pic.js", "required": true},
+    {"layer_id": "ambient-pressure-by-uncertainty-v0.1", "validator_path": "protocols/experimental/ambient-pressure-by-uncertainty/v0.1/validate.js", "required": true},
+    {"layer_id": "future-optionality-non-commitment-v0.1", "validator_path": "protocols/experimental/future-optionality-non-commitment/v0.1/validate.js", "required": true}
+  ],
+  "forbidden_implications": [
+    {"from": "possibility", "to": "intent", "allowed": false},
+    {"from": "intent", "to": "action", "allowed": false},
+    {"from": "action", "to": "liability", "allowed": false},
+    {"from": "text_exposure", "to": "intent", "allowed": false},
+    {"from": "observation", "to": "identification", "allowed": false},
+    {"from": "event_hash", "to": "stored_action_trace", "allowed": false},
+    {"from": "available_evidence", "to": "active_personalized_knowledge", "allowed": false},
+    {"from": "preventive_challenge", "to": "blocking_authority", "allowed": false},
+    {"from": "uncertainty", "to": "refusal", "allowed": false},
+    {"from": "forecast", "to": "obligation", "allowed": false},
+    {"from": "future_target", "to": "required_successor", "allowed": false},
+    {"from": "layer_commitment", "to": "rewrite_other_planes", "allowed": false}
+  ],
+  "non_effects": {
+    "external_observation_performed": false,
+    "profiling_performed": false,
+    "actuator_invoked": false,
+    "kontur_mutated": false,
+    "authority_transferred": false,
+    "permissions_changed": false,
+    "protection_changed": false,
+    "release_or_tag_created": false,
+    "sanction_authorized": false,
+    "history_rewritten": false,
+    "canonical_origin_mutated": false
+  },
+  "claims": {
+    "stability_check_passed": true,
+    "universal_correctness_proven": false,
+    "all_historical_states_verified": false,
+    "external_runtime_verified": false,
+    "legal_validity_proven": false,
+    "future_successors_safe_by_default": false
+  }
+}
