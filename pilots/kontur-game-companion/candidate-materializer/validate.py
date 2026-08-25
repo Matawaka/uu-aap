@@ -3,7 +3,10 @@ import copy, importlib.util, json
 from pathlib import Path
 
 HERE=Path(__file__).resolve().parent; ROOT=HERE.parent
-TRACE=ROOT/"integrated-conversation-trace"/"integrated-conversation-trace.json"; RUNNER=ROOT/"session-runner"/"runner.py"; GENERATOR=ROOT/"candidate-envelope"/"generator.py"; EVALUATOR=ROOT/"policy-evaluation-harness"/"evaluator.py"; MATERIALIZER=HERE/"materializer.py"
+TRACE=ROOT/"integrated-conversation-trace"/"integrated-conversation-trace.json"
+RUNNER=ROOT/"session-runner"/"runner.py"; GENERATOR=ROOT/"candidate-envelope"/"generator.py"
+EVALUATOR=ROOT/"policy-evaluation-harness"/"evaluator.py"; MATERIALIZER=HERE/"materializer.py"
+
 def loadmod(name,path):
     s=importlib.util.spec_from_file_location(name,path); m=importlib.util.module_from_spec(s); s.loader.exec_module(m); return m
 runner=loadmod("cmv_runner",RUNNER); gen=loadmod("cmv_generator",GENERATOR); evl=loadmod("cmv_evaluator",EVALUATOR); mat=loadmod("cmv_materializer",MATERIALIZER)
@@ -12,7 +15,8 @@ def derive(trace):
     state=runner.initial(trace["scope_id"]); out=[]; states={}; events={}; envs={}; pres={}
     for n,event in enumerate(trace["turns"],1):
         if event["speaker"]=="PLAYER":
-            st=copy.deepcopy(state); env=gen.generate(copy.deepcopy(st),copy.deepcopy(event)); pre=evl.evaluate(copy.deepcopy(st),copy.deepcopy(event),copy.deepcopy(env)); result=mat.materialize(copy.deepcopy(st),copy.deepcopy(event),copy.deepcopy(env),copy.deepcopy(pre))
+            st=copy.deepcopy(state); env=gen.generate(copy.deepcopy(st),copy.deepcopy(event)); pre=evl.evaluate(copy.deepcopy(st),copy.deepcopy(event),copy.deepcopy(env))
+            result=mat.materialize(copy.deepcopy(st),copy.deepcopy(event),copy.deepcopy(env),copy.deepcopy(pre))
             states[n]=st; events[n]=copy.deepcopy(event); envs[n]=env; pres[n]=pre
             if result is not None: out.append(result)
         runner.reduce_turn(state,copy.deepcopy(event),n)
@@ -32,17 +36,26 @@ def main():
         assert len(r["interaction_receipt_digest"])==64 and r["source_candidate_digest"]==c["candidate_digest"]
     assert mat.materialize(states[7],events[7],envs[7],pres[7]) is None
 
-    reduced_ctx=evl.default_policy_context(events[10]); reduced_ctx["assistance_ceiling"]="QUESTION"; reduced_pre=evl.evaluate(states[10],events[10],envs[10],reduced_ctx); reduced=mat.materialize(states[10],events[10],envs[10],reduced_pre,reduced_ctx)
-    assert reduced["candidate"]["assistance_depth"]=="QUESTION" and reduced["candidate"]["template_id"]=="generic-evidence-question" and reduced["interaction_receipt"]["response_admissible"] is True
-    blocked_ctx=evl.default_policy_context(events[14]); blocked_ctx["blocked"]=True; blocked_ctx["block_reason"]="SYNTHETIC_BLOCK"; blocked_pre=evl.evaluate(states[14],events[14],envs[14],blocked_ctx); assert mat.materialize(states[14],events[14],envs[14],blocked_pre,blocked_ctx) is None
+    reduced_ctx=evl.default_policy_context(events[10]); reduced_ctx["assistance_ceiling"]="QUESTION"
+    reduced_pre=evl.evaluate(states[10],events[10],envs[10],reduced_ctx)
+    reduced=mat.materialize(states[10],events[10],envs[10],reduced_pre,reduced_ctx)
+    assert reduced["candidate"]["assistance_depth"]=="QUESTION" and reduced["candidate"]["template_id"]=="generic-evidence-question"
+    blocked_ctx=evl.default_policy_context(events[14]); blocked_ctx["blocked"]=True; blocked_ctx["block_reason"]="SYNTHETIC_BLOCK"
+    blocked_pre=evl.evaluate(states[14],events[14],envs[14],blocked_ctx)
+    assert mat.materialize(states[14],events[14],envs[14],blocked_pre,blocked_ctx) is None
+
+    # Removing the explicit solution intent is safe: upstream recomputes a shallower COMMENT.
+    safe_event=copy.deepcopy(events[14]); safe_event["player_intent"]="CONVERSATION"
+    safe_env=gen.generate(copy.deepcopy(states[14]),copy.deepcopy(safe_event))
+    safe_pre=evl.evaluate(copy.deepcopy(states[14]),copy.deepcopy(safe_event),copy.deepcopy(safe_env))
+    safe_result=mat.materialize(copy.deepcopy(states[14]),copy.deepcopy(safe_event),copy.deepcopy(safe_env),copy.deepcopy(safe_pre))
+    assert safe_result["candidate"]["assistance_depth"]=="COMMENT" and safe_result["candidate"]["contains_solution"] is False
 
     mutations=0
-    def reject(turn,mc=None,mr=None,mp=None,me=None):
+    def reject(turn,mc=None,mr=None,mp=None):
         nonlocal mutations
         st=copy.deepcopy(states[turn]); event=copy.deepcopy(events[turn]); env=copy.deepcopy(envs[turn]); pre=copy.deepcopy(pres[turn])
         try:
-            if me:
-                me(event); env=gen.generate(copy.deepcopy(st),copy.deepcopy(event)); pre=evl.evaluate(copy.deepcopy(st),copy.deepcopy(event),copy.deepcopy(env))
             if mp: mp(pre)
             result=mat.materialize(copy.deepcopy(st),copy.deepcopy(event),copy.deepcopy(env),copy.deepcopy(pre))
             if result is None: raise AssertionError("unexpected no candidate")
@@ -54,8 +67,19 @@ def main():
         raise AssertionError(f"unsafe mutation accepted at turn {turn}")
 
     for turn in [1,3,5,8,10,12,14]:
-        reject(turn,mc=lambda c:c.__setitem__("response_authority_created",True)); reject(turn,mc=lambda c:c.__setitem__("send_authority",True)); reject(turn,mc=lambda c:c.__setitem__("player_judgment",True)); reject(turn,mc=lambda c:c.__setitem__("pressure_to_continue",True)); reject(turn,mc=lambda c:c.__setitem__("hidden_hint",True)); reject(turn,mr=lambda r:r.__setitem__("response_authority_created",True)); reject(turn,mr=lambda r:r.__setitem__("send_authority",True)); reject(turn,mr=lambda r:r.__setitem__("action_permit_created",True)); reject(turn,mr=lambda r:r.__setitem__("successor_permit_created",True)); reject(turn,mr=lambda r:r.__setitem__("scope","SESSION")); reject(turn,mr=lambda r:r.__setitem__("response_admissible",False))
-    reject(1,mc=lambda c:c.__setitem__("response_text","The answer is SUN LEAF MOON.")); reject(1,mc=lambda c:c.__setitem__("assistance_depth","SOLUTION")); reject(10,mc=lambda c:c.__setitem__("contains_solution",True)); reject(14,mc=lambda c:c.__setitem__("future_solution_authority",True)); reject(14,mc=lambda c:c.__setitem__("persistent_solver_mode",True)); reject(14,mr=lambda r:r.__setitem__("future_solution_authority",True)); reject(14,mr=lambda r:r.__setitem__("persistent_solver_mode",True)); reject(8,mc=lambda c:c.__setitem__("focus","gate-mechanism")); reject(8,mr=lambda r:r.__setitem__("initiative_authorized",False)); reject(14,mr=lambda r:r.__setitem__("factual_correctness_evaluated",True)); reject(3,mr=lambda r:r["boundary"].__setitem__("behavioral_profile",True)); reject(10,mr=lambda r:r.__setitem__("semantics_validator_sha256","0"*64)); reject(14,me=lambda e:e.__setitem__("player_intent","CONVERSATION")); reject(10,mp=lambda p:p.__setitem__("response_admissible",True)); reject(10,mp=lambda p:p.__setitem__("interaction_receipt_ready",True))
+        reject(turn,mc=lambda c:c.__setitem__("response_authority_created",True)); reject(turn,mc=lambda c:c.__setitem__("send_authority",True))
+        reject(turn,mc=lambda c:c.__setitem__("player_judgment",True)); reject(turn,mc=lambda c:c.__setitem__("pressure_to_continue",True)); reject(turn,mc=lambda c:c.__setitem__("hidden_hint",True))
+        reject(turn,mr=lambda r:r.__setitem__("response_authority_created",True)); reject(turn,mr=lambda r:r.__setitem__("send_authority",True))
+        reject(turn,mr=lambda r:r.__setitem__("action_permit_created",True)); reject(turn,mr=lambda r:r.__setitem__("successor_permit_created",True))
+        reject(turn,mr=lambda r:r.__setitem__("scope","SESSION")); reject(turn,mr=lambda r:r.__setitem__("response_admissible",False))
+    reject(1,mc=lambda c:c.__setitem__("response_text","The answer is SUN LEAF MOON.")); reject(1,mc=lambda c:c.__setitem__("assistance_depth","SOLUTION"))
+    reject(10,mc=lambda c:c.__setitem__("contains_solution",True)); reject(14,mc=lambda c:c.__setitem__("future_solution_authority",True))
+    reject(14,mc=lambda c:c.__setitem__("persistent_solver_mode",True)); reject(14,mc=lambda c:c.__setitem__("solution_scope","SESSION"))
+    reject(14,mr=lambda r:r.__setitem__("future_solution_authority",True)); reject(14,mr=lambda r:r.__setitem__("persistent_solver_mode",True))
+    reject(8,mc=lambda c:c.__setitem__("focus","gate-mechanism")); reject(8,mr=lambda r:r.__setitem__("initiative_authorized",False))
+    reject(14,mr=lambda r:r.__setitem__("factual_correctness_evaluated",True)); reject(3,mr=lambda r:r["boundary"].__setitem__("behavioral_profile",True))
+    reject(10,mr=lambda r:r.__setitem__("semantics_validator_sha256","0"*64)); reject(10,mp=lambda p:p.__setitem__("response_admissible",True)); reject(10,mp=lambda p:p.__setitem__("interaction_receipt_ready",True))
+
     final=by[14]
     print(f"synthetic candidate materializer validation: PASS; candidates={len(a)}; interaction_receipts={len(a)}; fail_closed_mutations={mutations}; final_candidate_digest={final['candidate']['candidate_digest']}; final_interaction_receipt_digest={final['interaction_receipt']['interaction_receipt_digest']}")
 
