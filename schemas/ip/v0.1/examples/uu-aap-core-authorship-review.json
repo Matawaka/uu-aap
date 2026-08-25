@@ -1,0 +1,94 @@
+{
+  "record_version": "0.1",
+  "record_id": "urn:uu-aap:ip:authorship:core-validator:wave-1",
+  "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
+  "evidence_frontier": {
+    "repository": "https://github.com/Matawaka/uu-aap",
+    "commit_sha": "987207645b7732e35a2cf153117aaaa230e2be45",
+    "observed_at": "2026-08-25T16:44:00Z"
+  },
+  "repository_provenance": {
+    "origin_pr": 320,
+    "origin_merge_sha": "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9",
+    "selected_paths": [
+      "protocols/core/v0.1/validate-core.js",
+      "protocols/core/v0.1/receipt-envelope.schema.json",
+      "protocols/core/v0.1/end-to-end.fixture.json"
+    ],
+    "history_status": "SINGLE_ORIGIN_COMMIT",
+    "evidence_refs": [
+      "GitHub issue #303",
+      "GitHub PR #320",
+      "Git commit history for protocols/core/v0.1/validate-core.js"
+    ]
+  },
+  "human_creative_contribution": {
+    "status": "UNRESOLVED",
+    "requirements_and_architecture": {
+      "status": "PARTIALLY_EVIDENCED",
+      "description": "Issue #303 records the seven-primitives architecture, typed receipt interfaces, assertions/non-effects and fail-closed requirements before the Core implementation merge; repository evidence does not by itself identify the natural-person creative author of those choices.",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/issues/303"
+      ]
+    },
+    "source_code_expression": {
+      "status": "NOT_EVIDENCED",
+      "description": "Git history establishes origin and continuity of the selected source file but does not establish which natural person personally created the protected source-code expression.",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/320",
+        "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9"
+      ]
+    },
+    "selection_editing_integration": {
+      "status": "UNKNOWN",
+      "description": "Private working history or a natural-person declaration is required to distinguish creative human selection/editing/integration from technical approval or repository merge activity.",
+      "evidence_refs": []
+    },
+    "debugging_testing_choices": {
+      "status": "UNKNOWN",
+      "description": "The repository records conformance and fail-closed tests, but current public evidence does not attribute creative debugging/testing choices to a verified natural person.",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/320"
+      ]
+    },
+    "candidate_natural_person_authors": []
+  },
+  "ai_assistance": {
+    "status": "AI_USE_UNKNOWN",
+    "systems": [],
+    "generated_expression_scope": "UNKNOWN",
+    "human_transformation_status": "UNKNOWN",
+    "excluded_uncertain_paths_or_fragments": [],
+    "private_working_history_digest": null
+  },
+  "employment_and_contract": {
+    "status": "UNRESOLVED",
+    "employment_duty_review": "UNKNOWN",
+    "commissioning_review": "UNKNOWN",
+    "assignment_review": "UNKNOWN",
+    "private_evidence_digest": null
+  },
+  "coauthor_and_third_party": {
+    "coauthor_status": "UNCERTAIN",
+    "direct_runtime_dependencies": "BUILTINS_ONLY",
+    "source_origin_status": "REVIEW_REQUIRED",
+    "notes": "The selected validator directly imports only Node.js built-in crypto, fs and path. That narrows dependency risk but does not prove source-expression authorship or exclude copied/adapted/generated expression."
+  },
+  "outcome": {
+    "classification": "MORE_EVIDENCE_REQUIRED",
+    "rights_gate_effect": "KEEP_RIGHTS_REVIEW",
+    "unresolved_items": [
+      "Obtain a private natural-person creative-contribution declaration for the selected source scope.",
+      "Classify generative-AI use and the scope of any AI-generated source expression.",
+      "Evidence any human selection, editing, restructuring, correction or integration claimed as creative contribution.",
+      "Resolve employment-duty, commissioning and assignment allocation for the creation period.",
+      "Resolve any coauthor or contributor contribution touching the selected deposit scope.",
+      "Complete source-origin clearance beyond direct runtime dependency review."
+    ],
+    "public_evidence_refs": [
+      "https://github.com/Matawaka/uu-aap/issues/303",
+      "https://github.com/Matawaka/uu-aap/pull/320",
+      "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9"
+    ]
+  }
+}
