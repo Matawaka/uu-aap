@@ -2,9 +2,9 @@
   "checkpoint_version": "0.1",
   "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
   "legal_snapshot": {
-    "verified_at": "2026-08-25T22:45:00+05:00",
+    "verified_at": "2026-08-25T23:15:00+05:00",
     "publication_rule": "Rospatent application field 5 asks for country and year of first publication/release only if publication under Civil Code Article 1268 occurred before filing. Public disclosure and publication are not treated as identical by default. For this Wave 1 filing, the applicant has expressly instructed that the field be completed as Russia, 2026.",
-    "author_rule": "The author may be named or may refuse mention. If the author refuses to be mentioned, Rospatent guidance states that the author's personal-data consent is not required; anonymous publication is treated differently."
+    "author_rule": "Rospatent filing materials distinguish the author's legal identity from the author's publication choice. A named author may request publication under a pseudonym; the public record may use that pseudonym while the legal author identity remains in the private filing materials."
   },
   "route": {
     "recommended": "EPGU",
@@ -16,8 +16,10 @@
     "selected": "SELF"
   },
   "author_visibility": {
-    "selected": "UNDECIDED",
-    "personal_data_consent_effect": "UNRESOLVED"
+    "selected": "PSEUDONYM",
+    "personal_data_consent_effect": "REQUIRED",
+    "public_pseudonym": "MATAWAKA",
+    "legal_identity_retention": "PRIVATE_OFF_REPOSITORY"
   },
   "first_publication": {
     "public_disclosure_confirmed": true,
@@ -29,7 +31,6 @@
   "gate_result": {
     "effect": "AWAIT_APPLICANT_DECISIONS",
     "unresolved_decisions": [
-      "author_visibility",
       "live_signature_method"
     ]
   },
