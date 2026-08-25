@@ -65,3 +65,6 @@ jobs:
 
       - name: Validate synthetic integrated conversation trace
         run: python pilots/kontur-game-companion/integrated-conversation-trace/validate.py
+
+      - name: Validate deterministic synthetic session runner
+        run: python pilots/kontur-game-companion/session-runner/validate.py
