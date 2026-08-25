@@ -1,0 +1,165 @@
+{
+  "artifact_type": "KonturGameCompanionUncertaintyRepairCases",
+  "version": "0.1",
+  "status": "synthetic_non_executing",
+  "predecessor_layers": [
+    "shared-discovery-memory",
+    "interaction-receipt",
+    "conversation-variety",
+    "safety-boundary"
+  ],
+  "repair_modes": [
+    "ACKNOWLEDGE",
+    "REVISE",
+    "DOWNGRADE",
+    "CONTEST",
+    "ASK_EVIDENCE",
+    "DEFER",
+    "CONTINUE"
+  ],
+  "claim_states": [
+    "ACTIVE",
+    "CHALLENGED",
+    "DISPROVED",
+    "CONTESTED",
+    "SUPERSEDED"
+  ],
+  "invariants": [
+    "Correction != Model Defeat",
+    "Changed Claim != Rewritten History",
+    "Player Disagreement != Automatic Fact",
+    "Disproved Hypothesis != Reusable Fact",
+    "Uncertainty Repair != Confidence Theater",
+    "Apology != Required Ritual",
+    "Correction != Conversation Reset",
+    "Evidence Update != Authority Expansion",
+    "Local Correction != Global Truth",
+    "Contestation != Forced Resolution",
+    "Repair != Spoiler Escalation",
+    "Repair != Assistance Escalation",
+    "Repair != Action Permit"
+  ],
+  "limits": {
+    "repair_scope": "CURRENT_LOCAL_CLAIM",
+    "prior_claim_must_remain_provenance_visible": true,
+    "global_truth_transfer": false,
+    "apology_required": false,
+    "conversation_reset_required": false,
+    "authority_expansion_allowed": false,
+    "assistance_escalation_allowed": false,
+    "spoiler_escalation_allowed": false,
+    "focus_switch_for_repair_allowed": false
+  },
+  "non_effects": {
+    "live_response_generation": false,
+    "proactive_messaging": false,
+    "background_notification": false,
+    "autonomous_gameplay": false,
+    "game_account_control": false,
+    "external_effect_authorized": false,
+    "action_permit_created": false,
+    "successor_permit_created": false,
+    "response_authority_created": false,
+    "behavioral_profile": false,
+    "psychological_profile": false,
+    "mood_inference": false,
+    "engagement_optimization": false,
+    "retention_optimization": false,
+    "total_history_required": false,
+    "cross_game_truth_profile": false,
+    "stable_core_promotion": false
+  },
+  "cases": [
+    {
+      "id": "verified-local-correction-revises",
+      "prior_claim": {"claim_id": "claim:verified-local-correction-revises", "epistemic_mode": "GUESS", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_WITH_LOCAL_EVIDENCE", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "REVISE", "resulting_claim_state": "DISPROVED", "current_epistemic_mode": "LIKELY", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "A locally verified correction retires the prior guess without universalizing the player's claim."
+    },
+    {
+      "id": "bare-disagreement-stays-challenged",
+      "prior_claim": {"claim_id": "claim:bare-disagreement-stays-challenged", "epistemic_mode": "LIKELY", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_ASSERTION", "strength": "LOW", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "CONTEST", "resulting_claim_state": "CHALLENGED", "current_epistemic_mode": "GUESS", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Disagreement is evidence of challenge, not automatic truth."
+    },
+    {
+      "id": "conflicting-evidence-stays-contested",
+      "prior_claim": {"claim_id": "claim:conflicting-evidence-stays-contested", "epistemic_mode": "LIKELY", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "MIXED_LOCAL_EVIDENCE", "strength": "MIXED", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "DEFER", "resulting_claim_state": "CONTESTED", "current_epistemic_mode": "GUESS", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Unresolved conflict remains open rather than selecting a winner."
+    },
+    {
+      "id": "disproved-hypothesis-not-reused",
+      "prior_claim": {"claim_id": "claim:disproved-hypothesis-not-reused", "epistemic_mode": "GUESS", "state": "DISPROVED", "provenance_visible": true},
+      "new_evidence": {"source": "LOCAL_CONFIRMATION", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "CONTINUE", "resulting_claim_state": "DISPROVED", "current_epistemic_mode": "GUESS", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Disproved hypotheses stay provenance-visible but cannot return as active guidance."
+    },
+    {
+      "id": "history-not-rewritten-after-correction",
+      "prior_claim": {"claim_id": "claim:history-not-rewritten-after-correction", "epistemic_mode": "PLAYFUL_THEORY", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_WITH_LOCAL_EVIDENCE", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "ACKNOWLEDGE", "resulting_claim_state": "DISPROVED", "current_epistemic_mode": "GUESS", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Repair preserves the old claim instead of pretending the companion knew the correction all along."
+    },
+    {
+      "id": "challenge-causes-confidence-downgrade",
+      "prior_claim": {"claim_id": "claim:challenge-causes-confidence-downgrade", "epistemic_mode": "KNOWN", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_COUNTEREVIDENCE", "strength": "MEDIUM", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "DOWNGRADE", "resulting_claim_state": "CHALLENGED", "current_epistemic_mode": "LIKELY", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Contrary evidence must reduce unsupported certainty."
+    },
+    {
+      "id": "repair-without-apology-ritual",
+      "prior_claim": {"claim_id": "claim:repair-without-apology-ritual", "epistemic_mode": "GUESS", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_WITH_LOCAL_EVIDENCE", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "REVISE", "resulting_claim_state": "DISPROVED", "current_epistemic_mode": "LIKELY", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "An apology may be natural language, but the protocol never requires a ritual apology."
+    },
+    {
+      "id": "correction-continues-thread",
+      "prior_claim": {"claim_id": "claim:correction-continues-thread", "epistemic_mode": "LIKELY", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_WITH_LOCAL_EVIDENCE", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "CONTINUE", "resulting_claim_state": "SUPERSEDED", "current_epistemic_mode": "LIKELY", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "A corrected claim does not require resetting the conversation or changing topic."
+    },
+    {
+      "id": "repair-does-not-escalate-spoilers",
+      "prior_claim": {"claim_id": "claim:repair-does-not-escalate-spoilers", "epistemic_mode": "GUESS", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_WITH_LOCAL_EVIDENCE", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "REVISE", "resulting_claim_state": "DISPROVED", "current_epistemic_mode": "LIKELY", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Knowing the correction does not authorize deeper spoiler disclosure."
+    },
+    {
+      "id": "repair-does-not-escalate-help",
+      "prior_claim": {"claim_id": "claim:repair-does-not-escalate-help", "epistemic_mode": "GUESS", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_WITH_LOCAL_EVIDENCE", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "REVISE", "resulting_claim_state": "DISPROVED", "current_epistemic_mode": "LIKELY", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Repair does not increase assistance depth."
+    },
+    {
+      "id": "cross-scope-correction-not-imported",
+      "prior_claim": {"claim_id": "claim:cross-scope-correction-not-imported", "epistemic_mode": "LIKELY", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_OTHER_GAME_ASSERTION", "strength": "MEDIUM", "scope_match": false, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "ASK_EVIDENCE", "resulting_claim_state": "CHALLENGED", "current_epistemic_mode": "GUESS", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Evidence from another game/scope cannot silently overwrite the local claim."
+    },
+    {
+      "id": "player-correction-does-not-create-authority",
+      "prior_claim": {"claim_id": "claim:player-correction-does-not-create-authority", "epistemic_mode": "LIKELY", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_WITH_LOCAL_EVIDENCE", "strength": "VERIFIED_LOCAL", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "REVISE", "resulting_claim_state": "DISPROVED", "current_epistemic_mode": "LIKELY", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "Useful correction creates no generalized authority or global truth."
+    },
+    {
+      "id": "irreversible-risk-repair-defers",
+      "prior_claim": {"claim_id": "claim:irreversible-risk-repair-defers", "epistemic_mode": "GUESS", "state": "ACTIVE", "provenance_visible": true},
+      "new_evidence": {"source": "PLAYER_COUNTEREVIDENCE", "strength": "MEDIUM", "scope_match": true, "contradicts_prior": true, "canonicality_proven": false},
+      "repair_candidate": {"mode": "DEFER", "resulting_claim_state": "CHALLENGED", "current_epistemic_mode": "GUESS", "decision": "ALLOW_REPAIR", "preserve_prior_claim": true, "player_claim_promoted_to_global_truth": false, "apology_required": false, "conversation_reset": false, "authority_created": false, "assistance_depth_increased": false, "spoiler_depth_increased": false, "focus_changed": false, "prior_claim_active_reuse": false},
+      "note": "When consequences may be irreversible, uncertainty repair may defer rather than bluff confidence."
+    }
+  ]
+}
