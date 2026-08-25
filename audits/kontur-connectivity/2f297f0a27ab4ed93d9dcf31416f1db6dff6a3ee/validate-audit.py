@@ -224,12 +224,19 @@ def main() -> None:
         )
 
     require(summary.get("audit_complete") is True, "audit_complete must be true")
+    require(summary.get("audit_status") == "PUBLISHED", "unexpected publication status")
     require(
-        summary.get("audit_status") == "PREPARED_NOT_PUBLISHED",
-        "unexpected publication status",
+        summary.get("audit_branch") == "audit/kontur-connectivity-2f297f0",
+        "unexpected audit branch",
     )
-    require(summary.get("audit_branch") == "NONE", "no branch may be claimed")
-    require(summary.get("audit_pr") == "NONE", "no PR may be claimed")
+    require(
+        summary.get("audit_pr") == "https://github.com/Matawaka/uu-aap/pull/458",
+        "unexpected audit PR",
+    )
+    require(
+        summary.get("recovery_status") == "RECOVERED_CONTINUATION",
+        "unexpected recovery status",
+    )
 
     require(recovery.get("recovery_reason") == "network_interruption", "recovery reason mismatch")
     require(recovery.get("frontier_diverged") is False, "recovery frontier must not diverge")
@@ -238,6 +245,19 @@ def main() -> None:
     require(recovery.get("partial_artifacts_found") is True, "partial artifacts must be recorded")
     require(recovery.get("recovered_existing_work") is True, "existing work recovery not recorded")
     require(recovery.get("duplicate_publication_created") is False, "duplicate publication claimed")
+    require(
+        recovery.get("recovery_status") == "RECOVERED_CONTINUATION",
+        "recovered continuation status absent",
+    )
+    require(
+        recovery.get("publication_branch_created") == "audit/kontur-connectivity-2f297f0",
+        "publication branch receipt mismatch",
+    )
+    require(
+        recovery.get("publication_pr_created") == "https://github.com/Matawaka/uu-aap/pull/458",
+        "publication PR receipt mismatch",
+    )
+    require(recovery.get("audit_pr_merged") is False, "audit PR must remain unmerged")
     require(
         recovery.get("concurrent_unmerged_state_included_in_audited_architecture") is False,
         "parallel unmerged work must remain outside the frozen architecture",
@@ -273,6 +293,5 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-
 
 
