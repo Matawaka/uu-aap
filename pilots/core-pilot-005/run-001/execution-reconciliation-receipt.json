@@ -1,0 +1,23 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-005",
+  "run_id": "core-pilot-005-run-001",
+  "permit_id": "core-pilot-005-run-001-comment-001-r1",
+  "execution_frontier": "54a47ffc2c08a8ddf5c7ec6814d7411960634b4a",
+  "repository": "Matawaka/uu-aap",
+  "target_issue": 440,
+  "effect_type": "issue_comment_create",
+  "payload_sha256": "2ab6bb1a99b7839062a02a27b41a0dc472581b8bf9218d5e356ab23719688226",
+  "attempted_effect_count": 1,
+  "immediate_ack_state": "UNKNOWN",
+  "write_response_used_as_final_evidence": false,
+  "observation_mode": "read_only",
+  "observed_comment_count": 1,
+  "observed_comment_id": 5406855558,
+  "observed_payload_exact_match": true,
+  "reconciliation_class": "CONFIRMED",
+  "retry_authorized": false,
+  "original_permit_reusable": false,
+  "successor_permit_created": false,
+  "external_action_authorized_after_reconciliation": false
+}
