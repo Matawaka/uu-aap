@@ -77,3 +77,6 @@ jobs:
 
       - name: Validate synthetic candidate materializer and Interaction Receipt bridge
         run: python pilots/kontur-game-companion/candidate-materializer/validate.py
+
+      - name: Validate synthetic response dispatch gate
+        run: python pilots/kontur-game-companion/response-dispatch-gate/validate.py
