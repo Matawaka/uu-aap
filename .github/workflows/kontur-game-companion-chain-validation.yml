@@ -119,3 +119,7 @@ jobs:
 
       - name: Validate local synthetic network user-surface activation materialization
         run: python pilots/kontur-game-companion/network-user-surface-activation-materialization/validate.py
+      - name: Validate network user-surface enablement challenge
+        run: python pilots/kontur-game-companion/network-user-surface-enablement-challenge/validate.py
+
+

@@ -1,0 +1,32 @@
+name: KONTUR Game Companion network user-surface enablement challenge validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/network-user-surface-enablement-challenge/**'
+      - 'pilots/kontur-game-companion/network-user-surface-activation-materialization/**'
+      - 'pilots/kontur-game-companion/network-user-surface-activation-grant/**'
+      - 'pilots/kontur-game-companion/network-user-surface-externalization-review/**'
+      - 'pilots/kontur-game-companion/network-user-surface-activation-challenge/**'
+      - 'pilots/kontur-game-companion/runtime-transport-binding-materialization/**'
+      - 'pilots/kontur-game-companion/**'
+      - '.github/workflows/kontur-game-companion-network-user-surface-enablement-challenge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-network-user-surface-enablement-challenge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate network user-surface enablement challenge
+        run: python pilots/kontur-game-companion/network-user-surface-enablement-challenge/validate.py
+
+
