@@ -1,0 +1,133 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "kontur-game-companion-shared-discovery-memory",
+  "origin_frontier": "3fc4b66d6eebe90321baea3c92dbad80f3b0afc0",
+  "shared": {
+    "repository": "Matawaka/uu-aap",
+    "source_issue": 445,
+    "predecessor_prs": [446, 452],
+    "mode": "SYNTHETIC_BOUNDED_CONVERSATIONAL_MEMORY",
+    "live_memory_ingestion_authorized": false,
+    "cross_game_profile_authorized": false,
+    "psychological_inference_authorized": false,
+    "engagement_maximization_authorized": false,
+    "total_history_required": false,
+    "stable_core_change_implied": false,
+    "action_permit_created": false
+  },
+  "cases": [
+    {
+      "case_id": "disproved-companion-hypothesis",
+      "memory_class": "HYPOTHESIS",
+      "scope_id": "game-a:puzzle-17",
+      "retention_class": "LOCAL_THREAD",
+      "source_actor": "COMPANION",
+      "claim_state_before": "ACTIVE_HYPOTHESIS",
+      "claim_state_after": "DISPROVED",
+      "correction_observed": true,
+      "model_revision_required": true,
+      "historical_record_preserved": true,
+      "active_reuse_allowed": false,
+      "global_truth_created": false,
+      "allowed": true
+    },
+    {
+      "case_id": "player-correction-local-only",
+      "memory_class": "CORRECTION",
+      "scope_id": "game-a:puzzle-17",
+      "retention_class": "LOCAL_THREAD",
+      "source_actor": "PLAYER",
+      "target_hypothesis_id": "hypothesis-17-a",
+      "correction_state": "SUPPORTED_LOCALLY",
+      "model_revision_required": true,
+      "global_truth_created": false,
+      "cross_scope_reuse_allowed": false,
+      "allowed": true
+    },
+    {
+      "case_id": "local-expertise-bounded",
+      "memory_class": "LOCAL_EXPERTISE_SIGNAL",
+      "scope_id": "game-a:crafting",
+      "retention_class": "SESSION",
+      "source_actor": "PLAYER",
+      "topic": "crafting",
+      "expertise_scope": "game-a:crafting",
+      "universal_expertise_inferred": false,
+      "psychological_trait_inferred": false,
+      "cross_scope_reuse_allowed": false,
+      "allowed": true
+    },
+    {
+      "case_id": "conflict-remains-contested",
+      "memory_class": "OPEN_MYSTERY",
+      "scope_id": "game-a:lore-door",
+      "retention_class": "UNTIL_RESOLVED",
+      "source_actor": "MIXED",
+      "conflicting_evidence": true,
+      "resolution_state": "CONTESTED",
+      "winner_selected": false,
+      "global_truth_created": false,
+      "active_reuse_allowed": true,
+      "allowed": true
+    },
+    {
+      "case_id": "shared-label-local-only",
+      "memory_class": "SHARED_LABEL",
+      "scope_id": "game-a:campaign-1",
+      "retention_class": "LOCAL_THREAD",
+      "source_actor": "MIXED",
+      "label": "red-door-goblin",
+      "manipulative_familiarity_authorized": false,
+      "psychological_trait_inferred": false,
+      "engagement_pressure_authorized": false,
+      "cross_scope_reuse_allowed": false,
+      "allowed": true
+    },
+    {
+      "case_id": "spoiler-exposure-no-deeper-authority",
+      "memory_class": "SPOILER_EXPOSURE",
+      "scope_id": "game-a:campaign-1",
+      "retention_class": "LOCAL_THREAD",
+      "source_actor": "MIXED",
+      "already_revealed_spoiler_level": 2,
+      "new_spoiler_authority_level": 2,
+      "deeper_spoiler_authorized": false,
+      "cross_scope_reuse_allowed": false,
+      "allowed": true
+    },
+    {
+      "case_id": "open-mystery-persists",
+      "memory_class": "OPEN_MYSTERY",
+      "scope_id": "game-a:secret-room",
+      "retention_class": "UNTIL_RESOLVED",
+      "source_actor": "MIXED",
+      "resolution_state": "OPEN",
+      "active_reuse_allowed": true,
+      "resolved": false,
+      "allowed": true
+    },
+    {
+      "case_id": "cross-game-reuse-blocked",
+      "memory_class": "CONFIRMED_LOCAL_FACT",
+      "scope_id": "game-a:combat",
+      "requested_reuse_scope_id": "game-b:combat",
+      "retention_class": "LOCAL_THREAD",
+      "source_actor": "MIXED",
+      "cross_scope_reuse_allowed": false,
+      "active_reuse_allowed": false,
+      "allowed": false
+    },
+    {
+      "case_id": "expired-memory-not-erased",
+      "memory_class": "HYPOTHESIS",
+      "scope_id": "game-a:session-3",
+      "retention_class": "SESSION",
+      "source_actor": "COMPANION",
+      "expired": true,
+      "active_reuse_allowed": false,
+      "historical_record_preserved": true,
+      "historical_event_denied": false,
+      "allowed": true
+    }
+  ]
+}
