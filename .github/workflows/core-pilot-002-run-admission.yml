@@ -1,0 +1,22 @@
+name: Core Pilot 002 run admission validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/core-pilot-002/run-admission/**'
+      - '.github/workflows/core-pilot-002-run-admission.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate run admission gate
+        run: python pilots/core-pilot-002/run-admission/validate.py
