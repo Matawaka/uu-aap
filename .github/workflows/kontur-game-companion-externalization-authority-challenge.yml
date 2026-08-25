@@ -1,0 +1,28 @@
+name: KONTUR Game Companion externalization authority challenge validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/externalization-authority-challenge/**'
+      - 'pilots/kontur-game-companion/runtime-activation-boundary/**'
+      - 'pilots/kontur-game-companion/shadow-runtime/**'
+      - '.github/workflows/kontur-game-companion-externalization-authority-challenge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-externalization-authority-challenge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate externalization authority challenge
+        run: python pilots/kontur-game-companion/externalization-authority-challenge/validate.py
