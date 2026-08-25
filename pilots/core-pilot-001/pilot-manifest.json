@@ -1,0 +1,25 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-001",
+  "title": "Verified Continuity Capture & Recovery",
+  "status": "pre-execution",
+  "origin": {
+    "repository": "Matawaka/uu-aap",
+    "main_commit": "9ed03f99d4ccab7896b62664ecd273f2919c5bb8",
+    "main_tree": "3719b1a3a4d785b1f9a58586e8b1fa7cefa954fb"
+  },
+  "core_path": [
+    "state_evidence_anchor",
+    "possibility_availability",
+    "intent",
+    "authority_responsibility",
+    "coordination_ccrp",
+    "action_gate",
+    "outcome_provenance_successor_state"
+  ],
+  "intent": "Create one verifiable local continuity capture of the authorized frontier and perform one disposable recovery drill from that capture.",
+  "execution_requires_separate_action_permit": true,
+  "specification_merge_is_not_execution_authority": true,
+  "real_capture_executed": false,
+  "real_recovery_executed": false
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-001:receipt:v0.1",
+  "title": "Core Pilot 001 Outcome or Recovery Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","pilot_id","receipt_type","permit_id","origin","status","checks","non_effects"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "pilot_id": {"const": "core-pilot-001"},
+    "receipt_type": {"enum": ["capture_outcome","recovery_outcome"]},
+    "permit_id": {"type": "string", "minLength": 1},
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["main_commit","main_tree"],
+      "properties": {
+        "main_commit": {"const": "9ed03f99d4ccab7896b62664ecd273f2919c5bb8"},
+        "main_tree": {"const": "3719b1a3a4d785b1f9a58586e8b1fa7cefa954fb"}
+      }
+    },
+    "status": {"enum": ["success","failure"]},
+    "checks": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "captured_main_matches": {"type":"boolean"},
+        "captured_tree_matches": {"type":"boolean"},
+        "git_fsck_full": {"enum":["pass","fail","not_applicable"]},
+        "git_bundle_verify": {"enum":["pass","fail"]},
+        "bundle_sha256_verified": {"type":"boolean"},
+        "recovered_main_matches": {"type":"boolean"},
+        "recovered_tree_matches": {"type":"boolean"}
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["git_push","github_authority_mutation","kontur_mutation","canonicality_transfer"],
+      "properties": {
+        "git_push": {"const": false},
+        "github_authority_mutation": {"const": false},
+        "kontur_mutation": {"const": false},
+        "canonicality_transfer": {"const": false}
+      }
+    }
+  }
+}
