@@ -1,10 +1,24 @@
 {
-  "schema_version": "0.1",
+  "schema_version": "0.2",
   "pilot_id": "kontur-game-companion-interaction-receipt",
   "origin_frontier": "b45eaf9ba8864023d822340181ae129f1245beb1",
   "source_issue": 445,
-  "predecessor_prs": [446, 452, 453, 454, 455],
+  "predecessor_prs": [
+    446,
+    452,
+    453,
+    454,
+    455
+  ],
   "mode": "SYNTHETIC_COMPANION_INTERACTION_RECEIPT",
+  "semantic_revision": "F003_RECEIPT_AUTHORITY_SEPARATION",
+  "decision_semantics": {
+    "decision_field": "response_admissible",
+    "scope": "THIS_CANDIDATE_ONLY",
+    "authority_effect": "NONE",
+    "action_effect": "NONE",
+    "successor_effect": "NONE"
+  },
   "boundary": {
     "live_kontur_response_generation": false,
     "live_proactive_messaging": false,
@@ -19,6 +33,7 @@
     "cross_game_preference_profile": false,
     "stable_core_promotion": false,
     "external_effect_authorized": false,
+    "response_authority_created": false,
     "action_permit_created": false,
     "successor_permit_created": false
   },
@@ -53,7 +68,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": true
+      "response_admissible": true
     },
     {
       "id": "explicit-hint-request",
@@ -85,7 +100,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": true
+      "response_admissible": true
     },
     {
       "id": "bounded-current-cue-question",
@@ -117,7 +132,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": true
+      "response_admissible": true
     },
     {
       "id": "active-open-mystery-callback",
@@ -149,7 +164,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": true
+      "response_admissible": true
     },
     {
       "id": "player-correction-revises-local-model",
@@ -181,7 +196,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": true
+      "response_admissible": true
     },
     {
       "id": "unsolicited-deep-solution-blocked",
@@ -213,7 +228,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": false
+      "response_admissible": false
     },
     {
       "id": "expired-cross-scope-memory-blocked",
@@ -245,7 +260,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": false
+      "response_admissible": false
     },
     {
       "id": "predicted-interest-override-blocked",
@@ -277,7 +292,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": false
+      "response_admissible": false
     },
     {
       "id": "uncertain-irreversible-proactive-nudge-blocked",
@@ -309,7 +324,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": false
+      "response_admissible": false
     },
     {
       "id": "dependency-signal-shallower-help",
@@ -341,7 +356,7 @@
       "agency_preserved": true,
       "player_can_ignore": true,
       "receipt_complete": true,
-      "response_authorized": true
+      "response_admissible": true
     }
   ]
 }
