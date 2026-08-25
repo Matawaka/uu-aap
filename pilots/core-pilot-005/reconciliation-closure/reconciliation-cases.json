@@ -1,0 +1,49 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-005",
+  "origin_frontier": "098baf9ec9ed8a2db5aec52281c880505182415b",
+  "shared": {
+    "repository": "Matawaka/uu-aap",
+    "target_issue": 440,
+    "observation_read_only": true,
+    "mutation_authorized": false,
+    "retry_authorized": false,
+    "original_permit_reusable": false,
+    "successor_permit_created": false,
+    "fresh_authority_required": true
+  },
+  "runs": [
+    {
+      "run_id": "core-pilot-005-run-002",
+      "input_state": "UNKNOWN",
+      "observation": {
+        "scope_sufficient": true,
+        "target_matches": true,
+        "frontier_matches": true,
+        "matching_effect_count": 0,
+        "conflicting_evidence_count": 0
+      },
+      "reconciliation": "ABSENT",
+      "human_decision_required": true,
+      "human_disposition_required": false,
+      "automatic_winner_selected": false,
+      "stop": true
+    },
+    {
+      "run_id": "core-pilot-005-run-003",
+      "input_state": "UNKNOWN",
+      "observation": {
+        "scope_sufficient": true,
+        "target_matches": true,
+        "frontier_matches": true,
+        "matching_effect_count": 1,
+        "conflicting_evidence_count": 1
+      },
+      "reconciliation": "CONFLICT",
+      "human_decision_required": false,
+      "human_disposition_required": true,
+      "automatic_winner_selected": false,
+      "stop": true
+    }
+  ]
+}
