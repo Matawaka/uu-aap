@@ -1,0 +1,34 @@
+name: KONTUR Game Companion optional adapter edge validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/interface-registry/v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - 'pilots/kontur-game-companion/**'
+      - '.github/workflows/kontur-game-companion-optional-adapter-edge.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-optional-adapter-edge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate interface registry and Core to KONTUR direction
+        run: node protocols/interface-registry/v0.1/validate-interface-registry.js
+
+      - name: Validate Stable Core independently
+        run: node protocols/core/v0.1/validate-core.js
+
+      - name: Validate KONTUR cross-cutting safety boundary independently
+        run: python pilots/kontur-game-companion/safety-boundary/validate.py
