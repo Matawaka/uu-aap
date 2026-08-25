@@ -83,3 +83,6 @@ jobs:
 
       - name: Validate shadow runtime null transport harness
         run: python pilots/kontur-game-companion/shadow-runtime/validate.py
+
+      - name: Validate runtime activation readiness boundary
+        run: python pilots/kontur-game-companion/runtime-activation-boundary/validate.py
