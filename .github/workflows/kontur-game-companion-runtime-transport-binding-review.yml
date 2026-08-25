@@ -1,0 +1,28 @@
+name: KONTUR Game Companion runtime transport binding review validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/runtime-transport-binding-review/**'
+      - 'pilots/kontur-game-companion/runtime-transport-binding-challenge/**'
+      - 'pilots/kontur-game-companion/authority-grant-boundary/**'
+      - '.github/workflows/kontur-game-companion-runtime-transport-binding-review.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-runtime-transport-binding-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate runtime transport binding review receipt
+        run: python pilots/kontur-game-companion/runtime-transport-binding-review/validate.py
