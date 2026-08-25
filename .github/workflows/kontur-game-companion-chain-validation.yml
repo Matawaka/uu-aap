@@ -89,3 +89,6 @@ jobs:
 
       - name: Validate externalization authority challenge / live activation request
         run: python pilots/kontur-game-companion/externalization-authority-challenge/validate.py
+
+      - name: Validate authority review receipt
+        run: python pilots/kontur-game-companion/authority-review-receipt/validate.py
