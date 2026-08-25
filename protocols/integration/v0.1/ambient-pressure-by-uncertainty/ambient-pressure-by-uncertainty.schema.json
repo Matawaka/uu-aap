@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/v0.1/ambient-pressure-by-uncertainty/ambient-pressure-by-uncertainty.schema.json",
+  "title": "Ambient Pressure by Uncertainty Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "artifact_version",
+    "receipt_id",
+    "possibility_binding",
+    "observer_context",
+    "uncertainty_interval",
+    "observable_effects",
+    "interpretation",
+    "interpretation_evidence_ref",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": { "const": "AmbientPressureByUncertaintyReceipt" },
+    "artifact_version": { "const": "0.1" },
+    "receipt_id": { "type": "string", "minLength": 1 },
+    "possibility_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["possibility_ref", "expectation_created_at", "basis_ref"],
+      "properties": {
+        "possibility_ref": { "type": "string", "minLength": 1 },
+        "expectation_created_at": { "type": "string", "format": "date-time" },
+        "basis_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "observer_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observer_ref", "context_ref"],
+      "properties": {
+        "observer_ref": { "type": "string", "minLength": 1 },
+        "context_ref": { "type": "string", "minLength": 1 }
+      }
+    },
+    "uncertainty_interval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["started_at", "ended_at", "bounded"],
+      "properties": {
+        "started_at": { "type": "string", "format": "date-time" },
+        "ended_at": { "type": "string", "format": "date-time" },
+        "bounded": { "const": true }
+      }
+    },
+    "observable_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["attention_held", "resources_reserved", "alternative_decision_deferred", "effect_evidence_refs"],
+      "properties": {
+        "attention_held": { "type": "boolean" },
+        "resources_reserved": { "type": "boolean" },
+        "alternative_decision_deferred": { "type": "boolean" },
+        "effect_evidence_refs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "interpretation": {
+      "enum": ["no_response", "unknown", "delay", "unavailable", "abstention", "refusal"]
+    },
+    "interpretation_evidence_ref": {
+      "type": ["string", "null"]
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "causal_state_observed",
+        "refusal_established",
+        "intentional_delay_established",
+        "negative_intent_established",
+        "coercive_purpose_established",
+        "responsibility_assigned",
+        "liability_established",
+        "authority_granted",
+        "sanction_authorized",
+        "action_authorized",
+        "external_effect_performed"
+      ],
+      "properties": {
+        "causal_state_observed": { "type": "boolean" },
+        "refusal_established": { "const": false },
+        "intentional_delay_established": { "const": false },
+        "negative_intent_established": { "const": false },
+        "coercive_purpose_established": { "const": false },
+        "responsibility_assigned": { "const": false },
+        "liability_established": { "const": false },
+        "authority_granted": { "const": false },
+        "sanction_authorized": { "const": false },
+        "action_authorized": { "const": false },
+        "external_effect_performed": { "const": false }
+      }
+    }
+  }
+}
