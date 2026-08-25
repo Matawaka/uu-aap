@@ -122,4 +122,7 @@ jobs:
       - name: Validate network user-surface enablement challenge
         run: python pilots/kontur-game-companion/network-user-surface-enablement-challenge/validate.py
 
+      - name: Validate network user-surface enablement externalization review receipt
+        run: python pilots/kontur-game-companion/network-user-surface-enablement-externalization-review/validate.py
+
 
