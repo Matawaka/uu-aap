@@ -15,11 +15,13 @@ function exactKeys(obj, keys, label) {
   assert(JSON.stringify(Object.keys(obj).sort()) === JSON.stringify([...keys].sort()), `${label}: exact keys required`);
 }
 
+const topKeys = ['$schema','artifact_type','artifact_version','test_id','checkpoint_binding','post_checkpoint_frontier','successor_proposal','inherited_from_checkpoint','claims','non_effects'];
 const inheritedKeys = ['intent','authority','identity','action_permit','obligation','liability','canonicality','execution'];
 const claimKeys = ['checkpoint_preserved','fresh_successor_evidence_present','post_checkpoint_evolution_test_passed','successor_compatibility_proven','successor_canonical','action_authorized','action_performed','universal_future_safety_proven'];
 const nonEffectKeys = ['checkpoint_rewritten','release_or_tag_created','kontur_mutated','authority_transferred','permissions_changed','history_rewritten','canonical_origin_mutated'];
 
 function validate(r) {
+  exactKeys(r, topKeys, 'receipt');
   assert(r.$schema === './post-checkpoint-successor-evolution.schema.json', 'schema binding mismatch');
   assert(r.artifact_type === 'PostCheckpointSuccessorEvolutionTest', 'artifact type mismatch');
   assert(r.artifact_version === '0.1', 'artifact version mismatch');
