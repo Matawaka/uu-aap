@@ -74,3 +74,6 @@ jobs:
 
       - name: Validate pre-text policy evaluation harness
         run: python pilots/kontur-game-companion/policy-evaluation-harness/validate.py
+
+      - name: Validate synthetic candidate materializer and Interaction Receipt bridge
+        run: python pilots/kontur-game-companion/candidate-materializer/validate.py
