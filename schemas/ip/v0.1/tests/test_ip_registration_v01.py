@@ -21,7 +21,7 @@ def base_record() -> dict:
     return json.loads(EXAMPLE_PATH.read_text(encoding="utf-8"))
 
 
-def make_rights_cleared(record: dict) -> dict:
+def make_ready_to_file(record: dict) -> dict:
     r = copy.deepcopy(record)
     r["state"] = "READY_TO_FILE"
     r["evidence_anchor"]["package_digest"] = "a" * 64
@@ -29,7 +29,7 @@ def make_rights_cleared(record: dict) -> dict:
         "status": "CLEARED",
         "authors": [
             {
-                "name": "Verified Human Author",
+                "name": "private-party:test-author-1",
                 "basis": "AUTHOR_OWNED",
                 "contribution_scope": "Selected deposited source",
                 "evidence_ref": "private-rights-evidence:author-1"
@@ -37,7 +37,7 @@ def make_rights_cleared(record: dict) -> dict:
         ],
         "right_holders": [
             {
-                "name": "Verified Human Author",
+                "name": "private-party:test-author-1",
                 "basis": "AUTHOR_OWNED",
                 "contribution_scope": "Selected deposited source",
                 "evidence_ref": "private-rights-evidence:right-holder-1"
@@ -55,33 +55,63 @@ def make_rights_cleared(record: dict) -> dict:
     return r
 
 
-def test_current_pre_filing_example_is_valid() -> None:
+def test_current_rights_cleared_example_is_valid() -> None:
+    record = base_record()
+    assert record["state"] == "RIGHTS_CLEARED"
     assert module.validate_record(EXAMPLE_PATH) == []
 
 
-def test_ready_to_file_fails_closed_on_unknown_rights() -> None:
+def test_ready_to_file_fails_closed_if_rights_are_reopened() -> None:
     record = base_record()
     record["state"] = "READY_TO_FILE"
+    record["rights_review"]["status"] = "IN_REVIEW"
+    record["rights_review"]["third_party_status"] = "UNKNOWN"
+    record["rights_review"]["authors"] = [
+        {
+            "name": "TO_BE_REVERIFIED",
+            "basis": "UNKNOWN",
+            "contribution_scope": "Reopened test state",
+            "evidence_ref": "test"
+        }
+    ]
+    record["rights_review"]["right_holders"] = [
+        {
+            "name": "TO_BE_REVERIFIED",
+            "basis": "UNKNOWN",
+            "contribution_scope": "Reopened test state",
+            "evidence_ref": "test"
+        }
+    ]
     errors = module.semantic_errors(record)
     assert errors
     assert any("rights_review.status=CLEARED" in error for error in errors)
+    assert any("third-party material CLEARED or EXCLUDED" in error for error in errors)
+    assert any("unresolved author/right-holder identity or basis" in error for error in errors)
+    assert any("frozen package digest" in error for error in errors)
+
+
+def test_ready_to_file_still_requires_patent_screen_and_frozen_digest() -> None:
+    record = base_record()
+    record["state"] = "READY_TO_FILE"
+    errors = module.semantic_errors(record)
+    assert any("patentability/public-disclosure review" in error for error in errors)
     assert any("frozen package digest" in error for error in errors)
 
 
 def test_ready_to_file_accepts_resolved_evidence() -> None:
-    record = make_rights_cleared(base_record())
+    record = make_ready_to_file(base_record())
     assert module.semantic_errors(record) == []
 
 
 def test_licensed_only_holder_cannot_be_claimed_as_exclusive_holder() -> None:
-    record = make_rights_cleared(base_record())
+    record = make_ready_to_file(base_record())
     record["rights_review"]["right_holders"][0]["basis"] = "LICENSED_ONLY"
     errors = module.semantic_errors(record)
     assert any("LICENSED_ONLY" in error for error in errors)
 
 
 def test_filed_requires_external_receipt() -> None:
-    record = make_rights_cleared(base_record())
+    record = make_ready_to_file(base_record())
     record["state"] = "FILED"
     record["registration_intent"]["decision"] = "FILED"
     record["filing"] = {
@@ -96,7 +126,7 @@ def test_filed_requires_external_receipt() -> None:
 
 
 def test_registered_requires_registration_outcome() -> None:
-    record = make_rights_cleared(base_record())
+    record = make_ready_to_file(base_record())
     record["state"] = "REGISTERED"
     record["registration_intent"]["decision"] = "FILED"
     record["filing"] = {
