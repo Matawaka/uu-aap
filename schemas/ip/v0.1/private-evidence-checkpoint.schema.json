@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/ip/v0.1/private-evidence-checkpoint.schema.json",
+  "title": "UU-AAP Private Evidence Checkpoint v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "record_version",
+    "checkpoint_id",
+    "object_id",
+    "public_frontier",
+    "private_declaration",
+    "factual_answers",
+    "classification",
+    "gate_result"
+  ],
+  "properties": {
+    "record_version": {"const": "0.1"},
+    "checkpoint_id": {"type": "string", "minLength": 1},
+    "object_id": {"type": "string", "minLength": 1},
+    "public_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "private_declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["template_version", "status", "digest_algorithm", "digest", "signed_or_attested_at"],
+      "properties": {
+        "template_version": {"const": "0.1"},
+        "status": {"enum": ["AWAITING_PRIVATE_DECLARATION", "COMPLETED", "REPLACED", "WITHDRAWN"]},
+        "digest_algorithm": {"const": "SHA-256"},
+        "digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+        "signed_or_attested_at": {"type": ["string", "null"], "format": "date-time"},
+        "private_storage_reference": {"type": ["string", "null"]}
+      }
+    },
+    "factual_answers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "human_architecture_choices",
+        "human_source_expression",
+        "generative_ai_used",
+        "ai_generated_expression_scope",
+        "human_material_transformation",
+        "other_human_creative_contributors",
+        "within_employment_duties",
+        "commission_or_customer_contract_affects_rights",
+        "exclusive_right_assignment_affects_scope",
+        "third_party_expression_incorporated"
+      ],
+      "properties": {
+        "human_architecture_choices": {"enum": ["YES", "NO", "UNKNOWN"]},
+        "human_source_expression": {"enum": ["YES", "PARTIAL", "NO", "UNKNOWN"]},
+        "generative_ai_used": {"enum": ["YES", "NO", "UNKNOWN"]},
+        "ai_generated_expression_scope": {"enum": ["NONE", "PARTIAL", "SUBSTANTIAL", "FULL", "UNKNOWN"]},
+        "human_material_transformation": {"enum": ["YES", "PARTIAL", "NO", "UNKNOWN"]},
+        "other_human_creative_contributors": {"enum": ["NONE", "PRESENT", "UNKNOWN"]},
+        "within_employment_duties": {"enum": ["YES", "NO", "UNKNOWN"]},
+        "commission_or_customer_contract_affects_rights": {"enum": ["YES", "NO", "UNKNOWN"]},
+        "exclusive_right_assignment_affects_scope": {"enum": ["YES", "NO", "UNKNOWN"]},
+        "third_party_expression_incorporated": {"enum": ["NO", "PRESENT", "UNKNOWN"]}
+      }
+    },
+    "classification": {
+      "enum": [
+        "UNRESOLVED",
+        "HUMAN_AUTHORED",
+        "AI_ASSISTED_HUMAN_CREATION",
+        "AUTHORSHIP_CLAIM_NARROWING_REQUIRED",
+        "NO_HUMAN_AUTHORSHIP_ESTABLISHED",
+        "BLOCKED"
+      ]
+    },
+    "gate_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["effect", "unresolved_items"],
+      "properties": {
+        "effect": {"enum": ["KEEP_RIGHTS_REVIEW", "MAY_ADVANCE_TO_RIGHTS_CLEARED", "BLOCK_ADVANCE"]},
+        "unresolved_items": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
