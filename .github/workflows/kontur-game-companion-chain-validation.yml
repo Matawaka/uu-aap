@@ -86,3 +86,6 @@ jobs:
 
       - name: Validate runtime activation readiness boundary
         run: python pilots/kontur-game-companion/runtime-activation-boundary/validate.py
+
+      - name: Validate externalization authority challenge / live activation request
+        run: python pilots/kontur-game-companion/externalization-authority-challenge/validate.py
