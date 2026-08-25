@@ -1,0 +1,119 @@
+name: IP Wave 1 applicant decision v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/legal/IP-WAVE-1-APPLICANT-DECISION-GATE-v0.1.md'
+      - 'schemas/ip/v0.1/applicant-decision-checkpoint.schema.json'
+      - 'schemas/ip/v0.1/examples/uu-aap-core-applicant-decision-checkpoint.json'
+      - '.github/workflows/ip-wave1-applicant-decision-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate JSON syntax
+        run: |
+          python -m json.tool schemas/ip/v0.1/applicant-decision-checkpoint.schema.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-applicant-decision-checkpoint.json >/dev/null
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Validate decision checkpoint fail closed
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('schemas/ip/v0.1')
+          schema = json.loads((root / 'applicant-decision-checkpoint.schema.json').read_text())
+          record = json.loads((root / 'examples/uu-aap-core-applicant-decision-checkpoint.json').read_text())
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(record)
+
+          def complete(candidate):
+              publication = candidate['first_publication']
+              publication_ok = (
+                  publication['publication_under_article_1268'] == 'NO'
+                  or (
+                      publication['publication_under_article_1268'] == 'YES'
+                      and publication['country_code'] is not None
+                      and publication['year'] == 2026
+                      and publication['reasoning_status'] == 'FACTUALLY_CONFIRMED'
+                  )
+              )
+              return (
+                  candidate['route']['selected'] in {'EPGU', 'FIPS', 'PAPER'}
+                  and candidate['representation']['selected'] in {'SELF', 'REPRESENTATIVE'}
+                  and candidate['author_visibility']['selected'] in {'NAMED', 'PSEUDONYM', 'NON_MENTION'}
+                  and publication_ok
+                  and candidate['route']['live_signature_status'] == 'CONFIRMED'
+                  and candidate['gate_result']['effect'] == 'MAY_COMPLETE_PRIVATE_PACKET'
+                  and candidate['gate_result']['unresolved_decisions'] == []
+              )
+
+          # Applicant decisions already recorded from the conversation.
+          assert record['route']['selected'] == 'EPGU'
+          assert record['representation']['selected'] == 'SELF'
+          assert record['first_publication']['publication_under_article_1268'] == 'YES'
+          assert record['first_publication']['country_code'] == 'RU'
+          assert record['first_publication']['year'] == 2026
+          assert record['first_publication']['reasoning_status'] == 'FACTUALLY_CONFIRMED'
+
+          # Gate stays fail-closed until author visibility and live EPGU signature method are known.
+          assert record['author_visibility']['selected'] == 'UNDECIDED'
+          assert record['route']['live_signature_status'] == 'LIVE_CONFIRMATION_REQUIRED'
+          assert record['gate_result']['effect'] == 'AWAIT_APPLICANT_DECISIONS'
+          assert set(record['gate_result']['unresolved_decisions']) == {'author_visibility', 'live_signature_method'}
+          assert not complete(record)
+
+          # Completing only the two remaining decisions must be sufficient.
+          candidate = copy.deepcopy(record)
+          candidate['route']['live_signature_status'] = 'CONFIRMED'
+          candidate['author_visibility'] = {'selected': 'NAMED', 'personal_data_consent_effect': 'REQUIRED'}
+          candidate['gate_result'] = {'effect': 'MAY_COMPLETE_PRIVATE_PACKET', 'unresolved_decisions': []}
+          validator.validate(candidate)
+          assert complete(candidate)
+
+          # Fail closed: a publication country may not be marked as inferred from GitHub/server geography.
+          unsafe = copy.deepcopy(candidate)
+          unsafe['first_publication'] = {
+              'public_disclosure_confirmed': True,
+              'publication_under_article_1268': 'YES',
+              'country_code': 'US',
+              'year': 2026,
+              'reasoning_status': 'DO_NOT_INFER_FROM_GITHUB_LOCATION',
+          }
+          assert not complete(unsafe)
+
+          print('applicant decision gate: EPGU/SELF/RU-2026 recorded; remaining decisions fail-closed')
+          PY
+
+      - name: Assert workflow is read-only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('.github/workflows/ip-wave1-applicant-decision-v0.1-validation.yml').read_text()
+          forbidden = ['contents:' + ' write', 'pull_request' + '_target', 'secrets' + '.', 'gh' + ' api', 'cu' + 'rl ']
+          for token in forbidden:
+              assert token not in text, token
+          assert 'permissions:\n  contents: read' in text
+          print('workflow boundary: read-only')
+          PY
