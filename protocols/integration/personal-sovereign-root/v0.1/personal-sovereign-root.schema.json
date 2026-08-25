@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:personal-sovereign-root:v0.1",
+  "title": "Personal Sovereign Root / Personal Evidence Fabric v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile","origin_frontier","root_id","root_model","evidence_fabric","current_root_state","successor_transition","recovery_policy","retention_policy","correlation_policy","disclosure_policy","claims","non_effects"],
+  "properties": {
+    "profile": {"const":"uu-aap.personal-sovereign-root.v0.1"},
+    "origin_frontier": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "root_id": {"type":"string","minLength":1},
+    "root_model": {
+      "type":"object","additionalProperties":false,
+      "required":["single_secret","person_equated_to_key","centralized_identity_database_required","cryptography_creates_human_uniqueness"],
+      "properties": {
+        "single_secret":{"const":false},
+        "person_equated_to_key":{"const":false},
+        "centralized_identity_database_required":{"const":false},
+        "cryptography_creates_human_uniqueness":{"const":false}
+      }
+    },
+    "evidence_fabric": {
+      "type":"object","additionalProperties":false,
+      "required":["sources","opaque_trust_score_used"],
+      "properties": {
+        "opaque_trust_score_used":{"const":false},
+        "sources": {
+          "type":"array","minItems":2,
+          "items": {
+            "type":"object","additionalProperties":false,
+            "required":["source_id","source_class","commitment_ref","provenance_ref","independence_group","universally_sufficient_identity_proof"],
+            "properties": {
+              "source_id":{"type":"string","minLength":1},
+              "source_class":{"enum":["record_commitment","witness_receipt","credential_commitment","device_or_key_control","successor_state_link","other_bounded_evidence"]},
+              "commitment_ref":{"type":"string","minLength":1},
+              "provenance_ref":{"type":"string","minLength":1},
+              "independence_group":{"type":"string","minLength":1},
+              "universally_sufficient_identity_proof":{"const":false}
+            }
+          }
+        }
+      }
+    },
+    "current_root_state": {
+      "type":"object","additionalProperties":false,
+      "required":["root_state_id","active_control_refs","control_mode","personhood_claimed_by_root","legal_identity_claimed_by_root"],
+      "properties": {
+        "root_state_id":{"type":"string","minLength":1},
+        "active_control_refs":{"type":"array","minItems":1,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+        "control_mode":{"enum":["multi-factor","threshold","recovery-bounded","threshold-or-recovery-bounded"]},
+        "personhood_claimed_by_root":{"const":false},
+        "legal_identity_claimed_by_root":{"const":false}
+      }
+    },
+    "successor_transition": {
+      "type":"object","additionalProperties":false,
+      "required":["transition_type","predecessor_root_state_id","successor_root_state_id","continuity_policy_ref","continuity_evidence_source_ids","accepted","new_person_claimed"],
+      "properties": {
+        "transition_type":{"enum":["key_rotation","recovery","migration"]},
+        "predecessor_root_state_id":{"type":"string","minLength":1},
+        "successor_root_state_id":{"type":"string","minLength":1},
+        "continuity_policy_ref":{"type":"string","minLength":1},
+        "continuity_evidence_source_ids":{"type":"array","minItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+        "accepted":{"const":true},
+        "new_person_claimed":{"const":false}
+      }
+    },
+    "recovery_policy": {
+      "type":"object","additionalProperties":false,
+      "required":["key_loss_means_personhood_loss","single_compromised_key_means_conclusive_takeover","continuity_assessment_required","minimum_independence_groups"],
+      "properties": {
+        "key_loss_means_personhood_loss":{"const":false},
+        "single_compromised_key_means_conclusive_takeover":{"const":false},
+        "continuity_assessment_required":{"const":true},
+        "minimum_independence_groups":{"type":"integer","minimum":2}
+      }
+    },
+    "retention_policy": {
+      "type":"object","additionalProperties":false,
+      "required":["full_history_required","commitment_only_permitted","total_telemetry_required"],
+      "properties": {
+        "full_history_required":{"const":false},
+        "commitment_only_permitted":{"const":true},
+        "total_telemetry_required":{"const":false}
+      }
+    },
+    "correlation_policy": {
+      "type":"object","additionalProperties":false,
+      "required":["cross_context_default_allowed","purpose_bounded","performed"],
+      "properties": {
+        "cross_context_default_allowed":{"const":false},
+        "purpose_bounded":{"const":true},
+        "performed":{"const":false}
+      }
+    },
+    "disclosure_policy": {
+      "type":"object","additionalProperties":false,
+      "required":["right_to_inspect_all_sources","default_disclosure","performed"],
+      "properties": {
+        "right_to_inspect_all_sources":{"const":false},
+        "default_disclosure":{"const":false},
+        "performed":{"const":false}
+      }
+    },
+    "claims": {
+      "type":"object","additionalProperties":false,
+      "required":["bounded_continuity_established","legal_identity_established","universal_identity_proof","authority_established","intent_established","action_established","authorship_established","responsibility_established","liability_established"],
+      "properties": {
+        "bounded_continuity_established":{"const":true},
+        "legal_identity_established":{"const":false},
+        "universal_identity_proof":{"const":false},
+        "authority_established":{"const":false},
+        "intent_established":{"const":false},
+        "action_established":{"const":false},
+        "authorship_established":{"const":false},
+        "responsibility_established":{"const":false},
+        "liability_established":{"const":false}
+      }
+    },
+    "non_effects": {
+      "type":"object","additionalProperties":false,
+      "required":["identity_lookup_performed","biometric_processing_performed","profile_constructed","external_correlation_performed","credential_issued","account_recovered","legal_identity_determined","authority_expanded","actuator_invoked","kontur_mutated"],
+      "properties": {
+        "identity_lookup_performed":{"const":false},
+        "biometric_processing_performed":{"const":false},
+        "profile_constructed":{"const":false},
+        "external_correlation_performed":{"const":false},
+        "credential_issued":{"const":false},
+        "account_recovered":{"const":false},
+        "legal_identity_determined":{"const":false},
+        "authority_expanded":{"const":false},
+        "actuator_invoked":{"const":false},
+        "kontur_mutated":{"const":false}
+      }
+    }
+  }
+}
