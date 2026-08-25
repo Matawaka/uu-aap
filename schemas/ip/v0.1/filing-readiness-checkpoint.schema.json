@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/ip/v0.1/filing-readiness-checkpoint.schema.json",
+  "title": "UU-AAP Filing Readiness Checkpoint v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "checkpoint_version",
+    "object_id",
+    "jurisdiction",
+    "route",
+    "status",
+    "official_form_basis",
+    "frozen_package_digest",
+    "private_packet",
+    "application_form",
+    "personal_data_consent",
+    "author_consent",
+    "representative",
+    "signature",
+    "fee",
+    "consistency",
+    "privacy_boundary"
+  ],
+  "properties": {
+    "checkpoint_version": {"const": "0.1"},
+    "object_id": {"type": "string", "minLength": 1},
+    "jurisdiction": {"const": "RU"},
+    "route": {"enum": ["FIPS", "EPGU", "PAPER", "UNSELECTED"]},
+    "status": {"enum": ["NOT_STARTED", "PRIVATE_PACKET_IN_PROGRESS", "COMPLETE", "BLOCKED"]},
+    "official_form_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["authority", "form_family", "legal_basis", "verified_at"],
+      "properties": {
+        "authority": {"const": "ROSPATENT"},
+        "form_family": {"const": "PROGRAM_OR_DATABASE_STATE_REGISTRATION"},
+        "legal_basis": {"type": "string", "minLength": 1},
+        "verified_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "frozen_package_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "private_packet": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["retention", "package_digest"],
+      "properties": {
+        "retention": {"const": "PRIVATE_OFF_REPOSITORY"},
+        "package_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "application_form": {"$ref": "#/$defs/privateDocument"},
+    "personal_data_consent": {"$ref": "#/$defs/privateDocument"},
+    "author_consent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "digest"],
+      "properties": {
+        "status": {"enum": ["NOT_STARTED", "DRAFTED", "COMPLETE", "AUTHOR_DECLINED_MENTION"]},
+        "digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "representative": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "power_of_attorney_status", "power_of_attorney_digest"],
+      "properties": {
+        "mode": {"enum": ["SELF", "REPRESENTATIVE", "UNDECIDED"]},
+        "power_of_attorney_status": {"enum": ["NOT_APPLICABLE", "NOT_STARTED", "COMPLETE"]},
+        "power_of_attorney_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "method"],
+      "properties": {
+        "status": {"enum": ["UNCONFIRMED", "CONFIRMED"]},
+        "method": {"type": ["string", "null"], "minLength": 1}
+      }
+    },
+    "fee": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_rub", "status", "evidence_digest"],
+      "properties": {
+        "required_rub": {"const": 5000},
+        "status": {"enum": ["NOT_READY", "PAYMENT_READY", "PAID", "EXEMPT"]},
+        "evidence_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "consistency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title_exact_match",
+        "abstract_exact_match",
+        "deposit_digest_exact_match",
+        "right_holder_consistency",
+        "author_consistency",
+        "checked_at"
+      ],
+      "properties": {
+        "title_exact_match": {"type": "boolean"},
+        "abstract_exact_match": {"type": "boolean"},
+        "deposit_digest_exact_match": {"type": "boolean"},
+        "right_holder_consistency": {"type": "boolean"},
+        "author_consistency": {"type": "boolean"},
+        "checked_at": {"type": ["string", "null"], "format": "date-time"}
+      }
+    },
+    "privacy_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public_record_contains_personal_data", "private_material_committed_to_public_repo"],
+      "properties": {
+        "public_record_contains_personal_data": {"const": false},
+        "private_material_committed_to_public_repo": {"const": false}
+      }
+    }
+  },
+  "$defs": {
+    "privateDocument": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "digest"],
+      "properties": {
+        "status": {"enum": ["NOT_STARTED", "DRAFTED", "FINALIZED"]},
+        "digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    }
+  }
+}

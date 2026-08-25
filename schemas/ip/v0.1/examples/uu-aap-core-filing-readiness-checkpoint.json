@@ -1,0 +1,56 @@
+{
+  "checkpoint_version": "0.1",
+  "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
+  "jurisdiction": "RU",
+  "route": "UNSELECTED",
+  "status": "PRIVATE_PACKET_IN_PROGRESS",
+  "official_form_basis": {
+    "authority": "ROSPATENT",
+    "form_family": "PROGRAM_OR_DATABASE_STATE_REGISTRATION",
+    "legal_basis": "Rospatent state-service forms under Ministry of Economic Development Order No. 211, as amended; public legal snapshot verified 2026-08-25",
+    "verified_at": "2026-08-25T22:25:00+05:00"
+  },
+  "frozen_package_digest": "sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8",
+  "private_packet": {
+    "retention": "PRIVATE_OFF_REPOSITORY",
+    "package_digest": null
+  },
+  "application_form": {
+    "status": "DRAFTED",
+    "digest": null
+  },
+  "personal_data_consent": {
+    "status": "NOT_STARTED",
+    "digest": null
+  },
+  "author_consent": {
+    "status": "NOT_STARTED",
+    "digest": null
+  },
+  "representative": {
+    "mode": "UNDECIDED",
+    "power_of_attorney_status": "NOT_STARTED",
+    "power_of_attorney_digest": null
+  },
+  "signature": {
+    "status": "UNCONFIRMED",
+    "method": null
+  },
+  "fee": {
+    "required_rub": 5000,
+    "status": "NOT_READY",
+    "evidence_digest": null
+  },
+  "consistency": {
+    "title_exact_match": false,
+    "abstract_exact_match": false,
+    "deposit_digest_exact_match": true,
+    "right_holder_consistency": false,
+    "author_consistency": false,
+    "checked_at": null
+  },
+  "privacy_boundary": {
+    "public_record_contains_personal_data": false,
+    "private_material_committed_to_public_repo": false
+  }
+}

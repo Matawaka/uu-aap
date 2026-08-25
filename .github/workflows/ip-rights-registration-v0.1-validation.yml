@@ -8,6 +8,8 @@ on:
       - 'docs/legal/IP-WAVE-1-AUTHORSHIP-EVIDENCE-GATE-v0.1.md'
       - 'docs/legal/IP-WAVE-1-PRIVATE-EVIDENCE-CHECKPOINT-v0.1.md'
       - 'docs/legal/IP-WAVE-1-RIGHTS-CLEARANCE-v0.1.md'
+      - 'docs/legal/IP-WAVE-1-FILING-READINESS-GATE-v0.1.md'
+      - 'docs/legal/IP-WAVE-1-PRIVATE-FILING-WORKSHEET-v0.1.md'
       - 'schemas/ip/v0.1/**'
       - '.github/workflows/ip-rights-registration-v0.1-validation.yml'
   workflow_dispatch:
@@ -32,13 +34,16 @@ jobs:
       - name: Validate syntax
         run: |
           python -m py_compile schemas/ip/v0.1/ip_registration_validator.py
+          python -m py_compile schemas/ip/v0.1/hash_private_filing_packet.py
           python -m py_compile schemas/ip/v0.1/tests/test_ip_registration_v01.py
           python -m json.tool schemas/ip/v0.1/ip-rights-registration-record.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/human-authorship-evidence-record.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/private-evidence-checkpoint.schema.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/filing-readiness-checkpoint.schema.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-authorship-review.json >/dev/null
           python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-private-evidence-checkpoint.json >/dev/null
+          python -m json.tool schemas/ip/v0.1/examples/uu-aap-core-filing-readiness-checkpoint.json >/dev/null
 
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
@@ -107,17 +112,125 @@ jobs:
           assert record['gate_result']['unresolved_items'] == []
           assert advance_allowed(record)
 
-          # Fail closed: removing the retained private digest must revoke advancement.
           missing_digest = copy.deepcopy(record)
           missing_digest['private_declaration']['digest'] = None
           assert not advance_allowed(missing_digest)
 
-          # Fail closed: introducing a rights-allocation uncertainty must revoke advancement.
           uncertain_employment = copy.deepcopy(record)
           uncertain_employment['factual_answers']['within_employment_duties'] = 'UNKNOWN'
           assert not advance_allowed(uncertain_employment)
 
           print('private evidence checkpoint: completed, advancement justified, fail-closed preserved')
+          PY
+
+      - name: Validate filing readiness checkpoint
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          root = Path('schemas/ip/v0.1')
+          schema = json.loads((root / 'filing-readiness-checkpoint.schema.json').read_text())
+          record = json.loads((root / 'examples/uu-aap-core-filing-readiness-checkpoint.json').read_text())
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          validator.validate(record)
+
+          def complete(candidate):
+              representative = candidate['representative']
+              representative_ok = (
+                  (representative['mode'] == 'SELF' and representative['power_of_attorney_status'] == 'NOT_APPLICABLE')
+                  or (
+                      representative['mode'] == 'REPRESENTATIVE'
+                      and representative['power_of_attorney_status'] == 'COMPLETE'
+                      and representative['power_of_attorney_digest'] is not None
+                  )
+              )
+              consent = candidate['author_consent']
+              consent_ok = (
+                  (consent['status'] == 'COMPLETE' and consent['digest'] is not None)
+                  or consent['status'] == 'AUTHOR_DECLINED_MENTION'
+              )
+              consistency = candidate['consistency']
+              return (
+                  candidate['status'] == 'COMPLETE'
+                  and candidate['route'] in {'FIPS', 'EPGU', 'PAPER'}
+                  and candidate['private_packet']['package_digest'] is not None
+                  and candidate['application_form']['status'] == 'FINALIZED'
+                  and candidate['application_form']['digest'] is not None
+                  and candidate['personal_data_consent']['status'] == 'FINALIZED'
+                  and candidate['personal_data_consent']['digest'] is not None
+                  and consent_ok
+                  and representative_ok
+                  and candidate['signature']['status'] == 'CONFIRMED'
+                  and candidate['signature']['method'] is not None
+                  and candidate['fee']['status'] in {'PAYMENT_READY', 'PAID', 'EXEMPT'}
+                  and all(consistency[key] is True for key in (
+                      'title_exact_match',
+                      'abstract_exact_match',
+                      'deposit_digest_exact_match',
+                      'right_holder_consistency',
+                      'author_consistency',
+                  ))
+                  and consistency['checked_at'] is not None
+              )
+
+          assert record['status'] == 'PRIVATE_PACKET_IN_PROGRESS'
+          assert record['frozen_package_digest'] == 'sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8'
+          assert record['private_packet']['retention'] == 'PRIVATE_OFF_REPOSITORY'
+          assert not complete(record)
+
+          completed = copy.deepcopy(record)
+          completed['status'] = 'COMPLETE'
+          completed['route'] = 'FIPS'
+          completed['private_packet']['package_digest'] = 'sha256:' + '1' * 64
+          completed['application_form'] = {'status': 'FINALIZED', 'digest': 'sha256:' + '2' * 64}
+          completed['personal_data_consent'] = {'status': 'FINALIZED', 'digest': 'sha256:' + '3' * 64}
+          completed['author_consent'] = {'status': 'COMPLETE', 'digest': 'sha256:' + '4' * 64}
+          completed['representative'] = {
+              'mode': 'SELF',
+              'power_of_attorney_status': 'NOT_APPLICABLE',
+              'power_of_attorney_digest': None,
+          }
+          completed['signature'] = {'status': 'CONFIRMED', 'method': 'selected-route signature'}
+          completed['fee'] = {'required_rub': 5000, 'status': 'PAYMENT_READY', 'evidence_digest': None}
+          completed['consistency'] = {
+              'title_exact_match': True,
+              'abstract_exact_match': True,
+              'deposit_digest_exact_match': True,
+              'right_holder_consistency': True,
+              'author_consistency': True,
+              'checked_at': '2026-08-25T22:30:00+05:00',
+          }
+          validator.validate(completed)
+          assert complete(completed)
+
+          missing_consent = copy.deepcopy(completed)
+          missing_consent['personal_data_consent'] = {'status': 'NOT_STARTED', 'digest': None}
+          assert not complete(missing_consent)
+
+          print('filing readiness checkpoint: private/public boundary and fail-closed completion validated')
+          PY
+
+      - name: Test private packet hashing is deterministic
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/uu-aap-private-packet-test/sub
+          printf 'synthetic-form\n' > /tmp/uu-aap-private-packet-test/application.txt
+          printf 'synthetic-consent\n' > /tmp/uu-aap-private-packet-test/sub/consent.txt
+          python schemas/ip/v0.1/hash_private_filing_packet.py /tmp/uu-aap-private-packet-test > /tmp/private-manifest-1.json
+          python schemas/ip/v0.1/hash_private_filing_packet.py /tmp/uu-aap-private-packet-test > /tmp/private-manifest-2.json
+          cmp /tmp/private-manifest-1.json /tmp/private-manifest-2.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('/tmp/private-manifest-1.json').read_text())
+          assert manifest['manifest_version'] == '0.1'
+          assert manifest['file_count'] == 2
+          assert manifest['package_digest'].startswith('sha256:')
+          assert all(len(entry['sha256']) == 64 for entry in manifest['files'])
+          print('private filing packet hashing: deterministic and content-free manifest')
           PY
 
       - name: Exercise fail-closed legal readiness gates
