@@ -1,0 +1,40 @@
+name: Cross-Layer Invariant Stability Matrix v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/experimental/cross-layer-invariant-stability/v0.1/**"
+      - ".github/workflows/cross-layer-invariant-stability-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/experimental/cross-layer-invariant-stability/v0.1/**"
+      - ".github/workflows/cross-layer-invariant-stability-v0.1-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Representative cross-layer invariant stability
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax check
+        run: node --check protocols/experimental/cross-layer-invariant-stability/v0.1/validate.js
+      - name: Run representative layer validators and stability mutations
+        run: node protocols/experimental/cross-layer-invariant-stability/v0.1/validate.js
+      - name: Confirm read-only repository state
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
