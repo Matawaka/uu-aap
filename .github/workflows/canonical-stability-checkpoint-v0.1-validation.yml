@@ -1,0 +1,40 @@
+name: Canonical Stability Checkpoint v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/experimental/canonical-stability-checkpoint/v0.1/**"
+      - ".github/workflows/canonical-stability-checkpoint-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/experimental/canonical-stability-checkpoint/v0.1/**"
+      - ".github/workflows/canonical-stability-checkpoint-v0.1-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Canonical stability checkpoint semantics
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Syntax check
+        run: node --check protocols/experimental/canonical-stability-checkpoint/v0.1/validate.js
+      - name: Validate checkpoint and predecessor stability
+        run: node protocols/experimental/canonical-stability-checkpoint/v0.1/validate.js
+      - name: Confirm read-only repository state
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
