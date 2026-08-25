@@ -95,3 +95,6 @@ jobs:
 
       - name: Validate separate authority grant boundary
         run: python pilots/kontur-game-companion/authority-grant-boundary/validate.py
+
+      - name: Validate runtime transport binding challenge
+        run: python pilots/kontur-game-companion/runtime-transport-binding-challenge/validate.py
