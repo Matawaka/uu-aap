@@ -11,7 +11,11 @@
     "frozen_package_digest": "sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8",
     "applicant_count": 1,
     "author_count": 1,
-    "gis_component": false
+    "gis_component": false,
+    "author_publication_mode": "PSEUDONYM",
+    "author_public_pseudonym": "MATAWAKA",
+    "first_publication_country_code": "RU",
+    "first_publication_year": 2026
   },
   "private_required_fields": {
     "applicant": [
@@ -29,9 +33,8 @@
       "residence_address",
       "inn",
       "snils_if_available",
-      "author_publication_choice",
       "personal_data_consent",
-      "author_information_consent_if_author_is_named"
+      "author_information_consent_if_required_by_live_form"
     ]
   },
   "route_guidance": {
@@ -39,8 +42,13 @@
     "reason": "Applicant selected self-filing through EPGU. Public search of official sources found documented EPGU/SMEV and ESIA integration interfaces for connected information systems, but no supported public citizen API for arbitrary external submission of this Rospatent application. Actual authentication/signature requirements must be confirmed in the live EPGU flow immediately before submission.",
     "signature_status": "LIVE_ROUTE_CONFIRMATION_REQUIRED"
   },
+  "author_publication_guidance": {
+    "legal_author_identity": "PRIVATE_OFF_REPOSITORY",
+    "publication_mode": "PSEUDONYM",
+    "public_pseudonym": "MATAWAKA",
+    "rule": "Rospatent materials distinguish legal author identity from the publication choice and permit publication under an author pseudonym."
+  },
   "unresolved_form_fields": [
-    "author publication choice: own name, pseudonym, or non-mention option available in the live form",
     "route-specific authentication/signature method shown by the live EPGU flow",
     "correspondence address/contact fields if not populated from ESIA",
     "fee state and payment evidence"

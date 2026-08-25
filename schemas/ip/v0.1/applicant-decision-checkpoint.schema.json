@@ -40,11 +40,28 @@
     "author_visibility": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["selected","personal_data_consent_effect"],
+      "required": ["selected","personal_data_consent_effect","public_pseudonym","legal_identity_retention"],
       "properties": {
         "selected": {"enum": ["UNDECIDED","NAMED","PSEUDONYM","NON_MENTION"]},
-        "personal_data_consent_effect": {"enum": ["UNRESOLVED","REQUIRED","NOT_REQUIRED_FOR_AUTHOR_NON_MENTION"]}
-      }
+        "personal_data_consent_effect": {"enum": ["UNRESOLVED","REQUIRED","NOT_REQUIRED_FOR_AUTHOR_NON_MENTION"]},
+        "public_pseudonym": {"type": ["string","null"], "minLength": 1},
+        "legal_identity_retention": {"enum": ["PRIVATE_OFF_REPOSITORY"]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"selected": {"const": "PSEUDONYM"}}},
+          "then": {
+            "properties": {
+              "public_pseudonym": {"type": "string", "minLength": 1},
+              "personal_data_consent_effect": {"const": "REQUIRED"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"selected": {"enum": ["NAMED","NON_MENTION","UNDECIDED"]}}},
+          "then": {"properties": {"public_pseudonym": {"type": "null"}}}
+        }
+      ]
     },
     "first_publication": {
       "type": "object",

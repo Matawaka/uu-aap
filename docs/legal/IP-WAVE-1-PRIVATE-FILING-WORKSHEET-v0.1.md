@@ -32,17 +32,17 @@ Current Wave 1 model expects one individual applicant/right holder.
 
 Do not paste INN, document details, SNILS, address, signature or portal credentials into ChatGPT, GitHub, an issue or a PR merely to prove completion.
 
-## B. Author — private
+## B. Author — private legal identity / public pseudonym
 
 Current Wave 1 rights evidence expects one natural-person author for the bounded human creative contribution.
 
-Still choose one visibility mode:
+Publication choice already fixed:
 
-- `[ ] NAMED`
-- `[ ] PSEUDONYM`
-- `[ ] NON_MENTION`
+- Legal author identity: `[PRIVATE_OFF_REPOSITORY]`
+- Publication mode: `[PSEUDONYM]`
+- Public pseudonym: `MATAWAKA`
 
-If applicable fill locally:
+Fill locally in EPGU as applicable:
 
 - Full legal name: `[PRIVATE]`
 - Country / country code: `[PRIVATE]`
@@ -52,8 +52,11 @@ If applicable fill locally:
 - Number of authors: `[1]`
 - Same natural person as applicant/right holder: `[YES/NO]`
 - Actual creative contribution scope matches Wave 1 declaration: `[YES/NO]`
-- Personal-data consent completed: `[YES/NO/NOT_APPLICABLE per selected mode]`
-- Author-information consent completed if author is named: `[YES/NO/NOT_APPLICABLE]`
+- Personal-data consent completed: `[YES/NO]`
+- Author-information consent completed if required by live form: `[YES/NO/NOT_APPLICABLE]`
+- Publication pseudonym shown exactly as: `MATAWAKA`
+
+Do not copy the completed legal identity block into GitHub. The public repository records only the pseudonym and privacy-safe state.
 
 ## C. Program bibliographic fields
 
@@ -70,6 +73,8 @@ These public values are evidence-bound:
 - First-publication classification for filing field: `YES`
 - First-publication country: `Russia / RU`
 - First-publication year: `2026`
+- Author publication mode: `PSEUDONYM`
+- Public author pseudonym: `MATAWAKA`
 
 `RU / 2026` is an applicant-confirmed filing value, not an inference from GitHub infrastructure.
 
@@ -111,7 +116,8 @@ Before submission verify:
 - `[ ]` deposit digest match;
 - `[ ]` first-publication field shows Russia / 2026;
 - `[ ]` right-holder identity matches the rights-cleared private declaration;
-- `[ ]` author identity/visibility choice matches the private author evidence;
+- `[ ]` legal author identity matches the private author evidence;
+- `[ ]` publication mode is pseudonym and pseudonym is exactly `MATAWAKA`;
 - `[ ]` no unintended personal data is present in deposited source/material;
 - `[ ]` live Rospatent/EPGU form revision rechecked.
 
@@ -129,9 +135,9 @@ Recommended private directory contents after finalization:
 
 1. saved/exported application form or portal-generated application copy;
 2. personal-data consent evidence/document;
-3. author-information consent or retained evidence of the lawful non-mention choice;
+3. author-information consent if required by the live form;
 4. fee/payment or exemption evidence;
-5. private operator note recording EPGU, SELF, Russia/2026, the live signature method and final consistency check.
+5. private operator note recording EPGU, SELF, Russia/2026, pseudonym `MATAWAKA`, the live signature method and final consistency check.
 
 The frozen source/deposit package may be retained in the same private archive or in a linked immutable archive, but its public digest must remain the already frozen value above.
 
@@ -150,7 +156,8 @@ After all private documents are final:
 - `[ ]` I reviewed the live official Rospatent/EPGU flow immediately before filing.
 - `[ ]` Applicant/right-holder identity is correct.
 - `[ ]` Applicant identifiers and address are complete locally.
-- `[ ]` Author information/visibility choice is correct.
+- `[x]` Author publication mode selected as `PSEUDONYM / MATAWAKA`.
+- `[ ]` Legal author identity is complete locally.
 - `[ ]` Required consent documents are complete.
 - `[x]` First-publication filing value selected as Russia / 2026.
 - `[x]` Representative/POA branch selected as SELF / NOT_APPLICABLE.

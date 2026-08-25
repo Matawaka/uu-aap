@@ -12,6 +12,7 @@
     "public_fixed_fields",
     "private_required_fields",
     "route_guidance",
+    "author_publication_guidance",
     "unresolved_form_fields",
     "privacy_boundary"
   ],
@@ -31,7 +32,11 @@
         "frozen_package_digest",
         "applicant_count",
         "author_count",
-        "gis_component"
+        "gis_component",
+        "author_publication_mode",
+        "author_public_pseudonym",
+        "first_publication_country_code",
+        "first_publication_year"
       ],
       "properties": {
         "title_ru": {"type": "string", "minLength": 1},
@@ -41,7 +46,11 @@
         "frozen_package_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
         "applicant_count": {"const": 1},
         "author_count": {"const": 1},
-        "gis_component": {"const": false}
+        "gis_component": {"const": false},
+        "author_publication_mode": {"const": "PSEUDONYM"},
+        "author_public_pseudonym": {"type": "string", "minLength": 1},
+        "first_publication_country_code": {"const": "RU"},
+        "first_publication_year": {"const": 2026}
       }
     },
     "private_required_fields": {
@@ -71,6 +80,17 @@
         "recommended_route": {"enum": ["EPGU", "FIPS", "PAPER"]},
         "reason": {"type": "string", "minLength": 1},
         "signature_status": {"enum": ["LIVE_ROUTE_CONFIRMATION_REQUIRED", "CONFIRMED"]}
+      }
+    },
+    "author_publication_guidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["legal_author_identity", "publication_mode", "public_pseudonym", "rule"],
+      "properties": {
+        "legal_author_identity": {"const": "PRIVATE_OFF_REPOSITORY"},
+        "publication_mode": {"const": "PSEUDONYM"},
+        "public_pseudonym": {"type": "string", "minLength": 1},
+        "rule": {"type": "string", "minLength": 1}
       }
     },
     "unresolved_form_fields": {
