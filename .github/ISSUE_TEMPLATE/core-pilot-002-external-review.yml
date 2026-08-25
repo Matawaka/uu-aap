@@ -1,0 +1,59 @@
+name: Core Pilot 002 external review
+description: Submit one concrete counterexample, risk, ambiguity, or adoption problem for the public review pilot.
+title: "Review: "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for trying to break the protocol. Agreement or endorsement is not required.
+
+        A short concrete case is enough. Do not post secrets, private credentials, personal contact details, private prompts, or evidence you do not want public.
+
+        Your GitHub account identifier is treated only as the source account of this public submission. It is not treated as verified identity, expertise, authority, standing, truth, fault, or liability.
+  - type: textarea
+    id: failure_case
+    attributes:
+      label: Failure case or concern
+      description: What could go wrong, become ambiguous, unfair, coercive, privacy-invasive, or impractical?
+      placeholder: A concrete example is more useful than a general endorsement or rejection.
+    validations:
+      required: true
+  - type: textarea
+    id: why_it_matters
+    attributes:
+      label: Why it matters
+      description: What harm, ambiguity, implementation burden, or adoption cost could result?
+    validations:
+      required: false
+  - type: input
+    id: where
+    attributes:
+      label: Relevant clause, object, workflow, or pilot step
+      description: Optional. "unknown" is acceptable.
+      placeholder: e.g. SPEC §6, review disposition, authority boundary, unknown
+    validations:
+      required: false
+  - type: textarea
+    id: possible_fix
+    attributes:
+      label: Possible fix or alternative
+      description: Optional. A problem report is useful even without a proposed solution.
+    validations:
+      required: false
+  - type: textarea
+    id: competing_view
+    attributes:
+      label: Competing interpretation or unresolved objection
+      description: Optional. Use this if reasonable reviewers could disagree.
+    validations:
+      required: false
+  - type: checkboxes
+    id: public_scope
+    attributes:
+      label: Public submission acknowledgement
+      options:
+        - label: I understand this issue is public and I have not intentionally included secrets or private evidence.
+          required: true
+        - label: I understand submission does not imply acceptance, verified identity, authority, standing, truth, fault, liability, or automatic protocol change.
+          required: true

@@ -80,12 +80,16 @@ PoAI does **not** change UU-AAP v0.1 conformance. It is being developed under [`
 
 ## Join the public review
 
+- **Fastest concrete review / Core Pilot 002:** [External Review Entry — Issue #422](https://github.com/Matawaka/uu-aap/issues/422)
+- **Core Pilot 002 protocol:** [Public Review Intake & Contestable Resolution](pilots/core-pilot-002/README.md)
 - **UU-AAP broad design discussion:** [What should accountable AI-augmented authorship mean? — Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8)
 - **PoAI Genesis RFC:** [Proof of Available Intelligence v0.0 — Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10)
 - **Main UU-AAP RFC:** [UU-AAP v0.1 Public Review — Issue #1](https://github.com/Matawaka/uu-aap/issues/1)
 - **Concrete failure cases and proposals:** [Open Issues](https://github.com/Matawaka/uu-aap/issues)
 
 Agreement is not required. Concrete counterexamples, privacy risks, implementation failures and competing models are especially valuable at this stage.
+
+For the lowest-friction path, one short external comment on Issue #422 is enough to provide a real review candidate. The project-authored invitation is not counted as external evidence, and a reviewer account is not treated as verified identity, authority, standing or expertise. The pilot preserves the submitted evidence separately from project interpretation and disposition; disposition itself does not change the protocol.
 
 ## Read in this order
 
@@ -130,7 +134,7 @@ UU-AAP is intended to reuse established infrastructure where practical, especial
 
 This draft is intentionally contestable. Please submit concrete failure cases: privacy harms, coercive uses, ambiguous responsibility, unverifiable claims, interoperability failures, accessibility problems, or unnecessary implementation burden.
 
-For broad UU-AAP questions and competing design models, use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8). For PoAI Genesis, use [Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10). For a concrete protocol defect or proposed normative change, open an Issue.
+For a short concrete review, use [Core Pilot 002 Issue #422](https://github.com/Matawaka/uu-aap/issues/422). For broad UU-AAP questions and competing design models, use [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8). For PoAI Genesis, use [Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10). For a concrete protocol defect or proposed normative change, open an Issue.
 
 **Initial proposer/editor:** [Matawaka](https://github.com/Matawaka)  
 This attribution identifies the initial public proposer; it does not grant unilateral authority over future protocol meaning.
