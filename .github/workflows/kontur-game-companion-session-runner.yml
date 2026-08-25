@@ -1,0 +1,27 @@
+name: KONTUR Game Companion session runner validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/session-runner/**'
+      - 'pilots/kontur-game-companion/integrated-conversation-trace/**'
+      - '.github/workflows/kontur-game-companion-session-runner.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-session-runner:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate deterministic synthetic session runner
+        run: python pilots/kontur-game-companion/session-runner/validate.py
