@@ -1,0 +1,48 @@
+{
+  "artifact_type": "ThreeLayerCommitmentRoot",
+  "artifact_version": "0.1",
+  "canonicalization": "uu-aap-three-layer-root-v0.1",
+  "digest_algorithm": "SHA-256",
+  "layers": [
+    {
+      "plane": "knowledge",
+      "digest": "1111111111111111111111111111111111111111111111111111111111111111",
+      "lifecycle_state": "active",
+      "transition_reason": null,
+      "successor_ref": null
+    },
+    {
+      "plane": "authority",
+      "digest": "2222222222222222222222222222222222222222222222222222222222222222",
+      "lifecycle_state": "active",
+      "transition_reason": null,
+      "successor_ref": null
+    },
+    {
+      "plane": "legitimacy",
+      "digest": "3333333333333333333333333333333333333333333333333333333333333333",
+      "lifecycle_state": "active",
+      "transition_reason": null,
+      "successor_ref": null
+    }
+  ],
+  "root_digest": "bedfb0a22f2c1fc9c25978f2d569abda465be680876e44900ad4c6464eae64a8",
+  "predecessor_root": null,
+  "successor": {
+    "declared": false,
+    "successor_ref": null,
+    "binds_predecessor_root": null
+  },
+  "claims": {
+    "layer_separation_preserved": true,
+    "root_integrity_verified": true,
+    "mutation_authority_granted": false,
+    "semantic_truth_established": false,
+    "legal_validity_established": false,
+    "human_intent_established": false,
+    "responsibility_assigned": false,
+    "liability_established": false,
+    "universal_legitimacy_established": false,
+    "history_rewritten": false
+  }
+}

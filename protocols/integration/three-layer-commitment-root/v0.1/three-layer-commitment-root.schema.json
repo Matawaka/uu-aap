@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:three-layer-commitment-root:v0.1",
+  "title": "Three-Layer Commitment Root v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","artifact_version","canonicalization","digest_algorithm","layers","root_digest","predecessor_root","successor","claims"],
+  "properties": {
+    "artifact_type": {"const": "ThreeLayerCommitmentRoot"},
+    "artifact_version": {"const": "0.1"},
+    "canonicalization": {"const": "uu-aap-three-layer-root-v0.1"},
+    "digest_algorithm": {"const": "SHA-256"},
+    "layers": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["plane","digest","lifecycle_state","transition_reason","successor_ref"],
+        "properties": {
+          "plane": {"enum": ["knowledge","authority","legitimacy"]},
+          "digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "lifecycle_state": {"enum": ["active","deprecated","absorbed"]},
+          "transition_reason": {"type": ["string","null"]},
+          "successor_ref": {"type": ["string","null"]}
+        }
+      }
+    },
+    "root_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "predecessor_root": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "successor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["declared","successor_ref","binds_predecessor_root"],
+      "properties": {
+        "declared": {"type": "boolean"},
+        "successor_ref": {"type": ["string","null"]},
+        "binds_predecessor_root": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["layer_separation_preserved","root_integrity_verified","mutation_authority_granted","semantic_truth_established","legal_validity_established","human_intent_established","responsibility_assigned","liability_established","universal_legitimacy_established","history_rewritten"],
+      "properties": {
+        "layer_separation_preserved": {"const": true},
+        "root_integrity_verified": {"const": true},
+        "mutation_authority_granted": {"const": false},
+        "semantic_truth_established": {"const": false},
+        "legal_validity_established": {"const": false},
+        "human_intent_established": {"const": false},
+        "responsibility_assigned": {"const": false},
+        "liability_established": {"const": false},
+        "universal_legitimacy_established": {"const": false},
+        "history_rewritten": {"const": false}
+      }
+    }
+  }
+}
