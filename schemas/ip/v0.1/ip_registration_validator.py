@@ -52,9 +52,39 @@ INVALID_RIGHT_HOLDER_BASES_FOR_EXCLUSIVE_FILING = {
     "UNKNOWN",
 }
 
+READY_FEE_STATES = {"PAYMENT_READY", "PAID", "EXEMPT"}
+
 
 def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def filing_readiness_errors(readiness: dict | None) -> list[str]:
+    if not readiness:
+        return ["READY_TO_FILE or filing-lifecycle state requires filing_readiness evidence"]
+
+    errors: list[str] = []
+    if readiness.get("status") != "COMPLETE":
+        errors.append("READY_TO_FILE or filing-lifecycle state requires filing_readiness.status=COMPLETE")
+    if not readiness.get("private_packet_digest"):
+        errors.append("READY_TO_FILE or filing-lifecycle state requires a private filing packet digest")
+
+    required_true = {
+        "official_form_finalized": "official form must be finalized",
+        "personal_data_consent_complete": "personal-data consent must be complete",
+        "author_consent_resolved": "author consent/mention choice must be resolved",
+        "representative_authority_resolved": "representative/authority state must be resolved",
+        "route_selected": "filing route must be selected",
+        "signature_method_confirmed": "signature method must be confirmed",
+        "consistency_verified": "title/abstract/deposit/right-holder/author consistency must be verified",
+    }
+    for field, message in required_true.items():
+        if readiness.get(field) is not True:
+            errors.append(f"READY_TO_FILE or filing-lifecycle state requires {message}")
+
+    if readiness.get("fee_status") not in READY_FEE_STATES:
+        errors.append("READY_TO_FILE or filing-lifecycle state requires fee status PAYMENT_READY, PAID, or EXEMPT")
+    return errors
 
 
 def semantic_errors(record: dict) -> list[str]:
@@ -91,6 +121,7 @@ def semantic_errors(record: dict) -> list[str]:
                 break
         if record["registration_intent"]["decision"] not in {"PLANNED", "FILED"}:
             errors.append("READY_TO_FILE or filing-lifecycle state requires an active filing decision")
+        errors.extend(filing_readiness_errors(record.get("filing_readiness")))
 
     if state in FILED_STATES:
         filing = record.get("filing")
