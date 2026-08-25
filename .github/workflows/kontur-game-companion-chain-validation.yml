@@ -50,3 +50,6 @@ jobs:
 
       - name: Validate Pause / Resume
         run: python pilots/kontur-game-companion/pause-resume/validate.py
+
+      - name: Validate Conversational Variety
+        run: python pilots/kontur-game-companion/conversation-variety/validate.py
