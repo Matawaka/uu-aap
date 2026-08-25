@@ -27,6 +27,7 @@ def validate(data):
     assert root["parent_id"] is None
     assert root["authority_source"] == "explicit_human_authorization"
     assert root["single_use"] is True
+    assert (root["remaining_depth"] > 0) == root["may_redelegate"]
 
     for child in ds[1:]:
         assert child["parent_id"] in by_id
@@ -42,8 +43,7 @@ def validate(data):
         assert child["single_use"] is True
         assert parse_time(child["expires_at"]) <= parse_time(parent["expires_at"])
         assert all(within_prefix(p, parent["path_prefixes"]) for p in child["path_prefixes"])
-        if not child["may_redelegate"]:
-            assert child["remaining_depth"] == 0
+        assert (child["remaining_depth"] > 0) == child["may_redelegate"]
 
 
 def expect_fail(base, mutate):
