@@ -1,0 +1,57 @@
+{
+  "$schema": "./post-checkpoint-successor-evolution.schema.json",
+  "artifact_type": "PostCheckpointSuccessorEvolutionTest",
+  "artifact_version": "0.1",
+  "test_id": "urn:uu-aap:post-checkpoint-successor-evolution:v0.1:test:001",
+  "checkpoint_binding": {
+    "pr_number": 408,
+    "fixture_path": "protocols/experimental/canonical-stability-checkpoint/v0.1/fixture.json",
+    "validator_path": "protocols/experimental/canonical-stability-checkpoint/v0.1/validate.js",
+    "checkpoint_id": "urn:uu-aap:canonical-stability-checkpoint:v0.1:676b8c3b",
+    "bound_commit_sha": "676b8c3bfc7d10595a17f4595a88bf477cf8fc48",
+    "bound_tree_sha": "2477f354a8fd117108e7108ba4719f9129ef7fe6"
+  },
+  "post_checkpoint_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "branch": "main",
+    "commit_sha": "4f24a966f70f96673995c775fa350af4e0f8f0f0",
+    "tree_sha": "696bb0e3db63255ee52b821a47d53c9b5c8897d4"
+  },
+  "successor_proposal": {
+    "proposal_id": "urn:uu-aap:synthetic-successor:test:001",
+    "synthetic": true,
+    "state": "proposed",
+    "compatibility_state": "requires_fresh_validation",
+    "fresh_evidence_refs": ["urn:uu-aap:evidence:synthetic-successor:test:001"],
+    "semantic_strengthening": false
+  },
+  "inherited_from_checkpoint": {
+    "intent": false,
+    "authority": false,
+    "identity": false,
+    "action_permit": false,
+    "obligation": false,
+    "liability": false,
+    "canonicality": false,
+    "execution": false
+  },
+  "claims": {
+    "checkpoint_preserved": true,
+    "fresh_successor_evidence_present": true,
+    "post_checkpoint_evolution_test_passed": true,
+    "successor_compatibility_proven": false,
+    "successor_canonical": false,
+    "action_authorized": false,
+    "action_performed": false,
+    "universal_future_safety_proven": false
+  },
+  "non_effects": {
+    "checkpoint_rewritten": false,
+    "release_or_tag_created": false,
+    "kontur_mutated": false,
+    "authority_transferred": false,
+    "permissions_changed": false,
+    "history_rewritten": false,
+    "canonical_origin_mutated": false
+  }
+}
