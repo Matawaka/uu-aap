@@ -1,0 +1,476 @@
+{
+  "schema_version": "1.0",
+  "expected_frontier": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "observed_main_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "source_archive": {
+    "url": "https://github.com/Matawaka/uu-aap/archive/2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee.zip",
+    "sha256": "faf109a86c7fe61dc06a0956d6129eb32bb3c2af4b603137d3784f431e1b8b6d",
+    "byte_length": 2199429,
+    "extracted_file_count": 1096,
+    "evidence_role": "commit-pinned repository snapshot"
+  },
+  "repository_records": [
+    {
+      "evidence_id": "EV-R01",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "url": "https://github.com/Matawaka/uu-aap/commit/2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "relevant_artifact": "Observed main frontier and PR #457 merge commit",
+      "issue_pr_reference": "#457",
+      "validator_workflow_relation": null,
+      "evidence_role": "frontier-provenance"
+    },
+    {
+      "evidence_id": "EV-R02",
+      "commit_sha": "75c150a",
+      "url": "https://github.com/Matawaka/uu-aap/pull/446",
+      "relevant_artifact": "Cautious Observational Lane merged PR",
+      "issue_pr_reference": "#446",
+      "validator_workflow_relation": "Origin for observational-lane spec/fixture/validator/workflow.",
+      "evidence_role": "layer-origin"
+    },
+    {
+      "evidence_id": "EV-R03",
+      "commit_sha": "3fc4b66",
+      "url": "https://github.com/Matawaka/uu-aap/pull/452",
+      "relevant_artifact": "Assistance Escalation / Spoiler Budget Gate merged PR",
+      "issue_pr_reference": "#452",
+      "validator_workflow_relation": "Origin for assistance-gate spec/fixture/validator/workflow.",
+      "evidence_role": "layer-origin"
+    },
+    {
+      "evidence_id": "EV-R04",
+      "commit_sha": "b3df9ac",
+      "url": "https://github.com/Matawaka/uu-aap/pull/453",
+      "relevant_artifact": "Shared Discovery Memory merged PR",
+      "issue_pr_reference": "#453",
+      "validator_workflow_relation": "Origin for shared-discovery-memory spec/fixture/validator/workflow.",
+      "evidence_role": "layer-origin"
+    },
+    {
+      "evidence_id": "EV-R05",
+      "commit_sha": "282f132",
+      "url": "https://github.com/Matawaka/uu-aap/pull/454",
+      "relevant_artifact": "Bounded Conversational Initiative merged PR",
+      "issue_pr_reference": "#454",
+      "validator_workflow_relation": "Origin for bounded-initiative spec/fixture/validator/workflow.",
+      "evidence_role": "layer-origin"
+    },
+    {
+      "evidence_id": "EV-R06",
+      "commit_sha": "b45eaf9",
+      "url": "https://github.com/Matawaka/uu-aap/pull/455",
+      "relevant_artifact": "Focus Diversity & Interest Surface merged PR",
+      "issue_pr_reference": "#455",
+      "validator_workflow_relation": "Origin for focus-diversity spec/fixture/validator/workflow.",
+      "evidence_role": "layer-origin"
+    },
+    {
+      "evidence_id": "EV-R07",
+      "commit_sha": "7c97e26",
+      "url": "https://github.com/Matawaka/uu-aap/pull/456",
+      "relevant_artifact": "Cross-Layer Interaction Receipt merged PR",
+      "issue_pr_reference": "#456",
+      "validator_workflow_relation": "Origin for interaction-receipt spec/fixture/validator/workflow.",
+      "evidence_role": "layer-origin"
+    },
+    {
+      "evidence_id": "EV-R08",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "url": "https://github.com/Matawaka/uu-aap/pull/457",
+      "relevant_artifact": "Pause / Resume & Session Boundary merged PR",
+      "issue_pr_reference": "#457",
+      "validator_workflow_relation": "Origin for pause-resume spec/fixture/validator/workflow.",
+      "evidence_role": "layer-origin"
+    },
+    {
+      "evidence_id": "EV-R09",
+      "commit_sha": null,
+      "url": "https://github.com/Matawaka/uu-aap/issues/445",
+      "relevant_artifact": "Game Companion ongoing architecture/backlog line",
+      "issue_pr_reference": "#445",
+      "validator_workflow_relation": "Source of the bounded-fallibility invariant set; materialization is checked per layer.",
+      "evidence_role": "architectural-contract"
+    }
+  ],
+  "entries": [
+    {
+      "evidence_id": "EV-001",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "protocols/core/v0.1/README.md",
+      "relevant_artifact": "Stable Core v0.1 specification",
+      "sha256": "ca967b121c33e834ca62f9ceb24fa33a1d3ea670f51f91dc9579eb5f752e00b2",
+      "issue_pr_reference": null,
+      "validator_workflow_relation": "Specifies the typed receipt direction checked by EV-003 and executed by EV-004.",
+      "evidence_role": "stable-direction-specification"
+    },
+    {
+      "evidence_id": "EV-002",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "protocols/core/v0.1/end-to-end.fixture.json",
+      "relevant_artifact": "Stable Core v0.1 machine-readable fixture",
+      "sha256": "1f570095355dbef1b87a33edd11c69ec9a6a58ac2756420df7b0e022fa8e3fc5",
+      "issue_pr_reference": null,
+      "validator_workflow_relation": "Consumed by protocols/core/v0.1/validate-core.js.",
+      "evidence_role": "stable-direction-fixture"
+    },
+    {
+      "evidence_id": "EV-003",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "protocols/core/v0.1/validate-core.js",
+      "relevant_artifact": "Stable Core deterministic validator",
+      "sha256": "4315bc0661698de4946a0f24478c8f98dcdfadca7289178a04e436232acd5fd7",
+      "issue_pr_reference": null,
+      "validator_workflow_relation": "Consumes EV-002 and checks predecessor, frontier, permit, outcome, and successor-state boundaries.",
+      "evidence_role": "stable-direction-validator"
+    },
+    {
+      "evidence_id": "EV-004",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/core-protocol-v0.1-validation.yml",
+      "relevant_artifact": "Stable Core CI workflow",
+      "sha256": "808fe94d813a61615021d1a094c96cb541f6bf5cd386a83f1072e89a08075bdf",
+      "issue_pr_reference": null,
+      "validator_workflow_relation": "Executes protocols/core/v0.1/validate-core.js.",
+      "evidence_role": "stable-direction-ci"
+    },
+    {
+      "evidence_id": "EV-005",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "protocols/interface-registry/v0.1/interface-registry.json",
+      "relevant_artifact": "Interface registry fixture",
+      "sha256": "61c1aa2299e0e29bfda2db78a2ab2ebaea8dafd304d48c3be69300cc3568f3c5",
+      "issue_pr_reference": null,
+      "validator_workflow_relation": "Consumed by EV-006; contains no KONTUR/Game Companion registration at the observed frontier.",
+      "evidence_role": "optional-adapter-registry-state"
+    },
+    {
+      "evidence_id": "EV-006",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "protocols/interface-registry/v0.1/validate-interface-registry.js",
+      "relevant_artifact": "Interface registry validator",
+      "sha256": "757aa012bd7fd5bc45d6c2140d1dcfd7f0198acf3ebe44b10f42d1693b720c39",
+      "issue_pr_reference": null,
+      "validator_workflow_relation": "Validates EV-005; does not establish the missing Game Companion registry edge.",
+      "evidence_role": "optional-adapter-registry-validator"
+    },
+    {
+      "evidence_id": "EV-007",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/reusable-protocol-interface-registry-v0.1-validation.yml",
+      "relevant_artifact": "Interface registry workflow",
+      "sha256": "9bac94e3333d99934bb3c91815f0a98b7751c46b2ad96cc37cb4af82584b320c",
+      "issue_pr_reference": null,
+      "validator_workflow_relation": "Executes EV-006.",
+      "evidence_role": "optional-adapter-registry-ci"
+    },
+    {
+      "evidence_id": "EV-008",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/observational-lane/README.md",
+      "relevant_artifact": "Cautious Observational Lane specification",
+      "sha256": "70a45f1df96de219166c04af1b136cfc020c7672f15529028ac72bdc901acae0",
+      "issue_pr_reference": "#446 https://github.com/Matawaka/uu-aap/pull/446",
+      "validator_workflow_relation": "Defines observational-lane; fixture and validator are adjacent in pilots/kontur-game-companion/observational-lane.",
+      "evidence_role": "game-companion-specification",
+      "notes": "Merge commit 75c150a."
+    },
+    {
+      "evidence_id": "EV-009",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/observational-lane/observation-cases.json",
+      "relevant_artifact": "Cautious Observational Lane fixture",
+      "sha256": "031fdb393c8a53b765b4b3359fd814fe9dcf473ee8e4ef2cba00aad2b6bdab09",
+      "issue_pr_reference": "#446 https://github.com/Matawaka/uu-aap/pull/446",
+      "validator_workflow_relation": "Consumed by pilots/kontur-game-companion/observational-lane/validate.py.",
+      "evidence_role": "game-companion-fixture",
+      "notes": "Merge commit 75c150a."
+    },
+    {
+      "evidence_id": "EV-010",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/observational-lane/validate.py",
+      "relevant_artifact": "Cautious Observational Lane validator",
+      "sha256": "8c75c49da826a970c1edc30f2e99477525446bf69fd8182c8caa0757ca9d714c",
+      "issue_pr_reference": "#446 https://github.com/Matawaka/uu-aap/pull/446",
+      "validator_workflow_relation": "Consumes pilots/kontur-game-companion/observational-lane/observation-cases.json; invoked by .github/workflows/kontur-game-companion-observational-lane.yml.",
+      "evidence_role": "game-companion-validator",
+      "notes": "Merge commit 75c150a."
+    },
+    {
+      "evidence_id": "EV-011",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/kontur-game-companion-observational-lane.yml",
+      "relevant_artifact": "observational-lane CI workflow",
+      "sha256": "6729ada319629dce9f179988ce321a9ca1e0f3b07b5c52fa1a4204d80d540483",
+      "issue_pr_reference": "#446 https://github.com/Matawaka/uu-aap/pull/446",
+      "validator_workflow_relation": "Executes pilots/kontur-game-companion/observational-lane/validate.py; path filter is local to this layer/workflow.",
+      "evidence_role": "game-companion-ci",
+      "notes": "Merge commit 75c150a."
+    },
+    {
+      "evidence_id": "EV-012",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/assistance-gate/README.md",
+      "relevant_artifact": "Assistance Escalation / Spoiler Budget Gate specification",
+      "sha256": "9d55febc333b434be8b68416f33ed9103d05af3378eebcb995f09cbfc43b5a11",
+      "issue_pr_reference": "#452 https://github.com/Matawaka/uu-aap/pull/452",
+      "validator_workflow_relation": "Defines assistance-gate; fixture and validator are adjacent in pilots/kontur-game-companion/assistance-gate.",
+      "evidence_role": "game-companion-specification",
+      "notes": "Merge commit 3fc4b66."
+    },
+    {
+      "evidence_id": "EV-013",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json",
+      "relevant_artifact": "Assistance Gate fixture",
+      "sha256": "22b2a32c897da343de41d5365b417174b1060fb3d244666a166379ab5b766d19",
+      "issue_pr_reference": "#452 https://github.com/Matawaka/uu-aap/pull/452",
+      "validator_workflow_relation": "Consumed by pilots/kontur-game-companion/assistance-gate/validate.py.",
+      "evidence_role": "game-companion-fixture",
+      "notes": "Merge commit 3fc4b66."
+    },
+    {
+      "evidence_id": "EV-014",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/assistance-gate/validate.py",
+      "relevant_artifact": "Assistance Gate validator",
+      "sha256": "23602f658ab9fc5d7ae4a39d79200b37aa30df42466b1e480df7c577388399c3",
+      "issue_pr_reference": "#452 https://github.com/Matawaka/uu-aap/pull/452",
+      "validator_workflow_relation": "Consumes pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json; invoked by .github/workflows/kontur-game-companion-assistance-gate.yml.",
+      "evidence_role": "game-companion-validator",
+      "notes": "Merge commit 3fc4b66."
+    },
+    {
+      "evidence_id": "EV-015",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/kontur-game-companion-assistance-gate.yml",
+      "relevant_artifact": "assistance-gate CI workflow",
+      "sha256": "195a49af287b72ac5253728fb4a0d3222071fa7e2f999dbadc834509bf99bc32",
+      "issue_pr_reference": "#452 https://github.com/Matawaka/uu-aap/pull/452",
+      "validator_workflow_relation": "Executes pilots/kontur-game-companion/assistance-gate/validate.py; path filter is local to this layer/workflow.",
+      "evidence_role": "game-companion-ci",
+      "notes": "Merge commit 3fc4b66."
+    },
+    {
+      "evidence_id": "EV-016",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+      "relevant_artifact": "Shared Discovery Memory & Correction Provenance specification",
+      "sha256": "46e02de022eaca42259dfd7f183b0b828a16b30d27c6c7af505943135fc56605",
+      "issue_pr_reference": "#453 https://github.com/Matawaka/uu-aap/pull/453",
+      "validator_workflow_relation": "Defines shared-discovery-memory; fixture and validator are adjacent in pilots/kontur-game-companion/shared-discovery-memory.",
+      "evidence_role": "game-companion-specification",
+      "notes": "Merge commit b3df9ac."
+    },
+    {
+      "evidence_id": "EV-017",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json",
+      "relevant_artifact": "Shared Discovery Memory fixture",
+      "sha256": "599cce9bcb51d9fbfb5b4a4517601bf76a1c034a034336759282b5dac6547a5e",
+      "issue_pr_reference": "#453 https://github.com/Matawaka/uu-aap/pull/453",
+      "validator_workflow_relation": "Consumed by pilots/kontur-game-companion/shared-discovery-memory/validate.py.",
+      "evidence_role": "game-companion-fixture",
+      "notes": "Merge commit b3df9ac."
+    },
+    {
+      "evidence_id": "EV-018",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+      "relevant_artifact": "Shared Discovery Memory validator",
+      "sha256": "148f36cb25d89d3da8524744af83d492a93de0727c08734b65816faeb52c8c69",
+      "issue_pr_reference": "#453 https://github.com/Matawaka/uu-aap/pull/453",
+      "validator_workflow_relation": "Consumes pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json; invoked by .github/workflows/kontur-game-companion-shared-discovery-memory.yml.",
+      "evidence_role": "game-companion-validator",
+      "notes": "Merge commit b3df9ac."
+    },
+    {
+      "evidence_id": "EV-019",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/kontur-game-companion-shared-discovery-memory.yml",
+      "relevant_artifact": "shared-discovery-memory CI workflow",
+      "sha256": "f8a9f2676ab853341e9b909bdf46d25f5560528a2235384847e1c5f76c4ba656",
+      "issue_pr_reference": "#453 https://github.com/Matawaka/uu-aap/pull/453",
+      "validator_workflow_relation": "Executes pilots/kontur-game-companion/shared-discovery-memory/validate.py; path filter is local to this layer/workflow.",
+      "evidence_role": "game-companion-ci",
+      "notes": "Merge commit b3df9ac."
+    },
+    {
+      "evidence_id": "EV-020",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/bounded-initiative/README.md",
+      "relevant_artifact": "Bounded Conversational Initiative specification",
+      "sha256": "df28095979dec20fea50501c2486d2f9efb6dc84edfa2cce197aebb186fd41ce",
+      "issue_pr_reference": "#454 https://github.com/Matawaka/uu-aap/pull/454",
+      "validator_workflow_relation": "Defines bounded-initiative; fixture and validator are adjacent in pilots/kontur-game-companion/bounded-initiative.",
+      "evidence_role": "game-companion-specification",
+      "notes": "Merge commit 282f132."
+    },
+    {
+      "evidence_id": "EV-021",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+      "relevant_artifact": "Bounded Initiative fixture",
+      "sha256": "2afc0b0c692871dc19c4f16fb2bb3916378b08e687d3ce83703d7bb67cba8a84",
+      "issue_pr_reference": "#454 https://github.com/Matawaka/uu-aap/pull/454",
+      "validator_workflow_relation": "Consumed by pilots/kontur-game-companion/bounded-initiative/validate.py.",
+      "evidence_role": "game-companion-fixture",
+      "notes": "Merge commit 282f132."
+    },
+    {
+      "evidence_id": "EV-022",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/bounded-initiative/validate.py",
+      "relevant_artifact": "Bounded Initiative validator",
+      "sha256": "8b9dd7429f4c057234136335016215951ea54039e6e50cf5e9ea9297fb569c2d",
+      "issue_pr_reference": "#454 https://github.com/Matawaka/uu-aap/pull/454",
+      "validator_workflow_relation": "Consumes pilots/kontur-game-companion/bounded-initiative/initiative-cases.json; invoked by .github/workflows/kontur-game-companion-bounded-initiative.yml.",
+      "evidence_role": "game-companion-validator",
+      "notes": "Merge commit 282f132."
+    },
+    {
+      "evidence_id": "EV-023",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/kontur-game-companion-bounded-initiative.yml",
+      "relevant_artifact": "bounded-initiative CI workflow",
+      "sha256": "c17d7b4e513eb06b54f9b93773b9b6890ad89868a1addf5784fa9547ee3ca0ca",
+      "issue_pr_reference": "#454 https://github.com/Matawaka/uu-aap/pull/454",
+      "validator_workflow_relation": "Executes pilots/kontur-game-companion/bounded-initiative/validate.py; path filter is local to this layer/workflow.",
+      "evidence_role": "game-companion-ci",
+      "notes": "Merge commit 282f132."
+    },
+    {
+      "evidence_id": "EV-024",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/focus-diversity/README.md",
+      "relevant_artifact": "Focus Diversity & Interest Surface specification",
+      "sha256": "eaa894520061db104a958526c7591aea1c05c76ef7c18e97e5f3077b943d99fb",
+      "issue_pr_reference": "#455 https://github.com/Matawaka/uu-aap/pull/455",
+      "validator_workflow_relation": "Defines focus-diversity; fixture and validator are adjacent in pilots/kontur-game-companion/focus-diversity.",
+      "evidence_role": "game-companion-specification",
+      "notes": "Merge commit b45eaf9."
+    },
+    {
+      "evidence_id": "EV-025",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+      "relevant_artifact": "Focus Diversity fixture",
+      "sha256": "18ba7488d26cad6edd85a049300568c67f51ef019ad04b2b267c17a7b44fed63",
+      "issue_pr_reference": "#455 https://github.com/Matawaka/uu-aap/pull/455",
+      "validator_workflow_relation": "Consumed by pilots/kontur-game-companion/focus-diversity/validate.py.",
+      "evidence_role": "game-companion-fixture",
+      "notes": "Merge commit b45eaf9."
+    },
+    {
+      "evidence_id": "EV-026",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/focus-diversity/validate.py",
+      "relevant_artifact": "Focus Diversity validator",
+      "sha256": "bb8990d8665611b838a71b8dafd965cd01d210158a1ff3ac827249cea9460f2e",
+      "issue_pr_reference": "#455 https://github.com/Matawaka/uu-aap/pull/455",
+      "validator_workflow_relation": "Consumes pilots/kontur-game-companion/focus-diversity/focus-cases.json; invoked by .github/workflows/kontur-game-companion-focus-diversity.yml.",
+      "evidence_role": "game-companion-validator",
+      "notes": "Merge commit b45eaf9."
+    },
+    {
+      "evidence_id": "EV-027",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/kontur-game-companion-focus-diversity.yml",
+      "relevant_artifact": "focus-diversity CI workflow",
+      "sha256": "3fe81e1a43141c2afd9d1d324c134636f3952df04d5f0d90bc80c943ad8719c5",
+      "issue_pr_reference": "#455 https://github.com/Matawaka/uu-aap/pull/455",
+      "validator_workflow_relation": "Executes pilots/kontur-game-companion/focus-diversity/validate.py; path filter is local to this layer/workflow.",
+      "evidence_role": "game-companion-ci",
+      "notes": "Merge commit b45eaf9."
+    },
+    {
+      "evidence_id": "EV-028",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/interaction-receipt/README.md",
+      "relevant_artifact": "Cross-Layer Interaction Receipt specification",
+      "sha256": "8f971242d49640c98381d9090658baedc8b6538f90f8fc1cbefc99ded5e02d45",
+      "issue_pr_reference": "#456 https://github.com/Matawaka/uu-aap/pull/456",
+      "validator_workflow_relation": "Defines interaction-receipt; fixture and validator are adjacent in pilots/kontur-game-companion/interaction-receipt.",
+      "evidence_role": "game-companion-specification",
+      "notes": "Merge commit 7c97e26."
+    },
+    {
+      "evidence_id": "EV-029",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+      "relevant_artifact": "Interaction Receipt fixture",
+      "sha256": "90e1d53033218ce1e56ffcddb56ee6fa63c3b6eb80cf9fc864785fc24eef9fc2",
+      "issue_pr_reference": "#456 https://github.com/Matawaka/uu-aap/pull/456",
+      "validator_workflow_relation": "Consumed by pilots/kontur-game-companion/interaction-receipt/validate.py.",
+      "evidence_role": "game-companion-fixture",
+      "notes": "Merge commit 7c97e26."
+    },
+    {
+      "evidence_id": "EV-030",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/interaction-receipt/validate.py",
+      "relevant_artifact": "Interaction Receipt validator",
+      "sha256": "b9644c943b475fdfea3cf2b859bac95849192f5019c6c8b2a15582f90ed14170",
+      "issue_pr_reference": "#456 https://github.com/Matawaka/uu-aap/pull/456",
+      "validator_workflow_relation": "Consumes pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json; invoked by .github/workflows/kontur-game-companion-interaction-receipt.yml.",
+      "evidence_role": "game-companion-validator",
+      "notes": "Merge commit 7c97e26."
+    },
+    {
+      "evidence_id": "EV-031",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/kontur-game-companion-interaction-receipt.yml",
+      "relevant_artifact": "interaction-receipt CI workflow",
+      "sha256": "278c10259696c647849d59be73227e6d9b681aa2f51ab27fba9dd2c5969e5c32",
+      "issue_pr_reference": "#456 https://github.com/Matawaka/uu-aap/pull/456",
+      "validator_workflow_relation": "Executes pilots/kontur-game-companion/interaction-receipt/validate.py; path filter is local to this layer/workflow.",
+      "evidence_role": "game-companion-ci",
+      "notes": "Merge commit 7c97e26."
+    },
+    {
+      "evidence_id": "EV-032",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/pause-resume/README.md",
+      "relevant_artifact": "Pause / Resume & Session Boundary specification",
+      "sha256": "2b36ef16d1ce7ba79abda7c66d07a4dcd930d497b101d217912dc0642512379b",
+      "issue_pr_reference": "#457 https://github.com/Matawaka/uu-aap/pull/457",
+      "validator_workflow_relation": "Defines pause-resume; fixture and validator are adjacent in pilots/kontur-game-companion/pause-resume.",
+      "evidence_role": "game-companion-specification",
+      "notes": "Merge commit 2f297f0."
+    },
+    {
+      "evidence_id": "EV-033",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+      "relevant_artifact": "Pause / Resume fixture",
+      "sha256": "404118ee0ba0e6d725f943ae00d1e4b2555edc4c329d8b23e41828b0884da660",
+      "issue_pr_reference": "#457 https://github.com/Matawaka/uu-aap/pull/457",
+      "validator_workflow_relation": "Consumed by pilots/kontur-game-companion/pause-resume/validate.py.",
+      "evidence_role": "game-companion-fixture",
+      "notes": "Merge commit 2f297f0."
+    },
+    {
+      "evidence_id": "EV-034",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": "pilots/kontur-game-companion/pause-resume/validate.py",
+      "relevant_artifact": "Pause / Resume validator",
+      "sha256": "43770091ed5b47518964d83617a87692bb9eec562e77e32db7536713678c0970",
+      "issue_pr_reference": "#457 https://github.com/Matawaka/uu-aap/pull/457",
+      "validator_workflow_relation": "Consumes pilots/kontur-game-companion/pause-resume/pause-resume-cases.json; invoked by .github/workflows/kontur-game-companion-pause-resume.yml.",
+      "evidence_role": "game-companion-validator",
+      "notes": "Merge commit 2f297f0."
+    },
+    {
+      "evidence_id": "EV-035",
+      "commit_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "path": ".github/workflows/kontur-game-companion-pause-resume.yml",
+      "relevant_artifact": "pause-resume CI workflow",
+      "sha256": "288f79f388e2c6ee352f94f52a3d17849fa5b75ccc0e8a7f28c0b0c11898cace",
+      "issue_pr_reference": "#457 https://github.com/Matawaka/uu-aap/pull/457",
+      "validator_workflow_relation": "Executes pilots/kontur-game-companion/pause-resume/validate.py; path filter is local to this layer/workflow.",
+      "evidence_role": "game-companion-ci",
+      "notes": "Merge commit 2f297f0."
+    }
+  ]
+}
+

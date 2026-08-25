@@ -1,0 +1,1729 @@
+{
+  "audit_type": "KONTURConnectivityGraph",
+  "version": "0.1",
+  "expected_frontier": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "observed_main_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "generated_at": "2026-08-25T09:56:28.3384297Z",
+  "classification_definitions": {
+    "PROVEN": "Repository evidence directly establishes the relationship and validation supports it.",
+    "DOCUMENTED": "The relationship is explicitly stated, but machine validation is incomplete or absent.",
+    "IMPLIED": "The relationship appears intended from structure/naming/context but is not explicit enough to claim proof.",
+    "MISSING": "A relation required by the claimed architecture cannot be found.",
+    "CONFLICTING": "Two or more artifacts assert incompatible relations or boundaries.",
+    "OUT_OF_SCOPE": "The repository contains or names the artifact, but this audit lacks sufficient basis to classify the runtime/external relation."
+  },
+  "nodes": [
+    {
+      "id": "repo-main",
+      "path_or_architectural_identity": "git:2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "layer_class": "repository-frontier",
+      "status": "OBSERVED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/commit/2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee"
+      ]
+    },
+    {
+      "id": "uu-aap-core",
+      "path_or_architectural_identity": "protocols/core/v0.1/README.md",
+      "layer_class": "stable-core",
+      "status": "experimental stable-core candidate",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:9"
+      ]
+    },
+    {
+      "id": "core-fixture",
+      "path_or_architectural_identity": "protocols/core/v0.1/end-to-end.fixture.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "core-validator",
+      "path_or_architectural_identity": "protocols/core/v0.1/validate-core.js",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "protocols/core/v0.1/validate-core.js"
+      ]
+    },
+    {
+      "id": "core-workflow",
+      "path_or_architectural_identity": ".github/workflows/core-protocol-v0.1-validation.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/core-protocol-v0.1-validation.yml:19"
+      ]
+    },
+    {
+      "id": "interface-registry",
+      "path_or_architectural_identity": "protocols/interface-registry/v0.1/interface-registry.json",
+      "layer_class": "reusable-interface-registry",
+      "status": "13 entries; no Game Companion entry",
+      "evidence_refs": [
+        "protocols/interface-registry/v0.1/interface-registry.json"
+      ]
+    },
+    {
+      "id": "issue-445",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/issues/445",
+      "layer_class": "architectural-backlog-line",
+      "status": "OPEN at audit",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ]
+    },
+    {
+      "id": "live-kontur-runtime",
+      "path_or_architectural_identity": "external live KONTUR / gameplay runtime",
+      "layer_class": "external-runtime",
+      "status": "NOT OBSERVED",
+      "evidence_refs": []
+    },
+    {
+      "id": "core-state-evidence",
+      "path_or_architectural_identity": "UU-AAP Core primitive: state-evidence",
+      "layer_class": "stable-core-primitive",
+      "status": "materialized in Core fixture/validator",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:14",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "core-availability",
+      "path_or_architectural_identity": "UU-AAP Core primitive: availability",
+      "layer_class": "stable-core-primitive",
+      "status": "materialized in Core fixture/validator",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:14",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "core-intent",
+      "path_or_architectural_identity": "UU-AAP Core primitive: intent",
+      "layer_class": "stable-core-primitive",
+      "status": "materialized in Core fixture/validator",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:14",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "core-authority-responsibility",
+      "path_or_architectural_identity": "UU-AAP Core primitive: authority-responsibility",
+      "layer_class": "stable-core-primitive",
+      "status": "materialized in Core fixture/validator",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:14",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "core-coordination-ccrp",
+      "path_or_architectural_identity": "UU-AAP Core primitive: coordination-ccrp",
+      "layer_class": "stable-core-primitive",
+      "status": "materialized in Core fixture/validator",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:14",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "core-action-gate",
+      "path_or_architectural_identity": "UU-AAP Core primitive: action-gate",
+      "layer_class": "stable-core-primitive",
+      "status": "materialized in Core fixture/validator",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:14",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "core-outcome-successor",
+      "path_or_architectural_identity": "UU-AAP Core primitive: outcome-successor",
+      "layer_class": "stable-core-primitive",
+      "status": "materialized in Core fixture/validator",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:14",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ]
+    },
+    {
+      "id": "pr-446",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/pull/446",
+      "layer_class": "merged-pull-request",
+      "status": "MERGED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/446"
+      ]
+    },
+    {
+      "id": "observational-lane",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/observational-lane/README.md",
+      "layer_class": "optional-game-companion-pilot",
+      "status": "synthetic / non-executing / observational",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/README.md"
+      ]
+    },
+    {
+      "id": "observational-lane-fixture",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/observational-lane/observation-cases.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json"
+      ]
+    },
+    {
+      "id": "observational-lane-validator",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/observational-lane/validate.py",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/validate.py"
+      ]
+    },
+    {
+      "id": "observational-lane-workflow",
+      "path_or_architectural_identity": ".github/workflows/kontur-game-companion-observational-lane.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-observational-lane.yml"
+      ]
+    },
+    {
+      "id": "pr-452",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/pull/452",
+      "layer_class": "merged-pull-request",
+      "status": "MERGED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/452"
+      ]
+    },
+    {
+      "id": "assistance-gate",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/assistance-gate/README.md",
+      "layer_class": "optional-game-companion-pilot",
+      "status": "synthetic / non-executing / policy experiment",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/README.md"
+      ]
+    },
+    {
+      "id": "assistance-gate-fixture",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json"
+      ]
+    },
+    {
+      "id": "assistance-gate-validator",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/assistance-gate/validate.py",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/validate.py"
+      ]
+    },
+    {
+      "id": "assistance-gate-workflow",
+      "path_or_architectural_identity": ".github/workflows/kontur-game-companion-assistance-gate.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-assistance-gate.yml"
+      ]
+    },
+    {
+      "id": "pr-453",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/pull/453",
+      "layer_class": "merged-pull-request",
+      "status": "MERGED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/453"
+      ]
+    },
+    {
+      "id": "shared-discovery-memory",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+      "layer_class": "optional-game-companion-pilot",
+      "status": "synthetic / non-executing / bounded memory",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/README.md"
+      ]
+    },
+    {
+      "id": "shared-discovery-memory-fixture",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json"
+      ]
+    },
+    {
+      "id": "shared-discovery-memory-validator",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py"
+      ]
+    },
+    {
+      "id": "shared-discovery-memory-workflow",
+      "path_or_architectural_identity": ".github/workflows/kontur-game-companion-shared-discovery-memory.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml"
+      ]
+    },
+    {
+      "id": "pr-454",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/pull/454",
+      "layer_class": "merged-pull-request",
+      "status": "MERGED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/454"
+      ]
+    },
+    {
+      "id": "bounded-initiative",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/bounded-initiative/README.md",
+      "layer_class": "optional-game-companion-pilot",
+      "status": "synthetic / non-executing / conversational policy",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/README.md"
+      ]
+    },
+    {
+      "id": "bounded-initiative-fixture",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json"
+      ]
+    },
+    {
+      "id": "bounded-initiative-validator",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/bounded-initiative/validate.py",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/validate.py"
+      ]
+    },
+    {
+      "id": "bounded-initiative-workflow",
+      "path_or_architectural_identity": ".github/workflows/kontur-game-companion-bounded-initiative.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml"
+      ]
+    },
+    {
+      "id": "pr-455",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/pull/455",
+      "layer_class": "merged-pull-request",
+      "status": "MERGED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/455"
+      ]
+    },
+    {
+      "id": "focus-diversity",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/focus-diversity/README.md",
+      "layer_class": "optional-game-companion-pilot",
+      "status": "synthetic / non-executing / conversational policy",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/README.md"
+      ]
+    },
+    {
+      "id": "focus-diversity-fixture",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json"
+      ]
+    },
+    {
+      "id": "focus-diversity-validator",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/focus-diversity/validate.py",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/validate.py"
+      ]
+    },
+    {
+      "id": "focus-diversity-workflow",
+      "path_or_architectural_identity": ".github/workflows/kontur-game-companion-focus-diversity.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-focus-diversity.yml"
+      ]
+    },
+    {
+      "id": "pr-456",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/pull/456",
+      "layer_class": "merged-pull-request",
+      "status": "MERGED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/456"
+      ]
+    },
+    {
+      "id": "interaction-receipt",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/interaction-receipt/README.md",
+      "layer_class": "optional-game-companion-pilot",
+      "status": "synthetic / non-executing / cross-layer receipt",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/README.md"
+      ]
+    },
+    {
+      "id": "interaction-receipt-fixture",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json"
+      ]
+    },
+    {
+      "id": "interaction-receipt-validator",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/interaction-receipt/validate.py",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/validate.py"
+      ]
+    },
+    {
+      "id": "interaction-receipt-workflow",
+      "path_or_architectural_identity": ".github/workflows/kontur-game-companion-interaction-receipt.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml"
+      ]
+    },
+    {
+      "id": "pr-457",
+      "path_or_architectural_identity": "https://github.com/Matawaka/uu-aap/pull/457",
+      "layer_class": "merged-pull-request",
+      "status": "MERGED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/457"
+      ]
+    },
+    {
+      "id": "pause-resume",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/pause-resume/README.md",
+      "layer_class": "optional-game-companion-pilot",
+      "status": "synthetic / non-executing / session boundary",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/README.md"
+      ]
+    },
+    {
+      "id": "pause-resume-fixture",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+      "layer_class": "fixture",
+      "status": "materialized",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json"
+      ]
+    },
+    {
+      "id": "pause-resume-validator",
+      "path_or_architectural_identity": "pilots/kontur-game-companion/pause-resume/validate.py",
+      "layer_class": "deterministic-validator",
+      "status": "PASS at audit",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/validate.py"
+      ]
+    },
+    {
+      "id": "pause-resume-workflow",
+      "path_or_architectural_identity": ".github/workflows/kontur-game-companion-pause-resume.yml",
+      "layer_class": "ci-workflow",
+      "status": "materialized",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-pause-resume.yml"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "R001",
+      "source": "repo-main",
+      "target": "uu-aap-core",
+      "relation_type": "contains_at_frontier",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md",
+        "https://github.com/Matawaka/uu-aap/commit/2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee"
+      ],
+      "authority_effect": "none",
+      "notes": "Exact SHA archive contains the stable-core candidate."
+    },
+    {
+      "id": "R002",
+      "source": "uu-aap-core",
+      "target": "core-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:220",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture materializes the nine-receipt end-to-end chain."
+    },
+    {
+      "id": "R003",
+      "source": "core-fixture",
+      "target": "core-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/validate-core.js:8",
+        "protocols/core/v0.1/end-to-end.fixture.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads and validates the fixture."
+    },
+    {
+      "id": "R004",
+      "source": "core-validator",
+      "target": "core-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/core-protocol-v0.1-validation.yml:26"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow executes validate-core.js."
+    },
+    {
+      "id": "R005",
+      "source": "core-state-evidence",
+      "target": "core-availability",
+      "relation_type": "typed_receipt_direction",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:162",
+        "protocols/core/v0.1/end-to-end.fixture.json",
+        "protocols/core/v0.1/validate-core.js:239"
+      ],
+      "authority_effect": "bounded; no implicit reverse authority",
+      "notes": "Core fixture ordering and validator predecessor/type checks support this repository-level direction."
+    },
+    {
+      "id": "R006",
+      "source": "core-availability",
+      "target": "core-intent",
+      "relation_type": "typed_receipt_direction",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:162",
+        "protocols/core/v0.1/end-to-end.fixture.json",
+        "protocols/core/v0.1/validate-core.js:239"
+      ],
+      "authority_effect": "bounded; no implicit reverse authority",
+      "notes": "Core fixture ordering and validator predecessor/type checks support this repository-level direction."
+    },
+    {
+      "id": "R007",
+      "source": "core-intent",
+      "target": "core-authority-responsibility",
+      "relation_type": "typed_receipt_direction",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:162",
+        "protocols/core/v0.1/end-to-end.fixture.json",
+        "protocols/core/v0.1/validate-core.js:239"
+      ],
+      "authority_effect": "bounded; no implicit reverse authority",
+      "notes": "Core fixture ordering and validator predecessor/type checks support this repository-level direction."
+    },
+    {
+      "id": "R008",
+      "source": "core-authority-responsibility",
+      "target": "core-coordination-ccrp",
+      "relation_type": "typed_receipt_direction",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:162",
+        "protocols/core/v0.1/end-to-end.fixture.json",
+        "protocols/core/v0.1/validate-core.js:239"
+      ],
+      "authority_effect": "bounded; no implicit reverse authority",
+      "notes": "Core fixture ordering and validator predecessor/type checks support this repository-level direction."
+    },
+    {
+      "id": "R009",
+      "source": "core-coordination-ccrp",
+      "target": "core-action-gate",
+      "relation_type": "typed_receipt_direction",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:162",
+        "protocols/core/v0.1/end-to-end.fixture.json",
+        "protocols/core/v0.1/validate-core.js:239"
+      ],
+      "authority_effect": "bounded; no implicit reverse authority",
+      "notes": "Core fixture ordering and validator predecessor/type checks support this repository-level direction."
+    },
+    {
+      "id": "R010",
+      "source": "core-action-gate",
+      "target": "core-outcome-successor",
+      "relation_type": "typed_receipt_direction",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/core/v0.1/README.md:162",
+        "protocols/core/v0.1/end-to-end.fixture.json",
+        "protocols/core/v0.1/validate-core.js:239"
+      ],
+      "authority_effect": "bounded; no implicit reverse authority",
+      "notes": "Core fixture ordering and validator predecessor/type checks support this repository-level direction."
+    },
+    {
+      "id": "R011",
+      "source": "uu-aap-core",
+      "target": "interface-registry",
+      "relation_type": "registered_interface",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "protocols/interface-registry/v0.1/interface-registry.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Registry includes UU-AAP-Core."
+    },
+    {
+      "id": "R012",
+      "source": "observational-lane",
+      "target": "uu-aap-core",
+      "relation_type": "reverse_stable_core_authority",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/README.md:19",
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json:14",
+        "pilots/kontur-game-companion/observational-lane/validate.py:36",
+        "protocols/core/v0.1/README.md:218"
+      ],
+      "authority_effect": "prohibited",
+      "notes": "Core has no Game Companion import; pilot fixture rejects stable-core implication."
+    },
+    {
+      "id": "R013",
+      "source": "uu-aap-core",
+      "target": "observational-lane",
+      "relation_type": "optional_adapter_reuse",
+      "classification": "DOCUMENTED",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/README.md:9"
+      ],
+      "authority_effect": "none",
+      "notes": "Placement is explicit in prose, but no typed import, hash binding, or interface-registry edge materializes the forward dependency."
+    },
+    {
+      "id": "R014",
+      "source": "interface-registry",
+      "target": "observational-lane",
+      "relation_type": "game_companion_interface_registration",
+      "classification": "MISSING",
+      "evidence_refs": [
+        "protocols/interface-registry/v0.1/interface-registry.json"
+      ],
+      "authority_effect": "none",
+      "notes": "No Game Companion/KONTUR pilot entry exists; optional status means this is a connectivity gap, not automatic core promotion."
+    },
+    {
+      "id": "R015",
+      "source": "issue-445",
+      "target": "observational-lane",
+      "relation_type": "source_architectural_line",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json",
+        "pilots/kontur-game-companion/observational-lane/validate.py",
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture metadata and validator bind source issue #445; the issue was observed open."
+    },
+    {
+      "id": "R016",
+      "source": "pr-446",
+      "target": "observational-lane",
+      "relation_type": "materializes_pilot_layer",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/446",
+        "pilots/kontur-game-companion/observational-lane/README.md",
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Merged PR page and exact SHA archive establish the layer."
+    },
+    {
+      "id": "R017",
+      "source": "issue-445",
+      "target": "assistance-gate",
+      "relation_type": "source_architectural_line",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json",
+        "pilots/kontur-game-companion/assistance-gate/validate.py",
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture metadata and validator bind source issue #445; the issue was observed open."
+    },
+    {
+      "id": "R018",
+      "source": "pr-452",
+      "target": "assistance-gate",
+      "relation_type": "materializes_pilot_layer",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/452",
+        "pilots/kontur-game-companion/assistance-gate/README.md",
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Merged PR page and exact SHA archive establish the layer."
+    },
+    {
+      "id": "R019",
+      "source": "issue-445",
+      "target": "shared-discovery-memory",
+      "relation_type": "source_architectural_line",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture metadata and validator bind source issue #445; the issue was observed open."
+    },
+    {
+      "id": "R020",
+      "source": "pr-453",
+      "target": "shared-discovery-memory",
+      "relation_type": "materializes_pilot_layer",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/453",
+        "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Merged PR page and exact SHA archive establish the layer."
+    },
+    {
+      "id": "R021",
+      "source": "issue-445",
+      "target": "bounded-initiative",
+      "relation_type": "source_architectural_line",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+        "pilots/kontur-game-companion/bounded-initiative/validate.py",
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture metadata and validator bind source issue #445; the issue was observed open."
+    },
+    {
+      "id": "R022",
+      "source": "pr-454",
+      "target": "bounded-initiative",
+      "relation_type": "materializes_pilot_layer",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/454",
+        "pilots/kontur-game-companion/bounded-initiative/README.md",
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Merged PR page and exact SHA archive establish the layer."
+    },
+    {
+      "id": "R023",
+      "source": "issue-445",
+      "target": "focus-diversity",
+      "relation_type": "source_architectural_line",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py",
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture metadata and validator bind source issue #445; the issue was observed open."
+    },
+    {
+      "id": "R024",
+      "source": "pr-455",
+      "target": "focus-diversity",
+      "relation_type": "materializes_pilot_layer",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/455",
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Merged PR page and exact SHA archive establish the layer."
+    },
+    {
+      "id": "R025",
+      "source": "issue-445",
+      "target": "interaction-receipt",
+      "relation_type": "source_architectural_line",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py",
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture metadata and validator bind source issue #445; the issue was observed open."
+    },
+    {
+      "id": "R026",
+      "source": "pr-456",
+      "target": "interaction-receipt",
+      "relation_type": "materializes_pilot_layer",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/456",
+        "pilots/kontur-game-companion/interaction-receipt/README.md",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Merged PR page and exact SHA archive establish the layer."
+    },
+    {
+      "id": "R027",
+      "source": "issue-445",
+      "target": "pause-resume",
+      "relation_type": "source_architectural_line",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+        "pilots/kontur-game-companion/pause-resume/validate.py",
+        "https://github.com/Matawaka/uu-aap/issues/445"
+      ],
+      "authority_effect": "none",
+      "notes": "Fixture metadata and validator bind source issue #445; the issue was observed open."
+    },
+    {
+      "id": "R028",
+      "source": "pr-457",
+      "target": "pause-resume",
+      "relation_type": "materializes_pilot_layer",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/457",
+        "pilots/kontur-game-companion/pause-resume/README.md",
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Merged PR page and exact SHA archive establish the layer."
+    },
+    {
+      "id": "R029",
+      "source": "pr-446",
+      "target": "pr-452",
+      "relation_type": "repository_history_precedes",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/446",
+        "https://github.com/Matawaka/uu-aap/pull/452"
+      ],
+      "authority_effect": "none",
+      "notes": "PR #448 / commit 6465e6b is an observed intervening main commit; order is not inferred from PR numbering."
+    },
+    {
+      "id": "R030",
+      "source": "pr-452",
+      "target": "pr-453",
+      "relation_type": "repository_history_precedes",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/452",
+        "https://github.com/Matawaka/uu-aap/pull/453"
+      ],
+      "authority_effect": "none",
+      "notes": "PR #452 merge commit is the recorded origin frontier of #453."
+    },
+    {
+      "id": "R031",
+      "source": "pr-453",
+      "target": "pr-454",
+      "relation_type": "repository_history_precedes",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/453",
+        "https://github.com/Matawaka/uu-aap/pull/454"
+      ],
+      "authority_effect": "none",
+      "notes": "PR #453 merge commit is the recorded origin frontier of #454."
+    },
+    {
+      "id": "R032",
+      "source": "pr-454",
+      "target": "pr-455",
+      "relation_type": "repository_history_precedes",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/454",
+        "https://github.com/Matawaka/uu-aap/pull/455"
+      ],
+      "authority_effect": "none",
+      "notes": "PR #454 merge commit is the recorded origin frontier of #455."
+    },
+    {
+      "id": "R033",
+      "source": "pr-455",
+      "target": "pr-456",
+      "relation_type": "repository_history_precedes",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/455",
+        "https://github.com/Matawaka/uu-aap/pull/456"
+      ],
+      "authority_effect": "none",
+      "notes": "PR #455 merge commit is the recorded origin frontier of #456."
+    },
+    {
+      "id": "R034",
+      "source": "pr-456",
+      "target": "pr-457",
+      "relation_type": "repository_history_precedes",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/pull/456",
+        "https://github.com/Matawaka/uu-aap/pull/457"
+      ],
+      "authority_effect": "none",
+      "notes": "PR #456 merge commit is the recorded origin frontier of #457."
+    },
+    {
+      "id": "R035",
+      "source": "observational-lane",
+      "target": "observational-lane-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/README.md",
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "README case inventory matches the materialized canonical fixture."
+    },
+    {
+      "id": "R036",
+      "source": "observational-lane-fixture",
+      "target": "observational-lane-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/validate.py",
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads this exact fixture and rejects mutations."
+    },
+    {
+      "id": "R037",
+      "source": "observational-lane-validator",
+      "target": "observational-lane-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-observational-lane.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow path exists and invokes the intended validator."
+    },
+    {
+      "id": "R038",
+      "source": "assistance-gate",
+      "target": "assistance-gate-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/README.md",
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "README case inventory matches the materialized canonical fixture."
+    },
+    {
+      "id": "R039",
+      "source": "assistance-gate-fixture",
+      "target": "assistance-gate-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/validate.py",
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads this exact fixture and rejects mutations."
+    },
+    {
+      "id": "R040",
+      "source": "assistance-gate-validator",
+      "target": "assistance-gate-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-assistance-gate.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow path exists and invokes the intended validator."
+    },
+    {
+      "id": "R041",
+      "source": "shared-discovery-memory",
+      "target": "shared-discovery-memory-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "README case inventory matches the materialized canonical fixture."
+    },
+    {
+      "id": "R042",
+      "source": "shared-discovery-memory-fixture",
+      "target": "shared-discovery-memory-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads this exact fixture and rejects mutations."
+    },
+    {
+      "id": "R043",
+      "source": "shared-discovery-memory-validator",
+      "target": "shared-discovery-memory-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow path exists and invokes the intended validator."
+    },
+    {
+      "id": "R044",
+      "source": "bounded-initiative",
+      "target": "bounded-initiative-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/README.md",
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "README case inventory matches the materialized canonical fixture."
+    },
+    {
+      "id": "R045",
+      "source": "bounded-initiative-fixture",
+      "target": "bounded-initiative-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/validate.py",
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads this exact fixture and rejects mutations."
+    },
+    {
+      "id": "R046",
+      "source": "bounded-initiative-validator",
+      "target": "bounded-initiative-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow path exists and invokes the intended validator."
+    },
+    {
+      "id": "R047",
+      "source": "focus-diversity",
+      "target": "focus-diversity-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "README case inventory matches the materialized canonical fixture."
+    },
+    {
+      "id": "R048",
+      "source": "focus-diversity-fixture",
+      "target": "focus-diversity-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/validate.py",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads this exact fixture and rejects mutations."
+    },
+    {
+      "id": "R049",
+      "source": "focus-diversity-validator",
+      "target": "focus-diversity-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-focus-diversity.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow path exists and invokes the intended validator."
+    },
+    {
+      "id": "R050",
+      "source": "interaction-receipt",
+      "target": "interaction-receipt-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/README.md",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "README case inventory matches the materialized canonical fixture."
+    },
+    {
+      "id": "R051",
+      "source": "interaction-receipt-fixture",
+      "target": "interaction-receipt-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/validate.py",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads this exact fixture and rejects mutations."
+    },
+    {
+      "id": "R052",
+      "source": "interaction-receipt-validator",
+      "target": "interaction-receipt-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow path exists and invokes the intended validator."
+    },
+    {
+      "id": "R053",
+      "source": "pause-resume",
+      "target": "pause-resume-fixture",
+      "relation_type": "specification_to_fixture",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/README.md",
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "README case inventory matches the materialized canonical fixture."
+    },
+    {
+      "id": "R054",
+      "source": "pause-resume-fixture",
+      "target": "pause-resume-validator",
+      "relation_type": "fixture_consumed_by_validator",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/validate.py",
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Validator reads this exact fixture and rejects mutations."
+    },
+    {
+      "id": "R055",
+      "source": "pause-resume-validator",
+      "target": "pause-resume-workflow",
+      "relation_type": "validator_executed_by_ci",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-pause-resume.yml"
+      ],
+      "authority_effect": "none",
+      "notes": "Workflow path exists and invokes the intended validator."
+    },
+    {
+      "id": "R056",
+      "source": "observational-lane",
+      "target": "assistance-gate",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/validate.py:37"
+      ],
+      "authority_effect": "none",
+      "notes": "Repository metadata and validator enforce the predecessor PR reference."
+    },
+    {
+      "id": "R057",
+      "source": "assistance-gate",
+      "target": "shared-discovery-memory",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py:29"
+      ],
+      "authority_effect": "none",
+      "notes": "Repository metadata and validator enforce the predecessor PR reference."
+    },
+    {
+      "id": "R058",
+      "source": "shared-discovery-memory",
+      "target": "bounded-initiative",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/validate.py:38"
+      ],
+      "authority_effect": "none",
+      "notes": "Repository metadata and validator enforce the predecessor PR reference."
+    },
+    {
+      "id": "R059",
+      "source": "bounded-initiative",
+      "target": "focus-diversity",
+      "relation_type": "declared_predecessor",
+      "classification": "DOCUMENTED",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/README.md:5"
+      ],
+      "authority_effect": "none",
+      "notes": "README and PR page state the relation, but the focus fixture/validator omit predecessor metadata."
+    },
+    {
+      "id": "R060",
+      "source": "focus-diversity",
+      "target": "interaction-receipt",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/validate.py:105"
+      ],
+      "authority_effect": "none",
+      "notes": "Repository metadata and validator enforce the predecessor PR reference."
+    },
+    {
+      "id": "R061",
+      "source": "interaction-receipt",
+      "target": "pause-resume",
+      "relation_type": "declared_predecessor",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/validate.py:57"
+      ],
+      "authority_effect": "none",
+      "notes": "Repository metadata and validator enforce the predecessor PR reference."
+    },
+    {
+      "id": "R062",
+      "source": "observational-lane",
+      "target": "assistance-gate",
+      "relation_type": "predecessor_artifact_hash_or_typed_receipt_binding",
+      "classification": "MISSING",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json",
+        "pilots/kontur-game-companion/assistance-gate/validate.py"
+      ],
+      "authority_effect": "none",
+      "notes": "The successor records PR numbers/origin metadata but consumes no predecessor artifact hash, receipt, fixture digest, or validator result."
+    },
+    {
+      "id": "R063",
+      "source": "observational-lane-workflow",
+      "target": "assistance-gate-workflow",
+      "relation_type": "downstream_ci_trigger_on_predecessor_change",
+      "classification": "MISSING",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-assistance-gate.yml:4"
+      ],
+      "authority_effect": "none",
+      "notes": "Successor workflow path filters cover only its own directory/workflow, so predecessor-only changes do not execute this downstream validator."
+    },
+    {
+      "id": "R064",
+      "source": "assistance-gate",
+      "target": "shared-discovery-memory",
+      "relation_type": "predecessor_artifact_hash_or_typed_receipt_binding",
+      "classification": "MISSING",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/shared-memory-cases.json",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py"
+      ],
+      "authority_effect": "none",
+      "notes": "The successor records PR numbers/origin metadata but consumes no predecessor artifact hash, receipt, fixture digest, or validator result."
+    },
+    {
+      "id": "R065",
+      "source": "assistance-gate-workflow",
+      "target": "shared-discovery-memory-workflow",
+      "relation_type": "downstream_ci_trigger_on_predecessor_change",
+      "classification": "MISSING",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml:4"
+      ],
+      "authority_effect": "none",
+      "notes": "Successor workflow path filters cover only its own directory/workflow, so predecessor-only changes do not execute this downstream validator."
+    },
+    {
+      "id": "R066",
+      "source": "shared-discovery-memory",
+      "target": "bounded-initiative",
+      "relation_type": "predecessor_artifact_hash_or_typed_receipt_binding",
+      "classification": "MISSING",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+        "pilots/kontur-game-companion/bounded-initiative/validate.py"
+      ],
+      "authority_effect": "none",
+      "notes": "The successor records PR numbers/origin metadata but consumes no predecessor artifact hash, receipt, fixture digest, or validator result."
+    },
+    {
+      "id": "R067",
+      "source": "shared-discovery-memory-workflow",
+      "target": "bounded-initiative-workflow",
+      "relation_type": "downstream_ci_trigger_on_predecessor_change",
+      "classification": "MISSING",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml:4"
+      ],
+      "authority_effect": "none",
+      "notes": "Successor workflow path filters cover only its own directory/workflow, so predecessor-only changes do not execute this downstream validator."
+    },
+    {
+      "id": "R068",
+      "source": "bounded-initiative",
+      "target": "focus-diversity",
+      "relation_type": "predecessor_artifact_hash_or_typed_receipt_binding",
+      "classification": "MISSING",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py"
+      ],
+      "authority_effect": "none",
+      "notes": "The successor records PR numbers/origin metadata but consumes no predecessor artifact hash, receipt, fixture digest, or validator result."
+    },
+    {
+      "id": "R069",
+      "source": "bounded-initiative-workflow",
+      "target": "focus-diversity-workflow",
+      "relation_type": "downstream_ci_trigger_on_predecessor_change",
+      "classification": "MISSING",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-focus-diversity.yml:4"
+      ],
+      "authority_effect": "none",
+      "notes": "Successor workflow path filters cover only its own directory/workflow, so predecessor-only changes do not execute this downstream validator."
+    },
+    {
+      "id": "R070",
+      "source": "focus-diversity",
+      "target": "interaction-receipt",
+      "relation_type": "predecessor_artifact_hash_or_typed_receipt_binding",
+      "classification": "MISSING",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py"
+      ],
+      "authority_effect": "none",
+      "notes": "The successor records PR numbers/origin metadata but consumes no predecessor artifact hash, receipt, fixture digest, or validator result."
+    },
+    {
+      "id": "R071",
+      "source": "focus-diversity-workflow",
+      "target": "interaction-receipt-workflow",
+      "relation_type": "downstream_ci_trigger_on_predecessor_change",
+      "classification": "MISSING",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml:4"
+      ],
+      "authority_effect": "none",
+      "notes": "Successor workflow path filters cover only its own directory/workflow, so predecessor-only changes do not execute this downstream validator."
+    },
+    {
+      "id": "R072",
+      "source": "interaction-receipt",
+      "target": "pause-resume",
+      "relation_type": "predecessor_artifact_hash_or_typed_receipt_binding",
+      "classification": "MISSING",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+        "pilots/kontur-game-companion/pause-resume/validate.py"
+      ],
+      "authority_effect": "none",
+      "notes": "The successor records PR numbers/origin metadata but consumes no predecessor artifact hash, receipt, fixture digest, or validator result."
+    },
+    {
+      "id": "R073",
+      "source": "interaction-receipt-workflow",
+      "target": "pause-resume-workflow",
+      "relation_type": "downstream_ci_trigger_on_predecessor_change",
+      "classification": "MISSING",
+      "evidence_refs": [
+        ".github/workflows/kontur-game-companion-pause-resume.yml:4"
+      ],
+      "authority_effect": "none",
+      "notes": "Successor workflow path filters cover only its own directory/workflow, so predecessor-only changes do not execute this downstream validator."
+    },
+    {
+      "id": "R074",
+      "source": "issue-445",
+      "target": "observational-lane",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/observation-cases.json",
+        "pilots/kontur-game-companion/observational-lane/validate.py:38"
+      ],
+      "authority_effect": "none",
+      "notes": "Companion != Solver: Direct-solution and irreversible-guess cases are machine checked."
+    },
+    {
+      "id": "R075",
+      "source": "issue-445",
+      "target": "observational-lane",
+      "relation_type": "invariant_preservation",
+      "classification": "DOCUMENTED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/issues/445",
+        "pilots/kontur-game-companion/observational-lane/README.md:107"
+      ],
+      "authority_effect": "none",
+      "notes": "Advice != Command: External game control is rejected, but no machine field distinguishes advice from command semantics."
+    },
+    {
+      "id": "R076",
+      "source": "issue-445",
+      "target": "observational-lane",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/observational-lane/validate.py:65",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py:79"
+      ],
+      "authority_effect": "none",
+      "notes": "Hypothesis != Fact: Epistemic promotion and corrected-claim retention are rejected."
+    },
+    {
+      "id": "R077",
+      "source": "issue-445",
+      "target": "assistance-gate",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/validate.py:102",
+        "pilots/kontur-game-companion/assistance-gate/validate.py:134"
+      ],
+      "authority_effect": "none",
+      "notes": "Knowledge != Spoiler Right: Known answers and prior exposure remain bounded by request and spoiler budget."
+    },
+    {
+      "id": "R078",
+      "source": "issue-445",
+      "target": "focus-diversity",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py:84"
+      ],
+      "authority_effect": "none",
+      "notes": "Optimal Move != Interesting Move: Objective-best and forced-ranking fields are machine checked."
+    },
+    {
+      "id": "R079",
+      "source": "issue-445",
+      "target": "observational-lane",
+      "relation_type": "invariant_preservation",
+      "classification": "DOCUMENTED",
+      "evidence_refs": [
+        "https://github.com/Matawaka/uu-aap/issues/445",
+        "pilots/kontur-game-companion/observational-lane/README.md:64"
+      ],
+      "authority_effect": "none",
+      "notes": "Correction by Player != Model Defeat: Correction is documented as positive evidence and model revision is checked, but defeat/defensiveness has no machine representation."
+    },
+    {
+      "id": "R080",
+      "source": "issue-445",
+      "target": "assistance-gate",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/validate.py:46",
+        "pilots/kontur-game-companion/assistance-gate/assistance-gate-cases.json:15"
+      ],
+      "authority_effect": "none",
+      "notes": "Confidence != Authority: Depth remains intent/spoiler/stakes bounded and action_permit_created is false."
+    },
+    {
+      "id": "R081",
+      "source": "issue-445",
+      "target": "assistance-gate",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/validate.py:102"
+      ],
+      "authority_effect": "none",
+      "notes": "Request for Conversation != Request for Completion: Conversation and explicit help intents have separate ceilings."
+    },
+    {
+      "id": "R082",
+      "source": "issue-445",
+      "target": "assistance-gate",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/assistance-gate/validate.py:126"
+      ],
+      "authority_effect": "none",
+      "notes": "Permission to Be Wrong != Permission to Cause Avoidable Loss: Uncertain irreversible solution remains blocked."
+    },
+    {
+      "id": "R083",
+      "source": "issue-445",
+      "target": "shared-discovery-memory",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py:91",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py:101"
+      ],
+      "authority_effect": "none",
+      "notes": "Remembered Correction != Permanent Player Profile: Correction and expertise remain local; profile inference is rejected."
+    },
+    {
+      "id": "R084",
+      "source": "issue-445",
+      "target": "shared-discovery-memory",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py:52",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py:148"
+      ],
+      "authority_effect": "none",
+      "notes": "Memory Candidate != Durable Memory: Bounded retention and expiry behavior are checked."
+    },
+    {
+      "id": "R085",
+      "source": "issue-445",
+      "target": "bounded-initiative",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/validate.py:178"
+      ],
+      "authority_effect": "none",
+      "notes": "Memory Available != Initiative Authorized: Cross-scope/stale memory cannot authorize callback."
+    },
+    {
+      "id": "R086",
+      "source": "issue-445",
+      "target": "bounded-initiative",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/validate.py:161"
+      ],
+      "authority_effect": "none",
+      "notes": "Silence != Invitation: Silence-only initiative is blocked."
+    },
+    {
+      "id": "R087",
+      "source": "issue-445",
+      "target": "bounded-initiative",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/validate.py:192"
+      ],
+      "authority_effect": "none",
+      "notes": "Player Cue > System Agenda: Player focus suppresses unrelated system agenda."
+    },
+    {
+      "id": "R088",
+      "source": "issue-445",
+      "target": "bounded-initiative",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/bounded-initiative/validate.py:172"
+      ],
+      "authority_effect": "none",
+      "notes": "Repeated Ignoring -> Less Initiative: Ignored initiative exhausts the bounded budget."
+    },
+    {
+      "id": "R089",
+      "source": "issue-445",
+      "target": "focus-diversity",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/validate.py:108",
+        "pilots/kontur-game-companion/focus-diversity/validate.py:121"
+      ],
+      "authority_effect": "none",
+      "notes": "Interesting Detail != Attention Capture Right: Ignored focus and engagement objectives are blocked."
+    },
+    {
+      "id": "R090",
+      "source": "issue-445",
+      "target": "focus-diversity",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/validate.py:96"
+      ],
+      "authority_effect": "none",
+      "notes": "Predicted Interest != Player Intent: Prediction cannot override player selection."
+    },
+    {
+      "id": "R091",
+      "source": "issue-445",
+      "target": "focus-diversity",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/focus-diversity/validate.py:96"
+      ],
+      "authority_effect": "none",
+      "notes": "Player-Selected Focus > System-Predicted Interest: Player-choice override case is canonical."
+    },
+    {
+      "id": "R092",
+      "source": "issue-445",
+      "target": "interaction-receipt",
+      "relation_type": "invariant_preservation",
+      "classification": "CONFLICTING",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/interaction-receipt/README.md:9",
+        "pilots/kontur-game-companion/interaction-receipt/README.md:11",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json:56",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py:215"
+      ],
+      "authority_effect": "none",
+      "notes": "Receipt != Authority: README denies authority, while the same receipt fixture carries and the validator interprets response_authorized without a separate authority-decision/permit binding. No external game effect is authorized, but the semantic boundary is internally ambiguous."
+    },
+    {
+      "id": "R093",
+      "source": "issue-445",
+      "target": "pause-resume",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/validate.py:77",
+        "pilots/kontur-game-companion/pause-resume/validate.py:202"
+      ],
+      "authority_effect": "none",
+      "notes": "Recall != Intent Continuity: Carry-prior-intent mutations are rejected."
+    },
+    {
+      "id": "R094",
+      "source": "issue-445",
+      "target": "pause-resume",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+        "pilots/kontur-game-companion/pause-resume/validate.py:202"
+      ],
+      "authority_effect": "none",
+      "notes": "Previous Help Request != Current Help Request: Stale solution request is not carried."
+    },
+    {
+      "id": "R095",
+      "source": "issue-445",
+      "target": "pause-resume",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/validate.py:77",
+        "pilots/kontur-game-companion/pause-resume/validate.py:202"
+      ],
+      "authority_effect": "none",
+      "notes": "Session Resume != Topic Resume: Resume-thread requires a fresh compatible cue."
+    },
+    {
+      "id": "R096",
+      "source": "issue-445",
+      "target": "pause-resume",
+      "relation_type": "invariant_preservation",
+      "classification": "PROVEN",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/validate.py:202",
+        "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json"
+      ],
+      "authority_effect": "none",
+      "notes": "Remembered Spoiler Exposure != Deeper Spoiler Authority: Prior exposure cannot raise the spoiler level."
+    },
+    {
+      "id": "R097",
+      "source": "pause-resume",
+      "target": "live-kontur-runtime",
+      "relation_type": "runtime_behavior_or_effect",
+      "classification": "OUT_OF_SCOPE",
+      "evidence_refs": [
+        "pilots/kontur-game-companion/pause-resume/README.md:3",
+        "pilots/kontur-game-companion/interaction-receipt/README.md:122"
+      ],
+      "authority_effect": "not authorized",
+      "notes": "All layers are synthetic/non-executing; no live runtime or user observation was invoked, so repository artifacts do not prove runtime behavior."
+    }
+  ]
+}
+

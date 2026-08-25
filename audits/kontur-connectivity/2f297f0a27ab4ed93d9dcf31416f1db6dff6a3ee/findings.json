@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0",
+  "expected_frontier": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "observed_main_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "findings": [
+    {
+      "finding_id": "F-001",
+      "severity": "HIGH",
+      "category": "evidence-continuity",
+      "claim": "The six adjacent Game Companion layer transitions are described by PR/origin metadata but are not bound by a predecessor artifact hash, typed receipt, fixture digest, or consumed validator result.",
+      "classification": "MISSING",
+      "evidence": [
+        "pilots/kontur-game-companion/assistance-gate/README.md",
+        "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+        "pilots/kontur-game-companion/bounded-initiative/README.md",
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/interaction-receipt/README.md",
+        "pilots/kontur-game-companion/pause-resume/README.md",
+        "connectivity-graph.json edges R062, R064, R066, R068, R070, and R072"
+      ],
+      "affected_paths": [
+        "pilots/kontur-game-companion/assistance-gate/",
+        "pilots/kontur-game-companion/shared-discovery-memory/",
+        "pilots/kontur-game-companion/bounded-initiative/",
+        "pilots/kontur-game-companion/focus-diversity/",
+        "pilots/kontur-game-companion/interaction-receipt/",
+        "pilots/kontur-game-companion/pause-resume/"
+      ],
+      "affected_layers": [
+        "assistance-gate",
+        "shared-discovery-memory",
+        "bounded-initiative",
+        "focus-diversity",
+        "interaction-receipt",
+        "pause-resume"
+      ],
+      "expected_boundary": "A successor layer's claimed predecessor relation should be tied to concrete, reviewable repository evidence without treating PR ordering as semantic proof.",
+      "observed_state": "Origin PRs and predecessor prose exist, and commit history is linear, but no machine-consumed artifact binds each successor fixture or validator to the exact predecessor state it claims.",
+      "remediation_needed": true,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-002",
+      "severity": "HIGH",
+      "category": "validation-connectedness",
+      "claim": "Game Companion CI execution is non-transitive: each successor workflow is path-filtered to its own layer and workflow, so predecessor-only changes do not execute downstream validators.",
+      "classification": "MISSING",
+      "evidence": [
+        ".github/workflows/kontur-game-companion-assistance-gate.yml",
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml",
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml",
+        ".github/workflows/kontur-game-companion-focus-diversity.yml",
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml",
+        ".github/workflows/kontur-game-companion-pause-resume.yml",
+        "connectivity-graph.json edges R063, R065, R067, R069, R071, and R073"
+      ],
+      "affected_paths": [
+        ".github/workflows/kontur-game-companion-assistance-gate.yml",
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml",
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml",
+        ".github/workflows/kontur-game-companion-focus-diversity.yml",
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml",
+        ".github/workflows/kontur-game-companion-pause-resume.yml"
+      ],
+      "affected_layers": [
+        "assistance-gate",
+        "shared-discovery-memory",
+        "bounded-initiative",
+        "focus-diversity",
+        "interaction-receipt",
+        "pause-resume"
+      ],
+      "expected_boundary": "If a validator's claim depends on a predecessor layer, repository changes to that predecessor should have an effective path to re-run the dependent validation.",
+      "observed_state": "Each workflow invokes its intended validator for its own path, but its path filter excludes the predecessor layer on which the successor documentation relies.",
+      "remediation_needed": true,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-003",
+      "severity": "MEDIUM",
+      "category": "authority-boundary",
+      "claim": "The Interaction Receipt specification states 'Receipt != Authority' and that a receipt does not authorize the next response, while its fixture and validator use a response_authorized decision without a separately bound authority decision or permit.",
+      "classification": "CONFLICTING",
+      "evidence": [
+        "pilots/kontur-game-companion/interaction-receipt/README.md",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py",
+        "connectivity-graph.json edge R092"
+      ],
+      "affected_paths": [
+        "pilots/kontur-game-companion/interaction-receipt/README.md",
+        "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py"
+      ],
+      "affected_layers": [
+        "interaction-receipt",
+        "authority/action-gate boundary"
+      ],
+      "expected_boundary": "A receipt may preserve evidence but must not itself become an action or successor permit.",
+      "observed_state": "Explicit non-effect fields still deny action and successor permits, but the response_authorized field makes the receipt-to-authority separation semantically ambiguous within this layer.",
+      "remediation_needed": true,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-004",
+      "severity": "MEDIUM",
+      "category": "provenance",
+      "claim": "Focus Diversity documentation names predecessors #446, #452, #453, and #454, but its fixture and validator do not carry or verify predecessor metadata.",
+      "classification": "DOCUMENTED",
+      "evidence": [
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py",
+        "https://github.com/Matawaka/uu-aap/pull/455",
+        "connectivity-graph.json edge R059"
+      ],
+      "affected_paths": [
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py"
+      ],
+      "affected_layers": [
+        "focus-diversity",
+        "bounded-initiative",
+        "shared-discovery-memory",
+        "assistance-gate",
+        "observational-lane"
+      ],
+      "expected_boundary": "Predecessor claims should be visible in materialized evidence and checked at the validation boundary when they are used to establish continuity.",
+      "observed_state": "The relation is explicit in prose and PR history, but the machine-readable fixture and deterministic validator do not establish it.",
+      "remediation_needed": true,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-005",
+      "severity": "MEDIUM",
+      "category": "non-effect-validation",
+      "claim": "Several Game Companion specifications state broader non-effects than their fixtures and validators machine-enforce; Focus Diversity is the clearest instance.",
+      "classification": "DOCUMENTED",
+      "evidence": [
+        "pilots/kontur-game-companion/focus-diversity/README.md",
+        "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+        "pilots/kontur-game-companion/focus-diversity/validate.py",
+        "pilots/kontur-game-companion/observational-lane/README.md",
+        "pilots/kontur-game-companion/observational-lane/validate.py"
+      ],
+      "affected_paths": [
+        "pilots/kontur-game-companion/focus-diversity/",
+        "pilots/kontur-game-companion/observational-lane/",
+        "pilots/kontur-game-companion/assistance-gate/",
+        "pilots/kontur-game-companion/shared-discovery-memory/",
+        "pilots/kontur-game-companion/bounded-initiative/"
+      ],
+      "affected_layers": [
+        "observational-lane",
+        "assistance-gate",
+        "shared-discovery-memory",
+        "bounded-initiative",
+        "focus-diversity"
+      ],
+      "expected_boundary": "Material non-effect assertions used to constrain authority should be represented and deterministically checked, or be clearly identified as prose-only.",
+      "observed_state": "Validators reject meaningful subsets of external control and permit creation, but some documented denials—such as automatic stable-core promotion, background activity, total-history capture, and certain profiling boundaries—have no corresponding machine field or assertion in these layers.",
+      "remediation_needed": true,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-006",
+      "severity": "MEDIUM",
+      "category": "optional-adapter-boundary",
+      "claim": "Stable Core documents KONTUR as an optional non-imported adapter, but no typed interface-registry edge materializes the forward reuse relation.",
+      "classification": "DOCUMENTED",
+      "evidence": [
+        "protocols/core/v0.1/README.md",
+        "protocols/interface-registry/v0.1/interface-registry.json",
+        "protocols/interface-registry/v0.1/validate-interface-registry.js",
+        "connectivity-graph.json edges R013 and R014"
+      ],
+      "affected_paths": [
+        "protocols/core/v0.1/README.md",
+        "protocols/interface-registry/v0.1/interface-registry.json",
+        "pilots/kontur-game-companion/"
+      ],
+      "affected_layers": [
+        "stable-core",
+        "interface-registry",
+        "KONTUR optional adapter"
+      ],
+      "expected_boundary": "The permitted direction is stable primitive to optional KONTUR adapter, never pilot observation to automatic stable-core requirement.",
+      "observed_state": "The forward optionality relation is explicit in Core prose and reverse imports were not found, but the observed interface registry has no Game Companion/KONTUR registration tying the adapter to a stable interface.",
+      "remediation_needed": true,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-007",
+      "severity": "LOW",
+      "category": "invariant-coverage",
+      "claim": "The exact invariants 'Advice != Command' and 'Correction by Player != Model Defeat' remain prose-level even though related external-control and correction-provenance properties are checked.",
+      "classification": "DOCUMENTED",
+      "evidence": [
+        "https://github.com/Matawaka/uu-aap/issues/445",
+        "pilots/kontur-game-companion/observational-lane/README.md",
+        "pilots/kontur-game-companion/shared-discovery-memory/README.md",
+        "connectivity-graph.json edges R075 and R079"
+      ],
+      "affected_paths": [
+        "pilots/kontur-game-companion/observational-lane/",
+        "pilots/kontur-game-companion/shared-discovery-memory/"
+      ],
+      "affected_layers": [
+        "observational-lane",
+        "shared-discovery-memory",
+        "issue-445 contract"
+      ],
+      "expected_boundary": "A documented invariant is not PROVEN unless its important semantic distinction is represented and checked.",
+      "observed_state": "Neighboring constraints are deterministically checked, but no fixture field or assertion directly distinguishes advice from command or player correction from model defeat.",
+      "remediation_needed": true,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-008",
+      "severity": "NOTE",
+      "category": "frontier-provenance",
+      "claim": "The expected and observed frontiers are identical, and the Game Companion commits form a verified linear repository history with an unrelated #448 merge between #446 and #452.",
+      "classification": "PROVEN",
+      "evidence": [
+        "https://github.com/Matawaka/uu-aap/commit/2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+        "https://github.com/Matawaka/uu-aap/pull/446",
+        "https://github.com/Matawaka/uu-aap/pull/452",
+        "https://github.com/Matawaka/uu-aap/pull/453",
+        "https://github.com/Matawaka/uu-aap/pull/454",
+        "https://github.com/Matawaka/uu-aap/pull/455",
+        "https://github.com/Matawaka/uu-aap/pull/456",
+        "https://github.com/Matawaka/uu-aap/pull/457"
+      ],
+      "affected_paths": [],
+      "affected_layers": [
+        "repository frontier",
+        "Game Companion history"
+      ],
+      "expected_boundary": "PR number order must not be used as semantic proof, and expected provenance must not be rewritten.",
+      "observed_state": "Direct GitHub commit/PR inspection established exact SHA equality and parent continuity; semantic relations were classified separately from that history.",
+      "remediation_needed": false,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-009",
+      "severity": "NOTE",
+      "category": "deterministic-validation",
+      "claim": "Core and all seven Game Companion validators pass on the commit-pinned source, proving synthetic fixture conformance but not runtime connectedness.",
+      "classification": "PROVEN",
+      "evidence": [
+        "protocols/core/v0.1/validate-core.js",
+        "pilots/kontur-game-companion/observational-lane/validate.py",
+        "pilots/kontur-game-companion/assistance-gate/validate.py",
+        "pilots/kontur-game-companion/shared-discovery-memory/validate.py",
+        "pilots/kontur-game-companion/bounded-initiative/validate.py",
+        "pilots/kontur-game-companion/focus-diversity/validate.py",
+        "pilots/kontur-game-companion/interaction-receipt/validate.py",
+        "pilots/kontur-game-companion/pause-resume/validate.py"
+      ],
+      "affected_paths": [
+        "protocols/core/v0.1/",
+        "pilots/kontur-game-companion/"
+      ],
+      "affected_layers": [
+        "stable-core",
+        "all materialized Game Companion layers"
+      ],
+      "expected_boundary": "Passing deterministic validation must not be represented as proof of live behavior, runtime effects, or semantic relations not asserted by the validator.",
+      "observed_state": "The validators pass locally against their bundled fixtures; this audit makes no live KONTUR, gameplay, user-observation, or runtime claim.",
+      "remediation_needed": false,
+      "remediation_authorized": false
+    },
+    {
+      "finding_id": "F-010",
+      "severity": "NOTE",
+      "category": "orphan-and-reverse-dependency",
+      "claim": "No orphaned README/fixture/validator/workflow component was found in the seven-layer Game Companion line, and no stable-core import of the optional pilot was found.",
+      "classification": "PROVEN",
+      "evidence": [
+        ".github/workflows/kontur-game-companion-observational-lane.yml",
+        ".github/workflows/kontur-game-companion-assistance-gate.yml",
+        ".github/workflows/kontur-game-companion-shared-discovery-memory.yml",
+        ".github/workflows/kontur-game-companion-bounded-initiative.yml",
+        ".github/workflows/kontur-game-companion-focus-diversity.yml",
+        ".github/workflows/kontur-game-companion-interaction-receipt.yml",
+        ".github/workflows/kontur-game-companion-pause-resume.yml",
+        "protocols/core/v0.1/README.md"
+      ],
+      "affected_paths": [
+        ".github/workflows/",
+        "pilots/kontur-game-companion/",
+        "protocols/core/v0.1/"
+      ],
+      "affected_layers": [
+        "stable-core",
+        "all materialized Game Companion layers"
+      ],
+      "expected_boundary": "Optional pilot artifacts must not become mandatory stable-core dependencies, and validators/fixtures must have an effective direct execution path.",
+      "observed_state": "Each layer has an internally connected README-fixture-validator-workflow chain, and repository search found no reverse stable-core dependency; transitive execution remains separately missing under F-002.",
+      "remediation_needed": false,
+      "remediation_authorized": false
+    }
+  ]
+}
+
+
