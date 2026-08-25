@@ -1,0 +1,147 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "kontur-game-companion-cross-cutting-safety-boundary",
+  "origin_frontier": "af14ba8154665db069055d9cc8b6f27d7aa51063",
+  "audit_findings": ["F-005", "F-007"],
+  "mode": "SYNTHETIC_CROSS_CUTTING_CONSTRAINT",
+  "causal_layer": false,
+  "authority_effect": "NONE",
+  "applies_to_layers": [
+    "observational-lane",
+    "assistance-gate",
+    "shared-discovery-memory",
+    "bounded-initiative",
+    "focus-diversity",
+    "interaction-receipt",
+    "pause-resume"
+  ],
+  "source_evidence": {
+    "advice_not_command": [
+      "pilots/kontur-game-companion/observational-lane/README.md",
+      "pilots/kontur-game-companion/assistance-gate/README.md"
+    ],
+    "correction_not_model_defeat": [
+      "pilots/kontur-game-companion/observational-lane/README.md",
+      "pilots/kontur-game-companion/shared-discovery-memory/README.md"
+    ]
+  },
+  "non_effects": {
+    "live_response_generation": false,
+    "proactive_messaging": false,
+    "background_activity": false,
+    "autonomous_gameplay": false,
+    "game_account_control": false,
+    "external_effect": false,
+    "action_permit": false,
+    "successor_permit": false,
+    "response_authority_created": false,
+    "behavioral_profile": false,
+    "psychological_inference": false,
+    "mood_inference": false,
+    "attention_tracking": false,
+    "engagement_maximization": false,
+    "retention_optimization": false,
+    "cross_game_preference_profile": false,
+    "total_history_capture": false,
+    "stable_core_promotion": false
+  },
+  "invariants": [
+    "Advice != Command",
+    "Correction by Player != Model Defeat"
+  ],
+  "cases": [
+    {
+      "id": "optional-advice-remains-ignorable",
+      "kind": "ADVICE",
+      "advice_present": true,
+      "command_semantics": false,
+      "compliance_required": false,
+      "player_can_ignore": true,
+      "external_control": false,
+      "action_permit_created": false,
+      "boundary_satisfied": true
+    },
+    {
+      "id": "mandatory-command-framing-blocked",
+      "kind": "ADVICE",
+      "advice_present": true,
+      "command_semantics": true,
+      "compliance_required": true,
+      "player_can_ignore": false,
+      "external_control": false,
+      "action_permit_created": false,
+      "boundary_satisfied": false
+    },
+    {
+      "id": "advice-cannot-create-action-permit",
+      "kind": "ADVICE",
+      "advice_present": true,
+      "command_semantics": false,
+      "compliance_required": false,
+      "player_can_ignore": true,
+      "external_control": false,
+      "action_permit_created": true,
+      "boundary_satisfied": false
+    },
+    {
+      "id": "player-correction-revises-local-model",
+      "kind": "CORRECTION",
+      "player_correction_received": true,
+      "local_model_revised": true,
+      "correction_contested": false,
+      "model_defeat_declared": false,
+      "global_truth_promoted": false,
+      "player_authority_generalized": false,
+      "historical_hypothesis_erased": false,
+      "boundary_satisfied": true
+    },
+    {
+      "id": "player-correction-may-remain-contested",
+      "kind": "CORRECTION",
+      "player_correction_received": true,
+      "local_model_revised": false,
+      "correction_contested": true,
+      "model_defeat_declared": false,
+      "global_truth_promoted": false,
+      "player_authority_generalized": false,
+      "historical_hypothesis_erased": false,
+      "boundary_satisfied": true
+    },
+    {
+      "id": "model-defeat-framing-blocked",
+      "kind": "CORRECTION",
+      "player_correction_received": true,
+      "local_model_revised": true,
+      "correction_contested": false,
+      "model_defeat_declared": true,
+      "global_truth_promoted": false,
+      "player_authority_generalized": false,
+      "historical_hypothesis_erased": false,
+      "boundary_satisfied": false
+    },
+    {
+      "id": "correction-global-authority-transfer-blocked",
+      "kind": "CORRECTION",
+      "player_correction_received": true,
+      "local_model_revised": true,
+      "correction_contested": false,
+      "model_defeat_declared": false,
+      "global_truth_promoted": true,
+      "player_authority_generalized": true,
+      "historical_hypothesis_erased": false,
+      "boundary_satisfied": false
+    },
+    {
+      "id": "correction-provenance-erasure-blocked",
+      "kind": "CORRECTION",
+      "player_correction_received": true,
+      "local_model_revised": true,
+      "correction_contested": false,
+      "model_defeat_declared": false,
+      "global_truth_promoted": false,
+      "player_authority_generalized": false,
+      "historical_hypothesis_erased": true,
+      "boundary_satisfied": false
+    }
+  ]
+}
