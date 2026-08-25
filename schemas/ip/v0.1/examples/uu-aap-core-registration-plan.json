@@ -1,7 +1,7 @@
 {
   "record_version": "0.1",
   "record_id": "urn:uu-aap:ip:registration:uu-aap-core:wave-1",
-  "state": "RIGHTS_REVIEW",
+  "state": "RIGHTS_CLEARED",
   "object": {
     "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
     "title": "UU-AAP Core v0.1 Receipt Chain Validator",
@@ -14,7 +14,7 @@
   },
   "evidence_anchor": {
     "repository": "https://github.com/Matawaka/uu-aap",
-    "commit_sha": "68588d0db347f168f6b3a6a13dbd5b479a49e6eb",
+    "commit_sha": "42fcbb46fbd2f2cd6efac44e17c825c4a4a73590",
     "tag": null,
     "paths": [
       "protocols/core/v0.1/validate-core.js",
@@ -27,30 +27,25 @@
     "first_public_disclosure": "2026-08-24T19:01:17+05:00"
   },
   "rights_review": {
-    "status": "IN_REVIEW",
+    "status": "CLEARED",
     "authors": [
       {
-        "name": "TO_BE_VERIFIED_FROM_CREATIVE_CONTRIBUTION_PROVENANCE",
-        "basis": "UNKNOWN",
-        "contribution_scope": "Selected Wave 1 surface only: validate-core.js and any copyright-relevant expression in the bound schema/fixture. Do not infer natural-person authorship merely from repository control, PR submission, merge authority or AI-assisted generation.",
-        "evidence_ref": "PR #320, merge commit fd3a3fa7e84c11a80d2af5ff389fe10979720ef9, Git history, retained creation evidence and author declaration"
+        "name": "private-party:wave1-declarant-01",
+        "basis": "AUTHOR_OWNED",
+        "contribution_scope": "Selected Wave 1 Core validator surface. Human contribution is classified as AI-assisted human creation: architecture choices, personal source development, material restructuring, algorithmic choices, validation checks and audit-driven integration. This does not claim every AI-generated token as independently human-authored.",
+        "evidence_ref": "Private declaration sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b; issue #303; PR #320; origin merge fd3a3fa7e84c11a80d2af5ff389fe10979720ef9"
       }
     ],
     "right_holders": [
       {
-        "name": "TO_BE_VERIFIED",
-        "basis": "UNKNOWN",
-        "contribution_scope": "Exclusive-right basis must be established for the selected Wave 1 surface before filing.",
-        "evidence_ref": "Wave 1 Core rights audit plus private employment/commissioning/assignment evidence as applicable"
+        "name": "private-party:wave1-declarant-01",
+        "basis": "AUTHOR_OWNED",
+        "contribution_scope": "Selected Wave 1 Core validator surface only. Declarant reports no employment-duty allocation, customer/commission allocation, exclusive-right assignment, coauthor claim or incorporated third-party protected expression affecting this scope.",
+        "evidence_ref": "Private declaration sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b"
       }
     ],
-    "third_party_status": "UNKNOWN",
+    "third_party_status": "CLEARED",
     "unresolved_items": [
-      "Identify the natural-person creative author(s) and contribution scopes for the selected Wave 1 surface.",
-      "Classify AI assistance/generated material and human creative selection/editing/integration evidence.",
-      "Determine the exclusive-right basis, including employment, commissioning and assignment boundaries.",
-      "Confirm whether any coauthor/contributor owns copyright-relevant expression in the selected deposit surface.",
-      "Complete third-party/material-origin clearance for validate-core.js, the receipt schema and the conformance fixture.",
       "Resolve the separate patent/public-disclosure screen for this already-public Core surface.",
       "Freeze the rights-cleared deposit package and compute its SHA-256 digest."
     ]
