@@ -4,38 +4,31 @@
   "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
   "public_frontier": {
     "repository": "https://github.com/Matawaka/uu-aap",
-    "commit_sha": "f72efcafb0376d99c7b9645ada33158bba619d7e"
+    "commit_sha": "42fcbb46fbd2f2cd6efac44e17c825c4a4a73590"
   },
   "private_declaration": {
     "template_version": "0.1",
-    "status": "AWAITING_PRIVATE_DECLARATION",
+    "status": "COMPLETED",
     "digest_algorithm": "SHA-256",
-    "digest": null,
-    "signed_or_attested_at": null,
-    "private_storage_reference": null
+    "digest": "sha256:51997e3a1d8d4e3ff9673e4564fd5a47bcda6e1556c8d314f6a69aab81788e8b",
+    "signed_or_attested_at": "2026-08-25T22:00:00+05:00",
+    "private_storage_reference": "held-outside-public-repository-by-declarant"
   },
   "factual_answers": {
-    "human_architecture_choices": "UNKNOWN",
-    "human_source_expression": "UNKNOWN",
-    "generative_ai_used": "UNKNOWN",
-    "ai_generated_expression_scope": "UNKNOWN",
-    "human_material_transformation": "UNKNOWN",
-    "other_human_creative_contributors": "UNKNOWN",
-    "within_employment_duties": "UNKNOWN",
-    "commission_or_customer_contract_affects_rights": "UNKNOWN",
-    "exclusive_right_assignment_affects_scope": "UNKNOWN",
-    "third_party_expression_incorporated": "UNKNOWN"
+    "human_architecture_choices": "YES",
+    "human_source_expression": "YES",
+    "generative_ai_used": "YES",
+    "ai_generated_expression_scope": "SUBSTANTIAL",
+    "human_material_transformation": "YES",
+    "other_human_creative_contributors": "NONE",
+    "within_employment_duties": "NO",
+    "commission_or_customer_contract_affects_rights": "NO",
+    "exclusive_right_assignment_affects_scope": "NO",
+    "third_party_expression_incorporated": "NO"
   },
-  "classification": "UNRESOLVED",
+  "classification": "AI_ASSISTED_HUMAN_CREATION",
   "gate_result": {
-    "effect": "KEEP_RIGHTS_REVIEW",
-    "unresolved_items": [
-      "Complete the private Author & Rights Declaration for the selected Core validator scope.",
-      "Classify whether generative AI was used and the scope of generated source expression.",
-      "Classify the natural-person creative contribution to architecture, source expression and material transformation.",
-      "Resolve other human creative contributors, employment duties, customer/commission contracts and assignments.",
-      "Resolve whether any third-party protected expression is incorporated into the selected filing scope.",
-      "Hash the completed private declaration and bind only its digest into the public checkpoint."
-    ]
+    "effect": "MAY_ADVANCE_TO_RIGHTS_CLEARED",
+    "unresolved_items": []
   }
 }
