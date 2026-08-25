@@ -107,3 +107,6 @@ jobs:
 
       - name: Validate local synthetic runtime transport binding materialization
         run: python pilots/kontur-game-companion/runtime-transport-binding-materialization/validate.py
+
+      - name: Validate network user-surface activation challenge
+        run: python pilots/kontur-game-companion/network-user-surface-activation-challenge/validate.py
