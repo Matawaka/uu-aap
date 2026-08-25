@@ -101,3 +101,6 @@ jobs:
 
       - name: Validate runtime transport binding review receipt
         run: python pilots/kontur-game-companion/runtime-transport-binding-review/validate.py
+
+      - name: Validate separate runtime transport binding grant boundary
+        run: python pilots/kontur-game-companion/runtime-transport-binding-grant/validate.py
