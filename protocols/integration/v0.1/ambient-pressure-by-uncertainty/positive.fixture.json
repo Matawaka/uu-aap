@@ -1,0 +1,43 @@
+{
+  "$schema": "./ambient-pressure-by-uncertainty.schema.json",
+  "artifact_type": "AmbientPressureByUncertaintyReceipt",
+  "artifact_version": "0.1",
+  "receipt_id": "urn:uu-aap:ambient-pressure:test:001",
+  "possibility_binding": {
+    "possibility_ref": "urn:uu-aap:possibility:interaction:test:001",
+    "expectation_created_at": "2026-08-25T03:00:00Z",
+    "basis_ref": "urn:uu-aap:evidence:availability:test:001"
+  },
+  "observer_context": {
+    "observer_ref": "urn:uu-aap:observer:test:001",
+    "context_ref": "urn:uu-aap:context:test:001"
+  },
+  "uncertainty_interval": {
+    "started_at": "2026-08-25T03:00:00Z",
+    "ended_at": "2026-08-25T03:10:00Z",
+    "bounded": true
+  },
+  "observable_effects": {
+    "attention_held": true,
+    "resources_reserved": true,
+    "alternative_decision_deferred": false,
+    "effect_evidence_refs": [
+      "urn:uu-aap:evidence:resource-reservation:test:001"
+    ]
+  },
+  "interpretation": "unknown",
+  "interpretation_evidence_ref": null,
+  "claims": {
+    "causal_state_observed": true,
+    "refusal_established": false,
+    "intentional_delay_established": false,
+    "negative_intent_established": false,
+    "coercive_purpose_established": false,
+    "responsibility_assigned": false,
+    "liability_established": false,
+    "authority_granted": false,
+    "sanction_authorized": false,
+    "action_authorized": false,
+    "external_effect_performed": false
+  }
+}
