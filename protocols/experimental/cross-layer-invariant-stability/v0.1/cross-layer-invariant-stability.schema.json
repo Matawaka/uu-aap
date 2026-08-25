@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/experimental/cross-layer-invariant-stability/v0.1/cross-layer-invariant-stability.schema.json",
+  "title": "Cross-Layer Invariant Stability Matrix v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema","artifact_type","artifact_version","checkpoint_id","baseline_main_sha","scope_class","layers","forbidden_implications","non_effects","claims"],
+  "properties": {
+    "$schema": {"const": "./cross-layer-invariant-stability.schema.json"},
+    "artifact_type": {"const": "CrossLayerInvariantStabilityMatrix"},
+    "artifact_version": {"const": "0.1"},
+    "checkpoint_id": {"type": "string", "minLength": 1},
+    "baseline_main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "scope_class": {"const": "representative_cross_layer"},
+    "layers": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["layer_id","validator_path","required"],
+        "properties": {
+          "layer_id": {"type": "string", "minLength": 1},
+          "validator_path": {"type": "string", "minLength": 1},
+          "required": {"const": true}
+        }
+      }
+    },
+    "forbidden_implications": {
+      "type": "array",
+      "minItems": 11,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["from","to","allowed"],
+        "properties": {
+          "from": {"type": "string", "minLength": 1},
+          "to": {"type": "string", "minLength": 1},
+          "allowed": {"const": false}
+        }
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["external_observation_performed","profiling_performed","actuator_invoked","kontur_mutated","authority_transferred","permissions_changed","protection_changed","release_or_tag_created","sanction_authorized","history_rewritten","canonical_origin_mutated"],
+      "properties": {
+        "external_observation_performed": {"const": false},
+        "profiling_performed": {"const": false},
+        "actuator_invoked": {"const": false},
+        "kontur_mutated": {"const": false},
+        "authority_transferred": {"const": false},
+        "permissions_changed": {"const": false},
+        "protection_changed": {"const": false},
+        "release_or_tag_created": {"const": false},
+        "sanction_authorized": {"const": false},
+        "history_rewritten": {"const": false},
+        "canonical_origin_mutated": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stability_check_passed","universal_correctness_proven","all_historical_states_verified","external_runtime_verified","legal_validity_proven","future_successors_safe_by_default"],
+      "properties": {
+        "stability_check_passed": {"const": true},
+        "universal_correctness_proven": {"const": false},
+        "all_historical_states_verified": {"const": false},
+        "external_runtime_verified": {"const": false},
+        "legal_validity_proven": {"const": false},
+        "future_successors_safe_by_default": {"const": false}
+      }
+    }
+  }
+}
