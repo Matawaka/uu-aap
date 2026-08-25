@@ -27,6 +27,9 @@ jobs:
       - name: Validate exact cross-layer dependency bindings
         run: python pilots/kontur-game-companion/dependency-contract/validate.py
 
+      - name: Validate cross-cutting safety boundary
+        run: python pilots/kontur-game-companion/safety-boundary/validate.py
+
       - name: Validate Observational Lane
         run: python pilots/kontur-game-companion/observational-lane/validate.py
 

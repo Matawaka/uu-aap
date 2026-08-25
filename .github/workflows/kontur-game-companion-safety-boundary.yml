@@ -1,0 +1,26 @@
+name: KONTUR Game Companion safety boundary validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/safety-boundary/**'
+      - '.github/workflows/kontur-game-companion-safety-boundary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-safety-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate cross-cutting safety boundary
+        run: python pilots/kontur-game-companion/safety-boundary/validate.py
