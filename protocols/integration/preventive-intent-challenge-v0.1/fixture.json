@@ -1,0 +1,46 @@
+{
+  "$schema": "./pic.schema.json",
+  "artifact_type": "PreventiveIntentChallenge",
+  "artifact_version": "0.1",
+  "baseline": {
+    "intent_ref": "urn:uu-aap:intent-baseline:example:001",
+    "observed_at": "2026-08-25T03:00:00Z"
+  },
+  "drift_window": {
+    "starts_at": "2026-08-25T03:00:00Z",
+    "ends_at": "2026-08-25T03:30:00Z",
+    "bounded": true,
+    "indicators": ["scope-language-broadened", "fresh-confirmation-age-increased"]
+  },
+  "challenge": {
+    "challenge_id": "urn:uu-aap:pic:challenge:example:001",
+    "text_origin": "mixed",
+    "provenance_ref": "urn:uu-aap:provenance:challenge-text:example:001",
+    "leading": false,
+    "presented": true,
+    "intent_evidence_weight": 0
+  },
+  "response": {
+    "state": "responded",
+    "fresh_confirmation": true,
+    "silence_is_refusal": false,
+    "delay_is_intentional_delay": false,
+    "prior_approval_carried_forward": false
+  },
+  "assessment": {
+    "scope": "architecture-intent-drift-only",
+    "disposition": "advisory_review",
+    "automatic_block": false,
+    "sanction_recommended": false,
+    "authority_expanded": false
+  },
+  "claims": {
+    "malicious_intent_proven": false,
+    "intent_inferred_from_exposure": false,
+    "responsibility_assigned": false,
+    "liability_established": false,
+    "action_executed": false,
+    "permissions_revoked": false,
+    "kontur_mutated": false
+  }
+}
