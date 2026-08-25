@@ -56,3 +56,6 @@ jobs:
 
       - name: Validate Graceful Error Dialogue / Uncertainty Repair
         run: python pilots/kontur-game-companion/uncertainty-repair/validate.py
+
+      - name: Validate Discovery Prompt Gate / Self-Discovery Surface
+        run: python pilots/kontur-game-companion/self-discovery-gate/validate.py

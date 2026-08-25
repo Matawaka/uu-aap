@@ -1,0 +1,25 @@
+name: KONTUR Game Companion self-discovery gate validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/self-discovery-gate/**'
+      - '.github/workflows/kontur-game-companion-self-discovery-gate.yml'
+      - '.github/workflows/kontur-game-companion-chain-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate self-discovery gate
+        run: python pilots/kontur-game-companion/self-discovery-gate/validate.py
