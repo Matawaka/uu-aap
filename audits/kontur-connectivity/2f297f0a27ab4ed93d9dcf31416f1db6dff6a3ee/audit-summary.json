@@ -3,9 +3,9 @@
   "expected_frontier": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
   "observed_main_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
   "frontier_diverged": false,
-  "audit_branch": "NONE",
+  "audit_branch": "audit/kontur-connectivity-2f297f0",
   "intended_audit_branch": "audit/kontur-connectivity-2f297f0",
-  "audit_pr": "NONE",
+  "audit_pr": "https://github.com/Matawaka/uu-aap/pull/458",
   "audit_path": "audits/kontur-connectivity/2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee/",
   "timestamp": "2026-08-25T09:56:28.3384297Z",
   "source_archive_sha256": "faf109a86c7fe61dc06a0956d6129eb32bb3c2af4b603137d3784f431e1b8b6d",
@@ -23,8 +23,10 @@
   "low_findings": 1,
   "note_findings": 3,
   "audit_complete": true,
-  "audit_status": "PREPARED_NOT_PUBLISHED",
-  "publication_blocker": "No authenticated GitHub mutation surface was available under existing permissions: shell Git HTTPS could not connect to github.com, GitHub CLI was unauthenticated, and the available in-app GitHub view was logged out. No additional permission was requested.",
+  "audit_status": "PUBLISHED",
+  "recovery_status": "RECOVERED_CONTINUATION",
+  "published_at": "2026-08-25T10:19:08Z",
+  "publication_result": "Published through an already-authorized GitHub connector after recovery; no additional permission was requested.",
   "architecture_modified": false,
   "external_effect_authorized": false,
   "action_permit_created": false,
@@ -32,7 +34,6 @@
   "stable_core_change_implied": false,
   "remediation_authorized": false
 }
-
 
 
 
