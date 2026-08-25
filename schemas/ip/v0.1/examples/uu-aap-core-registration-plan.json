@@ -1,7 +1,7 @@
 {
   "record_version": "0.1",
   "record_id": "urn:uu-aap:ip:registration:uu-aap-core:wave-1",
-  "state": "RIGHTS_CLEARED",
+  "state": "PATENT_SCREEN",
   "object": {
     "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
     "title": "UU-AAP Core v0.1 Receipt Chain Validator",
@@ -10,11 +10,11 @@
       "SOFTWARE",
       "COPYRIGHT_EXPRESSION"
     ],
-    "description": "Candidate Russian software-registration object: the standalone Node.js validator for machine-readable UU-AAP Core v0.1 receipt chains, with its receipt-envelope schema and conformance fixture as identifying/deposit-support material. Abstract protocol ideas, CCRP, KONTUR, PoAI and unrelated implementations are outside this Wave 1 software object."
+    "description": "Russian software-registration object: the standalone Node.js validator for machine-readable UU-AAP Core v0.1 receipt chains, with its receipt-envelope schema and conformance fixture as identifying/deposit-support material. Abstract protocol ideas, CCRP, KONTUR, PoAI and unrelated implementations are outside this Wave 1 software object. Potentially patentable technical mechanisms are handled independently in patent-track issue #492."
   },
   "evidence_anchor": {
     "repository": "https://github.com/Matawaka/uu-aap",
-    "commit_sha": "42fcbb46fbd2f2cd6efac44e17c825c4a4a73590",
+    "commit_sha": "8aec7684a54e2570c285720a22d30d99f958131a",
     "tag": null,
     "paths": [
       "protocols/core/v0.1/validate-core.js",
@@ -22,7 +22,7 @@
       "protocols/core/v0.1/end-to-end.fixture.json"
     ],
     "digest_algorithm": "SHA-256",
-    "package_digest": "TO_BE_COMPUTED_AFTER_RIGHTS_CLEARED_DEPOSIT_SCOPE_IS_FROZEN",
+    "package_digest": "sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8",
     "claimed_creation_date": null,
     "first_public_disclosure": "2026-08-24T19:01:17+05:00"
   },
@@ -45,10 +45,7 @@
       }
     ],
     "third_party_status": "CLEARED",
-    "unresolved_items": [
-      "Resolve the separate patent/public-disclosure screen for this already-public Core surface.",
-      "Freeze the rights-cleared deposit package and compute its SHA-256 digest."
-    ]
+    "unresolved_items": []
   },
   "public_disclosure": {
     "status": "PUBLIC",
@@ -56,16 +53,16 @@
     "evidence_ref": "PR #320; origin merge commit fd3a3fa7e84c11a80d2af5ff389fe10979720ef9"
   },
   "patentability": {
-    "status": "ALREADY_PUBLIC_DISCLOSURE_REVIEW_REQUIRED",
-    "reviewed_at": null,
-    "reviewer_or_authority": null,
-    "notes": "Wave 1 is a software-registration candidate. The selected Core surface is already public; any patent claim over a separate technical solution requires a separate novelty/public-disclosure review and is not implied by this software filing."
+    "status": "SEPARATE_PATENT_TRACK",
+    "reviewed_at": "2026-08-25T22:16:20+05:00",
+    "reviewer_or_authority": "UU-AAP Wave 1 evidence-bound screen; technical patent review tracked separately in issue #492",
+    "notes": "For Wave 1, the filing object is the concrete program expression and identifying materials only. The Core surface is already public. The software-registration path makes no patent claim and does not classify underlying UU-AAP technical mechanisms as non-patentable. Those mechanisms remain subject to separate novelty, technical-character, inventorship and disclosure review in issue #492, including the 2027 Russian programmable-means amendments."
   },
   "registration_intent": {
     "jurisdiction": "RU",
     "route": "ROSPATENT_PROGRAM",
     "decision": "PLANNED",
-    "rationale": "Create an official registry record for one coherent, rights-cleared executable UU-AAP Core validator while preserving the distinction between protected software expression and abstract architecture or independently implemented protocol ideas.",
+    "rationale": "Create an official registry record for one coherent, rights-cleared executable UU-AAP Core validator while preserving a separate patent track for potentially technical mechanisms and the distinction between protected software expression and abstract architecture.",
     "target_filing_date": null
   },
   "filing": null,
