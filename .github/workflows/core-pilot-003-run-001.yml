@@ -1,0 +1,22 @@
+name: Core Pilot 003 Run 001 validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/core-pilot-003/run-001/**'
+      - '.github/workflows/core-pilot-003-run-001.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Run 001 materialization
+        run: python pilots/core-pilot-003/run-001/validate.py

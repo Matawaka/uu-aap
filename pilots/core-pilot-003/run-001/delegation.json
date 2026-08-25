@@ -1,0 +1,44 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-003",
+  "run_id": "core-pilot-003-run-001",
+  "execution_frontier": "757953acdd9f936862e913812aa7d4c3c6c8528d",
+  "source_set": [
+    "README.ru.md",
+    "pilots/core-pilot-003/README.md",
+    "pilots/core-pilot-003/delegation-chain.json",
+    "pilots/core-pilot-003/validate.py"
+  ],
+  "human_root": {
+    "id": "run-001-human-root",
+    "allowed_effects": ["read_sources", "prepare_candidate", "validate_candidate"],
+    "forbidden_effects": ["repo_write", "issue_mutation", "pr_mutation", "push", "merge", "release_or_tag", "permission_change", "secret_change", "protection_change", "kontur_effect", "external_publish", "successor_permit_creation"],
+    "single_use": true,
+    "may_redelegate": true,
+    "remaining_depth": 2
+  },
+  "agent_a": {
+    "id": "run-001-agent-a",
+    "parent_id": "run-001-human-root",
+    "allowed_effects": ["read_sources", "prepare_candidate", "validate_candidate"],
+    "exercised_effects": ["read_sources", "prepare_candidate"],
+    "forbidden_effects": ["repo_write", "issue_mutation", "pr_mutation", "push", "merge", "release_or_tag", "permission_change", "secret_change", "protection_change", "kontur_effect", "external_publish", "successor_permit_creation"],
+    "single_use": true,
+    "may_redelegate": true,
+    "remaining_depth": 1,
+    "output_path": "staging/core-pilot-003-run-001/README.ru.candidate.md"
+  },
+  "agent_b": {
+    "id": "run-001-agent-b",
+    "parent_id": "run-001-agent-a",
+    "allowed_effects": ["read_sources", "validate_candidate"],
+    "exercised_effects": ["read_sources", "validate_candidate"],
+    "forbidden_effects": ["repo_write", "issue_mutation", "pr_mutation", "push", "merge", "release_or_tag", "permission_change", "secret_change", "protection_change", "kontur_effect", "external_publish", "successor_permit_creation", "prepare_candidate"],
+    "single_use": true,
+    "may_redelegate": false,
+    "remaining_depth": 0,
+    "output_path": "staging/core-pilot-003-run-001/validation-receipt.json"
+  },
+  "human_confirmation_required_before_external_action": true,
+  "successful_run_creates_successor_permit": false
+}
