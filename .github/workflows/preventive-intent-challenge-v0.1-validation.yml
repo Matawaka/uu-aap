@@ -1,0 +1,34 @@
+name: Preventive Intent Challenge v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/preventive-intent-challenge-v0.1/**"
+      - ".github/workflows/preventive-intent-challenge-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/integration/preventive-intent-challenge-v0.1/**"
+      - ".github/workflows/preventive-intent-challenge-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check validator syntax
+        run: node --check protocols/integration/preventive-intent-challenge-v0.1/validate-pic.js
+      - name: Validate JSON syntax
+        run: |
+          node -e "JSON.parse(require('fs').readFileSync('protocols/integration/preventive-intent-challenge-v0.1/pic.schema.json','utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('protocols/integration/preventive-intent-challenge-v0.1/fixture.json','utf8'))"
+      - name: Validate PIC semantics and fail-closed mutations
+        run: node protocols/integration/preventive-intent-challenge-v0.1/validate-pic.js
+      - name: Confirm read-only repository behavior
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
