@@ -80,3 +80,6 @@ jobs:
 
       - name: Validate synthetic response dispatch gate
         run: python pilots/kontur-game-companion/response-dispatch-gate/validate.py
+
+      - name: Validate shadow runtime null transport harness
+        run: python pilots/kontur-game-companion/shadow-runtime/validate.py
