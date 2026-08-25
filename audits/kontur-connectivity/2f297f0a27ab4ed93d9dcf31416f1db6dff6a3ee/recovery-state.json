@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "recovery_reason": "network_interruption",
+  "recovery_observed_at": "2026-08-25T10:18:00Z",
+  "expected_frontier": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "observed_main_sha": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+  "frontier_diverged": false,
+  "existing_audit_branch_found": false,
+  "existing_audit_pr_found": false,
+  "partial_artifacts_found": true,
+  "recovered_existing_work": true,
+  "duplicate_publication_created": false,
+  "concurrent_unmerged_state_included_in_audited_architecture": false,
+  "architecture_modified": false,
+  "recovery_created_new_authority": false,
+  "remediation_authorized": false,
+  "action_permit_created": false,
+  "successor_permit_created": false,
+  "evidence": [
+    {
+      "observation": "remote_main",
+      "result": "2f297f0a27ab4ed93d9dcf31416f1db6dff6a3ee",
+      "method": "GitHub connector fetch_commit for ref main"
+    },
+    {
+      "observation": "audit_branch_pattern",
+      "result": [],
+      "method": "GitHub connector search_branches query audit/kontur-connectivity-"
+    },
+    {
+      "observation": "audit_pr_pattern",
+      "result": [],
+      "method": "GitHub connector search_prs query head:audit/kontur-connectivity-"
+    },
+    {
+      "observation": "local_partial_audit",
+      "result": "validated",
+      "method": "validate-audit.py plus Core and seven Game Companion validators"
+    }
+  ]
+}
+
+
