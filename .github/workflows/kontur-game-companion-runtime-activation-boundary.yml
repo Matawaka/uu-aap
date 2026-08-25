@@ -1,0 +1,29 @@
+name: KONTUR Game Companion runtime activation boundary validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/runtime-activation-boundary/**'
+      - 'pilots/kontur-game-companion/shadow-runtime/**'
+      - 'pilots/kontur-game-companion/response-dispatch-gate/**'
+      - 'pilots/kontur-game-companion/candidate-materializer/**'
+      - '.github/workflows/kontur-game-companion-runtime-activation-boundary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-runtime-activation-boundary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate runtime activation readiness boundary
+        run: python pilots/kontur-game-companion/runtime-activation-boundary/validate.py
