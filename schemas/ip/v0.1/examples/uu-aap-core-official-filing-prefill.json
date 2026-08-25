@@ -36,12 +36,11 @@
   },
   "route_guidance": {
     "recommended_route": "EPGU",
-    "reason": "Current Rospatent guidance supports EPGU electronic filing; applicant data may be populated from ESIA and fee handling/notifications are integrated. Actual authentication/signature requirements must be confirmed in the live EPGU flow immediately before submission.",
+    "reason": "Applicant selected self-filing through EPGU. Public search of official sources found documented EPGU/SMEV and ESIA integration interfaces for connected information systems, but no supported public citizen API for arbitrary external submission of this Rospatent application. Actual authentication/signature requirements must be confirmed in the live EPGU flow immediately before submission.",
     "signature_status": "LIVE_ROUTE_CONFIRMATION_REQUIRED"
   },
   "unresolved_form_fields": [
-    "country_and_year_of_first_publication_if_the_form_treats_the_public GitHub release as publication for this field",
-    "author publication choice: own name, pseudonym, or non-publication option available in the live form",
+    "author publication choice: own name, pseudonym, or non-mention option available in the live form",
     "route-specific authentication/signature method shown by the live EPGU flow",
     "correspondence address/contact fields if not populated from ESIA",
     "fee state and payment evidence"
