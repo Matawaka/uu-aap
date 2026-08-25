@@ -1,0 +1,24 @@
+name: Core Pilot 001 post-run assessment validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/core-pilot-001/post-run-assessment.json'
+      - 'pilots/core-pilot-001/POST-RUN-ASSESSMENT.md'
+      - 'pilots/core-pilot-001/validate-post-run-assessment.py'
+      - '.github/workflows/core-pilot-001-post-run-assessment.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Core Pilot 001 post-run assessment
+        run: python pilots/core-pilot-001/validate-post-run-assessment.py

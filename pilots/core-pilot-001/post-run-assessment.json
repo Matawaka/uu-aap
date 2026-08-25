@@ -1,0 +1,41 @@
+{
+  "schema_version": "0.1",
+  "assessment_id": "core-pilot-001-post-run-001",
+  "canonical_main": "f1172065a444594cfee3ec51868cab92340c4819",
+  "run_001_execution_target": {
+    "commit": "e134e612d1913aa9c26ea88ebe6ab3b3ae6c6741",
+    "tree": "6bb35b96eab93251e61060c464d1bf4787fdc2cd"
+  },
+  "core_evidence": [
+    {"primitive":"state_evidence_anchor","status":"directly_exercised","rationale":"Exact commit/tree were frozen, re-observed, bound into the permit, capture manifest and recovery comparison."},
+    {"primitive":"possibility_availability","status":"directly_exercised","rationale":"Git/Python/repository/local destinations were checked before the bounded run and missing Python initially blocked execution."},
+    {"primitive":"intent","status":"partially_exercised","rationale":"A narrow human-authorized run intent was materialized, but conflicting or multi-party intent was not tested."},
+    {"primitive":"authority_responsibility","status":"partially_exercised","rationale":"A single-use bounded permit constrained effects; contested authority, delegation and external standing were not tested."},
+    {"primitive":"coordination_ccrp","status":"partially_exercised","rationale":"Human, protocol, GitHub evidence and local executor shared one frozen frontier, but no independent external participant or conflict resolution occurred."},
+    {"primitive":"action_gate","status":"directly_exercised","rationale":"Execution failed closed on environment prerequisites and would fail on frontier mismatch; permitted effects were explicitly bounded."},
+    {"primitive":"outcome_provenance_successor_state","status":"directly_exercised","rationale":"Capture, bundle verification, disposable recovery, fsck and exact recovered commit/tree were recorded as canonical receipts."}
+  ],
+  "unproven_boundaries": [
+    "external_participant_identity_or_pseudonymity",
+    "contested_or_plural_intent",
+    "disputed_authority_or_standing",
+    "selective_disclosure_or_private_evidence",
+    "appeal_or_contestable_resolution",
+    "conflicting_observations_or_reviews",
+    "external_notification_or_publication_effect"
+  ],
+  "pilot_002": {
+    "selected": "public-review-intake-and-contestable-resolution",
+    "reason": "Adds external participant input, plurality, contestability and scoped disclosure while keeping execution effects bounded and human-gated.",
+    "source_issues": [1,2,3,4,5,6,7],
+    "automatic_disposition": false,
+    "automatic_authority_inference": false,
+    "automatic_external_contact": false
+  },
+  "non_claims": [
+    "pilot_001_success_does_not_prove_universal_core_correctness",
+    "local_recovery_success_does_not_prove_external_multi_party_coordination",
+    "human_permit_does_not_prove_contested_authority_resolution",
+    "verified_recovery_does_not_prove_identity_or_disclosure_boundaries"
+  ]
+}
