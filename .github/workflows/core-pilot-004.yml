@@ -1,0 +1,22 @@
+name: Core Pilot 004 validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/core-pilot-004/**'
+      - '.github/workflows/core-pilot-004.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate single-use external effect permit
+        run: python pilots/core-pilot-004/validate.py

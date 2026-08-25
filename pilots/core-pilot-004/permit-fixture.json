@@ -1,0 +1,56 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-004",
+  "run_id": "synthetic-run-000",
+  "permit_id": "synthetic-single-use-effect-000",
+  "repository": "Matawaka/uu-aap",
+  "effect_type": "issue_comment_create",
+  "target": {
+    "issue_number": 433,
+    "expected_state": "open"
+  },
+  "payload": {
+    "body": "SYNTHETIC CORE PILOT 004 FIXTURE — NOT AUTHORIZED FOR EXECUTION",
+    "sha256": "6921cb2b69ac11a41520a36c78d91345cb803fef56b219690f65587c5da0d612"
+  },
+  "canonical_frontier": "5c39351a9c10d82befd30018c9c5915c70e88ae4",
+  "precondition_snapshot": {
+    "observed_frontier": "5c39351a9c10d82befd30018c9c5915c70e88ae4",
+    "observed_issue_state": "open",
+    "observed_at": "2026-08-25T06:40:00Z"
+  },
+  "human_authorized": false,
+  "execution_authorized": false,
+  "issued_at": "2026-08-25T06:36:22Z",
+  "expires_at": "2026-08-25T07:36:22Z",
+  "single_use": true,
+  "max_effect_count": 1,
+  "consumed": false,
+  "allowed_external_effects": [
+    "issue_comment_create"
+  ],
+  "forbidden_effects": [
+    "issue_create",
+    "issue_edit",
+    "issue_close",
+    "pr_create",
+    "pr_edit",
+    "push",
+    "merge",
+    "release_or_tag",
+    "permission_change",
+    "secret_change",
+    "protection_change",
+    "kontur_effect",
+    "successor_permit_creation"
+  ],
+  "expected_execution_receipt": {
+    "effect_count": 1,
+    "effect_type": "issue_comment_create",
+    "repository": "Matawaka/uu-aap",
+    "issue_number": 433,
+    "payload_sha256": "6921cb2b69ac11a41520a36c78d91345cb803fef56b219690f65587c5da0d612",
+    "successor_permit_created": false,
+    "permit_consumed_after_success": true
+  }
+}
