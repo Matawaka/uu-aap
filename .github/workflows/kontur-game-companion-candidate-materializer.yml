@@ -1,0 +1,27 @@
+name: KONTUR Game Companion synthetic candidate materializer validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/candidate-materializer/**'
+      - 'pilots/kontur-game-companion/policy-evaluation-harness/**'
+      - 'pilots/kontur-game-companion/candidate-envelope/**'
+      - 'pilots/kontur-game-companion/session-runner/**'
+      - 'pilots/kontur-game-companion/interaction-receipt/**'
+      - 'pilots/kontur-game-companion/integrated-conversation-trace/**'
+      - '.github/workflows/kontur-game-companion-candidate-materializer.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-candidate-materializer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate synthetic candidate materializer and Interaction Receipt bridge
+        run: python pilots/kontur-game-companion/candidate-materializer/validate.py
