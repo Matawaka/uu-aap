@@ -1,0 +1,27 @@
+name: Event-Hash Minimalism v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/event-hash-minimalism/v0.1/**'
+      - '.github/workflows/event-hash-minimalism-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/event-hash-minimalism/v0.1/**'
+      - '.github/workflows/event-hash-minimalism-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Minimal event commitment without surveillance trace
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check protocols/integration/event-hash-minimalism/v0.1/validate-event-hash-minimalism.js
+      - run: node protocols/integration/event-hash-minimalism/v0.1/validate-event-hash-minimalism.js
