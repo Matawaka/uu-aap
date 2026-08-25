@@ -154,6 +154,36 @@
         "target_filing_date": {"type": ["string", "null"], "format": "date"}
       }
     },
+    "filing_readiness": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "checkpoint_ref",
+        "private_packet_digest",
+        "official_form_finalized",
+        "personal_data_consent_complete",
+        "author_consent_resolved",
+        "representative_authority_resolved",
+        "route_selected",
+        "signature_method_confirmed",
+        "fee_status",
+        "consistency_verified"
+      ],
+      "properties": {
+        "status": {"enum": ["NOT_STARTED", "PRIVATE_PACKET_IN_PROGRESS", "COMPLETE", "BLOCKED"]},
+        "checkpoint_ref": {"type": "string", "minLength": 1},
+        "private_packet_digest": {"type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$"},
+        "official_form_finalized": {"type": "boolean"},
+        "personal_data_consent_complete": {"type": "boolean"},
+        "author_consent_resolved": {"type": "boolean"},
+        "representative_authority_resolved": {"type": "boolean"},
+        "route_selected": {"type": "boolean"},
+        "signature_method_confirmed": {"type": "boolean"},
+        "fee_status": {"enum": ["NOT_READY", "PAYMENT_READY", "PAID", "EXEMPT"]},
+        "consistency_verified": {"type": "boolean"}
+      }
+    },
     "filing": {
       "type": ["object", "null"],
       "additionalProperties": false,
