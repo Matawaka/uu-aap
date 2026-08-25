@@ -3,17 +3,17 @@
   "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
   "legal_snapshot": {
     "verified_at": "2026-08-25T22:45:00+05:00",
-    "publication_rule": "Rospatent application field 5 asks for country and year of first publication/release only if publication under Civil Code Article 1268 occurred before filing. Public disclosure and publication are not treated as identical by default.",
+    "publication_rule": "Rospatent application field 5 asks for country and year of first publication/release only if publication under Civil Code Article 1268 occurred before filing. Public disclosure and publication are not treated as identical by default. For this Wave 1 filing, the applicant has expressly instructed that the field be completed as Russia, 2026.",
     "author_rule": "The author may be named or may refuse mention. If the author refuses to be mentioned, Rospatent guidance states that the author's personal-data consent is not required; anonymous publication is treated differently."
   },
   "route": {
     "recommended": "EPGU",
-    "selected": "UNDECIDED",
+    "selected": "EPGU",
     "live_signature_status": "LIVE_CONFIRMATION_REQUIRED"
   },
   "representation": {
     "recommended": "SELF_IF_PERSONALLY_FILING",
-    "selected": "UNDECIDED"
+    "selected": "SELF"
   },
   "author_visibility": {
     "selected": "UNDECIDED",
@@ -21,19 +21,15 @@
   },
   "first_publication": {
     "public_disclosure_confirmed": true,
-    "publication_under_article_1268": "UNRESOLVED",
-    "country_code": null,
-    "year": null,
-    "reasoning_status": "DO_NOT_INFER_FROM_GITHUB_LOCATION"
+    "publication_under_article_1268": "YES",
+    "country_code": "RU",
+    "year": 2026,
+    "reasoning_status": "FACTUALLY_CONFIRMED"
   },
   "gate_result": {
     "effect": "AWAIT_APPLICANT_DECISIONS",
     "unresolved_decisions": [
-      "route",
-      "representation",
       "author_visibility",
-      "first_publication_classification",
-      "first_publication_country_if_applicable",
       "live_signature_method"
     ]
   },
