@@ -69,25 +69,30 @@ jobs:
                   and candidate['gate_result']['unresolved_decisions'] == []
               )
 
+          # Applicant decisions already recorded from the conversation.
+          assert record['route']['selected'] == 'EPGU'
+          assert record['representation']['selected'] == 'SELF'
+          assert record['first_publication']['publication_under_article_1268'] == 'YES'
+          assert record['first_publication']['country_code'] == 'RU'
+          assert record['first_publication']['year'] == 2026
+          assert record['first_publication']['reasoning_status'] == 'FACTUALLY_CONFIRMED'
+
+          # Gate stays fail-closed until author visibility and live EPGU signature method are known.
+          assert record['author_visibility']['selected'] == 'UNDECIDED'
+          assert record['route']['live_signature_status'] == 'LIVE_CONFIRMATION_REQUIRED'
           assert record['gate_result']['effect'] == 'AWAIT_APPLICANT_DECISIONS'
-          assert record['first_publication']['reasoning_status'] == 'DO_NOT_INFER_FROM_GITHUB_LOCATION'
+          assert set(record['gate_result']['unresolved_decisions']) == {'author_visibility', 'live_signature_method'}
           assert not complete(record)
 
+          # Completing only the two remaining decisions must be sufficient.
           candidate = copy.deepcopy(record)
-          candidate['route'] = {'recommended': 'EPGU', 'selected': 'EPGU', 'live_signature_status': 'CONFIRMED'}
-          candidate['representation']['selected'] = 'SELF'
+          candidate['route']['live_signature_status'] = 'CONFIRMED'
           candidate['author_visibility'] = {'selected': 'NAMED', 'personal_data_consent_effect': 'REQUIRED'}
-          candidate['first_publication'] = {
-              'public_disclosure_confirmed': True,
-              'publication_under_article_1268': 'NO',
-              'country_code': None,
-              'year': None,
-              'reasoning_status': 'FACTUALLY_CONFIRMED',
-          }
           candidate['gate_result'] = {'effect': 'MAY_COMPLETE_PRIVATE_PACKET', 'unresolved_decisions': []}
           validator.validate(candidate)
           assert complete(candidate)
 
+          # Fail closed: a publication country may not be marked as inferred from GitHub/server geography.
           unsafe = copy.deepcopy(candidate)
           unsafe['first_publication'] = {
               'public_disclosure_confirmed': True,
@@ -98,7 +103,7 @@ jobs:
           }
           assert not complete(unsafe)
 
-          print('applicant decision gate: schema-valid, fail-closed, no inferred publication country')
+          print('applicant decision gate: EPGU/SELF/RU-2026 recorded; remaining decisions fail-closed')
           PY
 
       - name: Assert workflow is read-only
