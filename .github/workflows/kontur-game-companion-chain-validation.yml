@@ -113,3 +113,6 @@ jobs:
 
       - name: Validate network user-surface externalization review receipt
         run: python pilots/kontur-game-companion/network-user-surface-externalization-review/validate.py
+
+      - name: Validate bounded network user-surface activation grant
+        run: python pilots/kontur-game-companion/network-user-surface-activation-grant/validate.py
