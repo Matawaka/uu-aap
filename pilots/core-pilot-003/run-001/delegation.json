@@ -20,7 +20,8 @@
   "agent_a": {
     "id": "run-001-agent-a",
     "parent_id": "run-001-human-root",
-    "allowed_effects": ["read_sources", "prepare_candidate"],
+    "allowed_effects": ["read_sources", "prepare_candidate", "validate_candidate"],
+    "exercised_effects": ["read_sources", "prepare_candidate"],
     "forbidden_effects": ["repo_write", "issue_mutation", "pr_mutation", "push", "merge", "release_or_tag", "permission_change", "secret_change", "protection_change", "kontur_effect", "external_publish", "successor_permit_creation"],
     "single_use": true,
     "may_redelegate": true,
@@ -31,6 +32,7 @@
     "id": "run-001-agent-b",
     "parent_id": "run-001-agent-a",
     "allowed_effects": ["read_sources", "validate_candidate"],
+    "exercised_effects": ["read_sources", "validate_candidate"],
     "forbidden_effects": ["repo_write", "issue_mutation", "pr_mutation", "push", "merge", "release_or_tag", "permission_change", "secret_change", "protection_change", "kontur_effect", "external_publish", "successor_permit_creation", "prepare_candidate"],
     "single_use": true,
     "may_redelegate": false,
