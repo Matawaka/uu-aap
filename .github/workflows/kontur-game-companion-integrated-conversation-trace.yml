@@ -1,0 +1,27 @@
+name: KONTUR Game Companion integrated conversation trace validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/integrated-conversation-trace/**'
+      - '.github/workflows/kontur-game-companion-integrated-conversation-trace.yml'
+      - '.github/workflows/kontur-game-companion-chain-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-integrated-trace:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate integrated conversation trace
+        run: python pilots/kontur-game-companion/integrated-conversation-trace/validate.py

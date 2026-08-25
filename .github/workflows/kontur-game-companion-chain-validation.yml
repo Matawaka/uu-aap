@@ -62,3 +62,6 @@ jobs:
 
       - name: Validate Bounded Playfulness / Humor Contract
         run: python pilots/kontur-game-companion/bounded-playfulness/validate.py
+
+      - name: Validate synthetic integrated conversation trace
+        run: python pilots/kontur-game-companion/integrated-conversation-trace/validate.py
