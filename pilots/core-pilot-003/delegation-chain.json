@@ -1,0 +1,64 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "core-pilot-003",
+  "origin_frontier": "a95bd7371d29335e6061b529ab7b9078628ad120",
+  "coordination_receipt": {
+    "id": "coord-001",
+    "authority_source": false
+  },
+  "previous_success_receipt": {
+    "id": "prior-success-001",
+    "authority_source": false
+  },
+  "delegations": [
+    {
+      "id": "human-root",
+      "parent_id": null,
+      "authority_source": "explicit_human_authorization",
+      "delegator": "human",
+      "delegate": "agent-a",
+      "repository": "Matawaka/uu-aap",
+      "path_prefixes": ["pilots/core-pilot-003/"],
+      "allowed_effects": ["read", "prepare", "validate"],
+      "forbidden_effects": ["push", "merge", "issue_mutation", "release_or_tag", "permission_change", "kontur_effect", "successor_permit_creation"],
+      "expires_at": "2026-09-01T00:00:00Z",
+      "single_use": true,
+      "may_redelegate": true,
+      "remaining_depth": 2,
+      "target_frontier": "a95bd7371d29335e6061b529ab7b9078628ad120"
+    },
+    {
+      "id": "agent-a",
+      "parent_id": "human-root",
+      "authority_source": "parent_delegation",
+      "delegator": "agent-a",
+      "delegate": "agent-b",
+      "repository": "Matawaka/uu-aap",
+      "path_prefixes": ["pilots/core-pilot-003/"],
+      "allowed_effects": ["read", "prepare"],
+      "forbidden_effects": ["push", "merge", "issue_mutation", "release_or_tag", "permission_change", "kontur_effect", "successor_permit_creation"],
+      "expires_at": "2026-08-31T00:00:00Z",
+      "single_use": true,
+      "may_redelegate": true,
+      "remaining_depth": 1,
+      "target_frontier": "a95bd7371d29335e6061b529ab7b9078628ad120"
+    },
+    {
+      "id": "agent-b",
+      "parent_id": "agent-a",
+      "authority_source": "parent_delegation",
+      "delegator": "agent-b",
+      "delegate": "terminal-validator",
+      "repository": "Matawaka/uu-aap",
+      "path_prefixes": ["pilots/core-pilot-003/"],
+      "allowed_effects": ["read"],
+      "forbidden_effects": ["push", "merge", "issue_mutation", "release_or_tag", "permission_change", "kontur_effect", "successor_permit_creation"],
+      "expires_at": "2026-08-30T00:00:00Z",
+      "single_use": true,
+      "may_redelegate": false,
+      "remaining_depth": 0,
+      "target_frontier": "a95bd7371d29335e6061b529ab7b9078628ad120"
+    }
+  ],
+  "outcome_creates_successor_permit": false
+}
