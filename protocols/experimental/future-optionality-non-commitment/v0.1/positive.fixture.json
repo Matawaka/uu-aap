@@ -1,0 +1,44 @@
+{
+  "$schema": "./future-optionality-non-commitment.schema.json",
+  "artifact_type": "FutureOptionalityNonCommitmentReceipt",
+  "artifact_version": "0.1",
+  "receipt_id": "urn:uu-aap:future-optionality:test:001",
+  "future_representation": {
+    "representation_ref": "urn:uu-aap:future-representation:test:001",
+    "representation_kind": "forecast",
+    "target_ref": "urn:uu-aap:future-target:test:001",
+    "created_at": "2026-08-25T04:00:00Z"
+  },
+  "provenance": {
+    "source_ref": "urn:uu-aap:evidence:forecast-source:test:001",
+    "origin_class": "mixed"
+  },
+  "horizon": {
+    "starts_at": "2026-08-25T04:00:00Z",
+    "ends_at": "2026-08-26T04:00:00Z",
+    "bounded": true
+  },
+  "evidence_refs": [
+    "urn:uu-aap:evidence:future-model:test:001"
+  ],
+  "probability": 0.82,
+  "lifecycle": {
+    "state": "active",
+    "changed_at": "2026-08-25T04:00:00Z",
+    "successor_representation_ref": null,
+    "predecessor_provenance_preserved": true
+  },
+  "claims": {
+    "intent_established": false,
+    "obligation_established": false,
+    "authorization_established": false,
+    "action_permit_established": false,
+    "required_successor_established": false,
+    "inevitability_established": false,
+    "fault_established": false,
+    "responsibility_established": false,
+    "liability_established": false,
+    "sanction_authorized": false,
+    "external_action_performed": false
+  }
+}
