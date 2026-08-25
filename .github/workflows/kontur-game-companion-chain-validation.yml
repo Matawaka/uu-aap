@@ -104,3 +104,6 @@ jobs:
 
       - name: Validate separate runtime transport binding grant boundary
         run: python pilots/kontur-game-companion/runtime-transport-binding-grant/validate.py
+
+      - name: Validate local synthetic runtime transport binding materialization
+        run: python pilots/kontur-game-companion/runtime-transport-binding-materialization/validate.py
