@@ -5,6 +5,11 @@ on:
     paths:
       - "schemas/architecture/v0.1/**"
       - "docs/PROJECT-READINESS-CHECKPOINT-v0.1.md"
+      - "ROADMAP.md"
+      - "README.ru.md"
+      - "docs/ecosystem/**"
+      - "schemas/ecosystem/**"
+      - ".github/workflows/ecosystem-portfolio.yml"
       - ".github/workflows/project-readiness-checkpoint-v0.1-validation.yml"
   push:
     branches:
@@ -53,6 +58,10 @@ jobs:
           Draft202012Validator.check_schema(schema)
           print('VALID ProjectReadinessCheckpointReceipt v0.1 schema')
           PY
+
+      - name: Validate ecosystem portfolio snapshot when present
+        if: ${{ hashFiles('schemas/ecosystem/v0.1/validate_portfolio.py') != '' }}
+        run: python schemas/ecosystem/v0.1/validate_portfolio.py
 
       - name: Validate architecture convergence predecessor with Git facts
         run: |
