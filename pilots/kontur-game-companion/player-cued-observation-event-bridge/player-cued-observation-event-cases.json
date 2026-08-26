@@ -1,0 +1,241 @@
+{
+  "schema_version": "0.1",
+  "pilot_id": "kontur-game-companion-player-cued-observation-event-bridge",
+  "origin_frontier": "44e7eb4a68189ed096f4642973d5f57b138ca142",
+  "scope": "SYNTHETIC_NON_EXECUTING_COMPLETED_SESSION_CONTEXT_BRIDGE",
+  "predecessor_bindings": [
+    {
+      "path": "pilots/kontur-game-companion/external-observation-session/runtime-collection-policy.json",
+      "sha256": "3de8b6e4451bd5c876dfa7898612af4fc87848d337a686987118bc54ff661b6d"
+    },
+    {
+      "path": "pilots/kontur-game-companion/external-sandbox-sidecar-ingest/adapter-config.json",
+      "sha256": "9073f9a3d6617f8c0a11691f4a5b789ee68d6641dfa49cab4c7a10d6a50d834b"
+    },
+    {
+      "path": "pilots/kontur-game-companion/external-sandbox-sidecar-ingest/ingest.py",
+      "sha256": "d9562fcee7487fae7fd1cdc7d45ba3baddd99a8cf18dab3073b4b0c769e14732"
+    },
+    {
+      "path": "pilots/kontur-game-companion/bounded-initiative/initiative-cases.json",
+      "sha256": "2afc0b0c692871dc19c4f16fb2bb3916378b08e687d3ce83703d7bb67cba8a84"
+    },
+    {
+      "path": "pilots/kontur-game-companion/focus-diversity/focus-cases.json",
+      "sha256": "18ba7488d26cad6edd85a049300568c67f51ef019ad04b2b267c17a7b44fed63"
+    },
+    {
+      "path": "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+      "sha256": "fd7c8ed5fcfabc57ffe009ed8787d2b60b5ad5dd3b9f41ab5bf1f4c6b11b45d8"
+    },
+    {
+      "path": "pilots/kontur-game-companion/pause-resume/pause-resume-cases.json",
+      "sha256": "404118ee0ba0e6d725f943ae00d1e4b2555edc4c329d8b23e41828b0884da660"
+    },
+    {
+      "path": "pilots/kontur-game-companion/candidate-envelope/generator.py",
+      "sha256": "af05ffd5d32abb1105c5d4552b72739c48475f058a5c4665259cb74214baf273"
+    }
+  ],
+  "invariants": [
+    "Completed Session != Current Game State",
+    "Sanitized Count != Semantic Game Fact",
+    "Count Magnitude != Player Interest",
+    "Structured Cue != Authenticated Human Cue",
+    "Digest Binding != Provenance Authentication",
+    "Supplied State Frontier != Runtime State Authentication",
+    "Deterministic Replay != Consume-Once Protection",
+    "Structured Selected Focus > System-Predicted Interest",
+    "Structured NONE Cue -> No Event Candidate",
+    "Pause != Resume",
+    "Session Resume != Topic Resume",
+    "Structured Decline -> No Further Initiative In This Evaluation",
+    "Suppression Receipt != Durable Suppression State",
+    "Event Candidate != Admitted Player Event",
+    "Candidate-Envelope Compatibility != Downstream Admission",
+    "Conversation Context != Help Request",
+    "Attention to Gameplay != Attention Tracking",
+    "Receipt != Authority",
+    "Bridge Output != Response",
+    "Bridge Output != Send Permit",
+    "Bridge Output != Action Permit",
+    "Bridge Output != Successor Permit"
+  ],
+  "non_effects": {
+    "live_response_generation": false,
+    "language_model_invocation": false,
+    "proactive_messaging": false,
+    "background_activity": false,
+    "game_process_access": false,
+    "game_action_execution": false,
+    "game_account_control": false,
+    "network_io": false,
+    "message_send": false,
+    "audio_capture": false,
+    "microphone_capture": false,
+    "screen_capture": false,
+    "input_emulation": false,
+    "raw_log_read": false,
+    "raw_human_text_persisted": false,
+    "identifier_value_persisted": false,
+    "behavioral_profile": false,
+    "psychological_inference": false,
+    "mood_inference": false,
+    "attention_tracking": false,
+    "engagement_optimization": false,
+    "retention_optimization": false,
+    "durable_preference": false,
+    "cross_game_profile": false,
+    "total_history_capture": false,
+    "stable_core_promotion": false,
+    "human_identity_authentication": false,
+    "input_adapter_authentication": false,
+    "replay_registry": false,
+    "runtime_state_read": false,
+    "downstream_policy_evaluation": false,
+    "state_transition": false,
+    "suppression_state_persistence": false
+  },
+  "cases": [
+    {
+      "case_id": "no-structured-cue-waits",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 0, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "NONE", "turn": 1, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "WAIT_FOR_CURRENT_PLAYER_CUE", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "CURRENT_HUMAN_CUE_OR_END", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "post-session-overview-fixed-order",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 0, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "ASK_POST_SESSION_OVERVIEW", "turn": 1, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["LIFECYCLE_COUNTS", "SEVERITY_COUNTS", "TERM_COUNTS"], "event": "PLAYER_REQUESTS_COMPLETED_OBSERVATION_REVIEW", "intent": "CONVERSATION", "focus": "completed-observation-overview", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "player-selects-lifecycle-counts",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 1, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_LIFECYCLE_COUNTS", "turn": 2, "selected_category": "LIFECYCLE_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["LIFECYCLE_COUNTS"], "event": "PLAYER_SELECTS_COMPLETED_OBSERVATION_CONTEXT", "intent": "CONVERSATION", "focus": "completed-observation-lifecycle-counts", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "player-selects-severity-counts",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 2, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_SEVERITY_COUNTS", "turn": 3, "selected_category": "SEVERITY_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["SEVERITY_COUNTS"], "event": "PLAYER_SELECTS_COMPLETED_OBSERVATION_CONTEXT", "intent": "CONVERSATION", "focus": "completed-observation-severity-counts", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "player-selects-term-counts",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 3, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_TERM_COUNTS", "turn": 4, "selected_category": "TERM_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["TERM_COUNTS"], "event": "PLAYER_SELECTS_COMPLETED_OBSERVATION_CONTEXT", "intent": "CONVERSATION", "focus": "completed-observation-term-counts", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "empty-selected-category-has-no-fallback",
+      "source_profile": "EMPTY_SEVERITY",
+      "state": {"last_turn": 0, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_SEVERITY_COUNTS", "turn": 1, "selected_category": "SEVERITY_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "NO_SUPPORTED_AGGREGATE", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "HUMAN_REDIRECT_OR_END", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "redirect-suppresses-this-evaluation",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 0, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "REDIRECT", "turn": 1, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SUPPRESSED_BY_PLAYER_CUE", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "NO_FURTHER_SYSTEM_INITIATIVE", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "decline-suppresses-this-evaluation",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 0, "session_phase": "PAUSED"},
+      "cue": {"cue_class": "DECLINE", "turn": 1, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SUPPRESSED_BY_PLAYER_CUE", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "NO_FURTHER_SYSTEM_INITIATIVE", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "lower-count-player-choice-beats-larger-counts",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 4, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_LIFECYCLE_COUNTS", "turn": 5, "selected_category": "LIFECYCLE_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["LIFECYCLE_COUNTS"], "event": "PLAYER_SELECTS_COMPLETED_OBSERVATION_CONTEXT", "intent": "CONVERSATION", "focus": "completed-observation-lifecycle-counts", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "stale-turn-waits",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 4, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_TERM_COUNTS", "turn": 4, "selected_category": "TERM_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "WAIT_FOR_CURRENT_PLAYER_CUE", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "CURRENT_HUMAN_CUE_OR_END", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "future-turn-gap-waits",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 1, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_TERM_COUNTS", "turn": 3, "selected_category": "TERM_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "WAIT_FOR_CURRENT_PLAYER_CUE", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "CURRENT_HUMAN_CUE_OR_END", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "substring-error-is-not-severity-or-mood",
+      "source_profile": "ERROR_AMBIGUITY",
+      "state": {"last_turn": 0, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "SELECT_TERM_COUNTS", "turn": 1, "selected_category": "TERM_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["TERM_COUNTS"], "event": "PLAYER_SELECTS_COMPLETED_OBSERVATION_CONTEXT", "intent": "CONVERSATION", "focus": "completed-observation-term-counts", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "question-is-context-not-help",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 5, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "ASK_ABOUT_SELECTED_CATEGORY", "turn": 6, "selected_category": "TERM_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["TERM_COUNTS"], "event": "PLAYER_REQUESTS_COMPLETED_OBSERVATION_CONTEXT", "intent": "CONVERSATION", "focus": "completed-observation-term-counts", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "pause-from-active-is-candidate-only",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 6, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "PAUSE", "turn": 7, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": [], "event": "PAUSE", "intent": "NONE", "focus": "NONE", "requested_assistance_depth": "NONE", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "pause-from-paused-is-blocked",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 7, "session_phase": "PAUSED"},
+      "cue": {"cue_class": "PAUSE", "turn": 8, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "STATE_PHASE_BLOCKED", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "HUMAN_STATE_OR_CUE_CORRECTION_REQUIRED", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "resume-from-paused-is-candidate-only",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 8, "session_phase": "PAUSED"},
+      "cue": {"cue_class": "RESUME", "turn": 9, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": [], "event": "RESUME", "intent": "NONE", "focus": "NONE", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "resume-from-active-is-blocked",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 9, "session_phase": "ACTIVE"},
+      "cue": {"cue_class": "RESUME", "turn": 10, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "STATE_PHASE_BLOCKED", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "HUMAN_STATE_OR_CUE_CORRECTION_REQUIRED", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "content-while-paused-is-blocked",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 10, "session_phase": "PAUSED"},
+      "cue": {"cue_class": "SELECT_TERM_COUNTS", "turn": 11, "selected_category": "TERM_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "STATE_PHASE_BLOCKED", "candidate_categories": [], "event": null, "intent": null, "focus": null, "requested_assistance_depth": null, "next_boundary": "HUMAN_STATE_OR_CUE_CORRECTION_REQUIRED", "next_human_decision": "NONE"}
+    },
+    {
+      "case_id": "same-cue-replay-remains-runtime-ineligible",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 11, "session_phase": "RESUMED_NEUTRAL"},
+      "cue": {"cue_class": "ASK_POST_SESSION_OVERVIEW", "turn": 12, "selected_category": null, "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["LIFECYCLE_COUNTS", "SEVERITY_COUNTS", "TERM_COUNTS"], "event": "PLAYER_REQUESTS_COMPLETED_OBSERVATION_REVIEW", "intent": "CONVERSATION", "focus": "completed-observation-overview", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    },
+    {
+      "case_id": "resumed-neutral-allows-selected-context",
+      "source_profile": "BASELINE",
+      "state": {"last_turn": 12, "session_phase": "RESUMED_NEUTRAL"},
+      "cue": {"cue_class": "SELECT_LIFECYCLE_COUNTS", "turn": 13, "selected_category": "LIFECYCLE_COUNTS", "raw_text_stored": false, "audio_stored": false, "speaker_identifier_stored": false},
+      "expected": {"decision": "SYNTHETIC_PLAYER_EVENT_CANDIDATE_CREATED", "candidate_categories": ["LIFECYCLE_COUNTS"], "event": "PLAYER_SELECTS_COMPLETED_OBSERVATION_CONTEXT", "intent": "CONVERSATION", "focus": "completed-observation-lifecycle-counts", "requested_assistance_depth": "COMMENT", "next_boundary": "AUTHENTICATED_INPUT_AND_STATE_ADMISSION_REQUIRED", "next_human_decision": "HUMAN_BOUNDED_REACTIVE_DIALOGUE_SANDBOX_DECISION_REQUIRED"}
+    }
+  ]
+}
