@@ -140,4 +140,7 @@ jobs:
       - name: Validate bounded external observation session
         run: python pilots/kontur-game-companion/external-observation-session/validate.py
 
+      - name: Validate player-cued completed-observation context bridge
+        run: python pilots/kontur-game-companion/player-cued-observation-event-bridge/validate.py
+
 
