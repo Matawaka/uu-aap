@@ -1,0 +1,75 @@
+{
+  "authority_boundary": {
+    "action_permit_created": false,
+    "new_observation_authorized": false,
+    "remediation_authorized": false,
+    "runtime_activation_authorized": false,
+    "successor_permit_created": false
+  },
+  "evidence_class": "SANITIZED_FIELD_CONFIRMATION",
+  "evidence_continuity": {
+    "checkpoint_aggregate_matches_final": true,
+    "checkpoint_non_effects_match_final": true,
+    "completed_read_only_ingest_decision": "READ_ONLY_COMPLETED_SIDECAR_SESSION_INGESTED",
+    "final_checkpoint_present": true,
+    "session_final_valid": true,
+    "sidecar_unchanged_by_ingest": true
+  },
+  "evidence_id": "terminal-state-commit-field-confirmation-001",
+  "observed_main_sha": "2bad1681b6d13a9e7cf8bf150d24478edfcee931",
+  "privacy_boundary": {
+    "control_tokens_or_digests_published": false,
+    "game_account_data_published": false,
+    "identifier_values_published": false,
+    "local_paths_published": false,
+    "log_file_names_published": false,
+    "original_session_id_published": false,
+    "original_timestamps_published": false,
+    "player_profile_published": false,
+    "process_identifiers_published": false,
+    "raw_log_lines_published": false,
+    "source_file_hashes_published": false
+  },
+  "publication": {
+    "repository_publication_effect": true,
+    "source_evidence_retention": "LOCAL_NOT_PUBLISHED",
+    "verification_limit": "SANITIZED_AGGREGATE_AND_CONTROL_CONTINUITY_ONLY"
+  },
+  "receipt_digest": "sha256:d71c8c4bc9c874b135ad17aa26668127d73b243bd112ce38117b009d1424f08a",
+  "runtime_non_effects": {
+    "game_action_executed": false,
+    "game_process_accessed": false,
+    "identifier_values_stored": false,
+    "input_emulated": false,
+    "kontur_activated": false,
+    "message_sent": false,
+    "network_io_performed": false,
+    "pilot_approved": false,
+    "raw_log_content_stored": false,
+    "recommendation_generated": false
+  },
+  "sanitized_metrics": {
+    "bytes_processed": 64063,
+    "identifier_values_stored": false,
+    "lines_processed": 557,
+    "log_file_count": 1,
+    "raw_lines_stored": false,
+    "sensitive_identifier_line_count": 1
+  },
+  "schema_version": "kontur-game-companion-terminal-state-field-confirmation-v0.1",
+  "scope": {
+    "observation_count": 1,
+    "observation_kind": "EXPLICITLY_AUTHORIZED_BOUNDED_SANITIZED_LOG_OBSERVATION",
+    "source_scope": "NEWLY_APPENDED_LOG_BYTES_AFTER_BASELINE_ONLY"
+  },
+  "terminal_result": {
+    "final_control_status": "stopped",
+    "finalizing_recovery_used": false,
+    "game_exit_confirmed": true,
+    "observer_exit_confirmed": true,
+    "stop_reason": "stop_requested",
+    "tail_catchup_complete": true,
+    "terminal_commit_completed": true,
+    "terminal_temporary_files_remaining": 0
+  }
+}
