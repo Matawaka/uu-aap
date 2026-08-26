@@ -94,7 +94,7 @@ def validate(data: dict[str, Any]) -> None:
 
     require(by_id["uu-aap-core"]["core_member"] is True, "Core membership lost")
     require(all(not product["core_member"] for pid, product in by_id.items() if pid != "uu-aap-core"), "non-Core product promoted into Core")
-    require(by_id["uu-aap-core"]["maturity"] == "stable_substrate", "Core maturity drift")
+    require(by_id["uu-aap-core"]["maturity"] == "stable_core_candidate", "Core maturity overclaimed or lost")
     require(by_id["ial"]["maturity"] == "experimental_protocol", "IAL maturity drift")
     require(by_id["ai-transport"]["maturity"] == "experimental_infrastructure", "transport maturity drift")
     require(by_id["kontur"]["maturity"] == "field_pilot", "KONTUR field-pilot evidence lost")
