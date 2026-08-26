@@ -1,0 +1,50 @@
+{
+  "schema_version": "0.1",
+  "receipt_type": "bounded_log_observation_session_final",
+  "session_id": "synthetic-complete",
+  "started_at": "2026-01-01T00:00:00.000Z",
+  "ended_at": "2026-01-01T00:01:00.000Z",
+  "stop_reason": "manual_stop",
+  "policy_id": "kontur-scrap-mechanic-bounded-log-session-v0.1",
+  "policy_sha256": "1980e8c5f0ffb0b098af269b82de1a539dfb1345ea22b2d709340d2d5b801d6c",
+  "aggregate": {
+    "bytes_processed": 2048,
+    "lines_processed": 32,
+    "log_files_observed": ["game-synthetic.log"],
+    "sensitive_identifier_line_count": 1,
+    "identifier_values_stored": false,
+    "raw_lines_stored": false,
+    "severity_counts": {
+      "error": 2,
+      "warning": 3
+    },
+    "term_counts": {
+      "inventory": 4,
+      "player": 5,
+      "world": 6
+    },
+    "lifecycle_counts": {
+      "player_loaded": 1,
+      "world_added": 1,
+      "world_removed": 1
+    }
+  },
+  "raw_lines_stored": false,
+  "identifier_values_stored": false,
+  "game_action_executed": false,
+  "recommendation_generated": false,
+  "performance_claim_verified": false,
+  "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+  "non_effects": {
+    "game_launched": false,
+    "game_process_attached": false,
+    "process_memory_read": false,
+    "network_traffic_observed": false,
+    "input_emulated": false,
+    "raw_log_persisted": false,
+    "recommendation_generated": false,
+    "game_action_executed": false,
+    "kontur_activated": false,
+    "pilot_approved": false
+  }
+}
