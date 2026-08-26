@@ -1,17 +1,18 @@
 # UU-AAP Ecosystem Roadmap
 
 **Status:** portfolio-oriented successor to the original Public Draft roadmap  
-**Evidence frontier:** `84fc5c968d9b786f5f84f8224179c8a182672089`  
-**Related:** Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
+**Portfolio baseline:** `55dda89ac681e2c7ffbc90f00fe33852c35e8c65` (PR #513)  
+**Current reusable-layer increment:** Issue #514  
+**Related:** completed Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
 
 This roadmap reflects the implemented repository rather than the original August 2026 public-draft plan.
 
 ## Strategic objective
 
-Prove that one stable Core, one responsibility-boundary language and one provider-neutral transport system can support multiple independent products without mixing product semantics, authority, responsibility, data or successor decisions.
+Prove that one stable-core candidate, one responsibility-boundary language and one provider-neutral transport system can support multiple independent products without mixing product semantics, authority, responsibility, data or successor decisions.
 
 ```text
-Stable Core
+Stable-Core candidate
   -> Intent/Action Language
   -> AI Gateway / Transport
   -> bounded responsibility runtime and protective checks
@@ -38,13 +39,14 @@ Application Filed != Application Registered
 
 The repository already contains:
 
-- UU-AAP Core v0.1 and reusable receipt-chain validation;
+- UU-AAP Core v0.1 experimental stable-core candidate and reusable receipt-chain validation;
 - real Core Pilots for continuity/recovery, bounded multi-agent delegation, single-use external effects and observe-before-retry reconciliation;
 - Intent/Action Language v0.1;
 - provider-neutral AI Gateway, adapters, harnesses, evaluations and bounded execution lifecycle profiles;
 - KONTUR server responsibility kernel;
 - an extensive KONTUR Game Companion line including synthetic dialogue, authority/binding/activation boundaries, bounded local trials, read-only external observation, recovery and privacy-minimized field evidence;
-- a privacy-preserving IP rights/filing pipeline for exact software objects.
+- a privacy-preserving IP rights/filing pipeline for exact software objects;
+- Product Contract v0.1 schema, reusable template, exact-frontier no-effect example and fail-closed validator.
 
 The applicant reports that the selected Core software-registration application has been submitted externally. The repository must record that milestone only through a separate privacy-safe evidence checkpoint; submission does not establish registration.
 
@@ -59,11 +61,13 @@ The applicant reports that the selected Core software-registration application h
 
 ## Phase A — Portfolio convergence
 
-1. Publish the ecosystem state, product portfolio manifest and rebuilt roadmap.
-2. Bind the applicant-reported filing event to a privacy-safe receipt digest when retained evidence is available.
-3. Add a reusable Product Contract v0.1 schema, validator and template.
-4. Add a cross-product interface/dependency registry separate from both Core membership and release status.
-5. Keep Public Review and Core Pilot 002 open for honest external counterexamples.
+1. [x] Publish the ecosystem state, product portfolio manifest and rebuilt roadmap.
+2. [ ] Bind the applicant-reported filing event to a privacy-safe receipt digest when retained evidence is available.
+3. [x] Add a reusable Product Contract v0.1 schema, validator and template.
+4. [ ] Add a cross-product interface/dependency registry separate from both Core membership and release status.
+5. [ ] Keep Public Review and Core Pilot 002 open for honest external counterexamples.
+
+The reusable Product Contract is documented at [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/).
 
 **Exit condition:** every ecosystem direction has an explicit role, maturity class, dependency direction and next gate.
 
@@ -165,9 +169,9 @@ A release candidate is not automatically a release, standard, certification or l
 
 ## Near-term merge sequence
 
-1. Ecosystem State + Portfolio Manifest + Roadmap.
-2. Privacy-safe filing checkpoint after private receipt digest exists.
-3. Reusable Product Contract v0.1.
+1. **Completed:** Ecosystem State + Portfolio Manifest + Roadmap (#513).
+2. **Evidence-gated:** privacy-safe filing checkpoint after a private receipt digest exists.
+3. **Current:** reusable Product Contract v0.1 (Issue #514).
 4. Маркетолог Пессимиста Product Contract v0.1.
 5. FREESHIELD Protective Contract v0.1.
 6. Честный найм Product Contract v0.1.

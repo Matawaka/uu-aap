@@ -1,0 +1,73 @@
+name: Product Contract v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "schemas/product-contract/v0.1/**"
+      - "ROADMAP.md"
+      - "README.ru.md"
+      - ".github/workflows/product-contract-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "schemas/product-contract/v0.1/**"
+      - "ROADMAP.md"
+      - "README.ru.md"
+      - ".github/workflows/product-contract-v0.1-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Schema, semantic and fail-closed contract validation
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/product-contract-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Check validator syntax
+        run: python -m py_compile schemas/product-contract/v0.1/validate_product_contract.py
+
+      - name: Validate Product Contract v0.1
+        run: python schemas/product-contract/v0.1/validate_product_contract.py
+
+      - name: Guard validator as local-only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('schemas/product-contract/v0.1/validate_product_contract.py').read_text(encoding='utf-8')
+          forbidden = [
+              'subprocess',
+              'socket',
+              'urllib',
+              'requests',
+              'http.client',
+              'child_process',
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS: Product Contract validator is local-only')
+          PY
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
