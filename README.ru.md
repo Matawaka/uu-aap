@@ -97,8 +97,8 @@ KONTUR развивается как responsibility control plane и family of b
 - **IAL** — язык границ намерения/ответственности;
 - **AI Gateway / Transport** — provider-neutral integration path;
 - **KONTUR** — responsibility runtime and product family;
-- **Маркетолог Пессимиста** — claim/evidence stress-testing product с отдельным Product Contract v0.1 candidate;
-- **FREESHIELD** — protective plane, точная canonical роль ещё должна быть материализована;
+- **Маркетолог Пессимиста** — claim/evidence stress-testing product с отдельным canonical candidate Product Contract v0.1;
+- **FREESHIELD** — protective plane с отдельным candidate Protective Contract v0.1;
 - **Честный найм** — contestable evidence-first hiring product, canonical contract ещё должен быть материализован.
 
 ### Product Contract v0.1
@@ -160,7 +160,36 @@ Claim / plan
 
 `Candidate Output != Publication Authority`
 
-Текущий файл продукта является candidate, пока его отдельный PR не прошёл human merge gate. Даже после merge он определяет границу продукта, а не запускает MVP или внешний effect.
+Contract канонизирован merge #517, но остаётся product-definition candidate: merge определяет границу продукта, а не запускает MVP или внешний effect.
+
+### FREESHIELD Protective Contract v0.1
+
+[`products/freeshield/v0.1/`](products/freeshield/v0.1/) определяет защитный assessment plane для одного exact request/effect candidate:
+
+```text
+candidate
+→ product-contract / authority evidence
+→ constraints / non-effects
+→ frontier observation
+→ sufficiency / scope / risk hypotheses
+→ ALLOW_ANALYSIS | NARROW_SCOPE | REQUIRE_EVIDENCE | HUMAN_REVIEW | BLOCK_EFFECT
+→ human disposition
+```
+
+Все разрешённые effects локальны, `external_effects=[]`.
+
+```text
+Protective Review != Authority
+Protective Assessment != ActionPermit
+Risk Hypothesis != Proof of Harm
+BLOCK_EFFECT != Global Prohibition
+Scope Narrowing != Product Ownership
+Protective Assessment != Sanction or Blacklist
+```
+
+`BLOCK_EFFECT` означает только scoped non-admissibility candidate для одного exact effect при одном contract/evidence/frontier. FREESHIELD не управляет actuator, не создаёт permit, не блокирует аккаунт, не устанавливает вину и не создаёт hidden score.
+
+Даже human acceptance protective assessment не является execution authority: consumer product обязан пройти собственный отдельный Action Gate.
 
 ## IP-граница
 
@@ -196,12 +225,13 @@ Claim / plan
 2. [`docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`](docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md) — состояние экосистемы и balanced roadmap.
 3. [`ROADMAP.md`](ROADMAP.md) — текущий portfolio-oriented roadmap.
 4. [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/) — reusable Product Contract, template, example и validator.
-5. [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) — Маркетолог Пессимиста Product Contract candidate и product-specific validator.
-6. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
-7. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
-8. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
-9. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
-10. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
-11. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR.
+5. [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) — Маркетолог Пессимиста Product Contract и product-specific validator.
+6. [`products/freeshield/v0.1/`](products/freeshield/v0.1/) — FREESHIELD Protective Contract и fail-closed validator.
+7. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
+8. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
+9. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
+10. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
+11. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
+12. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR.
 
 Для нормативной и machine-readable проверки используйте канонические английские документы, schemas, validators и receipts, на которые ссылаются эти страницы.
