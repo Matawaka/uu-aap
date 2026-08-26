@@ -1,0 +1,190 @@
+{
+  "schema_version": "0.1",
+  "snapshot_id": "uu-aap-ecosystem-portfolio-2026-08-26",
+  "frontier": {
+    "repository": "Matawaka/uu-aap",
+    "commit_sha": "84fc5c968d9b786f5f84f8224179c8a182672089",
+    "tree_sha": "c3c600be51e901abf77f361830b9d9cb9c1842ab"
+  },
+  "external_milestones": {
+    "core_software_registration_application": {
+      "evidence_source": "applicant_report",
+      "reported_state": "reported_submitted",
+      "public_receipt_bound": false,
+      "registration_established": false
+    }
+  },
+  "portfolio_invariants": [
+    "Core != Product",
+    "Product Success != Stable-Core Requirement",
+    "Transport != Authority",
+    "IAL Expression != Execution Admission",
+    "KONTUR Responsibility State != ActionPermit",
+    "Protective Review != Automatic Block or Sanction",
+    "Product Contract != Product Runtime",
+    "Application Filed != Application Registered"
+  ],
+  "balance_policy": {
+    "max_active_domain_product_lines": 2,
+    "new_core_primitive_requires_product_consumers": 2,
+    "new_core_primitive_requires_cross_product_case": true,
+    "product_contract_before_deep_implementation": true,
+    "product_specific_reverse_core_dependency_allowed": false
+  },
+  "products": [
+    {
+      "id": "uu-aap-core",
+      "name": "UU-AAP Core",
+      "plane": "stable_substrate",
+      "maturity": "stable_substrate",
+      "repository_evidence_state": "canonical_implementation",
+      "canonical_paths": [
+        "protocols/core/v0.1/README.md",
+        "protocols/core/v0.1/validate-core.js",
+        "pilots/core-pilot-001",
+        "pilots/core-pilot-003",
+        "pilots/core-pilot-004",
+        "pilots/core-pilot-005"
+      ],
+      "current_role": "Seven-primitive evidence, intent, authority, coordination, action-gate and successor-state substrate with real bounded pilot evidence.",
+      "next_deliverable": "Compatibility baseline and change-budget policy; avoid product-specific reverse dependencies.",
+      "current_dependencies": [],
+      "planned_dependencies": [],
+      "core_member": true,
+      "reverse_core_dependency_allowed": false,
+      "stable_core_promotion_authorized": false,
+      "external_effect_authorized": false
+    },
+    {
+      "id": "ial",
+      "name": "Intent/Action Language (IAL)",
+      "plane": "semantic_language",
+      "maturity": "experimental_protocol",
+      "repository_evidence_state": "canonical_implementation",
+      "canonical_paths": [
+        "protocols/ial/v0.1/README.md"
+      ],
+      "current_role": "Responsibility-boundary language for E0-E3 elevation and explicit handoff without turning expression into execution authority.",
+      "next_deliverable": "Compact agent-facing envelope, CLI examples and conformance vectors shared by at least two products.",
+      "current_dependencies": [
+        "uu-aap-core"
+      ],
+      "planned_dependencies": [],
+      "core_member": false,
+      "reverse_core_dependency_allowed": false,
+      "stable_core_promotion_authorized": false,
+      "external_effect_authorized": false
+    },
+    {
+      "id": "ai-transport",
+      "name": "AI Gateway and Transport System",
+      "plane": "transport_integration",
+      "maturity": "experimental_infrastructure",
+      "repository_evidence_state": "canonical_implementation",
+      "canonical_paths": [
+        "protocols/integration/ai-gateway/v0.1/README.md",
+        "protocols/integration/ai-gateway/adapters/v0.1",
+        "protocols/integration/ai-gateway/harness/v0.1",
+        "protocols/integration/execution-lifecycle/v0.1"
+      ],
+      "current_role": "Provider-neutral inspect, qualify, authorize and observe surface with adapters, bounded lifecycle, harnesses and acceptance evidence; transport never defines authority.",
+      "next_deliverable": "One public reference CLI/SDK path that carries IAL and Core-bound receipts across a provider-neutral adapter.",
+      "current_dependencies": [
+        "uu-aap-core"
+      ],
+      "planned_dependencies": [
+        "ial"
+      ],
+      "core_member": false,
+      "reverse_core_dependency_allowed": false,
+      "stable_core_promotion_authorized": false,
+      "external_effect_authorized": false
+    },
+    {
+      "id": "kontur",
+      "name": "KONTUR",
+      "plane": "responsibility_runtime",
+      "maturity": "field_pilot",
+      "repository_evidence_state": "canonical_pilot_evidence",
+      "canonical_paths": [
+        "server/kontur/v0.1/README.md",
+        "pilots/kontur-game-companion"
+      ],
+      "current_role": "Responsibility control plane plus the most mature ecosystem product line, including bounded synthetic dialogue, local observation, recovery and privacy-minimized field evidence.",
+      "next_deliverable": "Consolidate the Game Companion into a measured bounded demo and implement the explicitly named readiness-aggregation successor without adding another conversational layer.",
+      "current_dependencies": [
+        "uu-aap-core"
+      ],
+      "planned_dependencies": [
+        "ial",
+        "ai-transport"
+      ],
+      "core_member": false,
+      "reverse_core_dependency_allowed": false,
+      "stable_core_promotion_authorized": false,
+      "external_effect_authorized": false
+    },
+    {
+      "id": "marketer-pessimist",
+      "name": "Маркетолог Пессимиста",
+      "plane": "domain_product",
+      "maturity": "definition_required",
+      "repository_evidence_state": "not_materialized_at_frontier",
+      "canonical_paths": [],
+      "current_role": "Named ecosystem product intended to stress-test claims, separate facts from assumptions, seek counterarguments, falsifiers and missing evidence; no canonical repository product contract exists at this frontier.",
+      "next_deliverable": "Canonical product contract and local claim-stress-test MVP with no campaign send, ad-spend or autonomous persuasion effect.",
+      "current_dependencies": [],
+      "planned_dependencies": [
+        "uu-aap-core",
+        "ial",
+        "ai-transport",
+        "freeshield"
+      ],
+      "core_member": false,
+      "reverse_core_dependency_allowed": false,
+      "stable_core_promotion_authorized": false,
+      "external_effect_authorized": false
+    },
+    {
+      "id": "freeshield",
+      "name": "FREESHIELD",
+      "plane": "protective_plane",
+      "maturity": "definition_required",
+      "repository_evidence_state": "not_materialized_at_frontier",
+      "canonical_paths": [],
+      "current_role": "Named ecosystem product whose exact canonical protective role, inputs, outputs and authority ceiling are not yet materialized in the repository.",
+      "next_deliverable": "Human-approved protective-plane contract proving that review can constrain or surface risk without silently creating authority, sanction or product ownership.",
+      "current_dependencies": [],
+      "planned_dependencies": [
+        "uu-aap-core",
+        "ial",
+        "ai-transport"
+      ],
+      "core_member": false,
+      "reverse_core_dependency_allowed": false,
+      "stable_core_promotion_authorized": false,
+      "external_effect_authorized": false
+    },
+    {
+      "id": "honest-hiring",
+      "name": "Честный найм",
+      "plane": "domain_product",
+      "maturity": "definition_required",
+      "repository_evidence_state": "not_materialized_at_frontier",
+      "canonical_paths": [],
+      "current_role": "Named ecosystem product whose exact canonical hiring workflow and contestability boundaries are not yet materialized in the repository.",
+      "next_deliverable": "Canonical evidence-first hiring contract with no automatic rejection, protected-attribute inference or unappealable ranking, followed by a synthetic contestable pilot.",
+      "current_dependencies": [],
+      "planned_dependencies": [
+        "uu-aap-core",
+        "ial",
+        "ai-transport",
+        "freeshield"
+      ],
+      "core_member": false,
+      "reverse_core_dependency_allowed": false,
+      "stable_core_promotion_authorized": false,
+      "external_effect_authorized": false
+    }
+  ]
+}
