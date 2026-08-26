@@ -1,0 +1,102 @@
+name: Честный найм Product Contract v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "products/honest-hiring/v0.1/**"
+      - "products/freeshield/v0.1/**"
+      - "schemas/product-contract/v0.1/**"
+      - "ROADMAP.md"
+      - "README.ru.md"
+      - ".github/workflows/honest-hiring-contract-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "products/honest-hiring/v0.1/**"
+      - "products/freeshield/v0.1/**"
+      - "schemas/product-contract/v0.1/**"
+      - "ROADMAP.md"
+      - "README.ru.md"
+      - ".github/workflows/honest-hiring-contract-v0.1-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Evidence, contestability and fail-closed hiring boundary
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/honest-hiring-pycache
+      ORIGIN_FRONTIER: 18a57f46eac60576ecc7ff9777888cd2b45230a2
+      ORIGIN_TREE: 0d6e4453c3c5e6aa1611bae4ccf9d2962cd4f360
+      EXPECTED_CONTRACT_HASH: sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact origin frontier and tree
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          test "$(git show -s --format=%T "$ORIGIN_FRONTIER")" = "$ORIGIN_TREE"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          contract = json.loads(Path('products/honest-hiring/v0.1/product-contract.json').read_text(encoding='utf-8'))
+          assert contract['frontier']['repository'] == 'Matawaka/uu-aap'
+          assert contract['frontier']['revision'] == os.environ['ORIGIN_FRONTIER']
+          assert contract['identity']['content_hash'] == os.environ['EXPECTED_CONTRACT_HASH']
+          print('PASS: exact origin frontier, tree and contract identity verified')
+          PY
+
+      - name: Check validator syntax
+        run: python -m py_compile products/honest-hiring/v0.1/validate_contract.py
+
+      - name: Re-run reusable Product Contract validation
+        run: python schemas/product-contract/v0.1/validate_product_contract.py
+
+      - name: Re-run FREESHIELD protective contract validation
+        run: python products/freeshield/v0.1/validate_contract.py
+
+      - name: Validate Честный найм Product Contract v0.1
+        run: python products/honest-hiring/v0.1/validate_contract.py
+
+      - name: Guard dedicated validator as local-only
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('products/honest-hiring/v0.1/validate_contract.py').read_text(encoding='utf-8')
+          forbidden = [
+              'subprocess',
+              'socket',
+              'urllib',
+              'requests',
+              'http.client',
+              'child_process',
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS: Честный найм validator is local-only')
+          PY
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
