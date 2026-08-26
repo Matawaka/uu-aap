@@ -15,6 +15,8 @@ OBSERVER = HERE / "observer.js"
 RUNTIME_CONFIG = HERE / "runtime-config.json"
 SOURCE_POLICY = HERE / "runtime-collection-policy.json"
 HUMAN_DECISION = "ALLOW_THIS_BOUNDED_SANITIZED_LOG_OBSERVATION_SESSION"
+ACTIVE_SESSION_STATUSES = frozenset({"ready_for_game_start", "collecting", "finalizing"})
+TERMINAL_SESSION_STATUSES = frozenset({"stopped", "faulted", "stopped_recovered"})
 
 
 class ControlError(RuntimeError):
@@ -186,7 +188,7 @@ def start(args):
         current = load_current(control_root)
         if current is not None:
             state = load_state(current)
-            if state and state.get("status") in {"ready_for_game_start", "collecting", "finalizing"}:
+            if state and state.get("status") in ACTIVE_SESSION_STATUSES:
                 req(not process_alive(current.get("observer_pid")), "an observation session is already active")
                 raise ControlError("stale active session state requires review; no automatic replacement")
 
@@ -280,7 +282,7 @@ def stop(args):
     if current is None:
         return {"status": "not_started", "stop_requested": False}
     state = load_state(current)
-    if state and state.get("status") in {"stopped", "faulted"}:
+    if state and state.get("status") in TERMINAL_SESSION_STATUSES:
         return state
     stop_path = Path(current["control_directory"]) / "stop.request"
     try:
@@ -291,7 +293,7 @@ def stop(args):
     deadline = time.monotonic() + args.stop_timeout_seconds
     while time.monotonic() < deadline:
         state = load_state(current)
-        if state and state.get("status") in {"stopped", "faulted"}:
+        if state and state.get("status") in TERMINAL_SESSION_STATUSES:
             return state
         time.sleep(0.1)
     raise ControlError("observer did not stop cooperatively; no game process was terminated")

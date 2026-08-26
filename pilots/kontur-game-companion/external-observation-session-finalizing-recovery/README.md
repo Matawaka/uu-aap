@@ -44,6 +44,11 @@ Recovery fails closed when liveness is unknown, the PID is active, evidence is
 missing or inconsistent, paths are linked, the final checkpoint does not match
 the final aggregate, or recovery metadata already exists.
 
+The recovered `stopped_recovered` state is terminal for the ordinary session
+controller. `status` may read it and `stop` is idempotent: neither command
+creates a new stop request or modifies the source state, recovery metadata, or
+sidecar evidence. Starting a distinct session remains a separate human decision.
+
 ## Validation
 
 ```text
@@ -51,4 +56,7 @@ python pilots/kontur-game-companion/external-observation-session-finalizing-reco
 ```
 
 The validator operates only on temporary copies and proves that source control
-state and the complete synthetic sidecar remain byte-for-byte unchanged.
+state and the complete synthetic sidecar remain byte-for-byte unchanged. It also
+proves read-only `status` and idempotent `stop` compatibility. The existing
+external-observation-session validator invokes this validator, so the repository's
+cross-layer workflow executes the recovery lifecycle without adding a workflow.

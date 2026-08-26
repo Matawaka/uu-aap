@@ -47,6 +47,12 @@ Stop never terminates the game:
 python pilots/kontur-game-companion/external-observation-session/control.py stop --control-root <local-control-root>
 ```
 
+`stopped_recovered` is a terminal control state. `status` reports it with the
+observer liveness result, while a repeated `stop` returns the recovered state
+immediately without creating a stop request or rewriting recovery/session
+evidence. A later `start` still requires the complete decision and confirmation
+sequence for a distinct observation session.
+
 The launcher kills only its own observer child if readiness fails, preventing a hidden
 orphan. Stop requests carry an unguessable session-local token. The observer performs a
 bounded final catch-up before marking itself finalized, fixing the historical tail-loss
@@ -70,6 +76,8 @@ race.
 
 A stopped session is not interpreted automatically. Its completed receipts must pass the
 separate `external-sandbox-sidecar-ingest` adapter before any later human decision.
+The chain validator also runs the finalizing-recovery validator through this
+session validator, preserving specification -> validator -> CI continuity.
 
 ## Copyright and IP-process isolation
 
