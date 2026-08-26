@@ -97,7 +97,7 @@ KONTUR развивается как responsibility control plane и family of b
 - **IAL** — язык границ намерения/ответственности;
 - **AI Gateway / Transport** — provider-neutral integration path;
 - **KONTUR** — responsibility runtime and product family;
-- **Маркетолог Пессимиста** — claim/evidence stress-testing product;
+- **Маркетолог Пессимиста** — claim/evidence stress-testing product с отдельным Product Contract v0.1 candidate;
 - **FREESHIELD** — protective plane, точная canonical роль ещё должна быть материализована;
 - **Честный найм** — contestable evidence-first hiring product, canonical contract ещё должен быть материализован.
 
@@ -131,7 +131,36 @@ Product identity
 
 `IP Object Boundary != Registration Outcome`
 
-Reusable schema, template и local no-effect example не означают, что contracts Маркетолога Пессимиста, FREESHIELD или «Честного найма» уже приняты. Для каждого named product нужен отдельный exact-frontier contract, validator result и human merge gate.
+Reusable schema, template и local no-effect example не принимают автоматически ни один named-product contract. Каждый exact-frontier contract требует собственного validator result и human merge gate.
+
+### Маркетолог Пессимиста Product Contract v0.1
+
+[`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) материализует первый named-product contract как evidence-first стресс-тест утверждений, планов и стратегий:
+
+```text
+Claim / plan
+→ evidence / interpretation / assumption / hypothesis
+→ counterarguments
+→ causal alternatives
+→ falsifiers
+→ missing evidence / uncertainty
+→ bounded candidate
+→ human disposition
+```
+
+Контракт допускает только локальные analysis effects. В нём нет runtime, campaign send, публикации, ad-account access, spend, audience upload, profiling или autonomous persuasion.
+
+`Pessimistic Analysis != Truth`
+
+`Counterargument != Rejection`
+
+`Audience Description != Permission to Profile a Person`
+
+`Marketing Recommendation != Campaign Authority`
+
+`Candidate Output != Publication Authority`
+
+Текущий файл продукта является candidate, пока его отдельный PR не прошёл human merge gate. Даже после merge он определяет границу продукта, а не запускает MVP или внешний effect.
 
 ## IP-граница
 
@@ -167,11 +196,12 @@ Reusable schema, template и local no-effect example не означают, чт
 2. [`docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`](docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md) — состояние экосистемы и balanced roadmap.
 3. [`ROADMAP.md`](ROADMAP.md) — текущий portfolio-oriented roadmap.
 4. [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/) — reusable Product Contract, template, example и validator.
-5. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
-6. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
-7. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
-8. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
-9. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
-10. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR.
+5. [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) — Маркетолог Пессимиста Product Contract candidate и product-specific validator.
+6. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
+7. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
+8. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
+9. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
+10. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
+11. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR.
 
 Для нормативной и machine-readable проверки используйте канонические английские документы, schemas, validators и receipts, на которые ссылаются эти страницы.
