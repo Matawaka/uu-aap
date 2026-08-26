@@ -1,0 +1,29 @@
+name: KONTUR Game Companion external observation session validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/external-observation-session/**'
+      - 'pilots/kontur-game-companion/external-sandbox-sidecar-ingest/**'
+      - '.github/workflows/kontur-game-companion-external-observation-session.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate bounded external observation session
+        run: python pilots/kontur-game-companion/external-observation-session/validate.py

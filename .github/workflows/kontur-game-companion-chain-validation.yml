@@ -137,4 +137,7 @@ jobs:
       - name: Validate external sandbox read-only completed sidecar ingest
         run: python pilots/kontur-game-companion/external-sandbox-sidecar-ingest/validate.py
 
+      - name: Validate bounded external observation session
+        run: python pilots/kontur-game-companion/external-observation-session/validate.py
+
 
