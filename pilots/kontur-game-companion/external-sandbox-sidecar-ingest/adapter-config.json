@@ -1,0 +1,60 @@
+{
+  "schema_version": "kontur-game-companion-external-sandbox-sidecar-ingest-config-v0.1",
+  "adapter_mode": "EXTERNAL_SANDBOX_READ_ONLY_COMPLETED_SIDECAR_INGEST",
+  "input_scope": "COMPLETED_SANITIZED_SESSION_RECEIPTS_ONLY",
+  "session_scope": "ONE_PROCESS_INVOCATION",
+  "output_mode": "STDOUT_JSON_RECEIPT_ONLY",
+  "cpu_profile": "BOUNDED_SINGLE_SHOT_NO_POLLING",
+  "sidecar_directory_name": "KONTUR_PILOT_INFO",
+  "allowed_policy_id": "kontur-scrap-mechanic-bounded-log-session-v0.1",
+  "allowed_read_templates": [
+    "runtime-collection-policy.json",
+    "sessions/{session_id}/session-start.json",
+    "sessions/{session_id}/session-final.json"
+  ],
+  "allowed_term_keys": [
+    "character",
+    "error",
+    "inventory",
+    "player",
+    "quest",
+    "save",
+    "survival",
+    "warning",
+    "world"
+  ],
+  "allowed_lifecycle_keys": [
+    "join_accepted",
+    "player_loaded",
+    "player_manager_cleanup",
+    "player_manager_initialized",
+    "world_added",
+    "world_removed"
+  ],
+  "allowed_stop_reasons": [
+    "budget_violation",
+    "game_stopped",
+    "manual_stop",
+    "maximum_duration_reached",
+    "observer_error",
+    "stop_requested"
+  ],
+  "max_read_bytes_per_file": 262144,
+  "recursive_scan": false,
+  "raw_log_read": false,
+  "game_process_access": false,
+  "process_memory_read": false,
+  "network_access": false,
+  "game_file_modification": false,
+  "sidecar_file_modification": false,
+  "audio_capture": false,
+  "microphone_capture": false,
+  "screen_capture": false,
+  "input_emulation": false,
+  "background_loop": false,
+  "polling": false,
+  "persistent_output": false,
+  "recommendation_generation": false,
+  "message_send": false,
+  "game_action_execution": false
+}

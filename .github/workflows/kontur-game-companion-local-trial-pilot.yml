@@ -1,0 +1,28 @@
+name: KONTUR Game Companion local synthetic trial pilot validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/local-trial-pilot/**'
+      - 'pilots/kontur-game-companion/network-user-surface-enablement-materialization/**'
+      - 'pilots/kontur-game-companion/network-user-surface-enablement-grant/**'
+      - '.github/workflows/kontur-game-companion-local-trial-pilot.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-local-trial-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Validate local synthetic trial pilot
+        run: python pilots/kontur-game-companion/local-trial-pilot/validate.py

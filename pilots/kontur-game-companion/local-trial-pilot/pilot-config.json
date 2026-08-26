@@ -1,0 +1,20 @@
+{
+  "schema_version": "kontur-game-companion-local-trial-pilot-config-v0.1",
+  "pilot_mode": "LOCAL_SYNTHETIC_NULL_TRANSPORT",
+  "input_source": "DETERMINISTIC_SYNTHETIC_FIXTURE_ONLY",
+  "session_scope": "ONE_PROCESS_INVOCATION",
+  "output_mode": "STDOUT_JSON_RECEIPT_ONLY",
+  "cpu_profile": "BOUNDED_SINGLE_SHOT_NO_POLLING",
+  "transport_mode": "NULL_TRANSPORT",
+  "game_integration_mode": "NONE",
+  "audio_mode": "NONE",
+  "network_access": false,
+  "game_process_access": false,
+  "game_file_modification": false,
+  "audio_capture": false,
+  "microphone_capture": false,
+  "background_loop": false,
+  "polling": false,
+  "persistent_output": false,
+  "external_effect_authorized": false
+}
