@@ -3,7 +3,8 @@
 **Status:** portfolio-oriented successor to the original Public Draft roadmap  
 **Portfolio baseline:** `55dda89ac681e2c7ffbc90f00fe33852c35e8c65` (PR #513)  
 **Reusable Product Contract baseline:** `70c1dfe0e2d4f3e8401050c4e7f56a5e76d11b4d` (PR #515)  
-**Current product-definition increment:** Issue #516  
+**Маркетолог Пессимиста contract baseline:** `c831b643a9b984a274c5093033c28ea4a8a26794` (PR #517)  
+**Current product-definition increment:** Issue #518  
 **Related:** completed Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
 
 This roadmap reflects the implemented repository rather than the original August 2026 public-draft plan.
@@ -48,7 +49,8 @@ The repository already contains:
 - an extensive KONTUR Game Companion line including synthetic dialogue, authority/binding/activation boundaries, bounded local trials, read-only external observation, recovery and privacy-minimized field evidence;
 - a privacy-preserving IP rights/filing pipeline for exact software objects;
 - Product Contract v0.1 schema, reusable template, exact-frontier no-effect example and fail-closed validator;
-- a candidate Product Contract v0.1 for Маркетолог Пессимиста, bounded to local evidence-first claim stress testing with no external effects.
+- a canonical candidate Product Contract v0.1 for Маркетолог Пессимиста, bounded to local evidence-first claim stress testing with no external effects;
+- a candidate FREESHIELD Protective Contract v0.1 that defines scoped protective assessment without actuator control, sanction or authority creation.
 
 The applicant reports that the selected Core software-registration application has been submitted externally. The repository must record that milestone only through a separate privacy-safe evidence checkpoint; submission does not establish registration.
 
@@ -77,8 +79,8 @@ The reusable Product Contract is documented at [`schemas/product-contract/v0.1/`
 
 Materialize product contracts in this order:
 
-1. **Маркетолог Пессимиста** — current candidate at [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); evidence/claim stress testing, counterarguments, falsifiers and missing evidence; no campaign send, profiling or autonomous persuasion.
-2. **FREESHIELD** — exact protective-plane role and authority ceiling; risk surfacing and scope narrowing without automatic sanction or product ownership.
+1. **Маркетолог Пессимиста** — canonical candidate at [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); evidence/claim stress testing, counterarguments, falsifiers and missing evidence; no campaign send, profiling or autonomous persuasion.
+2. **FREESHIELD** — current candidate at [`products/freeshield/v0.1/`](products/freeshield/v0.1/); scoped protective assessment and authority ceiling without automatic sanction, global prohibition, actuator control or product ownership.
 3. **Честный найм** — evidence-first, job-relevant, contestable decision support; no automatic rejection, protected-attribute inference or unappealable ranking.
 4. **KONTUR Product Family Contract** — bind the server responsibility kernel and Game Companion while keeping pilot evidence out of Stable Core.
 
@@ -116,7 +118,7 @@ Protective outcomes may include:
 ALLOW_ANALYSIS | NARROW_SCOPE | REQUIRE_EVIDENCE | HUMAN_REVIEW | BLOCK_EFFECT
 ```
 
-`BLOCK_EFFECT` is scoped non-admissibility for one effect, not guilt, diagnosis or global sanction.
+`BLOCK_EFFECT` is scoped non-admissibility for one exact effect candidate under one reviewed contract/evidence/frontier. It is not actuator execution, guilt, diagnosis, blacklist, global prohibition or sanction.
 
 ### Честный найм
 
@@ -174,8 +176,8 @@ A release candidate is not automatically a release, standard, certification or l
 1. **Completed:** Ecosystem State + Portfolio Manifest + Roadmap (#513).
 2. **Evidence-gated:** privacy-safe filing checkpoint after a private receipt digest exists.
 3. **Completed:** reusable Product Contract v0.1 (#515).
-4. **Current:** Маркетолог Пессимиста Product Contract v0.1 (Issue #516).
-5. FREESHIELD Protective Contract v0.1.
+4. **Completed:** Маркетолог Пессимиста Product Contract v0.1 (#517).
+5. **Current:** FREESHIELD Protective Contract v0.1 (Issue #518).
 6. Честный найм Product Contract v0.1.
 7. IAL Compact Envelope + CLI conformance.
 8. AI Transport Reference CLI/SDK.
