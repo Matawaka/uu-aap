@@ -18,6 +18,7 @@ OBSERVER = HERE / "observer.js"
 CONFIG_PATH = HERE / "runtime-config.json"
 POLICY_PATH = HERE / "runtime-collection-policy.json"
 INGEST_PATH = HERE.parent / "external-sandbox-sidecar-ingest" / "ingest.py"
+RECOVERY_VALIDATE = HERE.parent / "external-observation-session-finalizing-recovery" / "validate.py"
 DECISION = "ALLOW_THIS_BOUNDED_SANITIZED_LOG_OBSERVATION_SESSION"
 
 FALSE_FIELDS = (
@@ -118,6 +119,15 @@ def loadmod(name, path):
 
 
 def main():
+    control = loadmod("kontur_external_observation_control_validate", CONTROL)
+    assert control.ACTIVE_SESSION_STATUSES == frozenset(
+        {"ready_for_game_start", "collecting", "finalizing"}
+    )
+    assert control.TERMINAL_SESSION_STATUSES == frozenset(
+        {"stopped", "faulted", "stopped_recovered"}
+    )
+    assert control.ACTIVE_SESSION_STATUSES.isdisjoint(control.TERMINAL_SESSION_STATUSES)
+
     config = read_json(CONFIG_PATH)
     validate_config(config)
     policy = read_json(POLICY_PATH)
@@ -281,9 +291,27 @@ def main():
         assert status["status"] == "stopped"
         assert status["game_start_allowed"] is False
 
+    recovery_validation = subprocess.run(
+        [sys.executable, str(RECOVERY_VALIDATE)],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+    )
+    if recovery_validation.returncode != 0:
+        raise AssertionError(
+            "finalizing recovery lifecycle validation failed: "
+            f"{recovery_validation.stdout} {recovery_validation.stderr}"
+        )
+    assert "control_terminal_roundtrips=2" in recovery_validation.stdout
+    assert "terminal_control_writes=0" in recovery_validation.stdout
+
     print(
         "KONTUR external observation session validation: PASS; "
         "synthetic_sessions=1; tail_race_cases=1; ingest_roundtrips=1; cli_controls=3; "
+        "active_statuses=3; terminal_statuses=3; status_sets_disjoint=true; "
+        "recovery_lifecycle_validators=1; recovered_terminal_roundtrips=2; "
         f"fail_closed_mutations={rejected_mutations}"
     )
 

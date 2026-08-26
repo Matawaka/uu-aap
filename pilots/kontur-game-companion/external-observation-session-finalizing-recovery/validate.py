@@ -19,6 +19,7 @@ sys.dont_write_bytecode = True
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 RECOVER_PATH = HERE / "recover.py"
+CONTROL_PATH = ROOT / "pilots/kontur-game-companion/external-observation-session/control.py"
 FIXTURE = (
     ROOT
     / "pilots/kontur-game-companion/external-sandbox-sidecar-ingest/fixtures/synthetic-sidecar"
@@ -183,6 +184,20 @@ def assert_error(action):
     raise AssertionError("unsafe recovery input accepted")
 
 
+def run_control(arguments):
+    completed = subprocess.run(
+        [sys.executable, str(CONTROL_PATH), *arguments],
+        cwd=ROOT,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        timeout=10,
+        env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+    )
+    if completed.returncode != 0:
+        raise AssertionError(f"control lifecycle failed: {completed.stdout!r} {completed.stderr!r}")
+    return json.loads(completed.stdout.decode("utf-8"))
+
+
 def validate_positive():
     with tempfile.TemporaryDirectory(prefix="kontur-finalizing-recovery-") as name:
         case = prepare_case(name)
@@ -228,6 +243,39 @@ def validate_positive():
             raise AssertionError("recovery runtime source")
         if recovered_state["tail_catchup_complete"] is not True:
             raise AssertionError("tail continuity not materialized")
+
+        current_before_control = case["current_path"].read_bytes()
+        recovered_state_before_control = recovered_state_path.read_bytes()
+        receipt_before_control = receipt_path.read_bytes()
+        stop_path = case["session_control"] / "stop.request"
+        if stop_path.exists():
+            raise AssertionError("synthetic recovery unexpectedly has a stop request")
+        status = run_control(["status", "--control-root", str(case["control_root"])])
+        if status["status"] != "stopped_recovered" or status["observer_running"] is not False:
+            raise AssertionError("recovered status control compatibility")
+        stopped = run_control(
+            [
+                "stop",
+                "--control-root",
+                str(case["control_root"]),
+                "--stop-timeout-seconds",
+                "1",
+            ]
+        )
+        if stopped != recovered_state:
+            raise AssertionError("recovered stop must return the terminal state unchanged")
+        if stop_path.exists():
+            raise AssertionError("terminal recovered stop created a new stop request")
+        if case["current_path"].read_bytes() != current_before_control:
+            raise AssertionError("terminal status/stop changed current control")
+        if recovered_state_path.read_bytes() != recovered_state_before_control:
+            raise AssertionError("terminal status/stop changed recovered state")
+        if receipt_path.read_bytes() != receipt_before_control:
+            raise AssertionError("terminal status/stop changed recovery receipt")
+        if case["state_path"].read_bytes() != source_state_before:
+            raise AssertionError("terminal status/stop changed source state")
+        if tree_digest(case["sidecar_root"]) != sidecar_before:
+            raise AssertionError("terminal status/stop changed sidecar")
         assert_error(lambda: apply(case))
         return result
 
@@ -366,6 +414,7 @@ def main():
         "KONTUR finalizing control recovery: PASS; "
         f"recovered=1; rejected_mutations={rejected}; "
         "source_state_modified=0; sidecar_files_modified=0; "
+        "control_terminal_roundtrips=2; terminal_control_writes=0; "
         "tail_catchup_continuity_proven=true; new_observation_authorized=false; "
         f"result_digest={positive['recovery_result_digest']}"
     )
