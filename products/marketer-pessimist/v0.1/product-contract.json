@@ -1,0 +1,454 @@
+{
+  "schema_version": "0.1",
+  "document_class": "product_contract",
+  "contract_id": "marketer-pessimist-product-contract",
+  "contract_status": "candidate",
+  "identity": {
+    "canonicalization_profile": "uu-aap-product-contract-json-v0.1",
+    "hash_algorithm": "sha256",
+    "content_hash": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6"
+  },
+  "product": {
+    "id": "marketer-pessimist",
+    "name": "Маркетолог Пессимиста",
+    "version": "0.1",
+    "kind": "domain_product",
+    "maturity": "definition",
+    "portfolio_product": true,
+    "core_member": false,
+    "product_owner_role_id": "human-product-owner"
+  },
+  "frontier": {
+    "binding": "exact",
+    "repository": "Matawaka/uu-aap",
+    "revision": "70c1dfe0e2d4f3e8401050c4e7f56a5e76d11b4d",
+    "observed_at": "2026-08-26T18:28:03Z"
+  },
+  "purpose": {
+    "user_outcomes": [
+      "Separate observed evidence, interpretations, assumptions and hypotheses in a claim, plan or strategy",
+      "Generate counterarguments, causal alternatives, falsifiers, missing-evidence statements and explicit uncertainty",
+      "Prepare a bounded recommendation candidate for human review without executing or publishing it"
+    ],
+    "anti_goals": [
+      "Do not treat pessimism, criticism or a negative scenario as truth",
+      "Do not automatically reject, sabotage or suppress a claim, plan, product or person",
+      "Do not optimize persuasion, psychological pressure, personal vulnerability targeting or deceptive influence",
+      "Do not send campaigns, publish content, access advertising accounts, spend funds, upload audiences or mutate external systems"
+    ],
+    "target_contexts": [
+      "Review of marketing claims and positioning statements",
+      "Pre-launch stress testing of product, project or communication plans",
+      "Evidence-first review of strategic recommendations before human disposition"
+    ]
+  },
+  "actors": [
+    {
+      "id": "human-product-owner",
+      "kind": "human",
+      "description": "Human role that defines the review purpose, controls scope and records the final disposition.",
+      "responsibilities": [
+        "Define the exact claim, plan or strategy under review",
+        "Review evidence gaps, uncertainty and counterarguments",
+        "Accept, correct, narrow or reject the local candidate"
+      ],
+      "authority_source": "Explicit human assignment outside this contract",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "human-requester",
+      "kind": "human",
+      "description": "Human who supplies the bounded review request and the evidence package.",
+      "responsibilities": [
+        "State the intended decision context",
+        "Supply sources, constraints and known uncertainties",
+        "Avoid submitting data outside the declared product scope"
+      ],
+      "authority_source": "Explicit participation in the bounded review session",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "marketer-pessimist-analysis-system",
+      "kind": "ai_system",
+      "description": "Analysis component that stress-tests claims and produces a local candidate without external effects.",
+      "responsibilities": [
+        "Preserve source lineage",
+        "Distinguish evidence from interpretation, assumption and hypothesis",
+        "Generate counterarguments, causal alternatives and falsifiers",
+        "Expose missing evidence and uncertainty",
+        "Stop before publication, campaign execution or account mutation"
+      ],
+      "authority_source": "No independent authority; bounded by the exact contract and admitted local runtime",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": false
+    }
+  ],
+  "evidence": {
+    "inputs": [
+      {
+        "id": "claim-package",
+        "description": "The exact claim, plan or strategy statement, intended decision context and declared scope.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "claim-content"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "A bounded claim or plan, intended review purpose and explicit scope are present",
+        "freshness_policy": "Bound to the exact session input and contract frontier; any material edit creates a successor input",
+        "absence_handling": "fail_closed"
+      },
+      {
+        "id": "supporting-evidence",
+        "description": "Sources, observations, metrics and documents offered in support of or against the claim.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "evidence-bundle"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "Each supplied item has an attributable source or is explicitly marked as unverified",
+        "freshness_policy": "Every item declares its observation or publication frontier; stale evidence remains visible as stale",
+        "absence_handling": "unknown"
+      },
+      {
+        "id": "decision-constraints",
+        "description": "Declared objectives, constraints, unacceptable outcomes and success conditions for the review.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "decision-context"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "At least one objective and one constraint or an explicit statement that constraints are unknown",
+        "freshness_policy": "Bound to the current human review session and invalidated by a material context change",
+        "absence_handling": "unknown"
+      }
+    ],
+    "derived_claims_require_lineage": true,
+    "missing_evidence_is_not_negative_evidence": true,
+    "available_evidence_is_not_permission_to_inspect": true
+  },
+  "boundary_invariants": {
+    "possibility_implies_intent": false,
+    "exposure_implies_intent": false,
+    "intent_implies_authority": false,
+    "authority_implies_execution": false,
+    "contract_implies_action_permit": false,
+    "dependency_implies_authority_transfer": false,
+    "product_success_implies_core_requirement": false,
+    "stored_relation_implies_permitted_correlation": false,
+    "available_evidence_implies_active_knowledge": false
+  },
+  "data_governance": {
+    "classes": [
+      {
+        "id": "claim-content",
+        "class": "internal",
+        "collection_scope": "Only the exact claim, plan, strategy statement and context intentionally submitted for review",
+        "minimization_rule": "Exclude unrelated personal data, account credentials, audience lists and hidden contextual data",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the bounded review is closed or the human owner requests earlier deletion",
+        "disclosure_scope": "Human requester, human product owner and the admitted local analysis component only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "evidence-bundle",
+        "class": "internal",
+        "collection_scope": "Only sources and observations intentionally supplied for the declared claim stress test",
+        "minimization_rule": "Store source references and minimum necessary excerpts rather than full unrelated documents",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the bounded review is closed or its evidence package is superseded",
+        "disclosure_scope": "Declared review roles only; no external publication or campaign use",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "decision-context",
+        "class": "confidential",
+        "collection_scope": "Only objectives, constraints and unacceptable outcomes necessary for the declared review",
+        "minimization_rule": "Do not collect advertising credentials, financial account access or identifiable audience records",
+        "retention_mode": "bounded",
+        "retention_limit": "Until human disposition or explicit cancellation of the review",
+        "disclosure_scope": "Human product owner and admitted analysis component only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "derived-stress-test",
+        "class": "derived",
+        "collection_scope": "Counterarguments, causal alternatives, falsifiers, evidence gaps, uncertainty and recommendation candidates derived inside the bounded review",
+        "minimization_rule": "Do not add personal profiles, protected-attribute inferences or psychological vulnerability models",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the review is closed, corrected or superseded by a successor state",
+        "disclosure_scope": "Human product owner and requester only; no automatic publication",
+        "correction_supported": true,
+        "deletion_supported": true
+      }
+    ],
+    "default_minimization": true,
+    "purpose_limitation": true,
+    "cross_context_correlation_default": "denied",
+    "identity_resolution_default": "denied",
+    "retention_extension_requires_human_gate": true
+  },
+  "contract_effect": {
+    "describes_product_boundary": true,
+    "execution_authorized": false,
+    "action_permit_created": false,
+    "responsibility_accepted": false,
+    "stable_core_promotion_authorized": false,
+    "legal_outcome_established": false
+  },
+  "effects": {
+    "analysis_effects": [
+      {
+        "id": "claim-decomposition",
+        "description": "Separate the submitted material into observed evidence, interpretation, assumption, hypothesis and declared objective.",
+        "external_effect": false
+      },
+      {
+        "id": "counterargument-map",
+        "description": "Generate bounded counterarguments and identify the evidence or hypothesis supporting each one.",
+        "external_effect": false
+      },
+      {
+        "id": "causal-alternative-map",
+        "description": "Generate alternative causal explanations without treating them as established facts.",
+        "external_effect": false
+      },
+      {
+        "id": "falsifier-map",
+        "description": "Define observations or tests that would weaken or falsify material claims or recommendations.",
+        "external_effect": false
+      },
+      {
+        "id": "missing-evidence-map",
+        "description": "Identify absent, stale, conflicting or insufficient evidence and preserve UNKNOWN where resolution is unavailable.",
+        "external_effect": false
+      },
+      {
+        "id": "bounded-recommendation-candidate",
+        "description": "Prepare a local recommendation candidate with uncertainty, alternatives and non-effects for human disposition.",
+        "external_effect": false
+      }
+    ],
+    "external_effects": [],
+    "default_external_effect_admission": "denied"
+  },
+  "human_gates": [
+    {
+      "id": "analysis-disposition-gate",
+      "trigger": "Before any stress-test output is treated as a recommendation or successor decision",
+      "owner_role_id": "human-product-owner",
+      "required_evidence_ids": [
+        "claim-package",
+        "supporting-evidence",
+        "decision-constraints"
+      ],
+      "decision_values": [
+        "REJECT",
+        "CORRECT",
+        "REQUEST_MORE_EVIDENCE",
+        "ACCEPT_FOR_HUMAN_USE"
+      ],
+      "default_decision": "REJECT",
+      "fail_closed": true,
+      "expires_after": "Any material input, constraint, evidence or contract-frontier change",
+      "records_receipt_type": "MarketerPessimistDispositionReceipt"
+    }
+  ],
+  "failure_uncertainty": {
+    "states": [
+      "UNKNOWN",
+      "CONFLICT",
+      "INSUFFICIENT_EVIDENCE",
+      "CANDIDATE_READY",
+      "REJECTED",
+      "ACCEPTED_FOR_HUMAN_USE"
+    ],
+    "terminal_states": [
+      "INSUFFICIENT_EVIDENCE",
+      "REJECTED",
+      "ACCEPTED_FOR_HUMAN_USE"
+    ],
+    "unknown_is_success": false,
+    "automatic_retry_on_unknown": false,
+    "observe_before_retry": true,
+    "conflict_requires_reconciliation": true,
+    "reconciliation_owner_role_id": "human-product-owner"
+  },
+  "contestability": {
+    "challenge_supported": true,
+    "correction_supported": true,
+    "appeal_mode": "human_review",
+    "challenge_owner_role_id": "human-product-owner",
+    "challenge_input_scope": "Source lineage, evidence classification, assumptions, counterarguments, causal alternatives, falsifiers, uncertainty and recommendation wording",
+    "decision_receipt_required": true,
+    "original_evidence_preserved": true,
+    "correction_creates_successor_state": true
+  },
+  "dependencies": [
+    {
+      "id": "uu-aap-core",
+      "kind": "core",
+      "version_range": "v0.1",
+      "relationship": "Consumes typed evidence, intent, authority, action-gate and successor-state distinctions",
+      "required": true,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "ial",
+      "kind": "language",
+      "version_range": "v0.1",
+      "relationship": "Expresses the bounded review request and human handoff without execution admission",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "ai-transport",
+      "kind": "transport",
+      "version_range": "v0.1",
+      "relationship": "Potential future carrier of exact-bound requests and receipts; unused for external effects in this contract",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "freeshield",
+      "kind": "protective",
+      "version_range": "v0.1-candidate",
+      "relationship": "Planned protective review dependency after a separate FREESHIELD contract is materialized",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    }
+  ],
+  "receipts": [
+    {
+      "type": "MarketerPessimistStressTestReceipt",
+      "purpose": "Record the exact claim package, evidence lineage, classifications, counterarguments, causal alternatives, falsifiers, missing evidence and uncertainty.",
+      "assertions": [
+        "The stress test is bound to the exact contract hash and input frontier",
+        "Derived factual statements carry lineage or are marked as interpretation, assumption or hypothesis",
+        "The output preserves UNKNOWN and CONFLICT where evidence is insufficient or inconsistent"
+      ],
+      "non_effects": [
+        "The receipt does not certify truth",
+        "The receipt does not reject the claim or person",
+        "The receipt does not authorize publication, campaign execution, spending, targeting or account mutation"
+      ],
+      "predecessor_bindings": [
+        "Product contract content hash",
+        "Claim package evidence receipt",
+        "Supporting evidence receipt",
+        "Decision constraints receipt"
+      ],
+      "successor_state_emitted": true
+    },
+    {
+      "type": "MarketerPessimistDispositionReceipt",
+      "purpose": "Record the human review disposition for one exact stress-test candidate.",
+      "assertions": [
+        "The human disposition, scope and reviewed candidate are explicit",
+        "Any correction or narrowing creates a successor state"
+      ],
+      "non_effects": [
+        "Human acceptance for local use is not campaign or publication authority",
+        "Disposition is not proof that any external effect occurred"
+      ],
+      "predecessor_bindings": [
+        "MarketerPessimistStressTestReceipt",
+        "Current contract frontier",
+        "Human gate decision"
+      ],
+      "successor_state_emitted": true
+    }
+  ],
+  "success_criteria": {
+    "criteria": [
+      {
+        "id": "material-claim-classification",
+        "metric": "Material statements are classified as evidence, interpretation, assumption, hypothesis or declared objective",
+        "threshold": "100 percent of material statements in the bounded input are classified or explicitly marked UNKNOWN",
+        "evidence_source_ids": [
+          "claim-package",
+          "supporting-evidence"
+        ],
+        "falsification_condition": "A material factual statement is presented without lineage, classification or uncertainty"
+      },
+      {
+        "id": "recommendation-falsifiability",
+        "metric": "Every recommendation candidate exposes at least one falsifier or explicit reason that falsification is currently unavailable",
+        "threshold": "100 percent of recommendation candidates include a falsifier, test or UNKNOWN statement",
+        "evidence_source_ids": [
+          "claim-package",
+          "supporting-evidence",
+          "decision-constraints"
+        ],
+        "falsification_condition": "A recommendation is presented as robust without any test, countercondition or uncertainty"
+      },
+      {
+        "id": "no-external-effect",
+        "metric": "The product contract and contract validation perform no external effect",
+        "threshold": "Zero campaign, publication, spending, targeting, account or external-system mutations",
+        "evidence_source_ids": [
+          "claim-package"
+        ],
+        "falsification_condition": "Any external mutation is performed or authorized by this contract"
+      }
+    ],
+    "success_creates_successor_authority": false,
+    "failure_creates_liability": false
+  },
+  "ip_boundary": {
+    "object_id": "marketer-pessimist-product-contract-v0.1",
+    "included_artifacts": [
+      "products/marketer-pessimist/v0.1/product-contract.json",
+      "products/marketer-pessimist/v0.1/README.ru.md",
+      "products/marketer-pessimist/v0.1/validate_contract.py",
+      ".github/workflows/marketer-pessimist-contract-v0.1-validation.yml"
+    ],
+    "excluded_artifacts": [
+      "Runtime implementation, model weights, future versions, campaign integrations, advertising accounts and third-party dependencies",
+      "General marketing methods, abstract ideas and off-repository product artifacts not embodied in the listed files"
+    ],
+    "future_versions_included": false,
+    "registration_claimed": false,
+    "legal_outcome_claimed": false,
+    "license_scope": "Repository license; exact Product Contract v0.1 artifact scope only"
+  },
+  "assertions": [
+    "Product boundary described for the declared version and frontier",
+    "Effects are descriptive and denied by default",
+    "Human gates and contestability are explicit",
+    "Data handling is purpose-limited",
+    "Маркетолог Пессимиста is bounded to local evidence-first claim and strategy stress testing",
+    "Pessimism and counterargument generation do not receive privileged truth status"
+  ],
+  "non_effects": [
+    "Product Contract != Product Runtime",
+    "Product Contract != ActionPermit",
+    "Described Effect != Authorized Effect",
+    "Dependency Edge != Authority Transfer",
+    "Product Success != Stable-Core Requirement",
+    "Contract Acceptance != Responsibility Acceptance",
+    "Contract Version != Future Version",
+    "IP Object Boundary != Registration Outcome",
+    "Pessimistic Analysis != Truth",
+    "Counterargument != Rejection",
+    "Risk Hypothesis != Proof of Harm",
+    "Negative Possibility != Negative Intent or Liability",
+    "Audience Description != Permission to Profile a Person",
+    "Marketing Recommendation != Campaign Authority",
+    "Candidate Output != Publication Authority",
+    "Available Evidence != Permission to Inspect",
+    "Missing Evidence != Negative Evidence"
+  ]
+}

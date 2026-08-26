@@ -2,7 +2,8 @@
 
 **Status:** portfolio-oriented successor to the original Public Draft roadmap  
 **Portfolio baseline:** `55dda89ac681e2c7ffbc90f00fe33852c35e8c65` (PR #513)  
-**Current reusable-layer increment:** Issue #514  
+**Reusable Product Contract baseline:** `70c1dfe0e2d4f3e8401050c4e7f56a5e76d11b4d` (PR #515)  
+**Current product-definition increment:** Issue #516  
 **Related:** completed Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
 
 This roadmap reflects the implemented repository rather than the original August 2026 public-draft plan.
@@ -46,7 +47,8 @@ The repository already contains:
 - KONTUR server responsibility kernel;
 - an extensive KONTUR Game Companion line including synthetic dialogue, authority/binding/activation boundaries, bounded local trials, read-only external observation, recovery and privacy-minimized field evidence;
 - a privacy-preserving IP rights/filing pipeline for exact software objects;
-- Product Contract v0.1 schema, reusable template, exact-frontier no-effect example and fail-closed validator.
+- Product Contract v0.1 schema, reusable template, exact-frontier no-effect example and fail-closed validator;
+- a candidate Product Contract v0.1 for Маркетолог Пессимиста, bounded to local evidence-first claim stress testing with no external effects.
 
 The applicant reports that the selected Core software-registration application has been submitted externally. The repository must record that milestone only through a separate privacy-safe evidence checkpoint; submission does not establish registration.
 
@@ -75,7 +77,7 @@ The reusable Product Contract is documented at [`schemas/product-contract/v0.1/`
 
 Materialize product contracts in this order:
 
-1. **Маркетолог Пессимиста** — evidence/claim stress testing, counterarguments, falsifiers and missing evidence; no campaign send or autonomous persuasion.
+1. **Маркетолог Пессимиста** — current candidate at [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); evidence/claim stress testing, counterarguments, falsifiers and missing evidence; no campaign send, profiling or autonomous persuasion.
 2. **FREESHIELD** — exact protective-plane role and authority ceiling; risk surfacing and scope narrowing without automatic sanction or product ownership.
 3. **Честный найм** — evidence-first, job-relevant, contestable decision support; no automatic rejection, protected-attribute inference or unappealable ranking.
 4. **KONTUR Product Family Contract** — bind the server responsibility kernel and Game Companion while keeping pilot evidence out of Stable Core.
@@ -171,8 +173,8 @@ A release candidate is not automatically a release, standard, certification or l
 
 1. **Completed:** Ecosystem State + Portfolio Manifest + Roadmap (#513).
 2. **Evidence-gated:** privacy-safe filing checkpoint after a private receipt digest exists.
-3. **Current:** reusable Product Contract v0.1 (Issue #514).
-4. Маркетолог Пессимиста Product Contract v0.1.
+3. **Completed:** reusable Product Contract v0.1 (#515).
+4. **Current:** Маркетолог Пессимиста Product Contract v0.1 (Issue #516).
 5. FREESHIELD Protective Contract v0.1.
 6. Честный найм Product Contract v0.1.
 7. IAL Compact Envelope + CLI conformance.
