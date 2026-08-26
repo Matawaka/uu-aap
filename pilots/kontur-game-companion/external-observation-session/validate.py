@@ -19,6 +19,8 @@ CONFIG_PATH = HERE / "runtime-config.json"
 POLICY_PATH = HERE / "runtime-collection-policy.json"
 INGEST_PATH = HERE.parent / "external-sandbox-sidecar-ingest" / "ingest.py"
 RECOVERY_VALIDATE = HERE.parent / "external-observation-session-finalizing-recovery" / "validate.py"
+TERMINAL_COMMIT = HERE / "terminal-state-commit.js"
+TERMINAL_COMMIT_VALIDATE = HERE / "validate-terminal-state-commit.js"
 DECISION = "ALLOW_THIS_BOUNDED_SANITIZED_LOG_OBSERVATION_SESSION"
 
 FALSE_FIELDS = (
@@ -138,6 +140,7 @@ def main():
     assert policy["resource_targets"]["budget_violation_effect"] == "stop_session_and_record_unverified_resource_result"
 
     source = OBSERVER.read_text(encoding="utf-8")
+    terminal_commit_source = TERMINAL_COMMIT.read_text(encoding="utf-8")
     for forbidden in (
         'require("net")', 'require("http")', 'require("https")', 'require("dgram")',
         'require("child_process")', "process.stdin", "WebSocket", "fetch(",
@@ -148,10 +151,22 @@ def main():
     assert "config.max_session_bytes" in source
     assert "config.max_final_catchup_bytes" in source
     assert "config.working_set_mib_limit" in source
+    assert 'require("./terminal-state-commit")' in source
+    assert "commitTerminalJson(statePath, state(\"stopped\"" in source
+    assert "fs.fsyncSync(descriptor)" in terminal_commit_source
+    assert "exact_payload_verified: true" in terminal_commit_source
     finalize_start = source.index("function finalize(reason")
     final_scan = source.index("scanLogs();", finalize_start)
+    final_receipt_create = source.index('createJson(path.join(sessionDir, "session-final.json")', finalize_start)
+    final_receipt_marker = source.index("finalReceiptCreated = true;", finalize_start)
+    terminal_state_commit = source.index('commitTerminalJson(statePath, state("stopped"', finalize_start)
     finalized_true = source.index("finalized = true;", finalize_start)
-    assert final_scan < finalized_true, "tail scan must precede finalized marker"
+    recovery_preserving_guard = source.index("if (!finalReceiptCreated)", finalize_start)
+    assert final_scan < final_receipt_create < final_receipt_marker < terminal_state_commit < finalized_true, (
+        "tail scan, final receipt, verified terminal commit, finalized marker order"
+    )
+    assert terminal_state_commit < recovery_preserving_guard
+    assert 'commitTerminalJson(statePath, state("faulted"' in source[recovery_preserving_guard:]
 
     rejected_mutations = 0
     config_mutations = [
@@ -186,6 +201,21 @@ def main():
 
     node = shutil.which("node")
     assert node, "Node.js required for observer validation"
+    terminal_commit_validation = subprocess.run(
+        [node, str(TERMINAL_COMMIT_VALIDATE)],
+        check=False,
+        capture_output=True,
+        text=True,
+        timeout=20,
+    )
+    if terminal_commit_validation.returncode != 0:
+        raise AssertionError(
+            "terminal state commit validation failed: "
+            f"{terminal_commit_validation.stdout} {terminal_commit_validation.stderr}"
+        )
+    assert "transient_rename_failures=3" in terminal_commit_validation.stdout
+    assert "persistent_retryable_fail_closed=1" in terminal_commit_validation.stdout
+    assert "fsync_and_exact_verify=true" in terminal_commit_validation.stdout
     raw_identifier = "12345678901234567"
     control_root = None
     with tempfile.TemporaryDirectory(prefix="kontur-observation-runtime-") as temp:
@@ -311,6 +341,7 @@ def main():
         "KONTUR external observation session validation: PASS; "
         "synthetic_sessions=1; tail_race_cases=1; ingest_roundtrips=1; cli_controls=3; "
         "active_statuses=3; terminal_statuses=3; status_sets_disjoint=true; "
+        "terminal_state_commit_validators=1; transient_commit_failures_recovered=5; "
         "recovery_lifecycle_validators=1; recovered_terminal_roundtrips=2; "
         f"fail_closed_mutations={rejected_mutations}"
     )

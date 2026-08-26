@@ -20,6 +20,7 @@ completed sidecar ingest
   -> manual game launch by the human
   -> sanitized aggregate receipts
   -> explicit stop / resource stop / four-hour ceiling
+  -> fsync + bounded rename retry + exact terminal-state verification
   -> completed sidecar ingest required again
 ```
 
@@ -56,7 +57,11 @@ sequence for a distinct observation session.
 The launcher kills only its own observer child if readiness fails, preventing a hidden
 orphan. Stop requests carry an unguessable session-local token. The observer performs a
 bounded final catch-up before marking itself finalized, fixing the historical tail-loss
-race.
+race. After creating the final receipt, terminal control state is committed through a
+separate fsynced temporary file, bounded retries for transient Windows
+`EPERM`/`EACCES`/`EBUSY`, and exact payload verification. Retry exhaustion never rewrites
+the final receipt: the state remains reviewable by the separate finalizing-recovery
+adapter.
 
 ## Resource and data bounds
 

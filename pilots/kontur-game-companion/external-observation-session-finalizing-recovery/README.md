@@ -6,6 +6,10 @@ This optional adapter handles one narrow failure: the observer process is no
 longer running and a valid `session-final.json` plus matching `final_checkpoint`
 exist, but the local control state remains `finalizing`.
 
+The ordinary observer now uses a bounded fsynced and verified terminal-state
+commit to reduce recurrence. This adapter remains the fail-closed fallback when
+that bounded commit is exhausted; prevention does not remove recovery evidence.
+
 ```text
 dead observer + finalizing control state
   + valid completed-session ingest

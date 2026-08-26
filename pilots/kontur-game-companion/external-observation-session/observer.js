@@ -6,6 +6,7 @@ const crypto = require("crypto");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
+const { commitTerminalJson } = require("./terminal-state-commit");
 
 function parseArgs(argv) {
   const result = {};
@@ -406,8 +407,9 @@ function closeRuntime() {
 function finalize(reason, exitCode = 0) {
   if (finalizing || finalized) return;
   finalizing = true;
-  writeState(statePath, state("finalizing"));
+  let finalReceiptCreated = false;
   try {
+    writeState(statePath, state("finalizing"));
     let catchup = 0;
     let stablePasses = 0;
     while (stablePasses < 2) {
@@ -445,20 +447,27 @@ function finalize(reason, exitCode = 0) {
     };
     finalReceipt.content_hash = `sha256:${hashValue({ ...finalReceipt, content_hash: null })}`;
     createJson(path.join(sessionDir, "session-final.json"), finalReceipt);
-    finalized = true;
-    writeState(statePath, state("stopped", {
+    finalReceiptCreated = true;
+    commitTerminalJson(statePath, state("stopped", {
       ended_at: endedAt.toISOString(),
       stop_reason: reason,
       final_receipt_relative_path: `sessions/${args["session-id"]}/session-final.json`,
       tail_catchup_complete: true,
     }));
+    finalized = true;
   } catch (error) {
     finalized = true;
-    writeState(statePath, state("faulted", {
-      fault_at: new Date().toISOString(),
-      fault_class: error.name,
-      tail_catchup_complete: false,
-    }));
+    if (!finalReceiptCreated) {
+      try {
+        commitTerminalJson(statePath, state("faulted", {
+          fault_at: new Date().toISOString(),
+          fault_class: error.name,
+          tail_catchup_complete: false,
+        }));
+      } catch (_commitError) {
+        // Preserve finalizing for manual review when even bounded fault commit fails.
+      }
+    }
     exitCode = 1;
   } finally {
     closeRuntime();
