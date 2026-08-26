@@ -1,0 +1,490 @@
+{
+  "schema_version": "0.1",
+  "document_class": "product_contract",
+  "contract_id": "freeshield-protective-contract",
+  "contract_status": "candidate",
+  "identity": {
+    "canonicalization_profile": "uu-aap-product-contract-json-v0.1",
+    "hash_algorithm": "sha256",
+    "content_hash": "sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295"
+  },
+  "product": {
+    "id": "freeshield",
+    "name": "FREESHIELD",
+    "version": "0.1",
+    "kind": "protective_plane",
+    "maturity": "definition",
+    "portfolio_product": true,
+    "core_member": false,
+    "product_owner_role_id": "human-protection-owner"
+  },
+  "frontier": {
+    "binding": "exact",
+    "repository": "Matawaka/uu-aap",
+    "revision": "c831b643a9b984a274c5093033c28ea4a8a26794",
+    "observed_at": "2026-08-26T19:01:48Z"
+  },
+  "purpose": {
+    "user_outcomes": [
+      "Inspect one exact product request or effect candidate against declared contract, authority, evidence and frontier boundaries",
+      "Produce a scoped protective outcome candidate: ALLOW_ANALYSIS, NARROW_SCOPE, REQUIRE_EVIDENCE, HUMAN_REVIEW or BLOCK_EFFECT",
+      "Preserve uncertainty, contestability and human responsibility without executing, sanctioning or creating authority"
+    ],
+    "anti_goals": [
+      "Do not execute, permit, deny or physically block an actuator",
+      "Do not treat a risk hypothesis, missing evidence or a protective outcome as proof of harm, intent, guilt, illegality or liability",
+      "Do not create global actor or product scores, hidden blacklists, sanctions, account restrictions or permanent prohibitions",
+      "Do not infer protected attributes, identity across contexts or psychological vulnerability, and do not inspect undeclared data",
+      "Do not own another product, replace its responsible human role or broaden any authority scope"
+    ],
+    "target_contexts": [
+      "Pre-admission review of a product analysis request",
+      "Pre-admission review of a separately proposed external effect candidate",
+      "Protective review of product-contract, evidence, scope and frontier consistency before human disposition"
+    ]
+  },
+  "actors": [
+    {
+      "id": "human-protection-owner",
+      "kind": "human",
+      "description": "Human role that owns the FREESHIELD contract boundary and records the final protective disposition.",
+      "responsibilities": [
+        "Define the protective review purpose and admissible evidence scope",
+        "Review uncertainty, conflicts and proposed protective outcomes",
+        "Accept, correct, narrow or reject the local protective assessment"
+      ],
+      "authority_source": "Explicit human assignment outside this contract",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "human-request-owner",
+      "kind": "human",
+      "description": "Human role responsible for the product request or effect candidate submitted for protective review.",
+      "responsibilities": [
+        "Supply the exact request or effect candidate and intended outcome",
+        "Supply product-contract, authority, scope and relevant constraint evidence",
+        "Correct or withdraw the candidate when evidence or scope changes"
+      ],
+      "authority_source": "Responsibility for the submitted candidate established outside this contract",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "freeshield-analysis-system",
+      "kind": "ai_system",
+      "description": "Local protective analysis component that produces a bounded assessment candidate without external effects.",
+      "responsibilities": [
+        "Preserve evidence and contract lineage",
+        "Separate observed boundary mismatches from risk hypotheses and interpretation",
+        "Identify missing, stale or conflicting evidence",
+        "Propose only the declared protective outcomes",
+        "Stop before actuator admission, notification, sanction or external mutation"
+      ],
+      "authority_source": "No independent authority; bounded by the exact contract and admitted local runtime",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": false
+    }
+  ],
+  "evidence": {
+    "inputs": [
+      {
+        "id": "request-or-effect-candidate",
+        "description": "The exact product request or proposed effect, target, payload or operation digest, intended outcome and declared scope.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "candidate-envelope"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "The candidate, intended outcome, exact scope and whether it is analysis-only or externally effectful are explicit",
+        "freshness_policy": "Bound to the exact candidate digest and current review session; any material edit creates a successor candidate",
+        "absence_handling": "fail_closed"
+      },
+      {
+        "id": "product-contract-and-authority-evidence",
+        "description": "The applicable product contract, declared actor roles, authority source and any separately proposed ActionPermit evidence.",
+        "source_class": "repository_artifact",
+        "data_class_ids": [
+          "contract-authority-bundle"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "An exact product-contract hash and authority lineage are present; absence of ActionPermit remains explicit",
+        "freshness_policy": "Contract and authority evidence must match the exact reviewed frontier and candidate",
+        "absence_handling": "fail_closed"
+      },
+      {
+        "id": "constraints-and-non-effects",
+        "description": "Declared policy, safety, privacy, legal, product and human constraints together with explicit non-effects.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "constraint-bundle"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "Every binding constraint has an attributable source, scope and applicability statement",
+        "freshness_policy": "Bound to the reviewed candidate and invalidated by a material policy, purpose or scope change",
+        "absence_handling": "unknown"
+      },
+      {
+        "id": "frontier-observation",
+        "description": "Observed repository, resource or target state needed to evaluate staleness, conflict and exact-scope consistency.",
+        "source_class": "system_observed",
+        "data_class_ids": [
+          "frontier-state"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "The relevant state identifier, observation time and observer are present",
+        "freshness_policy": "Must be re-observed when the candidate, target or referenced contract frontier changes",
+        "absence_handling": "unknown"
+      }
+    ],
+    "derived_claims_require_lineage": true,
+    "missing_evidence_is_not_negative_evidence": true,
+    "available_evidence_is_not_permission_to_inspect": true
+  },
+  "boundary_invariants": {
+    "possibility_implies_intent": false,
+    "exposure_implies_intent": false,
+    "intent_implies_authority": false,
+    "authority_implies_execution": false,
+    "contract_implies_action_permit": false,
+    "dependency_implies_authority_transfer": false,
+    "product_success_implies_core_requirement": false,
+    "stored_relation_implies_permitted_correlation": false,
+    "available_evidence_implies_active_knowledge": false
+  },
+  "data_governance": {
+    "classes": [
+      {
+        "id": "candidate-envelope",
+        "class": "internal",
+        "collection_scope": "Only the exact request/effect description, target, operation or payload digest, intended outcome and declared scope",
+        "minimization_rule": "Exclude unrelated payload content, credentials, personal profiles and undeclared contextual data",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the protective disposition is closed or the candidate is superseded",
+        "disclosure_scope": "Human request owner, human protection owner and admitted local analysis component only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "contract-authority-bundle",
+        "class": "confidential",
+        "collection_scope": "Only exact product-contract, role, authority-lineage and permit-candidate fields required for the review",
+        "minimization_rule": "Do not collect credentials, unrelated permissions or authority evidence outside the candidate scope",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the protective disposition is closed or authority evidence expires",
+        "disclosure_scope": "Human protection owner and admitted local analysis component only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "constraint-bundle",
+        "class": "internal",
+        "collection_scope": "Only constraints and non-effects applicable to the exact candidate and declared context",
+        "minimization_rule": "Preserve source references and minimum necessary excerpts; do not import unrelated rules or personal records",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the review is closed or constraints are superseded",
+        "disclosure_scope": "Declared review roles only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "frontier-state",
+        "class": "ephemeral",
+        "collection_scope": "Only state identifiers, observation times and minimum target facts required for staleness and conflict checks",
+        "minimization_rule": "Do not expand observation into surveillance, identity resolution or unrelated telemetry",
+        "retention_mode": "session",
+        "retention_limit": "End of the bounded review session",
+        "disclosure_scope": "Declared review roles only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "protective-assessment",
+        "class": "derived",
+        "collection_scope": "Evidence sufficiency, scope mismatch, risk hypotheses, uncertainty, conflicts and one protective outcome candidate",
+        "minimization_rule": "Do not create global scores, blacklists, guilt labels, diagnoses or protected-attribute inferences",
+        "retention_mode": "bounded",
+        "retention_limit": "Until human disposition, correction or successor-state replacement",
+        "disclosure_scope": "Human protection owner and human request owner only",
+        "correction_supported": true,
+        "deletion_supported": true
+      }
+    ],
+    "default_minimization": true,
+    "purpose_limitation": true,
+    "cross_context_correlation_default": "denied",
+    "identity_resolution_default": "denied",
+    "retention_extension_requires_human_gate": true
+  },
+  "contract_effect": {
+    "describes_product_boundary": true,
+    "execution_authorized": false,
+    "action_permit_created": false,
+    "responsibility_accepted": false,
+    "stable_core_promotion_authorized": false,
+    "legal_outcome_established": false
+  },
+  "effects": {
+    "analysis_effects": [
+      {
+        "id": "candidate-envelope-inspection",
+        "description": "Inspect the exact candidate, declared outcome, target and scope without executing it.",
+        "external_effect": false
+      },
+      {
+        "id": "contract-authority-consistency-check",
+        "description": "Compare the candidate to the exact product contract and declared authority lineage without creating or broadening authority.",
+        "external_effect": false
+      },
+      {
+        "id": "evidence-sufficiency-assessment",
+        "description": "Identify sufficient, missing, stale, conflicting or unavailable evidence and preserve UNKNOWN.",
+        "external_effect": false
+      },
+      {
+        "id": "scope-risk-hypothesis-map",
+        "description": "Map scope mismatches and bounded risk hypotheses without treating them as proof of harm, intent or liability.",
+        "external_effect": false
+      },
+      {
+        "id": "protective-outcome-candidate",
+        "description": "Produce exactly one candidate outcome: ALLOW_ANALYSIS, NARROW_SCOPE, REQUIRE_EVIDENCE, HUMAN_REVIEW or BLOCK_EFFECT.",
+        "external_effect": false
+      },
+      {
+        "id": "protective-reconciliation-candidate",
+        "description": "Prepare a local reconciliation candidate when evidence or observations are UNKNOWN or CONFLICT.",
+        "external_effect": false
+      }
+    ],
+    "external_effects": [],
+    "default_external_effect_admission": "denied"
+  },
+  "human_gates": [
+    {
+      "id": "protective-disposition-gate",
+      "trigger": "Before a FREESHIELD assessment is treated as a protective disposition or consumed by another product gate",
+      "owner_role_id": "human-protection-owner",
+      "required_evidence_ids": [
+        "request-or-effect-candidate",
+        "product-contract-and-authority-evidence",
+        "constraints-and-non-effects",
+        "frontier-observation"
+      ],
+      "decision_values": [
+        "REJECT_ASSESSMENT",
+        "CORRECT_ASSESSMENT",
+        "REQUEST_MORE_EVIDENCE",
+        "ACCEPT_PROTECTIVE_ASSESSMENT"
+      ],
+      "default_decision": "REJECT_ASSESSMENT",
+      "fail_closed": true,
+      "expires_after": "Any material candidate, contract, authority, constraint, target-state or frontier change",
+      "records_receipt_type": "FreeShieldDispositionReceipt"
+    }
+  ],
+  "failure_uncertainty": {
+    "states": [
+      "UNKNOWN",
+      "CONFLICT",
+      "INSUFFICIENT_EVIDENCE",
+      "SCOPE_UNBOUND",
+      "ASSESSMENT_READY",
+      "REJECTED",
+      "ACCEPTED_PROTECTIVE_ASSESSMENT"
+    ],
+    "terminal_states": [
+      "INSUFFICIENT_EVIDENCE",
+      "SCOPE_UNBOUND",
+      "REJECTED",
+      "ACCEPTED_PROTECTIVE_ASSESSMENT"
+    ],
+    "unknown_is_success": false,
+    "automatic_retry_on_unknown": false,
+    "observe_before_retry": true,
+    "conflict_requires_reconciliation": true,
+    "reconciliation_owner_role_id": "human-protection-owner"
+  },
+  "contestability": {
+    "challenge_supported": true,
+    "correction_supported": true,
+    "appeal_mode": "human_review",
+    "challenge_owner_role_id": "human-protection-owner",
+    "challenge_input_scope": "Candidate identity and scope, product-contract interpretation, authority lineage, evidence sufficiency, constraint applicability, risk hypotheses, protective outcome and observed frontier",
+    "decision_receipt_required": true,
+    "original_evidence_preserved": true,
+    "correction_creates_successor_state": true
+  },
+  "dependencies": [
+    {
+      "id": "uu-aap-core",
+      "kind": "core",
+      "version_range": "v0.1",
+      "relationship": "Consumes typed evidence, authority, action-gate, observation and successor-state distinctions",
+      "required": true,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "ial",
+      "kind": "language",
+      "version_range": "v0.1",
+      "relationship": "May express the exact review request and human handoff without execution admission",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "ai-transport",
+      "kind": "transport",
+      "version_range": "v0.1",
+      "relationship": "Potential carrier of exact-bound evidence and receipts; transport does not define protective authority",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "kontur",
+      "kind": "runtime",
+      "version_range": "v0.1",
+      "relationship": "Potential bounded responsibility runtime for future protective assessment; unused for external effects in this contract",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    }
+  ],
+  "receipts": [
+    {
+      "type": "FreeShieldProtectiveAssessmentReceipt",
+      "purpose": "Record the exact candidate, contract and authority lineage, evidence sufficiency, scope findings, risk hypotheses, uncertainty and one protective outcome candidate.",
+      "assertions": [
+        "The assessment is bound to the exact contract hash, candidate digest and observed frontier",
+        "Observed mismatches are separated from hypotheses, interpretation and uncertainty",
+        "The protective outcome candidate is one of ALLOW_ANALYSIS, NARROW_SCOPE, REQUIRE_EVIDENCE, HUMAN_REVIEW or BLOCK_EFFECT"
+      ],
+      "non_effects": [
+        "The receipt does not execute, permit or physically block an actuator",
+        "The receipt does not prove harm, intent, guilt, illegality or liability",
+        "BLOCK_EFFECT is not a global prohibition, sanction, blacklist entry or permanent product judgment",
+        "The receipt does not create, broaden, renew or infer an ActionPermit"
+      ],
+      "predecessor_bindings": [
+        "Product contract content hash",
+        "Request or effect candidate digest",
+        "Authority and constraint evidence receipts",
+        "Observed frontier receipt"
+      ],
+      "successor_state_emitted": true
+    },
+    {
+      "type": "FreeShieldDispositionReceipt",
+      "purpose": "Record the human protective disposition for one exact assessment candidate.",
+      "assertions": [
+        "The reviewed assessment, human decision, scope and expiry boundary are explicit",
+        "Any correction, narrowing or evidence request creates a successor state"
+      ],
+      "non_effects": [
+        "Acceptance of a protective assessment is not execution authority",
+        "A protective disposition is not a legal judgment or proof that an external effect occurred",
+        "A consumer product must apply its own separate action gate and authority checks"
+      ],
+      "predecessor_bindings": [
+        "FreeShieldProtectiveAssessmentReceipt",
+        "Current product contract and frontier",
+        "Human protective-disposition gate decision"
+      ],
+      "successor_state_emitted": true
+    }
+  ],
+  "success_criteria": {
+    "criteria": [
+      {
+        "id": "exact-boundary-coverage",
+        "metric": "Every protective finding is bound to the exact candidate, contract/authority evidence, applicable constraint and frontier",
+        "threshold": "100 percent of material findings carry lineage or are marked UNKNOWN or hypothesis",
+        "evidence_source_ids": [
+          "request-or-effect-candidate",
+          "product-contract-and-authority-evidence",
+          "constraints-and-non-effects",
+          "frontier-observation"
+        ],
+        "falsification_condition": "A material protective finding is asserted without source lineage, scope or uncertainty classification"
+      },
+      {
+        "id": "outcome-scope-integrity",
+        "metric": "Every protective outcome remains within the five-value vocabulary and cannot broaden authority",
+        "threshold": "One declared outcome candidate with zero authority expansion and zero external effects",
+        "evidence_source_ids": [
+          "request-or-effect-candidate",
+          "product-contract-and-authority-evidence"
+        ],
+        "falsification_condition": "The assessment authorizes execution, creates a permit, imposes a global sanction or produces an undeclared outcome"
+      },
+      {
+        "id": "contestable-protection",
+        "metric": "The human can inspect evidence, uncertainty, reasoning scope and challenge/correct the assessment",
+        "threshold": "All accepted assessments have a human disposition receipt and correction path",
+        "evidence_source_ids": [
+          "request-or-effect-candidate",
+          "constraints-and-non-effects",
+          "frontier-observation"
+        ],
+        "falsification_condition": "A protective assessment is accepted without human disposition, challenge scope or preserved predecessor evidence"
+      }
+    ],
+    "success_creates_successor_authority": false,
+    "failure_creates_liability": false
+  },
+  "ip_boundary": {
+    "object_id": "freeshield-protective-contract-v0.1",
+    "included_artifacts": [
+      "products/freeshield/v0.1/product-contract.json",
+      "products/freeshield/v0.1/README.ru.md",
+      "products/freeshield/v0.1/validate_contract.py",
+      ".github/workflows/freeshield-contract-v0.1-validation.yml"
+    ],
+    "excluded_artifacts": [
+      "Future FREESHIELD versions, runtime implementations, actuators and external integrations",
+      "Reviewed product data, private evidence packages, policies and third-party dependencies",
+      "General ideas of safety, protection, moderation, compliance or risk review",
+      "Маркетолог Пессимиста, Честный найм, KONTUR and other product-specific contracts or implementations"
+    ],
+    "future_versions_included": false,
+    "registration_claimed": false,
+    "legal_outcome_claimed": false,
+    "license_scope": "Repository license; exact FREESHIELD Protective Contract v0.1 artifacts only"
+  },
+  "assertions": [
+    "Product boundary described for the declared version and frontier",
+    "Effects are descriptive and denied by default",
+    "Human gates and contestability are explicit",
+    "Data handling is purpose-limited",
+    "FREESHIELD is bounded to local evidence-first protective assessment of one exact candidate",
+    "A protective assessment may narrow or request review but cannot broaden authority",
+    "BLOCK_EFFECT denotes scoped non-admissibility of one exact effect candidate under the reviewed evidence and frontier"
+  ],
+  "non_effects": [
+    "Product Contract != Product Runtime",
+    "Product Contract != ActionPermit",
+    "Described Effect != Authorized Effect",
+    "Dependency Edge != Authority Transfer",
+    "Product Success != Stable-Core Requirement",
+    "Contract Acceptance != Responsibility Acceptance",
+    "Contract Version != Future Version",
+    "IP Object Boundary != Registration Outcome",
+    "Protective Review != Authority",
+    "Protective Assessment != ActionPermit",
+    "Risk Hypothesis != Proof of Harm",
+    "BLOCK_EFFECT != Global Prohibition",
+    "Scope Narrowing != Product Ownership",
+    "Human Review Requirement != Negative Judgment",
+    "Missing Evidence != Evidence of Safety or Harm",
+    "Protective Outcome != Legal Judgment",
+    "Protective Assessment != Sanction or Blacklist",
+    "Available Evidence != Permission to Inspect"
+  ]
+}
