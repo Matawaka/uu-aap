@@ -1,0 +1,61 @@
+{
+  "schema_version": "0.1",
+  "policy_id": "kontur-scrap-mechanic-bounded-log-session-v0.1",
+  "pilot_candidate_id": "kontur-game-advisor-pilot-candidate-001",
+  "target": {
+    "product": "Scrap Mechanic",
+    "source_relative_path": "Logs",
+    "output_relative_path": "Release/KONTUR_PILOT_INFO/sessions",
+    "private_absolute_path_publication": false
+  },
+  "session": {
+    "manual_start": true,
+    "manual_game_launch": true,
+    "game_launch_by_observer": false,
+    "maximum_duration_seconds": 14400,
+    "single_active_session": true,
+    "automatic_retry": false
+  },
+  "observation": {
+    "event_driven_file_watcher": true,
+    "reconciliation_interval_seconds": 30,
+    "control_signal_interval_seconds": 2,
+    "existing_log_bytes_at_start_skipped": true,
+    "new_log_bytes_only": true,
+    "raw_lines_retained_after_classification": false,
+    "numeric_user_identifier_values_retained": false,
+    "aggregate_term_counts_allowed": true,
+    "lifecycle_category_counts_allowed": true
+  },
+  "checkpoint": {
+    "create_only": true,
+    "overwrite_allowed": false,
+    "line_interval": 200,
+    "maximum_seconds_between_active_checkpoints": 60,
+    "allowed_extensions": [".json", ".txt"]
+  },
+  "resource_targets": {
+    "idle_total_cpu_percent": 0.3,
+    "working_set_mib": 100,
+    "budget_violation_effect": "stop_session_and_record_unverified_resource_result",
+    "performance_verified": false
+  },
+  "denied_capabilities": [
+    "game.launch",
+    "game.execute",
+    "game.input_control",
+    "game.process_attach",
+    "game.process_memory_read",
+    "game.network_observe",
+    "game.network_write",
+    "game.screen_capture",
+    "game.save_content_read",
+    "game.credential_content_read",
+    "game.raw_log_persist",
+    "game.user_identifier_persist",
+    "game.auto_confirm",
+    "kontur.activate"
+  ],
+  "unlisted_capability_policy": "denied",
+  "safe_effect": "sanitized_observation_receipts_only"
+}
