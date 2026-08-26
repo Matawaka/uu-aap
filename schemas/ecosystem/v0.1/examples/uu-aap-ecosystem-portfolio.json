@@ -36,7 +36,7 @@
       "id": "uu-aap-core",
       "name": "UU-AAP Core",
       "plane": "stable_substrate",
-      "maturity": "stable_substrate",
+      "maturity": "stable_core_candidate",
       "repository_evidence_state": "canonical_implementation",
       "canonical_paths": [
         "protocols/core/v0.1/README.md",
@@ -46,8 +46,8 @@
         "pilots/core-pilot-004",
         "pilots/core-pilot-005"
       ],
-      "current_role": "Seven-primitive evidence, intent, authority, coordination, action-gate and successor-state substrate with real bounded pilot evidence.",
-      "next_deliverable": "Compatibility baseline and change-budget policy; avoid product-specific reverse dependencies.",
+      "current_role": "Experimental stable-core candidate serving as a seven-primitive evidence, intent, authority, coordination, action-gate and successor-state substrate with real bounded pilot evidence.",
+      "next_deliverable": "Compatibility baseline, change-budget policy and additional cross-product evidence before any stronger stability claim.",
       "current_dependencies": [],
       "planned_dependencies": [],
       "core_member": true,
