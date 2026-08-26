@@ -1,0 +1,704 @@
+{
+  "schema_version": "0.1",
+  "document_class": "product_contract",
+  "contract_id": "honest-hiring-product-contract",
+  "contract_status": "candidate",
+  "identity": {
+    "canonicalization_profile": "uu-aap-product-contract-json-v0.1",
+    "hash_algorithm": "sha256",
+    "content_hash": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae"
+  },
+  "product": {
+    "id": "honest-hiring",
+    "name": "Честный найм",
+    "version": "0.1",
+    "kind": "domain_product",
+    "maturity": "definition",
+    "portfolio_product": true,
+    "core_member": false,
+    "product_owner_role_id": "human-hiring-owner"
+  },
+  "frontier": {
+    "binding": "exact",
+    "repository": "Matawaka/uu-aap",
+    "revision": "18a57f46eac60576ecc7ff9777888cd2b45230a2",
+    "observed_at": "2026-08-26T19:18:31Z"
+  },
+  "purpose": {
+    "user_outcomes": [
+      "Transform explicit current role requirements and candidate-supplied job evidence into a provenance-preserving human-review packet with visible uncertainty",
+      "Compare evidence against each declared job requirement without producing a global person ranking or automatic employment disposition",
+      "Support candidate correction and challenge through reasoned human review and successor-state receipts"
+    ],
+    "anti_goals": [
+      "Do not automatically reject, shortlist, offer, schedule, contact or otherwise change a candidate's employment state",
+      "Do not create an immutable, hidden or cross-role global ranking, employability score or worth judgment",
+      "Do not infer protected attributes or proxies for protected attributes",
+      "Do not infer personality, emotion, deception, health, disability or psychological state from voice, face, video, writing style, interaction latency or other behavioral traces",
+      "Do not scrape social profiles, join unrelated contexts, perform background checks or use unrelated personal history",
+      "Do not access or mutate an ATS, mailbox, calendar, external account or communication channel"
+    ],
+    "target_contexts": [
+      "Normalization and human review of explicit job requirements before candidate comparison",
+      "Evidence-first review of candidate-supplied work history, skills, artifacts and declared constraints",
+      "Contestable preparation of a human decision packet before any separate employment decision process"
+    ]
+  },
+  "actors": [
+    {
+      "id": "human-hiring-owner",
+      "kind": "human",
+      "description": "Human role that owns the exact hiring-support scope, role requirements and review process without delegating the employment decision to the product.",
+      "responsibilities": [
+        "Define attributable and current job requirements",
+        "Ensure that only job-relevant evidence enters the bounded review",
+        "Record a reasoned disposition for the analysis packet",
+        "Preserve a separate employment-decision boundary"
+      ],
+      "authority_source": "Explicit organizational assignment outside this contract",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "human-hiring-reviewer",
+      "kind": "human",
+      "description": "Human reviewer who evaluates the bounded comparison packet and its uncertainty.",
+      "responsibilities": [
+        "Review requirement relevance and evidence lineage",
+        "Inspect missing, stale and conflicting evidence",
+        "Reject, correct, narrow or accept the packet for further human review",
+        "Avoid treating the packet as an automatic decision"
+      ],
+      "authority_source": "Explicit assignment by the human hiring owner outside this contract",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "candidate-participant",
+      "kind": "human",
+      "description": "Candidate role that supplies bounded job evidence and may challenge or correct the resulting packet.",
+      "responsibilities": [
+        "Supply or explicitly withhold job-relevant evidence",
+        "Identify corrections, context and source-lineage problems",
+        "Avoid submitting unrelated third-party or sensitive data"
+      ],
+      "authority_source": "Participation in the bounded hiring-support process",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "human-appeal-reviewer",
+      "kind": "human",
+      "description": "Human role that reviews candidate challenges independently from the original analysis-system output.",
+      "responsibilities": [
+        "Review the predecessor evidence and recorded reasons",
+        "Consider candidate corrections without treating the challenge as a negative signal",
+        "Record an upheld, corrected, evidence-requested or paused successor state"
+      ],
+      "authority_source": "Explicit appeal-review assignment outside this contract",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": true
+    },
+    {
+      "id": "honest-hiring-analysis-system",
+      "kind": "ai_system",
+      "description": "Local analysis component that produces job-relevance and evidence-lineage candidates without ranking people or causing external effects.",
+      "responsibilities": [
+        "Preserve source lineage and requirement bindings",
+        "Separate evidence, interpretation, uncertainty and missing evidence",
+        "Avoid protected-attribute, proxy, personality, emotion, health and disability inference",
+        "Produce no global ranking or automatic disposition",
+        "Stop before ATS mutation, communication or employment action"
+      ],
+      "authority_source": "No independent authority; bounded by the exact contract and admitted local runtime",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": false
+    },
+    {
+      "id": "freeshield-protective-system",
+      "kind": "ai_system",
+      "description": "Protective assessment component that may identify scope, evidence or prohibited-feature risks but cannot reject a candidate or control a disposition.",
+      "responsibilities": [
+        "Assess the exact comparison candidate against the declared product contract",
+        "Surface evidence, scope, correlation and prohibited-feature risks",
+        "Emit only a protective assessment candidate for human review"
+      ],
+      "authority_source": "No independent authority; consumes the separately materialized FREESHIELD contract",
+      "may_authorize_effects": false,
+      "responsibility_acceptance_required": false
+    }
+  ],
+  "evidence": {
+    "inputs": [
+      {
+        "id": "role-requirements",
+        "description": "The exact role purpose, tasks, job-relevant requirements, evidence standards, relevance rationales and current owner/frontier.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "role-requirement-data"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "Each material requirement has an attributable owner, a job-relevance rationale, an evidence standard and a current validity frontier",
+        "freshness_policy": "Any material role, task, requirement, evidence-standard or owner change creates a successor requirement set",
+        "absence_handling": "fail_closed"
+      },
+      {
+        "id": "candidate-evidence-package",
+        "description": "Candidate-supplied work history, skills, work samples, certifications and contextual explanations intentionally submitted for this exact role.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "candidate-job-evidence"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "Each material candidate claim has an attributable source or is explicitly marked unverified or unavailable",
+        "freshness_policy": "Bound to the exact candidate submission version; corrections and additions create a successor package",
+        "absence_handling": "unknown"
+      },
+      {
+        "id": "candidate-declared-context",
+        "description": "Candidate-declared role-relevant preferences, constraints or explanations intentionally supplied for this review without inferred protected attributes.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "candidate-declared-context-data"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "Only context voluntarily supplied and demonstrably relevant to the declared role or process is included",
+        "freshness_policy": "Bound to the exact candidate-declared version and invalidated by correction or withdrawal",
+        "absence_handling": "not_available"
+      },
+      {
+        "id": "review-constraints",
+        "description": "Declared process scope, review roles, prohibited uses, evidence limits and separate employment-decision boundary.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "hiring-process-context"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "The review scope, allowed roles, prohibited features, contestability path and non-effects are explicit",
+        "freshness_policy": "Any process, policy, role or contract change requires a successor review-constraints package",
+        "absence_handling": "fail_closed"
+      },
+      {
+        "id": "freeshield-assessment",
+        "description": "Protective assessment candidate bound to the exact comparison packet, Product Contract hash, evidence frontier and prohibited-feature rules.",
+        "source_class": "derived",
+        "data_class_ids": [
+          "protective-assessment-data"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "The assessment identifies the exact input packet, contract hash, frontier, scope, evidence sufficiency and any protective outcome candidate",
+        "freshness_policy": "Invalidated by any material input, contract, requirement or frontier change",
+        "absence_handling": "fail_closed"
+      },
+      {
+        "id": "candidate-challenge",
+        "description": "Candidate-supplied challenge, correction or contextual evidence bound to one exact predecessor review packet.",
+        "source_class": "user_supplied",
+        "data_class_ids": [
+          "challenge-record-data"
+        ],
+        "provenance_required": true,
+        "minimum_sufficiency": "The challenge identifies the disputed claim, requirement, evidence binding, reason or requested correction",
+        "freshness_policy": "Bound to the exact predecessor packet and superseded only by a recorded successor challenge state",
+        "absence_handling": "not_available"
+      }
+    ],
+    "derived_claims_require_lineage": true,
+    "missing_evidence_is_not_negative_evidence": true,
+    "available_evidence_is_not_permission_to_inspect": true
+  },
+  "boundary_invariants": {
+    "possibility_implies_intent": false,
+    "exposure_implies_intent": false,
+    "intent_implies_authority": false,
+    "authority_implies_execution": false,
+    "contract_implies_action_permit": false,
+    "dependency_implies_authority_transfer": false,
+    "product_success_implies_core_requirement": false,
+    "stored_relation_implies_permitted_correlation": false,
+    "available_evidence_implies_active_knowledge": false
+  },
+  "data_governance": {
+    "classes": [
+      {
+        "id": "role-requirement-data",
+        "class": "internal",
+        "collection_scope": "Only current tasks, requirements, evidence standards and relevance rationales for the exact role",
+        "minimization_rule": "Exclude preferences that are not demonstrably job-relevant and exclude protected-attribute requirements or proxies",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the role is closed or the requirement set is superseded, subject to an explicit contestability period",
+        "disclosure_scope": "Candidate, human hiring owner, human reviewers and admitted local analysis components only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "candidate-job-evidence",
+        "class": "personal",
+        "collection_scope": "Only job-relevant evidence intentionally supplied by the candidate for the exact role",
+        "minimization_rule": "Exclude protected attributes, unrelated personal history, social-profile data, behavioral biometrics and hidden third-party data",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the bounded process and declared contestability period end or earlier deletion is validly requested",
+        "disclosure_scope": "Candidate and declared human review roles; local analysis components receive only minimum necessary fields",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "candidate-declared-context-data",
+        "class": "personal",
+        "collection_scope": "Only candidate-declared context necessary to interpret job evidence or process participation",
+        "minimization_rule": "Do not infer or expand the context into protected attributes, health, disability, personality or psychological profile",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the exact process closes, the context is withdrawn or a successor correction replaces it",
+        "disclosure_scope": "Candidate and explicitly assigned human review roles only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "hiring-process-context",
+        "class": "confidential",
+        "collection_scope": "Only process scope, roles, prohibited uses, evidence limits and contestability rules",
+        "minimization_rule": "Exclude account credentials, hidden decision heuristics and unrelated organizational data",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the process version is superseded and its contestability period closes",
+        "disclosure_scope": "Declared process owner, reviewers and validation components only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "derived-job-relevance-map",
+        "class": "derived",
+        "collection_scope": "Requirement-to-evidence bindings, uncertainty, conflicts and missing-evidence statements for one exact role and candidate package",
+        "minimization_rule": "No global ranking, employability score, protected-attribute proxy, personality or cross-role profile",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the packet is rejected, corrected, superseded or the contestability period closes",
+        "disclosure_scope": "Candidate and declared human review roles only",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "protective-assessment-data",
+        "class": "derived",
+        "collection_scope": "FREESHIELD scope, evidence and prohibited-feature assessment for one exact comparison candidate",
+        "minimization_rule": "No candidate blacklist, hidden risk score, global prohibition or legal judgment",
+        "retention_mode": "bounded",
+        "retention_limit": "Until human disposition or successor protective assessment",
+        "disclosure_scope": "Declared human review roles and candidate challenge process",
+        "correction_supported": true,
+        "deletion_supported": true
+      },
+      {
+        "id": "challenge-record-data",
+        "class": "personal",
+        "collection_scope": "Only the disputed claim, evidence binding, candidate correction, reason and appeal disposition",
+        "minimization_rule": "A challenge must not be converted into a negative candidate signal or cross-process profile",
+        "retention_mode": "bounded",
+        "retention_limit": "Until the challenge is resolved and the declared review period closes",
+        "disclosure_scope": "Candidate, human appeal reviewer and process owner only",
+        "correction_supported": true,
+        "deletion_supported": true
+      }
+    ],
+    "default_minimization": true,
+    "purpose_limitation": true,
+    "cross_context_correlation_default": "denied",
+    "identity_resolution_default": "denied",
+    "retention_extension_requires_human_gate": true
+  },
+  "contract_effect": {
+    "describes_product_boundary": true,
+    "execution_authorized": false,
+    "action_permit_created": false,
+    "responsibility_accepted": false,
+    "stable_core_promotion_authorized": false,
+    "legal_outcome_established": false
+  },
+  "effects": {
+    "analysis_effects": [
+      {
+        "id": "role-requirement-normalization",
+        "description": "Normalize attributable role requirements, evidence standards and job-relevance rationales without adding hidden criteria.",
+        "external_effect": false
+      },
+      {
+        "id": "candidate-evidence-lineage",
+        "description": "Bind candidate claims to supplied sources or mark them unverified, unavailable or uncertain.",
+        "external_effect": false
+      },
+      {
+        "id": "job-relevance-map",
+        "description": "Map supplied evidence to each declared job requirement without producing a global person ranking.",
+        "external_effect": false
+      },
+      {
+        "id": "uncertainty-missing-evidence-map",
+        "description": "Expose missing, stale, conflicting and insufficient job-relevant evidence without treating absence as negative evidence.",
+        "external_effect": false
+      },
+      {
+        "id": "bounded-comparison-candidate",
+        "description": "Prepare a requirement-by-requirement comparison candidate with reasons, uncertainty and non-effects for human review.",
+        "external_effect": false
+      },
+      {
+        "id": "freeshield-protective-input",
+        "description": "Prepare the exact comparison candidate and provenance bundle for a separate FREESHIELD protective assessment.",
+        "external_effect": false
+      },
+      {
+        "id": "human-review-packet",
+        "description": "Assemble a local human-review packet that does not decide, rank, reject, shortlist, offer or contact.",
+        "external_effect": false
+      },
+      {
+        "id": "challenge-correction-candidate",
+        "description": "Prepare a local successor candidate from a candidate challenge while preserving predecessor evidence and reasons.",
+        "external_effect": false
+      }
+    ],
+    "external_effects": [],
+    "default_external_effect_admission": "denied"
+  },
+  "human_gates": [
+    {
+      "id": "comparison-disposition-gate",
+      "trigger": "Before any comparison packet is treated as ready for further human hiring review",
+      "owner_role_id": "human-hiring-owner",
+      "required_evidence_ids": [
+        "role-requirements",
+        "candidate-evidence-package",
+        "review-constraints",
+        "freeshield-assessment"
+      ],
+      "decision_values": [
+        "REJECT_ANALYSIS",
+        "CORRECT_ANALYSIS",
+        "REQUEST_MORE_JOB_RELEVANT_EVIDENCE",
+        "ACCEPT_FOR_HUMAN_REVIEW"
+      ],
+      "default_decision": "REJECT_ANALYSIS",
+      "fail_closed": true,
+      "expires_after": "Any material requirement, evidence, context, protective-assessment, contract or frontier change",
+      "records_receipt_type": "HonestHiringDispositionReceipt"
+    },
+    {
+      "id": "challenge-resolution-gate",
+      "trigger": "When a candidate challenges or corrects an exact predecessor comparison or disposition packet",
+      "owner_role_id": "human-appeal-reviewer",
+      "required_evidence_ids": [
+        "role-requirements",
+        "candidate-evidence-package",
+        "review-constraints",
+        "candidate-challenge"
+      ],
+      "decision_values": [
+        "PAUSE_FOR_REVIEW",
+        "REQUEST_MORE_EVIDENCE",
+        "UPHOLD_WITH_REASONS",
+        "CORRECT_SUCCESSOR_STATE"
+      ],
+      "default_decision": "PAUSE_FOR_REVIEW",
+      "fail_closed": true,
+      "expires_after": "Any predecessor-packet, challenge-evidence, reviewer-role, contract or frontier change",
+      "records_receipt_type": "HonestHiringChallengeReceipt"
+    }
+  ],
+  "failure_uncertainty": {
+    "states": [
+      "UNKNOWN",
+      "CONFLICT",
+      "INSUFFICIENT_JOB_RELEVANT_EVIDENCE",
+      "PROHIBITED_FEATURE_RISK",
+      "COMPARISON_CANDIDATE_READY",
+      "REJECTED_ANALYSIS",
+      "ACCEPTED_FOR_HUMAN_REVIEW",
+      "CHALLENGE_PENDING",
+      "CORRECTED_SUCCESSOR_STATE"
+    ],
+    "terminal_states": [
+      "INSUFFICIENT_JOB_RELEVANT_EVIDENCE",
+      "PROHIBITED_FEATURE_RISK",
+      "REJECTED_ANALYSIS",
+      "ACCEPTED_FOR_HUMAN_REVIEW",
+      "CORRECTED_SUCCESSOR_STATE"
+    ],
+    "unknown_is_success": false,
+    "automatic_retry_on_unknown": false,
+    "observe_before_retry": true,
+    "conflict_requires_reconciliation": true,
+    "reconciliation_owner_role_id": "human-appeal-reviewer"
+  },
+  "contestability": {
+    "challenge_supported": true,
+    "correction_supported": true,
+    "appeal_mode": "human_review",
+    "challenge_owner_role_id": "human-appeal-reviewer",
+    "challenge_input_scope": "Role requirements, evidence lineage, job relevance, uncertainty, missing evidence, FREESHIELD protective assessment, comparison reasons and recorded disposition",
+    "decision_receipt_required": true,
+    "original_evidence_preserved": true,
+    "correction_creates_successor_state": true
+  },
+  "dependencies": [
+    {
+      "id": "uu-aap-core",
+      "kind": "core",
+      "version_range": "v0.1",
+      "relationship": "Consumes typed evidence, intent, authority, action-gate and successor-state distinctions",
+      "required": true,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "ial",
+      "kind": "language",
+      "version_range": "v0.1",
+      "relationship": "May express the bounded review request and explicit human handoffs without execution admission",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "ai-transport",
+      "kind": "transport",
+      "version_range": "v0.1",
+      "relationship": "Potential future carrier of exact-bound evidence and receipts; unused for external effects in this contract",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "freeshield",
+      "kind": "protective",
+      "version_range": "v0.1-candidate",
+      "relationship": "Required protective assessment of the exact comparison candidate before it may be accepted for further human review",
+      "required": true,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    },
+    {
+      "id": "kontur",
+      "kind": "runtime",
+      "version_range": "v0.1-candidate",
+      "relationship": "Optional future bounded responsibility lifecycle; this contract does not activate or require KONTUR",
+      "required": false,
+      "authority_transfer": false,
+      "responsibility_transfer": false,
+      "reverse_core_dependency": false
+    }
+  ],
+  "receipts": [
+    {
+      "type": "HonestHiringRequirementReceipt",
+      "purpose": "Record the exact role requirements, evidence standards, relevance rationales, owner and validity frontier.",
+      "assertions": [
+        "Every material requirement is attributable and bound to the exact role frontier",
+        "Each material requirement states a job-relevance rationale and evidence standard"
+      ],
+      "non_effects": [
+        "The receipt does not prove that a requirement is lawful, necessary or non-discriminatory in every jurisdiction",
+        "The receipt does not authorize candidate comparison or an employment decision"
+      ],
+      "predecessor_bindings": [
+        "Product contract content hash",
+        "Role-requirements evidence receipt",
+        "Review-constraints receipt"
+      ],
+      "successor_state_emitted": true
+    },
+    {
+      "type": "HonestHiringComparisonReceipt",
+      "purpose": "Record requirement-by-requirement evidence bindings, uncertainty, conflicts, missing evidence and the FREESHIELD assessment reference.",
+      "assertions": [
+        "Every material comparison statement is linked to supplied evidence or marked as interpretation, unverified, unavailable or UNKNOWN",
+        "No global person ranking or automatic disposition is emitted",
+        "The packet is bound to the exact role, candidate-evidence, contract and protective-assessment frontiers"
+      ],
+      "non_effects": [
+        "The receipt does not establish candidate identity, worth, personality, health, disability or protected attributes",
+        "The receipt does not reject, shortlist, offer, schedule, contact or otherwise change employment state",
+        "The receipt does not authorize ATS, mailbox, calendar, account or background-check mutation"
+      ],
+      "predecessor_bindings": [
+        "HonestHiringRequirementReceipt",
+        "Candidate-evidence package receipt",
+        "Candidate-declared context receipt when present",
+        "FREESHIELD protective assessment receipt",
+        "Current contract frontier"
+      ],
+      "successor_state_emitted": true
+    },
+    {
+      "type": "HonestHiringDispositionReceipt",
+      "purpose": "Record the human disposition for one exact comparison packet before any separate employment-decision process.",
+      "assertions": [
+        "The reviewed packet, reasons, uncertainty and human disposition are explicit",
+        "Correction, narrowing or evidence request creates a successor state"
+      ],
+      "non_effects": [
+        "Acceptance for human review is not an employment offer, rejection, shortlist or final decision",
+        "The disposition does not prove that any external action or communication occurred",
+        "The disposition does not create an ActionPermit"
+      ],
+      "predecessor_bindings": [
+        "HonestHiringComparisonReceipt",
+        "Current FREESHIELD assessment",
+        "Comparison-disposition human gate decision"
+      ],
+      "successor_state_emitted": true
+    },
+    {
+      "type": "HonestHiringChallengeReceipt",
+      "purpose": "Record a candidate challenge, reviewed predecessor evidence, reasons and the resulting successor challenge state.",
+      "assertions": [
+        "The challenge is bound to the exact predecessor packet and candidate-supplied correction",
+        "The human appeal disposition and reasons are explicit",
+        "The challenge itself is not treated as a negative candidate signal"
+      ],
+      "non_effects": [
+        "The receipt does not erase predecessor evidence or silently rewrite history",
+        "The receipt does not authorize an employment decision or external communication",
+        "An upheld predecessor packet is not proof of universal correctness or legal compliance"
+      ],
+      "predecessor_bindings": [
+        "HonestHiringDispositionReceipt or HonestHiringComparisonReceipt",
+        "Candidate-challenge evidence receipt",
+        "Challenge-resolution human gate decision"
+      ],
+      "successor_state_emitted": true
+    }
+  ],
+  "success_criteria": {
+    "criteria": [
+      {
+        "id": "requirement-attribution-coverage",
+        "metric": "Material role requirements carry an owner, validity frontier, evidence standard and job-relevance rationale",
+        "threshold": "100 percent of material requirements are attributable and challengeable or explicitly blocked as insufficient",
+        "evidence_source_ids": [
+          "role-requirements",
+          "review-constraints"
+        ],
+        "falsification_condition": "A material comparison criterion lacks an attributable requirement, relevance rationale or evidence standard"
+      },
+      {
+        "id": "candidate-evidence-lineage-coverage",
+        "metric": "Material candidate claims and comparison statements preserve source lineage or explicit uncertainty",
+        "threshold": "100 percent of material claims are linked to supplied evidence or marked unverified, unavailable or UNKNOWN",
+        "evidence_source_ids": [
+          "candidate-evidence-package",
+          "candidate-declared-context"
+        ],
+        "falsification_condition": "A material factual claim or comparison appears without lineage, qualification or uncertainty"
+      },
+      {
+        "id": "prohibited-feature-exclusion",
+        "metric": "Protected attributes, proxies, personality, emotion, deception, health, disability, social scraping and cross-context correlation are absent from the comparison",
+        "threshold": "Zero prohibited feature uses or inferences in the exact packet",
+        "evidence_source_ids": [
+          "candidate-evidence-package",
+          "review-constraints",
+          "freeshield-assessment"
+        ],
+        "falsification_condition": "Any prohibited attribute, proxy or behavioral inference affects the packet"
+      },
+      {
+        "id": "no-global-ranking",
+        "metric": "The output remains requirement-by-requirement and does not create a global person rank, employability score or immutable ordering",
+        "threshold": "No global numerical or ordinal candidate ranking is emitted",
+        "evidence_source_ids": [
+          "role-requirements",
+          "candidate-evidence-package",
+          "freeshield-assessment"
+        ],
+        "falsification_condition": "The system emits or relies on a global candidate score, rank or hidden ordering"
+      },
+      {
+        "id": "uncertainty-visibility",
+        "metric": "Missing, stale, conflicting and insufficient evidence remains visible through disposition",
+        "threshold": "Every material uncertainty is retained or explicitly resolved through a bound successor receipt",
+        "evidence_source_ids": [
+          "candidate-evidence-package",
+          "freeshield-assessment",
+          "candidate-challenge"
+        ],
+        "falsification_condition": "A material uncertainty disappears without evidence or a recorded reconciliation"
+      },
+      {
+        "id": "contestability-closure",
+        "metric": "Candidate challenges can produce a reasoned human-reviewed successor state without becoming a negative signal",
+        "threshold": "Every admitted challenge is bound to a predecessor packet and ends in a challenge receipt or explicit pending state",
+        "evidence_source_ids": [
+          "candidate-challenge",
+          "candidate-evidence-package",
+          "role-requirements"
+        ],
+        "falsification_condition": "A challenge is ignored, penalized, untraceable or changes the packet without a successor receipt"
+      },
+      {
+        "id": "zero-external-effect",
+        "metric": "The Product Contract and local analysis perform no ATS, communication, calendar, account, background-check or employment-state mutation",
+        "threshold": "Zero external effects",
+        "evidence_source_ids": [
+          "review-constraints",
+          "freeshield-assessment"
+        ],
+        "falsification_condition": "Any external mutation, communication or employment-state change occurs under this contract"
+      }
+    ],
+    "success_creates_successor_authority": false,
+    "failure_creates_liability": false
+  },
+  "ip_boundary": {
+    "object_id": "honest-hiring-product-contract-v0.1",
+    "included_artifacts": [
+      "products/honest-hiring/v0.1/product-contract.json",
+      "products/honest-hiring/v0.1/README.ru.md",
+      "products/honest-hiring/v0.1/validate_contract.py",
+      ".github/workflows/honest-hiring-contract-v0.1-validation.yml"
+    ],
+    "excluded_artifacts": [
+      "Candidate resumes, applications, work samples, identity data, challenges and employment decisions",
+      "Organization-specific role requirements, policies, legal advice and compliance outcomes",
+      "Third-party models, ATS systems, background-check services, communication tools and external runtimes",
+      "Future product versions, general hiring ideas and artifacts not listed as included"
+    ],
+    "future_versions_included": false,
+    "registration_claimed": false,
+    "legal_outcome_claimed": false,
+    "license_scope": "Repository license; exact Product Contract v0.1 artifacts only"
+  },
+  "assertions": [
+    "Product boundary described for the declared version and frontier",
+    "Effects are descriptive and denied by default",
+    "Human gates and contestability are explicit",
+    "Data handling is purpose-limited",
+    "The product emits only local job-relevance and evidence-lineage candidates",
+    "FREESHIELD assessment is an input to human review and not rejection authority",
+    "Candidate challenges create reviewable successor states and are not negative signals",
+    "A separate human-controlled employment-decision process remains outside this contract"
+  ],
+  "non_effects": [
+    "Product Contract != Product Runtime",
+    "Product Contract != ActionPermit",
+    "Described Effect != Authorized Effect",
+    "Dependency Edge != Authority Transfer",
+    "Product Success != Stable-Core Requirement",
+    "Contract Acceptance != Responsibility Acceptance",
+    "Contract Version != Future Version",
+    "IP Object Boundary != Registration Outcome",
+    "Hiring Support != Hiring Authority",
+    "Candidate Evidence != Candidate Identity or Worth",
+    "Missing Evidence != Negative Evidence",
+    "Job-Relevant Comparison != Global Person Ranking",
+    "Model Score != Employment Decision",
+    "Protected Attribute != Job-Relevant Feature",
+    "Proxy Correlation != Permission to Infer a Protected Attribute",
+    "Interview Observation != Personality, Health or Disability Diagnosis",
+    "Human Review != Rubber-Stamping",
+    "Disposition != Unappealable Finality",
+    "Candidate Challenge != Negative Signal",
+    "FREESHIELD Assessment != Automatic Rejection"
+  ]
+}
