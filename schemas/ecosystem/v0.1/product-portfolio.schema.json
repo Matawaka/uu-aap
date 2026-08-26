@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/ecosystem/v0.1/product-portfolio.schema.json",
+  "title": "UU-AAP Ecosystem Product Portfolio v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "snapshot_id",
+    "frontier",
+    "external_milestones",
+    "portfolio_invariants",
+    "balance_policy",
+    "products"
+  ],
+  "properties": {
+    "schema_version": { "const": "0.1" },
+    "snapshot_id": { "type": "string", "minLength": 1 },
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit_sha", "tree_sha"],
+      "properties": {
+        "repository": { "const": "Matawaka/uu-aap" },
+        "commit_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "external_milestones": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core_software_registration_application"],
+      "properties": {
+        "core_software_registration_application": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "evidence_source",
+            "reported_state",
+            "public_receipt_bound",
+            "registration_established"
+          ],
+          "properties": {
+            "evidence_source": { "enum": ["applicant_report", "repository_receipt"] },
+            "reported_state": { "enum": ["not_reported", "reported_submitted", "receipt_bound"] },
+            "public_receipt_bound": { "type": "boolean" },
+            "registration_established": { "type": "boolean" }
+          }
+        }
+      }
+    },
+    "portfolio_invariants": {
+      "type": "array",
+      "minItems": 8,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "balance_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_active_domain_product_lines",
+        "new_core_primitive_requires_product_consumers",
+        "new_core_primitive_requires_cross_product_case",
+        "product_contract_before_deep_implementation",
+        "product_specific_reverse_core_dependency_allowed"
+      ],
+      "properties": {
+        "max_active_domain_product_lines": { "const": 2 },
+        "new_core_primitive_requires_product_consumers": { "type": "integer", "minimum": 2 },
+        "new_core_primitive_requires_cross_product_case": { "const": true },
+        "product_contract_before_deep_implementation": { "const": true },
+        "product_specific_reverse_core_dependency_allowed": { "const": false }
+      }
+    },
+    "products": {
+      "type": "array",
+      "minItems": 7,
+      "items": { "$ref": "#/$defs/product" }
+    }
+  },
+  "$defs": {
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name",
+        "plane",
+        "maturity",
+        "repository_evidence_state",
+        "canonical_paths",
+        "current_role",
+        "next_deliverable",
+        "current_dependencies",
+        "planned_dependencies",
+        "core_member",
+        "reverse_core_dependency_allowed",
+        "stable_core_promotion_authorized",
+        "external_effect_authorized"
+      ],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+        "name": { "type": "string", "minLength": 1 },
+        "plane": {
+          "enum": [
+            "stable_substrate",
+            "semantic_language",
+            "transport_integration",
+            "responsibility_runtime",
+            "protective_plane",
+            "domain_product"
+          ]
+        },
+        "maturity": {
+          "enum": [
+            "stable_substrate",
+            "experimental_protocol",
+            "experimental_infrastructure",
+            "field_pilot",
+            "definition_required"
+          ]
+        },
+        "repository_evidence_state": {
+          "enum": [
+            "canonical_implementation",
+            "canonical_pilot_evidence",
+            "not_materialized_at_frontier"
+          ]
+        },
+        "canonical_paths": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "current_role": { "type": "string", "minLength": 1 },
+        "next_deliverable": { "type": "string", "minLength": 1 },
+        "current_dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }
+        },
+        "planned_dependencies": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+$" }
+        },
+        "core_member": { "type": "boolean" },
+        "reverse_core_dependency_allowed": { "type": "boolean" },
+        "stable_core_promotion_authorized": { "type": "boolean" },
+        "external_effect_authorized": { "type": "boolean" }
+      }
+    }
+  }
+}
