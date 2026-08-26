@@ -27,6 +27,8 @@ jobs:
   validate:
     name: Schema, semantic and fail-closed contract validation
     runs-on: ubuntu-latest
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/product-contract-pycache
     steps:
       - name: Checkout without persisted credentials
         uses: actions/checkout@v4
