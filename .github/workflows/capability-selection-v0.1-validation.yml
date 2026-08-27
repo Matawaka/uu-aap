@@ -33,6 +33,14 @@ jobs:
       - name: Validate Bounded Execution Lifecycle v0.1
         run: node protocols/integration/execution-lifecycle/v0.1/validate-execution-lifecycle.js
       - name: Validate Execution Capability Descriptor v0.1
-        run: node protocols/integration/execution-capability-descriptor/v0.1/validate-execution-capability-descriptor.js
-      - name: Validate Capability Selection v0.1
-        run: node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+        run: |
+          node protocols/integration/execution-capability-descriptor/v0.1/validate-execution-capability-descriptor.js
+          node protocols/integration/execution-capability-descriptor/v0.1/test-import-safe-validator.js
+      - name: Validate Capability Selection v0.1 historical conformance
+        run: |
+          node --check protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+          node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+      - name: Validate Capability Selection import-safe library seam
+        run: |
+          node --check protocols/integration/capability-selection/v0.1/test-import-safe-validator.js
+          node protocols/integration/capability-selection/v0.1/test-import-safe-validator.js

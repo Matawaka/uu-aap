@@ -152,42 +152,48 @@ function expectInvalid(base, label, mutate) {
   assert(failed, `negative test unexpectedly passed: ${label}`);
 }
 
-const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
-validate(fixture);
+function runConformance() {
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+  validate(fixture);
 
-const tests = [
-  ["descriptor grants more than discovery", x => { x.capability.discovery_only = false; }],
-  ["descriptor grants authority", x => { x.global_non_effects.authority_granted = true; }],
-  ["descriptor asserts current availability", x => { x.global_non_effects.current_availability_asserted = true; }],
-  ["external effect without approval", x => { x.operations[0].approval_contract.required = false; }],
-  ["external effect blanket approval mode", x => { x.operations[0].approval_contract.mode = "none"; }],
-  ["protocol mode consent treated as sufficient", x => { x.operations[0].approval_contract.protocol_mode_consent_sufficient = true; }],
-  ["advertisement treated as current availability", x => { x.operations[0].availability_contract.advertised_capability_is_current_availability = true; }],
-  ["availability treated as authority", x => { x.operations[0].availability_contract.availability_proof_is_authority = true; }],
-  ["availability probe removed", x => { x.operations[0].availability_contract.availability_probe_required_before_authorization = false; }],
-  ["execute phase omitted", x => { x.operations[0].lifecycle_contract.required_phases = ["prepare","authorize","observe","close"]; }],
-  ["exact target binding removed", x => { x.operations[0].lifecycle_contract.exact_target_binding_required = false; }],
-  ["predecessor freshness removed", x => { x.operations[0].lifecycle_contract.predecessor_freshness_required = false; }],
-  ["fail-closed guard removed", x => { x.operations[0].lifecycle_contract.fail_closed_target_guard_required = false; }],
-  ["one-shot unsupported", x => { x.operations[0].lifecycle_contract.one_shot_supported = false; }],
-  ["expiry removed", x => { x.operations[0].lifecycle_contract.expiry_required = false; }],
-  ["observer separation removed", x => { x.operations[0].lifecycle_contract.separate_observer_required = false; }],
-  ["ActionPermit omitted", x => { x.operations[0].receipt_contract.pre_action_required = x.operations[0].receipt_contract.pre_action_required.filter(v => v !== "ActionPermit"); }],
-  ["actuator advertises ActionPermit emission", x => { x.operations[0].receipt_contract.actuator_may_emit.push("ActionPermit"); }],
-  ["actuator creates ActionPermit", x => { x.operations[0].receipt_contract.actuator_creates_core_action_permit = true; }],
-  ["actuator creates Core post-action receipts", x => { x.operations[0].receipt_contract.actuator_creates_core_post_action_receipts = true; }],
-  ["advertised receipt support treated as receipt", x => { x.operations[0].receipt_contract.advertised_receipt_support_is_receipt = true; }],
-  ["post-action receipt contract substituted", x => { x.operations[0].receipt_contract.core_post_action_required = ["ActionReceipt","OutcomeReceipt"]; }],
-  ["effect/non-effect overlap", x => { x.operations[0].effect_contract.explicit_non_effects.push("demo_state_change"); }],
-  ["observation treated as causality proof", x => { x.operations[0].effect_contract.effect_observation_is_causality_proof = true; }]
-];
+  const tests = [
+    ["descriptor grants more than discovery", x => { x.capability.discovery_only = false; }],
+    ["descriptor grants authority", x => { x.global_non_effects.authority_granted = true; }],
+    ["descriptor asserts current availability", x => { x.global_non_effects.current_availability_asserted = true; }],
+    ["external effect without approval", x => { x.operations[0].approval_contract.required = false; }],
+    ["external effect blanket approval mode", x => { x.operations[0].approval_contract.mode = "none"; }],
+    ["protocol mode consent treated as sufficient", x => { x.operations[0].approval_contract.protocol_mode_consent_sufficient = true; }],
+    ["advertisement treated as current availability", x => { x.operations[0].availability_contract.advertised_capability_is_current_availability = true; }],
+    ["availability treated as authority", x => { x.operations[0].availability_contract.availability_proof_is_authority = true; }],
+    ["availability probe removed", x => { x.operations[0].availability_contract.availability_probe_required_before_authorization = false; }],
+    ["execute phase omitted", x => { x.operations[0].lifecycle_contract.required_phases = ["prepare","authorize","observe","close"]; }],
+    ["exact target binding removed", x => { x.operations[0].lifecycle_contract.exact_target_binding_required = false; }],
+    ["predecessor freshness removed", x => { x.operations[0].lifecycle_contract.predecessor_freshness_required = false; }],
+    ["fail-closed guard removed", x => { x.operations[0].lifecycle_contract.fail_closed_target_guard_required = false; }],
+    ["one-shot unsupported", x => { x.operations[0].lifecycle_contract.one_shot_supported = false; }],
+    ["expiry removed", x => { x.operations[0].lifecycle_contract.expiry_required = false; }],
+    ["observer separation removed", x => { x.operations[0].lifecycle_contract.separate_observer_required = false; }],
+    ["ActionPermit omitted", x => { x.operations[0].receipt_contract.pre_action_required = x.operations[0].receipt_contract.pre_action_required.filter(v => v !== "ActionPermit"); }],
+    ["actuator advertises ActionPermit emission", x => { x.operations[0].receipt_contract.actuator_may_emit.push("ActionPermit"); }],
+    ["actuator creates ActionPermit", x => { x.operations[0].receipt_contract.actuator_creates_core_action_permit = true; }],
+    ["actuator creates Core post-action receipts", x => { x.operations[0].receipt_contract.actuator_creates_core_post_action_receipts = true; }],
+    ["advertised receipt support treated as receipt", x => { x.operations[0].receipt_contract.advertised_receipt_support_is_receipt = true; }],
+    ["post-action receipt contract substituted", x => { x.operations[0].receipt_contract.core_post_action_required = ["ActionReceipt","OutcomeReceipt"]; }],
+    ["effect/non-effect overlap", x => { x.operations[0].effect_contract.explicit_non_effects.push("demo_state_change"); }],
+    ["observation treated as causality proof", x => { x.operations[0].effect_contract.effect_observation_is_causality_proof = true; }]
+  ];
 
-for (const [label, mutate] of tests) expectInvalid(fixture, label, mutate);
+  for (const [label, mutate] of tests) expectInvalid(fixture, label, mutate);
 
-const wrongHash = clone(fixture);
-wrongHash.content_hash = "sha256:" + "0".repeat(64);
-let hashFailed = false;
-try { validate(wrongHash); } catch (_) { hashFailed = true; }
-assert(hashFailed, "negative test unexpectedly passed: content hash mismatch");
+  const wrongHash = clone(fixture);
+  wrongHash.content_hash = "sha256:" + "0".repeat(64);
+  let hashFailed = false;
+  try { validate(wrongHash); } catch (_) { hashFailed = true; }
+  assert(hashFailed, "negative test unexpectedly passed: content hash mismatch");
 
-console.log(`Execution Capability Descriptor v0.1: PASS (${tests.length + 1} negative tests)`);
+  console.log(`Execution Capability Descriptor v0.1: PASS (${tests.length + 1} negative tests)`);
+}
+
+module.exports = { validate, contentHash };
+
+if (require.main === module) runConformance();
