@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/authority-evaluation/authority-evaluation-input.schema.json",
+  "title": "FCL Authority Evaluation Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","profile","authority_evaluation_id","origin","current_state_request_evaluation","effect_actor_subject","authority_verification_result","evaluated_at"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "authority-evaluation-v0.1"},
+    "authority_evaluation_id": {"type":"string","pattern":"^[a-z][a-z0-9-]{2,95}$"},
+    "origin": {
+      "type":"object","additionalProperties":false,"required":["repository","revision","tree"],
+      "properties": {
+        "repository":{"const":"Matawaka/uu-aap"},
+        "revision":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "tree":{"type":"string","pattern":"^[0-9a-f]{40}$"}
+      }
+    },
+    "current_state_request_evaluation": {"type":"object","description":"Must independently validate as FCL CurrentStateRequestEvaluationReceipt v0.1."},
+    "effect_actor_subject": {
+      "type":"object","additionalProperties":false,"required":["id","key_ref"],
+      "properties":{"id":{"type":"string","minLength":1},"key_ref":{"type":"string","minLength":1}}
+    },
+    "authority_verification_result": {"type":"object","description":"Must independently satisfy PoAIAuthorityVerificationResult 0.1-experimental and authority-core assurance validation."},
+    "evaluated_at": {"type":"string","format":"date-time"}
+  }
+}
