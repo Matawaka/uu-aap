@@ -6,13 +6,12 @@ on:
       - 'protocols/fcl/v0.1/**'
       - 'protocols/core/v0.1/**'
       - 'proposals/poai/authority/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
       - '.github/workflows/fcl-core-coordination-binding-v0.1-validation.yml'
   push:
     branches: [main]
     paths:
-      - 'protocols/fcl/v0.1/**'
-      - 'protocols/core/v0.1/**'
-      - 'proposals/poai/authority/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
       - '.github/workflows/fcl-core-coordination-binding-v0.1-validation.yml'
 
 permissions:
@@ -20,7 +19,7 @@ permissions:
 
 jobs:
   validate:
-    name: Core prerequisite closure without ActionPermit
+    name: Reconciled Core prerequisite closure without ActionPermit
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -51,7 +50,10 @@ jobs:
       - name: Re-run Core v0.1 unchanged
         run: node protocols/core/v0.1/validate-core.js
 
-      - name: Run Core CoordinationReceipt binding conformance
+      - name: Re-run Execution Capability Availability unchanged
+        run: node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+
+      - name: Run reconciled CoordinationReceipt conformance
         run: |
           node --check protocols/fcl/v0.1/core-coordination-binding/core-coordination-binding.js
           node --check protocols/fcl/v0.1/core-coordination-binding/test-core-coordination-binding.js
@@ -77,11 +79,12 @@ jobs:
               print(f'VALID schema: {instance_path}')
           PY
 
-      - name: Independently verify Core identity and prerequisite graph
+      - name: Independently verify Core identity, graph, availability separation and freshness
         run: |
           python - <<'PY'
           import hashlib
           import json
+          from datetime import datetime
           from pathlib import Path
 
           coord = json.loads(Path('/tmp/fcl-core-coordination.json').read_text(encoding='utf-8'))
@@ -96,6 +99,9 @@ jobs:
                   return '{' + ','.join(json.dumps(k, ensure_ascii=False) + ':' + canonical(value[k]) for k in sorted(value)) + '}'
               raise TypeError(type(value))
 
+          def ts(value):
+              return datetime.fromisoformat(value.replace('Z', '+00:00'))
+
           projection = {k: v for k, v in coord.items() if k not in ('content_hash', 'signature_profile')}
           expected = 'sha256:' + hashlib.sha256(canonical(projection).encode('utf-8')).hexdigest()
           assert coord['content_hash'] == expected, (coord['content_hash'], expected)
@@ -104,23 +110,38 @@ jobs:
           availability = inp['core_availability_claim']
           intent = inp['core_intent_receipt']
           authority = inp['core_authority_receipt']
+
           assert state['predecessor_receipt_hashes'] == []
           assert availability['predecessor_receipt_hashes'] == [state['content_hash']]
           assert intent['predecessor_receipt_hashes'] == [state['content_hash']]
           assert authority['predecessor_receipt_hashes'] == [intent['content_hash']]
           assert coord['predecessor_receipt_hashes'] == [availability['content_hash'], intent['content_hash'], authority['content_hash']]
+
           subjects = {(r['subject']['id'], r['subject']['scope']) for r in (state, availability, intent, authority, coord)}
           frontiers = {r['frontier']['revision'] for r in (state, availability, intent, authority, coord)}
           assert len(subjects) == 1
           assert len(frontiers) == 1
-          assert coord['assertions']['coordination_established'] is True
+
+          binding = availability['payload']['fcl_binding']
+          assert set(binding) == {'run_id', 'run_epoch', 'chain_id', 'operation_scope', 'target'}
+          assert 'intent_ref' not in binding
+          assert 'requested_control' not in binding
+          assert availability['payload']['status'] == 'available'
+          assert ts(coord['issued_at']) <= ts(availability['payload']['valid_until'])
+          assert coord['payload']['availability_valid_until'] == availability['payload']['valid_until']
+          assert coord['frontier']['observed_at'] == coord['issued_at']
+          assert coord['assertions']['availability_fresh_at_coordination'] is True
+          assert coord['payload']['core_availability_chain_revalidated'] is True
+          assert coord['payload']['availability_horizon_extended'] is False
+          assert coord['non_effects']['availability_extended'] is False
           assert coord['non_effects']['execution_authorized'] is False
+          assert coord['non_effects']['execution_admitted'] is False
           assert coord['non_effects']['action_permitted'] is False
           assert coord['non_effects']['action_permit_created'] is False
-          print('Independent Core hash and prerequisite graph verified; no ActionPermit created')
+          print('Independent Core graph, Availability != Intent, freshness and no-ActionPermit boundaries verified')
           PY
 
-      - name: Preserve Core and PoAI authority immutability
+      - name: Preserve predecessor layers unchanged
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -132,8 +153,8 @@ jobs:
           fi
           changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
           echo "$changed"
-          if echo "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/)'; then
-            echo 'ERROR: FCL coordination binding must not modify Core v0.1 or PoAI authority artifacts'
+          if echo "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/integration/execution-capability-availability/v0\.1/)'; then
+            echo 'ERROR: reconciliation must not modify Core, PoAI authority, or existing availability artifacts'
             exit 1
           fi
-          echo 'Core v0.1 and PoAI authority artifacts unchanged by this slice'
+          echo 'Protected predecessor layers unchanged by reconciliation'

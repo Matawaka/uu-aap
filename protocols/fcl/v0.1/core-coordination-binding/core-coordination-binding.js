@@ -42,7 +42,8 @@ const HASH = /^sha256:[0-9a-f]{64}$/;
 const ID = /^[a-z][a-z0-9-]{2,95}$/;
 const CORE_KEYS = ['protocol','version','receipt_type','subject','frontier','predecessor_receipt_hashes','assertions','non_effects','issuer','issued_at','payload','signature_profile','content_hash'];
 const INPUT_KEYS = ['protocol','version','profile','coordination_id','origin','fcl_authority_evaluation','core_state_receipt','core_availability_claim','core_intent_receipt','core_authority_receipt','issued_at'];
-const BINDING_KEYS = ['intent_ref','requested_control','run_id','run_epoch','chain_id','required_scope','required_target'];
+const INTENT_BINDING_KEYS = ['intent_ref','requested_control','run_id','run_epoch','chain_id','required_scope','required_target'];
+const AVAILABILITY_BINDING_KEYS = ['run_id','run_epoch','chain_id','operation_scope','target'];
 const STATE_NON_EFFECTS = { intent_established:false, authority_established:false, action_performed:false, liability_established:false, truth_certified:false };
 const AVAILABILITY_NON_EFFECTS = { intent_established:false, action_performed:false, liability_established:false, truth_certified:false };
 const COORDINATION_NON_EFFECTS = {
@@ -52,9 +53,12 @@ const COORDINATION_NON_EFFECTS = {
   liability_established:false,
   action_permitted:false,
   action_permit_created:false,
-  authority_granted:false,
-  intent_created:false,
   availability_created:false,
+  availability_extended:false,
+  intent_created:false,
+  authority_created:false,
+  authority_granted:false,
+  execution_admitted:false,
   interrupt_completed:false,
   continuation_receipt_created:false,
   successor_run_created:false,
@@ -119,7 +123,17 @@ function validateStateReceipt(state) {
   return true;
 }
 
-function validateAvailabilityClaim(availability, state, authority) {
+function expectedAvailabilityBinding(authority) {
+  return {
+    run_id: authority.current_run_id,
+    run_epoch: authority.current_run_epoch,
+    chain_id: authority.current_chain_id,
+    operation_scope: authority.required_scope,
+    target: authority.required_target
+  };
+}
+
+function validateAvailabilityClaim(availability, state, authority, coordinationIssuedAt) {
   validateCoreEnvelope(availability, 'core_availability_claim');
   req(availability.receipt_type === 'AvailabilityClaim', 'core_availability_claim must be AvailabilityClaim');
   req(availability.predecessor_receipt_hashes.length === 1 && availability.predecessor_receipt_hashes[0] === state.content_hash, 'Core AvailabilityClaim must point exactly to StateReceipt');
@@ -128,11 +142,20 @@ function validateAvailabilityClaim(availability, state, authority) {
   req(availability.assertions.availability_qualified === true, 'Core AvailabilityClaim must assert availability_qualified=true');
   req(availability.assertions.capability === authority.required_scope, 'Core AvailabilityClaim capability must equal exact FCL required_scope');
   requireNonEffects(availability, AVAILABILITY_NON_EFFECTS, 'core_availability_claim');
+  req(availability.payload.status === 'available', 'Core AvailabilityClaim payload.status must be available');
+  const observedAt = instant(availability.frontier.observed_at, 'core_availability_claim.frontier.observed_at');
+  const claimIssuedAt = instant(availability.issued_at, 'core_availability_claim.issued_at');
+  req(claimIssuedAt >= instant(state.issued_at, 'core_state_receipt.issued_at'), 'Core AvailabilityClaim issued before StateReceipt');
+  req(claimIssuedAt >= observedAt, 'Core AvailabilityClaim issued before availability observation');
+  req(Object.prototype.hasOwnProperty.call(availability.payload, 'valid_until'), 'core_availability_claim.payload.valid_until required');
+  const validUntil = instant(availability.payload.valid_until, 'core_availability_claim.payload.valid_until');
+  req(validUntil > observedAt, 'Core AvailabilityClaim freshness window must end after observation');
+  req(claimIssuedAt <= validUntil, 'Core AvailabilityClaim issued after availability expired');
+  req(coordinationIssuedAt <= validUntil, 'Core AvailabilityClaim stale at coordination time');
   req(obj(availability.payload.fcl_binding), 'core_availability_claim.payload.fcl_binding required');
-  exact(availability.payload.fcl_binding, BINDING_KEYS, 'core_availability_claim.payload.fcl_binding');
-  const expected = expectedFCLBinding(authority);
-  for (const key of BINDING_KEYS) req(availability.payload.fcl_binding[key] === expected[key], `Core AvailabilityClaim FCL binding mismatch: ${key}`);
-  req(instant(availability.issued_at, 'core_availability_claim.issued_at') >= instant(state.issued_at, 'core_state_receipt.issued_at'), 'Core AvailabilityClaim issued before StateReceipt');
+  exact(availability.payload.fcl_binding, AVAILABILITY_BINDING_KEYS, 'core_availability_claim.payload.fcl_binding');
+  const expected = expectedAvailabilityBinding(authority);
+  for (const key of AVAILABILITY_BINDING_KEYS) req(availability.payload.fcl_binding[key] === expected[key], `Core AvailabilityClaim FCL binding mismatch: ${key}`);
   return true;
 }
 
@@ -146,7 +169,7 @@ function validateIntentReceipt(intent, state, authority) {
   req(sameSubject(intent, state), 'Core IntentReceipt subject mismatch with StateReceipt');
   req(sameFrontier(intent, state), 'Core IntentReceipt frontier mismatch with StateReceipt');
   const expected = expectedFCLBinding(authority);
-  for (const key of BINDING_KEYS) req(intent.payload.fcl_binding[key] === expected[key], `Core IntentReceipt FCL binding mismatch: ${key}`);
+  for (const key of INTENT_BINDING_KEYS) req(intent.payload.fcl_binding[key] === expected[key], `Core IntentReceipt FCL binding mismatch: ${key}`);
   req(instant(intent.issued_at, 'core_intent_receipt.issued_at') >= instant(state.issued_at, 'core_state_receipt.issued_at'), 'Core IntentReceipt issued before StateReceipt');
   return true;
 }
@@ -182,14 +205,14 @@ function validateInput(input) {
   str(input.origin.revision, 'input.origin.revision', SHA40); str(input.origin.tree, 'input.origin.tree', SHA40);
   validatePositiveFCLAuthority(input.fcl_authority_evaluation);
   validateStateReceipt(input.core_state_receipt);
-  validateAvailabilityClaim(input.core_availability_claim, input.core_state_receipt, input.fcl_authority_evaluation);
+  const issuedAt = instant(input.issued_at, 'input.issued_at');
+  validateAvailabilityClaim(input.core_availability_claim, input.core_state_receipt, input.fcl_authority_evaluation, issuedAt);
   validateIntentReceipt(input.core_intent_receipt, input.core_state_receipt, input.fcl_authority_evaluation);
   validateAuthorityReceipt(input.core_authority_receipt, input.core_intent_receipt, input.fcl_authority_evaluation, input.coordination_id);
   for (const receipt of [input.core_availability_claim, input.core_intent_receipt, input.core_authority_receipt]) {
     req(sameSubject(receipt, input.core_state_receipt), `${receipt.receipt_type} subject mismatch with Core StateReceipt`);
     req(sameFrontier(receipt, input.core_state_receipt), `${receipt.receipt_type} frontier mismatch with Core StateReceipt`);
   }
-  const issuedAt = instant(input.issued_at, 'input.issued_at');
   for (const [label, receipt] of [['StateReceipt',input.core_state_receipt],['AvailabilityClaim',input.core_availability_claim],['IntentReceipt',input.core_intent_receipt],['AuthorityReceipt',input.core_authority_receipt]]) {
     req(issuedAt >= instant(receipt.issued_at, `${label}.issued_at`), `CoordinationReceipt issued before ${label}`);
   }
@@ -208,13 +231,14 @@ function buildCoreCoordinationReceipt(input) {
     version:'0.1',
     receipt_type:'CoordinationReceipt',
     subject:clone(state.subject),
-    frontier:clone(state.frontier),
+    frontier:{ revision:state.frontier.revision, observed_at:input.issued_at },
     predecessor_receipt_hashes:[availability.content_hash,intent.content_hash,authority.content_hash],
     assertions:{
       coordination_established:true,
       shared_frontier:state.frontier.revision,
       coordination_scope:fcl.required_scope,
-      coordination_target:fcl.required_target
+      coordination_target:fcl.required_target,
+      availability_fresh_at_coordination:true
     },
     non_effects:clone(COORDINATION_NON_EFFECTS),
     issuer:{ id:'urn:uu-aap:fcl:core-coordination-binding:v0.1', assurance:'deterministic_prerequisite_chain_binding' },
@@ -234,7 +258,13 @@ function buildCoreCoordinationReceipt(input) {
       core_availability_claim_ref:availability.content_hash,
       core_intent_receipt_ref:intent.content_hash,
       core_authority_receipt_ref:authority.content_hash,
+      availability_valid_until:availability.payload.valid_until,
+      core_state_envelope_validated:true,
+      core_availability_envelope_validated:true,
+      core_availability_chain_revalidated:true,
+      core_authority_binding_revalidated:true,
       core_prerequisite_chain_validated:true,
+      availability_horizon_extended:false,
       action_gate_evaluated:false
     },
     signature_profile:{ mode:'none', reason:'deterministic_coordination_adapter_only' },
@@ -251,12 +281,14 @@ function validateBoundCoordinationReceipt(receipt, input) {
   const state=input.core_state_receipt, availability=input.core_availability_claim, intent=input.core_intent_receipt, authority=input.core_authority_receipt, fcl=input.fcl_authority_evaluation;
   req(sameSubject(receipt,state), 'CoordinationReceipt subject substitution');
   req(sameFrontier(receipt,state), 'CoordinationReceipt frontier substitution');
+  req(receipt.frontier.observed_at===input.issued_at, 'CoordinationReceipt observed_at must equal coordination issued_at');
   const expectedPred=[availability.content_hash,intent.content_hash,authority.content_hash];
   req(JSON.stringify(receipt.predecessor_receipt_hashes)===JSON.stringify(expectedPred), 'CoordinationReceipt predecessor substitution');
   req(receipt.assertions.coordination_established===true, 'CoordinationReceipt must assert coordination_established=true');
   req(receipt.assertions.shared_frontier===state.frontier.revision, 'CoordinationReceipt shared_frontier mismatch');
   req(receipt.assertions.coordination_scope===fcl.required_scope, 'CoordinationReceipt coordination_scope mismatch');
   req(receipt.assertions.coordination_target===fcl.required_target, 'CoordinationReceipt coordination_target mismatch');
+  req(receipt.assertions.availability_fresh_at_coordination===true, 'CoordinationReceipt must assert availability_fresh_at_coordination=true');
   requireNonEffects(receipt, COORDINATION_NON_EFFECTS, 'core_coordination_receipt');
   req(receipt.issuer.id==='urn:uu-aap:fcl:core-coordination-binding:v0.1', 'CoordinationReceipt issuer.id mismatch');
   req(receipt.issuer.assurance==='deterministic_prerequisite_chain_binding', 'CoordinationReceipt issuer.assurance mismatch');
@@ -278,7 +310,13 @@ function validateBoundCoordinationReceipt(receipt, input) {
   req(payload.core_availability_claim_ref===availability.content_hash, 'CoordinationReceipt AvailabilityClaim ref mismatch');
   req(payload.core_intent_receipt_ref===intent.content_hash, 'CoordinationReceipt IntentReceipt ref mismatch');
   req(payload.core_authority_receipt_ref===authority.content_hash, 'CoordinationReceipt AuthorityReceipt ref mismatch');
+  req(payload.availability_valid_until===availability.payload.valid_until, 'CoordinationReceipt availability_valid_until mismatch');
+  req(payload.core_state_envelope_validated===true, 'CoordinationReceipt must state StateReceipt envelope validated');
+  req(payload.core_availability_envelope_validated===true, 'CoordinationReceipt must state AvailabilityClaim envelope validated');
+  req(payload.core_availability_chain_revalidated===true, 'CoordinationReceipt must state AvailabilityClaim predecessor chain revalidated');
+  req(payload.core_authority_binding_revalidated===true, 'CoordinationReceipt must state AuthorityReceipt binding revalidated');
   req(payload.core_prerequisite_chain_validated===true, 'CoordinationReceipt must assert prerequisite chain validated');
+  req(payload.availability_horizon_extended===false, 'CoordinationReceipt must not extend availability horizon');
   req(payload.action_gate_evaluated===false, 'CoordinationReceipt must not claim Action Gate evaluation');
   return true;
 }
@@ -320,8 +358,10 @@ if(require.main===module){
 
 module.exports={
   FCLCoreCoordinationBindingError,
+  AVAILABILITY_BINDING_KEYS,
   COORDINATION_NON_EFFECTS,
   buildCoreCoordinationReceipt,
+  expectedAvailabilityBinding,
   validateBoundCoordinationReceipt,
   validateCoreEnvelope,
   validateInput

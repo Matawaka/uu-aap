@@ -1,64 +1,61 @@
-# FCL → UU-AAP Core CoordinationReceipt Binding v0.1
+# FCL → UU-AAP Core CoordinationReceipt Binding v0.1 — reconciled hardening
 
 **Status:** experimental bounded adapter  
-**Tracking:** Issue #548  
-**Predecessor:** merged PR #547  
-**Core:** `protocols/core/v0.1`
+**Tracking:** Issue #549  
+**Merged predecessor:** PR #550  
+**Earlier predecessor:** PR #547  
+**Core:** `protocols/core/v0.1`  
+**Availability reference:** `protocols/integration/execution-capability-availability/v0.1`
 
 ## Purpose
 
-This profile closes the Core prerequisite chain up to `CoordinationReceipt` for an FCL control request without entering the Action Gate.
+This revision reconciles two independently materialized implementations of the same Core coordination boundary. Merged PR #550 remains the canonical predecessor and preserves full Core prerequisite closure. The former competing PR #551 is converted into a successor hardening layer instead of replaying or replacing #550.
+
+The resulting profile keeps both guarantees:
 
 ```text
 Core StateReceipt
   -> Core AvailabilityClaim
+Core StateReceipt
   -> Core IntentReceipt
   -> Core AuthorityReceipt
+AvailabilityClaim + IntentReceipt + AuthorityReceipt
   -> Core CoordinationReceipt
   != ActionPermit
 ```
 
-More exactly, Core has two predecessor branches that meet at coordination:
-
-```text
-StateReceipt -> AvailabilityClaim
-StateReceipt -> IntentReceipt -> AuthorityReceipt
-AvailabilityClaim + IntentReceipt + AuthorityReceipt -> CoordinationReceipt
-```
-
-The adapter consumes these already-existing receipts, validates their exact Core hashes, subject/frontier continuity and FCL context binding, then emits only a canonical Core `CoordinationReceipt`.
-
-## Why this layer exists
-
-Merged #547 created a Core `AuthorityReceipt`, but Core v0.1 does not allow authority evidence to jump directly to an `ActionPermit`. Coordination is a distinct primitive.
+and:
 
 ```text
 Availability != Intent
-Intent != Authority
-Authority != Coordination
+Availability freshness != future availability guarantee
 Coordination != ActionPermit
+Coordination != Execution
 ```
 
-A coordination receipt therefore proves only that the required pre-action contexts have been reconciled on one predecessor frontier. It does not authorize execution.
+## Why reconciliation is required
 
-## Required input chain
+PR #550 and the original #551 were created from the same predecessor frontier and wrote the same five repository paths. A direct merge would therefore be a duplicate implementation conflict. Selecting only one side would lose useful invariants:
 
-The profile accepts:
+- #550: complete `StateReceipt` predecessor closure and explicit Core edge validation;
+- original #551: intent-free availability binding, `valid_until` freshness at coordination time, and explicit compatibility with the existing execution-capability availability profile.
+
+This successor keeps #550 in history and strengthens it on top of the merged frontier.
+
+## Full prerequisite closure
+
+The adapter consumes only already-existing receipts:
 
 ```text
 positive FCLAuthorityEvaluationReceipt
 Core StateReceipt
 Core AvailabilityClaim
 Core IntentReceipt
-Core AuthorityReceipt produced under the #547 binding semantics
-issued_at
+Core AuthorityReceipt produced under #547 semantics
+coordination issued_at
 ```
 
-No StateReceipt, AvailabilityClaim, IntentReceipt or AuthorityReceipt is created by this profile.
-
-## Exact Core predecessor rules
-
-The binder requires:
+It verifies:
 
 ```text
 StateReceipt.predecessors = []
@@ -67,98 +64,138 @@ IntentReceipt.predecessors = [StateReceipt.content_hash]
 AuthorityReceipt.predecessors = [IntentReceipt.content_hash]
 ```
 
-All four Core receipts must have the same exact `subject` and `frontier.revision`. Every receipt must carry a valid Core v0.1 content hash.
+All Core prerequisites must have the same exact subject and `frontier.revision`.
 
-The adapter also checks predecessor time monotonicity and refuses to issue a `CoordinationReceipt` before any of its prerequisites.
+## Availability does not carry human intent
 
-## FCL availability binding
-
-The pre-existing `AvailabilityClaim` must explicitly bind the same FCL context as the positive authority evidence:
+The reconciled `AvailabilityClaim.payload.fcl_binding` is a closed five-field object:
 
 ```json
 {
-  "fcl_binding": {
-    "intent_ref": "...",
-    "requested_control": "REQUEST_INTERRUPT | REQUEST_SUCCESSOR",
-    "run_id": "...",
-    "run_epoch": 0,
-    "chain_id": "...",
-    "required_scope": "fcl.run.interrupt | fcl.run.successor.create",
-    "required_target": "urn:uu-aap:fcl:run:<run_id>:epoch:<epoch>"
-  }
+  "run_id": "...",
+  "run_epoch": 0,
+  "chain_id": "...",
+  "operation_scope": "fcl.run.interrupt | fcl.run.successor.create",
+  "target": "urn:uu-aap:fcl:run:<run_id>:epoch:<epoch>"
 }
 ```
 
-`AvailabilityClaim.assertions.capability` must equal the exact `required_scope`.
-
-This is only an availability statement:
+It MUST NOT contain `intent_ref` or `requested_control`.
 
 ```text
-available != intended != authorized != permitted != executed
+Availability Binding != Human Intent
+Capability Availability != Request
 ```
 
-## AuthorityReceipt compatibility
+Human request/intent remains bound separately by the Core `IntentReceipt` and #547 AuthorityReceipt path.
 
-The supplied Core `AuthorityReceipt` is revalidated through the merged #547 `validateBoundAuthorityReceipt` semantics using:
+## Freshness boundary
 
-- the same positive `FCLAuthorityEvaluationReceipt`;
-- the exact Core `IntentReceipt`;
-- the AuthorityReceipt's original profile origin;
-- the AuthorityReceipt's original issue time.
+A positive `AvailabilityClaim` must satisfy:
 
-This prevents a syntactically valid but semantically substituted Core AuthorityReceipt from entering coordination.
+```text
+availability_qualified = true
+payload.status = available
+AvailabilityClaim.issued_at <= payload.valid_until
+CoordinationReceipt.issued_at <= payload.valid_until
+```
+
+The claim's observation time must precede its `valid_until`, and the claim may not be issued after expiry.
+
+The CoordinationReceipt copies the exact `availability_valid_until` and fixes:
+
+```text
+availability_horizon_extended = false
+availability_extended = false
+```
+
+No coordination step may turn bounded availability into future availability.
+
+## Compatibility with existing availability profile
+
+This adapter does not create another availability primitive. It consumes an ordinary Core v0.1 `AvailabilityClaim`, including claims produced by `execution-capability-availability/v0.1` when they carry the additional FCL consumer binding in the Core payload.
+
+The existing availability profile remains unchanged and is rerun by CI.
+
+## Authority compatibility
+
+The supplied Core `AuthorityReceipt` is revalidated using merged #547 semantics against the exact Core `IntentReceipt` and positive FCL authority evidence. A syntactically similar authority object is insufficient.
+
+```text
+Authority evidence != new grant
+AuthorityReceipt != ActionPermit
+```
 
 ## Output
 
-A positive binding emits exactly one Core v0.1 `CoordinationReceipt`:
+The sole positive output is a canonical Core v0.1 `CoordinationReceipt`:
 
 ```text
 protocol = UU-AAP Core
 version = 0.1
 receipt_type = CoordinationReceipt
-subject = exact shared subject
-frontier = exact shared predecessor frontier
+subject = exact shared predecessor subject
+frontier.revision = exact shared predecessor revision
+frontier.observed_at = coordination issued_at
 predecessor_receipt_hashes = [AvailabilityClaim, IntentReceipt, AuthorityReceipt]
 assertions.coordination_established = true
-assertions.shared_frontier = exact frontier revision
+assertions.shared_frontier = exact shared revision
+assertions.coordination_scope = exact authority scope
+assertions.coordination_target = exact authority target
+assertions.availability_fresh_at_coordination = true
 ```
 
-Additional assertions bind the exact FCL scope and target. The payload retains provenance to all Core prerequisite receipts and the FCL authority-evaluation receipt.
+The payload retains exact predecessor refs, FCL execution context, authority provenance, the unchanged availability horizon, and explicit validation-boundary flags.
+
+Because `StateReceipt` is part of the adapter input, the reconciled profile can truthfully record:
+
+```text
+core_state_envelope_validated = true
+core_availability_envelope_validated = true
+core_availability_chain_revalidated = true
+core_authority_binding_revalidated = true
+core_prerequisite_chain_validated = true
+```
+
+No absent upstream edge is inferred.
 
 ## Core identity
 
-The output uses the existing Core v0.1 identity rule:
+The generated receipt keeps the unchanged Core v0.1 identity rule:
 
 ```text
 sha256(UTF8(canonical-json(identity-projection(receipt))))
 ```
 
-`content_hash` and `signature_profile` are excluded from the identity projection; object keys are recursively sorted. No alternative Core hash identity is introduced.
+`content_hash` and `signature_profile` are excluded from the identity projection and object keys are recursively sorted. CI independently recomputes this hash.
 
 ## Non-effects
 
-The generated `CoordinationReceipt` fixes at least:
+The generated CoordinationReceipt fixes false at least for:
 
 ```text
-execution_authorized = false
-action_performed = false
-authority_expanded = false
-liability_established = false
-action_permitted = false
-action_permit_created = false
-authority_granted = false
-intent_created = false
-availability_created = false
-interrupt_completed = false
-continuation_receipt_created = false
-successor_run_created = false
-runtime_state_transitioned = false
-legal_authority_established = false
-universal_authority_established = false
-legal_effect_established = false
-truth_certified = false
-causality_proven = false
-private_reasoning_included = false
+execution_authorized
+action_performed
+authority_expanded
+liability_established
+action_permitted
+action_permit_created
+availability_created
+availability_extended
+intent_created
+authority_created
+authority_granted
+execution_admitted
+interrupt_completed
+continuation_receipt_created
+successor_run_created
+runtime_state_transitioned
+legal_authority_established
+universal_authority_established
+legal_effect_established
+truth_certified
+causality_proven
+private_reasoning_included
 ```
 
 Therefore:
@@ -169,32 +206,22 @@ Coordination established != execution authorized
 Coordination established != action performed
 ```
 
-## Fail-closed behavior
+## Fail-closed coverage
 
-The profile rejects malformed Core envelopes or hashes, missing/extra predecessor edges, subject or frontier drift, time reversal, absent Core non-effects, missing or mismatched FCL availability binding, capability/scope mismatch, non-positive FCL authority evidence, any AuthorityReceipt that no longer matches #547, output predecessor substitution, subject/frontier substitution, permission or execution escalation, and legal/universal/truth/causality overclaims.
+The conformance suite rejects malformed Core receipts/hashes, broken State→Availability or State→Intent or Intent→Authority edges, subject/frontier drift, non-positive authority evidence, unavailable or stale availability, missing `valid_until`, intent/control leakage into availability, run/epoch/chain/scope/target substitution, timing rollback, predecessor substitution, availability horizon extension, ActionPermit/execution/authority/legal/truth/causality escalation, and actuating CLI commands.
 
-The CLI is deliberately read-only with respect to the world:
+## CLI
+
+Only:
 
 ```text
-core-coordination-binding.js validate <input.json|->
-core-coordination-binding.js bind <input.json|->
+validate
+bind
+help
 ```
 
-`bind` only emits a JSON Core `CoordinationReceipt`. There is no `permit`, `execute`, `interrupt`, `resume`, `send`, `switch`, `activate`, `create-successor` or `grant` command.
+are supported. `bind` emits JSON only. There is no `permit`, `execute`, `interrupt`, `resume`, `send`, `switch`, `activate`, `create-successor`, or `grant` command.
 
-## Validation
+## Repository non-effects
 
-`test-core-coordination-binding.js` covers positive interrupt/successor paths, complete Core edge closure, deterministic Core hash parity, FCL binding substitutions, predecessor/frontier/subject/time failures, #547 authority substitution, non-effects and CLI boundaries.
-
-Dedicated CI also re-runs:
-
-- FCL Authority Evaluation;
-- FCL Core AuthorityReceipt Binding;
-- Core v0.1 conformance unchanged;
-- JSON Schema validation of the profile input and generated CoordinationReceipt;
-- an independent Python recomputation of the Core content hash;
-- a guard that the PR does not modify `protocols/core/v0.1/**` or `proposals/poai/authority/**`.
-
-## Deliberately out of scope
-
-No Core schema change, Authority Root/Grant change, live authority expansion, prerequisite receipt creation, ActionPermit, execution, real interrupt, successor/ContinuationReceipt creation, production UI mutation, provider invocation, transport send, timeout transition, KONTUR activation, release or tag.
+This successor does not rewrite #550, modify Core v0.1, modify PoAI Authority Roots/Grants, modify `execution-capability-availability/v0.1`, create an AvailabilityClaim/IntentReceipt/AuthorityReceipt, create an ActionPermit, execute an interrupt, create a successor/ContinuationReceipt, mutate production UI, invoke a provider/model, send transport, activate KONTUR, or publish a release/tag.
