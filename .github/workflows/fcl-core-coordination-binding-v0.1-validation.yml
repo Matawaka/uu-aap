@@ -1,0 +1,139 @@
+name: FCL Core CoordinationReceipt Binding v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/fcl-core-coordination-binding-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/fcl-core-coordination-binding-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Core prerequisite closure without ActionPermit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Re-run FCL authority predecessors
+        run: |
+          node --check protocols/fcl/v0.1/authority-evaluation/authority-evaluation.js
+          node protocols/fcl/v0.1/authority-evaluation/test-authority-evaluation.js
+          node --check protocols/fcl/v0.1/core-authority-binding/core-authority-binding.js
+          node protocols/fcl/v0.1/core-authority-binding/test-core-authority-binding.js
+
+      - name: Re-run Core v0.1 unchanged
+        run: node protocols/core/v0.1/validate-core.js
+
+      - name: Run Core CoordinationReceipt binding conformance
+        run: |
+          node --check protocols/fcl/v0.1/core-coordination-binding/core-coordination-binding.js
+          node --check protocols/fcl/v0.1/core-coordination-binding/test-core-coordination-binding.js
+          node protocols/fcl/v0.1/core-coordination-binding/test-core-coordination-binding.js \
+            /tmp/fcl-core-coordination.json \
+            /tmp/fcl-core-coordination-input.json
+
+      - name: Validate profile input and Core output schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          pairs = [
+              (Path('protocols/fcl/v0.1/core-coordination-binding/core-coordination-binding-input.schema.json'), Path('/tmp/fcl-core-coordination-input.json')),
+              (Path('protocols/core/v0.1/receipt-envelope.schema.json'), Path('/tmp/fcl-core-coordination.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify Core identity and prerequisite graph
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          from pathlib import Path
+
+          coord = json.loads(Path('/tmp/fcl-core-coordination.json').read_text(encoding='utf-8'))
+          inp = json.loads(Path('/tmp/fcl-core-coordination-input.json').read_text(encoding='utf-8'))
+
+          def canonical(value):
+              if value is None or isinstance(value, (bool, int, float, str)):
+                  return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(value, list):
+                  return '[' + ','.join(canonical(v) for v in value) + ']'
+              if isinstance(value, dict):
+                  return '{' + ','.join(json.dumps(k, ensure_ascii=False) + ':' + canonical(value[k]) for k in sorted(value)) + '}'
+              raise TypeError(type(value))
+
+          projection = {k: v for k, v in coord.items() if k not in ('content_hash', 'signature_profile')}
+          expected = 'sha256:' + hashlib.sha256(canonical(projection).encode('utf-8')).hexdigest()
+          assert coord['content_hash'] == expected, (coord['content_hash'], expected)
+
+          state = inp['core_state_receipt']
+          availability = inp['core_availability_claim']
+          intent = inp['core_intent_receipt']
+          authority = inp['core_authority_receipt']
+          assert state['predecessor_receipt_hashes'] == []
+          assert availability['predecessor_receipt_hashes'] == [state['content_hash']]
+          assert intent['predecessor_receipt_hashes'] == [state['content_hash']]
+          assert authority['predecessor_receipt_hashes'] == [intent['content_hash']]
+          assert coord['predecessor_receipt_hashes'] == [availability['content_hash'], intent['content_hash'], authority['content_hash']]
+          subjects = {(r['subject']['id'], r['subject']['scope']) for r in (state, availability, intent, authority, coord)}
+          frontiers = {r['frontier']['revision'] for r in (state, availability, intent, authority, coord)}
+          assert len(subjects) == 1
+          assert len(frontiers) == 1
+          assert coord['assertions']['coordination_established'] is True
+          assert coord['non_effects']['execution_authorized'] is False
+          assert coord['non_effects']['action_permitted'] is False
+          assert coord['non_effects']['action_permit_created'] is False
+          print('Independent Core hash and prerequisite graph verified; no ActionPermit created')
+          PY
+
+      - name: Preserve Core and PoAI authority immutability
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE='${{ github.event.pull_request.base.sha }}'
+            HEAD_SHA='${{ github.event.pull_request.head.sha }}'
+          else
+            BASE="$(git rev-parse HEAD^)"
+            HEAD_SHA="$(git rev-parse HEAD)"
+          fi
+          changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
+          echo "$changed"
+          if echo "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/)'; then
+            echo 'ERROR: FCL coordination binding must not modify Core v0.1 or PoAI authority artifacts'
+            exit 1
+          fi
+          echo 'Core v0.1 and PoAI authority artifacts unchanged by this slice'
