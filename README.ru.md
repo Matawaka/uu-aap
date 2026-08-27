@@ -76,12 +76,48 @@ Gateway и transport не являются источниками полномо
 
 KONTUR развивается как responsibility control plane и family of bounded runtimes.
 
-- [`server/kontur/v0.1/`](server/kontur/v0.1/) — persistent responsibility kernel;
-- [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — наиболее зрелая продуктовая линия: synthetic dialogue, assistance/spoiler gates, memory/initiative/focus, uncertainty repair, activation/binding boundaries, local trials, read-only external observation, recovery и privacy-minimized field evidence.
+- [`server/kontur/v0.1/`](server/kontur/v0.1/) — Responsibility Kernel, Readiness Aggregator, activation/preflight boundary, append-only ledger, live-host boundaries и recovery;
+- [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — наиболее зрелая product/pilot line: observational, assistance, memory, initiative, focus, receipt, pause/resume, local trials, read-only observation, recovery и privacy-minimized field evidence;
+- [`products/kontur/v0.1/`](products/kontur/v0.1/) — candidate Product Family Contract и exact machine-readable family manifest.
 
-Следующая цель KONTUR — консолидация в измеряемый demo и `KONTURReadinessAggregator`, а не бесконечное добавление разговорных слоёв.
+Product Family Contract связывает:
 
-`KONTUR responsibility state != ActionPermit`
+```text
+independent subsystem evidence
+→ readiness aggregation
+→ human-controlled activation boundary
+→ responsibility kernel
+→ append-only responsibility ledger
+→ bounded product / pilot consumers
+→ observation / recovery / successor evidence
+```
+
+Он не активирует KONTUR:
+
+```text
+KONTUR Product Family Contract != KONTUR Activation
+Readiness Aggregation != Kernel Activation
+Ready Signal != ActionPermit
+Responsibility State != Execution Authority
+Family Membership != Shared Data Access
+Game Companion Pilot != Server Responsibility Holder
+Field Evidence != Production Readiness
+Live Host Eligibility != Live Host Designation
+Designation != Activation
+Activation Review != Activation Execution
+Product Family != Stable Core
+```
+
+Manifest фиксирует четыре established evidence dependencies и два planned interfaces. Для каждого edge:
+
+```text
+authority_transfer = false
+responsibility_transfer = false
+shared_data_access = false
+activation_authorized = false
+```
+
+Human gates могут принять только consolidation candidate, referral to a **separate** activation review или bounded pilot evidence. Decisions `ACTIVATE`, `START_RUNTIME`, `WRITE_LEDGER`, `SEND_RESPONSE` отсутствуют.
 
 `pilot evidence != Stable-Core requirement`
 
@@ -96,10 +132,10 @@ KONTUR развивается как responsibility control plane и family of b
 - **UU-AAP Core** — experimental stable-core candidate и общий причинно-доказательный substrate;
 - **IAL** — язык границ намерения/ответственности;
 - **AI Gateway / Transport** — provider-neutral integration path;
-- **KONTUR** — responsibility runtime and product family;
-- **Маркетолог Пессимиста** — claim/evidence stress-testing product с отдельным canonical candidate Product Contract v0.1;
-- **FREESHIELD** — protective plane с отдельным candidate Protective Contract v0.1;
-- **Честный найм** — evidence-first contestable hiring-support product с отдельным candidate Product Contract v0.1.
+- **KONTUR** — responsibility runtime/product family с отдельным candidate family contract;
+- **Маркетолог Пессимиста** — claim/evidence stress-testing product с canonical candidate Product Contract v0.1;
+- **FREESHIELD** — protective plane с candidate Protective Contract v0.1;
+- **Честный найм** — evidence-first contestable hiring-support product с candidate Product Contract v0.1.
 
 ### Product Contract v0.1
 
@@ -135,7 +171,7 @@ Reusable schema, template и local no-effect example не принимают а�
 
 ### Маркетолог Пессимиста Product Contract v0.1
 
-[`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) материализует первый named-product contract как evidence-first стресс-тест утверждений, планов и стратегий:
+[`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) материализует evidence-first стресс-тест утверждений, планов и стратегий:
 
 ```text
 Claim / plan
@@ -159,8 +195,6 @@ Claim / plan
 `Marketing Recommendation != Campaign Authority`
 
 `Candidate Output != Publication Authority`
-
-Contract канонизирован merge #517, но остаётся product-definition candidate: merge определяет границу продукта, а не запускает MVP или внешний effect.
 
 ### FREESHIELD Protective Contract v0.1
 
@@ -187,9 +221,7 @@ Scope Narrowing != Product Ownership
 Protective Assessment != Sanction or Blacklist
 ```
 
-`BLOCK_EFFECT` означает только scoped non-admissibility candidate для одного exact effect при одном contract/evidence/frontier. FREESHIELD не управляет actuator, не создаёт permit, не блокирует аккаунт, не устанавливает вину и не создаёт hidden score.
-
-Даже human acceptance protective assessment не является execution authority: consumer product обязан пройти собственный отдельный Action Gate.
+`BLOCK_EFFECT` означает scoped non-admissibility candidate для одного exact effect при одном contract/evidence/frontier. FREESHIELD не управляет actuator, не создаёт permit, не блокирует аккаунт и не создаёт hidden score.
 
 ### Честный найм Product Contract v0.1
 
@@ -221,9 +253,37 @@ FREESHIELD Assessment != Automatic Rejection
 
 Запрещены protected-attribute/proxy inference, personality/emotion/deception/health/disability inference, social-profile scraping, cross-context correlation, hidden score и immutable ranking.
 
-Comparison gate может только reject/correct/request evidence/accept packet for further human review. Candidate challenge рассматривается отдельным human appeal reviewer и создаёт successor receipt без переписывания predecessor evidence.
+Первый возможный pilot должен быть полностью fictional, synthetic и no-effect.
 
-Merge contract не разрешает использовать real candidate data. Первый возможный pilot должен быть полностью fictional, synthetic и no-effect.
+### KONTUR Product Family Contract v0.1
+
+[`products/kontur/v0.1/`](products/kontur/v0.1/) материализует family boundary для шести членов:
+
+1. Readiness Aggregator;
+2. Human Activation Boundary;
+3. Responsibility Kernel;
+4. Responsibility Ledger;
+5. Live Host Boundary;
+6. Game Companion.
+
+Разрешены только локальные/read-only analysis effects:
+
+- manifest validation;
+- interface review;
+- readiness inspection;
+- kernel/ledger lineage review;
+- activation/host evidence review;
+- Game Companion dependency-chain review;
+- privacy-minimized field-evidence consolidation.
+
+```text
+external_effects = []
+execution_authorized = false
+action_permit_created = false
+responsibility_accepted = false
+```
+
+Family contract не означает, что planned Game Companion runtime interfaces уже реализованы, что KONTUR активирован или что полевая проверка доказывает production readiness.
 
 ## IP-граница
 
@@ -259,14 +319,15 @@ Merge contract не разрешает использовать real candidate d
 2. [`docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`](docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md) — состояние экосистемы и balanced roadmap.
 3. [`ROADMAP.md`](ROADMAP.md) — текущий portfolio-oriented roadmap.
 4. [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/) — reusable Product Contract, template, example и validator.
-5. [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) — Маркетолог Пессимиста Product Contract и product-specific validator.
-6. [`products/freeshield/v0.1/`](products/freeshield/v0.1/) — FREESHIELD Protective Contract и fail-closed validator.
-7. [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/) — Честный найм Product Contract и contestability validator.
-8. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
-9. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
-10. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
-11. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
-12. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
-13. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR.
+5. [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) — Маркетолог Пессимиста Product Contract.
+6. [`products/freeshield/v0.1/`](products/freeshield/v0.1/) — FREESHIELD Protective Contract.
+7. [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/) — Честный найм Product Contract.
+8. [`products/kontur/v0.1/`](products/kontur/v0.1/) — KONTUR Product Family Contract и manifest.
+9. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
+10. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
+11. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
+12. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
+13. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
+14. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR implementation and pilots.
 
 Для нормативной и machine-readable проверки используйте канонические английские документы, schemas, validators и receipts, на которые ссылаются эти страницы.
