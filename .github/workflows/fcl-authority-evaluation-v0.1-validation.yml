@@ -1,0 +1,96 @@
+name: FCL Authority Evaluation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/fcl-authority-evaluation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/fcl-authority-evaluation-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: FCL Authority Evaluation v0.1 validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Re-run FCL predecessor stack
+        run: |
+          node protocols/fcl/v0.1/test-fcl.js
+          node protocols/fcl/v0.1/progress/test-progress-chain.js
+          node protocols/fcl/v0.1/delivery/test-delivery.js
+          node protocols/fcl/v0.1/handoff/test-handoff.js
+          node protocols/fcl/v0.1/runtime-ui/test-runtime-ui.js
+          node protocols/fcl/v0.1/control-request/test-control-request.js
+          node protocols/fcl/v0.1/request-evaluation/test-request-evaluation.js
+
+      - name: Re-run PoAI Authority Root semantics
+        run: |
+          node --check proposals/poai/authority/tools/authority-core.js
+          node --check proposals/poai/authority/test-authority.js
+          node proposals/poai/authority/test-authority.js /tmp/authority-grant.json /tmp/authority-verification.json
+
+      - name: Preserve Core and pre-action separation
+        run: |
+          node protocols/core/v0.1/validate-core.js
+          node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+
+      - name: Run FCL Authority Evaluation conformance
+        run: |
+          node --check protocols/fcl/v0.1/authority-evaluation/authority-evaluation.js
+          node --check protocols/fcl/v0.1/authority-evaluation/test-authority-evaluation.js
+          node protocols/fcl/v0.1/authority-evaluation/test-authority-evaluation.js /tmp/fcl-authority-input.json /tmp/fcl-authority-receipt.json
+          node protocols/fcl/v0.1/authority-evaluation/authority-evaluation.js validate /tmp/fcl-authority-input.json
+          node protocols/fcl/v0.1/authority-evaluation/authority-evaluation.js evaluate /tmp/fcl-authority-input.json >/tmp/fcl-authority-cli-receipt.json
+
+      - name: Validate FCL Authority Evaluation schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('protocols/fcl/v0.1/authority-evaluation/authority-evaluation-input.schema.json'), Path('/tmp/fcl-authority-input.json')),
+              (Path('protocols/fcl/v0.1/authority-evaluation/authority-evaluation-receipt.schema.json'), Path('/tmp/fcl-authority-receipt.json')),
+              (Path('protocols/fcl/v0.1/authority-evaluation/authority-evaluation-receipt.schema.json'), Path('/tmp/fcl-authority-cli-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Confirm live Authority Root does not grant FCL scopes
+        run: |
+          node - <<'NODE'
+          const root = require('./proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json');
+          for (const scope of ['fcl.run.interrupt', 'fcl.run.successor.create']) {
+            if (root.accepted_actions.includes(scope)) throw new Error(`live root unexpectedly grants ${scope}`);
+          }
+          console.log('Live Authority Root unchanged: no FCL action scopes granted');
+          NODE
