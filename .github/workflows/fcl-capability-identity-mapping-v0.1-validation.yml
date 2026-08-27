@@ -1,0 +1,140 @@
+name: FCL Capability Identity Mapping v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/capability-identity-mapping/**'
+      - 'protocols/fcl/v0.1/authority-evaluation/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - '.github/workflows/fcl-capability-identity-mapping-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/capability-identity-mapping/**'
+      - 'protocols/fcl/v0.1/authority-evaluation/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - '.github/workflows/fcl-capability-identity-mapping-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Prove exact selected-operation to FCL-scope mapping
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Re-run canonical source validators
+        run: |
+          node protocols/integration/execution-capability-descriptor/v0.1/validate-execution-capability-descriptor.js
+          node protocols/integration/execution-capability-descriptor/v0.1/test-import-safe-validator.js
+          node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+          node protocols/integration/capability-selection/v0.1/test-import-safe-validator.js
+          node protocols/fcl/v0.1/authority-evaluation/test-authority-evaluation.js
+
+      - name: Run FCL capability identity mapping conformance
+        run: |
+          node --check protocols/fcl/v0.1/capability-identity-mapping/capability-identity-mapping.js
+          node --check protocols/fcl/v0.1/capability-identity-mapping/test-capability-identity-mapping.js
+          node protocols/fcl/v0.1/capability-identity-mapping/test-capability-identity-mapping.js \
+            /tmp/fcl-capability-mapping-receipt.json \
+            /tmp/fcl-capability-mapping-input.json
+
+      - name: Validate input and receipt schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (
+                  Path('protocols/fcl/v0.1/capability-identity-mapping/capability-identity-mapping-input.schema.json'),
+                  Path('/tmp/fcl-capability-mapping-input.json'),
+              ),
+              (
+                  Path('protocols/fcl/v0.1/capability-identity-mapping/capability-identity-mapping-receipt.schema.json'),
+                  Path('/tmp/fcl-capability-mapping-receipt.json'),
+              ),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify mapping source identities and non-effects
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          receipt = json.loads(Path('/tmp/fcl-capability-mapping-receipt.json').read_text())
+          inp = json.loads(Path('/tmp/fcl-capability-mapping-input.json').read_text())
+
+          def canonical(v):
+              if v is None or isinstance(v, (bool, int, float, str)):
+                  return json.dumps(v, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(v, list):
+                  return '[' + ','.join(canonical(x) for x in v) + ']'
+              if isinstance(v, dict):
+                  return '{' + ','.join(
+                      json.dumps(k, ensure_ascii=False) + ':' + canonical(v[k])
+                      for k in sorted(v)
+                  ) + '}'
+              raise TypeError(type(v))
+
+          projected = dict(receipt)
+          projected['fingerprint_sha256'] = ''
+          expected = 'sha256:' + hashlib.sha256(canonical(projected).encode()).hexdigest()
+          assert receipt['fingerprint_sha256'] == expected
+
+          descriptor = inp['execution_capability_descriptor']
+          selection = inp['capability_selection']
+          authority = inp['fcl_authority_evaluation']
+
+          assert receipt['selected_descriptor_content_hash'] == descriptor['content_hash']
+          assert receipt['selection_content_hash'] == selection['content_hash']
+          assert receipt['authority_evaluation_fingerprint'] == authority['fingerprint_sha256']
+          assert receipt['descriptor_authority_scope'] == authority['required_scope']
+          assert receipt['mapping_status'] == 'EXACT'
+          assert all(v is False for v in receipt['non_effects'].values())
+          print('Independent mapping identity/fingerprint and no-effect boundary verified')
+          PY
+
+      - name: Preserve source protocols unchanged for mapping-slice changes
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          if printf '%s\n' "$changed" | grep -q '^protocols/fcl/v0\.1/capability-identity-mapping/'; then
+            bad="$(printf '%s\n' "$changed" | grep -E '^(protocols/fcl/v0\.1/authority-evaluation/|protocols/integration/execution-capability-descriptor/v0\.1/|protocols/integration/capability-selection/v0\.1/|protocols/core/v0\.1/|proposals/poai/authority/)' || true)"
+            if [ -n "$bad" ]; then
+              echo 'ERROR: mapping slice modified a protected source protocol'
+              echo "$bad"
+              exit 1
+            fi
+          fi
+          echo 'Source protocol ownership boundary preserved'

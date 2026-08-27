@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/fcl/v0.1/capability-identity-mapping/input.schema.json",
+  "title": "FCL Capability Identity Mapping Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "profile", "mapping_id", "origin",
+    "execution_capability_descriptor", "capability_selection",
+    "fcl_authority_evaluation", "mapped_at"
+  ],
+  "properties": {
+    "protocol": { "const": "FCL" },
+    "version": { "const": "0.1" },
+    "profile": { "const": "capability-identity-mapping-v0.1" },
+    "mapping_id": { "type": "string", "minLength": 1 },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": { "const": "Matawaka/uu-aap" },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "execution_capability_descriptor": { "type": "object" },
+    "capability_selection": { "type": "object" },
+    "fcl_authority_evaluation": { "type": "object" },
+    "mapped_at": { "type": "string", "format": "date-time" }
+  }
+}
