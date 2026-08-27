@@ -190,7 +190,7 @@ const mutations = [
   ['extra top-level key', marketer, d => { d.execute = true; }, true],
   ['invalid envelope id', marketer, d => { d.envelope_id = 'INVALID ID'; }, true],
   ['content hash mismatch', marketer, d => { d.identity.content_hash = `sha256:${'0'.repeat(64)}`; }, false],
-  ['frontier revision drift', marketer, d => { d.frontier.revision = '0'.repeat(40); }, true],
+  ['frontier revision format drift', marketer, d => { d.frontier.revision = '0'.repeat(39); }, true],
   ['consumer product substitution', marketer, d => { d.consumer.product_id = 'other-product'; }, true],
   ['consumer contract path substitution', marketer, d => { d.consumer.product_contract_path = 'products/honest-hiring/v0.1/product-contract.json'; }, true],
   ['consumer contract digest substitution', marketer, d => { d.consumer.product_contract_hash = `sha256:${'1'.repeat(64)}`; }, true],
