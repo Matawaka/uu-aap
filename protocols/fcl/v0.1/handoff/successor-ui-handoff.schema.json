@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/handoff/successor-ui-handoff.schema.json",
+  "title": "FCL Successor UI Handoff v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "profile", "handoff_id", "origin", "predecessor_delivery_assessment", "predecessor_terminal_projection", "continuation_receipt", "successor_projection", "successor_display_predecessor_projection_fingerprint", "handoff_at"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "successor-ui-handoff-v0.1"},
+    "handoff_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "predecessor_delivery_assessment": {"$ref": "../delivery/projection-delivery-assessment-receipt.schema.json"},
+    "predecessor_terminal_projection": {"$ref": "../progress/progress-projection-receipt.schema.json"},
+    "continuation_receipt": {"$ref": "../continuation-receipt.schema.json"},
+    "successor_projection": {"$ref": "../progress/progress-projection-receipt.schema.json"},
+    "successor_display_predecessor_projection_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "handoff_at": {"type": "string", "format": "date-time"}
+  }
+}
