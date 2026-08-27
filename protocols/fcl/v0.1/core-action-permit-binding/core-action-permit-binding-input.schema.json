@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/core-action-permit-binding/core-action-permit-binding-input.schema.json",
+  "title": "FCL Core ActionPermit Binding Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "profile",
+    "permit_id",
+    "origin",
+    "core_coordination_binding_input",
+    "core_coordination_receipt",
+    "issued_at",
+    "expires_at"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "core-action-permit-binding-v0.1"},
+    "permit_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "core_coordination_binding_input": {"type": "object"},
+    "core_coordination_receipt": {"type": "object"},
+    "issued_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"}
+  }
+}

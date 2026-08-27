@@ -1,0 +1,148 @@
+name: FCL Core ActionPermit Binding v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/fcl-core-action-permit-binding-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - '.github/workflows/fcl-core-action-permit-binding-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Materialize bounded ActionPermit without execution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Re-run reconciled FCL CoordinationReceipt predecessor
+        run: node protocols/fcl/v0.1/core-coordination-binding/test-core-coordination-binding.js
+
+      - name: Re-run Core v0.1 unchanged
+        run: node protocols/core/v0.1/validate-core.js
+
+      - name: Re-run reusable pre-action stack unchanged
+        run: |
+          node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+
+      - name: Run FCL ActionPermit binding conformance
+        run: |
+          node --check protocols/fcl/v0.1/core-action-permit-binding/core-action-permit-binding.js
+          node --check protocols/fcl/v0.1/core-action-permit-binding/test-core-action-permit-binding.js
+          node protocols/fcl/v0.1/core-action-permit-binding/test-core-action-permit-binding.js \
+            /tmp/fcl-action-permit.json \
+            /tmp/fcl-action-permit-input.json
+
+      - name: Validate input and Core output schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          pairs = [
+              (Path('protocols/fcl/v0.1/core-action-permit-binding/core-action-permit-binding-input.schema.json'), Path('/tmp/fcl-action-permit-input.json')),
+              (Path('protocols/core/v0.1/receipt-envelope.schema.json'), Path('/tmp/fcl-action-permit.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify Core permit identity target and prerequisite graph
+        run: |
+          python - <<'PY'
+          import hashlib
+          import json
+          from datetime import datetime
+          from pathlib import Path
+
+          permit = json.loads(Path('/tmp/fcl-action-permit.json').read_text(encoding='utf-8'))
+          inp = json.loads(Path('/tmp/fcl-action-permit-input.json').read_text(encoding='utf-8'))
+
+          def canonical(value):
+              if value is None or isinstance(value, (bool, int, float, str)):
+                  return json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(value, list):
+                  return '[' + ','.join(canonical(v) for v in value) + ']'
+              if isinstance(value, dict):
+                  return '{' + ','.join(json.dumps(k, ensure_ascii=False) + ':' + canonical(value[k]) for k in sorted(value)) + '}'
+              raise TypeError(type(value))
+
+          projection = {k: v for k, v in permit.items() if k not in ('content_hash', 'signature_profile')}
+          expected_core = 'sha256:' + hashlib.sha256(canonical(projection).encode('utf-8')).hexdigest()
+          assert permit['content_hash'] == expected_core, (permit['content_hash'], expected_core)
+
+          target = permit['payload']['target']
+          expected_target = 'sha256:' + hashlib.sha256(canonical(target).encode('utf-8')).hexdigest()
+          assert permit['assertions']['target_binding_hash'] == expected_target
+          assert permit['payload']['target_binding_hash'] == expected_target
+
+          c = inp['core_coordination_binding_input']
+          coord = inp['core_coordination_receipt']
+          expected_predecessors = [
+              c['core_state_receipt']['content_hash'],
+              c['core_intent_receipt']['content_hash'],
+              c['core_authority_receipt']['content_hash'],
+              coord['content_hash'],
+          ]
+          assert permit['predecessor_receipt_hashes'] == expected_predecessors
+          assert permit['receipt_type'] == 'ActionPermit'
+          assert permit['assertions']['action_permitted'] is True
+          assert permit['payload']['gate'] == 'fail_closed'
+          assert permit['payload']['one_shot'] is True
+          assert permit['payload']['consumed'] is False
+          assert permit['payload']['execute_revalidation_required'] is True
+          assert permit['non_effects']['action_performed'] is False
+          assert permit['non_effects']['execution_admitted'] is False
+
+          parse = lambda s: datetime.fromisoformat(s.replace('Z', '+00:00'))
+          assert parse(permit['issued_at']) < parse(permit['payload']['expires_at'])
+          assert parse(permit['payload']['expires_at']) <= parse(c['core_availability_claim']['payload']['valid_until'])
+          print('Independent Core ActionPermit identity, target and prerequisite graph verified; no execution admitted')
+          PY
+
+      - name: Preserve predecessor layers unchanged
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/pre-action-evidence-bundle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/|protocols/fcl/v0\.1/core-coordination-binding/)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: FCL ActionPermit slice modified a protected predecessor path'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'Protected predecessor paths unchanged'
