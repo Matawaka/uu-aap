@@ -44,7 +44,7 @@ const TOP_LEVEL_KEYS = [
   'non_effects'
 ];
 
-const RFC3339_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})[Tt]([01]\d|2[0-3]):([0-5]\d):([0-5]\d|60)(?:\.\d+)?(?:[Zz]|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
+const RFC3339_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})[Tt]([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(?:\.\d+)?(?:[Zz]|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
 
 class IALCompactError extends Error {
   constructor(message) {
@@ -85,6 +85,7 @@ function assertRfc3339DateTime(value, label) {
   const match = RFC3339_DATE_TIME.exec(value);
   requireCondition(match !== null, `${label} must be RFC3339 date-time`);
   const year = Number(match[1]);
+  requireCondition(year > 0, `${label} year must be between 0001 and 9999`);
   const month = Number(match[2]);
   const day = Number(match[3]);
   const calendar = new Date(0);
