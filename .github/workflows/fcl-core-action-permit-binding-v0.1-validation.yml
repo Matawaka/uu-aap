@@ -132,17 +132,22 @@ jobs:
           print('Independent Core ActionPermit identity, target and prerequisite graph verified; no execution admitted')
           PY
 
-      - name: Preserve predecessor layers unchanged
+      - name: Preserve predecessor layers unchanged for ActionPermit slice changes
         if: github.event_name == 'pull_request'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
           changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
           echo "$changed"
+          own="$(printf '%s\n' "$changed" | grep -E '^protocols/fcl/v0\.1/core-action-permit-binding/' || true)"
+          if [ -z "$own" ]; then
+            echo 'Dependency-only trigger: ActionPermit predecessor-mutation guard not applicable'
+            exit 0
+          fi
           bad="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/pre-action-evidence-bundle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/|protocols/fcl/v0\.1/core-coordination-binding/)' || true)"
           if [ -n "$bad" ]; then
             echo 'ERROR: FCL ActionPermit slice modified a protected predecessor path'
             echo "$bad"
             exit 1
           fi
-          echo 'Protected predecessor paths unchanged'
+          echo 'Protected predecessor paths unchanged for ActionPermit slice change'

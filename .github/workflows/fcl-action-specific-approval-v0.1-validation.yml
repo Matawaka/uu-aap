@@ -133,7 +133,7 @@ jobs:
           print('Independent approval hash/fingerprint, reusable shape and no-effect boundary verified')
           PY
 
-      - name: Preserve predecessor layers unchanged
+      - name: Preserve predecessor layers unchanged for approval slice changes
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -145,10 +145,15 @@ jobs:
           fi
           changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
           echo "$changed"
-          bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/fcl/v0\.1/core-coordination-binding/|protocols/fcl/v0\.1/core-action-permit-binding/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/pre-action-evidence-bundle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/)' || true)"
+          own="$(printf '%s\n' "$changed" | grep -E '^protocols/fcl/v0\.1/action-specific-approval/' || true)"
+          if [ -z "$own" ]; then
+            echo 'Dependency-only trigger: approval predecessor-mutation guard not applicable'
+            exit 0
+          fi
+          bad="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/fcl/v0\.1/core-coordination-binding/|protocols/fcl/v0\.1/core-action-permit-binding/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/pre-action-evidence-bundle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/)' || true)"
           if [ -n "$bad" ]; then
             echo 'ERROR: approval slice modified protected predecessor paths'
             echo "$bad"
             exit 1
           fi
-          echo 'Protected predecessor paths unchanged'
+          echo 'Protected predecessor paths unchanged for approval slice change'

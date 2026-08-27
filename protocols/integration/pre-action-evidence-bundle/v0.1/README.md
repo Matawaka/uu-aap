@@ -114,6 +114,52 @@ This profile is prospective.
 
 Historical AI Gateway live acceptance receipts and hashes remain immutable. An older bundle that omitted a standalone Core-valid `AvailabilityClaim` is not retroactively rewritten. Future fully Core-composable pre-action bundles should satisfy this profile or an equivalent stronger one.
 
+## Parameterized programmatic interface
+
+The validator now exposes a side-effect-free programmatic API:
+
+```text
+validateBundle(bundle, evidenceContext = buildDefaultFixtureEvidenceContext())
+buildDefaultFixtureEvidenceContext()
+validateEvidenceContext(evidenceContext)
+```
+
+The default evidence context is deterministically projected from the same Capability Selection and Execution Capability Availability conformance fixtures used by the historical v0.1 validator. Therefore omitting the context preserves the existing positive fixture and negative-mutation semantics.
+
+The normalized context carries only the exact facts the bundle validator needs from those upstream profiles:
+
+```text
+selection:
+  selection_id
+  content_hash
+  selected_capability_id
+  descriptor_id
+  descriptor_content_hash
+  operation
+
+availability:
+  binding_id
+  content_hash
+  observation_content_hash
+  core_state_receipt_hash
+  core_availability_claim_hash
+  status
+  valid_until
+  frontier
+```
+
+This interface extraction does **not** make an arbitrary context authoritative. A caller supplying a non-default context remains responsible for independently validating the source selection/availability artifacts under their own protocol profiles before constructing the normalized handoff.
+
+```text
+Parameterization != Semantic Relaxation
+Evidence Context != Source Verification
+Evidence Context != Authority
+Evidence Context != ActionPermit
+Evidence Context != Execution
+```
+
+The bundle validator still re-checks Core content hashes, predecessor graph, subject/frontier equality, target binding, approval binding, freshness horizon, one-shot permit state, lifecycle handoff and all explicit non-effects.
+
 ## Non-effects
 
 A conforming bundle does not itself create intent, create or expand authority, create approval, create an ActionPermit, perform an action, observe an outcome, prove causality, certify truth, establish liability, or create generalized/future action authority.
@@ -123,5 +169,7 @@ A conforming bundle does not itself create intent, create or expand authority, c
 `validate-pre-action-evidence-bundle.js` validates exact Capability Selection and Availability bindings, Core receipt identity hashes and predecessor graph, subject/frontier consistency, availability freshness, exact target and approval binding, one-shot unconsumed ActionPermit, expiry horizon, lifecycle authorize handoff and explicit non-effects.
 
 Negative mutations cover missing AvailabilityClaim in Coordination, stale availability, expired approval/permit, selection/capability/operation/target/frontier substitution, receipt substitution, permit consumption, wrong lifecycle phase and authority/action/future-permission escalation.
+
+`test-evidence-context.js` additionally proves deterministic default-context projection, explicit-vs-implicit default equivalence, fail-closed context substitutions, unavailable/malformed context rejection and side-effect-free module import.
 
 CI is read-only and never invokes an actuator.
