@@ -1,0 +1,74 @@
+name: FCL Core AuthorityReceipt Binding v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - '.github/workflows/fcl-core-authority-binding-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - '.github/workflows/fcl-core-authority-binding-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Bind pre-existing FCL authority to Core Intent without permit
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Syntax check binding adapter
+        run: |
+          node --check protocols/fcl/v0.1/core-authority-binding/core-authority-binding.js
+          node --check protocols/fcl/v0.1/core-authority-binding/test-core-authority-binding.js
+      - name: Re-run FCL Authority Evaluation predecessor
+        run: node protocols/fcl/v0.1/authority-evaluation/test-authority-evaluation.js
+      - name: Re-run Core v0.1 unchanged
+        run: node protocols/core/v0.1/validate-core.js
+      - name: Run FCL Core AuthorityReceipt binding conformance
+        run: node protocols/fcl/v0.1/core-authority-binding/test-core-authority-binding.js /tmp/fcl-core-authority-receipt.json
+      - name: Validate generated receipt against existing Core schema and independent hash
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('protocols/core/v0.1/receipt-envelope.schema.json').read_text(encoding='utf-8'))
+          receipt = json.loads(Path('/tmp/fcl-core-authority-receipt.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          assert receipt['receipt_type'] == 'AuthorityReceipt'
+          projection = {k: v for k, v in receipt.items() if k not in ('content_hash', 'signature_profile')}
+          canonical = json.dumps(projection, ensure_ascii=False, sort_keys=True, separators=(',', ':'))
+          expected = 'sha256:' + hashlib.sha256(canonical.encode('utf-8')).hexdigest()
+          assert receipt['content_hash'] == expected, (receipt['content_hash'], expected)
+          assert receipt['assertions']['authority_bound'] is True
+          assert receipt['non_effects']['permissions_expanded'] is False
+          assert receipt['non_effects']['action_permitted'] is False
+          assert receipt['payload']['core_intent_envelope_validated'] is True
+          assert receipt['payload']['core_intent_chain_revalidated'] is False
+          print('Generated FCL Core AuthorityReceipt validates against unchanged Core envelope and independent identity hash')
+          PY
+      - name: Confirm no Core or live authority expansion in this profile
+        run: |
+          git diff --exit-code HEAD^ -- protocols/core/v0.1 proposals/poai/authority || {
+            echo 'ERROR: this bounded adapter must not modify Core v0.1 or PoAI authority roots/grants'; exit 1;
+          }
