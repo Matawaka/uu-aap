@@ -61,7 +61,12 @@
       ],
       "properties": {
         "product_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
-        "product_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "product_version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[0-9]+\\.[0-9]+$"
+        },
         "product_contract_path": {
           "type": "string",
           "pattern": "^products/[a-z0-9-]+/v[0-9]+\\.[0-9]+/product-contract\\.json$"
