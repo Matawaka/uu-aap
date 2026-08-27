@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/action-specific-approval/action-specific-approval-input.schema.json",
+  "title": "FCL Action-Specific Approval Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","profile","approval_id","origin","user_control_request_receipt","core_action_permit_binding_input","core_action_permit","approval_event","issued_at","valid_until"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "action-specific-approval-v0.1"},
+    "approval_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository","revision","tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "user_control_request_receipt": {"type": "object"},
+    "core_action_permit_binding_input": {"type": "object"},
+    "core_action_permit": {"type": "object"},
+    "approval_event": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_id","event_kind","target_action_permit_hash","target_coordination_receipt_hash","target_binding_hash","occurred_at","human_initiated","passive_observation"],
+      "properties": {
+        "event_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+        "event_kind": {"enum": ["POINTER_ACTIVATION","KEYBOARD_ACTIVATION","VOICE_ACTIVATION","ACCESSIBILITY_ACTIVATION"]},
+        "target_action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "target_coordination_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "target_binding_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "occurred_at": {"type": "string", "format": "date-time"},
+        "human_initiated": {"const": true},
+        "passive_observation": {"const": false}
+      }
+    },
+    "issued_at": {"type": "string", "format": "date-time"},
+    "valid_until": {"type": "string", "format": "date-time"}
+  }
+}

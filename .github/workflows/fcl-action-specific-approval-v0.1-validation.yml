@@ -1,0 +1,154 @@
+name: FCL Action-Specific Approval v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/fcl/v0.1/control-request/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/fcl-action-specific-approval-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/fcl/v0.1/control-request/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/core/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/fcl-action-specific-approval-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Approve exact materialized permit without authorize or execute
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Re-run FCL request and permit predecessors
+        run: |
+          node protocols/fcl/v0.1/control-request/test-control-request.js
+          node protocols/fcl/v0.1/core-coordination-binding/test-core-coordination-binding.js
+          node protocols/fcl/v0.1/core-action-permit-binding/test-core-action-permit-binding.js \
+            /tmp/fcl-approval-cached-permit.json \
+            /tmp/fcl-approval-cached-permit-input.json
+
+      - name: Re-run Core and reusable downstream stack unchanged
+        run: |
+          node protocols/core/v0.1/validate-core.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+
+      - name: Run FCL approval conformance with cached exact predecessor sample
+        env:
+          FCL_APPROVAL_CACHED_PERMIT: /tmp/fcl-approval-cached-permit.json
+          FCL_APPROVAL_CACHED_PERMIT_INPUT: /tmp/fcl-approval-cached-permit-input.json
+        run: |
+          node --check protocols/fcl/v0.1/action-specific-approval/action-specific-approval.js
+          node --check protocols/fcl/v0.1/action-specific-approval/test-action-specific-approval.js
+          node --check protocols/fcl/v0.1/action-specific-approval/run-conformance-cached.js
+          node protocols/fcl/v0.1/action-specific-approval/run-conformance-cached.js \
+            /tmp/fcl-action-specific-approval-receipt.json \
+            /tmp/fcl-action-specific-approval-input.json
+
+      - name: Validate input and receipt schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('protocols/fcl/v0.1/action-specific-approval/action-specific-approval-input.schema.json'), Path('/tmp/fcl-action-specific-approval-input.json')),
+              (Path('protocols/fcl/v0.1/action-specific-approval/action-specific-approval-receipt.schema.json'), Path('/tmp/fcl-action-specific-approval-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema=json.loads(schema_path.read_text(encoding='utf-8'))
+              instance=json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema,format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify approval identities and no-effect boundary
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/fcl-action-specific-approval-receipt.json').read_text(encoding='utf-8'))
+          i=json.loads(Path('/tmp/fcl-action-specific-approval-input.json').read_text(encoding='utf-8'))
+          def canonical(v):
+              if v is None or isinstance(v,(bool,int,float,str)):
+                  return json.dumps(v,ensure_ascii=False,separators=(',',':'))
+              if isinstance(v,list):
+                  return '['+','.join(canonical(x) for x in v)+']'
+              if isinstance(v,dict):
+                  return '{'+','.join(json.dumps(k,ensure_ascii=False)+':'+canonical(v[k]) for k in sorted(v))+'}'
+              raise TypeError(type(v))
+          approval=dict(r['approval_binding'])
+          approval_projection={k:v for k,v in approval.items() if k!='content_hash'}
+          approval_hash='sha256:'+hashlib.sha256(canonical(approval_projection).encode()).hexdigest()
+          assert r['approval_binding']['content_hash']==approval_hash
+          projected=dict(r); projected['fingerprint_sha256']=''
+          fingerprint='sha256:'+hashlib.sha256(canonical(projected).encode()).hexdigest()
+          assert r['fingerprint_sha256']==fingerprint
+          permit=i['core_action_permit']
+          event=i['approval_event']
+          assert r['core_action_permit_hash']==permit['content_hash']==event['target_action_permit_hash']
+          assert r['core_coordination_receipt_hash']==i['core_action_permit_binding_input']['core_coordination_receipt']['content_hash']==event['target_coordination_receipt_hash']
+          assert r['target_binding_hash']==permit['payload']['target_binding_hash']==event['target_binding_hash']
+          expected_keys={'approval_id','kind','scope_bound','subject_id','operation','action_scope','authority_scope','target_binding_hash','issued_at','valid_until','one_shot','content_hash'}
+          assert set(r['approval_binding'])==expected_keys
+          assert r['approval_binding']['kind']=='action_specific'
+          assert r['approval_binding']['scope_bound'] is True
+          assert r['approval_binding']['one_shot'] is True
+          assert permit['payload']['consumed'] is False
+          assert r['action_permit_consumed'] is False
+          assert r['pre_action_bundle_created'] is False
+          assert r['lifecycle_authorize_admitted'] is False
+          assert r['lifecycle_execute_ready'] is False
+          assert r['execution_admitted'] is False
+          print('Independent approval hash/fingerprint, reusable shape and no-effect boundary verified')
+          PY
+
+      - name: Preserve predecessor layers unchanged
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE='${{ github.event.pull_request.base.sha }}'
+            HEAD_SHA='${{ github.event.pull_request.head.sha }}'
+          else
+            BASE="$(git rev-parse HEAD^)"
+            HEAD_SHA="$(git rev-parse HEAD)"
+          fi
+          changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
+          echo "$changed"
+          bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/fcl/v0\.1/core-coordination-binding/|protocols/fcl/v0\.1/core-action-permit-binding/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/pre-action-evidence-bundle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: approval slice modified protected predecessor paths'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'Protected predecessor paths unchanged'
