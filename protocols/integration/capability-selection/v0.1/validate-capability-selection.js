@@ -164,55 +164,61 @@ function clone(x) { return JSON.parse(JSON.stringify(x)); }
 function rehashProjection(p) { p.projection_hash = hashObject(p, "projection_hash"); }
 function rehashRecord(r) { r.content_hash = hashObject(r, "content_hash"); }
 
-const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
-const positive = validate(fixture);
-if (positive.length) {
-  console.error("Positive fixture failed:", positive);
-  process.exit(1);
-}
-
-const mutations = [
-  ["selection grants authority", r => { r.non_effects.authority_granted = true; }],
-  ["selection asserts current availability", r => { r.non_effects.current_availability_asserted = true; }],
-  ["selection creates intent", r => { r.non_effects.intent_established = true; }],
-  ["selection creates approval", r => { r.non_effects.approval_created = true; }],
-  ["selection creates ActionPermit", r => { r.non_effects.action_permit_created = true; }],
-  ["selection authorizes action", r => { r.non_effects.action_authorized = true; }],
-  ["selection performs action", r => { r.non_effects.action_performed = true; }],
-  ["selection creates future permission", r => { r.non_effects.future_action_permission_created = true; }],
-  ["constraints relaxed", r => { r.result.assertions.no_constraints_relaxed = false; }],
-  ["availability no longer required", r => { r.result.assertions.fresh_availability_still_required = false; }],
-  ["authorization no longer required", r => { r.result.assertions.authorization_still_required = false; }],
-  ["ineligible authority scope marked eligible", r => { r.candidates[2].assessment.eligible = true; r.candidates[2].assessment.failed_hard_constraints = []; r.candidates[2].assessment.eligible_rank = 1; }],
-  ["operation substitution", r => { r.candidates[0].operation_projection.operation = "delete"; rehashProjection(r.candidates[0].operation_projection); }],
-  ["approval downgrade", r => { r.candidates[0].operation_projection.approval_mode = "none"; rehashProjection(r.candidates[0].operation_projection); }],
-  ["availability probe removed", r => { r.candidates[0].operation_projection.availability_probe_required_before_authorization = false; rehashProjection(r.candidates[0].operation_projection); }],
-  ["lifecycle phase removed", r => { r.candidates[0].operation_projection.required_phases = ["prepare","authorize","execute","close"]; rehashProjection(r.candidates[0].operation_projection); }],
-  ["exact target guard removed", r => { r.candidates[0].operation_projection.exact_target_binding_required = false; rehashProjection(r.candidates[0].operation_projection); }],
-  ["predecessor freshness removed", r => { r.candidates[0].operation_projection.predecessor_freshness_required = false; rehashProjection(r.candidates[0].operation_projection); }],
-  ["fail closed target guard removed", r => { r.candidates[0].operation_projection.fail_closed_target_guard_required = false; rehashProjection(r.candidates[0].operation_projection); }],
-  ["one shot removed", r => { r.candidates[0].operation_projection.one_shot_supported = false; rehashProjection(r.candidates[0].operation_projection); }],
-  ["expiry removed", r => { r.candidates[0].operation_projection.expiry_required = false; rehashProjection(r.candidates[0].operation_projection); }],
-  ["observer separation removed", r => { r.candidates[0].operation_projection.separate_observer_required = false; rehashProjection(r.candidates[0].operation_projection); }],
-  ["ActionPermit receipt removed", r => { r.candidates[0].operation_projection.pre_action_receipts = ["StateReceipt","IntentReceipt","AuthorityReceipt","CoordinationReceipt"]; rehashProjection(r.candidates[0].operation_projection); }],
-  ["post-action receipt substituted", r => { r.candidates[0].operation_projection.post_action_receipts = ["ActionReceipt","OutcomeReceipt"]; rehashProjection(r.candidates[0].operation_projection); }],
-  ["wrong preference vector", r => { r.candidates[0].assessment.preference_vector = [0,0]; }],
-  ["wrong eligible rank", r => { r.candidates[0].assessment.eligible_rank = 1; r.candidates[1].assessment.eligible_rank = 2; }],
-  ["lower ranked candidate selected", r => { r.result.selected_capability_id = r.candidates[0].operation_projection.capability_id; r.result.selected_descriptor_ref = r.candidates[0].descriptor_ref; }],
-  ["no_match despite eligible candidates", r => { r.result.status = "no_match"; r.result.selected_capability_id = null; r.result.selected_descriptor_ref = null; r.result.assertions.selected_candidate_eligible = false; }],
-  ["projection hash mismatch", r => { r.candidates[0].operation_projection.projection_hash = "sha256:" + "0".repeat(64); }],
-  ["content hash mismatch", r => { r.content_hash = "sha256:" + "0".repeat(64); }],
-];
-
-for (const [name, mutate] of mutations) {
-  const r = clone(fixture);
-  mutate(r);
-  if (name !== "content hash mismatch") rehashRecord(r);
-  const errs = validate(r);
-  if (errs.length === 0) {
-    console.error(`Negative mutation unexpectedly passed: ${name}`);
+function runConformance() {
+  const fixture = JSON.parse(fs.readFileSync(fixturePath, "utf8"));
+  const positive = validate(fixture);
+  if (positive.length) {
+    console.error("Positive fixture failed:", positive);
     process.exit(1);
   }
+
+  const mutations = [
+    ["selection grants authority", r => { r.non_effects.authority_granted = true; }],
+    ["selection asserts current availability", r => { r.non_effects.current_availability_asserted = true; }],
+    ["selection creates intent", r => { r.non_effects.intent_established = true; }],
+    ["selection creates approval", r => { r.non_effects.approval_created = true; }],
+    ["selection creates ActionPermit", r => { r.non_effects.action_permit_created = true; }],
+    ["selection authorizes action", r => { r.non_effects.action_authorized = true; }],
+    ["selection performs action", r => { r.non_effects.action_performed = true; }],
+    ["selection creates future permission", r => { r.non_effects.future_action_permission_created = true; }],
+    ["constraints relaxed", r => { r.result.assertions.no_constraints_relaxed = false; }],
+    ["availability no longer required", r => { r.result.assertions.fresh_availability_still_required = false; }],
+    ["authorization no longer required", r => { r.result.assertions.authorization_still_required = false; }],
+    ["ineligible authority scope marked eligible", r => { r.candidates[2].assessment.eligible = true; r.candidates[2].assessment.failed_hard_constraints = []; r.candidates[2].assessment.eligible_rank = 1; }],
+    ["operation substitution", r => { r.candidates[0].operation_projection.operation = "delete"; rehashProjection(r.candidates[0].operation_projection); }],
+    ["approval downgrade", r => { r.candidates[0].operation_projection.approval_mode = "none"; rehashProjection(r.candidates[0].operation_projection); }],
+    ["availability probe removed", r => { r.candidates[0].operation_projection.availability_probe_required_before_authorization = false; rehashProjection(r.candidates[0].operation_projection); }],
+    ["lifecycle phase removed", r => { r.candidates[0].operation_projection.required_phases = ["prepare","authorize","execute","close"]; rehashProjection(r.candidates[0].operation_projection); }],
+    ["exact target guard removed", r => { r.candidates[0].operation_projection.exact_target_binding_required = false; rehashProjection(r.candidates[0].operation_projection); }],
+    ["predecessor freshness removed", r => { r.candidates[0].operation_projection.predecessor_freshness_required = false; rehashProjection(r.candidates[0].operation_projection); }],
+    ["fail closed target guard removed", r => { r.candidates[0].operation_projection.fail_closed_target_guard_required = false; rehashProjection(r.candidates[0].operation_projection); }],
+    ["one shot removed", r => { r.candidates[0].operation_projection.one_shot_supported = false; rehashProjection(r.candidates[0].operation_projection); }],
+    ["expiry removed", r => { r.candidates[0].operation_projection.expiry_required = false; rehashProjection(r.candidates[0].operation_projection); }],
+    ["observer separation removed", r => { r.candidates[0].operation_projection.separate_observer_required = false; rehashProjection(r.candidates[0].operation_projection); }],
+    ["ActionPermit receipt removed", r => { r.candidates[0].operation_projection.pre_action_receipts = ["StateReceipt","IntentReceipt","AuthorityReceipt","CoordinationReceipt"]; rehashProjection(r.candidates[0].operation_projection); }],
+    ["post-action receipt substituted", r => { r.candidates[0].operation_projection.post_action_receipts = ["ActionReceipt","OutcomeReceipt"]; rehashProjection(r.candidates[0].operation_projection); }],
+    ["wrong preference vector", r => { r.candidates[0].assessment.preference_vector = [0,0]; }],
+    ["wrong eligible rank", r => { r.candidates[0].assessment.eligible_rank = 1; r.candidates[1].assessment.eligible_rank = 2; }],
+    ["lower ranked candidate selected", r => { r.result.selected_capability_id = r.candidates[0].operation_projection.capability_id; r.result.selected_descriptor_ref = r.candidates[0].descriptor_ref; }],
+    ["no_match despite eligible candidates", r => { r.result.status = "no_match"; r.result.selected_capability_id = null; r.result.selected_descriptor_ref = null; r.result.assertions.selected_candidate_eligible = false; }],
+    ["projection hash mismatch", r => { r.candidates[0].operation_projection.projection_hash = "sha256:" + "0".repeat(64); }],
+    ["content hash mismatch", r => { r.content_hash = "sha256:" + "0".repeat(64); }],
+  ];
+
+  for (const [name, mutate] of mutations) {
+    const r = clone(fixture);
+    mutate(r);
+    if (name !== "content hash mismatch") rehashRecord(r);
+    const errs = validate(r);
+    if (errs.length === 0) {
+      console.error(`Negative mutation unexpectedly passed: ${name}`);
+      process.exit(1);
+    }
+  }
+
+  console.log(`Capability selection v0.1: positive fixture PASS; ${mutations.length} negative mutations rejected.`);
 }
 
-console.log(`Capability selection v0.1: positive fixture PASS; ${mutations.length} negative mutations rejected.`);
+module.exports = { validate, hashObject };
+
+if (require.main === module) runConformance();

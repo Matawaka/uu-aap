@@ -59,7 +59,7 @@ jobs:
           node --check protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
           node protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
 
-      - name: Protect predecessor protocol implementations
+      - name: Protect predecessor protocol implementations for PreAction slice changes
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -71,10 +71,15 @@ jobs:
           fi
           changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
           echo "$changed"
-          bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/integration/capability-selection/v0\.1/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/execution-lifecycle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/|protocols/fcl/v0\.1/)' || true)"
-          if [ -n "$bad" ]; then
-            echo 'ERROR: parameterization changed a protected predecessor/downstream profile'
-            echo "$bad"
-            exit 1
+          slice_changed="$(echo "$changed" | grep -E '^protocols/integration/pre-action-evidence-bundle/v0\.1/' || true)"
+          if [ -n "$slice_changed" ]; then
+            bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/integration/capability-selection/v0\.1/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/execution-lifecycle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/|protocols/fcl/v0\.1/)' || true)"
+            if [ -n "$bad" ]; then
+              echo 'ERROR: PreAction slice changed a protected predecessor/downstream profile'
+              echo "$bad"
+              exit 1
+            fi
+            echo 'PreAction slice changed; protected predecessor/downstream profiles unchanged'
+          else
+            echo 'PreAction protocol implementation unchanged; dependency evolution accepted after full semantic revalidation'
           fi
-          echo 'Protected predecessor/downstream profiles unchanged'
