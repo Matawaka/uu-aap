@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -47,5 +49,32 @@ jobs:
       - name: Validate Bounded Execution Lifecycle
         run: node protocols/integration/execution-lifecycle/v0.1/validate-execution-lifecycle.js
 
-      - name: Validate Pre-Action Evidence Bundle
-        run: node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+      - name: Validate historical Pre-Action fixture semantics
+        run: |
+          node --check protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+
+      - name: Validate parameterized evidence-context interface
+        run: |
+          node --check protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
+
+      - name: Protect predecessor protocol implementations
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE='${{ github.event.pull_request.base.sha }}'
+            HEAD_SHA='${{ github.event.pull_request.head.sha }}'
+          else
+            BASE="$(git rev-parse HEAD^)"
+            HEAD_SHA="$(git rev-parse HEAD)"
+          fi
+          changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
+          echo "$changed"
+          bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/integration/capability-selection/v0\.1/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/execution-lifecycle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/|protocols/fcl/v0\.1/)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: parameterization changed a protected predecessor/downstream profile'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'Protected predecessor/downstream profiles unchanged'

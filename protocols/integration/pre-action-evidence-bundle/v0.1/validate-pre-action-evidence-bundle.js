@@ -29,6 +29,13 @@ function same(a,b) { return canonical(a) === canonical(b); }
 function setEq(a,b) { return a.length === b.length && new Set(a).size === a.length && a.every(x => new Set(b).has(x)); }
 function ms(s, label) { const v = Date.parse(s); if (Number.isNaN(v)) fail(`${label} invalid date`); return v; }
 function checkHash(v,label) { if (typeof v !== "string" || !/^sha256:[0-9a-f]{64}$/.test(v)) fail(`${label} invalid hash`); }
+function exactKeys(value, expected, label) {
+  if (!isObject(value)) fail(`${label} must be object`);
+  const actual = Object.keys(value).sort();
+  const wanted = [...expected].sort();
+  if (JSON.stringify(actual) !== JSON.stringify(wanted)) fail(`${label} keys mismatch`);
+}
+function nonEmpty(value, label) { if (typeof value !== "string" || value.length === 0) fail(`${label} must be non-empty string`); }
 
 const REQUIRED_NON_EFFECTS = {
   StateReceipt: {intent_established:false, authority_established:false, action_performed:false, liability_established:false, truth_certified:false},
@@ -53,29 +60,67 @@ function checkCoreReceipt(r, expectedType, label) {
   for (const [k,v] of Object.entries(req)) if (r.non_effects?.[k] !== v) fail(`${label} non_effect ${k} mismatch`);
 }
 
-function validateBundle(b) {
+function buildDefaultFixtureEvidenceContext() {
+  const selected = selectionFixture.result;
+  return {
+    selection: {
+      selection_id: selectionFixture.selection_id,
+      content_hash: selectionFixture.content_hash,
+      selected_capability_id: selected.selected_capability_id,
+      descriptor_id: selected.selected_descriptor_ref.descriptor_id,
+      descriptor_content_hash: selected.selected_descriptor_ref.content_hash,
+      operation: selectionFixture.request.operation,
+    },
+    availability: {
+      binding_id: availabilityFixture.binding_id,
+      content_hash: availabilityFixture.content_hash,
+      observation_content_hash: availabilityFixture.observation.content_hash,
+      core_state_receipt_hash: availabilityFixture.core_state_receipt.content_hash,
+      core_availability_claim_hash: availabilityFixture.core_availability_claim.content_hash,
+      status: availabilityFixture.observation.status,
+      valid_until: availabilityFixture.observation.valid_until,
+      frontier: availabilityFixture.observation.frontier.revision,
+    },
+  };
+}
+
+function validateEvidenceContext(context) {
+  exactKeys(context, ["selection","availability"], "evidenceContext");
+  exactKeys(context.selection, ["selection_id","content_hash","selected_capability_id","descriptor_id","descriptor_content_hash","operation"], "evidenceContext.selection");
+  exactKeys(context.availability, ["binding_id","content_hash","observation_content_hash","core_state_receipt_hash","core_availability_claim_hash","status","valid_until","frontier"], "evidenceContext.availability");
+  for (const key of ["selection_id","selected_capability_id","descriptor_id","operation"]) nonEmpty(context.selection[key], `evidenceContext.selection.${key}`);
+  for (const key of ["content_hash","descriptor_content_hash"]) checkHash(context.selection[key], `evidenceContext.selection.${key}`);
+  for (const key of ["binding_id","frontier"]) nonEmpty(context.availability[key], `evidenceContext.availability.${key}`);
+  for (const key of ["content_hash","observation_content_hash","core_state_receipt_hash","core_availability_claim_hash"]) checkHash(context.availability[key], `evidenceContext.availability.${key}`);
+  if (context.availability.status !== "available") fail("evidenceContext.availability.status must be available");
+  ms(context.availability.valid_until, "evidenceContext.availability.valid_until");
+  return true;
+}
+
+function validateBundle(b, evidenceContext = buildDefaultFixtureEvidenceContext()) {
+  validateEvidenceContext(evidenceContext);
   if (!isObject(b)) fail("bundle must be object");
   if (schema.title !== "UU-AAP Pre-Action Evidence Bundle v0.1") fail("schema title mismatch");
   if (b.protocol !== "UU-AAP-PRE-ACTION-EVIDENCE-BUNDLE" || b.version !== "0.1" || b.artifact_type !== "PreActionEvidenceBundle") fail("bundle identity mismatch");
   checkHash(b.content_hash, "bundle content_hash");
   const assembled = ms(b.assembled_at, "assembled_at");
 
-  const selected = selectionFixture.result;
-  if (b.selection_binding.selection_id !== selectionFixture.selection_id) fail("selection id mismatch");
-  if (b.selection_binding.content_hash !== selectionFixture.content_hash) fail("selection hash mismatch");
+  const selected = evidenceContext.selection;
+  if (b.selection_binding.selection_id !== selected.selection_id) fail("selection id mismatch");
+  if (b.selection_binding.content_hash !== selected.content_hash) fail("selection hash mismatch");
   if (b.selection_binding.selected_capability_id !== selected.selected_capability_id) fail("selected capability mismatch");
-  if (b.selection_binding.descriptor_id !== selected.selected_descriptor_ref.descriptor_id) fail("selected descriptor id mismatch");
-  if (b.selection_binding.descriptor_content_hash !== selected.selected_descriptor_ref.content_hash) fail("selected descriptor hash mismatch");
-  if (b.selection_binding.operation !== selectionFixture.request.operation) fail("selected operation mismatch");
+  if (b.selection_binding.descriptor_id !== selected.descriptor_id) fail("selected descriptor id mismatch");
+  if (b.selection_binding.descriptor_content_hash !== selected.descriptor_content_hash) fail("selected descriptor hash mismatch");
+  if (b.selection_binding.operation !== selected.operation) fail("selected operation mismatch");
 
-  const af = availabilityFixture;
+  const af = evidenceContext.availability;
   if (b.availability_binding.binding_id !== af.binding_id) fail("availability binding id mismatch");
   if (b.availability_binding.content_hash !== af.content_hash) fail("availability binding hash mismatch");
-  if (b.availability_binding.observation_content_hash !== af.observation.content_hash) fail("availability observation hash mismatch");
-  if (b.availability_binding.core_availability_claim_hash !== af.core_availability_claim.content_hash) fail("availability claim ref mismatch");
-  if (b.availability_binding.status !== "available" || b.availability_binding.status !== af.observation.status) fail("availability status must be available");
-  if (b.availability_binding.valid_until !== af.observation.valid_until) fail("availability validity mismatch");
-  if (b.availability_binding.frontier !== af.observation.frontier.revision) fail("availability frontier mismatch");
+  if (b.availability_binding.observation_content_hash !== af.observation_content_hash) fail("availability observation hash mismatch");
+  if (b.availability_binding.core_availability_claim_hash !== af.core_availability_claim_hash) fail("availability claim ref mismatch");
+  if (b.availability_binding.status !== "available" || b.availability_binding.status !== af.status) fail("availability status must be available");
+  if (b.availability_binding.valid_until !== af.valid_until) fail("availability validity mismatch");
+  if (b.availability_binding.frontier !== af.frontier) fail("availability frontier mismatch");
 
   const targetProjection = {
     resource:b.target.resource,
@@ -103,8 +148,8 @@ function validateBundle(b) {
   checkCoreReceipt(c.coordination, "CoordinationReceipt", "coordination");
   checkCoreReceipt(c.action_permit, "ActionPermit", "action_permit");
 
-  if (c.state.content_hash !== af.core_state_receipt.content_hash) fail("state receipt not bound to availability profile");
-  if (c.availability.content_hash !== af.core_availability_claim.content_hash) fail("availability receipt not bound to availability profile");
+  if (c.state.content_hash !== af.core_state_receipt_hash) fail("state receipt not bound to availability profile");
+  if (c.availability.content_hash !== af.core_availability_claim_hash) fail("availability receipt not bound to availability profile");
   if (!same(c.state.subject,b.subject)) fail("bundle/state subject mismatch");
   for (const [name,r] of Object.entries(c)) {
     if (!same(r.subject,b.subject)) fail(`${name} subject mismatch`);
@@ -181,9 +226,6 @@ function expectFailure(name, mutate) {
   process.stdout.write(`PASS negative: ${name}\n`);
 }
 
-validateBundle(fixture);
-process.stdout.write(`PASS positive: ${fixture.bundle_id}\n`);
-
 const negatives = [
 ["protocol substitution", x=>x.protocol="BAD"],
 ["selection hash substitution", x=>x.selection_binding.content_hash="sha256:"+"0".repeat(64)],
@@ -230,5 +272,20 @@ const negatives = [
 ["bundle content hash mismatch", x=>x.content_hash="sha256:"+"c".repeat(64)],
 ];
 
-for (const [name, mutate] of negatives) expectFailure(name, mutate);
-process.stdout.write(`UU-AAP Pre-Action Evidence Bundle v0.1: PASS (${negatives.length} negative tests)\n`);
+function runConformance() {
+  validateBundle(fixture);
+  process.stdout.write(`PASS positive: ${fixture.bundle_id}\n`);
+  for (const [name, mutate] of negatives) expectFailure(name, mutate);
+  process.stdout.write(`UU-AAP Pre-Action Evidence Bundle v0.1: PASS (${negatives.length} negative tests)\n`);
+}
+
+if (require.main === module) runConformance();
+
+module.exports = {
+  buildDefaultFixtureEvidenceContext,
+  canonical,
+  coreHash,
+  sha256Object,
+  validateBundle,
+  validateEvidenceContext,
+};
