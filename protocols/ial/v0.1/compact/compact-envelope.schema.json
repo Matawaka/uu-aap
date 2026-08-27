@@ -1,0 +1,411 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/protocols/ial/v0.1/compact/compact-envelope.schema.json",
+  "title": "IAL Compact Envelope v0.1",
+  "description": "A provider-neutral, content-addressed preflight envelope for parse, validate and inspect only. It does not establish responsibility acceptance, authority, execution admission or materialization permission.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "profile",
+    "envelope_id",
+    "identity",
+    "frontier",
+    "consumer",
+    "intent",
+    "target",
+    "boundary",
+    "responsibility",
+    "authority_refs",
+    "evidence",
+    "requested_operation",
+    "controls",
+    "assertions",
+    "non_effects"
+  ],
+  "properties": {
+    "protocol": { "const": "IAL" },
+    "version": { "const": "0.1" },
+    "profile": { "const": "compact-envelope-v0.1" },
+    "envelope_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$" },
+    "identity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["canonicalization_profile", "hash_algorithm", "content_hash"],
+      "properties": {
+        "canonicalization_profile": { "const": "ial-compact-json-v0.1" },
+        "hash_algorithm": { "const": "sha256" },
+        "content_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "observed_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "consumer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id",
+        "product_version",
+        "product_contract_path",
+        "product_contract_hash",
+        "requester_role_id"
+      ],
+      "properties": {
+        "product_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+        "product_version": { "type": "string", "minLength": 1, "maxLength": 64 },
+        "product_contract_path": {
+          "type": "string",
+          "pattern": "^products/[a-z0-9-]+/v[0-9]+\\.[0-9]+/product-contract\\.json$"
+        },
+        "product_contract_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "requester_role_id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,95}$" }
+      }
+    },
+    "intent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["origin", "statement", "scope", "non_goals"],
+      "properties": {
+        "origin": { "enum": ["human_declared", "system_proposed", "mixed"] },
+        "statement": { "type": "string", "minLength": 1 },
+        "scope": { "$ref": "#/$defs/nonEmptyStringArray" },
+        "non_goals": { "$ref": "#/$defs/nonEmptyStringArray" }
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "identifier"],
+      "properties": {
+        "kind": {
+          "enum": [
+            "local_artifact",
+            "repository_artifact",
+            "human_decision_packet",
+            "external_resource_candidate",
+            "canonical_state_candidate"
+          ]
+        },
+        "identifier": { "type": "string", "minLength": 1 }
+      }
+    },
+    "boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "elevation_level",
+        "effect_class",
+        "observable_effect",
+        "responsibility_handoff",
+        "materialization_commitment"
+      ],
+      "properties": {
+        "elevation_level": { "enum": ["E0", "E1", "E2", "E3"] },
+        "effect_class": {
+          "enum": [
+            "internal_analysis",
+            "observable_output",
+            "responsibility_handoff",
+            "materialization_candidate"
+          ]
+        },
+        "observable_effect": { "type": "boolean" },
+        "responsibility_handoff": { "type": "boolean" },
+        "materialization_commitment": { "type": "boolean" }
+      }
+    },
+    "responsibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "current_responsible_party_id",
+        "receiving_party_id",
+        "handoff_scope",
+        "acceptance_ref"
+      ],
+      "properties": {
+        "current_responsible_party_id": { "type": "string", "minLength": 1 },
+        "receiving_party_id": {
+          "oneOf": [
+            { "type": "string", "minLength": 1 },
+            { "type": "null" }
+          ]
+        },
+        "handoff_scope": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "acceptance_ref": { "type": "null" }
+      }
+    },
+    "authority_refs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_evidence_ref",
+        "action_permit_ref",
+        "execution_admission_ref",
+        "materialization_permission_ref"
+      ],
+      "properties": {
+        "authority_evidence_ref": { "type": "null" },
+        "action_permit_ref": { "type": "null" },
+        "execution_admission_ref": { "type": "null" },
+        "materialization_permission_ref": { "type": "null" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["refs", "private_reasoning_included"],
+      "properties": {
+        "refs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/evidenceRef" }
+        },
+        "private_reasoning_included": { "const": false }
+      }
+    },
+    "requested_operation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["operation_class", "verb", "description", "external_mutation_requested"],
+      "properties": {
+        "operation_class": {
+          "enum": [
+            "local_analysis",
+            "display_candidate",
+            "handoff_candidate",
+            "materialization_candidate"
+          ]
+        },
+        "verb": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+        "description": { "type": "string", "minLength": 1 },
+        "external_mutation_requested": { "type": "boolean" }
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface",
+        "execute_command_available",
+        "network_access_required",
+        "filesystem_write_required",
+        "responsibility_accepted",
+        "execution_admitted",
+        "materialization_permitted",
+        "external_effect_requires_separate_gate",
+        "observe_before_retry",
+        "automatic_retry_on_unknown"
+      ],
+      "properties": {
+        "surface": { "const": "parse_validate_inspect_only" },
+        "execute_command_available": { "const": false },
+        "network_access_required": { "const": false },
+        "filesystem_write_required": { "const": false },
+        "responsibility_accepted": { "const": false },
+        "execution_admitted": { "const": false },
+        "materialization_permitted": { "const": false },
+        "external_effect_requires_separate_gate": { "const": true },
+        "observe_before_retry": { "const": true },
+        "automatic_retry_on_unknown": { "const": false }
+      }
+    },
+    "assertions": { "$ref": "#/$defs/nonEmptyStringArray" },
+    "non_effects": { "$ref": "#/$defs/nonEmptyStringArray" }
+  },
+  "$defs": {
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "digest", "description"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,95}$" },
+        "kind": {
+          "enum": [
+            "product_contract",
+            "user_input",
+            "repository_artifact",
+            "derived_candidate",
+            "protective_assessment",
+            "other"
+          ]
+        },
+        "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "description": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "boundary": {
+            "properties": { "elevation_level": { "const": "E0" } },
+            "required": ["elevation_level"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "boundary": {
+            "properties": {
+              "effect_class": { "const": "internal_analysis" },
+              "observable_effect": { "const": false },
+              "responsibility_handoff": { "const": false },
+              "materialization_commitment": { "const": false }
+            }
+          },
+          "responsibility": {
+            "properties": {
+              "receiving_party_id": { "type": "null" },
+              "handoff_scope": { "maxItems": 0 }
+            }
+          },
+          "requested_operation": {
+            "properties": {
+              "operation_class": { "const": "local_analysis" },
+              "external_mutation_requested": { "const": false }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "boundary": {
+            "properties": { "elevation_level": { "const": "E1" } },
+            "required": ["elevation_level"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "boundary": {
+            "properties": {
+              "effect_class": { "const": "observable_output" },
+              "observable_effect": { "const": true },
+              "responsibility_handoff": { "const": false },
+              "materialization_commitment": { "const": false }
+            }
+          },
+          "responsibility": {
+            "properties": {
+              "receiving_party_id": { "type": "null" },
+              "handoff_scope": { "maxItems": 0 }
+            }
+          },
+          "requested_operation": {
+            "properties": { "operation_class": { "const": "display_candidate" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "boundary": {
+            "properties": { "elevation_level": { "const": "E2" } },
+            "required": ["elevation_level"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "boundary": {
+            "properties": {
+              "effect_class": { "const": "responsibility_handoff" },
+              "observable_effect": { "const": true },
+              "responsibility_handoff": { "const": true },
+              "materialization_commitment": { "const": false }
+            }
+          },
+          "responsibility": {
+            "properties": {
+              "receiving_party_id": { "type": "string", "minLength": 1 },
+              "handoff_scope": { "minItems": 1 }
+            }
+          },
+          "requested_operation": {
+            "properties": { "operation_class": { "const": "handoff_candidate" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "boundary": {
+            "properties": { "elevation_level": { "const": "E3" } },
+            "required": ["elevation_level"]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "boundary": {
+            "properties": {
+              "effect_class": { "const": "materialization_candidate" },
+              "observable_effect": { "const": true },
+              "materialization_commitment": { "const": true }
+            }
+          },
+          "requested_operation": {
+            "properties": { "operation_class": { "const": "materialization_candidate" } }
+          }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "boundary": {
+                  "properties": { "responsibility_handoff": { "const": true } },
+                  "required": ["responsibility_handoff"]
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "responsibility": {
+                  "properties": {
+                    "receiving_party_id": { "type": "string", "minLength": 1 },
+                    "handoff_scope": { "minItems": 1 }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "responsibility": {
+                  "properties": {
+                    "receiving_party_id": { "type": "null" },
+                    "handoff_scope": { "maxItems": 0 }
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
