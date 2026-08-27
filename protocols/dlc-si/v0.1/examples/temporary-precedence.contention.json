@@ -1,0 +1,30 @@
+{
+  "protocol": "DLC-SI",
+  "version": "0.1",
+  "profile": "dual-legitimacy-singular-interface-v0.1",
+  "contention_id": "demo-temporary-precedence",
+  "source_conflict_refs": ["ccrp:semantic-conflict:demo-001"],
+  "claims": [
+    {"claim_id": "claim-preserve-continuity", "legitimacy_ref": "proof:continuity:001", "successor_state_ref": "state:continuity-preserved"},
+    {"claim_id": "claim-protect-interface", "legitimacy_ref": "proof:safety:001", "successor_state_ref": "state:interface-frozen"}
+  ],
+  "interface": {"interface_id": "shared-action-gate", "output_capacity": 1},
+  "conflict": {"type": "normative", "claim_relation": "INCOMPARABLE", "successor_relation": "INCOMPATIBLE"},
+  "proposed_resolution": {
+    "mode": "TEMPORARY_PRECEDENCE",
+    "selected_claim_id": "claim-protect-interface",
+    "justification": "Bounded precedence is explicitly declared for the irreversible safety scope.",
+    "lease": {
+      "authority_ref": "authority:human-resolution:001",
+      "scope": ["irreversible-interface-mutation"],
+      "starts_at": "2026-08-27T09:30:00Z",
+      "expires_at": "2026-08-27T10:30:00Z",
+      "revocation_conditions": ["new-evidence-invalidates-safety-premise"],
+      "revisit_triggers": ["lease_expiry", "new_evidence", "resource_restoration"],
+      "successor_state_constraints": ["preserve-nonselected-legitimacy", "no-execution-without-action-gate"]
+    },
+    "revisit_triggers": ["lease_expiry", "new_evidence", "resource_restoration"]
+  },
+  "safe_work": ["collect_evidence", "observe", "simulate_reversible_path"],
+  "evaluated_at": "2026-08-27T10:00:00Z"
+}

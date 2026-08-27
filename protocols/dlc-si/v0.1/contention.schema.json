@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/dlc-si/v0.1/contention.schema.json",
+  "title": "DLC-SI v0.1 Interface Contention",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "profile", "contention_id", "source_conflict_refs", "claims", "interface", "conflict", "proposed_resolution", "safe_work", "evaluated_at"],
+  "properties": {
+    "protocol": {"const": "DLC-SI"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "dual-legitimacy-singular-interface-v0.1"},
+    "contention_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "source_conflict_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "claims": {
+      "type": "array", "minItems": 2, "uniqueItems": true,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["claim_id", "legitimacy_ref", "successor_state_ref"],
+        "properties": {
+          "claim_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,95}$"},
+          "legitimacy_ref": {"type": "string", "minLength": 1},
+          "successor_state_ref": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "interface": {
+      "type": "object", "additionalProperties": false,
+      "required": ["interface_id", "output_capacity"],
+      "properties": {
+        "interface_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,95}$"},
+        "output_capacity": {"const": 1}
+      }
+    },
+    "conflict": {
+      "type": "object", "additionalProperties": false,
+      "required": ["type", "claim_relation", "successor_relation"],
+      "properties": {
+        "type": {"enum": ["epistemic", "normative", "resource", "temporal", "interface_capacity", "referential"]},
+        "claim_relation": {"const": "INCOMPARABLE"},
+        "successor_relation": {"const": "INCOMPATIBLE"}
+      }
+    },
+    "proposed_resolution": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "selected_claim_id", "justification", "lease", "revisit_triggers"],
+      "properties": {
+        "mode": {"enum": ["TEMPORARY_PRECEDENCE", "DEFERRED", "UNRESOLVED"]},
+        "selected_claim_id": {"type": ["string", "null"], "minLength": 1},
+        "justification": {"type": "string", "minLength": 1},
+        "lease": {
+          "type": ["object", "null"],
+          "properties": {
+            "authority_ref": {"type": "string", "minLength": 1},
+            "scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "starts_at": {"type": "string", "format": "date-time"},
+            "expires_at": {"type": "string", "format": "date-time"},
+            "revocation_conditions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+            "revisit_triggers": {"type": "array", "minItems": 1, "uniqueItems": true, "contains": {"const": "lease_expiry"}, "items": {"type": "string", "minLength": 1}},
+            "successor_state_constraints": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+          },
+          "required": ["authority_ref", "scope", "starts_at", "expires_at", "revocation_conditions", "revisit_triggers", "successor_state_constraints"],
+          "additionalProperties": false
+        },
+        "revisit_triggers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      },
+      "allOf": [
+        {"if": {"properties": {"mode": {"const": "TEMPORARY_PRECEDENCE"}}}, "then": {"properties": {"selected_claim_id": {"type": "string", "minLength": 1}, "lease": {"type": "object"}, "revisit_triggers": {"contains": {"const": "lease_expiry"}}}}},
+        {"if": {"properties": {"mode": {"enum": ["DEFERRED", "UNRESOLVED"]}}}, "then": {"properties": {"selected_claim_id": {"const": null}, "lease": {"const": null}}}}
+      ]
+    },
+    "safe_work": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "evaluated_at": {"type": "string", "format": "date-time"}
+  }
+}

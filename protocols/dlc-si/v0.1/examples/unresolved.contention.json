@@ -1,0 +1,16 @@
+{
+  "protocol": "DLC-SI",
+  "version": "0.1",
+  "profile": "dual-legitimacy-singular-interface-v0.1",
+  "contention_id": "demo-unresolved",
+  "source_conflict_refs": ["ccrp:semantic-conflict:demo-001"],
+  "claims": [
+    {"claim_id": "claim-preserve-continuity", "legitimacy_ref": "proof:continuity:001", "successor_state_ref": "state:continuity-preserved"},
+    {"claim_id": "claim-protect-interface", "legitimacy_ref": "proof:safety:001", "successor_state_ref": "state:interface-frozen"}
+  ],
+  "interface": {"interface_id": "shared-action-gate", "output_capacity": 1},
+  "conflict": {"type": "normative", "claim_relation": "INCOMPARABLE", "successor_relation": "INCOMPATIBLE"},
+  "proposed_resolution": {"mode": "UNRESOLVED", "selected_claim_id": null, "justification": "Available evidence does not establish justified precedence.", "lease": null, "revisit_triggers": ["new_evidence", "authority_change"]},
+  "safe_work": ["collect_evidence", "observe", "simulate_reversible_path"],
+  "evaluated_at": "2026-08-27T10:00:00Z"
+}

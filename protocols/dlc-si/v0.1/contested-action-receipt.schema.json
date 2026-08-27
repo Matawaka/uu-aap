@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/dlc-si/v0.1/contested-action-receipt.schema.json",
+  "title": "DLC-SI v0.1 Contested Action Receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "receipt_type", "contention_id", "status", "contest_visible", "source_conflict_refs", "claim_refs", "selected_claim_id", "former_selected_claim_id", "preserved_claim_ids", "precedence_effective", "action_gate_candidate", "execution_admitted", "irreversible_conflict_frozen", "safe_work_allowed", "revisit_triggers", "lease", "reopened_by", "evaluated_at", "fingerprint_sha256"],
+  "properties": {
+    "protocol": {"const": "DLC-SI"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "ContestedActionReceipt"},
+    "contention_id": {"type": "string"},
+    "status": {"enum": ["TEMPORARY_PRECEDENCE", "DEFERRED", "UNRESOLVED"]},
+    "contest_visible": {"const": true},
+    "source_conflict_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "claim_refs": {"type": "array", "minItems": 2, "items": {"type": "object", "additionalProperties": false, "required": ["claim_id", "legitimacy_ref", "successor_state_ref"], "properties": {"claim_id": {"type": "string"}, "legitimacy_ref": {"type": "string"}, "successor_state_ref": {"type": "string"}}}},
+    "selected_claim_id": {"type": ["string", "null"]},
+    "former_selected_claim_id": {"type": ["string", "null"]},
+    "preserved_claim_ids": {"type": "array", "minItems": 2, "uniqueItems": true, "items": {"type": "string"}},
+    "precedence_effective": {"type": "boolean"},
+    "action_gate_candidate": {"type": "boolean"},
+    "execution_admitted": {"const": false},
+    "irreversible_conflict_frozen": {"type": "boolean"},
+    "safe_work_allowed": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "revisit_triggers": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+    "lease": {"type": ["object", "null"]},
+    "reopened_by": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "fingerprint_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
