@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/delivery/projection-delivery-assessment-receipt.schema.json",
+  "title": "FCL Projection Delivery Assessment Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "session_id", "event_count", "display_update_count",
+    "accepted_chain_id", "accepted_run_id", "accepted_run_epoch", "accepted_intent_ref", "accepted_head_sequence",
+    "accepted_projection_fingerprint", "accepted_display_predecessor_projection_fingerprint", "human_status",
+    "last_confirmed_progress_at", "current_phase", "waiting_on", "next_observable_event", "next_safe_action",
+    "terminal", "continuation_available", "dispositions", "delivery_creates_progress",
+    "duplicate_delivery_counts_as_progress", "reconnect_restores_authority", "stale_projection_can_replace_display",
+    "transport_events_prove_liveness", "execution_admitted", "authority_established", "private_reasoning_included",
+    "assessed_at", "fingerprint_sha256"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "ProjectionDeliveryAssessmentReceipt"},
+    "session_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "event_count": {"type": "integer", "minimum": 1},
+    "display_update_count": {"type": "integer", "minimum": 1},
+    "accepted_chain_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "accepted_run_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "accepted_run_epoch": {"type": "integer", "minimum": 0},
+    "accepted_intent_ref": {"type": "string", "minLength": 1},
+    "accepted_head_sequence": {"type": "integer", "minimum": 0},
+    "accepted_projection_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "accepted_display_predecessor_projection_fingerprint": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      ]
+    },
+    "human_status": {"enum": ["ACTIVE", "WAITING", "STALL_SUSPECTED", "CLOSED", "CONTINUATION_AVAILABLE"]},
+    "last_confirmed_progress_at": {"type": "string", "format": "date-time"},
+    "current_phase": {"type": "string", "minLength": 1},
+    "waiting_on": {"type": ["string", "null"]},
+    "next_observable_event": {"type": "string", "minLength": 1},
+    "next_safe_action": {"enum": ["WAIT_FOR_NEXT_RECEIPT", "WAIT_OR_INTERRUPT", "CREATE_SUCCESSOR_RUN"]},
+    "terminal": {"type": "boolean"},
+    "continuation_available": {"type": "boolean"},
+    "dispositions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "delivery_sequence", "event_kind", "disposition", "projection_fingerprint",
+          "accepted_head_sequence_after", "accepted_projection_fingerprint_after", "display_state_advanced",
+          "new_progress_created_by_delivery", "authority_established", "execution_admitted"
+        ],
+        "properties": {
+          "delivery_sequence": {"type": "integer", "minimum": 0},
+          "event_kind": {"enum": ["PROJECTION_DELIVERY", "TRANSPORT_HEARTBEAT", "TRANSPORT_ACK", "RECONNECT"]},
+          "disposition": {"enum": ["ACCEPTED_NEWER_PROJECTION", "IDEMPOTENT_REPLAY", "DROPPED_STALE_PROJECTION", "TRANSPORT_ONLY"]},
+          "projection_fingerprint": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+            ]
+          },
+          "accepted_head_sequence_after": {"type": ["integer", "null"], "minimum": 0},
+          "accepted_projection_fingerprint_after": {
+            "oneOf": [
+              {"type": "null"},
+              {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+            ]
+          },
+          "display_state_advanced": {"type": "boolean"},
+          "new_progress_created_by_delivery": {"const": false},
+          "authority_established": {"const": false},
+          "execution_admitted": {"const": false}
+        }
+      }
+    },
+    "delivery_creates_progress": {"const": false},
+    "duplicate_delivery_counts_as_progress": {"const": false},
+    "reconnect_restores_authority": {"const": false},
+    "stale_projection_can_replace_display": {"const": false},
+    "transport_events_prove_liveness": {"const": false},
+    "execution_admitted": {"const": false},
+    "authority_established": {"const": false},
+    "private_reasoning_included": {"const": false},
+    "assessed_at": {"type": "string", "format": "date-time"},
+    "fingerprint_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
