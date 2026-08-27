@@ -1,0 +1,201 @@
+name: IAL Compact Envelope v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/ial/v0.1/**"
+      - "products/marketer-pessimist/v0.1/product-contract.json"
+      - "products/honest-hiring/v0.1/product-contract.json"
+      - "ROADMAP.md"
+      - "README.ru.md"
+      - ".github/workflows/ial-compact-envelope-v0.1-validation.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/ial/v0.1/**"
+      - "products/marketer-pessimist/v0.1/product-contract.json"
+      - "products/honest-hiring/v0.1/product-contract.json"
+      - "ROADMAP.md"
+      - "README.ru.md"
+      - ".github/workflows/ial-compact-envelope-v0.1-validation.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Parse, validate, inspect and fail-closed CLI conformance
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: b4faf8e759e5839b6d5ddf9ce461231b2d85375c
+      ORIGIN_TREE: 10f3145563fef126eef9c7d2307d7a7afc44fcf8
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact origin frontier and tree
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          test "$(git show -s --format=%T "$ORIGIN_FRONTIER")" = "$ORIGIN_TREE"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          base = Path('protocols/ial/v0.1/compact/examples')
+          for path in sorted(base.glob('*.envelope.json')):
+              envelope = json.loads(path.read_text(encoding='utf-8'))
+              assert envelope['frontier']['repository'] == 'Matawaka/uu-aap', path
+              assert envelope['frontier']['revision'] == os.environ['ORIGIN_FRONTIER'], path
+          print('PASS: compact vectors bind exact origin frontier and tree')
+          PY
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check protocols/ial/v0.1/evaluate-handoff.js
+          node --check protocols/ial/v0.1/test-ial.js
+          node --check protocols/ial/v0.1/compact/ial-compact.js
+          node --check protocols/ial/v0.1/compact/test-compact.js
+
+      - name: Validate schemas and positive vectors
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          base = Path('protocols/ial/v0.1/compact')
+          envelope_schema = json.loads((base / 'compact-envelope.schema.json').read_text(encoding='utf-8'))
+          inspection_schema = json.loads((base / 'inspection-receipt.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(envelope_schema)
+          Draft202012Validator.check_schema(inspection_schema)
+          validator = Draft202012Validator(envelope_schema, format_checker=FormatChecker())
+          vectors = sorted((base / 'examples').glob('*.envelope.json'))
+          assert len(vectors) == 2, vectors
+          products = set()
+          for path in vectors:
+              value = json.loads(path.read_text(encoding='utf-8'))
+              validator.validate(value)
+              products.add(value['consumer']['product_id'])
+              contract_path = Path(value['consumer']['product_contract_path'])
+              contract = json.loads(contract_path.read_text(encoding='utf-8'))
+              assert contract['product']['id'] == value['consumer']['product_id'], path
+              assert contract['product']['version'] == value['consumer']['product_version'], path
+              assert contract['identity']['content_hash'] == value['consumer']['product_contract_hash'], path
+          assert products == {'marketer-pessimist', 'honest-hiring'}, products
+          print('PASS: schemas valid and two independent product bindings verified')
+          PY
+
+      - name: Re-run original IAL handoff conformance
+        run: node protocols/ial/v0.1/test-ial.js /tmp/ial-e2-handoff-result.json
+
+      - name: Run IAL Compact conformance and mutation suite
+        run: node protocols/ial/v0.1/compact/test-compact.js /tmp/ial-compact
+
+      - name: Exercise parse, validate, inspect and stdin surfaces
+        run: |
+          CLI="protocols/ial/v0.1/compact/ial-compact.js"
+          MP="protocols/ial/v0.1/compact/examples/marketer-pessimist-e0.envelope.json"
+          HH="protocols/ial/v0.1/compact/examples/honest-hiring-e1.envelope.json"
+          node "$CLI" parse "$MP" > /tmp/ial-compact/cli-parse.json
+          node "$CLI" validate "$MP" > /tmp/ial-compact/cli-validate.json
+          node "$CLI" inspect "$HH" > /tmp/ial-compact/cli-inspect.json
+          cat "$MP" | node "$CLI" validate - > /tmp/ial-compact/cli-stdin-validate.json
+          node "$CLI" help > /tmp/ial-compact/cli-help.txt
+          if node "$CLI" execute "$MP" > /tmp/ial-compact/forbidden-execute.out 2> /tmp/ial-compact/forbidden-execute.err; then
+            echo "execute command unexpectedly succeeded"
+            exit 1
+          fi
+          grep -q "IAL_COMPACT_REJECTED" /tmp/ial-compact/forbidden-execute.err
+          grep -qi "no execute command" /tmp/ial-compact/cli-help.txt
+
+      - name: Validate emitted inspection receipts and stronger non-claims
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          schema = json.loads(Path('protocols/ial/v0.1/compact/inspection-receipt.schema.json').read_text(encoding='utf-8'))
+          validator = Draft202012Validator(schema, format_checker=FormatChecker())
+          outputs = [
+              Path('/tmp/ial-compact/marketer-pessimist-e0.inspection.json'),
+              Path('/tmp/ial-compact/honest-hiring-e1.inspection.json'),
+              Path('/tmp/ial-compact/synthetic-e2.inspection.json'),
+              Path('/tmp/ial-compact/synthetic-e3.inspection.json'),
+              Path('/tmp/ial-compact/cli-inspect.json'),
+          ]
+          levels = set()
+          for path in outputs:
+              receipt = json.loads(path.read_text(encoding='utf-8'))
+              validator.validate(receipt)
+              levels.add(receipt['elevation_level'])
+              for claim in [
+                  'responsibility_accepted',
+                  'authority_established',
+                  'action_permit_established',
+                  'execution_admitted',
+                  'materialization_permitted',
+                  'external_effect_observed',
+                  'canonical_state_established',
+              ]:
+                  assert receipt['claims'][claim] is False, (path, claim)
+          assert {'E0', 'E1', 'E2', 'E3'} <= levels, levels
+          print('PASS: E0-E3 inspection receipts preserve downstream claims false')
+          PY
+
+      - name: Guard CLI as local read-only surface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('protocols/ial/v0.1/compact/ial-compact.js').read_text(encoding='utf-8')
+          forbidden = [
+              'child_process',
+              "require('http')",
+              'require("http")',
+              "require('https')",
+              'require("https")',
+              "require('net')",
+              'require("net")',
+              "require('tls')",
+              'require("tls")',
+              "require('dgram')",
+              'require("dgram")',
+              'writeFile',
+              'appendFile',
+              'mkdir',
+              'unlink',
+              'rename',
+              'fetch(',
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          assert "['parse', 'validate', 'inspect']" in text
+          assert "unsupported command" in text
+          print('PASS: IAL Compact CLI has no network, execute or filesystem-write surface')
+          PY
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
