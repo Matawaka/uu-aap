@@ -44,8 +44,6 @@ const TOP_LEVEL_KEYS = [
   'non_effects'
 ];
 
-const RFC3339_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})[Tt]([01]\d|2[0-3]):([0-5]\d):([0-5]\d)(?:\.\d+)?(?:[Zz]|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
-
 class IALCompactError extends Error {
   constructor(message) {
     super(message);
@@ -80,25 +78,6 @@ function assertString(value, label, pattern = null) {
   if (pattern) requireCondition(pattern.test(value), `${label} has invalid format`);
 }
 
-function assertRfc3339DateTime(value, label) {
-  assertString(value, label);
-  const match = RFC3339_DATE_TIME.exec(value);
-  requireCondition(match !== null, `${label} must be RFC3339 date-time`);
-  const year = Number(match[1]);
-  requireCondition(year > 0, `${label} year must be between 0001 and 9999`);
-  const month = Number(match[2]);
-  const day = Number(match[3]);
-  const calendar = new Date(0);
-  calendar.setUTCHours(0, 0, 0, 0);
-  calendar.setUTCFullYear(year, month - 1, day);
-  requireCondition(
-    calendar.getUTCFullYear() === year &&
-      calendar.getUTCMonth() === month - 1 &&
-      calendar.getUTCDate() === day,
-    `${label} must contain a valid calendar date`
-  );
-}
-
 function assertBoolean(value, label) {
   requireCondition(typeof value === 'boolean', `${label} must be boolean`);
 }
@@ -114,6 +93,37 @@ function assertArray(value, label, { minItems = 0, unique = false } = {}) {
 function assertStringArray(value, label, { minItems = 1 } = {}) {
   assertArray(value, label, { minItems, unique: true });
   value.forEach((item, index) => assertString(item, `${label}[${index}]`));
+}
+
+function isRfc3339DateTime(value) {
+  if (typeof value !== 'string') return false;
+  const match = /^(\d{4})-(\d{2})-(\d{2})[Tt](\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:[Zz]|[+-](\d{2}):(\d{2}))$/.exec(value);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = Number(match[4]);
+  const minute = Number(match[5]);
+  const second = Number(match[6]);
+  const offsetHour = match[7] === undefined ? 0 : Number(match[7]);
+  const offsetMinute = match[8] === undefined ? 0 : Number(match[8]);
+
+  if (
+    year < 1 ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    hour > 23 ||
+    minute > 59 ||
+    second > 59 ||
+    offsetHour > 23 ||
+    offsetMinute > 59
+  ) return false;
+
+  const leapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  const daysInMonth = [31, leapYear ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  return day <= daysInMonth[month - 1];
 }
 
 function canonicalize(value) {
@@ -176,7 +186,8 @@ function validateShape(envelope) {
   assertExactKeys(envelope.frontier, ['repository', 'revision', 'observed_at'], 'frontier');
   assertString(envelope.frontier.repository, 'frontier.repository');
   assertString(envelope.frontier.revision, 'frontier.revision', /^[0-9a-f]{40}$/);
-  assertRfc3339DateTime(envelope.frontier.observed_at, 'frontier.observed_at');
+  assertString(envelope.frontier.observed_at, 'frontier.observed_at');
+  requireCondition(isRfc3339DateTime(envelope.frontier.observed_at), 'frontier.observed_at must be RFC 3339 date-time');
 
   assertExactKeys(
     envelope.consumer,
@@ -184,7 +195,7 @@ function validateShape(envelope) {
     'consumer'
   );
   assertString(envelope.consumer.product_id, 'consumer.product_id', /^[a-z][a-z0-9-]{1,63}$/);
-  assertString(envelope.consumer.product_version, 'consumer.product_version');
+  assertString(envelope.consumer.product_version, 'consumer.product_version', /^[0-9]+\.[0-9]+$/);
   requireCondition(envelope.consumer.product_version.length <= 64, 'consumer.product_version exceeds 64 characters');
   assertString(
     envelope.consumer.product_contract_path,
@@ -329,10 +340,17 @@ function validateSemantics(envelope) {
     requireCondition(nonEffectSet.has(nonEffect), `required non-effect missing: ${nonEffect}`);
   }
 
-  const expectedPathPrefix = `products/${envelope.consumer.product_id}/`;
+  const contractPathMatch = /^products\/([a-z0-9-]+)\/v([0-9]+\.[0-9]+)\/product-contract\.json$/.exec(
+    envelope.consumer.product_contract_path
+  );
+  requireCondition(contractPathMatch !== null, 'product contract path has invalid semantic shape');
   requireCondition(
-    envelope.consumer.product_contract_path.startsWith(expectedPathPrefix),
+    contractPathMatch[1] === envelope.consumer.product_id,
     'product contract path does not match consumer product id'
+  );
+  requireCondition(
+    contractPathMatch[2] === envelope.consumer.product_version,
+    'product contract path version does not match consumer product version'
   );
 
   const contractRefs = envelope.evidence.refs.filter(ref => ref.kind === 'product_contract');
@@ -344,6 +362,7 @@ function validateSemantics(envelope) {
 
   const level = envelope.boundary.elevation_level;
   const operationClass = envelope.requested_operation.operation_class;
+  const externalMutationRequested = envelope.requested_operation.external_mutation_requested;
   const receivingParty = envelope.responsibility.receiving_party_id;
   const handoffScope = envelope.responsibility.handoff_scope;
 
@@ -353,7 +372,7 @@ function validateSemantics(envelope) {
     requireCondition(envelope.boundary.responsibility_handoff === false, 'E0 cannot request responsibility handoff');
     requireCondition(envelope.boundary.materialization_commitment === false, 'E0 cannot request materialization');
     requireCondition(operationClass === 'local_analysis', 'E0 operation class mismatch');
-    requireCondition(envelope.requested_operation.external_mutation_requested === false, 'E0 cannot request external mutation');
+    requireCondition(externalMutationRequested === false, 'E0 cannot request external mutation');
     requireCondition(receivingParty === null && handoffScope.length === 0, 'E0 cannot carry receiving party or handoff scope');
   } else if (level === 'E1') {
     requireCondition(envelope.boundary.effect_class === 'observable_output', 'E1 effect class mismatch');
