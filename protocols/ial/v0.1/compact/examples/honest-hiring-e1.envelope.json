@@ -1,0 +1,116 @@
+{
+  "protocol": "IAL",
+  "version": "0.1",
+  "profile": "compact-envelope-v0.1",
+  "envelope_id": "honest-hiring-human-review-packet-001",
+  "identity": {
+    "canonicalization_profile": "ial-compact-json-v0.1",
+    "hash_algorithm": "sha256",
+    "content_hash": "sha256:3796f0c6df119d288bcd8a31a2207397c6cadae70e477ecf28f718a05a898b93"
+  },
+  "frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "b4faf8e759e5839b6d5ddf9ce461231b2d85375c",
+    "observed_at": "2026-08-27T02:01:50Z"
+  },
+  "consumer": {
+    "product_id": "honest-hiring",
+    "product_version": "0.1",
+    "product_contract_path": "products/honest-hiring/v0.1/product-contract.json",
+    "product_contract_hash": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+    "requester_role_id": "human-hiring-owner"
+  },
+  "intent": {
+    "origin": "human_declared",
+    "statement": "Prepare one fictional, requirement-by-requirement hiring-support packet for display to the assigned human reviewer.",
+    "scope": [
+      "One fully fictional role and candidate evidence package",
+      "One local human-review display candidate"
+    ],
+    "non_goals": [
+      "Do not rank, reject, shortlist, offer or hire a person",
+      "Do not process real applicant data",
+      "Do not contact anyone or mutate an ATS, mailbox or calendar"
+    ]
+  },
+  "target": {
+    "kind": "human_decision_packet",
+    "identifier": "urn:uu-aap:local:honest-hiring:human-review-packet:001"
+  },
+  "boundary": {
+    "elevation_level": "E1",
+    "effect_class": "observable_output",
+    "observable_effect": true,
+    "responsibility_handoff": false,
+    "materialization_commitment": false
+  },
+  "responsibility": {
+    "current_responsible_party_id": "human-hiring-owner",
+    "receiving_party_id": null,
+    "handoff_scope": [],
+    "acceptance_ref": null
+  },
+  "authority_refs": {
+    "authority_evidence_ref": null,
+    "action_permit_ref": null,
+    "execution_admission_ref": null,
+    "materialization_permission_ref": null
+  },
+  "evidence": {
+    "refs": [
+      {
+        "id": "honest-hiring-contract",
+        "kind": "product_contract",
+        "digest": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+        "description": "Exact Честный найм Product Contract v0.1 identity."
+      },
+      {
+        "id": "fictional-review-packet",
+        "kind": "derived_candidate",
+        "digest": "sha256:acd7eed19df3f324aef4f2abfe4c66c6ba96851b9de6ca948696f32a2180b57e",
+        "description": "Fully fictional local comparison packet selected for human display inspection."
+      }
+    ],
+    "private_reasoning_included": false
+  },
+  "requested_operation": {
+    "operation_class": "display_candidate",
+    "verb": "display-review-packet",
+    "description": "Inspect the observable human-review boundary and stop before any employment decision, communication or system mutation.",
+    "external_mutation_requested": false
+  },
+  "controls": {
+    "surface": "parse_validate_inspect_only",
+    "execute_command_available": false,
+    "network_access_required": false,
+    "filesystem_write_required": false,
+    "responsibility_accepted": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "external_effect_requires_separate_gate": true,
+    "observe_before_retry": true,
+    "automatic_retry_on_unknown": false
+  },
+  "assertions": [
+    "Envelope is bound to one exact product contract and repository frontier",
+    "The requested operation remains within the declared boundary",
+    "CLI surface is parse, validate and inspect only",
+    "The observable packet remains under the same human hiring responsibility and is not an employment decision"
+  ],
+  "non_effects": [
+    "IAL Envelope != Responsibility Acceptance",
+    "IAL Expression != Authority",
+    "IAL Expression != Execution Admission",
+    "Validation Success != ActionPermit",
+    "Inspection Receipt != External Effect",
+    "Consumer Binding != Authority Transfer",
+    "Private Reasoning != Required Payload",
+    "E0 Parsing != Responsibility Artifact Creation",
+    "E1 Observability != External Mutation Authority",
+    "E2 Handoff Candidate != Accepted Handoff",
+    "E3 Materialization Candidate != Materialization Permission",
+    "Hiring Support != Hiring Authority",
+    "FREESHIELD Assessment != Automatic Rejection",
+    "Candidate Challenge != Negative Signal"
+  ]
+}
