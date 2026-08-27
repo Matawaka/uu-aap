@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/continuation-receipt.schema.json",
+  "title": "FCL v0.1 ContinuationReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "receipt_type", "predecessor_run_id", "predecessor_run_epoch", "predecessor_terminal_state", "terminal_receipt_fingerprint", "predecessor_resurrection_admitted", "predecessor_authority_reacquired", "successor_run_id", "successor_run_epoch", "successor_requires_fresh_authority", "transferable_hidden_reasoning", "intent_ref", "last_checkpoint_ref", "completed_refs", "unresolved_work", "constraints", "non_effects", "status", "created_at", "fingerprint_sha256"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "ContinuationReceipt"},
+    "predecessor_run_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "predecessor_run_epoch": {"type": "integer", "minimum": 0},
+    "predecessor_terminal_state": {"const": "TIMED_OUT_CLOSED"},
+    "terminal_receipt_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "predecessor_resurrection_admitted": {"const": false},
+    "predecessor_authority_reacquired": {"const": false},
+    "successor_run_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "successor_run_epoch": {"type": "integer", "minimum": 1},
+    "successor_requires_fresh_authority": {"const": true},
+    "transferable_hidden_reasoning": {"const": false},
+    "intent_ref": {"type": "string", "minLength": 1},
+    "last_checkpoint_ref": {"type": ["string", "null"]},
+    "completed_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "unresolved_work": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "constraints": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "non_effects": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "status": {"const": "SUCCESSOR_ADMISSIBLE"},
+    "created_at": {"type": "string", "format": "date-time"},
+    "fingerprint_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

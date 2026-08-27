@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/run-liveness-receipt.schema.json",
+  "title": "FCL v0.1 RunLivenessReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "receipt_type", "run_id", "run_epoch", "intent_ref", "state", "intent_acknowledged", "current_phase", "last_progress_at", "last_progress_age_seconds", "progress_kind", "waiting_on", "next_observable_event", "checkpoint_ref", "lease_expires_at", "external_effect_authority", "terminal", "predecessor_resumable", "continuation_available", "next_safe_action", "evaluated_at", "fingerprint_sha256"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "RunLivenessReceipt"},
+    "run_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "run_epoch": {"type": "integer", "minimum": 0},
+    "intent_ref": {"type": "string", "minLength": 1},
+    "state": {"enum": ["RUNNING", "SUSPECTED_STALL", "TIMED_OUT_CLOSED"]},
+    "intent_acknowledged": {"type": "boolean"},
+    "current_phase": {"type": "string", "minLength": 1},
+    "last_progress_at": {"type": "string", "format": "date-time"},
+    "last_progress_age_seconds": {"type": "integer", "minimum": 0},
+    "progress_kind": {"enum": ["INTENT_ACK", "CHECKPOINT_COMMIT", "TOOL_OBSERVATION", "DEPENDENCY_WAIT", "SUBRESULT_COMMIT"]},
+    "waiting_on": {"type": ["string", "null"]},
+    "next_observable_event": {"type": "string", "minLength": 1},
+    "checkpoint_ref": {"type": ["string", "null"]},
+    "lease_expires_at": {"type": "string", "format": "date-time"},
+    "external_effect_authority": {"type": "boolean"},
+    "terminal": {"type": "boolean"},
+    "predecessor_resumable": {"const": false},
+    "continuation_available": {"type": "boolean"},
+    "next_safe_action": {"enum": ["WAIT_FOR_NEXT_RECEIPT", "WAIT_OR_INTERRUPT", "CREATE_SUCCESSOR_RUN"]},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "fingerprint_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "protocol": "FCL",
+  "version": "0.1",
+  "capsule_type": "ContinuationCapsule",
+  "predecessor": {
+    "run_id": "run-feedback-001",
+    "run_epoch": 41,
+    "terminal_state": "TIMED_OUT_CLOSED",
+    "terminal_receipt_fingerprint": "sha256:5f592cc41d56862c5476234ee0ea8649d7ed5e137a9173284ad8d381b5f36a6d"
+  },
+  "successor": {
+    "run_id": "run-feedback-002",
+    "run_epoch": 42
+  },
+  "intent_ref": "intent:feedback-continuity:001",
+  "last_checkpoint_ref": "checkpoint:last-confirmed-state",
+  "completed_refs": [
+    "observation:repository-frontier"
+  ],
+  "unresolved_work": [
+    "complete repository observation",
+    "prepare successor action only after fresh authority"
+  ],
+  "constraints": [
+    "do not reveal hidden chain-of-thought",
+    "preserve user prohibitions"
+  ],
+  "non_effects": [
+    "predecessor cannot resume",
+    "predecessor authority cannot be reacquired"
+  ],
+  "created_at": "2026-08-27T10:10:01Z"
+}

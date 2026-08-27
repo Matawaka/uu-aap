@@ -1,0 +1,22 @@
+{
+  "protocol": "FCL",
+  "version": "0.1",
+  "profile": "feedback-continuity-v0.1",
+  "run_id": "run-feedback-001",
+  "run_epoch": 41,
+  "intent_ref": "intent:feedback-continuity:001",
+  "lease": {
+    "starts_at": "2026-08-27T10:00:00Z",
+    "stall_after_seconds": 60,
+    "expires_at": "2026-08-27T10:10:00Z"
+  },
+  "intent_acknowledged": true,
+  "current_phase": "repository-observation",
+  "last_progress_at": "2026-08-27T10:01:00Z",
+  "progress_kind": "TOOL_OBSERVATION",
+  "waiting_on": null,
+  "next_observable_event": "repository frontier receipt",
+  "external_effect_authority": false,
+  "checkpoint_ref": "checkpoint:repository-frontier",
+  "evaluated_at": "2026-08-27T10:01:20Z"
+}
