@@ -1,0 +1,31 @@
+name: DLC-SI v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/dlc-si/v0.1/**'
+      - '.github/workflows/dlc-si-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'protocols/dlc-si/v0.1/**'
+      - '.github/workflows/dlc-si-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run DLC-SI v0.1 conformance
+        run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - name: Validate example CLI surface
+        run: |
+          node protocols/dlc-si/v0.1/dlc-si.js validate protocols/dlc-si/v0.1/examples/unresolved.contention.json
+          node protocols/dlc-si/v0.1/dlc-si.js resolve protocols/dlc-si/v0.1/examples/temporary-precedence.contention.json
