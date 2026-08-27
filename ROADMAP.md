@@ -5,7 +5,8 @@
 **Reusable Product Contract baseline:** `70c1dfe0e2d4f3e8401050c4e7f56a5e76d11b4d` (PR #515)  
 **Маркетолог Пессимиста contract baseline:** `c831b643a9b984a274c5093033c28ea4a8a26794` (PR #517)  
 **FREESHIELD contract baseline:** `18a57f46eac60576ecc7ff9777888cd2b45230a2` (PR #519)  
-**Current product-definition increment:** Issue #520  
+**Честный найм contract baseline:** `04078a72415b681bc588d801169fc5d9abee3e9b` (PR #521)  
+**Current product-family increment:** Issue #522  
 **Related:** completed Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
 
 This roadmap reflects the implemented repository rather than the original August 2026 public-draft plan.
@@ -46,15 +47,13 @@ The repository already contains:
 - real Core Pilots for continuity/recovery, bounded multi-agent delegation, single-use external effects and observe-before-retry reconciliation;
 - Intent/Action Language v0.1;
 - provider-neutral AI Gateway, adapters, harnesses, evaluations and bounded execution lifecycle profiles;
-- KONTUR server responsibility kernel;
-- an extensive KONTUR Game Companion line including synthetic dialogue, authority/binding/activation boundaries, bounded local trials, read-only external observation, recovery and privacy-minimized field evidence;
+- KONTUR server Responsibility Kernel, Readiness Aggregator, activation boundary, responsibility ledger, live-host boundaries and Game Companion field-pilot evidence;
 - a privacy-preserving IP rights/filing pipeline for exact software objects;
-- Product Contract v0.1 schema, reusable template, exact-frontier no-effect example and fail-closed validator;
-- a canonical candidate Product Contract v0.1 for Маркетолог Пессимиста, bounded to local evidence-first claim stress testing with no external effects;
-- a canonical candidate FREESHIELD Protective Contract v0.1 that defines scoped protective assessment without actuator control, sanction or authority creation;
-- a candidate Честный найм Product Contract v0.1 that defines evidence-first, job-relevant and contestable human-review support without automatic employment decisions or external effects.
+- Product Contract v0.1 schema, template, exact-frontier no-effect example and fail-closed validator;
+- canonical candidate Product Contracts for Маркетолог Пессимиста, FREESHIELD and Честный найм;
+- a candidate KONTUR Product Family Contract that binds six family members without activation, shared-data admission, execution authority or Stable-Core promotion.
 
-The applicant reports that the selected Core software-registration application has been submitted externally. The repository must record that milestone only through a separate privacy-safe evidence checkpoint; submission does not establish registration.
+The applicant reports that the selected Core software-registration application has been submitted externally. A separate privacy-safe filing checkpoint is still required; submission does not establish registration.
 
 ## Portfolio balance policy
 
@@ -63,28 +62,48 @@ The applicant reports that the selected Core software-registration application h
 - Every named product receives a compact Product Contract before deep implementation.
 - Product-specific semantics may not become reverse dependencies of Core.
 - A shared layer must gain a consumable product path within the next two increments.
-- KONTUR enters consolidation and measurement mode before more conversational layers are added.
+- KONTUR remains in consolidation and measurement mode before more conversational layers are added.
 
 ## Phase A — Portfolio convergence
 
 1. [x] Publish the ecosystem state, product portfolio manifest and rebuilt roadmap.
 2. [ ] Bind the applicant-reported filing event to a privacy-safe receipt digest when retained evidence is available.
 3. [x] Add a reusable Product Contract v0.1 schema, validator and template.
-4. [ ] Add a cross-product interface/dependency registry separate from both Core membership and release status.
+4. [ ] Add a cross-product interface/dependency registry separate from Core membership and release status.
 5. [ ] Keep Public Review and Core Pilot 002 open for honest external counterexamples.
 
-The reusable Product Contract is documented at [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/).
+Reusable Product Contract: [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/).
 
 **Exit condition:** every ecosystem direction has an explicit role, maturity class, dependency direction and next gate.
 
 ## Phase B — Canonical product definitions
 
-Materialize product contracts in this order:
+1. [x] **Маркетолог Пессимиста** — [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); local evidence/claim stress testing, no campaign send, profiling or autonomous persuasion.
+2. [x] **FREESHIELD** — [`products/freeshield/v0.1/`](products/freeshield/v0.1/); scoped protective assessment without actuator control, sanction, global prohibition or authority creation.
+3. [x] **Честный найм** — [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/); evidence-first contestable hiring support without automatic rejection, ranking, protected-attribute inference or external effects.
+4. [ ] **KONTUR Product Family Contract** — current candidate at [`products/kontur/v0.1/`](products/kontur/v0.1/); binds readiness, activation, kernel, ledger, live-host and Game Companion evidence while keeping member roles distinct.
 
-1. **Маркетолог Пессимиста** — canonical candidate at [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); evidence/claim stress testing, counterarguments, falsifiers and missing evidence; no campaign send, profiling or autonomous persuasion.
-2. **FREESHIELD** — canonical candidate at [`products/freeshield/v0.1/`](products/freeshield/v0.1/); scoped protective assessment and authority ceiling without automatic sanction, global prohibition, actuator control or product ownership.
-3. **Честный найм** — current candidate at [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/); evidence-first, job-relevant and contestable support with no automatic rejection, protected-attribute inference, global ranking or unappealable disposition.
-4. **KONTUR Product Family Contract** — bind the server responsibility kernel and Game Companion while keeping pilot evidence out of Stable Core.
+KONTUR family sequence:
+
+```text
+independent evidence
+-> readiness aggregation
+-> human activation boundary
+-> responsibility kernel
+-> append-only ledger
+-> bounded product/pilot consumers
+-> observation / recovery / successor evidence
+```
+
+The family contract fixes:
+
+```text
+automatic_activation = false
+automatic_host_designation = false
+automatic_ledger_mutation = false
+automatic_runtime_start = false
+cross_member_data_access_default = denied
+```
 
 **Exit condition:** all named products have canonical effects, non-effects, human gates, data boundaries, receipts and IP object boundaries.
 
@@ -92,7 +111,7 @@ Materialize product contracts in this order:
 
 1. Publish an IAL Compact Envelope and CLI examples for `parse -> validate -> inspect` with execution disabled by default.
 2. Publish one provider-neutral AI Transport reference CLI/SDK carrying Core and IAL evidence through exact-frontier adapters.
-3. Implement the explicitly named `KONTURReadinessAggregator` without creating authority or responsibility acceptance.
+3. Expose the already implemented KONTUR Readiness Aggregator through a read-only product-family interoperability example without creating activation or responsibility acceptance.
 4. Run one local interoperability scenario consumed by at least two products.
 
 **Exit condition:** IAL and transport are usable infrastructure rather than only formal profiles.
@@ -114,13 +133,11 @@ claim / plan
 
 ### FREESHIELD
 
-Protective outcomes may include:
-
 ```text
 ALLOW_ANALYSIS | NARROW_SCOPE | REQUIRE_EVIDENCE | HUMAN_REVIEW | BLOCK_EFFECT
 ```
 
-`BLOCK_EFFECT` is scoped non-admissibility for one exact effect candidate under one reviewed contract/evidence/frontier. It is not actuator execution, guilt, diagnosis, blacklist, global prohibition or sanction.
+`BLOCK_EFFECT` is scoped non-admissibility for one exact effect candidate, not actuator execution, guilt, diagnosis, blacklist, global prohibition or sanction.
 
 ### Честный найм
 
@@ -129,17 +146,28 @@ attributable role requirements
   -> candidate-supplied job evidence
   -> lineage / relevance / uncertainty
   -> bounded comparison candidate
-  -> FREESHIELD protective assessment
+  -> FREESHIELD assessment
   -> human review
   -> contestable disposition
   -> correction / appeal successor receipt
 ```
 
-The product contract permits no automatic rejection, shortlist, offer, protected-attribute/proxy inference, personality or health inference, social scraping, global ranking, ATS mutation or external communication.
+The first pilot MUST be fully fictional and synthetic. Real applicant data or employment effects require a separate later authorization and data-protection review.
 
 ### KONTUR
 
-Consolidate the existing Game Companion stack into one bounded measurable demo with lifecycle, observation, recovery, privacy and resource-budget metrics.
+Consolidate the existing stack into one bounded measurable demo with:
+
+- exact family/member identity;
+- readiness/activation separation;
+- lifecycle and ledger lineage;
+- host observation/designation separation;
+- Game Companion dependency-chain evidence;
+- pause/recovery;
+- privacy-minimized field outcomes;
+- resource and human-interruption metrics.
+
+The Product Family Contract does not activate KONTUR and does not authorize live Game Companion behavior.
 
 **Exit condition:** each active product has a runnable local no-effect scenario and fail-closed validation.
 
@@ -155,9 +183,7 @@ Each product follows the same ladder:
 6. post-run assessment;
 7. independent review or contestability case.
 
-No pilot result creates a successor permit or a Stable-Core requirement.
-
-For hiring-related products, the first pilot MUST be fully fictional and synthetic. Real applicant data or employment effects require a separate later authorization, data-protection assessment and human gate.
+No pilot result creates a successor permit or Stable-Core requirement.
 
 ## Phase F — Ecosystem interoperability and release candidate
 
@@ -185,8 +211,8 @@ A release candidate is not automatically a release, standard, certification or l
 3. **Completed:** reusable Product Contract v0.1 (#515).
 4. **Completed:** Маркетолог Пессимиста Product Contract v0.1 (#517).
 5. **Completed:** FREESHIELD Protective Contract v0.1 (#519).
-6. **Current:** Честный найм Product Contract v0.1 (Issue #520).
-7. KONTUR Product Family Contract and consolidation boundary.
+6. **Completed:** Честный найм Product Contract v0.1 (#521).
+7. **Current:** KONTUR Product Family Contract and consolidation boundary (Issue #522).
 8. IAL Compact Envelope + CLI conformance.
 9. AI Transport Reference CLI/SDK.
 10. Synthetic product pilots and cross-product interoperability.
