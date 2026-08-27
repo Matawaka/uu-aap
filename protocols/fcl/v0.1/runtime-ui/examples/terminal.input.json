@@ -1,0 +1,66 @@
+{
+  "protocol": "FCL",
+  "version": "0.1",
+  "profile": "runtime-ui-adapter-v0.1",
+  "adapter_id": "demo-runtime-terminal",
+  "origin": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "689a45584484e2abe973d6a27aedcca967d39de9",
+    "tree": "552bb66c24f414df845feb4c402514364631b0f6"
+  },
+  "source_type": "DELIVERY_ASSESSMENT",
+  "delivery_assessment": {
+    "protocol": "FCL",
+    "version": "0.1",
+    "receipt_type": "ProjectionDeliveryAssessmentReceipt",
+    "session_id": "demo-terminal-session",
+    "event_count": 1,
+    "display_update_count": 1,
+    "accepted_chain_id": "demo-terminal-chain",
+    "accepted_run_id": "demo-predecessor-run",
+    "accepted_run_epoch": 1,
+    "accepted_intent_ref": "intent:demo:runtime-ui",
+    "accepted_head_sequence": 3,
+    "accepted_projection_fingerprint": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "accepted_display_predecessor_projection_fingerprint": null,
+    "human_status": "CONTINUATION_AVAILABLE",
+    "last_confirmed_progress_at": "2026-08-27T16:04:00Z",
+    "current_phase": "timed-out-closed",
+    "waiting_on": null,
+    "next_observable_event": "successor run request",
+    "next_safe_action": "CREATE_SUCCESSOR_RUN",
+    "terminal": true,
+    "continuation_available": true,
+    "dispositions": [
+      {
+        "delivery_sequence": 0,
+        "event_kind": "PROJECTION_DELIVERY",
+        "disposition": "ACCEPTED_NEWER_PROJECTION",
+        "projection_fingerprint": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "accepted_head_sequence_after": 3,
+        "accepted_projection_fingerprint_after": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "display_state_advanced": true,
+        "new_progress_created_by_delivery": false,
+        "authority_established": false,
+        "execution_admitted": false
+      }
+    ],
+    "delivery_creates_progress": false,
+    "duplicate_delivery_counts_as_progress": false,
+    "reconnect_restores_authority": false,
+    "stale_projection_can_replace_display": false,
+    "transport_events_prove_liveness": false,
+    "execution_admitted": false,
+    "authority_established": false,
+    "private_reasoning_included": false,
+    "assessed_at": "2026-08-27T16:05:00Z",
+    "fingerprint_sha256": "sha256:8d80c04c1672d19699de6a0fceaeff65bcce832d7f558afd5a1e6190ebb6ce9d"
+  },
+  "handoff_receipt": null,
+  "render_constraints": {
+    "spinner_progress_admitted": false,
+    "transport_liveness_admitted": false,
+    "control_effect_authority_admitted": false
+  },
+  "rendered_at": "2026-08-27T16:05:01Z"
+}
