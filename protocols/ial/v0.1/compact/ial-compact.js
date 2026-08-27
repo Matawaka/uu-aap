@@ -44,6 +44,8 @@ const TOP_LEVEL_KEYS = [
   'non_effects'
 ];
 
+const RFC3339_DATE_TIME = /^(\d{4})-(\d{2})-(\d{2})[Tt]([01]\d|2[0-3]):([0-5]\d):([0-5]\d|60)(?:\.\d+)?(?:[Zz]|[+-](?:[01]\d|2[0-3]):[0-5]\d)$/;
+
 class IALCompactError extends Error {
   constructor(message) {
     super(message);
@@ -76,6 +78,24 @@ function assertExactKeys(value, expectedKeys, label) {
 function assertString(value, label, pattern = null) {
   requireCondition(typeof value === 'string' && value.length > 0, `${label} must be a non-empty string`);
   if (pattern) requireCondition(pattern.test(value), `${label} has invalid format`);
+}
+
+function assertRfc3339DateTime(value, label) {
+  assertString(value, label);
+  const match = RFC3339_DATE_TIME.exec(value);
+  requireCondition(match !== null, `${label} must be RFC3339 date-time`);
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const calendar = new Date(0);
+  calendar.setUTCHours(0, 0, 0, 0);
+  calendar.setUTCFullYear(year, month - 1, day);
+  requireCondition(
+    calendar.getUTCFullYear() === year &&
+      calendar.getUTCMonth() === month - 1 &&
+      calendar.getUTCDate() === day,
+    `${label} must contain a valid calendar date`
+  );
 }
 
 function assertBoolean(value, label) {
@@ -155,8 +175,7 @@ function validateShape(envelope) {
   assertExactKeys(envelope.frontier, ['repository', 'revision', 'observed_at'], 'frontier');
   assertString(envelope.frontier.repository, 'frontier.repository');
   assertString(envelope.frontier.revision, 'frontier.revision', /^[0-9a-f]{40}$/);
-  assertString(envelope.frontier.observed_at, 'frontier.observed_at');
-  requireCondition(!Number.isNaN(Date.parse(envelope.frontier.observed_at)), 'frontier.observed_at must be date-time');
+  assertRfc3339DateTime(envelope.frontier.observed_at, 'frontier.observed_at');
 
   assertExactKeys(
     envelope.consumer,
@@ -165,6 +184,7 @@ function validateShape(envelope) {
   );
   assertString(envelope.consumer.product_id, 'consumer.product_id', /^[a-z][a-z0-9-]{1,63}$/);
   assertString(envelope.consumer.product_version, 'consumer.product_version');
+  requireCondition(envelope.consumer.product_version.length <= 64, 'consumer.product_version exceeds 64 characters');
   assertString(
     envelope.consumer.product_contract_path,
     'consumer.product_contract_path',
