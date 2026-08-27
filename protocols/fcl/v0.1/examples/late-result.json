@@ -1,0 +1,13 @@
+{
+  "protocol": "FCL",
+  "version": "0.1",
+  "envelope_type": "LateResultEnvelope",
+  "source_run_id": "run-feedback-001",
+  "source_run_epoch": 41,
+  "current_run_epoch": 42,
+  "source_terminal_state": "TIMED_OUT_CLOSED",
+  "arrived_at": "2026-08-27T10:12:00Z",
+  "result_ref": "result:late-backend-001",
+  "requests_user_visible_authoritative_reply": true,
+  "requests_external_effect": true
+}

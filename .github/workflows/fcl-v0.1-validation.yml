@@ -1,0 +1,35 @@
+name: FCL v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - '.github/workflows/fcl-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - '.github/workflows/fcl-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run FCL v0.1 conformance
+        run: node protocols/fcl/v0.1/test-fcl.js
+      - name: Validate example CLI surface
+        run: |
+          node protocols/fcl/v0.1/fcl.js validate-run protocols/fcl/v0.1/examples/live.run.json
+          node protocols/fcl/v0.1/fcl.js observe protocols/fcl/v0.1/examples/stalled.run.json
+          node protocols/fcl/v0.1/fcl.js observe protocols/fcl/v0.1/examples/timed-out.run.json
+          node protocols/fcl/v0.1/fcl.js validate-continuation protocols/fcl/v0.1/examples/continuation.capsule.json
+          node protocols/fcl/v0.1/fcl.js continue protocols/fcl/v0.1/examples/continuation.capsule.json
+          node protocols/fcl/v0.1/fcl.js assess-result protocols/fcl/v0.1/examples/late-result.json

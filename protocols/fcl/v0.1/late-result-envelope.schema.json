@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/late-result-envelope.schema.json",
+  "title": "FCL v0.1 LateResultEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "envelope_type", "source_run_id", "source_run_epoch", "current_run_epoch", "source_terminal_state", "arrived_at", "result_ref", "requests_user_visible_authoritative_reply", "requests_external_effect"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "envelope_type": {"const": "LateResultEnvelope"},
+    "source_run_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "source_run_epoch": {"type": "integer", "minimum": 0},
+    "current_run_epoch": {"type": "integer", "minimum": 0},
+    "source_terminal_state": {"const": "TIMED_OUT_CLOSED"},
+    "arrived_at": {"type": "string", "format": "date-time"},
+    "result_ref": {"type": "string", "minLength": 1},
+    "requests_user_visible_authoritative_reply": {"type": "boolean"},
+    "requests_external_effect": {"type": "boolean"}
+  }
+}
