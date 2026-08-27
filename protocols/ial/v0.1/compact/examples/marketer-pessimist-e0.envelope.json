@@ -1,0 +1,115 @@
+{
+  "protocol": "IAL",
+  "version": "0.1",
+  "profile": "compact-envelope-v0.1",
+  "envelope_id": "marketer-pessimist-local-claim-review-001",
+  "identity": {
+    "canonicalization_profile": "ial-compact-json-v0.1",
+    "hash_algorithm": "sha256",
+    "content_hash": "sha256:db659ca8390eed91468646d4be1118cac17c09e193bc0d0bf6147c1d1a1fcac8"
+  },
+  "frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "b4faf8e759e5839b6d5ddf9ce461231b2d85375c",
+    "observed_at": "2026-08-27T02:01:50Z"
+  },
+  "consumer": {
+    "product_id": "marketer-pessimist",
+    "product_version": "0.1",
+    "product_contract_path": "products/marketer-pessimist/v0.1/product-contract.json",
+    "product_contract_hash": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6",
+    "requester_role_id": "human-product-owner"
+  },
+  "intent": {
+    "origin": "human_declared",
+    "statement": "Inspect one supplied marketing claim by separating evidence, interpretation, assumptions, counterarguments, falsifiers and missing evidence.",
+    "scope": [
+      "One local claim-review packet",
+      "Only evidence intentionally supplied for this request"
+    ],
+    "non_goals": [
+      "Do not publish or send content",
+      "Do not access advertising accounts or spend funds",
+      "Do not profile a person or optimize persuasion"
+    ]
+  },
+  "target": {
+    "kind": "local_artifact",
+    "identifier": "urn:uu-aap:local:marketer-pessimist:claim-review:001"
+  },
+  "boundary": {
+    "elevation_level": "E0",
+    "effect_class": "internal_analysis",
+    "observable_effect": false,
+    "responsibility_handoff": false,
+    "materialization_commitment": false
+  },
+  "responsibility": {
+    "current_responsible_party_id": "human-product-owner",
+    "receiving_party_id": null,
+    "handoff_scope": [],
+    "acceptance_ref": null
+  },
+  "authority_refs": {
+    "authority_evidence_ref": null,
+    "action_permit_ref": null,
+    "execution_admission_ref": null,
+    "materialization_permission_ref": null
+  },
+  "evidence": {
+    "refs": [
+      {
+        "id": "marketer-pessimist-contract",
+        "kind": "product_contract",
+        "digest": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6",
+        "description": "Exact Маркетолог Пессимиста Product Contract v0.1 identity."
+      },
+      {
+        "id": "claim-input",
+        "kind": "user_input",
+        "digest": "sha256:1fbee05ae7e5c361540345e6c54e7dee6972690470ee4dbb8bb661b54e2e6ca5",
+        "description": "User-supplied claim and source notes selected for this local inspection."
+      }
+    ],
+    "private_reasoning_included": false
+  },
+  "requested_operation": {
+    "operation_class": "local_analysis",
+    "verb": "inspect-claim",
+    "description": "Produce a local evidence/assumption/counterargument/falsifier map and stop before publication or execution.",
+    "external_mutation_requested": false
+  },
+  "controls": {
+    "surface": "parse_validate_inspect_only",
+    "execute_command_available": false,
+    "network_access_required": false,
+    "filesystem_write_required": false,
+    "responsibility_accepted": false,
+    "execution_admitted": false,
+    "materialization_permitted": false,
+    "external_effect_requires_separate_gate": true,
+    "observe_before_retry": true,
+    "automatic_retry_on_unknown": false
+  },
+  "assertions": [
+    "Envelope is bound to one exact product contract and repository frontier",
+    "The requested operation remains within the declared boundary",
+    "CLI surface is parse, validate and inspect only",
+    "The request remains an E0 local analysis input and is not retained as a responsibility-handoff artifact"
+  ],
+  "non_effects": [
+    "IAL Envelope != Responsibility Acceptance",
+    "IAL Expression != Authority",
+    "IAL Expression != Execution Admission",
+    "Validation Success != ActionPermit",
+    "Inspection Receipt != External Effect",
+    "Consumer Binding != Authority Transfer",
+    "Private Reasoning != Required Payload",
+    "E0 Parsing != Responsibility Artifact Creation",
+    "E1 Observability != External Mutation Authority",
+    "E2 Handoff Candidate != Accepted Handoff",
+    "E3 Materialization Candidate != Materialization Permission",
+    "Pessimistic Analysis != Truth",
+    "Candidate Output != Publication Authority"
+  ]
+}

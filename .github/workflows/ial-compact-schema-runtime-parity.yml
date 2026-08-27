@@ -1,0 +1,48 @@
+name: IAL Compact schema/runtime parity
+
+on:
+  pull_request:
+    paths:
+      - "protocols/ial/v0.1/compact/**"
+      - ".github/workflows/ial-compact-schema-runtime-parity.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "protocols/ial/v0.1/compact/**"
+      - ".github/workflows/ial-compact-schema-runtime-parity.yml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  parity:
+    name: Reject schema-invalid runtime vectors
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check syntax
+        run: |
+          node --check protocols/ial/v0.1/compact/ial-compact.js
+          node --check protocols/ial/v0.1/compact/test-schema-runtime-parity.js
+
+      - name: Run schema/runtime parity regression
+        run: node protocols/ial/v0.1/compact/test-schema-runtime-parity.js
+
+      - name: Confirm parity validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

@@ -62,6 +62,47 @@ State / Evidence Anchor
 
 `technical capability != responsibility acceptance`
 
+### IAL Compact Envelope + read-only CLI
+
+[`protocols/ial/v0.1/compact/`](protocols/ial/v0.1/compact/) добавляет компактную product-facing поверхность:
+
+```text
+parse → validate → inspect → STOP
+```
+
+Первый conformance связывает два независимых продукта:
+
+- Маркетолог Пессимиста — E0 local claim inspection;
+- Честный найм — E1 display candidate для полностью fictional human-review packet.
+
+Envelope содержит exact Product Contract hash, repository frontier, intent/scope/non-goals, target, E0–E3 boundary flags, evidence refs и фиксированные non-effects. Он не содержит принятого handoff или разрешения на действие.
+
+CLI допускает только:
+
+```text
+parse
+validate
+inspect
+help
+```
+
+Команды `execute` нет. CLI не использует сеть, provider, actuator или filesystem write.
+
+```text
+IAL Envelope != Responsibility Acceptance
+IAL Expression != Authority
+IAL Expression != Execution Admission
+Validation Success != ActionPermit
+Inspection Receipt != External Effect
+Consumer Binding != Authority Transfer
+E0 Parsing != Responsibility Artifact Creation
+E1 Observability != External Mutation Authority
+E2 Handoff Candidate != Accepted Handoff
+E3 Materialization Candidate != Materialization Permission
+```
+
+Для E2/E3 inspection сообщает, какие full handoff, Action Gate и materialization gates ещё нужны, но не считает их пройденными.
+
 ### AI Gateway / транспортная система
 
 [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) и reusable execution lifecycle предоставляют provider-neutral путь:
@@ -78,7 +119,7 @@ KONTUR развивается как responsibility control plane и family of b
 
 - [`server/kontur/v0.1/`](server/kontur/v0.1/) — Responsibility Kernel, Readiness Aggregator, activation/preflight boundary, append-only ledger, live-host boundaries и recovery;
 - [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — наиболее зрелая product/pilot line: observational, assistance, memory, initiative, focus, receipt, pause/resume, local trials, read-only observation, recovery и privacy-minimized field evidence;
-- [`products/kontur/v0.1/`](products/kontur/v0.1/) — candidate Product Family Contract и exact machine-readable family manifest.
+- [`products/kontur/v0.1/`](products/kontur/v0.1/) — Product Family Contract и exact machine-readable family manifest.
 
 Product Family Contract связывает:
 
@@ -130,12 +171,12 @@ Human gates могут принять только consolidation candidate, refe
 В портфель входят:
 
 - **UU-AAP Core** — experimental stable-core candidate и общий причинно-доказательный substrate;
-- **IAL** — язык границ намерения/ответственности;
+- **IAL** — язык границ намерения/ответственности с compact no-execute CLI;
 - **AI Gateway / Transport** — provider-neutral integration path;
-- **KONTUR** — responsibility runtime/product family с отдельным candidate family contract;
-- **Маркетолог Пессимиста** — claim/evidence stress-testing product с canonical candidate Product Contract v0.1;
-- **FREESHIELD** — protective plane с candidate Protective Contract v0.1;
-- **Честный найм** — evidence-first contestable hiring-support product с candidate Product Contract v0.1.
+- **KONTUR** — responsibility runtime/product family с отдельным family contract;
+- **Маркетолог Пессимиста** — claim/evidence stress-testing product с canonical Product Contract v0.1;
+- **FREESHIELD** — protective plane с Protective Contract v0.1;
+- **Честный найм** — evidence-first contestable hiring-support product с Product Contract v0.1.
 
 ### Product Contract v0.1
 
@@ -323,11 +364,12 @@ Family contract не означает, что planned Game Companion runtime int
 6. [`products/freeshield/v0.1/`](products/freeshield/v0.1/) — FREESHIELD Protective Contract.
 7. [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/) — Честный найм Product Contract.
 8. [`products/kontur/v0.1/`](products/kontur/v0.1/) — KONTUR Product Family Contract и manifest.
-9. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
-10. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
-11. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
-12. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
-13. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
-14. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR implementation and pilots.
+9. [`protocols/ial/v0.1/compact/`](protocols/ial/v0.1/compact/) — IAL Compact Envelope, read-only CLI и E0–E3 inspection receipts.
+10. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
+11. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
+12. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
+13. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
+14. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
+15. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR implementation and pilots.
 
 Для нормативной и machine-readable проверки используйте канонические английские документы, schemas, validators и receipts, на которые ссылаются эти страницы.

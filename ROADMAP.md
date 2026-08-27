@@ -6,7 +6,8 @@
 **Маркетолог Пессимиста contract baseline:** `c831b643a9b984a274c5093033c28ea4a8a26794` (PR #517)  
 **FREESHIELD contract baseline:** `18a57f46eac60576ecc7ff9777888cd2b45230a2` (PR #519)  
 **Честный найм contract baseline:** `04078a72415b681bc588d801169fc5d9abee3e9b` (PR #521)  
-**Current product-family increment:** Issue #522  
+**KONTUR Product Family baseline:** `b4faf8e759e5839b6d5ddf9ce461231b2d85375c` (PR #523)  
+**Current language-productization increment:** Issue #524  
 **Related:** completed Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
 
 This roadmap reflects the implemented repository rather than the original August 2026 public-draft plan.
@@ -45,13 +46,14 @@ The repository already contains:
 
 - UU-AAP Core v0.1 experimental stable-core candidate and reusable receipt-chain validation;
 - real Core Pilots for continuity/recovery, bounded multi-agent delegation, single-use external effects and observe-before-retry reconciliation;
-- Intent/Action Language v0.1;
+- Intent/Action Language v0.1 responsibility-boundary and handoff profile;
 - provider-neutral AI Gateway, adapters, harnesses, evaluations and bounded execution lifecycle profiles;
 - KONTUR server Responsibility Kernel, Readiness Aggregator, activation boundary, responsibility ledger, live-host boundaries and Game Companion field-pilot evidence;
 - a privacy-preserving IP rights/filing pipeline for exact software objects;
 - Product Contract v0.1 schema, template, exact-frontier no-effect example and fail-closed validator;
 - canonical candidate Product Contracts for Маркетолог Пессимиста, FREESHIELD and Честный найм;
-- a candidate KONTUR Product Family Contract that binds six family members without activation, shared-data admission, execution authority or Stable-Core promotion.
+- KONTUR Product Family Contract binding six family members without activation, shared-data admission, execution authority or Stable-Core promotion;
+- a candidate IAL Compact Envelope and read-only CLI binding Маркетолог Пессимиста and Честный найм through `parse -> validate -> inspect -> STOP`.
 
 The applicant reports that the selected Core software-registration application has been submitted externally. A separate privacy-safe filing checkpoint is still required; submission does not establish registration.
 
@@ -81,7 +83,7 @@ Reusable Product Contract: [`schemas/product-contract/v0.1/`](schemas/product-co
 1. [x] **Маркетолог Пессимиста** — [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); local evidence/claim stress testing, no campaign send, profiling or autonomous persuasion.
 2. [x] **FREESHIELD** — [`products/freeshield/v0.1/`](products/freeshield/v0.1/); scoped protective assessment without actuator control, sanction, global prohibition or authority creation.
 3. [x] **Честный найм** — [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/); evidence-first contestable hiring support without automatic rejection, ranking, protected-attribute inference or external effects.
-4. [ ] **KONTUR Product Family Contract** — current candidate at [`products/kontur/v0.1/`](products/kontur/v0.1/); binds readiness, activation, kernel, ledger, live-host and Game Companion evidence while keeping member roles distinct.
+4. [x] **KONTUR Product Family Contract** — [`products/kontur/v0.1/`](products/kontur/v0.1/); binds readiness, activation, kernel, ledger, live-host and Game Companion evidence while keeping member roles distinct.
 
 KONTUR family sequence:
 
@@ -105,14 +107,43 @@ automatic_runtime_start = false
 cross_member_data_access_default = denied
 ```
 
-**Exit condition:** all named products have canonical effects, non-effects, human gates, data boundaries, receipts and IP object boundaries.
+**Exit condition reached:** all named products have canonical effects, non-effects, human gates, data boundaries, receipts and IP object boundaries.
 
 ## Phase C — Language and transport productization
 
-1. Publish an IAL Compact Envelope and CLI examples for `parse -> validate -> inspect` with execution disabled by default.
-2. Publish one provider-neutral AI Transport reference CLI/SDK carrying Core and IAL evidence through exact-frontier adapters.
-3. Expose the already implemented KONTUR Readiness Aggregator through a read-only product-family interoperability example without creating activation or responsibility acceptance.
-4. Run one local interoperability scenario consumed by at least two products.
+1. [ ] **Current:** publish the IAL Compact Envelope and read-only CLI at [`protocols/ial/v0.1/compact/`](protocols/ial/v0.1/compact/) for `parse -> validate -> inspect`, with execution unavailable by construction.
+2. [ ] Publish one provider-neutral AI Transport reference CLI/SDK carrying Core and IAL evidence through exact-frontier adapters.
+3. [ ] Expose the implemented KONTUR Readiness Aggregator through a read-only product-family interoperability example without creating activation or responsibility acceptance.
+4. [ ] Run one local interoperability scenario consumed by at least two products.
+
+IAL Compact v0.1 first binds two independent consumers:
+
+```text
+Маркетолог Пессимиста -> E0 local analysis
+Честный найм -> E1 observable human-review packet
+```
+
+The Compact CLI exposes only:
+
+```text
+parse
+validate
+inspect
+help
+```
+
+It fixes:
+
+```text
+execute_command_available = false
+network_access_required = false
+filesystem_write_required = false
+responsibility_accepted = false
+execution_admitted = false
+materialization_permitted = false
+```
+
+E2 and E3 inspection identify required downstream handoff/Action Gate/materialization steps without satisfying them.
 
 **Exit condition:** IAL and transport are usable infrastructure rather than only formal profiles.
 
@@ -212,8 +243,8 @@ A release candidate is not automatically a release, standard, certification or l
 4. **Completed:** Маркетолог Пессимиста Product Contract v0.1 (#517).
 5. **Completed:** FREESHIELD Protective Contract v0.1 (#519).
 6. **Completed:** Честный найм Product Contract v0.1 (#521).
-7. **Current:** KONTUR Product Family Contract and consolidation boundary (Issue #522).
-8. IAL Compact Envelope + CLI conformance.
+7. **Completed:** KONTUR Product Family Contract and consolidation boundary (#523).
+8. **Current:** IAL Compact Envelope + read-only CLI conformance (Issue #524).
 9. AI Transport Reference CLI/SDK.
 10. Synthetic product pilots and cross-product interoperability.
 
