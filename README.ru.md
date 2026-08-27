@@ -99,7 +99,7 @@ KONTUR развивается как responsibility control plane и family of b
 - **KONTUR** — responsibility runtime and product family;
 - **Маркетолог Пессимиста** — claim/evidence stress-testing product с отдельным canonical candidate Product Contract v0.1;
 - **FREESHIELD** — protective plane с отдельным candidate Protective Contract v0.1;
-- **Честный найм** — contestable evidence-first hiring product, canonical contract ещё должен быть материализован.
+- **Честный найм** — evidence-first contestable hiring-support product с отдельным candidate Product Contract v0.1.
 
 ### Product Contract v0.1
 
@@ -191,6 +191,40 @@ Protective Assessment != Sanction or Blacklist
 
 Даже human acceptance protective assessment не является execution authority: consumer product обязан пройти собственный отдельный Action Gate.
 
+### Честный найм Product Contract v0.1
+
+[`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/) определяет evidence-first поддержку человеческого hiring review:
+
+```text
+attributable role requirements
+→ candidate-supplied job evidence
+→ lineage / relevance / uncertainty
+→ bounded comparison candidate
+→ FREESHIELD protective assessment
+→ human review
+→ contestable disposition
+→ correction / appeal successor state
+```
+
+Контракт допускает только локальную подготовку packet. В нём нет real applicant runtime, automatic rejection, shortlist, offer, hire, ATS/email/calendar mutation или внешней коммуникации.
+
+```text
+Hiring Support != Hiring Authority
+Candidate Evidence != Candidate Identity or Worth
+Missing Evidence != Negative Evidence
+Job-Relevant Comparison != Global Person Ranking
+Model Score != Employment Decision
+Protected Attribute != Job-Relevant Feature
+Candidate Challenge != Negative Signal
+FREESHIELD Assessment != Automatic Rejection
+```
+
+Запрещены protected-attribute/proxy inference, personality/emotion/deception/health/disability inference, social-profile scraping, cross-context correlation, hidden score и immutable ranking.
+
+Comparison gate может только reject/correct/request evidence/accept packet for further human review. Candidate challenge рассматривается отдельным human appeal reviewer и создаёт successor receipt без переписывания predecessor evidence.
+
+Merge contract не разрешает использовать real candidate data. Первый возможный pilot должен быть полностью fictional, synthetic и no-effect.
+
 ## IP-граница
 
 Заявитель сообщил о подаче заявки на выбранный программный объект Core. Публичный репозиторий пока не связывает фактическую квитанцию подачи и не утверждает государственную регистрацию.
@@ -227,11 +261,12 @@ Protective Assessment != Sanction or Blacklist
 4. [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/) — reusable Product Contract, template, example и validator.
 5. [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) — Маркетолог Пессимиста Product Contract и product-specific validator.
 6. [`products/freeshield/v0.1/`](products/freeshield/v0.1/) — FREESHIELD Protective Contract и fail-closed validator.
-7. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
-8. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
-9. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
-10. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
-11. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
-12. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR.
+7. [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/) — Честный найм Product Contract и contestability validator.
+8. [`SPEC.ru.md`](SPEC.ru.md) — русское пояснение UU-AAP v0.1.
+9. [`proposals/poai/README.ru.md`](proposals/poai/README.ru.md) — русский вход в PoAI.
+10. [`PUBLIC_REVIEW.ru.md`](PUBLIC_REVIEW.ru.md) — как попытаться сломать проект.
+11. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
+12. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
+13. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR.
 
 Для нормативной и machine-readable проверки используйте канонические английские документы, schemas, validators и receipts, на которые ссылаются эти страницы.

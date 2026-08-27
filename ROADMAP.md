@@ -4,7 +4,8 @@
 **Portfolio baseline:** `55dda89ac681e2c7ffbc90f00fe33852c35e8c65` (PR #513)  
 **Reusable Product Contract baseline:** `70c1dfe0e2d4f3e8401050c4e7f56a5e76d11b4d` (PR #515)  
 **Маркетолог Пессимиста contract baseline:** `c831b643a9b984a274c5093033c28ea4a8a26794` (PR #517)  
-**Current product-definition increment:** Issue #518  
+**FREESHIELD contract baseline:** `18a57f46eac60576ecc7ff9777888cd2b45230a2` (PR #519)  
+**Current product-definition increment:** Issue #520  
 **Related:** completed Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
 
 This roadmap reflects the implemented repository rather than the original August 2026 public-draft plan.
@@ -50,7 +51,8 @@ The repository already contains:
 - a privacy-preserving IP rights/filing pipeline for exact software objects;
 - Product Contract v0.1 schema, reusable template, exact-frontier no-effect example and fail-closed validator;
 - a canonical candidate Product Contract v0.1 for Маркетолог Пессимиста, bounded to local evidence-first claim stress testing with no external effects;
-- a candidate FREESHIELD Protective Contract v0.1 that defines scoped protective assessment without actuator control, sanction or authority creation.
+- a canonical candidate FREESHIELD Protective Contract v0.1 that defines scoped protective assessment without actuator control, sanction or authority creation;
+- a candidate Честный найм Product Contract v0.1 that defines evidence-first, job-relevant and contestable human-review support without automatic employment decisions or external effects.
 
 The applicant reports that the selected Core software-registration application has been submitted externally. The repository must record that milestone only through a separate privacy-safe evidence checkpoint; submission does not establish registration.
 
@@ -80,8 +82,8 @@ The reusable Product Contract is documented at [`schemas/product-contract/v0.1/`
 Materialize product contracts in this order:
 
 1. **Маркетолог Пессимиста** — canonical candidate at [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); evidence/claim stress testing, counterarguments, falsifiers and missing evidence; no campaign send, profiling or autonomous persuasion.
-2. **FREESHIELD** — current candidate at [`products/freeshield/v0.1/`](products/freeshield/v0.1/); scoped protective assessment and authority ceiling without automatic sanction, global prohibition, actuator control or product ownership.
-3. **Честный найм** — evidence-first, job-relevant, contestable decision support; no automatic rejection, protected-attribute inference or unappealable ranking.
+2. **FREESHIELD** — canonical candidate at [`products/freeshield/v0.1/`](products/freeshield/v0.1/); scoped protective assessment and authority ceiling without automatic sanction, global prohibition, actuator control or product ownership.
+3. **Честный найм** — current candidate at [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/); evidence-first, job-relevant and contestable support with no automatic rejection, protected-attribute inference, global ranking or unappealable disposition.
 4. **KONTUR Product Family Contract** — bind the server responsibility kernel and Game Companion while keeping pilot evidence out of Stable Core.
 
 **Exit condition:** all named products have canonical effects, non-effects, human gates, data boundaries, receipts and IP object boundaries.
@@ -123,14 +125,17 @@ ALLOW_ANALYSIS | NARROW_SCOPE | REQUIRE_EVIDENCE | HUMAN_REVIEW | BLOCK_EFFECT
 ### Честный найм
 
 ```text
-role requirements
-  -> evidence-bound candidate claims
-  -> uncertainty / missing evidence
-  -> job-relevant comparison
+attributable role requirements
+  -> candidate-supplied job evidence
+  -> lineage / relevance / uncertainty
+  -> bounded comparison candidate
+  -> FREESHIELD protective assessment
   -> human review
   -> contestable disposition
-  -> appeal / correction receipt
+  -> correction / appeal successor receipt
 ```
+
+The product contract permits no automatic rejection, shortlist, offer, protected-attribute/proxy inference, personality or health inference, social scraping, global ranking, ATS mutation or external communication.
 
 ### KONTUR
 
@@ -151,6 +156,8 @@ Each product follows the same ladder:
 7. independent review or contestability case.
 
 No pilot result creates a successor permit or a Stable-Core requirement.
+
+For hiring-related products, the first pilot MUST be fully fictional and synthetic. Real applicant data or employment effects require a separate later authorization, data-protection assessment and human gate.
 
 ## Phase F — Ecosystem interoperability and release candidate
 
@@ -177,11 +184,11 @@ A release candidate is not automatically a release, standard, certification or l
 2. **Evidence-gated:** privacy-safe filing checkpoint after a private receipt digest exists.
 3. **Completed:** reusable Product Contract v0.1 (#515).
 4. **Completed:** Маркетолог Пессимиста Product Contract v0.1 (#517).
-5. **Current:** FREESHIELD Protective Contract v0.1 (Issue #518).
-6. Честный найм Product Contract v0.1.
-7. IAL Compact Envelope + CLI conformance.
-8. AI Transport Reference CLI/SDK.
-9. KONTUR product-family consolidation + readiness aggregator.
-10. Product MVPs and cross-product interoperability pilots.
+5. **Completed:** FREESHIELD Protective Contract v0.1 (#519).
+6. **Current:** Честный найм Product Contract v0.1 (Issue #520).
+7. KONTUR Product Family Contract and consolidation boundary.
+8. IAL Compact Envelope + CLI conformance.
+9. AI Transport Reference CLI/SDK.
+10. Synthetic product pilots and cross-product interoperability.
 
 Every item remains a separate review and human merge gate.
