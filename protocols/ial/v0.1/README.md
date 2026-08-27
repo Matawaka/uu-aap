@@ -121,6 +121,36 @@ attested_compatible -/-> responsibility accepted
 
 The acceptance must be a separate artifact.
 
+## Product-facing Compact Envelope
+
+[`compact/`](compact/) adds an optional provider-neutral preflight wrapper and read-only CLI:
+
+```text
+parse -> validate -> inspect -> STOP
+```
+
+It binds one exact Product Contract, repository frontier, declared intent, target, E0–E3 boundary flags, evidence references and fixed non-effects. It is designed for product and transport tooling that needs a compact input before the full handoff or downstream execution cycle.
+
+The first exact consumer vectors are:
+
+- Маркетолог Пессимиста — E0 local claim inspection;
+- Честный найм — E1 display candidate for a fictional human-review packet.
+
+The Compact Envelope is not a handoff acceptance or authority artifact:
+
+```text
+IAL Envelope != Responsibility Acceptance
+IAL Expression != Authority
+IAL Expression != Execution Admission
+Validation Success != ActionPermit
+Inspection Receipt != External Effect
+Consumer Binding != Authority Transfer
+```
+
+The CLI exposes only `parse`, `validate`, `inspect` and `help`. It has no execute command, network access, provider call or filesystem-write surface.
+
+For E2 and E3, inspection reports which full IAL/downstream gates remain required but keeps responsibility acceptance, authority, ActionPermit, execution admission, materialization permission, observed outcome and canonical state false.
+
 ## Relationship to the wider integration cycle
 
 This profile is the responsibility-boundary segment inside the larger architecture:
@@ -140,6 +170,8 @@ ContextFrame
 
 IAL v0.1 stops before execution/commit. It makes the responsibility handoff explicit so later CCRP/authority/materialization gates can consume a clear boundary without conflating it with permission.
 
+The Compact Envelope is an earlier product/transport input surface and does not shorten or bypass that downstream cycle.
+
 ## Files
 
 - `boundary-assessment.schema.json`
@@ -151,7 +183,14 @@ IAL v0.1 stops before execution/commit. It makes the responsibility handoff expl
 - `evaluate-handoff.js`
 - `test-ial.js`
 - `examples/`
+- `compact/compact-envelope.schema.json`
+- `compact/inspection-receipt.schema.json`
+- `compact/ial-compact.js`
+- `compact/test-compact.js`
+- `compact/examples/`
 
 ## Non-claims
 
 IAL v0.1 does not establish legal identity, legal authority, universal responsibility, execution admission, materialization permission, successful external effect, canonicality, factual truth, causal proof, moral correctness, or PoAI/V conformance.
+
+The Compact Envelope and CLI additionally do not establish responsibility acceptance, ActionPermit validity, provider admission, transport success, external outcome or successor authority.
