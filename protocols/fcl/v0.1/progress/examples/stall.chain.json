@@ -1,0 +1,94 @@
+{
+  "protocol": "FCL",
+  "version": "0.1",
+  "profile": "progress-chain-v0.1",
+  "chain_id": "demo-stall-chain",
+  "origin": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "db5c32b81d734a243b9d485ae70b2514c8bac92b",
+    "tree": "1fb71e09b08bda4a1b5f8a4bf7f9acd7ea834c41"
+  },
+  "events": [
+    {
+      "sequence": 0,
+      "predecessor_fingerprint": null,
+      "committed_checkpoint_refs": [],
+      "receipt": {
+        "protocol": "FCL", "version": "0.1", "receipt_type": "RunLivenessReceipt",
+        "run_id": "demo-progress-run", "run_epoch": 1, "intent_ref": "intent:demo:progress-chain",
+        "state": "RUNNING", "intent_acknowledged": true, "current_phase": "intent-bound",
+        "last_progress_at": "2026-08-27T15:00:00Z", "last_progress_age_seconds": 5,
+        "progress_kind": "INTENT_ACK", "waiting_on": null, "next_observable_event": "first tool observation",
+        "checkpoint_ref": null, "lease_expires_at": "2026-08-27T15:10:00Z", "external_effect_authority": false,
+        "terminal": false, "predecessor_resumable": false, "continuation_available": false,
+        "next_safe_action": "WAIT_FOR_NEXT_RECEIPT", "evaluated_at": "2026-08-27T15:00:05Z",
+        "fingerprint_sha256": "sha256:171c898105bbd82b8d3cee22ea707ce5bff59f0d54c3a4cb8248ac1044c1af7b"
+      }
+    },
+    {
+      "sequence": 1,
+      "predecessor_fingerprint": "sha256:171c898105bbd82b8d3cee22ea707ce5bff59f0d54c3a4cb8248ac1044c1af7b",
+      "committed_checkpoint_refs": [],
+      "receipt": {
+        "protocol": "FCL", "version": "0.1", "receipt_type": "RunLivenessReceipt",
+        "run_id": "demo-progress-run", "run_epoch": 1, "intent_ref": "intent:demo:progress-chain",
+        "state": "RUNNING", "intent_acknowledged": true, "current_phase": "evidence-read",
+        "last_progress_at": "2026-08-27T15:01:00Z", "last_progress_age_seconds": 3,
+        "progress_kind": "TOOL_OBSERVATION", "waiting_on": null, "next_observable_event": "checkpoint commit",
+        "checkpoint_ref": null, "lease_expires_at": "2026-08-27T15:10:00Z", "external_effect_authority": false,
+        "terminal": false, "predecessor_resumable": false, "continuation_available": false,
+        "next_safe_action": "WAIT_FOR_NEXT_RECEIPT", "evaluated_at": "2026-08-27T15:01:03Z",
+        "fingerprint_sha256": "sha256:6ccbcbf1c9312c804cf8bc412a045c306199c0d7819a525c8226b5a55c6452d7"
+      }
+    },
+    {
+      "sequence": 2,
+      "predecessor_fingerprint": "sha256:6ccbcbf1c9312c804cf8bc412a045c306199c0d7819a525c8226b5a55c6452d7",
+      "committed_checkpoint_refs": ["checkpoint:demo:001"],
+      "receipt": {
+        "protocol": "FCL", "version": "0.1", "receipt_type": "RunLivenessReceipt",
+        "run_id": "demo-progress-run", "run_epoch": 1, "intent_ref": "intent:demo:progress-chain",
+        "state": "RUNNING", "intent_acknowledged": true, "current_phase": "checkpointed",
+        "last_progress_at": "2026-08-27T15:02:00Z", "last_progress_age_seconds": 2,
+        "progress_kind": "CHECKPOINT_COMMIT", "waiting_on": null, "next_observable_event": "dependency result",
+        "checkpoint_ref": "checkpoint:demo:001", "lease_expires_at": "2026-08-27T15:10:00Z", "external_effect_authority": false,
+        "terminal": false, "predecessor_resumable": false, "continuation_available": false,
+        "next_safe_action": "WAIT_FOR_NEXT_RECEIPT", "evaluated_at": "2026-08-27T15:02:02Z",
+        "fingerprint_sha256": "sha256:2a359f86745b0854c214060fdc2ce3bf14b654cd7572e1ce8b9473fead8b4506"
+      }
+    },
+    {
+      "sequence": 3,
+      "predecessor_fingerprint": "sha256:2a359f86745b0854c214060fdc2ce3bf14b654cd7572e1ce8b9473fead8b4506",
+      "committed_checkpoint_refs": ["checkpoint:demo:001"],
+      "receipt": {
+        "protocol": "FCL", "version": "0.1", "receipt_type": "RunLivenessReceipt",
+        "run_id": "demo-progress-run", "run_epoch": 1, "intent_ref": "intent:demo:progress-chain",
+        "state": "RUNNING", "intent_acknowledged": true, "current_phase": "dependency-wait",
+        "last_progress_at": "2026-08-27T15:03:00Z", "last_progress_age_seconds": 20,
+        "progress_kind": "DEPENDENCY_WAIT", "waiting_on": "dependency:demo:tool", "next_observable_event": "dependency completion or stall threshold",
+        "checkpoint_ref": "checkpoint:demo:001", "lease_expires_at": "2026-08-27T15:10:00Z", "external_effect_authority": false,
+        "terminal": false, "predecessor_resumable": false, "continuation_available": false,
+        "next_safe_action": "WAIT_FOR_NEXT_RECEIPT", "evaluated_at": "2026-08-27T15:03:20Z",
+        "fingerprint_sha256": "sha256:926265d4c7d6c72fca690297a8003f34fa7362500924098e2d282ad8281709fd"
+      }
+    },
+    {
+      "sequence": 4,
+      "predecessor_fingerprint": "sha256:926265d4c7d6c72fca690297a8003f34fa7362500924098e2d282ad8281709fd",
+      "committed_checkpoint_refs": ["checkpoint:demo:001"],
+      "receipt": {
+        "protocol": "FCL", "version": "0.1", "receipt_type": "RunLivenessReceipt",
+        "run_id": "demo-progress-run", "run_epoch": 1, "intent_ref": "intent:demo:progress-chain",
+        "state": "SUSPECTED_STALL", "intent_acknowledged": true, "current_phase": "dependency-wait",
+        "last_progress_at": "2026-08-27T15:03:00Z", "last_progress_age_seconds": 120,
+        "progress_kind": "DEPENDENCY_WAIT", "waiting_on": "dependency:demo:tool", "next_observable_event": "dependency completion or timeout closure",
+        "checkpoint_ref": "checkpoint:demo:001", "lease_expires_at": "2026-08-27T15:10:00Z", "external_effect_authority": false,
+        "terminal": false, "predecessor_resumable": false, "continuation_available": false,
+        "next_safe_action": "WAIT_OR_INTERRUPT", "evaluated_at": "2026-08-27T15:05:00Z",
+        "fingerprint_sha256": "sha256:4e1c8c0a305abb002bc9584e316f53258c931b9b98665a103ee35cbbb2f38594"
+      }
+    }
+  ],
+  "projected_at": "2026-08-27T15:05:00Z"
+}

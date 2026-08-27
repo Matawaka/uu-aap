@@ -1,0 +1,82 @@
+name: FCL Progress Chain v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - '.github/workflows/fcl-progress-chain-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'protocols/fcl/v0.1/**'
+      - '.github/workflows/fcl-progress-chain-v0.1-validation.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Check syntax and JSON structure
+        run: |
+          node --check protocols/fcl/v0.1/progress/progress-chain.js
+          node --check protocols/fcl/v0.1/progress/test-progress-chain.js
+          node -e "JSON.parse(require('fs').readFileSync('protocols/fcl/v0.1/progress/progress-chain.schema.json', 'utf8'))"
+          node -e "JSON.parse(require('fs').readFileSync('protocols/fcl/v0.1/progress/progress-projection-receipt.schema.json', 'utf8'))"
+
+      - name: Re-run predecessor FCL v0.1 conformance
+        run: node protocols/fcl/v0.1/test-fcl.js
+
+      - name: Run FCL Progress Chain conformance
+        run: node protocols/fcl/v0.1/progress/test-progress-chain.js
+
+      - name: Exercise read-only CLI surface
+        run: |
+          CLI="protocols/fcl/v0.1/progress/progress-chain.js"
+          BASE="protocols/fcl/v0.1/progress/examples"
+          node "$CLI" validate "$BASE/active.chain.json"
+          node "$CLI" project "$BASE/waiting.chain.json"
+          node "$CLI" project "$BASE/stall.chain.json"
+          node "$CLI" project "$BASE/closed.chain.json"
+          cat "$BASE/active.chain.json" | node "$CLI" validate -
+          node "$CLI" help | grep -q "No execute, resume, interrupt or send command exists"
+          if node "$CLI" execute "$BASE/active.chain.json"; then exit 1; fi
+          if node "$CLI" resume "$BASE/active.chain.json"; then exit 1; fi
+          if node "$CLI" interrupt "$BASE/active.chain.json"; then exit 1; fi
+          if node "$CLI" send "$BASE/active.chain.json"; then exit 1; fi
+
+      - name: Guard progress CLI as local read-only surface
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('protocols/fcl/v0.1/progress/progress-chain.js').read_text(encoding='utf-8')
+          forbidden = [
+              'child_process', "require('http')", 'require("http")', "require('https')", 'require("https")',
+              "require('net')", 'require("net")', "require('tls')", 'require("tls")', 'writeFile', 'appendFile',
+              'mkdir', 'unlink', 'rename', 'fetch(',
+          ]
+          for token in forbidden:
+              assert token not in text, token
+          print('PASS: progress-chain CLI has no network, subprocess or filesystem-write surface')
+          PY
+
+      - name: Confirm validation did not mutate checkout
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

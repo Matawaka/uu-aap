@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.org/protocols/fcl/v0.1/progress/progress-projection-receipt.schema.json",
+  "title": "FCL Progress Projection Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "chain_id", "run_id", "run_epoch", "intent_ref",
+    "chain_length", "head_sequence", "head_fingerprint", "human_status", "last_confirmed_progress_at",
+    "last_progress_age_seconds", "current_phase", "waiting_on", "next_observable_event", "next_safe_action",
+    "checkpoint_ref", "terminal", "continuation_available", "execution_admitted", "authority_established",
+    "transport_delivery_proves_progress", "private_reasoning_included", "projected_at", "fingerprint_sha256"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "ProgressProjectionReceipt"},
+    "chain_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "run_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{2,95}$"},
+    "run_epoch": {"type": "integer", "minimum": 0},
+    "intent_ref": {"type": "string", "minLength": 1},
+    "chain_length": {"type": "integer", "minimum": 1},
+    "head_sequence": {"type": "integer", "minimum": 0},
+    "head_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "human_status": {"enum": ["ACTIVE", "WAITING", "STALL_SUSPECTED", "CLOSED", "CONTINUATION_AVAILABLE"]},
+    "last_confirmed_progress_at": {"type": "string", "format": "date-time"},
+    "last_progress_age_seconds": {"type": "integer", "minimum": 0},
+    "current_phase": {"type": "string", "minLength": 1},
+    "waiting_on": {"type": ["string", "null"]},
+    "next_observable_event": {"type": "string", "minLength": 1},
+    "next_safe_action": {"enum": ["WAIT_FOR_NEXT_RECEIPT", "WAIT_OR_INTERRUPT", "CREATE_SUCCESSOR_RUN"]},
+    "checkpoint_ref": {"type": ["string", "null"]},
+    "terminal": {"type": "boolean"},
+    "continuation_available": {"type": "boolean"},
+    "execution_admitted": {"const": false},
+    "authority_established": {"const": false},
+    "transport_delivery_proves_progress": {"const": false},
+    "private_reasoning_included": {"const": false},
+    "projected_at": {"type": "string", "format": "date-time"},
+    "fingerprint_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
