@@ -1,0 +1,51 @@
+name: FCL Runtime UI Adapter v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/runtime-ui/**'
+      - 'protocols/fcl/v0.1/handoff/**'
+      - 'protocols/fcl/v0.1/delivery/**'
+      - 'protocols/fcl/v0.1/progress/**'
+      - 'protocols/fcl/v0.1/fcl.js'
+      - 'protocols/fcl/v0.1/test-fcl.js'
+      - '.github/workflows/fcl-runtime-ui-adapter-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'protocols/fcl/v0.1/runtime-ui/**'
+      - 'protocols/fcl/v0.1/handoff/**'
+      - 'protocols/fcl/v0.1/delivery/**'
+      - 'protocols/fcl/v0.1/progress/**'
+      - 'protocols/fcl/v0.1/fcl.js'
+      - 'protocols/fcl/v0.1/test-fcl.js'
+      - '.github/workflows/fcl-runtime-ui-adapter-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Re-run base FCL conformance
+        run: node protocols/fcl/v0.1/test-fcl.js
+      - name: Re-run Progress Chain conformance
+        run: node protocols/fcl/v0.1/progress/test-progress-chain.js
+      - name: Re-run Projection Delivery conformance
+        run: node protocols/fcl/v0.1/delivery/test-delivery.js
+      - name: Re-run Successor UI Handoff conformance
+        run: node protocols/fcl/v0.1/handoff/test-handoff.js
+      - name: Run Runtime UI Adapter conformance
+        run: node protocols/fcl/v0.1/runtime-ui/test-runtime-ui.js
+      - name: Validate and render examples
+        run: |
+          node protocols/fcl/v0.1/runtime-ui/runtime-ui.js validate protocols/fcl/v0.1/runtime-ui/examples/waiting.input.json
+          node protocols/fcl/v0.1/runtime-ui/runtime-ui.js render protocols/fcl/v0.1/runtime-ui/examples/waiting.input.json
+          node protocols/fcl/v0.1/runtime-ui/runtime-ui.js render protocols/fcl/v0.1/runtime-ui/examples/terminal.input.json
+          node protocols/fcl/v0.1/runtime-ui/runtime-ui.js render protocols/fcl/v0.1/runtime-ui/examples/handoff.input.json
