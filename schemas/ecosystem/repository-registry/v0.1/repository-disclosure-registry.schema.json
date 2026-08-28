@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Matawaka Public Repository Disclosure Registry v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version","registry_id","owner","observed_at","coverage","invariants","repositories","portfolio_decision","monetization_model","private_disclosure_gate","non_effects","content_hash"],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "registry_id": {"type": "string", "minLength": 1},
+    "owner": {"const": "Matawaka"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "coverage": {
+      "type": "object", "additionalProperties": false,
+      "required": ["public_inventory_observed","private_inventory_complete","private_repository_details_disclosed","full_ecosystem_disclosure_decision_complete","connector_private_scope_complete","next_safe_action"],
+      "properties": {
+        "public_inventory_observed": {"const": true},
+        "private_inventory_complete": {"const": false},
+        "private_repository_details_disclosed": {"const": false},
+        "full_ecosystem_disclosure_decision_complete": {"const": false},
+        "connector_private_scope_complete": {"const": false},
+        "next_safe_action": {"const": "EXPAND_GITHUB_REPOSITORY_SCOPE_AND_RESCAN_PRIVATE_PORTFOLIO"}
+      }
+    },
+    "invariants": {"type": "array", "minItems": 6, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "repositories": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["repository_id","full_name","visibility","evidence_state","observed_main","architectural_role","product_plane","strategic_priority","development_wip_priority","monetization_priority","monetization_posture","current_disclosure_state","recommended_disclosure_posture","recommendation_basis","next_development_gate","commercial_surfaces","non_effects"],
+        "properties": {
+          "repository_id": {"enum": ["uu-aap","marketcloser-public","vibe-coding-reality"]},
+          "full_name": {"enum": ["Matawaka/uu-aap","Matawaka/marketcloser-public","Matawaka/vibe-coding-reality"]},
+          "visibility": {"const": "public"},
+          "evidence_state": {"enum": ["connector_verified","public_verified"]},
+          "observed_main": {
+            "type": "object", "additionalProperties": false,
+            "required": ["commit_sha","tree_sha"],
+            "properties": {
+              "commit_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+              "tree_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+            }
+          },
+          "architectural_role": {"type": "string", "minLength": 1},
+          "product_plane": {"enum": ["shared_foundation","domain_product","publication_and_adoption"]},
+          "strategic_priority": {"enum": ["P0","P1","P2","P3"]},
+          "development_wip_priority": {"enum": ["P0","P1","P2","P3"]},
+          "monetization_priority": {"enum": ["P0","P1","P2","P3"]},
+          "monetization_posture": {"enum": ["open_foundation_commercial_services","open_reference_paid_managed_product","public_content_audience_funnel"]},
+          "current_disclosure_state": {"const": "fully_public"},
+          "recommended_disclosure_posture": {"const": "KEEP_FULLY_PUBLIC"},
+          "recommendation_basis": {"type": "array", "minItems": 2, "items": {"type": "string", "minLength": 1}},
+          "next_development_gate": {"type": "string", "minLength": 1},
+          "commercial_surfaces": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "non_effects": {
+            "type": "object", "additionalProperties": false,
+            "required": ["pricing_committed","deployment_authorized","license_changed","private_repository_disclosed","external_effect_authorized"],
+            "properties": {
+              "pricing_committed": {"const": false},
+              "deployment_authorized": {"const": false},
+              "license_changed": {"const": false},
+              "private_repository_disclosed": {"const": false},
+              "external_effect_authorized": {"const": false}
+            }
+          }
+        }
+      }
+    },
+    "portfolio_decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["development_focus","monetization_focus","keep_fully_public","private_projects_assessed_for_disclosure","private_project_publication_authorized"],
+      "properties": {
+        "development_focus": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["uu-aap","marketcloser-public","vibe-coding-reality"]}},
+        "monetization_focus": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["uu-aap","marketcloser-public","vibe-coding-reality"]}},
+        "keep_fully_public": {"type": "array", "minItems": 3, "maxItems": 3, "uniqueItems": true, "items": {"enum": ["uu-aap","marketcloser-public","vibe-coding-reality"]}},
+        "private_projects_assessed_for_disclosure": {"const": false},
+        "private_project_publication_authorized": {"const": false}
+      }
+    },
+    "monetization_model": {
+      "type": "object", "additionalProperties": false,
+      "required": ["principle","layers"],
+      "properties": {
+        "principle": {"type": "string", "minLength": 1},
+        "layers": {"type": "array", "minItems": 5, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "private_disclosure_gate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required_checks","default_when_incomplete"],
+      "properties": {
+        "required_checks": {"type": "array", "minItems": 9, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "default_when_incomplete": {"const": "KEEP_PRIVATE_AND_UNASSESSED"}
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository_visibility_changed","private_repository_name_published","private_repository_content_published","pricing_committed","license_changed","deployment_authorized","external_effect_authorized"],
+      "properties": {
+        "repository_visibility_changed": {"const": false},
+        "private_repository_name_published": {"const": false},
+        "private_repository_content_published": {"const": false},
+        "pricing_committed": {"const": false},
+        "license_changed": {"const": false},
+        "deployment_authorized": {"const": false},
+        "external_effect_authorized": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
