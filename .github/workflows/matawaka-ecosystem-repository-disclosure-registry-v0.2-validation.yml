@@ -1,0 +1,116 @@
+name: Matawaka Ecosystem Repository & Disclosure Registry v0.2 validation
+
+on:
+  pull_request:
+    paths:
+      - "schemas/ecosystem/repository-registry/v0.2/**"
+      - "docs/ecosystem/MATAWAKA-REPOSITORY-PORTFOLIO-DISCLOSURE-2026-08-v0.2.ru.md"
+      - ".github/workflows/matawaka-ecosystem-repository-disclosure-registry-v0.2-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate four-public-repository portfolio and TRUEHIRE projection evidence
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_MAIN: 53279493e4e34afd3ce517dc41b35433e9a383d7
+      ORIGIN_TREE: da723667d3045b02149894425dae2a81298291f5
+      TRUEHIRE_PUBLIC_COMMIT: 99a8ed329f20d670b1130795eecff305c0c996bf
+      TRUEHIRE_PUBLIC_TREE: 585cd1d24e6feecdfebdcfe54faf27db3d4b1475
+      TRUEHIRE_PROJECTION_ROOT: sha256:41be1d4f43f16e7b10f7d4242e782651d326632efe4e56369de40051abb1351e
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validator dependency
+        run: python -m pip install --disable-pip-version-check jsonschema
+
+      - name: Validate v0.2 registry and fail-closed mutations
+        run: python schemas/ecosystem/repository-registry/v0.2/validate_registry.py --self-test
+
+      - name: Verify exact UU-AAP origin frontier
+        run: |
+          test "$(git rev-parse origin/main)" = "$ORIGIN_MAIN"
+          test "$(git show -s --format=%T origin/main)" = "$ORIGIN_TREE"
+          test "$(git merge-base origin/main HEAD)" = "$ORIGIN_MAIN"
+
+      - name: Re-observe all four public repository frontiers
+        run: |
+          python - <<'PY'
+          import json, urllib.request
+          expected = {
+            'Matawaka/uu-aap': ('53279493e4e34afd3ce517dc41b35433e9a383d7','da723667d3045b02149894425dae2a81298291f5'),
+            'Matawaka/marketcloser-public': ('3984a516ab4b5c5e193a77dc94f58e03af3afc5f','eb14db38c7bf54c22894bfffb6b8de8efea1192e'),
+            'Matawaka/truehire-public': ('99a8ed329f20d670b1130795eecff305c0c996bf','585cd1d24e6feecdfebdcfe54faf27db3d4b1475'),
+            'Matawaka/vibe-coding-reality': ('bcfbd797a87215ce095e6c24be5275897f64c124','290019663be14da208eb40844e46752a12197f6a'),
+          }
+          for repo, (sha, tree) in expected.items():
+            with urllib.request.urlopen(f'https://api.github.com/repos/{repo}/branches/main') as r:
+              data = json.load(r)
+            assert data['commit']['sha'] == sha, (repo, 'commit drift', data['commit']['sha'])
+            assert data['commit']['commit']['tree']['sha'] == tree, (repo, 'tree drift', data['commit']['commit']['tree']['sha'])
+          print('Four public repository frontiers: PASS')
+          PY
+
+      - name: Re-observe TRUEHIRE release anchor, orphan root and receipts
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request
+          base='https://api.github.com/repos/Matawaka/truehire-public'
+          def get(url):
+            with urllib.request.urlopen(url) as r: return json.load(r)
+          main=get(base+'/branches/main')
+          release=get(base+'/branches/release/v0.1')
+          commit=get(base+'/commits/'+os.environ['TRUEHIRE_PUBLIC_COMMIT'])
+          tree=get(base+'/git/trees/'+os.environ['TRUEHIRE_PUBLIC_TREE']+'?recursive=1')
+          p=get('https://raw.githubusercontent.com/Matawaka/truehire-public/main/PUBLIC_PROJECTION.json')
+          a=get('https://raw.githubusercontent.com/Matawaka/truehire-public/main/PUBLIC_RELEASE_AUTHORIZATION.json')
+          assert main['commit']['sha'] == os.environ['TRUEHIRE_PUBLIC_COMMIT']
+          assert release['commit']['sha'] == os.environ['TRUEHIRE_PUBLIC_COMMIT']
+          assert main['commit']['commit']['tree']['sha'] == os.environ['TRUEHIRE_PUBLIC_TREE']
+          assert len(commit['parents']) == 0
+          assert tree['sha'] == os.environ['TRUEHIRE_PUBLIC_TREE'] and tree['truncated'] is False
+          blobs=[x for x in tree['tree'] if x['type']=='blob']
+          assert len(blobs) == 47, len(blobs)
+          paths={x['path'] for x in blobs}
+          assert not any(x.startswith('.github/') or x.startswith('release/') for x in paths)
+          for forbidden in ['public/og.png','disclosure-assessment.json','public-release-hygiene.json']:
+            assert forbidden not in paths
+          assert p['projection_root'] == os.environ['TRUEHIRE_PROJECTION_ROOT']
+          assert p['file_count_excluding_receipts'] == 45
+          assert a['target_public_repository'] == 'Matawaka/truehire-public'
+          assert a['private_repository_must_remain_private'] is True
+          assert a['private_history_included'] is False
+          assert a['deployment_authorized'] is False
+          assert a['candidate_data_processing_authorized'] is False
+          print('TRUEHIRE public release evidence: PASS')
+          PY
+
+      - name: Prove v0.2 adds no private repository names
+        run: |
+          python - <<'PY'
+          import pathlib, re
+          roots=[pathlib.Path('schemas/ecosystem/repository-registry/v0.2'), pathlib.Path('docs/ecosystem/MATAWAKA-REPOSITORY-PORTFOLIO-DISCLOSURE-2026-08-v0.2.ru.md')]
+          allowed={'Matawaka/uu-aap','Matawaka/marketcloser-public','Matawaka/truehire-public','Matawaka/vibe-coding-reality'}
+          refs=set()
+          for root in roots:
+            files=[root] if root.is_file() else [p for p in root.rglob('*') if p.is_file()]
+            for p in files:
+              refs.update(re.findall(r'Matawaka/[A-Za-z0-9_.-]+', p.read_text(encoding='utf-8')))
+          unexpected=refs-allowed
+          assert not unexpected, sorted(unexpected)
+          print('Public repository-name allowlist: PASS')
+          PY
+
+      - name: Verify immutable checkout
+        run: git diff --exit-code
