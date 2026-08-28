@@ -283,7 +283,9 @@ function deriveMarketerIntake(input, deploymentReceipt) {
     evaluation_frontier: clone(input.evaluation_frontier),
     source_context: {
       mode: input.source_mode,
-      source_reference: `urn:uu-aap:marketcloser:minimized-bridge-source:${input.content_hash.slice(-24)}`,
+      source_reference: input.source_mode === 'synthetic_conformance'
+        ? `urn:synthetic:marketcloser:minimized-bridge-source:${input.content_hash.slice(-24)}`
+        : `urn:uu-aap:marketcloser:minimized-bridge-source:${input.content_hash.slice(-24)}`,
       source_observed_at: deploymentReceipt.observation.observed_at,
       classification_basis:
         'Human-reviewed MarketCloser minimization assertion; deployment binding remains insufficient and is not repaired by inference.',
