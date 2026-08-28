@@ -1,0 +1,137 @@
+name: MarketCloser Deployment-Bound Observation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "applications/marketcloser/v0.1/**"
+      - ".github/workflows/marketcloser-deployment-observation-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "applications/marketcloser/v0.1/**"
+      - ".github/workflows/marketcloser-deployment-observation-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: 39af0064e71c545fd38edc65eacd073b7801f729
+      FIXTURE: applications/marketcloser/v0.1/deployment-observation/v0.1/examples/synthetic-deployment-observation.input.json
+      RECEIPT: /tmp/marketcloser-deployment-observation-receipt.json
+      PYTHONPYCACHEPREFIX: /tmp/marketcloser-deployment-observation-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run merged MarketCloser Application Boundary
+        run: python applications/marketcloser/v0.1/validate_boundary.py
+
+      - name: Re-run merged Marketer Pessimist Real Review Intake
+        run: |
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js
+
+      - name: Check deployment-observation JavaScript syntax
+        run: |
+          node --check applications/marketcloser/v0.1/deployment-observation/v0.1/deployment-observation.js
+          node --check applications/marketcloser/v0.1/deployment-observation/v0.1/receipt-binding.js
+          node --check applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+          node --check applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+          node --check applications/marketcloser/v0.1/deployment-observation/v0.1/test-import-safe.js
+          node --check applications/marketcloser/v0.1/deployment-observation/v0.1/test-schema-runtime-parity.js
+
+      - name: Validate synthetic observation fixture
+        run: node applications/marketcloser/v0.1/deployment-observation/v0.1/deployment-observation.js validate "$FIXTURE"
+
+      - name: Run deployment observation conformance
+        run: node applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+
+      - name: Validate exact observation receipt source binding
+        run: node applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+
+      - name: Validate schema/runtime parity
+        run: node applications/marketcloser/v0.1/deployment-observation/v0.1/test-schema-runtime-parity.js
+
+      - name: Validate import safety
+        run: node applications/marketcloser/v0.1/deployment-observation/v0.1/test-import-safe.js
+
+      - name: Generate canonical synthetic receipt
+        run: node applications/marketcloser/v0.1/deployment-observation/v0.1/deployment-observation.js receipt "$FIXTURE" > "$RECEIPT"
+
+      - name: Validate input and receipt against closed JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          base = Path('applications/marketcloser/v0.1/deployment-observation/v0.1')
+          pairs = [
+              (base/'input.schema.json', Path(os.environ['FIXTURE'])),
+              (base/'receipt.schema.json', Path(os.environ['RECEIPT'])),
+          ]
+          for schema_path, data_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              data = json.loads(data_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(data)
+              print(f'PASS: {data_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/deployment-observation.js help
+          for cmd in fetch resolve-dns verify bind attest publish send mutate authorize permit start run execute; do
+            if node applications/marketcloser/v0.1/deployment-observation/v0.1/deployment-observation.js "$cmd" "$FIXTURE" >/tmp/mcdo.out 2>/tmp/mcdo.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "MARKETCLOSER_DEPLOYMENT_OBSERVATION_REJECTED" /tmp/mcdo.err
+          done
+
+      - name: Guard production surface as local read-only
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const files = [
+            'applications/marketcloser/v0.1/deployment-observation/v0.1/deployment-observation.js',
+            'applications/marketcloser/v0.1/deployment-observation/v0.1/receipt-binding.js'
+          ];
+          const text = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
+          const forbidden = [
+            'child_process', "require('http')", "require('https')", 'http.request', 'https.request',
+            'fetch(', 'XMLHttpRequest', 'WebSocket', 'dns.', "require('dns')",
+            'writeFileSync', 'writeFile(', 'appendFile', 'execSync', 'spawnSync', 'OpenAI', 'Anthropic'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: deployment observation production surface is local read-only');
+          NODE
+
+      - name: Confirm real pilot evidence is not committed in this profile
+        run: |
+          ! grep -R "twc1.net" applications/marketcloser/v0.1/deployment-observation/v0.1
+          ! grep -R "0608e0d036c6bd7f4512f617978185621dcfbad96b4e77a9e3f36a7ae8ecca84" applications/marketcloser/v0.1/deployment-observation/v0.1
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
