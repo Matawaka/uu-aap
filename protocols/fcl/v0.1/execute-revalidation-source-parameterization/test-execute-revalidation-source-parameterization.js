@@ -8,7 +8,8 @@ const { spawnSync } = require('child_process');
 
 const {
   buildDecision,
-  revalidate,
+  prepareValidatedSource,
+  revalidateWithPreparedSource,
   validateInput,
   validateReceipt,
 } = require('./execute-revalidation-source-parameterization.js');
@@ -77,76 +78,113 @@ function positiveInput(evaluatedAt = '2026-08-27T18:01:15Z') {
   };
 }
 
+const canonicalInput = positiveInput();
+const preparedSource = prepareValidatedSource(canonicalInput);
+process.stdout.write('PASS prepared exact FCL authorize source once\n');
+
 function testPositiveReadyDecision() {
   const input = positiveInput();
-  assert.strictEqual(validateInput(input), true);
-  const result = revalidate(input);
+  assert.strictEqual(validateInput(input, preparedSource), true);
+  const result = revalidateWithPreparedSource(input, preparedSource);
   assert.strictEqual(result.generic_revalidation_decision.decision.status, 'ready');
   assert.strictEqual(result.generic_revalidation_decision.non_effects.permit_consumed, false);
   assert.strictEqual(result.generic_revalidation_decision.non_effects.actuator_invocation_emitted, false);
   assert.strictEqual(result.fcl_revalidation_receipt.next_safe_action, 'PARAMETERIZE_EXECUTION_INVOCATION_ENVELOPE_FCL_SOURCE');
-  assert.strictEqual(validateReceipt(result.fcl_revalidation_receipt, input, result.generic_revalidation_decision), true);
+  assert.strictEqual(validateReceipt(result.fcl_revalidation_receipt), true);
 }
-function testDeterministicReadyDecision() { const input = positiveInput(); assert.deepStrictEqual(revalidate(input), revalidate(clone(input))); }
+
+function testDeterministicReadyDecision() {
+  const first = revalidateWithPreparedSource(positiveInput(), preparedSource);
+  const second = revalidateWithPreparedSource(positiveInput(), preparedSource);
+  assert.deepStrictEqual(first, second);
+}
+
 function testParameterizedHelperAcceptsFCLDecision() {
   const input = positiveInput();
-  const decision = buildDecision(input);
+  const decision = buildDecision(input, preparedSource);
   assert.strictEqual(validateDecision(decision, input.authorize_binding_input.generic_assessment), true);
 }
-function testStaleRevalidationFailsClosed() { expectFailure('stale revalidation', () => validateInput(positiveInput('2026-08-27T18:02:01Z')), /stale execute revalidation/); }
-function testRevalidationCannotPredateAuthorize() { expectFailure('predates authorize', () => validateInput(positiveInput('2026-08-27T18:01:13Z')), /cannot predate authorize phase binding/); }
+
+function testStaleRevalidationFailsClosed() {
+  expectFailure('stale revalidation', () => validateInput(positiveInput('2026-08-27T18:02:01Z'), preparedSource), /stale execute revalidation/);
+}
+
+function testRevalidationCannotPredateAuthorize() {
+  expectFailure('predates authorize', () => validateInput(positiveInput('2026-08-27T18:01:13Z'), preparedSource), /cannot predate authorize phase binding/);
+}
+
 function testConsumedPermitFailsClosed() {
   const input = positiveInput();
   input.authorize_binding_input.assessment_input.pre_action_bundle.core_receipts.action_permit.payload.consumed = true;
-  expectFailure('consumed permit', () => validateInput(input), /authorize binding input invalid|ActionPermit|not exactly reproducible/);
+  expectFailure('consumed permit', () => validateInput(input, preparedSource), /prepared source authorize binding input mismatch/);
 }
+
 function testNonOneShotPermitFailsClosed() {
   const input = positiveInput();
   input.authorize_binding_input.assessment_input.pre_action_bundle.core_receipts.action_permit.payload.one_shot = false;
-  expectFailure('non one-shot permit', () => validateInput(input), /authorize binding input invalid|ActionPermit|not exactly reproducible/);
+  expectFailure('non one-shot permit', () => validateInput(input, preparedSource), /prepared source authorize binding input mismatch/);
 }
+
 function testAuthorizePhaseSubstitutionRejected() {
-  const input = positiveInput(); input.authorize_phase.target_binding_hash = `sha256:${'1'.repeat(64)}`;
-  expectFailure('authorize phase substitution', () => validateInput(input), /authorize phase is not exactly reproducible/);
+  const input = positiveInput();
+  input.authorize_phase.target_binding_hash = `sha256:${'1'.repeat(64)}`;
+  expectFailure('authorize phase substitution', () => validateInput(input, preparedSource), /prepared source authorize phase mismatch/);
 }
+
 function testAuthorizeReceiptSubstitutionRejected() {
-  const input = positiveInput(); input.fcl_authorize_phase_receipt.target_binding_hash = `sha256:${'2'.repeat(64)}`;
-  expectFailure('authorize receipt substitution', () => validateInput(input), /authorize phase receipt invalid|not exactly reproducible/);
+  const input = positiveInput();
+  input.fcl_authorize_phase_receipt.target_binding_hash = `sha256:${'2'.repeat(64)}`;
+  expectFailure('authorize receipt substitution', () => validateInput(input, preparedSource), /prepared source authorize receipt mismatch/);
 }
+
 function testAdmissionSubstitutionRejected() {
-  const input = positiveInput(); input.authorize_binding_input.generic_assessment.content_hash = `sha256:${'3'.repeat(64)}`;
-  expectFailure('admission substitution', () => validateInput(input), /authorize binding input invalid|not exactly reproducible/);
+  const input = positiveInput();
+  input.authorize_binding_input.generic_assessment.content_hash = `sha256:${'3'.repeat(64)}`;
+  expectFailure('admission substitution', () => validateInput(input, preparedSource), /prepared source authorize binding input mismatch/);
 }
+
 function testTargetAndFrontierSubstitutionRejected() {
-  const input = positiveInput(); input.authorize_binding_input.assessment_input.pre_action_bundle.target.binding_hash = `sha256:${'4'.repeat(64)}`;
-  expectFailure('target substitution', () => validateInput(input), /authorize binding input invalid|not exactly reproducible/);
-  const input2 = positiveInput(); input2.authorize_binding_input.assessment_input.pre_action_bundle.target.expected_predecessor_frontier += ':other';
-  expectFailure('frontier substitution', () => validateInput(input2), /authorize binding input invalid|not exactly reproducible/);
+  const input = positiveInput();
+  input.authorize_binding_input.assessment_input.pre_action_bundle.target.binding_hash = `sha256:${'4'.repeat(64)}`;
+  expectFailure('target substitution', () => validateInput(input, preparedSource), /prepared source authorize binding input mismatch/);
+
+  const input2 = positiveInput();
+  input2.authorize_binding_input.assessment_input.pre_action_bundle.target.expected_predecessor_frontier += ':other';
+  expectFailure('frontier substitution', () => validateInput(input2, preparedSource), /prepared source authorize binding input mismatch/);
 }
+
 function testExecuteHorizonExtensionRejected() {
-  const input = positiveInput(); const decision = buildDecision(input);
+  const input = positiveInput();
+  const decision = buildDecision(input, preparedSource);
   decision.freshness_binding.execute_revalidation_must_occur_by = '2026-08-27T18:03:00Z';
   decision.content_hash = hashWithoutContentHash(decision);
   expectFailure('execute horizon extension', () => validateDecision(decision, input.authorize_binding_input.generic_assessment), /execute horizon/);
 }
+
 function testGenericDecisionOverclaimRejected() {
-  const input = positiveInput(); const decision = buildDecision(input);
+  const input = positiveInput();
+  const decision = buildDecision(input, preparedSource);
   decision.non_effects.actuator_invocation_emitted = true;
   decision.content_hash = hashWithoutContentHash(decision);
   expectFailure('actuator overclaim', () => validateDecision(decision, input.authorize_binding_input.generic_assessment), /non-effect actuator_invocation_emitted/);
 }
+
 function testFCLReceiptOverclaimRejected() {
-  const input = positiveInput(); const result = revalidate(input);
+  const result = revalidateWithPreparedSource(positiveInput(), preparedSource);
   result.fcl_revalidation_receipt.non_effects.invocation_envelope_created = true;
   expectFailure('envelope overclaim', () => validateReceipt(result.fcl_revalidation_receipt), /invocation_envelope_created/);
 }
+
 function testReadOnlyCliAndImportSafe() {
   const script = path.resolve(ROOT, 'execute-revalidation-source-parameterization.js');
   const imported = spawnSync(process.execPath, ['-e', `require(${JSON.stringify(script)})`], { encoding: 'utf8' });
-  assert.strictEqual(imported.status, 0, imported.stderr); assert.strictEqual(imported.stdout, ''); assert.strictEqual(imported.stderr, '');
+  assert.strictEqual(imported.status, 0, imported.stderr);
+  assert.strictEqual(imported.stdout, '');
+  assert.strictEqual(imported.stderr, '');
   for (const command of ['invoke','execute','probe','consume','interrupt','send','actuate']) {
     const run = spawnSync(process.execPath, [script, command, '-'], { input: '{}', encoding: 'utf8', timeout: 5000 });
-    assert.notStrictEqual(run.status, 0, `${command} must be rejected`); assert(/unsupported command/.test(run.stderr), `${command}: unexpected stderr ${run.stderr}`);
+    assert.notStrictEqual(run.status, 0, `${command} must be rejected`);
+    assert(/unsupported command/.test(run.stderr), `${command}: unexpected stderr ${run.stderr}`);
   }
 }
 
@@ -167,8 +205,14 @@ const tests = [
   testFCLReceiptOverclaimRejected,
   testReadOnlyCliAndImportSafe,
 ];
-for (const test of tests) { test(); process.stdout.write(`PASS ${test.name}\n`); }
-const input = positiveInput(); const result = revalidate(input);
+
+for (const test of tests) {
+  test();
+  process.stdout.write(`PASS ${test.name}\n`);
+}
+
+const input = positiveInput();
+const result = revalidateWithPreparedSource(input, preparedSource);
 if (process.argv[2]) fs.writeFileSync(process.argv[2], `${JSON.stringify(input, null, 2)}\n`);
 if (process.argv[3]) fs.writeFileSync(process.argv[3], `${JSON.stringify(result.generic_revalidation_decision, null, 2)}\n`);
 if (process.argv[4]) fs.writeFileSync(process.argv[4], `${JSON.stringify(result.fcl_revalidation_receipt, null, 2)}\n`);
