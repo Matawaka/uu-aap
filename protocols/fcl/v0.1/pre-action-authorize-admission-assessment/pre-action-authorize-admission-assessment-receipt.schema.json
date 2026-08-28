@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/pre-action-authorize-admission-assessment/receipt.schema.json",
+  "title": "FCL PreAction Authorize Admission Assessment Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","assessment_id","adapter_id","generic_assessment_hash","decision_status","assembly_id","assembly_receipt_hash","bundle_id","bundle_content_hash","action_permit_hash","approval_hash","target_binding_hash","frontier","authorization_must_occur_by","evaluated_at","assertions","non_effects","next_safe_action","content_hash"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "FCLPreActionAuthorizeAdmissionAssessmentReceipt"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "adapter_id": {"type": "string", "minLength": 1},
+    "generic_assessment_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "decision_status": {"enum": ["admissible","denied"]},
+    "assembly_id": {"type": "string", "minLength": 1},
+    "assembly_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "bundle_content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "approval_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "target_binding_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "frontier": {"type": "string", "minLength": 1},
+    "authorization_must_occur_by": {"type": "string", "format": "date-time"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "assertions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["assembly_exactly_bound","bundle_exactly_bound","generic_assessment_validated","adapter_assessment_optional_evidence","permit_preexists_assessment","assessment_does_not_authorize","decision_reflects_generic_assessment"],
+      "properties": {
+        "assembly_exactly_bound": {"const": true},
+        "bundle_exactly_bound": {"const": true},
+        "generic_assessment_validated": {"const": true},
+        "adapter_assessment_optional_evidence": {"const": true},
+        "permit_preexists_assessment": {"const": true},
+        "assessment_does_not_authorize": {"const": true},
+        "decision_reflects_generic_assessment": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authorize_admitted","permit_consumed","execution_admitted","execute_phase_entered","action_performed","authority_created_or_expanded","approval_created","action_permit_created","availability_lifetime_extended","future_action_permission_created","runtime_state_transitioned"],
+      "properties": {
+        "authorize_admitted": {"const": false},
+        "permit_consumed": {"const": false},
+        "execution_admitted": {"const": false},
+        "execute_phase_entered": {"const": false},
+        "action_performed": {"const": false},
+        "authority_created_or_expanded": {"const": false},
+        "approval_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "availability_lifetime_extended": {"const": false},
+        "future_action_permission_created": {"const": false},
+        "runtime_state_transitioned": {"const": false}
+      }
+    },
+    "next_safe_action": {"enum": ["BIND_EXECUTION_LIFECYCLE_AUTHORIZE_PHASE","NONE"]},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
