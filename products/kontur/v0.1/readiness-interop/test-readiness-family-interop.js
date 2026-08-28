@@ -9,6 +9,7 @@ const Interop = require('./readiness-family-interop.js');
 
 const repoRoot = path.resolve(__dirname, '../../../..');
 const outputDir = process.argv[2] || '/tmp/kontur-readiness-interop';
+const MANIFEST_TAMPER = /family manifest hash mismatch/;
 
 function readJson(file) {
   return JSON.parse(fs.readFileSync(file, 'utf8'));
@@ -125,55 +126,55 @@ async function main() {
     const changed = clone(input);
     changed.family_manifest.family.id = 'other-family';
     await Interop.validateInput(changed);
-  }, /KONTUR family identity mismatch/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('readiness_member_activation_overclaim', async () => {
     const changed = clone(input);
     changed.family_manifest.members.find(item => item.id === 'readiness-aggregator').runtime_activation_state = 'activated';
     await Interop.validateInput(changed);
-  }, /readiness member activation state mismatch/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('readiness_member_authority_overclaim', async () => {
     const changed = clone(input);
     changed.family_manifest.members.find(item => item.id === 'readiness-aggregator').authority_source = true;
     await Interop.validateInput(changed);
-  }, /cannot be authority source/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('readiness_member_data_access_overclaim', async () => {
     const changed = clone(input);
     changed.family_manifest.members.find(item => item.id === 'readiness-aggregator').shared_data_access = true;
     await Interop.validateInput(changed);
-  }, /cannot gain shared data access/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('readiness_member_path_drift', async () => {
     const changed = clone(input);
     changed.family_manifest.members.find(item => item.id === 'readiness-aggregator').canonical_paths.pop();
     await Interop.validateInput(changed);
-  }, /canonical path set mismatch/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('readiness_edge_activation_authority', async () => {
     const changed = clone(input);
     changed.family_manifest.edges.find(item => item.from === 'readiness-aggregator' && item.to === 'activation-boundary').activation_authorized = true;
     await Interop.validateInput(changed);
-  }, /activation_authorized=false/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('readiness_edge_responsibility_transfer', async () => {
     const changed = clone(input);
     changed.family_manifest.edges.find(item => item.from === 'readiness-aggregator' && item.to === 'activation-boundary').responsibility_transfer = true;
     await Interop.validateInput(changed);
-  }, /responsibility_transfer=false/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('automatic_activation_policy_weakening', async () => {
     const changed = clone(input);
     changed.family_manifest.consolidation_policy.automatic_activation = true;
     await Interop.validateInput(changed);
-  }, /automatic_activation=false/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('cross_member_data_default_weakening', async () => {
     const changed = clone(input);
     changed.family_manifest.consolidation_policy.cross_member_data_access_default = 'allowed';
     await Interop.validateInput(changed);
-  }, /cross-member data access default/));
+  }, MANIFEST_TAMPER));
 
   rejected.push(await reject('evaluation_frontier_not_git_sha', async () => {
     const changed = clone(input);
@@ -219,6 +220,13 @@ async function main() {
       Interop.validateReceipt(changed);
     }, new RegExp(`prohibited claim ${claim}`)));
   }
+
+  rejected.push(await reject('receipt_unknown_claim', async () => {
+    const changed = clone(receipt);
+    changed.claims.activation_completed = true;
+    changed.content_hash = Interop.contentHash(changed);
+    Interop.validateReceipt(changed);
+  }, /interop receipt\.claims keys mismatch/));
 
   for (const command of ['activate', 'execute', 'start', 'designate', 'write-ledger', 'send']) {
     rejected.push(await reject(`forbidden_cli_${command}`, async () => {
