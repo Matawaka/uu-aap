@@ -30,9 +30,9 @@ reject('frontier_substitution', () => {
   Runtime.rehash(changed);
   Binding.validateReceiptAgainstInput(input, changed);
 });
-reject('family_summary_substitution', () => {
+reject('field_aggregate_substitution', () => {
   const changed = clone(receipt);
-  changed.family_review.canonical_path_count = 999;
+  changed.field_outcome_review.aggregates.attention_cue_count += 1;
   Runtime.rehash(changed);
   Binding.validateReceiptAgainstInput(input, changed);
 });
