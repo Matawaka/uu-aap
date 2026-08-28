@@ -1,0 +1,114 @@
+name: MarketCloser Application Boundary v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "applications/marketcloser/v0.1/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - ".github/workflows/marketcloser-application-boundary-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "applications/marketcloser/v0.1/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - ".github/workflows/marketcloser-application-boundary-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: 9d30ec25b64430235389526267c742ea37d36dba
+      PYTHONPYCACHEPREFIX: /tmp/marketcloser-boundary-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run Marketer Pessimist Product Contract
+        run: python products/marketer-pessimist/v0.1/validate_contract.py
+
+      - name: Re-run merged real-review intake predecessor
+        run: |
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-schema-runtime-parity.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-import-safe.js
+
+      - name: Check boundary validator syntax
+        run: python -m py_compile applications/marketcloser/v0.1/validate_boundary.py
+
+      - name: Validate MarketCloser application boundary
+        run: python applications/marketcloser/v0.1/validate_boundary.py
+
+      - name: Validate manifest against closed JSON Schema independently
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          base = Path('applications/marketcloser/v0.1')
+          schema = json.loads((base / 'application-boundary.schema.json').read_text(encoding='utf-8'))
+          manifest = json.loads((base / 'application-boundary.json').read_text(encoding='utf-8'))
+          Draft202012Validator(schema).validate(manifest)
+          print('PASS: application-boundary.json')
+          PY
+
+      - name: Guard synthetic-only repository example
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          case = json.loads(Path('applications/marketcloser/v0.1/examples/synthetic-boundary-case.json').read_text(encoding='utf-8'))
+          assert case['synthetic'] is True
+          assert case['source']['mode'] == 'synthetic_conformance'
+          assert case['source']['platform'].startswith('fictional-')
+          assert case['response_lifecycle']['publication_observed'] is False
+          assert case['response_lifecycle']['published_claimed'] is False
+          print('PASS: repository example remains synthetic and publication-unverified')
+          PY
+
+      - name: Guard no action surface in application profile
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          files = [
+              Path('applications/marketcloser/v0.1/application-boundary.json'),
+              Path('applications/marketcloser/v0.1/validate_boundary.py'),
+          ]
+          text = '\n'.join(p.read_text(encoding='utf-8') for p in files)
+          forbidden = [
+              'requests.post(',
+              'requests.put(',
+              'requests.patch(',
+              'urllib.request.urlopen(',
+              'subprocess.run(',
+              'subprocess.Popen(',
+              'os.system(',
+          ]
+          for token in forbidden:
+              assert token not in text, f'forbidden action surface: {token}'
+          print('PASS: application boundary has no network/action runtime surface')
+          PY
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
