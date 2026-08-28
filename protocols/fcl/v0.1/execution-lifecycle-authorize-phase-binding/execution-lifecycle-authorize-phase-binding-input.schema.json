@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/execution-lifecycle-authorize-phase-binding-input.schema.json",
+  "title": "FCL Execution Lifecycle Authorize Phase Binding Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "profile",
+    "binding_id",
+    "origin",
+    "assessment_input",
+    "generic_assessment",
+    "fcl_assessment_receipt",
+    "authorized_at"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "execution-lifecycle-authorize-phase-binding-v0.1"},
+    "binding_id": {"type": "string", "minLength": 1},
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "assessment_input": {"type": "object"},
+    "generic_assessment": {"type": "object"},
+    "fcl_assessment_receipt": {"type": "object"},
+    "authorized_at": {"type": "string", "format": "date-time"}
+  }
+}

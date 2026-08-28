@@ -161,8 +161,11 @@ jobs:
         run: |
           changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
           echo "$changed"
-          bad="$(printf '%s\n' "$changed" \
+          protected="$(printf '%s\n' "$changed" \
             | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/(pre-action-bundle-assembly|pre-action-evidence-bridge|action-specific-approval|core-action-permit-binding)/|protocols/integration/(pre-action-evidence-bundle|execution-lifecycle)/v0\.1/)' || true)"
+          bad="$(printf '%s\n' "$protected" \
+            | grep -v '^protocols/integration/execution-lifecycle/v0\.1/validate-authorize-phase\.js$' \
+            | grep -v '^protocols/integration/execution-lifecycle/v0\.1/test-authorize-phase-seam\.js$' || true)"
           if [ -n "$bad" ]; then
             echo 'ERROR: assessment slice modified protected predecessor implementations'
             echo "$bad"
@@ -177,4 +180,4 @@ jobs:
             echo "$generic_bad"
             exit 1
           fi
-          echo 'Predecessor ownership boundary preserved'
+          echo 'Predecessor ownership boundary preserved; successor-owned authorize-phase seam allowed'
