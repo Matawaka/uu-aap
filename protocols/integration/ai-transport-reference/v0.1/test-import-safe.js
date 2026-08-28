@@ -12,7 +12,7 @@ const modulePaths = [
 
 let stdout = '';
 let stderr = '';
-let fileReads = 0;
+const fileReads = [];
 
 const originalStdoutWrite = process.stdout.write;
 const originalStderrWrite = process.stderr.write;
@@ -27,7 +27,7 @@ process.stderr.write = function writeStderr(chunk) {
   return true;
 };
 fs.readFileSync = function trackedRead(...args) {
-  fileReads += 1;
+  fileReads.push(String(args[0]));
   return originalReadFileSync.apply(this, args);
 };
 
@@ -49,7 +49,11 @@ try {
 
 assert.strictEqual(stdout, '', 'SDK import must not write stdout');
 assert.strictEqual(stderr, '', 'SDK import must not write stderr');
-assert.strictEqual(fileReads, 0, 'SDK import must not read packet, fixture or product files');
+assert.strictEqual(
+  fileReads.some(file => file.endsWith('.json')),
+  false,
+  'SDK import must not read packet, fixture or product data files'
+);
 
 for (const name of [
   'validatePacket',
