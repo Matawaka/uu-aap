@@ -1,0 +1,61 @@
+{
+  "protocol": "MARKETCLOSER-DEPLOYMENT-OBSERVATION",
+  "version": "0.1",
+  "artifact_type": "MarketCloserDeploymentObservationInput",
+  "observation_id": "urn:uu-aap:marketcloser:deployment-observation:synthetic-001",
+  "boundary_binding": {
+    "application_id": "marketcloser",
+    "boundary_version": "0.1",
+    "boundary_hash": "sha256:143981c45d5a8cfa82261247325aef81da9686d5303ef9f696683ef6e5e9ee97",
+    "successor_frontier": "39af0064e71c545fd38edc65eacd073b7801f729"
+  },
+  "deployment": {
+    "url": "https://synthetic.marketcloser.invalid",
+    "supplied_by": "operator",
+    "independently_verified": false,
+    "reachability_verified": false
+  },
+  "observed_application": {
+    "application_id": "marketcloser",
+    "name": "MarketCloser",
+    "reported_version": "0.0.0-synthetic",
+    "reported_architecture_profile": "UU-AAP/T-inspired-synthetic",
+    "uu_aap_conformance_claimed": false
+  },
+  "source_artifact": {
+    "kind": "synthetic_conformance",
+    "artifact_ref": "urn:synthetic:marketcloser:deployment-audit:001",
+    "digest": {
+      "algorithm": "SHA-256",
+      "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "canonicalization_declared": false,
+      "canonicalization_profile": null,
+      "independently_attested": false
+    },
+    "private_material_committed": false
+  },
+  "observation": {
+    "method": "synthetic_conformance",
+    "observed_at": "2026-08-28T19:12:00Z",
+    "operator_supplied": true,
+    "independent": false,
+    "network_fetch_performed": false,
+    "dns_resolution_performed": false,
+    "artifact_deployment_binding_evidence_present": false,
+    "automatically_transmitted": false
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "network_access_available": false,
+    "dns_resolution_available": false,
+    "platform_mutation_available": false,
+    "external_publication_available": false,
+    "provider_invocation_available": false,
+    "action_permit_available": false,
+    "pilot_permit_available": false,
+    "execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:10e978f18e354bb73f062c7bc534fa28b1688759b32ce4c3f6e4d8b9ba1b366f"
+}
