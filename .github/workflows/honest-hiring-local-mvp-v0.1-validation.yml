@@ -1,0 +1,177 @@
+name: Честный найм Local Comparison MVP v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "products/honest-hiring/v0.1/local-mvp/**"
+      - "products/honest-hiring/v0.1/product-contract.json"
+      - "products/honest-hiring/v0.1/validate_contract.py"
+      - "products/freeshield/v0.1/product-contract.json"
+      - "products/freeshield/v0.1/validate_contract.py"
+      - "products/freeshield/v0.1/local-mvp/**"
+      - "schemas/product-contract/v0.1/**"
+      - ".github/workflows/honest-hiring-local-mvp-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "products/honest-hiring/v0.1/local-mvp/**"
+      - "products/honest-hiring/v0.1/product-contract.json"
+      - "products/freeshield/v0.1/local-mvp/**"
+      - ".github/workflows/honest-hiring-local-mvp-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: 239c14f0f0a28469a4cbff5d43fd8a8677f7832f
+      HONEST_HIRING_CONTRACT_HASH: sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae
+      FREESHIELD_CONTRACT_HASH: sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295
+      MVP_EXAMPLE: products/honest-hiring/v0.1/local-mvp/examples/synthetic-sap-data-platform-architect.input.json
+      MVP_RESULT: /tmp/honest-hiring-local-result.json
+      FREESHIELD_DEPENDENCY_RECEIPT: /tmp/freeshield-dependency-receipt.json
+      PYTHONPYCACHEPREFIX: /tmp/honest-hiring-local-mvp-pycache
+
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify successor origin and predecessor identities
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          hiring = json.loads(Path('products/honest-hiring/v0.1/product-contract.json').read_text(encoding='utf-8'))
+          freeshield = json.loads(Path('products/freeshield/v0.1/product-contract.json').read_text(encoding='utf-8'))
+          assert hiring['identity']['content_hash'] == os.environ['HONEST_HIRING_CONTRACT_HASH']
+          assert hiring['contract_id'] == 'honest-hiring-product-contract'
+          assert freeshield['identity']['content_hash'] == os.environ['FREESHIELD_CONTRACT_HASH']
+          assert freeshield['contract_id'] == 'freeshield-protective-contract'
+          print('PASS: exact Honest Hiring and FREESHIELD predecessor identities preserved')
+          PY
+
+      - name: Re-run canonical Honest Hiring Product Contract validator
+        run: python products/honest-hiring/v0.1/validate_contract.py
+
+      - name: Re-run canonical FREESHIELD Product Contract validator
+        run: python products/freeshield/v0.1/validate_contract.py
+
+      - name: Re-run FREESHIELD local MVP conformance
+        run: node products/freeshield/v0.1/local-mvp/test-protective-assessment.js "$FREESHIELD_DEPENDENCY_RECEIPT"
+
+      - name: Re-run FREESHIELD exact receipt/input binding
+        run: node products/freeshield/v0.1/local-mvp/test-receipt-binding.js
+
+      - name: Check Honest Hiring local MVP JavaScript syntax
+        run: |
+          node --check products/honest-hiring/v0.1/local-mvp/honest-hiring.js
+          node --check products/honest-hiring/v0.1/local-mvp/result-binding.js
+          node --check products/honest-hiring/v0.1/local-mvp/test-honest-hiring.js
+          node --check products/honest-hiring/v0.1/local-mvp/test-result-binding.js
+
+      - name: Validate committed fictional Hiring input
+        run: node products/honest-hiring/v0.1/local-mvp/honest-hiring.js validate "$MVP_EXAMPLE"
+
+      - name: Run Honest Hiring local comparison conformance
+        run: node products/honest-hiring/v0.1/local-mvp/test-honest-hiring.js
+
+      - name: Validate exact Honest Hiring result/input binding
+        run: node products/honest-hiring/v0.1/local-mvp/test-result-binding.js
+
+      - name: Validate schema/runtime parity
+        run: node products/honest-hiring/v0.1/local-mvp/test-schema-runtime-parity.js
+
+      - name: Validate import safety
+        run: node products/honest-hiring/v0.1/local-mvp/test-import-safe.js
+
+      - name: Generate canonical local comparison result
+        run: node products/honest-hiring/v0.1/local-mvp/honest-hiring.js compare "$MVP_EXAMPLE" > "$MVP_RESULT"
+
+      - name: Validate input, dependency and result JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          base = Path('products/honest-hiring/v0.1/local-mvp')
+          fsbase = Path('products/freeshield/v0.1/local-mvp')
+          input_data = json.loads(Path(os.environ['MVP_EXAMPLE']).read_text(encoding='utf-8'))
+          result_data = json.loads(Path(os.environ['MVP_RESULT']).read_text(encoding='utf-8'))
+
+          pairs = [
+              (base / 'input.schema.json', input_data, 'Honest Hiring input'),
+              (fsbase / 'input.schema.json', input_data['freeshield']['assessment_input'], 'FREESHIELD source input'),
+              (fsbase / 'receipt.schema.json', input_data['freeshield']['assessment_receipt'], 'FREESHIELD assessment receipt'),
+              (base / 'result.schema.json', result_data, 'Honest Hiring result'),
+              (base / 'requirement-receipt.schema.json', result_data['requirement_receipt'], 'Honest Hiring requirement receipt'),
+              (base / 'comparison-receipt.schema.json', result_data['comparison_receipt'], 'Honest Hiring comparison receipt'),
+          ]
+          for schema_path, data, label in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(data)
+              print(f'PASS: {label} validates against {schema_path}')
+          PY
+
+      - name: Validate CLI command boundary
+        run: |
+          node products/honest-hiring/v0.1/local-mvp/honest-hiring.js help
+          for cmd in rank score reject shortlist hire offer contact send schedule ats execute mutate publish; do
+            if node products/honest-hiring/v0.1/local-mvp/honest-hiring.js "$cmd" - >/tmp/honest-hiring.out 2>/tmp/honest-hiring.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "HONEST_HIRING_LOCAL_MVP_REJECTED" /tmp/honest-hiring.err
+          done
+
+      - name: Guard production runtime as local no-effect
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const files = [
+            'products/honest-hiring/v0.1/local-mvp/honest-hiring.js',
+            'products/honest-hiring/v0.1/local-mvp/result-binding.js'
+          ];
+          const text = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
+          const forbidden = [
+            'child_process',
+            "require('http')",
+            "require('https')",
+            'http.request',
+            'https.request',
+            'fetch(',
+            'XMLHttpRequest',
+            'WebSocket',
+            'writeFileSync',
+            'writeFile(',
+            'appendFile',
+            'execSync',
+            'spawnSync',
+            'OpenAI',
+            'Anthropic'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: Honest Hiring production MVP is deterministic local no-effect');
+          NODE
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
