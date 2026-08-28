@@ -1,0 +1,69 @@
+name: Matawaka Ecosystem Repository & Disclosure Registry v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/ecosystem/repository-registry/v0.1/**'
+      - 'docs/ecosystem/MATAWAKA-REPOSITORY-PORTFOLIO-DISCLOSURE-2026-08.ru.md'
+      - '.github/workflows/matawaka-ecosystem-repository-disclosure-registry-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'schemas/ecosystem/repository-registry/v0.1/**'
+      - 'docs/ecosystem/MATAWAKA-REPOSITORY-PORTFOLIO-DISCLOSURE-2026-08.ru.md'
+      - '.github/workflows/matawaka-ecosystem-repository-disclosure-registry-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate public-safe repository, disclosure and monetization decision plane
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate registry and fail-closed mutations
+        run: python schemas/ecosystem/repository-registry/v0.1/validate_registry.py --self-test
+
+      - name: Verify exact UU-AAP origin frontier
+        env:
+          ORIGIN_FRONTIER: 8ebb0e5a13089f6d43e499310a869102810577da
+          ORIGIN_TREE: cc3617f3318bbc6b61ae8bfe42ba0c25422f9b68
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          test "$(git show -s --format=%T "$ORIGIN_FRONTIER")" = "$ORIGIN_TREE"
+
+      - name: Prove public-only repository disclosure surface
+        run: |
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+          snapshot = json.loads(Path('schemas/ecosystem/repository-registry/v0.1/examples/public-repository-disclosure-registry.json').read_text())
+          doc = Path('docs/ecosystem/MATAWAKA-REPOSITORY-PORTFOLIO-DISCLOSURE-2026-08.ru.md').read_text()
+          allowed = {'Matawaka/uu-aap','Matawaka/marketcloser-public','Matawaka/vibe-coding-reality'}
+          assert {r['full_name'] for r in snapshot['repositories']} == allowed
+          refs = set(re.findall(r'Matawaka/[A-Za-z0-9_.-]+', doc))
+          assert refs <= allowed, refs - allowed
+          assert snapshot['coverage']['private_inventory_complete'] is False
+          assert snapshot['coverage']['private_repository_details_disclosed'] is False
+          assert snapshot['portfolio_decision']['private_project_publication_authorized'] is False
+          assert all(v is False for v in snapshot['non_effects'].values())
+          print('PASS: public-only disclosure surface; private portfolio remains undisclosed and unassessed')
+          PY
+
+      - name: Verify immutable checkout
+        run: test -z "$(git status --porcelain=v1)"
