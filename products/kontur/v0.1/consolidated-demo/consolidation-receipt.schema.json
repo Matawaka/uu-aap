@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/kontur/v0.1/consolidated-demo/consolidation-receipt.schema.json",
+  "title": "KONTURFamilyConsolidationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "receipt_type", "receipt_id", "source_input", "evaluation_frontier", "state", "family_review", "readiness_activation_review", "responsibility_lineage_review", "live_host_review", "game_companion_review", "pause_recovery_review", "field_outcome_review", "synthetic_demo_metrics", "claims", "non_effects", "next_safe_action", "content_hash"],
+  "properties": {
+    "protocol": {"const": "KONTUR-CONSOLIDATED-DEMO"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "KONTURFamilyConsolidationReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:family-consolidation:[0-9a-f]{24}$"},
+    "source_input": {"type": "object", "additionalProperties": false, "required": ["demo_id", "input_hash"], "properties": {"demo_id": {"type": "string"}, "input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}},
+    "evaluation_frontier": {"type": "object", "additionalProperties": false, "required": ["repository", "revision", "observed_at"], "properties": {"repository": {"const": "Matawaka/uu-aap"}, "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}, "observed_at": {"type": "string", "format": "date-time"}}},
+    "state": {"const": "CONSOLIDATION_CANDIDATE_READY"},
+    "family_review": {"type": "object"},
+    "readiness_activation_review": {"type": "object"},
+    "responsibility_lineage_review": {"type": "object"},
+    "live_host_review": {"type": "object"},
+    "game_companion_review": {"type": "object"},
+    "pause_recovery_review": {"$ref": "input.schema.json#/$defs/pauseRecovery"},
+    "field_outcome_review": {"$ref": "input.schema.json#/$defs/fieldOutcomes"},
+    "synthetic_demo_metrics": {"$ref": "input.schema.json#/$defs/metrics"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family_packet_complete", "all_six_members_bound", "member_roles_remain_distinct", "non_transfer_edges_preserved", "readiness_activation_separation_preserved", "kernel_ledger_lineage_reviewed", "live_host_boundary_preserved", "game_companion_chain_closed", "pause_recovery_boundary_preserved", "field_evidence_minimized", "measurable_demo_completed", "human_family_gate_still_required",
+        "family_activated", "production_ready", "activation_authorized", "activation_performed", "preflight_run", "kernel_activated", "responsibility_state_created", "responsibility_accepted", "ledger_mutated", "host_designated", "executor_bound", "runtime_started", "cross_member_data_access_admitted", "authority_created", "action_permit_created", "execution_admitted", "external_effect_performed", "live_response_generated", "proactive_message_sent", "background_activity_performed", "autonomous_gameplay_performed", "game_account_controlled", "behavioral_profile_built", "psychological_inference_performed", "attention_profile_built", "engagement_optimized", "stable_core_promotion_established", "successor_authority_created"
+      ],
+      "properties": {
+        "family_packet_complete": {"const": true}, "all_six_members_bound": {"const": true}, "member_roles_remain_distinct": {"const": true}, "non_transfer_edges_preserved": {"const": true}, "readiness_activation_separation_preserved": {"const": true}, "kernel_ledger_lineage_reviewed": {"const": true}, "live_host_boundary_preserved": {"const": true}, "game_companion_chain_closed": {"const": true}, "pause_recovery_boundary_preserved": {"const": true}, "field_evidence_minimized": {"const": true}, "measurable_demo_completed": {"const": true}, "human_family_gate_still_required": {"const": true},
+        "family_activated": {"const": false}, "production_ready": {"const": false}, "activation_authorized": {"const": false}, "activation_performed": {"const": false}, "preflight_run": {"const": false}, "kernel_activated": {"const": false}, "responsibility_state_created": {"const": false}, "responsibility_accepted": {"const": false}, "ledger_mutated": {"const": false}, "host_designated": {"const": false}, "executor_bound": {"const": false}, "runtime_started": {"const": false}, "cross_member_data_access_admitted": {"const": false}, "authority_created": {"const": false}, "action_permit_created": {"const": false}, "execution_admitted": {"const": false}, "external_effect_performed": {"const": false}, "live_response_generated": {"const": false}, "proactive_message_sent": {"const": false}, "background_activity_performed": {"const": false}, "autonomous_gameplay_performed": {"const": false}, "game_account_controlled": {"const": false}, "behavioral_profile_built": {"const": false}, "psychological_inference_performed": {"const": false}, "attention_profile_built": {"const": false}, "engagement_optimized": {"const": false}, "stable_core_promotion_established": {"const": false}, "successor_authority_created": {"const": false}
+      }
+    },
+    "non_effects": {"type": "array", "minItems": 14, "maxItems": 14, "uniqueItems": true, "items": {"type": "string"}},
+    "next_safe_action": {"const": "HUMAN_FAMILY_CONSOLIDATION_GATE_REQUIRED"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
