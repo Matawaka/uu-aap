@@ -1,0 +1,482 @@
+{
+  "protocol": "HONEST-HIRING-LOCAL-MVP",
+  "version": "0.1",
+  "artifact_type": "HonestHiringComparisonInput",
+  "input_id": "urn:uu-aap:honest-hiring:comparison-input:fictional-sap-data-platform-architect-002",
+  "contract_binding": {
+    "contract_id": "honest-hiring-product-contract",
+    "product_id": "honest-hiring",
+    "product_version": "0.1",
+    "content_hash": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae"
+  },
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "239c14f0f0a28469a4cbff5d43fd8a8677f7832f",
+    "observed_at": "2026-08-28T15:21:48Z"
+  },
+  "role": {
+    "role_id": "fictional-sap-data-platform-architect-001",
+    "role_title": "Fictional SAP Data Platform Architect",
+    "owner_role_id": "human-hiring-owner",
+    "validity_frontier": {
+      "repository": "Matawaka/uu-aap",
+      "revision": "239c14f0f0a28469a4cbff5d43fd8a8677f7832f",
+      "observed_at": "2026-08-28T15:21:48Z"
+    },
+    "tasks": [
+      "Design a maintainable SAP BW data architecture for a fictional enterprise analytics landscape.",
+      "Review and implement bounded ABAP-based extraction logic.",
+      "Produce written design and knowledge-transfer artifacts for human maintainers."
+    ],
+    "requirements": [
+      {
+        "requirement_id": "req-sap-bw-architecture",
+        "text": "Demonstrated SAP BW architecture experience relevant to enterprise analytics design.",
+        "owner_role_id": "human-hiring-owner",
+        "job_relevance_rationale": "The fictional role is responsible for SAP BW architecture decisions.",
+        "evidence_standard": "Candidate-supplied work history or work sample describing SAP BW architecture responsibility.",
+        "material": true,
+        "challengeable": true,
+        "accepted_evidence_kinds": [
+          "work_history",
+          "work_sample",
+          "candidate_explanation"
+        ]
+      },
+      {
+        "requirement_id": "req-abap-extraction",
+        "text": "Demonstrated ABAP data-extraction implementation experience.",
+        "owner_role_id": "human-hiring-owner",
+        "job_relevance_rationale": "The fictional role includes review and implementation of bounded ABAP extraction logic.",
+        "evidence_standard": "Candidate-supplied work history, work sample or skill evidence attributable to ABAP extraction work.",
+        "material": true,
+        "challengeable": true,
+        "accepted_evidence_kinds": [
+          "work_history",
+          "skill",
+          "work_sample",
+          "candidate_explanation"
+        ]
+      },
+      {
+        "requirement_id": "req-design-knowledge-transfer",
+        "text": "Ability to produce written design and knowledge-transfer artifacts.",
+        "owner_role_id": "human-hiring-owner",
+        "job_relevance_rationale": "The fictional role requires maintainable written design and handover to human teams.",
+        "evidence_standard": "Candidate-supplied work sample, certification context or explanation showing written design/knowledge-transfer practice.",
+        "material": true,
+        "challengeable": true,
+        "accepted_evidence_kinds": [
+          "work_sample",
+          "certification",
+          "candidate_explanation"
+        ]
+      }
+    ]
+  },
+  "candidate": {
+    "candidate_packet_id": "honest-hiring-fictional-comparison-002",
+    "fictional": true,
+    "evidence_items": [
+      {
+        "evidence_id": "ev-bw-architecture-sample",
+        "kind": "work_sample",
+        "status": "verified",
+        "data_class": "candidate-job-evidence",
+        "source_ref": "synthetic:fictional-bw-architecture-sample",
+        "provenance_ref": "synthetic-local-fixture",
+        "digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "submitted_for_requirement_ids": [
+          "req-sap-bw-architecture"
+        ],
+        "feature_tags": []
+      },
+      {
+        "evidence_id": "ev-abap-extraction-claim",
+        "kind": "skill",
+        "status": "unverified",
+        "data_class": "candidate-job-evidence",
+        "source_ref": "synthetic:fictional-candidate-declaration-abap",
+        "provenance_ref": "synthetic-local-fixture",
+        "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "submitted_for_requirement_ids": [
+          "req-abap-extraction"
+        ],
+        "feature_tags": []
+      },
+      {
+        "evidence_id": "ev-knowledge-transfer-unavailable",
+        "kind": "candidate_explanation",
+        "status": "unavailable",
+        "data_class": "candidate-job-evidence",
+        "source_ref": "synthetic:fictional-candidate-declared-unavailable",
+        "provenance_ref": "synthetic-local-fixture",
+        "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "submitted_for_requirement_ids": [
+          "req-design-knowledge-transfer"
+        ],
+        "feature_tags": []
+      }
+    ],
+    "claims": [
+      {
+        "claim_id": "claim-bw-architecture",
+        "text": "The fictional candidate states they designed SAP BW architecture for a prior fictional analytics program.",
+        "status": "verified",
+        "requirement_refs": [
+          "req-sap-bw-architecture"
+        ],
+        "evidence_refs": [
+          "ev-bw-architecture-sample"
+        ]
+      },
+      {
+        "claim_id": "claim-abap-extraction",
+        "text": "The fictional candidate states they implemented ABAP extraction logic.",
+        "status": "unverified",
+        "requirement_refs": [
+          "req-abap-extraction"
+        ],
+        "evidence_refs": [
+          "ev-abap-extraction-claim"
+        ]
+      },
+      {
+        "claim_id": "claim-knowledge-transfer",
+        "text": "The fictional candidate reports that a shareable written knowledge-transfer artifact is unavailable in this packet.",
+        "status": "unavailable",
+        "requirement_refs": [
+          "req-design-knowledge-transfer"
+        ],
+        "evidence_refs": [
+          "ev-knowledge-transfer-unavailable"
+        ]
+      }
+    ],
+    "declared_context": []
+  },
+  "review_constraints": {
+    "review_id": "fictional-hiring-review-002",
+    "allowed_data_classes": [
+      "role-requirement-data",
+      "candidate-job-evidence",
+      "candidate-declared-context-data",
+      "hiring-process-context",
+      "derived-job-relevance-map",
+      "protective-assessment-data"
+    ],
+    "prohibited_features": [
+      "protected_attribute",
+      "protected_attribute_proxy",
+      "personality",
+      "emotion",
+      "deception",
+      "health",
+      "disability",
+      "psychological_state",
+      "social_profile",
+      "behavioral_biometrics",
+      "interaction_latency",
+      "unrelated_personal_history",
+      "hidden_third_party_data",
+      "cross_context_correlation"
+    ],
+    "global_ranking_allowed": false,
+    "external_effects_allowed": false,
+    "challenge_supported": true,
+    "employment_decision_in_scope": false,
+    "cross_context_correlation_allowed": false
+  },
+  "freeshield": {
+    "assessment_input": {
+      "protocol": "FREESHIELD-LOCAL-MVP",
+      "version": "0.1",
+      "artifact_type": "FreeShieldProtectiveAssessmentInput",
+      "input_id": "urn:uu-aap:freeshield:protective-input:honest-hiring-fictional-comparison-002",
+      "contract_binding": {
+        "contract_id": "freeshield-protective-contract",
+        "product_id": "freeshield",
+        "product_version": "0.1",
+        "content_hash": "sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295"
+      },
+      "consumer_binding": {
+        "product_id": "honest-hiring",
+        "product_version": "0.1",
+        "product_contract_hash": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+        "authority_transfer": false,
+        "responsibility_transfer": false
+      },
+      "evaluation_frontier": {
+        "repository": "Matawaka/uu-aap",
+        "revision": "239c14f0f0a28469a4cbff5d43fd8a8677f7832f",
+        "observed_at": "2026-08-28T15:21:48Z"
+      },
+      "candidate": {
+        "candidate_id": "honest-hiring-fictional-comparison-002",
+        "candidate_kind": "fictional_hiring_comparison_packet",
+        "operation_class": "local_human_review_analysis",
+        "target_ref": "urn:uu-aap:local:honest-hiring:comparison:002",
+        "payload_digest": "sha256:bbf4a7838b400efc23b856eb94a2bdeeab99669a31013e37eb24b23b8ac45ab8",
+        "intended_outcome": "Prepare one fictional requirement-by-requirement comparison candidate for local human review without an employment decision.",
+        "declared_scope": [
+          "fictional-role-requirement-comparison",
+          "human-review-packet-preparation"
+        ],
+        "analysis_only": true,
+        "external_effect_requested": false,
+        "evidence_refs": [
+          "comparison-packet-digest",
+          "honest-hiring-contract",
+          "review-constraints",
+          "current-frontier"
+        ]
+      },
+      "authority": {
+        "request_owner_role_id": "human-hiring-owner",
+        "authority_scope": [
+          "fictional-role-requirement-comparison",
+          "human-review-packet-preparation"
+        ],
+        "authority_evidence_refs": [
+          "honest-hiring-contract"
+        ],
+        "authority_lineage_complete": true,
+        "action_permit_ref": null
+      },
+      "evidence": [
+        {
+          "id": "honest-hiring-contract",
+          "data_class": "contract-authority-bundle",
+          "quality": "verified",
+          "source_ref": "products/honest-hiring/v0.1/product-contract.json",
+          "provenance_ref": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+          "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "observed_at": "2026-08-28T15:21:48Z",
+          "applicable_scope": [
+            "fictional-role-requirement-comparison",
+            "human-review-packet-preparation"
+          ]
+        },
+        {
+          "id": "comparison-packet-digest",
+          "data_class": "candidate-envelope",
+          "quality": "verified",
+          "source_ref": "synthetic:honest-hiring-comparison-packet-002",
+          "provenance_ref": "synthetic-local-fixture",
+          "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "observed_at": "2026-08-28T15:21:48Z",
+          "applicable_scope": [
+            "fictional-role-requirement-comparison"
+          ]
+        },
+        {
+          "id": "review-constraints",
+          "data_class": "constraint-bundle",
+          "quality": "verified",
+          "source_ref": "synthetic:honest-hiring-review-constraints-002",
+          "provenance_ref": "synthetic-local-fixture",
+          "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+          "observed_at": "2026-08-28T15:21:48Z",
+          "applicable_scope": [
+            "fictional-role-requirement-comparison",
+            "human-review-packet-preparation"
+          ]
+        },
+        {
+          "id": "current-frontier",
+          "data_class": "frontier-state",
+          "quality": "verified",
+          "source_ref": "git:239c14f0f0a28469a4cbff5d43fd8a8677f7832f",
+          "provenance_ref": "repository-observation",
+          "digest": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+          "observed_at": "2026-08-28T15:21:48Z",
+          "applicable_scope": [
+            "fictional-role-requirement-comparison",
+            "human-review-packet-preparation"
+          ]
+        }
+      ],
+      "constraints": [
+        {
+          "id": "no-external-hiring-effect",
+          "source_ref": "honest-hiring-product-boundary",
+          "scope": [
+            "fictional-role-requirement-comparison",
+            "human-review-packet-preparation"
+          ],
+          "statement": "The protective review may support local analysis only and must not make or execute an employment decision.",
+          "disposition": "none",
+          "evidence_refs": [
+            "honest-hiring-contract",
+            "review-constraints"
+          ]
+        }
+      ],
+      "frontier_observation": {
+        "state_id": "git-main-after-pr-596",
+        "observer_role_id": "repository-observer",
+        "observed_at": "2026-08-28T15:21:48Z",
+        "quality": "verified",
+        "digest": "sha256:8888888888888888888888888888888888888888888888888888888888888888"
+      },
+      "controls": {
+        "local_only": true,
+        "read_only": true,
+        "network_access_required": false,
+        "filesystem_write_required": false,
+        "provider_invocation_available": false,
+        "actuator_control_available": false,
+        "authority_creation_available": false,
+        "responsibility_acceptance_available": false,
+        "action_permit_creation_available": false,
+        "execution_available": false,
+        "external_effect_available": false,
+        "automatic_retry": false
+      },
+      "content_hash": "sha256:244b5aaafaf04fde9cbc5516bed1d35dfc2c817ea4a6c404af521d6ba98b4ba5"
+    },
+    "assessment_receipt": {
+      "protocol": "FREESHIELD-LOCAL-MVP",
+      "version": "0.1",
+      "receipt_type": "FreeShieldProtectiveAssessmentReceipt",
+      "receipt_id": "urn:uu-aap:freeshield:protective-receipt:27370bb22ab442dd5143395b",
+      "contract_binding": {
+        "contract_id": "freeshield-protective-contract",
+        "product_id": "freeshield",
+        "product_version": "0.1",
+        "content_hash": "sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295"
+      },
+      "consumer_binding": {
+        "product_id": "honest-hiring",
+        "product_version": "0.1",
+        "product_contract_hash": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+        "authority_transfer": false,
+        "responsibility_transfer": false
+      },
+      "evaluation_frontier": {
+        "repository": "Matawaka/uu-aap",
+        "revision": "239c14f0f0a28469a4cbff5d43fd8a8677f7832f",
+        "observed_at": "2026-08-28T15:21:48Z"
+      },
+      "source_input": {
+        "input_id": "urn:uu-aap:freeshield:protective-input:honest-hiring-fictional-comparison-002",
+        "input_hash": "sha256:244b5aaafaf04fde9cbc5516bed1d35dfc2c817ea4a6c404af521d6ba98b4ba5"
+      },
+      "state": "ASSESSMENT_READY",
+      "candidate_summary": {
+        "candidate_id": "honest-hiring-fictional-comparison-002",
+        "candidate_kind": "fictional_hiring_comparison_packet",
+        "operation_class": "local_human_review_analysis",
+        "analysis_only": true,
+        "external_effect_requested": false,
+        "payload_digest": "sha256:bbf4a7838b400efc23b856eb94a2bdeeab99669a31013e37eb24b23b8ac45ab8"
+      },
+      "authority_findings": {
+        "authority_lineage_complete": true,
+        "scope_covered": true,
+        "action_permit_present": false,
+        "authority_created": false,
+        "authority_expanded": false
+      },
+      "evidence_findings": {
+        "verified_ids": [
+          "comparison-packet-digest",
+          "current-frontier",
+          "honest-hiring-contract",
+          "review-constraints"
+        ],
+        "unverified_ids": [],
+        "stale_ids": [],
+        "conflicting_ids": [],
+        "frontier_quality": "verified",
+        "missing_required_evidence": false
+      },
+      "scope_findings": {
+        "declared_scope": [
+          "fictional-role-requirement-comparison",
+          "human-review-packet-preparation"
+        ],
+        "uncovered_scope": [],
+        "scope_bound": true
+      },
+      "risk_hypotheses": [],
+      "protective_outcome": {
+        "outcome": "ALLOW_ANALYSIS",
+        "status": "candidate",
+        "reason_codes": [
+          "EXACT_LOCAL_ANALYSIS_BOUNDARY_SATISFIED"
+        ],
+        "human_disposition_required": true
+      },
+      "reconciliation_candidate": {
+        "required": false,
+        "owner_role_id": "human-protection-owner",
+        "reason_codes": []
+      },
+      "claims": {
+        "protective_assessment_completed": true,
+        "exact_contract_bound": true,
+        "consumer_binding_preserved": true,
+        "evidence_lineage_preserved": true,
+        "uncertainty_preserved": true,
+        "human_disposition_required": true,
+        "truth_certified": false,
+        "harm_proven": false,
+        "intent_inferred": false,
+        "liability_established": false,
+        "global_prohibition_created": false,
+        "sanction_created": false,
+        "blacklist_entry_created": false,
+        "account_blocked": false,
+        "candidate_rejected": false,
+        "employment_decision_made": false,
+        "human_disposition_recorded": false,
+        "actuator_blocked": false,
+        "external_system_mutated": false,
+        "authority_created": false,
+        "authority_expanded": false,
+        "responsibility_accepted": false,
+        "action_permit_created": false,
+        "execution_admitted": false,
+        "provider_invoked": false,
+        "network_delivery_performed": false,
+        "external_effect_performed": false,
+        "stable_core_promotion_established": false,
+        "successor_authority_created": false
+      },
+      "non_effects": [
+        "Protective Review != Authority",
+        "Protective Assessment != ActionPermit",
+        "Risk Hypothesis != Proof of Harm",
+        "BLOCK_EFFECT != Global Prohibition",
+        "Scope Narrowing != Product Ownership",
+        "Human Review Requirement != Negative Judgment",
+        "Missing Evidence != Evidence of Safety or Harm",
+        "Protective Outcome != Legal Judgment",
+        "Protective Assessment != Sanction or Blacklist",
+        "Available Evidence != Permission to Inspect",
+        "ALLOW_ANALYSIS != Execution Admission",
+        "Accepted Protective Assessment != Execution Authority"
+      ],
+      "next_safe_action": "HUMAN_PROTECTIVE_DISPOSITION_REQUIRED",
+      "content_hash": "sha256:9a3a23d2f50528e42bf01ea5402b95df9dbfc94e377c2e6d77247c1f20ce781b"
+    }
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "network_access_required": false,
+    "filesystem_write_required": false,
+    "provider_invocation_available": false,
+    "ats_mutation_available": false,
+    "communication_available": false,
+    "global_ranking_available": false,
+    "employment_decision_available": false,
+    "human_disposition_available": false,
+    "action_permit_creation_available": false,
+    "execution_available": false,
+    "external_effect_available": false,
+    "automatic_retry": false
+  },
+  "content_hash": "sha256:27e119233e2f84f074531da297e22d317edea104838563497663a05af2c40e3c"
+}
