@@ -66,10 +66,10 @@ jobs:
           node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
           node protocols/integration/execution-capability-availability/v0.1/test-parameterized-validator.js
 
-      - name: Re-run FCL reconciliation and approval sources
+      - name: Bound predecessor replay ownership
         run: |
-          node protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/test-pre-action-evidence-contract-reconciliation.js
-          node protocols/fcl/v0.1/action-specific-approval/test-action-specific-approval.js
+          echo 'Reconciliation and approval conformance are replayed once inside the bridge suite.'
+          echo 'Their dedicated fan-out workflows also run independently on this PR.'
 
       - name: Preserve historical PreAction behavior
         run: |
@@ -78,6 +78,7 @@ jobs:
           node protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
 
       - name: Run FCL bridge conformance
+        timeout-minutes: 2
         run: |
           node --check protocols/fcl/v0.1/pre-action-evidence-bridge/pre-action-evidence-bridge.js
           node --check protocols/fcl/v0.1/pre-action-evidence-bridge/test-pre-action-evidence-bridge.js
