@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/kontur/v0.1/consolidated-demo/input.schema.json",
+  "title": "KONTURConsolidatedDemoInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "artifact_type", "demo_id", "evaluation_frontier", "family_binding", "component_reviews", "pause_recovery", "field_outcomes", "metrics", "controls", "content_hash"],
+  "properties": {
+    "protocol": {"const": "KONTUR-CONSOLIDATED-DEMO"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "KONTURConsolidatedDemoInput"},
+    "demo_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:consolidated-demo:"},
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "family_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_contract_hash", "family_manifest_path", "family_manifest_hash"],
+      "properties": {
+        "product_contract_hash": {"const": "sha256:21597d591cc4fbe2974c8ac63d669c79158734336c6c64f8ba6a91602835b1b5"},
+        "family_manifest_path": {"const": "products/kontur/v0.1/family-manifest.json"},
+        "family_manifest_hash": {"const": "sha256:90da81f7c33f44f34410790e9269bf8b05a5ad47db596437b214b8301701a5a1"}
+      }
+    },
+    "component_reviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readiness", "activation", "kernel", "ledger", "live_host", "game_companion"],
+      "properties": {
+        "readiness": {"$ref": "#/$defs/readinessReview"},
+        "activation": {"$ref": "#/$defs/activationReview"},
+        "kernel": {"$ref": "#/$defs/kernelReview"},
+        "ledger": {"$ref": "#/$defs/ledgerReview"},
+        "live_host": {"$ref": "#/$defs/liveHostReview"},
+        "game_companion": {"$ref": "#/$defs/gameCompanionReview"}
+      }
+    },
+    "pause_recovery": {"$ref": "#/$defs/pauseRecovery"},
+    "field_outcomes": {"$ref": "#/$defs/fieldOutcomes"},
+    "metrics": {"$ref": "#/$defs/metrics"},
+    "controls": {"$ref": "#/$defs/controls"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "readinessReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["member_id", "conformance_status", "readiness_evidence_available", "activation_authorized", "human_activation_step_required"],
+      "properties": {"member_id": {"const": "readiness-aggregator"}, "conformance_status": {"const": "PASS"}, "readiness_evidence_available": {"const": true}, "activation_authorized": {"const": false}, "human_activation_step_required": {"const": true}}
+    },
+    "activationReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["member_id", "conformance_status", "human_review_required", "preflight_run", "activation_performed"],
+      "properties": {"member_id": {"const": "activation-boundary"}, "conformance_status": {"const": "PASS"}, "human_review_required": {"const": true}, "preflight_run": {"const": false}, "activation_performed": {"const": false}}
+    },
+    "kernelReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["member_id", "conformance_status", "structural_lineage_reviewed", "kernel_activated", "responsibility_accepted"],
+      "properties": {"member_id": {"const": "responsibility-kernel"}, "conformance_status": {"const": "PASS"}, "structural_lineage_reviewed": {"const": true}, "kernel_activated": {"const": false}, "responsibility_accepted": {"const": false}}
+    },
+    "ledgerReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["member_id", "conformance_status", "append_only_continuity_reviewed", "recovery_lineage_reviewed", "ledger_mutated"],
+      "properties": {"member_id": {"const": "responsibility-ledger"}, "conformance_status": {"const": "PASS"}, "append_only_continuity_reviewed": {"const": true}, "recovery_lineage_reviewed": {"const": true}, "ledger_mutated": {"const": false}}
+    },
+    "liveHostReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["member_id", "conformance_status", "observation_designation_separation_preserved", "designation_binding_separation_preserved", "binding_activation_separation_preserved", "host_designated", "executor_bound"],
+      "properties": {"member_id": {"const": "live-host-boundary"}, "conformance_status": {"const": "PASS"}, "observation_designation_separation_preserved": {"const": true}, "designation_binding_separation_preserved": {"const": true}, "binding_activation_separation_preserved": {"const": true}, "host_designated": {"const": false}, "executor_bound": {"const": false}}
+    },
+    "gameCompanionReview": {
+      "type": "object", "additionalProperties": false,
+      "required": ["member_id", "conformance_status", "chain_path", "layer_ids", "chain_closed", "pilot_evidence_only"],
+      "properties": {
+        "member_id": {"const": "game-companion"}, "conformance_status": {"const": "PASS"},
+        "chain_path": {"const": "pilots/kontur-game-companion/dependency-contract/game-companion-chain.json"},
+        "layer_ids": {"const": ["observational-lane", "assistance-gate", "shared-discovery-memory", "bounded-initiative", "focus-diversity", "interaction-receipt", "pause-resume"]},
+        "chain_closed": {"const": true}, "pilot_evidence_only": {"const": true}
+      }
+    },
+    "pauseRecovery": {
+      "type": "object", "additionalProperties": false,
+      "required": ["measurement_class", "sequence", "background_activity_during_pause", "pause_creates_successor_authority", "resume_creates_successor_authority", "minimal_state_resume"],
+      "properties": {
+        "measurement_class": {"const": "synthetic_pause_recovery_demo"},
+        "sequence": {"const": ["ACTIVE_LOCAL_REVIEW", "PAUSE_REQUESTED", "PAUSED_NO_BACKGROUND_ACTIVITY", "RESUME_FROM_MINIMAL_STATE", "LOCAL_REVIEW_RESUMED"]},
+        "background_activity_during_pause": {"const": false}, "pause_creates_successor_authority": {"const": false}, "resume_creates_successor_authority": {"const": false}, "minimal_state_resume": {"const": true}
+      }
+    },
+    "fieldOutcomes": {
+      "type": "object", "additionalProperties": false,
+      "required": ["measurement_class", "record_count", "aggregates", "excluded_data"],
+      "properties": {
+        "measurement_class": {"const": "synthetic_privacy_minimized_demo"}, "record_count": {"type": "integer", "minimum": 1},
+        "aggregates": {"type": "object", "additionalProperties": false, "required": ["bounded_assistance_opportunity_count", "attention_cue_count", "pause_count", "resume_count", "explicit_human_interruption_count"], "properties": {"bounded_assistance_opportunity_count": {"type": "integer", "minimum": 0}, "attention_cue_count": {"type": "integer", "minimum": 0}, "pause_count": {"type": "integer", "minimum": 0}, "resume_count": {"type": "integer", "minimum": 0}, "explicit_human_interruption_count": {"type": "integer", "minimum": 0}}},
+        "excluded_data": {"type": "object", "additionalProperties": false, "required": ["raw_game_history", "transcripts", "identity_correlation", "behavioral_profile", "psychological_profile", "mood_profile", "attention_profile", "engagement_optimization", "cross_game_preference_profile", "total_history_capture"], "properties": {"raw_game_history": {"const": false}, "transcripts": {"const": false}, "identity_correlation": {"const": false}, "behavioral_profile": {"const": false}, "psychological_profile": {"const": false}, "mood_profile": {"const": false}, "attention_profile": {"const": false}, "engagement_optimization": {"const": false}, "cross_game_preference_profile": {"const": false}, "total_history_capture": {"const": false}}}
+      }
+    },
+    "metrics": {
+      "type": "object", "additionalProperties": false,
+      "required": ["measurement_class", "family_member_count", "established_edge_count", "planned_edge_count", "canonical_path_count", "game_companion_layer_count", "human_gate_count", "human_interruption_count", "pause_event_count", "resume_event_count", "network_call_count", "filesystem_write_count", "external_effect_count", "runtime_start_count", "ledger_mutation_count", "host_designation_count"],
+      "properties": {
+        "measurement_class": {"const": "synthetic_demo_metrics"}, "family_member_count": {"const": 6}, "established_edge_count": {"const": 4}, "planned_edge_count": {"const": 2}, "canonical_path_count": {"type": "integer", "minimum": 1}, "game_companion_layer_count": {"const": 7}, "human_gate_count": {"const": 3}, "human_interruption_count": {"type": "integer", "minimum": 1}, "pause_event_count": {"type": "integer", "minimum": 1}, "resume_event_count": {"type": "integer", "minimum": 1}, "network_call_count": {"const": 0}, "filesystem_write_count": {"const": 0}, "external_effect_count": {"const": 0}, "runtime_start_count": {"const": 0}, "ledger_mutation_count": {"const": 0}, "host_designation_count": {"const": 0}
+      }
+    },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["local_only", "read_only", "network_access_required", "filesystem_write_required", "activation_available", "host_designation_available", "ledger_write_available", "runtime_start_available", "background_activity_available", "action_permit_available", "execution_available", "external_effect_available"],
+      "properties": {"local_only": {"const": true}, "read_only": {"const": true}, "network_access_required": {"const": false}, "filesystem_write_required": {"const": false}, "activation_available": {"const": false}, "host_designation_available": {"const": false}, "ledger_write_available": {"const": false}, "runtime_start_available": {"const": false}, "background_activity_available": {"const": false}, "action_permit_available": {"const": false}, "execution_available": {"const": false}, "external_effect_available": {"const": false}}
+    }
+  }
+}

@@ -1,0 +1,172 @@
+name: KONTUR Consolidated Measurable Demo v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "products/kontur/v0.1/consolidated-demo/**"
+      - "products/kontur/v0.1/family-manifest.json"
+      - "products/kontur/v0.1/product-contract.json"
+      - "products/kontur/v0.1/readiness-interop/**"
+      - "server/kontur/v0.1/**"
+      - "pilots/kontur-game-companion/dependency-contract/**"
+      - "pilots/kontur-game-companion/pause-resume/**"
+      - ".github/workflows/kontur-consolidated-demo-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "products/kontur/v0.1/consolidated-demo/**"
+      - "products/kontur/v0.1/family-manifest.json"
+      - "products/kontur/v0.1/product-contract.json"
+      - "products/kontur/v0.1/readiness-interop/**"
+      - "server/kontur/v0.1/**"
+      - "pilots/kontur-game-companion/dependency-contract/**"
+      - "pilots/kontur-game-companion/pause-resume/**"
+      - ".github/workflows/kontur-consolidated-demo-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: 0f284779a51a2161d3300384586b375ecffd870a
+      DEMO_INPUT: products/kontur/v0.1/consolidated-demo/examples/phase-d-synthetic.input.json
+      DEMO_RECEIPT: /tmp/kontur-family-consolidation-receipt.json
+      READINESS_OUTPUT: /tmp/kontur-consolidated-readiness
+      PYTHONPYCACHEPREFIX: /tmp/kontur-consolidated-demo-pycache
+
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run KONTUR Product Family Contract validation
+        run: python products/kontur/v0.1/validate_contract.py
+
+      - name: Re-run KONTUR Readiness Aggregator
+        run: node server/kontur/v0.1/test-readiness-aggregator.js "$READINESS_OUTPUT"
+
+      - name: Re-run KONTUR Family Readiness Interop
+        run: node products/kontur/v0.1/readiness-interop/test-readiness-family-interop.js "$READINESS_OUTPUT"
+
+      - name: Re-run KONTUR Responsibility Kernel
+        run: node server/kontur/v0.1/test-responsibility-kernel.js
+
+      - name: Re-run KONTUR Responsibility Ledger
+        run: node server/kontur/v0.1/test-responsibility-ledger.js
+
+      - name: Check activation preflight boundary syntax
+        run: node --check server/kontur/v0.1/activation-preflight.js
+
+      - name: Re-run Game Companion dependency contract
+        run: python pilots/kontur-game-companion/dependency-contract/validate.py
+
+      - name: Re-run Game Companion pause-resume validation
+        run: python pilots/kontur-game-companion/pause-resume/validate.py
+
+      - name: Check consolidated demo JavaScript syntax
+        run: |
+          node --check products/kontur/v0.1/consolidated-demo/kontur-consolidated-demo.js
+          node --check products/kontur/v0.1/consolidated-demo/receipt-binding.js
+          node --check products/kontur/v0.1/consolidated-demo/test-kontur-consolidated-demo.js
+          node --check products/kontur/v0.1/consolidated-demo/test-receipt-binding.js
+
+      - name: Validate canonical demo input
+        run: node products/kontur/v0.1/consolidated-demo/kontur-consolidated-demo.js validate "$DEMO_INPUT"
+
+      - name: Run consolidated demo conformance
+        run: node products/kontur/v0.1/consolidated-demo/test-kontur-consolidated-demo.js
+
+      - name: Validate exact consolidation receipt/source binding
+        run: node products/kontur/v0.1/consolidated-demo/test-receipt-binding.js
+
+      - name: Validate schema/runtime parity
+        run: node products/kontur/v0.1/consolidated-demo/test-schema-runtime-parity.js
+
+      - name: Validate import safety
+        run: node products/kontur/v0.1/consolidated-demo/test-import-safe.js
+
+      - name: Generate canonical consolidation receipt
+        run: node products/kontur/v0.1/consolidated-demo/kontur-consolidated-demo.js consolidate "$DEMO_INPUT" > "$DEMO_RECEIPT"
+
+      - name: Validate input and receipt JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          from referencing import Registry, Resource
+
+          base = Path('products/kontur/v0.1/consolidated-demo')
+          input_schema = json.loads((base / 'input.schema.json').read_text(encoding='utf-8'))
+          receipt_schema = json.loads((base / 'consolidation-receipt.schema.json').read_text(encoding='utf-8'))
+          input_data = json.loads(Path(os.environ['DEMO_INPUT']).read_text(encoding='utf-8'))
+          receipt_data = json.loads(Path(os.environ['DEMO_RECEIPT']).read_text(encoding='utf-8'))
+
+          Draft202012Validator(input_schema, format_checker=FormatChecker()).validate(input_data)
+          registry = Registry().with_resource(input_schema['$id'], Resource.from_contents(input_schema))
+          Draft202012Validator(receipt_schema, registry=registry, format_checker=FormatChecker()).validate(receipt_data)
+          print('PASS: KONTUR consolidated demo input and receipt schemas')
+          PY
+
+      - name: Validate CLI command boundary
+        run: |
+          node products/kontur/v0.1/consolidated-demo/kontur-consolidated-demo.js help
+          for cmd in activate start run execute write-ledger designate-host bind-executor message play mutate promote; do
+            if node products/kontur/v0.1/consolidated-demo/kontur-consolidated-demo.js "$cmd" - >/tmp/kontur-demo.out 2>/tmp/kontur-demo.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "KONTUR_CONSOLIDATED_DEMO_REJECTED" /tmp/kontur-demo.err
+          done
+
+      - name: Guard production surface as local read-only
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const files = [
+            'products/kontur/v0.1/consolidated-demo/kontur-consolidated-demo.js',
+            'products/kontur/v0.1/consolidated-demo/receipt-binding.js'
+          ];
+          const text = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
+          const forbidden = [
+            'child_process',
+            "require('http')",
+            "require('https')",
+            'http.request',
+            'https.request',
+            'fetch(',
+            'XMLHttpRequest',
+            'WebSocket',
+            'writeFileSync',
+            'writeFile(',
+            'appendFile',
+            'execSync',
+            'spawnSync'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: KONTUR consolidated demo production surface is local read-only');
+          NODE
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
