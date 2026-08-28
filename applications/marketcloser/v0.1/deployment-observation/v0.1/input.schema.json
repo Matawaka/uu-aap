@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/deployment-observation/v0.1/input.schema.json",
+  "title": "MarketCloserDeploymentObservationInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","artifact_type","observation_id","boundary_binding","deployment","observed_application","source_artifact","observation","controls","content_hash"],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-DEPLOYMENT-OBSERVATION"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserDeploymentObservationInput"},
+    "observation_id": {"type":"string","pattern":"^urn:uu-aap:marketcloser:deployment-observation:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "boundary_binding": {
+      "type":"object","additionalProperties":false,
+      "required":["application_id","boundary_version","boundary_hash","successor_frontier"],
+      "properties": {
+        "application_id":{"const":"marketcloser"},
+        "boundary_version":{"const":"0.1"},
+        "boundary_hash":{"const":"sha256:143981c45d5a8cfa82261247325aef81da9686d5303ef9f696683ef6e5e9ee97"},
+        "successor_frontier":{"const":"39af0064e71c545fd38edc65eacd073b7801f729"}
+      }
+    },
+    "deployment": {
+      "type":"object","additionalProperties":false,
+      "required":["url","supplied_by","independently_verified","reachability_verified"],
+      "properties": {
+        "url":{"type":"string","format":"uri","pattern":"^https://"},
+        "supplied_by":{"const":"operator"},
+        "independently_verified":{"const":false},
+        "reachability_verified":{"const":false}
+      }
+    },
+    "observed_application": {
+      "type":"object","additionalProperties":false,
+      "required":["application_id","name","reported_version","reported_architecture_profile","uu_aap_conformance_claimed"],
+      "properties": {
+        "application_id":{"const":"marketcloser"},
+        "name":{"const":"MarketCloser"},
+        "reported_version":{"type":"string","minLength":1},
+        "reported_architecture_profile":{"type":"string","minLength":1},
+        "uu_aap_conformance_claimed":{"const":false}
+      }
+    },
+    "source_artifact": {
+      "type":"object","additionalProperties":false,
+      "required":["kind","artifact_ref","digest","private_material_committed"],
+      "properties": {
+        "kind":{"enum":["audit_export","metadata_export","synthetic_conformance"]},
+        "artifact_ref":{"type":"string","minLength":1},
+        "digest": {
+          "type":"object","additionalProperties":false,
+          "required":["algorithm","value","canonicalization_declared","canonicalization_profile","independently_attested"],
+          "properties": {
+            "algorithm":{"const":"SHA-256"},
+            "value":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+            "canonicalization_declared":{"type":"boolean"},
+            "canonicalization_profile":{"type":["string","null"]},
+            "independently_attested":{"const":false}
+          },
+          "allOf":[
+            {"if":{"properties":{"canonicalization_declared":{"const":false}}},"then":{"properties":{"canonicalization_profile":{"type":"null"}}}},
+            {"if":{"properties":{"canonicalization_declared":{"const":true}}},"then":{"properties":{"canonicalization_profile":{"type":"string","minLength":1}}}}
+          ]
+        },
+        "private_material_committed":{"const":false}
+      }
+    },
+    "observation": {
+      "type":"object","additionalProperties":false,
+      "required":["method","observed_at","operator_supplied","independent","network_fetch_performed","dns_resolution_performed","artifact_deployment_binding_evidence_present","automatically_transmitted"],
+      "properties": {
+        "method":{"enum":["synthetic_conformance","manual_operator_sharing"]},
+        "observed_at":{"type":"string","format":"date-time"},
+        "operator_supplied":{"const":true},
+        "independent":{"const":false},
+        "network_fetch_performed":{"const":false},
+        "dns_resolution_performed":{"const":false},
+        "artifact_deployment_binding_evidence_present":{"const":false},
+        "automatically_transmitted":{"const":false}
+      }
+    },
+    "controls": {
+      "type":"object","additionalProperties":false,
+      "required":["local_only","read_only","network_access_available","dns_resolution_available","platform_mutation_available","external_publication_available","provider_invocation_available","action_permit_available","pilot_permit_available","execution_available","external_effect_available"],
+      "properties": {
+        "local_only":{"const":true},"read_only":{"const":true},
+        "network_access_available":{"const":false},"dns_resolution_available":{"const":false},
+        "platform_mutation_available":{"const":false},"external_publication_available":{"const":false},
+        "provider_invocation_available":{"const":false},"action_permit_available":{"const":false},
+        "pilot_permit_available":{"const":false},"execution_available":{"const":false},"external_effect_available":{"const":false}
+      }
+    },
+    "content_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}
+  }
+}
