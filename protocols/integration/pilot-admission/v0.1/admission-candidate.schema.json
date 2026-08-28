@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:product-pilot-admission:candidate:v0.1",
+  "title": "Product Pilot Admission Candidate v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "artifact_type", "candidate_id", "evaluation_frontier",
+    "product", "proposed_pilot", "requested_reviews", "controls", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-PRODUCT-PILOT-ADMISSION"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "ProductPilotAdmissionCandidate"},
+    "candidate_id": {"type": "string", "pattern": "^urn:uu-aap:pilot-admission:candidate:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["profile_id", "product_id", "product_version", "product_contract_hash", "local_mvp_source_path"],
+      "properties": {
+        "profile_id": {"enum": ["marketer-pessimist-v0.1", "honest-hiring-v0.1"]},
+        "product_id": {"enum": ["marketer-pessimist", "honest-hiring"]},
+        "product_version": {"const": "0.1"},
+        "product_contract_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "local_mvp_source_path": {"type": "string", "minLength": 1}
+      }
+    },
+    "proposed_pilot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "pilot_id", "mode", "purpose", "scope", "data_mode", "real_data_involved",
+        "personal_data_involved", "sensitive_personal_data_involved", "participant_opt_in_required",
+        "external_effect_requested", "irreversible_effect_requested", "real_world_decision_in_scope",
+        "network_access_required", "provider_invocation_required", "account_mutation_required",
+        "retention_mode", "retention_boundary", "correction_supported", "deletion_supported"
+      ],
+      "properties": {
+        "pilot_id": {"type": "string", "minLength": 1},
+        "mode": {"const": "bounded_real_no_external_effect"},
+        "purpose": {"type": "string", "minLength": 1},
+        "scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "data_mode": {"enum": ["real_non_personal", "real_personal"]},
+        "real_data_involved": {"const": true},
+        "personal_data_involved": {"type": "boolean"},
+        "sensitive_personal_data_involved": {"type": "boolean"},
+        "participant_opt_in_required": {"type": "boolean"},
+        "external_effect_requested": {"type": "boolean"},
+        "irreversible_effect_requested": {"type": "boolean"},
+        "real_world_decision_in_scope": {"type": "boolean"},
+        "network_access_required": {"type": "boolean"},
+        "provider_invocation_required": {"type": "boolean"},
+        "account_mutation_required": {"type": "boolean"},
+        "retention_mode": {"enum": ["session", "bounded"]},
+        "retention_boundary": {"type": "string", "minLength": 1},
+        "correction_supported": {"type": "boolean"},
+        "deletion_supported": {"type": "boolean"}
+      }
+    },
+    "requested_reviews": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["human_product_owner_review_required", "data_protection_review_requested", "participant_consent_boundary_required"],
+      "properties": {
+        "human_product_owner_review_required": {"type": "boolean"},
+        "data_protection_review_requested": {"type": "boolean"},
+        "participant_consent_boundary_required": {"type": "boolean"}
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_only", "read_only", "pilot_start_available", "pilot_permit_creation_available",
+        "network_delivery_available", "provider_invocation_available", "account_mutation_available",
+        "external_effect_available", "action_permit_available", "execution_available"
+      ],
+      "properties": {
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "pilot_start_available": {"const": false},
+        "pilot_permit_creation_available": {"const": false},
+        "network_delivery_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "account_mutation_available": {"const": false},
+        "external_effect_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "execution_available": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
