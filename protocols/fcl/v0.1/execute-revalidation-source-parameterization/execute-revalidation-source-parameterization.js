@@ -4,9 +4,9 @@
 const fs = require('fs');
 const path = require('path');
 const {
-  bind: bindAuthorizePhase,
+  buildAuthorizePhase,
+  buildReceiptUnchecked: buildAuthorizeReceiptUnchecked,
   hashObject,
-  validateInput: validateAuthorizeBindingInput,
   validateReceipt: validateAuthorizeBindingReceipt,
 } = require('../execution-lifecycle-authorize-phase-binding/execution-lifecycle-authorize-phase-binding.js');
 const {
@@ -37,6 +37,13 @@ const instant = (value, label) => {
   req(Number.isFinite(n), `${label} invalid date-time`);
   return n;
 };
+const deepFreeze = value => {
+  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+    Object.freeze(value);
+    for (const child of Object.values(value)) deepFreeze(child);
+  }
+  return value;
+};
 const SHA40 = /^[0-9a-f]{40}$/;
 const HASH = /^sha256:[0-9a-f]{64}$/;
 
@@ -62,40 +69,9 @@ const NON_EFFECT_KEYS = [
   'future_action_permission_created','authority_expanded'
 ];
 
-function validateSources(input) {
-  try { validateAuthorizeBindingInput(input.authorize_binding_input); }
-  catch (error) { throw new FCLExecuteRevalidationSourceParameterizationError(`authorize binding input invalid: ${error.message}`); }
-  const expected = bindAuthorizePhase(input.authorize_binding_input);
-  req(same(input.authorize_phase, expected.authorize_phase), 'authorize phase is not exactly reproducible from authorize_binding_input');
-  try { validateAuthorizeBindingReceipt(input.fcl_authorize_phase_receipt, input.authorize_binding_input, input.authorize_phase); }
-  catch (error) { throw new FCLExecuteRevalidationSourceParameterizationError(`authorize phase receipt invalid: ${error.message}`); }
-  req(same(input.fcl_authorize_phase_receipt, expected.fcl_authorize_phase_receipt), 'authorize phase receipt is not exactly reproducible from authorize_binding_input');
-  req(input.fcl_authorize_phase_receipt.next_safe_action === 'PARAMETERIZE_EXECUTE_REVALIDATION_FCL_SOURCE', 'authorize phase next_safe_action mismatch');
-  req(input.authorize_phase.status === 'authorized', 'authorize phase must be authorized');
-  req(input.authorize_phase.one_shot === true && input.authorize_phase.consumed === false, 'authorize phase permit must remain one-shot and unconsumed');
-  return expected;
-}
+const preparedContexts = new WeakSet();
 
-function deriveSources(input) {
-  validateSources(input);
-  const authorizeInput = input.authorize_binding_input;
-  const sourceAdmission = authorizeInput.generic_assessment;
-  const assessmentInput = authorizeInput.assessment_input;
-  const bundle = assessmentInput.pre_action_bundle;
-  const permit = bundle.core_receipts.action_permit;
-  const approval = bundle.approval_binding;
-  const authorizeReceipt = input.fcl_authorize_phase_receipt;
-  req(sourceAdmission.decision.status === 'admissible', 'source admission must remain admissible');
-  req(sourceAdmission.content_hash === input.authorize_phase.admission_assessment_ref.content_hash, 'authorize phase admission assessment hash mismatch');
-  req(authorizeReceipt.generic_assessment_hash === sourceAdmission.content_hash, 'authorize receipt admission hash mismatch');
-  req(authorizeReceipt.action_permit_hash === permit.content_hash, 'authorize receipt ActionPermit mismatch');
-  req(authorizeReceipt.approval_hash === approval.content_hash, 'authorize receipt Approval mismatch');
-  req(authorizeReceipt.target_binding_hash === bundle.target.binding_hash, 'authorize receipt target mismatch');
-  req(authorizeReceipt.frontier === bundle.target.expected_predecessor_frontier, 'authorize receipt frontier mismatch');
-  return { authorizeInput, sourceAdmission, assessmentInput, bundle, permit, approval, authorizeReceipt };
-}
-
-function validateInput(input) {
+function validateHeader(input) {
   exact(input, INPUT_KEYS, 'input');
   req(input.protocol === 'FCL' && input.version === '0.1', 'input header mismatch');
   req(input.profile === 'execute-revalidation-source-parameterization-v0.1', 'input.profile mismatch');
@@ -105,8 +81,32 @@ function validateInput(input) {
   req(input.origin.repository === 'Matawaka/uu-aap', 'input.origin.repository mismatch');
   str(input.origin.revision, 'input.origin.revision', SHA40);
   str(input.origin.tree, 'input.origin.tree', SHA40);
+  instant(input.evaluated_at, 'input.evaluated_at');
+  return true;
+}
 
-  const { sourceAdmission, bundle, permit, approval } = deriveSources(input);
+function deriveSourceFields(input) {
+  const authorizeInput = input.authorize_binding_input;
+  const sourceAdmission = authorizeInput.generic_assessment;
+  const assessmentInput = authorizeInput.assessment_input;
+  const bundle = assessmentInput.pre_action_bundle;
+  const permit = bundle.core_receipts.action_permit;
+  const approval = bundle.approval_binding;
+  const authorizeReceipt = input.fcl_authorize_phase_receipt;
+
+  req(sourceAdmission.decision.status === 'admissible', 'source admission must remain admissible');
+  req(sourceAdmission.content_hash === input.authorize_phase.admission_assessment_ref.content_hash, 'authorize phase admission assessment hash mismatch');
+  req(authorizeReceipt.generic_assessment_hash === sourceAdmission.content_hash, 'authorize receipt admission hash mismatch');
+  req(authorizeReceipt.action_permit_hash === permit.content_hash, 'authorize receipt ActionPermit mismatch');
+  req(authorizeReceipt.approval_hash === approval.content_hash, 'authorize receipt Approval mismatch');
+  req(authorizeReceipt.target_binding_hash === bundle.target.binding_hash, 'authorize receipt target mismatch');
+  req(authorizeReceipt.frontier === bundle.target.expected_predecessor_frontier, 'authorize receipt frontier mismatch');
+
+  return { authorizeInput, sourceAdmission, assessmentInput, bundle, permit, approval, authorizeReceipt };
+}
+
+function validateRuntimeBoundary(input, sources) {
+  const { sourceAdmission, permit, approval } = sources;
   const evaluatedAt = instant(input.evaluated_at, 'input.evaluated_at');
   req(instant(input.authorize_phase.authorized_at, 'authorize_phase.authorized_at') <= evaluatedAt, 'execute revalidation cannot predate authorize phase binding');
   req(instant(permit.issued_at, 'ActionPermit.issued_at') <= evaluatedAt, 'ActionPermit must pre-exist execute revalidation');
@@ -121,9 +121,54 @@ function validateInput(input) {
   return true;
 }
 
-function buildDecision(input) {
-  validateInput(input);
-  const { sourceAdmission } = deriveSources(input);
+function prepareValidatedSource(input) {
+  validateHeader(input);
+
+  let expectedPhase;
+  try { expectedPhase = buildAuthorizePhase(input.authorize_binding_input); }
+  catch (error) { throw new FCLExecuteRevalidationSourceParameterizationError(`authorize binding input invalid: ${error.message}`); }
+  req(same(input.authorize_phase, expectedPhase), 'authorize phase is not exactly reproducible from authorize_binding_input');
+
+  const expectedReceipt = buildAuthorizeReceiptUnchecked(input.authorize_binding_input, expectedPhase);
+  try { validateAuthorizeBindingReceipt(input.fcl_authorize_phase_receipt); }
+  catch (error) { throw new FCLExecuteRevalidationSourceParameterizationError(`authorize phase receipt invalid: ${error.message}`); }
+  req(same(input.fcl_authorize_phase_receipt, expectedReceipt), 'authorize phase receipt is not exactly reproducible from authorize_binding_input');
+  req(input.fcl_authorize_phase_receipt.next_safe_action === 'PARAMETERIZE_EXECUTE_REVALIDATION_FCL_SOURCE', 'authorize phase next_safe_action mismatch');
+  req(input.authorize_phase.status === 'authorized', 'authorize phase must be authorized');
+  req(input.authorize_phase.one_shot === true && input.authorize_phase.consumed === false, 'authorize phase permit must remain one-shot and unconsumed');
+
+  const sources = deriveSourceFields(input);
+  validateRuntimeBoundary(input, sources);
+
+  const context = {
+    authorize_binding_input_canonical: stable(input.authorize_binding_input),
+    authorize_phase_canonical: stable(input.authorize_phase),
+    fcl_authorize_phase_receipt_canonical: stable(input.fcl_authorize_phase_receipt),
+    sources: deepFreeze(clone(sources)),
+  };
+  deepFreeze(context);
+  preparedContexts.add(context);
+  return context;
+}
+
+function requirePreparedSource(input, context) {
+  validateHeader(input);
+  req(obj(context) && preparedContexts.has(context), 'prepared source context must originate from prepareValidatedSource');
+  req(stable(input.authorize_binding_input) === context.authorize_binding_input_canonical, 'prepared source authorize binding input mismatch');
+  req(stable(input.authorize_phase) === context.authorize_phase_canonical, 'prepared source authorize phase mismatch');
+  req(stable(input.fcl_authorize_phase_receipt) === context.fcl_authorize_phase_receipt_canonical, 'prepared source authorize receipt mismatch');
+  validateRuntimeBoundary(input, context.sources);
+  return context.sources;
+}
+
+function validateInput(input, preparedSource = null) {
+  if (preparedSource === null) prepareValidatedSource(input);
+  else requirePreparedSource(input, preparedSource);
+  return true;
+}
+
+function buildDecisionWithSource(input, sources) {
+  const { sourceAdmission } = sources;
   const decision = {
     protocol: 'UU-AAP-EXECUTE-REVALIDATION',
     version: '0.1',
@@ -202,8 +247,15 @@ function buildDecision(input) {
   return decision;
 }
 
-function buildReceiptUnchecked(input, decision) {
-  const { sourceAdmission, bundle, permit, approval, authorizeReceipt } = deriveSources(input);
+function buildDecision(input, preparedSource = null) {
+  const context = preparedSource === null ? prepareValidatedSource(input) : preparedSource;
+  const sources = requirePreparedSource(input, context);
+  return buildDecisionWithSource(input, sources);
+}
+
+function buildReceiptUnchecked(input, decision, preparedSource = null) {
+  const sources = preparedSource === null ? deriveSourceFields(input) : requirePreparedSource(input, preparedSource);
+  const { sourceAdmission, bundle, permit, approval, authorizeReceipt } = sources;
   const receipt = {
     protocol: 'FCL', version: '0.1', receipt_type: 'FCLExecuteRevalidationSourceBindingReceipt',
     binding_id: input.binding_id,
@@ -230,7 +282,7 @@ function buildReceiptUnchecked(input, decision) {
   return receipt;
 }
 
-function validateReceipt(receipt, input = null, decision = null) {
+function validateReceipt(receipt, input = null, decision = null, preparedSource = null) {
   exact(receipt, RECEIPT_KEYS, 'receipt');
   req(receipt.protocol === 'FCL' && receipt.version === '0.1', 'receipt header mismatch');
   req(receipt.receipt_type === 'FCLExecuteRevalidationSourceBindingReceipt', 'receipt_type mismatch');
@@ -247,21 +299,29 @@ function validateReceipt(receipt, input = null, decision = null) {
   for (const key of NON_EFFECT_KEYS) req(receipt.non_effects[key] === false, `receipt.non_effects.${key} must be false`);
   req(receipt.next_safe_action === 'PARAMETERIZE_EXECUTION_INVOCATION_ENVELOPE_FCL_SOURCE', 'receipt.next_safe_action mismatch');
   req(receipt.content_hash === hashObject(receipt), 'receipt content hash mismatch');
+
   if (input !== null) {
-    validateInput(input);
-    const expectedDecision = buildDecision(input);
-    const expected = buildReceiptUnchecked(input, expectedDecision);
+    const context = preparedSource === null ? prepareValidatedSource(input) : preparedSource;
+    const sources = requirePreparedSource(input, context);
+    const expectedDecision = buildDecisionWithSource(input, sources);
+    const expected = buildReceiptUnchecked(input, expectedDecision, context);
     req(same(receipt, expected), 'revalidation source binding receipt is not exactly reproducible from input');
     if (decision !== null) req(same(decision, expectedDecision), 'supplied revalidation decision mismatch');
   }
   return true;
 }
 
-function revalidate(input) {
-  const generic_revalidation_decision = buildDecision(input);
-  const fcl_revalidation_receipt = buildReceiptUnchecked(input, generic_revalidation_decision);
-  validateReceipt(fcl_revalidation_receipt, input, generic_revalidation_decision);
+function revalidateWithPreparedSource(input, preparedSource) {
+  const sources = requirePreparedSource(input, preparedSource);
+  const generic_revalidation_decision = buildDecisionWithSource(input, sources);
+  const fcl_revalidation_receipt = buildReceiptUnchecked(input, generic_revalidation_decision, preparedSource);
+  validateReceipt(fcl_revalidation_receipt);
   return { generic_revalidation_decision, fcl_revalidation_receipt };
+}
+
+function revalidate(input) {
+  const preparedSource = prepareValidatedSource(input);
+  return revalidateWithPreparedSource(input, preparedSource);
 }
 
 function readJson(inputPath) {
@@ -298,4 +358,15 @@ if (require.main === module) {
   }
 }
 
-module.exports = { ASSERTION_KEYS, FCLExecuteRevalidationSourceParameterizationError, NON_EFFECT_KEYS, buildDecision, buildReceiptUnchecked, revalidate, validateInput, validateReceipt };
+module.exports = {
+  ASSERTION_KEYS,
+  FCLExecuteRevalidationSourceParameterizationError,
+  NON_EFFECT_KEYS,
+  buildDecision,
+  buildReceiptUnchecked,
+  prepareValidatedSource,
+  revalidate,
+  revalidateWithPreparedSource,
+  validateInput,
+  validateReceipt,
+};
