@@ -1,0 +1,174 @@
+name: Маркетолог Пессимиста Real Review Intake v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "products/marketer-pessimist/v0.1/real-review-intake/v0.1/**"
+      - "products/marketer-pessimist/v0.1/local-mvp/**"
+      - "products/marketer-pessimist/v0.1/product-contract.json"
+      - "products/marketer-pessimist/v0.1/validate_contract.py"
+      - "protocols/integration/pilot-admission/v0.1/**"
+      - "protocols/integration/pilot-disposition/v0.1/**"
+      - ".github/workflows/marketer-pessimist-real-review-intake-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "products/marketer-pessimist/v0.1/real-review-intake/v0.1/**"
+      - "products/marketer-pessimist/v0.1/local-mvp/**"
+      - "products/marketer-pessimist/v0.1/product-contract.json"
+      - "products/marketer-pessimist/v0.1/validate_contract.py"
+      - "protocols/integration/pilot-admission/v0.1/**"
+      - "protocols/integration/pilot-disposition/v0.1/**"
+      - ".github/workflows/marketer-pessimist-real-review-intake-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: fc59a6c39d41e977dcc4df4831dccdf65deab57e
+      BASE: products/marketer-pessimist/v0.1/real-review-intake/v0.1
+      FIXTURE: products/marketer-pessimist/v0.1/real-review-intake/v0.1/examples/synthetic-positioning.intake.json
+      CANDIDATE: /tmp/marketer-pessimist-real-review-candidate.json
+      PYTHONPYCACHEPREFIX: /tmp/marketer-pessimist-real-review-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run Маркетолог Пессимиста Product Contract
+        run: python products/marketer-pessimist/v0.1/validate_contract.py
+
+      - name: Re-run synthetic-only local MVP predecessor
+        run: |
+          node products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js
+          node products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js
+          node products/marketer-pessimist/v0.1/local-mvp/test-schema-runtime-parity.js
+          node products/marketer-pessimist/v0.1/local-mvp/test-import-safe.js
+
+      - name: Re-run merged Product Pilot Admission boundary
+        run: |
+          node protocols/integration/pilot-admission/v0.1/test-pilot-admission.js
+          node protocols/integration/pilot-admission/v0.1/test-receipt-binding.js
+          node protocols/integration/pilot-admission/v0.1/test-schema-runtime-parity.js
+          node protocols/integration/pilot-admission/v0.1/test-import-safe.js
+
+      - name: Re-run merged Human Disposition boundary
+        run: |
+          node protocols/integration/pilot-disposition/v0.1/test-pilot-disposition.js
+          node protocols/integration/pilot-disposition/v0.1/test-receipt-binding.js
+          node protocols/integration/pilot-disposition/v0.1/test-schema-runtime-parity.js
+          node protocols/integration/pilot-disposition/v0.1/test-import-safe.js
+
+      - name: Check real-review intake JavaScript syntax
+        run: |
+          node --check "$BASE/real-review-intake.js"
+          node --check "$BASE/candidate-binding.js"
+          node --check "$BASE/test-intake.js"
+          node --check "$BASE/test-candidate-binding.js"
+          node --check "$BASE/test-schema-runtime-parity.js"
+          node --check "$BASE/test-import-safe.js"
+
+      - name: Validate committed synthetic conformance fixture
+        run: node "$BASE/real-review-intake.js" validate "$FIXTURE"
+
+      - name: Run real-review intake conformance
+        run: node "$BASE/test-intake.js"
+
+      - name: Validate exact intake/candidate binding
+        run: node "$BASE/test-candidate-binding.js"
+
+      - name: Validate schema/runtime parity
+        run: node "$BASE/test-schema-runtime-parity.js"
+
+      - name: Validate import safety
+        run: node "$BASE/test-import-safe.js"
+
+      - name: Generate canonical candidate
+        run: node "$BASE/real-review-intake.js" inspect "$FIXTURE" > "$CANDIDATE"
+
+      - name: Validate intake and candidate against JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          base = Path(os.environ['BASE'])
+          fixture = Path(os.environ['FIXTURE'])
+          candidate = Path(os.environ['CANDIDATE'])
+          pairs = [
+              (base / 'intake.schema.json', fixture),
+              (base / 'candidate.schema.json', candidate),
+          ]
+          for schema_path, data_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              data = json.loads(data_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(data)
+              print(f'PASS: {data_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node "$BASE/real-review-intake.js" help
+          for cmd in stress-test analyze approve defer reject admit authorize verify-authority permit start run execute send publish campaign spend target profile mutate; do
+            if node "$BASE/real-review-intake.js" "$cmd" - >/tmp/real-review-intake.out 2>/tmp/real-review-intake.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "MARKETER_PESSIMIST_REAL_REVIEW_INTAKE_REJECTED" /tmp/real-review-intake.err
+          done
+
+      - name: Guard production surface as local read-only
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const files = [
+            'products/marketer-pessimist/v0.1/real-review-intake/v0.1/real-review-intake.js',
+            'products/marketer-pessimist/v0.1/real-review-intake/v0.1/candidate-binding.js'
+          ];
+          const text = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
+          const forbidden = [
+            'child_process',
+            "require('http')",
+            "require('https')",
+            'http.request',
+            'https.request',
+            'fetch(',
+            'XMLHttpRequest',
+            'WebSocket',
+            'writeFileSync',
+            'writeFile(',
+            'appendFile',
+            'execSync',
+            'spawnSync',
+            'OpenAI',
+            'Anthropic'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: real-review intake production surface is local read-only');
+          NODE
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
