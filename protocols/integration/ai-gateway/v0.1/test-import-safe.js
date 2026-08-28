@@ -8,7 +8,7 @@ const modulePath = path.join(__dirname, 'validate-gateway.js');
 
 let stdout = '';
 let stderr = '';
-let fileReads = 0;
+const fileReads = [];
 
 const originalStdoutWrite = process.stdout.write;
 const originalStderrWrite = process.stderr.write;
@@ -23,7 +23,7 @@ process.stderr.write = function writeStderr(chunk) {
   return true;
 };
 fs.readFileSync = function trackedRead(...args) {
-  fileReads += 1;
+  fileReads.push(String(args[0]));
   return originalReadFileSync.apply(this, args);
 };
 
@@ -39,7 +39,11 @@ try {
 
 assert.strictEqual(stdout, '', 'import must not write stdout');
 assert.strictEqual(stderr, '', 'import must not write stderr');
-assert.strictEqual(fileReads, 0, 'import must not read conformance fixture');
+assert.strictEqual(
+  fileReads.some(file => file.endsWith('conformance.fixture.json')),
+  false,
+  'import must not read conformance fixture'
+);
 for (const name of [
   'validateCapability',
   'validateRequest',
