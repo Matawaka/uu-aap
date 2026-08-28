@@ -1,0 +1,139 @@
+{
+  "protocol": "MARKETER-PESSIMIST-REAL-REVIEW-INTAKE",
+  "version": "0.1",
+  "artifact_type": "MarketerPessimistRealReviewIntake",
+  "intake_id": "urn:uu-aap:marketer-pessimist:real-review-intake:synthetic-positioning-001",
+  "contract_binding": {
+    "contract_id": "marketer-pessimist-product-contract",
+    "product_id": "marketer-pessimist",
+    "product_version": "0.1",
+    "content_hash": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6"
+  },
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "fc59a6c39d41e977dcc4df4831dccdf65deab57e",
+    "observed_at": "2026-08-28T18:25:00Z"
+  },
+  "source_context": {
+    "mode": "synthetic_conformance",
+    "source_reference": "urn:synthetic:marketer-pessimist:positioning-review:001",
+    "source_observed_at": "2026-08-28T18:20:00Z",
+    "classification_basis": "Synthetic conformance fixture authored only to validate the bounded real-review intake shape; it contains no real person or participant data.",
+    "human_classification_supplied": true,
+    "personal_data_present": false,
+    "sensitive_personal_data_present": false,
+    "identity_resolution_required": false,
+    "protected_attribute_data_present": false,
+    "psychological_vulnerability_data_present": false,
+    "retention_mode": "session",
+    "deletion_supported": true,
+    "correction_supported": true
+  },
+  "claim_package": {
+    "claim_id": "claim-positioning-efficiency",
+    "data_class": "claim-content",
+    "claim_text": "A simplified positioning statement will improve qualified trial starts without increasing support burden.",
+    "review_purpose": "Validate the real-review intake boundary using a synthetic marketing claim before any real non-personal case is supplied.",
+    "scope": [
+      "Single synthetic positioning claim",
+      "Synthetic evidence included in this fixture only"
+    ],
+    "material_statements": [
+      {
+        "statement_id": "stmt-observed-trial-starts",
+        "data_class": "claim-content",
+        "text": "The synthetic observation recorded a higher qualified trial-start rate after the simplified message.",
+        "classification": "observed_evidence",
+        "material": true,
+        "evidence_refs": [
+          "ev-synthetic-observation"
+        ],
+        "falsification_probe": {
+          "status": "available",
+          "kind": "observation",
+          "description": "Repeat the synthetic observation on an independently generated cohort.",
+          "unavailable_reason": null
+        }
+      },
+      {
+        "statement_id": "stmt-support-burden-hypothesis",
+        "data_class": "claim-content",
+        "text": "The simplified message will not materially increase support burden.",
+        "classification": "hypothesis",
+        "material": true,
+        "evidence_refs": [
+          "ev-synthetic-support-sample"
+        ],
+        "falsification_probe": {
+          "status": "available",
+          "kind": "test",
+          "description": "Compare synthetic support requests per qualified trial start before and after the message change.",
+          "unavailable_reason": null
+        }
+      }
+    ]
+  },
+  "supporting_evidence": [
+    {
+      "evidence_id": "ev-synthetic-observation",
+      "data_class": "evidence-bundle",
+      "summary": "A synthetic observation showed a higher qualified trial-start rate for the simplified positioning message.",
+      "provenance_ref": "urn:synthetic:evidence:positioning-observation:001",
+      "quality": "verified",
+      "observed_at": "2026-08-28T18:18:00Z",
+      "supports_statement_ids": [
+        "stmt-observed-trial-starts"
+      ],
+      "contradicts_statement_ids": []
+    },
+    {
+      "evidence_id": "ev-synthetic-support-sample",
+      "data_class": "evidence-bundle",
+      "summary": "A small synthetic support sample did not show a clear burden increase, but the sample is not verified for generalization.",
+      "provenance_ref": "urn:synthetic:evidence:support-sample:001",
+      "quality": "unverified",
+      "observed_at": "2026-08-28T18:19:00Z",
+      "supports_statement_ids": [
+        "stmt-support-burden-hypothesis"
+      ],
+      "contradicts_statement_ids": []
+    }
+  ],
+  "decision_constraints": {
+    "data_class": "decision-context",
+    "objectives": [
+      "Improve qualified trial starts while preserving evidence-first review."
+    ],
+    "constraints": [
+      "Do not publish, send, spend, target, profile or mutate any external system."
+    ],
+    "unacceptable_outcomes": [
+      "Masking uncertainty about support burden."
+    ],
+    "success_conditions": [
+      "The review preserves evidence lineage and leaves the final marketing decision to a human."
+    ]
+  },
+  "controls": {
+    "real_non_personal_input_available": true,
+    "local_only": true,
+    "read_only": true,
+    "network_access_required": false,
+    "filesystem_write_required": false,
+    "provider_invocation_available": false,
+    "publication_available": false,
+    "campaign_send_available": false,
+    "advertising_account_access_available": false,
+    "spend_available": false,
+    "audience_upload_available": false,
+    "personal_targeting_available": false,
+    "cross_context_correlation_available": false,
+    "external_system_mutation_available": false,
+    "human_disposition_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:7f3f54f356cd7914b7f572985d28c3447e7f707b67ececd401a2181227913928"
+}
