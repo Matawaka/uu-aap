@@ -248,8 +248,8 @@ function validateSemantics(packet) {
     'Gateway decision result is incompatible with reference transport operation'
   );
 
-  requireCondition(request.action.read_only === true, 'reference transport requires read_only Gateway action');
   requireCondition(request.action.external_effect === false, 'reference transport forbids external-effect Gateway action');
+  requireCondition(request.action.read_only === true, 'reference transport requires read_only Gateway action');
   requireCondition(request.action.requires_approval === false, 'reference transport cannot request approval');
   requireCondition(request.approval_ref === null, 'reference transport cannot carry approval authority');
   requireCondition(Array.isArray(request.action.expected_effects), 'Gateway expected_effects must be an array');
