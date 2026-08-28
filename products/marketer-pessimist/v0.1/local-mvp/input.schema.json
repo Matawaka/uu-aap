@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/marketer-pessimist/v0.1/local-mvp/input.schema.json",
+  "title": "MarketerPessimistStressTestInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "artifact_type", "input_id", "contract_binding",
+    "evaluation_frontier", "claim_package", "supporting_evidence",
+    "decision_constraints", "controls", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETER-PESSIMIST-LOCAL-MVP"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketerPessimistStressTestInput"},
+    "input_id": {"type": "string", "pattern": "^urn:uu-aap:marketer-pessimist:stress-test-input:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "contract_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_id", "product_id", "product_version", "content_hash"],
+      "properties": {
+        "contract_id": {"const": "marketer-pessimist-product-contract"},
+        "product_id": {"const": "marketer-pessimist"},
+        "product_version": {"const": "0.1"},
+        "content_hash": {"const": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6"}
+      }
+    },
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "claim_package": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "data_class", "claim_text", "review_purpose", "scope", "material_statements"],
+      "properties": {
+        "claim_id": {"type": "string", "pattern": "^claim-[a-z0-9][a-z0-9-]{1,63}$"},
+        "data_class": {"const": "claim-content"},
+        "claim_text": {"type": "string", "minLength": 1},
+        "review_purpose": {"type": "string", "minLength": 1},
+        "scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "material_statements": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["statement_id", "data_class", "text", "classification", "material", "evidence_refs", "falsification_probe"],
+            "properties": {
+              "statement_id": {"type": "string", "pattern": "^stmt-[a-z0-9][a-z0-9-]{1,63}$"},
+              "data_class": {"const": "claim-content"},
+              "text": {"type": "string", "minLength": 1},
+              "classification": {"enum": ["observed_evidence", "interpretation", "assumption", "hypothesis", "declared_objective"]},
+              "material": {"const": true},
+              "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^ev-[a-z0-9][a-z0-9-]{1,63}$"}},
+              "falsification_probe": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": ["status", "kind", "description", "unavailable_reason"],
+                "properties": {
+                  "status": {"enum": ["available", "unavailable"]},
+                  "kind": {"enum": ["observation", "test", "none"]},
+                  "description": {"type": ["string", "null"]},
+                  "unavailable_reason": {"type": ["string", "null"]}
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "supporting_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidence_id", "data_class", "summary", "provenance_ref", "quality",
+          "observed_at", "supports_statement_ids", "contradicts_statement_ids"
+        ],
+        "properties": {
+          "evidence_id": {"type": "string", "pattern": "^ev-[a-z0-9][a-z0-9-]{1,63}$"},
+          "data_class": {"const": "evidence-bundle"},
+          "summary": {"type": "string", "minLength": 1},
+          "provenance_ref": {"type": "string", "minLength": 1},
+          "quality": {"enum": ["verified", "unverified", "stale", "conflicting"]},
+          "observed_at": {"type": "string", "format": "date-time"},
+          "supports_statement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^stmt-[a-z0-9][a-z0-9-]{1,63}$"}},
+          "contradicts_statement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "pattern": "^stmt-[a-z0-9][a-z0-9-]{1,63}$"}}
+        }
+      }
+    },
+    "decision_constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data_class", "objectives", "constraints", "unacceptable_outcomes", "success_conditions"],
+      "properties": {
+        "data_class": {"const": "decision-context"},
+        "objectives": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "constraints": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "unacceptable_outcomes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "success_conditions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "synthetic_only", "local_only", "read_only", "network_access_required",
+        "filesystem_write_required", "provider_invocation_available", "publication_available",
+        "campaign_send_available", "advertising_account_access_available", "spend_available",
+        "audience_upload_available", "personal_targeting_available", "cross_context_correlation_available",
+        "identity_resolution_available", "protected_attribute_inference_available",
+        "psychological_vulnerability_inference_available", "external_system_mutation_available",
+        "human_disposition_available", "action_permit_available", "execution_available",
+        "external_effect_available", "automatic_retry"
+      ],
+      "properties": {
+        "synthetic_only": {"const": true},
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "network_access_required": {"const": false},
+        "filesystem_write_required": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "publication_available": {"const": false},
+        "campaign_send_available": {"const": false},
+        "advertising_account_access_available": {"const": false},
+        "spend_available": {"const": false},
+        "audience_upload_available": {"const": false},
+        "personal_targeting_available": {"const": false},
+        "cross_context_correlation_available": {"const": false},
+        "identity_resolution_available": {"const": false},
+        "protected_attribute_inference_available": {"const": false},
+        "psychological_vulnerability_inference_available": {"const": false},
+        "external_system_mutation_available": {"const": false},
+        "human_disposition_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "execution_available": {"const": false},
+        "external_effect_available": {"const": false},
+        "automatic_retry": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "protocol": "MARKETER-PESSIMIST-LOCAL-MVP",
+  "version": "0.1",
+  "artifact_type": "MarketerPessimistStressTestInput",
+  "input_id": "urn:uu-aap:marketer-pessimist:stress-test-input:synthetic-onboarding-001",
+  "contract_binding": {
+    "contract_id": "marketer-pessimist-product-contract",
+    "product_id": "marketer-pessimist",
+    "product_version": "0.1",
+    "content_hash": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6"
+  },
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "a9e948af070fb2606051476cb6b6fdcb744a74fb",
+    "observed_at": "2026-08-28T14:42:46Z"
+  },
+  "claim_package": {
+    "claim_id": "claim-onboarding-uplift",
+    "data_class": "claim-content",
+    "claim_text": "A new onboarding headline promising setup in five minutes will increase trial activation by 20 percent without increasing support load.",
+    "review_purpose": "Stress-test the synthetic product-launch claim before any human decision or external publication.",
+    "scope": [
+      "Synthetic onboarding claim only",
+      "Synthetic evidence bundle supplied in this packet only"
+    ],
+    "material_statements": [
+      {
+        "statement_id": "stmt-observed-activation",
+        "data_class": "claim-content",
+        "text": "In the fictional A/B observation, the headline variant showed a 12 percent higher activation rate.",
+        "classification": "observed_evidence",
+        "material": true,
+        "evidence_refs": ["ev-ab-test"],
+        "falsification_probe": {
+          "status": "available",
+          "kind": "observation",
+          "description": "Repeat the fictional observation on a separately generated synthetic cohort and compare activation rates.",
+          "unavailable_reason": null
+        }
+      },
+      {
+        "statement_id": "stmt-setup-speed-interpretation",
+        "data_class": "claim-content",
+        "text": "The five-minute setup promise is representative of typical user setup time.",
+        "classification": "interpretation",
+        "material": true,
+        "evidence_refs": ["ev-scripted-setup"],
+        "falsification_probe": {
+          "status": "available",
+          "kind": "test",
+          "description": "Measure completion time in a new fictional heterogeneous-user setup simulation.",
+          "unavailable_reason": null
+        }
+      },
+      {
+        "statement_id": "stmt-activation-uplift-hypothesis",
+        "data_class": "claim-content",
+        "text": "The new headline will increase trial activation by 20 percent.",
+        "classification": "hypothesis",
+        "material": true,
+        "evidence_refs": ["ev-ab-test"],
+        "falsification_probe": {
+          "status": "available",
+          "kind": "test",
+          "description": "Run a new fictional randomized A/B test with a predeclared 20 percent uplift threshold.",
+          "unavailable_reason": null
+        }
+      },
+      {
+        "statement_id": "stmt-no-support-load-assumption",
+        "data_class": "claim-content",
+        "text": "The headline change will not increase support load.",
+        "classification": "assumption",
+        "material": true,
+        "evidence_refs": ["ev-support-history", "ev-support-conflict"],
+        "falsification_probe": {
+          "status": "available",
+          "kind": "test",
+          "description": "Compare fictional support-ticket volume per activated trial between control and variant after the headline change.",
+          "unavailable_reason": null
+        }
+      },
+      {
+        "statement_id": "stmt-improve-trial-activation",
+        "data_class": "claim-content",
+        "text": "Improve trial activation without materially increasing support burden.",
+        "classification": "declared_objective",
+        "material": true,
+        "evidence_refs": [],
+        "falsification_probe": {
+          "status": "unavailable",
+          "kind": "none",
+          "description": null,
+          "unavailable_reason": "This is a declared objective; empirical falsification applies to its success conditions rather than to the existence of the objective."
+        }
+      }
+    ]
+  },
+  "supporting_evidence": [
+    {
+      "evidence_id": "ev-ab-test",
+      "data_class": "evidence-bundle",
+      "summary": "Fictional A/B observation over 120 synthetic sessions reported a 12 percent activation uplift for the variant.",
+      "provenance_ref": "urn:synthetic:ab-test:onboarding-headline:001",
+      "quality": "verified",
+      "observed_at": "2026-08-28T14:30:00Z",
+      "supports_statement_ids": ["stmt-observed-activation", "stmt-activation-uplift-hypothesis"],
+      "contradicts_statement_ids": []
+    },
+    {
+      "evidence_id": "ev-scripted-setup",
+      "data_class": "evidence-bundle",
+      "summary": "A scripted fictional setup run completed in under five minutes but did not represent heterogeneous users.",
+      "provenance_ref": "urn:synthetic:setup-timing:scripted:001",
+      "quality": "unverified",
+      "observed_at": "2026-08-28T14:31:00Z",
+      "supports_statement_ids": ["stmt-setup-speed-interpretation"],
+      "contradicts_statement_ids": []
+    },
+    {
+      "evidence_id": "ev-support-history",
+      "data_class": "evidence-bundle",
+      "summary": "Older fictional onboarding history showed no material support-load increase.",
+      "provenance_ref": "urn:synthetic:support-history:legacy:001",
+      "quality": "stale",
+      "observed_at": "2026-06-01T09:00:00Z",
+      "supports_statement_ids": ["stmt-no-support-load-assumption"],
+      "contradicts_statement_ids": []
+    },
+    {
+      "evidence_id": "ev-support-conflict",
+      "data_class": "evidence-bundle",
+      "summary": "A separate fictional pilot showed a temporary increase in setup-related support requests after stronger speed messaging.",
+      "provenance_ref": "urn:synthetic:support-pilot:conflict:001",
+      "quality": "conflicting",
+      "observed_at": "2026-08-28T14:32:00Z",
+      "supports_statement_ids": [],
+      "contradicts_statement_ids": ["stmt-no-support-load-assumption"]
+    }
+  ],
+  "decision_constraints": {
+    "data_class": "decision-context",
+    "objectives": ["Increase synthetic trial activation while preserving evidence-first review."],
+    "constraints": ["Do not publish, send, spend, target, profile or mutate any external system."],
+    "unacceptable_outcomes": ["A fictional support-load increase greater than 5 percent per activated trial."],
+    "success_conditions": ["A new synthetic experiment supports the activation claim while support-load evidence remains within the declared bound."]
+  },
+  "controls": {
+    "synthetic_only": true,
+    "local_only": true,
+    "read_only": true,
+    "network_access_required": false,
+    "filesystem_write_required": false,
+    "provider_invocation_available": false,
+    "publication_available": false,
+    "campaign_send_available": false,
+    "advertising_account_access_available": false,
+    "spend_available": false,
+    "audience_upload_available": false,
+    "personal_targeting_available": false,
+    "cross_context_correlation_available": false,
+    "identity_resolution_available": false,
+    "protected_attribute_inference_available": false,
+    "psychological_vulnerability_inference_available": false,
+    "external_system_mutation_available": false,
+    "human_disposition_available": false,
+    "action_permit_available": false,
+    "execution_available": false,
+    "external_effect_available": false,
+    "automatic_retry": false
+  },
+  "content_hash": "sha256:388486f490a3411356d6d9f355a5db2c35ee1fd8d05fad70ce66f46bf4e4961a"
+}
