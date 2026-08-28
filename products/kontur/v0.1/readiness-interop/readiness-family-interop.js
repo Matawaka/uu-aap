@@ -12,6 +12,12 @@ const RECEIPT_TYPE = 'KONTURFamilyReadinessInteropReceipt';
 const STATUS = 'READINESS_EVIDENCE_AVAILABLE_FOR_FAMILY_INSPECTION';
 const NEXT_SAFE_ACTION = 'READ_ONLY_FAMILY_READINESS_INSPECTION_ONLY';
 const EXPECTED_MANIFEST_HASH = 'sha256:90da81f7c33f44f34410790e9269bf8b05a5ad47db596437b214b8301701a5a1';
+const EXPECTED_MANIFEST_FRONTIER = {
+  repository: 'Matawaka/uu-aap',
+  revision: '04078a72415b681bc588d801169fc5d9abee3e9b',
+  tree: '88ee6c1b7417ed3e5758d9b08c2b1252328d23b5',
+  observed_at: '2026-08-27T01:20:49Z'
+};
 const EXPECTED_READINESS_PATHS = [
   'server/kontur/v0.1/READINESS_AGGREGATOR.md',
   'server/kontur/v0.1/readiness-aggregator.js',
@@ -61,6 +67,34 @@ const FALSE_CLAIMS = [
   'external_effect_performed',
   'successor_authority_created'
 ];
+const ASSERTION_KEYS = [
+  'exact_evaluation_frontier_bound',
+  'historical_family_manifest_frontier_preserved',
+  'readiness_member_bound',
+  'readiness_acceptance_reproduced',
+  'family_edge_non_transfer_preserved',
+  'cross_member_data_access_default_denied',
+  'read_only_family_inspection_available'
+];
+const FAMILY_KEYS = [
+  'family_id',
+  'family_version',
+  'historical_manifest_frontier',
+  'family_manifest_binding',
+  'readiness_member_id',
+  'readiness_member_evidence_status',
+  'readiness_to_activation_edge_status'
+];
+const READINESS_KEYS = [
+  'aggregation_receipt_binding',
+  'readiness_signal_binding',
+  'acceptance_receipt_binding',
+  'responsibility_policy_binding',
+  'readiness_epoch',
+  'readiness_signal_ready',
+  'source_acceptance_decision',
+  'human_activation_step_still_required'
+];
 
 class KONTURFamilyReadinessInteropError extends Error {
   constructor(message) {
@@ -107,10 +141,21 @@ function canonicalize(value) {
   return result;
 }
 
+function sha256Canonical(value) {
+  return crypto.createHash('sha256').update(JSON.stringify(canonicalize(value)), 'utf8').digest('hex');
+}
+
+function manifestHash(manifest) {
+  const projected = clone(manifest);
+  requireCondition(projected.identity && typeof projected.identity === 'object', 'family manifest identity required');
+  projected.identity.content_hash = '';
+  return `sha256:${sha256Canonical(projected)}`;
+}
+
 function contentHash(value) {
   const projected = clone(value);
   if (Object.prototype.hasOwnProperty.call(projected, 'content_hash')) projected.content_hash = '';
-  return `sha256:${crypto.createHash('sha256').update(JSON.stringify(canonicalize(projected)), 'utf8').digest('hex')}`;
+  return `sha256:${sha256Canonical(projected)}`;
 }
 
 async function artifactBinding(artifactType, artifactRef, artifact) {
@@ -126,12 +171,24 @@ async function artifactBinding(artifactType, artifactRef, artifact) {
   };
 }
 
+function validateBinding(binding, label) {
+  assertExactKeys(binding, ['artifact_type', 'artifact_ref', 'digest'], label);
+  requireCondition(typeof binding.artifact_type === 'string' && binding.artifact_type.length > 0, `${label}.artifact_type required`);
+  requireCondition(typeof binding.artifact_ref === 'string' && binding.artifact_ref.length > 0, `${label}.artifact_ref required`);
+  assertExactKeys(binding.digest, ['canonicalization', 'digest_algorithm', 'digest_encoding', 'value'], `${label}.digest`);
+  requireCondition(binding.digest.canonicalization === 'RFC8785-JCS', `${label} canonicalization mismatch`);
+  requireCondition(binding.digest.digest_algorithm === 'SHA-256', `${label} digest algorithm mismatch`);
+  requireCondition(binding.digest.digest_encoding === 'hex', `${label} digest encoding mismatch`);
+  requireCondition(/^[0-9a-f]{64}$/.test(binding.digest.value), `${label} digest value invalid`);
+}
+
 function sameCanonical(left, right) {
   return JSON.stringify(canonicalize(left)) === JSON.stringify(canonicalize(right));
 }
 
-function assertFalseClaims(claims, keys, label) {
+function assertFalseClaims(claims, keys, label, exact = false) {
   assertObject(claims, `${label}.claims`);
+  if (exact) assertExactKeys(claims, keys, `${label}.claims`);
   for (const key of keys) {
     requireCondition(claims[key] === false, `${label}: prohibited claim ${key}`);
   }
@@ -141,14 +198,17 @@ function validateFamilyManifest(manifest) {
   assertObject(manifest, 'family_manifest');
   requireCondition(manifest.schema_version === '0.1', 'family manifest schema version mismatch');
   requireCondition(manifest.manifest_id === 'kontur-product-family-manifest-v0.1', 'family manifest id mismatch');
+  requireCondition(manifestHash(manifest) === EXPECTED_MANIFEST_HASH, 'family manifest hash mismatch');
   requireCondition(
     manifest.identity && manifest.identity.content_hash === EXPECTED_MANIFEST_HASH,
     'family manifest canonical identity mismatch'
   );
+  requireCondition(sameCanonical(manifest.frontier, EXPECTED_MANIFEST_FRONTIER), 'family manifest historical frontier drift');
   requireCondition(
     manifest.family && manifest.family.id === 'kontur' && manifest.family.version === '0.1',
     'KONTUR family identity mismatch'
   );
+  requireCondition(manifest.family.core_member === false, 'family cannot become Core member');
   requireCondition(manifest.family.activated === false, 'family manifest cannot claim activation');
   requireCondition(manifest.family.production_ready === false, 'family manifest cannot claim production readiness');
 
@@ -179,6 +239,8 @@ function validateFamilyManifest(manifest) {
 
   const policy = manifest.consolidation_policy;
   assertObject(policy, 'family consolidation policy');
+  requireCondition(policy.member_roles_remain_distinct === true, 'family member roles must remain distinct');
+  requireCondition(policy.single_member_may_self_certify_family_readiness === false, 'single-member family readiness self-certification forbidden');
   for (const key of [
     'automatic_activation',
     'automatic_host_designation',
@@ -302,7 +364,6 @@ async function validateReadinessEvidence(readiness) {
     sameCanonical(reproducedAcceptance, acceptanceReceipt),
     'readiness acceptance does not reproduce under canonical dry-run boundary'
   );
-
   return true;
 }
 
@@ -395,7 +456,6 @@ async function buildInteropReceipt(input) {
     responsibilityPolicyBinding.digest.value
   ].join('|');
   const idHash = crypto.createHash('sha256').update(seed, 'utf8').digest('hex');
-
   const falseClaims = {};
   for (const key of FALSE_CLAIMS) falseClaims[key] = false;
 
@@ -434,9 +494,7 @@ async function buildInteropReceipt(input) {
       cross_member_data_access_default_denied: true,
       read_only_family_inspection_available: true
     },
-    claims: {
-      ...falseClaims
-    },
+    claims: falseClaims,
     next_safe_action: NEXT_SAFE_ACTION,
     non_effects: [...REQUIRED_NON_EFFECTS],
     content_hash: ''
@@ -473,33 +531,35 @@ function validateReceipt(receipt) {
   requireCondition(receipt.status === STATUS, 'receipt status mismatch');
   requireCondition(receipt.next_safe_action === NEXT_SAFE_ACTION, 'next safe action mismatch');
 
-  assertObject(receipt.family, 'receipt.family');
+  assertExactKeys(receipt.family, FAMILY_KEYS, 'receipt.family');
   requireCondition(receipt.family.family_id === 'kontur' && receipt.family.family_version === '0.1', 'receipt family identity mismatch');
+  requireCondition(sameCanonical(receipt.family.historical_manifest_frontier, EXPECTED_MANIFEST_FRONTIER), 'receipt historical manifest frontier mismatch');
+  validateBinding(receipt.family.family_manifest_binding, 'receipt.family.family_manifest_binding');
   requireCondition(receipt.family.readiness_member_id === 'readiness-aggregator', 'receipt readiness member mismatch');
   requireCondition(receipt.family.readiness_member_evidence_status === 'implemented_experimental', 'receipt readiness member status mismatch');
   requireCondition(receipt.family.readiness_to_activation_edge_status === 'established_evidence_dependency', 'receipt readiness edge status mismatch');
 
-  assertObject(receipt.readiness, 'receipt.readiness');
+  assertExactKeys(receipt.readiness, READINESS_KEYS, 'receipt.readiness');
+  for (const key of [
+    'aggregation_receipt_binding',
+    'readiness_signal_binding',
+    'acceptance_receipt_binding',
+    'responsibility_policy_binding'
+  ]) validateBinding(receipt.readiness[key], `receipt.readiness.${key}`);
   requireCondition(receipt.readiness.readiness_signal_ready === true, 'receipt must preserve source readiness=true');
   requireCondition(receipt.readiness.source_acceptance_decision === 'accepted_for_activation_precondition', 'receipt acceptance decision mismatch');
   requireCondition(receipt.readiness.human_activation_step_still_required === true, 'human activation boundary must remain explicit');
   requireCondition(Number.isInteger(receipt.readiness.readiness_epoch) && receipt.readiness.readiness_epoch >= 1, 'readiness epoch invalid');
 
-  assertObject(receipt.assertions, 'receipt.assertions');
-  for (const key of [
-    'exact_evaluation_frontier_bound',
-    'historical_family_manifest_frontier_preserved',
-    'readiness_member_bound',
-    'readiness_acceptance_reproduced',
-    'family_edge_non_transfer_preserved',
-    'cross_member_data_access_default_denied',
-    'read_only_family_inspection_available'
-  ]) {
+  assertExactKeys(receipt.assertions, ASSERTION_KEYS, 'receipt.assertions');
+  for (const key of ASSERTION_KEYS) {
     requireCondition(receipt.assertions[key] === true, `receipt assertion ${key} must be true`);
   }
 
-  assertFalseClaims(receipt.claims, FALSE_CLAIMS, 'interop receipt');
-  const nonEffects = new Set(receipt.non_effects || []);
+  assertFalseClaims(receipt.claims, FALSE_CLAIMS, 'interop receipt', true);
+  requireCondition(Array.isArray(receipt.non_effects), 'receipt.non_effects must be an array');
+  requireCondition(new Set(receipt.non_effects).size === receipt.non_effects.length, 'receipt.non_effects must be unique');
+  const nonEffects = new Set(receipt.non_effects);
   for (const nonEffect of REQUIRED_NON_EFFECTS) {
     requireCondition(nonEffects.has(nonEffect), `interop non-effect missing: ${nonEffect}`);
   }
@@ -590,10 +650,12 @@ module.exports = {
   STATUS,
   NEXT_SAFE_ACTION,
   EXPECTED_MANIFEST_HASH,
+  EXPECTED_MANIFEST_FRONTIER,
   EXPECTED_READINESS_PATHS,
   REQUIRED_NON_EFFECTS,
   FALSE_CLAIMS,
   canonicalize,
+  manifestHash,
   contentHash,
   validateFamilyManifest,
   validateEvaluationFrontier,
