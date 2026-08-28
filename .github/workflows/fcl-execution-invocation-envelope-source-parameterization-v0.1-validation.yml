@@ -4,19 +4,24 @@ on:
   pull_request:
     paths:
       - 'protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/**'
+      - 'protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/**'
       - 'protocols/fcl/v0.1/execute-revalidation-source-parameterization/**'
       - 'protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/**'
       - 'protocols/integration/execution-invocation-envelope/v0.1/**'
       - 'protocols/integration/execute-revalidation/v0.1/**'
       - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
       - '.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0.1-validation.yml'
+      - '.github/workflows/fcl-invocation-action-receipt-postexecution-source-contract-v0.1-validation.yml'
   push:
     branches: [main]
     paths:
       - 'protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/**'
+      - 'protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/**'
       - 'protocols/fcl/v0.1/execute-revalidation-source-parameterization/**'
       - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
       - '.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0.1-validation.yml'
+      - '.github/workflows/fcl-invocation-action-receipt-postexecution-source-contract-v0.1-validation.yml'
 
 permissions:
   contents: read
@@ -149,14 +154,17 @@ jobs:
         run: |
           changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
           echo "$changed"
-          bad="$(printf '%s\n' "$changed" | grep -vE '^(\.github/workflows/fcl-execute-revalidation-source-parameterization-v0\.1-validation\.yml|\.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0\.1-validation\.yml|protocols/fcl/v0\.1/execution-invocation-envelope-source-parameterization/|protocols/integration/execution-invocation-envelope/v0\.1/(validate-parameterized-envelope\.js|test-parameterized-envelope\.js))' || true)"
+          bad="$(printf '%s\n' "$changed" | grep -vE '^(\.github/workflows/fcl-execute-revalidation-source-parameterization-v0\.1-validation\.yml|\.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0\.1-validation\.yml|\.github/workflows/fcl-invocation-action-receipt-postexecution-source-contract-v0\.1-validation\.yml|protocols/fcl/v0\.1/execution-invocation-envelope-source-parameterization/|protocols/fcl/v0\.1/invocation-action-receipt-postexecution-source-contract/|protocols/integration/execution-invocation-envelope/v0\.1/(validate-parameterized-envelope\.js|test-parameterized-envelope\.js)|protocols/integration/invocation-action-receipt-binding/v0\.1/(validate-parameterized-binding\.js|test-parameterized-binding\.js))' || true)"
           if [ -n "$bad" ]; then
-            echo 'ERROR: #577 diff exceeds allowed invocation-envelope parameterization slice'
+            echo 'ERROR: invocation-envelope predecessor guard detected an unauthorized successor change'
             echo "$bad"
             exit 1
           fi
           git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/execution-invocation-envelope/v0.1/validate-invocation-envelope.js
           git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/execution-invocation-envelope/v0.1/invocation-envelope.schema.json
           git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/execution-invocation-envelope/v0.1/conformance.fixture.json
-          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/
-          echo 'Historical envelope and post-execution boundary preserved; predecessor guard workflow-only compatibility update allowed'
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/validate-invocation-action-receipt-binding.js
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/invocation-action-receipt-binding.schema.json
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/conformance.fixture.json
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/README.md
+          echo 'Historical envelope and post-execution implementations unchanged; successor-owned post-execution seam and source contract allowed'
