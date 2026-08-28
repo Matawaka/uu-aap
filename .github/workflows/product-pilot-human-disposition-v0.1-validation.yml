@@ -1,0 +1,184 @@
+name: Product Pilot Human Disposition v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/pilot-disposition/v0.1/**"
+      - "protocols/integration/pilot-admission/v0.1/**"
+      - "pilots/core-pilot-002/run-admission/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - "products/honest-hiring/v0.1/**"
+      - "products/freeshield/v0.1/**"
+      - ".github/workflows/product-pilot-human-disposition-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "protocols/integration/pilot-disposition/v0.1/**"
+      - "protocols/integration/pilot-admission/v0.1/**"
+      - "pilots/core-pilot-002/run-admission/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - "products/honest-hiring/v0.1/**"
+      - "products/freeshield/v0.1/**"
+      - ".github/workflows/product-pilot-human-disposition-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: 392adeab56dba9ad69f9f0999f194597cab83fec
+      MARKETER: protocols/integration/pilot-disposition/v0.1/examples/marketer-pessimist-defer.disposition.json
+      HIRING: protocols/integration/pilot-disposition/v0.1/examples/honest-hiring-defer.disposition.json
+      MARKETER_RECEIPT: /tmp/product-pilot-disposition-marketer.json
+      HIRING_RECEIPT: /tmp/product-pilot-disposition-hiring.json
+      PYTHONPYCACHEPREFIX: /tmp/product-pilot-disposition-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run Core Pilot 002 Run Admission Gate
+        run: python pilots/core-pilot-002/run-admission/validate.py
+
+      - name: Re-run Маркетолог Пессимиста Product Contract and local MVP
+        run: |
+          python products/marketer-pessimist/v0.1/validate_contract.py
+          node products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js
+          node products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js
+
+      - name: Re-run FREESHIELD Product Contract and local MVP
+        run: |
+          python products/freeshield/v0.1/validate_contract.py
+          node products/freeshield/v0.1/local-mvp/test-protective-assessment.js
+          node products/freeshield/v0.1/local-mvp/test-receipt-binding.js
+
+      - name: Re-run Честный найм Product Contract and local MVP
+        run: |
+          python products/honest-hiring/v0.1/validate_contract.py
+          node products/honest-hiring/v0.1/local-mvp/test-honest-hiring.js
+          node products/honest-hiring/v0.1/local-mvp/test-result-binding.js
+
+      - name: Re-run merged Product Pilot Admission Profile
+        run: |
+          node protocols/integration/pilot-admission/v0.1/test-pilot-admission.js
+          node protocols/integration/pilot-admission/v0.1/test-receipt-binding.js
+          node protocols/integration/pilot-admission/v0.1/test-schema-runtime-parity.js
+          node protocols/integration/pilot-admission/v0.1/test-import-safe.js
+
+      - name: Check human-disposition JavaScript syntax
+        run: |
+          node --check protocols/integration/pilot-disposition/v0.1/pilot-disposition.js
+          node --check protocols/integration/pilot-disposition/v0.1/receipt-binding.js
+          node --check protocols/integration/pilot-disposition/v0.1/test-pilot-disposition.js
+          node --check protocols/integration/pilot-disposition/v0.1/test-receipt-binding.js
+          node --check protocols/integration/pilot-disposition/v0.1/test-schema-runtime-parity.js
+          node --check protocols/integration/pilot-disposition/v0.1/test-import-safe.js
+
+      - name: Validate canonical defer disposition inputs
+        run: |
+          node protocols/integration/pilot-disposition/v0.1/pilot-disposition.js validate "$MARKETER"
+          node protocols/integration/pilot-disposition/v0.1/pilot-disposition.js validate "$HIRING"
+
+      - name: Run human disposition conformance
+        run: node protocols/integration/pilot-disposition/v0.1/test-pilot-disposition.js
+
+      - name: Validate exact disposition receipt/source binding
+        run: node protocols/integration/pilot-disposition/v0.1/test-receipt-binding.js
+
+      - name: Validate schema/runtime parity
+        run: node protocols/integration/pilot-disposition/v0.1/test-schema-runtime-parity.js
+
+      - name: Validate import safety
+        run: node protocols/integration/pilot-disposition/v0.1/test-import-safe.js
+
+      - name: Generate canonical disposition receipts
+        run: |
+          node protocols/integration/pilot-disposition/v0.1/pilot-disposition.js inspect "$MARKETER" > "$MARKETER_RECEIPT"
+          node protocols/integration/pilot-disposition/v0.1/pilot-disposition.js inspect "$HIRING" > "$HIRING_RECEIPT"
+
+      - name: Validate inputs and receipts against JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          base = Path('protocols/integration/pilot-disposition/v0.1')
+          input_schema = json.loads((base / 'human-disposition-input.schema.json').read_text(encoding='utf-8'))
+          receipt_schema = json.loads((base / 'human-disposition-receipt.schema.json').read_text(encoding='utf-8'))
+          pairs = [
+              (input_schema, Path(os.environ['MARKETER'])),
+              (input_schema, Path(os.environ['HIRING'])),
+              (receipt_schema, Path(os.environ['MARKETER_RECEIPT'])),
+              (receipt_schema, Path(os.environ['HIRING_RECEIPT'])),
+          ]
+          for schema, data_path in pairs:
+              data = json.loads(data_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(data)
+              print(f'PASS: {data_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node protocols/integration/pilot-disposition/v0.1/pilot-disposition.js help
+          for cmd in approve defer reject admit permit start run execute send publish hire campaign mutate authorize verify-authority; do
+            if node protocols/integration/pilot-disposition/v0.1/pilot-disposition.js "$cmd" - >/tmp/pilot-disposition.out 2>/tmp/pilot-disposition.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "PRODUCT_PILOT_HUMAN_DISPOSITION_REJECTED" /tmp/pilot-disposition.err
+          done
+
+      - name: Guard production surface as local read-only
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const files = [
+            'protocols/integration/pilot-disposition/v0.1/pilot-disposition.js',
+            'protocols/integration/pilot-disposition/v0.1/receipt-binding.js'
+          ];
+          const text = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
+          const forbidden = [
+            'child_process',
+            "require('http')",
+            "require('https')",
+            'http.request',
+            'https.request',
+            'fetch(',
+            'XMLHttpRequest',
+            'WebSocket',
+            'writeFileSync',
+            'writeFile(',
+            'appendFile',
+            'execSync',
+            'spawnSync',
+            'OpenAI',
+            'Anthropic'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: human disposition production surface is local read-only');
+          NODE
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
