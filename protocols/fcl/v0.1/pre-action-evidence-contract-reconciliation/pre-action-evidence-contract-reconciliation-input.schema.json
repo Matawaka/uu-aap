@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/input.schema.json",
+  "title": "FCL PreAction Evidence Contract Reconciliation Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "profile", "reconciliation_id", "origin",
+    "capability_mapping_input", "capability_mapping_receipt",
+    "execution_capability_availability",
+    "fcl_core_action_permit_binding_input", "fcl_core_action_permit",
+    "reconciled_at"
+  ],
+  "properties": {
+    "protocol": { "const": "FCL" },
+    "version": { "const": "0.1" },
+    "profile": { "const": "pre-action-evidence-contract-reconciliation-v0.1" },
+    "reconciliation_id": { "type": "string", "minLength": 1 },
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": { "const": "Matawaka/uu-aap" },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "capability_mapping_input": { "type": "object" },
+    "capability_mapping_receipt": { "type": "object" },
+    "execution_capability_availability": { "type": "object" },
+    "fcl_core_action_permit_binding_input": { "type": "object" },
+    "fcl_core_action_permit": { "type": "object" },
+    "reconciled_at": { "type": "string", "format": "date-time" }
+  }
+}
