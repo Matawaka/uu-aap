@@ -52,13 +52,23 @@ function expectGenericFailure(label, fn, pattern = null) {
   assert(failed, `${label}: expected failure`);
 }
 
+function predecessorRunFailure(label, run) {
+  if (run.error) return `${label} failed: ${run.error.message}`;
+  if (run.signal) return `${label} failed: signal ${run.signal}`;
+  return `${label} failed with status ${run.status}`;
+}
+
 function loadReconciliationSample() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fcl-bridge-reconciliation-'));
   const receiptPath = path.join(dir, 'reconciliation.json');
   const inputPath = path.join(dir, 'reconciliation-input.json');
   const script = path.resolve(ROOT, '..', 'pre-action-evidence-contract-reconciliation', 'test-pre-action-evidence-contract-reconciliation.js');
-  const run = spawnSync(process.execPath, [script, receiptPath, inputPath], { encoding: 'utf8' });
-  assert.strictEqual(run.status, 0, `reconciliation predecessor suite failed: ${run.stderr}`);
+  const run = spawnSync(process.execPath, [script, receiptPath, inputPath], {
+    stdio: 'inherit',
+    timeout: 60000,
+    killSignal: 'SIGKILL',
+  });
+  assert.strictEqual(run.status, 0, predecessorRunFailure('reconciliation predecessor suite', run));
   return {
     receipt: JSON.parse(fs.readFileSync(receiptPath, 'utf8')),
     input: JSON.parse(fs.readFileSync(inputPath, 'utf8')),
@@ -70,8 +80,12 @@ function loadApprovalSample() {
   const receiptPath = path.join(dir, 'approval.json');
   const inputPath = path.join(dir, 'approval-input.json');
   const script = path.resolve(ROOT, '..', 'action-specific-approval', 'test-action-specific-approval.js');
-  const run = spawnSync(process.execPath, [script, receiptPath, inputPath], { encoding: 'utf8' });
-  assert.strictEqual(run.status, 0, `approval predecessor suite failed: ${run.stderr}`);
+  const run = spawnSync(process.execPath, [script, receiptPath, inputPath], {
+    stdio: 'inherit',
+    timeout: 60000,
+    killSignal: 'SIGKILL',
+  });
+  assert.strictEqual(run.status, 0, predecessorRunFailure('approval predecessor suite', run));
   return {
     receipt: JSON.parse(fs.readFileSync(receiptPath, 'utf8')),
     input: JSON.parse(fs.readFileSync(inputPath, 'utf8')),
