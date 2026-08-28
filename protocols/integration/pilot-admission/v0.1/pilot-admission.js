@@ -441,6 +441,11 @@ function validateReceipt(receipt) {
     'real_data_involved', 'personal_data_involved', 'sensitive_personal_data_involved',
     'external_effect_requested', 'irreversible_effect_requested', 'real_world_decision_in_scope'
   ]) assertBoolean(receipt.pilot[key], `receipt.pilot.${key}`);
+  requireCondition(receipt.pilot.real_data_involved === true, 'receipt must concern real data');
+  requireCondition(
+    receipt.pilot.data_mode === (receipt.pilot.personal_data_involved ? 'real_personal' : 'real_non_personal'),
+    'receipt data_mode/personal_data_involved mismatch'
+  );
   requireCondition(STATUSES.includes(receipt.pilot.status), 'receipt pilot status invalid');
   assertStringArray(receipt.pilot.reason_codes, 'receipt.pilot.reason_codes', 1);
 
@@ -448,6 +453,43 @@ function validateReceipt(receipt) {
   for (const key of GATE_KEYS) assertBoolean(receipt.required_human_gates[key], `receipt.required_human_gates.${key}`);
   requireCondition(receipt.required_human_gates.human_product_owner_review_required === true, 'human product-owner review must remain required');
   requireCondition(receipt.required_human_gates.pilot_admission_disposition_required === true, 'pilot admission disposition must remain required');
+
+  const unsafePilotBoundary =
+    receipt.pilot.sensitive_personal_data_involved ||
+    receipt.pilot.external_effect_requested ||
+    receipt.pilot.irreversible_effect_requested ||
+    receipt.pilot.real_world_decision_in_scope;
+  if (unsafePilotBoundary) {
+    requireCondition(
+      receipt.pilot.status === 'PILOT_BOUNDARY_UNSATISFIED',
+      'unsafe pilot boundary must remain PILOT_BOUNDARY_UNSATISFIED'
+    );
+  }
+  if (receipt.pilot.personal_data_involved) {
+    requireCondition(
+      receipt.required_human_gates.data_protection_review_required === true,
+      'personal-data receipt requires data-protection review gate'
+    );
+    requireCondition(
+      receipt.required_human_gates.participant_consent_required === true,
+      'personal-data receipt requires participant-consent gate'
+    );
+  }
+  if (receipt.pilot.status === 'READY_FOR_HUMAN_PILOT_ADMISSION_REVIEW') {
+    requireCondition(receipt.pilot.personal_data_involved === false, 'READY status cannot carry personal data');
+    requireCondition(
+      receipt.required_human_gates.data_protection_review_required === false,
+      'READY status cannot claim a pending data-protection gate'
+    );
+    requireCondition(unsafePilotBoundary === false, 'READY status cannot carry an unsafe pilot boundary');
+  }
+  if (receipt.pilot.status === 'DATA_PROTECTION_REVIEW_REQUIRED') {
+    requireCondition(
+      receipt.required_human_gates.data_protection_review_required === true,
+      'DATA_PROTECTION_REVIEW_REQUIRED status requires data-protection gate'
+    );
+    requireCondition(unsafePilotBoundary === false, 'data-protection review status cannot mask an unsafe pilot boundary');
+  }
 
   assertExactKeys(receipt.claims, CLAIM_KEYS, 'receipt.claims');
   for (const key of TRUE_CLAIMS) requireCondition(receipt.claims[key] === true, `required claim ${key} must be true`);
