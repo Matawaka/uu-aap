@@ -1,0 +1,83 @@
+name: Private Portfolio Disclosure Assessment Gate v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/ecosystem/private-disclosure-assessment/v0.1/**'
+      - '.github/workflows/private-repository-disclosure-assessment-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'schemas/ecosystem/private-disclosure-assessment/v0.1/**'
+      - '.github/workflows/private-repository-disclosure-assessment-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Assess private disclosure readiness without publishing repositories
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Check implementation and conformance
+        run: |
+          node --check schemas/ecosystem/private-disclosure-assessment/v0.1/private-repository-disclosure-assessment.js
+          node --check schemas/ecosystem/private-disclosure-assessment/v0.1/test-private-repository-disclosure-assessment.js
+          node schemas/ecosystem/private-disclosure-assessment/v0.1/test-private-repository-disclosure-assessment.js
+      - name: Validate schemas and generated full-candidate receipt
+        run: |
+          node - <<'NODE' > /tmp/private-input.json
+          const i={protocol:'UU-AAP-PRIVATE-PORTFOLIO-DISCLOSURE-ASSESSMENT',version:'0.1',artifact_type:'PrivateRepositoryDisclosureAssessmentInput',candidate_id:'urn:uu-aap:private-repository-candidate:ci-example',evaluated_at:'2026-08-28T07:00:00Z',repository_evidence:{owner:'example-owner',name:'example-private-repository',url:'https://example.invalid/private',visibility:'private',default_branch:'main',frontier:{commit_sha:'1'.repeat(40),tree_sha:'2'.repeat(40)}},gates:{connector_frontier_verified:'pass',secret_scan_clear:'pass',private_data_scan_clear:'pass',ip_disclosure_clear:'pass',third_party_license_clear:'pass',security_abuse_review_clear:'pass',role_classified:'pass',monetization_impact_assessed:'pass',canonical_provenance_bound:'pass',human_disclosure_approval:'approved'},role_classification:'protocol',priorities:{strategic:'P0',development_wip:'P1',monetization_validation:'P1'},monetization:{direct_product_revenue_fit:'low',managed_service_integration_fit:'high',enterprise_conformance_support_fit:'high',audience_adoption_leverage:'high',source_secrecy_value:'low',open_network_effect_value:'high'},disclosure_request:{partial:false,full:true}};
+          process.stdout.write(JSON.stringify(i));
+          NODE
+          node schemas/ecosystem/private-disclosure-assessment/v0.1/private-repository-disclosure-assessment.js assess /tmp/private-input.json > /tmp/private-receipt.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          root=Path('schemas/ecosystem/private-disclosure-assessment/v0.1')
+          for sp,ip in [(root/'private-repository-disclosure-assessment-input.schema.json',Path('/tmp/private-input.json')),(root/'private-repository-disclosure-assessment-receipt.schema.json',Path('/tmp/private-receipt.json'))]:
+              schema=json.loads(sp.read_text())
+              Draft202012Validator.check_schema(schema)
+              Draft202012Validator(schema,format_checker=FormatChecker()).validate(json.loads(ip.read_text()))
+              print('VALID',ip)
+          PY
+      - name: Prove public-safe receipt and no visibility effect
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/private-receipt.json'))
+          text=json.dumps(r)
+          for token in ['example-private-repository','example-owner','https://example.invalid/private','repository_evidence']:
+              assert token not in text, token
+          assert r['recommended_disposition']=='FULL_PUBLIC_DISCLOSURE_CANDIDATE'
+          assert all(v is False for v in r['non_effects'].values())
+          assert r['assertions']['assessment_is_advisory'] is True
+          assert r['assertions']['repository_visibility_unchanged'] is True
+          print('Public-safe advisory receipt verified')
+          PY
+      - name: Prove production CLI has no network or subprocess surface
+        run: |
+          file=schemas/ecosystem/private-disclosure-assessment/v0.1/private-repository-disclosure-assessment.js
+          ! grep -E "require\\(['\"](?:http|https|net|tls|child_process)['\"]\\)|\\bfetch\\s*\\(|\\bspawn\\s*\\(|\\bexec\\s*\\(" "$file"
+      - name: Verify exact origin frontier
+        run: |
+          git cat-file -e '82ba7f792f0ea96c7854f849b7c0642477c65454^{commit}'
+          git merge-base --is-ancestor 82ba7f792f0ea96c7854f849b7c0642477c65454 HEAD
+      - name: Verify immutable checkout
+        run: test -z "$(git status --porcelain)"

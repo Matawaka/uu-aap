@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private Repository Disclosure Assessment Receipt v0.1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["protocol","version","receipt_type","candidate_id","assessed_at","role_classification","gate_statuses","priorities","monetization_posture","recommended_disposition","blockers","sanitization","assertions","non_effects","next_safe_action","content_hash"],
+  "properties":{
+    "protocol":{"const":"UU-AAP-PRIVATE-PORTFOLIO-DISCLOSURE-ASSESSMENT"},
+    "version":{"const":"0.1"},
+    "receipt_type":{"const":"PrivateRepositoryDisclosureAssessmentReceipt"},
+    "candidate_id":{"type":"string","minLength":1},
+    "assessed_at":{"type":"string","format":"date-time"},
+    "role_classification":{"enum":["protocol","shared_infrastructure","product","pilot","publication","experiment","archive","mixed"]},
+    "gate_statuses":{"type":"object"},
+    "priorities":{"type":"object"},
+    "monetization_posture":{"type":"object"},
+    "recommended_disposition":{"enum":["KEEP_PRIVATE","PARTIAL_DISCLOSURE_CANDIDATE","FULL_PUBLIC_DISCLOSURE_CANDIDATE"]},
+    "blockers":{"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "sanitization":{"type":"object","additionalProperties":false,"required":["repository_identity_included","repository_url_included","private_paths_included","private_content_included"],"properties":{"repository_identity_included":{"const":false},"repository_url_included":{"const":false},"private_paths_included":{"const":false},"private_content_included":{"const":false}}},
+    "assertions":{"type":"object","additionalProperties":false,"required":["assessment_is_advisory","explicit_human_gate_required","monetization_does_not_authorize_disclosure","repository_visibility_unchanged"],"properties":{"assessment_is_advisory":{"const":true},"explicit_human_gate_required":{"const":true},"monetization_does_not_authorize_disclosure":{"const":true},"repository_visibility_unchanged":{"const":true}}},
+    "non_effects":{"type":"object","additionalProperties":false,"required":["visibility_change_performed","repository_publication_performed","license_change_performed","deployment_performed","external_effect_performed"],"properties":{"visibility_change_performed":{"const":false},"repository_publication_performed":{"const":false},"license_change_performed":{"const":false},"deployment_performed":{"const":false},"external_effect_performed":{"const":false}}},
+    "next_safe_action":{"enum":["COMPLETE_MISSING_PRIVATE_REPOSITORY_GATES","HUMAN_REVIEW_DISCLOSURE_CANDIDATE"]},
+    "content_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}
+  }
+}

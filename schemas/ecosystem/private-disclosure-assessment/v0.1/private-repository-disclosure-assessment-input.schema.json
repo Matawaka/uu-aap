@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private Repository Disclosure Assessment Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","artifact_type","candidate_id","evaluated_at","repository_evidence","gates","role_classification","priorities","monetization","disclosure_request"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-PRIVATE-PORTFOLIO-DISCLOSURE-ASSESSMENT"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "PrivateRepositoryDisclosureAssessmentInput"},
+    "candidate_id": {"type":"string","minLength":1},
+    "evaluated_at": {"type":"string","format":"date-time"},
+    "repository_evidence": {
+      "type":"object","additionalProperties":false,
+      "required":["owner","name","url","visibility","default_branch","frontier"],
+      "properties":{
+        "owner":{"type":"string","minLength":1},
+        "name":{"type":"string","minLength":1},
+        "url":{"type":"string","minLength":1},
+        "visibility":{"const":"private"},
+        "default_branch":{"type":"string","minLength":1},
+        "frontier":{"type":"object","additionalProperties":false,"required":["commit_sha","tree_sha"],"properties":{"commit_sha":{"type":"string","pattern":"^[0-9a-f]{40}$"},"tree_sha":{"type":"string","pattern":"^[0-9a-f]{40}$"}}}
+      }
+    },
+    "gates": {
+      "type":"object","additionalProperties":false,
+      "required":["connector_frontier_verified","secret_scan_clear","private_data_scan_clear","ip_disclosure_clear","third_party_license_clear","security_abuse_review_clear","role_classified","monetization_impact_assessed","canonical_provenance_bound","human_disclosure_approval"],
+      "properties":{
+        "connector_frontier_verified":{"enum":["pass","fail","unknown"]},
+        "secret_scan_clear":{"enum":["pass","fail","unknown"]},
+        "private_data_scan_clear":{"enum":["pass","fail","unknown"]},
+        "ip_disclosure_clear":{"enum":["pass","fail","unknown"]},
+        "third_party_license_clear":{"enum":["pass","fail","unknown"]},
+        "security_abuse_review_clear":{"enum":["pass","fail","unknown"]},
+        "role_classified":{"enum":["pass","fail","unknown"]},
+        "monetization_impact_assessed":{"enum":["pass","fail","unknown"]},
+        "canonical_provenance_bound":{"enum":["pass","fail","unknown"]},
+        "human_disclosure_approval":{"enum":["approved","not_approved","unknown"]}
+      }
+    },
+    "role_classification":{"enum":["protocol","shared_infrastructure","product","pilot","publication","experiment","archive","mixed"]},
+    "priorities":{"type":"object","additionalProperties":false,"required":["strategic","development_wip","monetization_validation"],"properties":{"strategic":{"enum":["P0","P1","P2","P3"]},"development_wip":{"enum":["P0","P1","P2","P3"]},"monetization_validation":{"enum":["P0","P1","P2","P3"]}}},
+    "monetization":{"type":"object","additionalProperties":false,"required":["direct_product_revenue_fit","managed_service_integration_fit","enterprise_conformance_support_fit","audience_adoption_leverage","source_secrecy_value","open_network_effect_value"],"properties":{"direct_product_revenue_fit":{"enum":["high","medium","low","unknown"]},"managed_service_integration_fit":{"enum":["high","medium","low","unknown"]},"enterprise_conformance_support_fit":{"enum":["high","medium","low","unknown"]},"audience_adoption_leverage":{"enum":["high","medium","low","unknown"]},"source_secrecy_value":{"enum":["high","medium","low","unknown"]},"open_network_effect_value":{"enum":["high","medium","low","unknown"]}}},
+    "disclosure_request":{"type":"object","additionalProperties":false,"required":["partial","full"],"properties":{"partial":{"type":"boolean"},"full":{"type":"boolean"}},"allOf":[{"not":{"properties":{"partial":{"const":true},"full":{"const":true}},"required":["partial","full"]}}]}
+  }
+}
