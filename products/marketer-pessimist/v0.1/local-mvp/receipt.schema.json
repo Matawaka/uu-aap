@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/marketer-pessimist/v0.1/local-mvp/receipt.schema.json",
+  "title": "MarketerPessimistStressTestReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "receipt_id", "contract_binding",
+    "evaluation_frontier", "source_input", "state", "uncertainty_states",
+    "classification_summary", "evidence_lineage", "counterarguments",
+    "causal_alternatives", "falsifiers", "missing_evidence",
+    "recommendation_candidate", "success_criteria", "claims", "non_effects",
+    "next_safe_action", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETER-PESSIMIST-LOCAL-MVP"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "MarketerPessimistStressTestReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:marketer-pessimist:stress-test-receipt:[0-9a-f]{24}$"},
+    "contract_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["contract_id", "product_id", "product_version", "content_hash"],
+      "properties": {
+        "contract_id": {"const": "marketer-pessimist-product-contract"},
+        "product_id": {"const": "marketer-pessimist"},
+        "product_version": {"const": "0.1"},
+        "content_hash": {"const": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6"}
+      }
+    },
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "source_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["input_id", "input_hash"],
+      "properties": {
+        "input_id": {"type": "string", "minLength": 1},
+        "input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "state": {"enum": ["UNKNOWN", "CONFLICT", "INSUFFICIENT_EVIDENCE", "CANDIDATE_READY"]},
+    "uncertainty_states": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"enum": ["UNKNOWN", "CONFLICT", "INSUFFICIENT_EVIDENCE", "CANDIDATE_READY"]}
+    },
+    "classification_summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["counts", "statement_ids_by_classification"],
+      "properties": {
+        "counts": {"$ref": "#/$defs/classificationCounts"},
+        "statement_ids_by_classification": {"$ref": "#/$defs/classificationArrays"}
+      }
+    },
+    "evidence_lineage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["statement_id", "classification", "evidence_refs", "evidence_quality"],
+        "properties": {
+          "statement_id": {"type": "string", "minLength": 1},
+          "classification": {"enum": ["observed_evidence", "interpretation", "assumption", "hypothesis", "declared_objective"]},
+          "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "evidence_quality": {"type": "array", "uniqueItems": true, "items": {"enum": ["verified", "unverified", "stale", "conflicting"]}}
+        }
+      }
+    },
+    "counterarguments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_id", "statement_id", "status", "reason_code", "text", "basis_evidence_refs"],
+        "properties": {
+          "candidate_id": {"type": "string", "minLength": 1},
+          "statement_id": {"type": "string", "minLength": 1},
+          "status": {"const": "candidate"},
+          "reason_code": {"type": "string", "minLength": 1},
+          "text": {"type": "string", "minLength": 1},
+          "basis_evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "causal_alternatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_id", "statement_id", "status", "text", "basis_evidence_refs"],
+        "properties": {
+          "candidate_id": {"type": "string", "minLength": 1},
+          "statement_id": {"type": "string", "minLength": 1},
+          "status": {"const": "candidate"},
+          "text": {"type": "string", "minLength": 1},
+          "basis_evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "falsifiers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["statement_id", "status", "kind", "description", "unavailable_reason"],
+        "properties": {
+          "statement_id": {"type": "string", "minLength": 1},
+          "status": {"enum": ["available", "unavailable"]},
+          "kind": {"enum": ["observation", "test", "none"]},
+          "description": {"type": ["string", "null"]},
+          "unavailable_reason": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "missing_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["gap_id", "statement_id", "code", "evidence_ref", "description"],
+        "properties": {
+          "gap_id": {"type": "string", "minLength": 1},
+          "statement_id": {"type": "string", "minLength": 1},
+          "code": {"type": "string", "minLength": 1},
+          "evidence_ref": {"type": ["string", "null"]},
+          "description": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "recommendation_candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["candidate", "rationale_codes", "human_disposition_required"],
+      "properties": {
+        "candidate": {"enum": ["REQUEST_MORE_EVIDENCE_CANDIDATE", "HUMAN_RECONCILIATION_REQUIRED", "READY_FOR_HUMAN_DISPOSITION_CANDIDATE"]},
+        "rationale_codes": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "human_disposition_required": {"const": true}
+      }
+    },
+    "success_criteria": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["material_claim_classification", "recommendation_falsifiability", "no_external_effect"],
+      "properties": {
+        "material_claim_classification": {"const": true},
+        "recommendation_falsifiability": {"const": true},
+        "no_external_effect": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stress_test_completed", "exact_contract_bound", "material_statements_classified",
+        "evidence_lineage_preserved", "uncertainty_preserved", "human_disposition_still_required",
+        "truth_certified", "claim_rejected", "automatic_negative_judgment",
+        "human_disposition_recorded", "publication_authorized", "campaign_send_authorized",
+        "campaign_sent", "advertising_account_accessed", "funds_spent", "audience_uploaded",
+        "personal_targeting_performed", "protected_attribute_inferred",
+        "psychological_vulnerability_inferred", "external_system_mutated", "authority_created",
+        "responsibility_accepted", "action_permit_created", "execution_admitted",
+        "external_effect_performed", "stable_core_promotion_established", "successor_authority_created"
+      ],
+      "properties": {
+        "stress_test_completed": {"const": true},
+        "exact_contract_bound": {"const": true},
+        "material_statements_classified": {"const": true},
+        "evidence_lineage_preserved": {"const": true},
+        "uncertainty_preserved": {"const": true},
+        "human_disposition_still_required": {"const": true},
+        "truth_certified": {"const": false},
+        "claim_rejected": {"const": false},
+        "automatic_negative_judgment": {"const": false},
+        "human_disposition_recorded": {"const": false},
+        "publication_authorized": {"const": false},
+        "campaign_send_authorized": {"const": false},
+        "campaign_sent": {"const": false},
+        "advertising_account_accessed": {"const": false},
+        "funds_spent": {"const": false},
+        "audience_uploaded": {"const": false},
+        "personal_targeting_performed": {"const": false},
+        "protected_attribute_inferred": {"const": false},
+        "psychological_vulnerability_inferred": {"const": false},
+        "external_system_mutated": {"const": false},
+        "authority_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "action_permit_created": {"const": false},
+        "execution_admitted": {"const": false},
+        "external_effect_performed": {"const": false},
+        "stable_core_promotion_established": {"const": false},
+        "successor_authority_created": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "next_safe_action": {"const": "HUMAN_ANALYSIS_DISPOSITION_GATE_REQUIRED"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "classificationCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed_evidence", "interpretation", "assumption", "hypothesis", "declared_objective"],
+      "properties": {
+        "observed_evidence": {"type": "integer", "minimum": 0},
+        "interpretation": {"type": "integer", "minimum": 0},
+        "assumption": {"type": "integer", "minimum": 0},
+        "hypothesis": {"type": "integer", "minimum": 0},
+        "declared_objective": {"type": "integer", "minimum": 0}
+      }
+    },
+    "classificationArrays": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observed_evidence", "interpretation", "assumption", "hypothesis", "declared_objective"],
+      "properties": {
+        "observed_evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "interpretation": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "assumption": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "hypothesis": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "declared_objective": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}
