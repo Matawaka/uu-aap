@@ -1,0 +1,59 @@
+{
+  "protocol": "UU-AAP-PRODUCT-PILOT-ADMISSION",
+  "version": "0.1",
+  "artifact_type": "ProductPilotAdmissionCandidate",
+  "candidate_id": "urn:uu-aap:pilot-admission:candidate:honest-hiring-real-person-review-001",
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "48843187400e3c2cf561a53659a0a1ef48e65a32"
+  },
+  "product": {
+    "profile_id": "honest-hiring-v0.1",
+    "product_id": "honest-hiring",
+    "product_version": "0.1",
+    "product_contract_hash": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+    "local_mvp_source_path": "products/honest-hiring/v0.1/local-mvp/examples/synthetic-sap-data-platform-architect.input.json"
+  },
+  "proposed_pilot": {
+    "pilot_id": "honest-hiring-real-person-review-001",
+    "mode": "bounded_real_no_external_effect",
+    "purpose": "Prepare a future bounded human-review comparison using voluntarily supplied job-relevant applicant evidence without making an employment decision.",
+    "scope": [
+      "single-role-comparison-review",
+      "candidate-supplied-job-evidence"
+    ],
+    "data_mode": "real_personal",
+    "real_data_involved": true,
+    "personal_data_involved": true,
+    "sensitive_personal_data_involved": false,
+    "participant_opt_in_required": true,
+    "external_effect_requested": false,
+    "irreversible_effect_requested": false,
+    "real_world_decision_in_scope": false,
+    "network_access_required": false,
+    "provider_invocation_required": false,
+    "account_mutation_required": false,
+    "retention_mode": "bounded",
+    "retention_boundary": "Retain only minimum job-relevant evidence for the declared pilot review and contestability window.",
+    "correction_supported": true,
+    "deletion_supported": true
+  },
+  "requested_reviews": {
+    "human_product_owner_review_required": true,
+    "data_protection_review_requested": true,
+    "participant_consent_boundary_required": true
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "pilot_start_available": false,
+    "pilot_permit_creation_available": false,
+    "network_delivery_available": false,
+    "provider_invocation_available": false,
+    "account_mutation_available": false,
+    "external_effect_available": false,
+    "action_permit_available": false,
+    "execution_available": false
+  },
+  "content_hash": "sha256:d3fb2123b42f0e968b4b67dd9c975313c751ae53e731a3f1214bb5e052231e06"
+}
