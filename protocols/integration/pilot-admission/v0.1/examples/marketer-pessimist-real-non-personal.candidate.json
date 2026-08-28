@@ -1,0 +1,59 @@
+{
+  "protocol": "UU-AAP-PRODUCT-PILOT-ADMISSION",
+  "version": "0.1",
+  "artifact_type": "ProductPilotAdmissionCandidate",
+  "candidate_id": "urn:uu-aap:pilot-admission:candidate:marketer-pessimist-bounded-real-review-001",
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "48843187400e3c2cf561a53659a0a1ef48e65a32"
+  },
+  "product": {
+    "profile_id": "marketer-pessimist-v0.1",
+    "product_id": "marketer-pessimist",
+    "product_version": "0.1",
+    "product_contract_hash": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6",
+    "local_mvp_source_path": "products/marketer-pessimist/v0.1/local-mvp/examples/synthetic-onboarding.input.json"
+  },
+  "proposed_pilot": {
+    "pilot_id": "marketer-pessimist-bounded-real-review-001",
+    "mode": "bounded_real_no_external_effect",
+    "purpose": "Review one real non-personal product positioning claim with explicitly supplied business evidence before any publication or campaign action.",
+    "scope": [
+      "single-claim-review",
+      "non-personal-business-evidence"
+    ],
+    "data_mode": "real_non_personal",
+    "real_data_involved": true,
+    "personal_data_involved": false,
+    "sensitive_personal_data_involved": false,
+    "participant_opt_in_required": false,
+    "external_effect_requested": false,
+    "irreversible_effect_requested": false,
+    "real_world_decision_in_scope": false,
+    "network_access_required": false,
+    "provider_invocation_required": false,
+    "account_mutation_required": false,
+    "retention_mode": "session",
+    "retention_boundary": "Discard the bounded review payload when the human pilot review session closes.",
+    "correction_supported": true,
+    "deletion_supported": true
+  },
+  "requested_reviews": {
+    "human_product_owner_review_required": true,
+    "data_protection_review_requested": false,
+    "participant_consent_boundary_required": false
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "pilot_start_available": false,
+    "pilot_permit_creation_available": false,
+    "network_delivery_available": false,
+    "provider_invocation_available": false,
+    "account_mutation_available": false,
+    "external_effect_available": false,
+    "action_permit_available": false,
+    "execution_available": false
+  },
+  "content_hash": "sha256:8addbef243129e68591cddbd680362b1362ac774067153e1915a65d2941010ff"
+}
