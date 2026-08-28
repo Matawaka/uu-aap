@@ -1,0 +1,144 @@
+name: FCL Execute Revalidation Source Parameterization v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/execute-revalidation-source-parameterization/**'
+      - 'protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/**'
+      - 'protocols/fcl/v0.1/pre-action-authorize-admission-assessment/**'
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - '.github/workflows/fcl-execute-revalidation-source-parameterization-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/execute-revalidation-source-parameterization/**'
+      - 'protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/**'
+      - 'protocols/fcl/v0.1/pre-action-authorize-admission-assessment/**'
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - '.github/workflows/fcl-execute-revalidation-source-parameterization-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Revalidate FCL execute boundary without invocation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Preserve historical Execute Revalidation and parameterized parity
+        run: |
+          node protocols/integration/execute-revalidation/v0.1/validate-execute-revalidation.js
+          node --check protocols/integration/execute-revalidation/v0.1/validate-parameterized-decision.js
+          node protocols/integration/execute-revalidation/v0.1/test-parameterized-decision.js
+      - name: Preserve downstream Invocation Envelope unchanged
+        run: node protocols/integration/execution-invocation-envelope/v0.1/validate-invocation-envelope.js
+      - name: Materialize exact FCL authorize source once
+        timeout-minutes: 4
+        run: |
+          node protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/test-execution-lifecycle-authorize-phase-binding.js \
+            /tmp/fcl-revalidation-authorize-input.json \
+            /tmp/fcl-revalidation-authorize-phase.json \
+            /tmp/fcl-revalidation-authorize-receipt.json
+      - name: Run FCL Execute Revalidation conformance with cached authorize source
+        timeout-minutes: 2
+        env:
+          FCL_REVALIDATION_CACHED_AUTHORIZE_INPUT: /tmp/fcl-revalidation-authorize-input.json
+          FCL_REVALIDATION_CACHED_AUTHORIZE_PHASE: /tmp/fcl-revalidation-authorize-phase.json
+          FCL_REVALIDATION_CACHED_AUTHORIZE_RECEIPT: /tmp/fcl-revalidation-authorize-receipt.json
+        run: |
+          node --check protocols/fcl/v0.1/execute-revalidation-source-parameterization/execute-revalidation-source-parameterization.js
+          node --check protocols/fcl/v0.1/execute-revalidation-source-parameterization/test-execute-revalidation-source-parameterization.js
+          node protocols/fcl/v0.1/execute-revalidation-source-parameterization/test-execute-revalidation-source-parameterization.js \
+            /tmp/fcl-revalidation-input.json \
+            /tmp/fcl-generic-revalidation-decision.json \
+            /tmp/fcl-revalidation-receipt.json
+      - name: Validate FCL and generic revalidation schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('protocols/fcl/v0.1/execute-revalidation-source-parameterization/execute-revalidation-source-parameterization-input.schema.json'), Path('/tmp/fcl-revalidation-input.json')),
+              (Path('protocols/integration/execute-revalidation/v0.1/execute-revalidation.schema.json'), Path('/tmp/fcl-generic-revalidation-decision.json')),
+              (Path('protocols/fcl/v0.1/execute-revalidation-source-parameterization/execute-revalidation-source-parameterization-receipt.schema.json'), Path('/tmp/fcl-revalidation-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema=json.loads(schema_path.read_text(encoding='utf-8'))
+              instance=json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+      - name: Independently verify ready decision binding and non-effects
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          i=json.loads(Path('/tmp/fcl-revalidation-input.json').read_text())
+          d=json.loads(Path('/tmp/fcl-generic-revalidation-decision.json').read_text())
+          r=json.loads(Path('/tmp/fcl-revalidation-receipt.json').read_text())
+          a=i['authorize_binding_input']['generic_assessment']
+          b=i['authorize_binding_input']['assessment_input']['pre_action_bundle']
+          ar=i['fcl_authorize_phase_receipt']
+          def canonical(v):
+              if v is None or isinstance(v,(bool,int,float,str)):
+                  return json.dumps(v,ensure_ascii=False,separators=(',',':'))
+              if isinstance(v,list): return '['+','.join(canonical(x) for x in v)+']'
+              if isinstance(v,dict): return '{'+','.join(json.dumps(k,ensure_ascii=False)+':'+canonical(v[k]) for k in sorted(v))+'}'
+              raise TypeError(type(v))
+          def h(v):
+              p={k:val for k,val in v.items() if k!='content_hash'}
+              return 'sha256:'+hashlib.sha256(canonical(p).encode()).hexdigest()
+          assert d['content_hash']==h(d)
+          assert r['content_hash']==h(r)
+          assert d['decision']['status']=='ready'==r['decision_status']
+          assert d['authorize_admission_ref']['content_hash']==a['content_hash']==r['generic_admission_hash']
+          assert r['authorize_phase_receipt_hash']==ar['content_hash']
+          assert r['bundle_content_hash']==b['content_hash']
+          assert r['action_permit_hash']==b['core_receipts']['action_permit']['content_hash']
+          assert r['approval_hash']==b['approval_binding']['content_hash']
+          assert r['target_binding_hash']==b['target']['binding_hash']
+          assert r['frontier']==b['target']['expected_predecessor_frontier']
+          assert r['execute_revalidation_must_occur_by']==r['authorization_must_occur_by']==b['lifecycle_handoff']['authorization_must_occur_by']
+          assert all(v is True for v in r['assertions'].values())
+          assert all(v is False for v in r['non_effects'].values())
+          assert d['non_effects']['permit_consumed'] is False
+          assert d['non_effects']['actuator_invocation_emitted'] is False
+          assert d['non_effects']['action_performed'] is False
+          assert r['next_safe_action']=='PARAMETERIZE_EXECUTION_INVOCATION_ENVELOPE_FCL_SOURCE'
+          print('Independent FCL Execute Revalidation ready/non-effect proof verified')
+          PY
+      - name: Protect canonical predecessor implementations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          protected="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/(execution-lifecycle-authorize-phase-binding|pre-action-authorize-admission-assessment|pre-action-bundle-assembly|action-specific-approval|core-action-permit-binding)/|protocols/integration/(execution-invocation-envelope|execute-revalidation)/v0\.1/)' || true)"
+          bad="$(printf '%s\n' "$protected" \
+            | grep -v '^protocols/integration/execute-revalidation/v0\.1/validate-parameterized-decision\.js$' \
+            | grep -v '^protocols/integration/execute-revalidation/v0\.1/test-parameterized-decision\.js$' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: revalidation parameterization modified protected predecessor implementation'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'Protected predecessor implementations unchanged; parameterized Execute Revalidation seam allowed'
