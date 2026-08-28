@@ -1,0 +1,141 @@
+{
+  "protocol": "KONTUR-CONSOLIDATED-DEMO",
+  "version": "0.1",
+  "artifact_type": "KONTURConsolidatedDemoInput",
+  "demo_id": "urn:uu-aap:kontur:consolidated-demo:phase-d-synthetic-001",
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "0f284779a51a2161d3300384586b375ecffd870a",
+    "observed_at": "2026-08-28T16:14:17Z"
+  },
+  "family_binding": {
+    "product_contract_hash": "sha256:21597d591cc4fbe2974c8ac63d669c79158734336c6c64f8ba6a91602835b1b5",
+    "family_manifest_path": "products/kontur/v0.1/family-manifest.json",
+    "family_manifest_hash": "sha256:90da81f7c33f44f34410790e9269bf8b05a5ad47db596437b214b8301701a5a1"
+  },
+  "component_reviews": {
+    "readiness": {
+      "member_id": "readiness-aggregator",
+      "conformance_status": "PASS",
+      "readiness_evidence_available": true,
+      "activation_authorized": false,
+      "human_activation_step_required": true
+    },
+    "activation": {
+      "member_id": "activation-boundary",
+      "conformance_status": "PASS",
+      "human_review_required": true,
+      "preflight_run": false,
+      "activation_performed": false
+    },
+    "kernel": {
+      "member_id": "responsibility-kernel",
+      "conformance_status": "PASS",
+      "structural_lineage_reviewed": true,
+      "kernel_activated": false,
+      "responsibility_accepted": false
+    },
+    "ledger": {
+      "member_id": "responsibility-ledger",
+      "conformance_status": "PASS",
+      "append_only_continuity_reviewed": true,
+      "recovery_lineage_reviewed": true,
+      "ledger_mutated": false
+    },
+    "live_host": {
+      "member_id": "live-host-boundary",
+      "conformance_status": "PASS",
+      "observation_designation_separation_preserved": true,
+      "designation_binding_separation_preserved": true,
+      "binding_activation_separation_preserved": true,
+      "host_designated": false,
+      "executor_bound": false
+    },
+    "game_companion": {
+      "member_id": "game-companion",
+      "conformance_status": "PASS",
+      "chain_path": "pilots/kontur-game-companion/dependency-contract/game-companion-chain.json",
+      "layer_ids": [
+        "observational-lane",
+        "assistance-gate",
+        "shared-discovery-memory",
+        "bounded-initiative",
+        "focus-diversity",
+        "interaction-receipt",
+        "pause-resume"
+      ],
+      "chain_closed": true,
+      "pilot_evidence_only": true
+    }
+  },
+  "pause_recovery": {
+    "measurement_class": "synthetic_pause_recovery_demo",
+    "sequence": [
+      "ACTIVE_LOCAL_REVIEW",
+      "PAUSE_REQUESTED",
+      "PAUSED_NO_BACKGROUND_ACTIVITY",
+      "RESUME_FROM_MINIMAL_STATE",
+      "LOCAL_REVIEW_RESUMED"
+    ],
+    "background_activity_during_pause": false,
+    "pause_creates_successor_authority": false,
+    "resume_creates_successor_authority": false,
+    "minimal_state_resume": true
+  },
+  "field_outcomes": {
+    "measurement_class": "synthetic_privacy_minimized_demo",
+    "record_count": 5,
+    "aggregates": {
+      "bounded_assistance_opportunity_count": 4,
+      "attention_cue_count": 2,
+      "pause_count": 1,
+      "resume_count": 1,
+      "explicit_human_interruption_count": 3
+    },
+    "excluded_data": {
+      "raw_game_history": false,
+      "transcripts": false,
+      "identity_correlation": false,
+      "behavioral_profile": false,
+      "psychological_profile": false,
+      "mood_profile": false,
+      "attention_profile": false,
+      "engagement_optimization": false,
+      "cross_game_preference_profile": false,
+      "total_history_capture": false
+    }
+  },
+  "metrics": {
+    "measurement_class": "synthetic_demo_metrics",
+    "family_member_count": 6,
+    "established_edge_count": 4,
+    "planned_edge_count": 2,
+    "canonical_path_count": 23,
+    "game_companion_layer_count": 7,
+    "human_gate_count": 3,
+    "human_interruption_count": 3,
+    "pause_event_count": 1,
+    "resume_event_count": 1,
+    "network_call_count": 0,
+    "filesystem_write_count": 0,
+    "external_effect_count": 0,
+    "runtime_start_count": 0,
+    "ledger_mutation_count": 0,
+    "host_designation_count": 0
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "network_access_required": false,
+    "filesystem_write_required": false,
+    "activation_available": false,
+    "host_designation_available": false,
+    "ledger_write_available": false,
+    "runtime_start_available": false,
+    "background_activity_available": false,
+    "action_permit_available": false,
+    "execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:8541303b0f7a6654a4277c6e089b8308f30cb8669c2e257efc5cbe1c85063454"
+}
