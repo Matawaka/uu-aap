@@ -1,0 +1,124 @@
+{
+  "$schema": "./application-boundary.schema.json",
+  "protocol": "MARKETCLOSER-APPLICATION-BOUNDARY",
+  "version": "0.1",
+  "artifact_type": "MarketCloserApplicationBoundary",
+  "application_id": "marketcloser",
+  "application_role": "human-reviewed-review-response-application",
+  "origin_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "9d30ec25b64430235389526267c742ea37d36dba",
+    "tree": "ce7daa841e56ace21e05a982e0ca069113e56746"
+  },
+  "dependency": {
+    "product_id": "marketer-pessimist",
+    "product_version": "0.1",
+    "product_contract_hash": "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6",
+    "relation": "bounded-analysis-consumer",
+    "authority_transfer": false,
+    "responsibility_transfer": false,
+    "raw_review_transfer": false,
+    "reverse_core_dependency": false
+  },
+  "data_boundaries": {
+    "raw_review_content": {
+      "may_contain_personal_data": true,
+      "application_side_only": true,
+      "allowed_to_cross_marketer_boundary": false
+    },
+    "minimized_claim_evidence": {
+      "personal_data_allowed": false,
+      "sensitive_personal_data_allowed": false,
+      "human_minimization_review_required": true,
+      "allowed_to_cross_marketer_boundary": true
+    },
+    "evidence_reference": {
+      "independent_verification_default": false,
+      "unavailable_means_false": false,
+      "missing_means_false": false
+    },
+    "business_pressure_context": {
+      "triage_use_allowed": true,
+      "epistemic_weight_allowed": false,
+      "truth_override_allowed": false,
+      "privacy_override_allowed": false
+    },
+    "audit_metadata": {
+      "full_case_content_implied": false,
+      "publication_receipt_implied": false,
+      "truth_certification_implied": false
+    }
+  },
+  "workflow_states": [
+    "REVIEW_OBSERVED",
+    "EVIDENCE_RECORDED",
+    "MINIMIZATION_REQUIRED",
+    "ANALYSIS_CANDIDATE_READY",
+    "RESPONSE_CANDIDATE_READY",
+    "HUMAN_APPROVAL_REQUIRED",
+    "APPROVED_FOR_COPY_EXPORT",
+    "COPIED_PUBLICATION_UNVERIFIED",
+    "PUBLICATION_OBSERVED",
+    "OUTCOME_EVIDENCE_RECORDED"
+  ],
+  "state_distinctions": {
+    "response_candidate_is_approved_response": false,
+    "approved_response_is_published_response": false,
+    "copied_response_is_published_response": false,
+    "publication_observation_is_publication_authority": false
+  },
+  "deployment_boundary": {
+    "operator_supplied_url_is_source_provenance": false,
+    "network_fetch_available": false,
+    "deployment_binding_receipt_available": false
+  },
+  "controls": {
+    "read_only_contract": true,
+    "network_access_available": false,
+    "external_publication_available": false,
+    "platform_mutation_available": false,
+    "campaign_send_available": false,
+    "spend_available": false,
+    "audience_upload_available": false,
+    "personal_targeting_available": false,
+    "identity_resolution_available": false,
+    "action_permit_creation_available": false,
+    "pilot_permit_creation_available": false,
+    "execution_admission_available": false,
+    "external_effect_available": false
+  },
+  "canonicalization": {
+    "id": "MARKETCLOSER-SORTED-JSON-v0.1",
+    "encoding": "UTF-8",
+    "object_keys": "lexicographic",
+    "array_order": "preserved",
+    "insignificant_whitespace": "removed",
+    "content_hash_field_omitted": true
+  },
+  "non_effects": [
+    "MarketCloser Application != Marketer Pessimist Core",
+    "Public Review != Verified Fact",
+    "Merchant Explanation != Verified Fact",
+    "Business Pressure != Epistemic Weight",
+    "Urgency != Permission to Manipulate",
+    "Public Content != Non-Personal Data",
+    "Heuristic Redaction != Privacy Guarantee",
+    "Minimized Claim != Raw Review Identity",
+    "Evidence Reference != Independently Verified Evidence",
+    "Response Candidate != Approved Response",
+    "Approved Response != Published Response",
+    "Copied Response != Published Response",
+    "Publication Observation != Publication Authority",
+    "Deployment URL != Source Provenance Without Binding",
+    "Audit Export != Full Case Export",
+    "Audit Digest != Independent Attestation Without Declared Canonicalization",
+    "UU-AAP/T-inspired != UU-AAP Conformance",
+    "Live Pilot Evidence != Protocol Conformance",
+    "Application Event != Authority Effect",
+    "Audit Export != Automatic Transmission",
+    "Developer Analysis Authorization != External Publication Authority",
+    "Deployment Version != Application Boundary Version"
+  ],
+  "next_safe_action": "DEPLOYMENT_BOUND_OBSERVATION_RECEIPT_REQUIRED",
+  "content_hash": "sha256:143981c45d5a8cfa82261247325aef81da9686d5303ef9f696683ef6e5e9ee97"
+}

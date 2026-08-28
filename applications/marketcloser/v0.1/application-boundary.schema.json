@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/application-boundary.schema.json",
+  "title": "MarketCloserApplicationBoundary v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema", "protocol", "version", "artifact_type", "application_id", "application_role",
+    "origin_frontier", "dependency", "data_boundaries", "workflow_states", "state_distinctions",
+    "deployment_boundary", "controls", "canonicalization", "non_effects", "next_safe_action", "content_hash"
+  ],
+  "properties": {
+    "$schema": {"const": "./application-boundary.schema.json"},
+    "protocol": {"const": "MARKETCLOSER-APPLICATION-BOUNDARY"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserApplicationBoundary"},
+    "application_id": {"const": "marketcloser"},
+    "application_role": {"const": "human-reviewed-review-response-application"},
+    "origin_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "product_id", "product_version", "product_contract_hash", "relation",
+        "authority_transfer", "responsibility_transfer", "raw_review_transfer", "reverse_core_dependency"
+      ],
+      "properties": {
+        "product_id": {"const": "marketer-pessimist"},
+        "product_version": {"const": "0.1"},
+        "product_contract_hash": {"pattern": "^sha256:[0-9a-f]{64}$"},
+        "relation": {"const": "bounded-analysis-consumer"},
+        "authority_transfer": {"const": false},
+        "responsibility_transfer": {"const": false},
+        "raw_review_transfer": {"const": false},
+        "reverse_core_dependency": {"const": false}
+      }
+    },
+    "data_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_review_content", "minimized_claim_evidence", "evidence_reference",
+        "business_pressure_context", "audit_metadata"
+      ],
+      "properties": {
+        "raw_review_content": {
+          "type": "object", "additionalProperties": false,
+          "required": ["may_contain_personal_data", "application_side_only", "allowed_to_cross_marketer_boundary"],
+          "properties": {
+            "may_contain_personal_data": {"const": true},
+            "application_side_only": {"const": true},
+            "allowed_to_cross_marketer_boundary": {"const": false}
+          }
+        },
+        "minimized_claim_evidence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["personal_data_allowed", "sensitive_personal_data_allowed", "human_minimization_review_required", "allowed_to_cross_marketer_boundary"],
+          "properties": {
+            "personal_data_allowed": {"const": false},
+            "sensitive_personal_data_allowed": {"const": false},
+            "human_minimization_review_required": {"const": true},
+            "allowed_to_cross_marketer_boundary": {"const": true}
+          }
+        },
+        "evidence_reference": {
+          "type": "object", "additionalProperties": false,
+          "required": ["independent_verification_default", "unavailable_means_false", "missing_means_false"],
+          "properties": {
+            "independent_verification_default": {"const": false},
+            "unavailable_means_false": {"const": false},
+            "missing_means_false": {"const": false}
+          }
+        },
+        "business_pressure_context": {
+          "type": "object", "additionalProperties": false,
+          "required": ["triage_use_allowed", "epistemic_weight_allowed", "truth_override_allowed", "privacy_override_allowed"],
+          "properties": {
+            "triage_use_allowed": {"const": true},
+            "epistemic_weight_allowed": {"const": false},
+            "truth_override_allowed": {"const": false},
+            "privacy_override_allowed": {"const": false}
+          }
+        },
+        "audit_metadata": {
+          "type": "object", "additionalProperties": false,
+          "required": ["full_case_content_implied", "publication_receipt_implied", "truth_certification_implied"],
+          "properties": {
+            "full_case_content_implied": {"const": false},
+            "publication_receipt_implied": {"const": false},
+            "truth_certification_implied": {"const": false}
+          }
+        }
+      }
+    },
+    "workflow_states": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "REVIEW_OBSERVED", "EVIDENCE_RECORDED", "MINIMIZATION_REQUIRED", "ANALYSIS_CANDIDATE_READY",
+          "RESPONSE_CANDIDATE_READY", "HUMAN_APPROVAL_REQUIRED", "APPROVED_FOR_COPY_EXPORT",
+          "COPIED_PUBLICATION_UNVERIFIED", "PUBLICATION_OBSERVED", "OUTCOME_EVIDENCE_RECORDED"
+        ]
+      }
+    },
+    "state_distinctions": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "response_candidate_is_approved_response", "approved_response_is_published_response",
+        "copied_response_is_published_response", "publication_observation_is_publication_authority"
+      ],
+      "properties": {
+        "response_candidate_is_approved_response": {"const": false},
+        "approved_response_is_published_response": {"const": false},
+        "copied_response_is_published_response": {"const": false},
+        "publication_observation_is_publication_authority": {"const": false}
+      }
+    },
+    "deployment_boundary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["operator_supplied_url_is_source_provenance", "network_fetch_available", "deployment_binding_receipt_available"],
+      "properties": {
+        "operator_supplied_url_is_source_provenance": {"const": false},
+        "network_fetch_available": {"const": false},
+        "deployment_binding_receipt_available": {"const": false}
+      }
+    },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "read_only_contract", "network_access_available", "external_publication_available", "platform_mutation_available",
+        "campaign_send_available", "spend_available", "audience_upload_available", "personal_targeting_available",
+        "identity_resolution_available", "action_permit_creation_available", "pilot_permit_creation_available",
+        "execution_admission_available", "external_effect_available"
+      ],
+      "properties": {
+        "read_only_contract": {"const": true},
+        "network_access_available": {"const": false},
+        "external_publication_available": {"const": false},
+        "platform_mutation_available": {"const": false},
+        "campaign_send_available": {"const": false},
+        "spend_available": {"const": false},
+        "audience_upload_available": {"const": false},
+        "personal_targeting_available": {"const": false},
+        "identity_resolution_available": {"const": false},
+        "action_permit_creation_available": {"const": false},
+        "pilot_permit_creation_available": {"const": false},
+        "execution_admission_available": {"const": false},
+        "external_effect_available": {"const": false}
+      }
+    },
+    "canonicalization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "encoding", "object_keys", "array_order", "insignificant_whitespace", "content_hash_field_omitted"],
+      "properties": {
+        "id": {"const": "MARKETCLOSER-SORTED-JSON-v0.1"},
+        "encoding": {"const": "UTF-8"},
+        "object_keys": {"const": "lexicographic"},
+        "array_order": {"const": "preserved"},
+        "insignificant_whitespace": {"const": "removed"},
+        "content_hash_field_omitted": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "array",
+      "minItems": 22,
+      "maxItems": 22,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "next_safe_action": {"const": "DEPLOYMENT_BOUND_OBSERVATION_RECEIPT_REQUIRED"},
+    "content_hash": {"pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
