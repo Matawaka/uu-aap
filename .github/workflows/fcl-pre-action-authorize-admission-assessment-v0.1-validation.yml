@@ -1,0 +1,180 @@
+name: FCL PreAction Authorize Admission Assessment v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-authorize-admission-assessment/**'
+      - 'protocols/fcl/v0.1/pre-action-bundle-assembly/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - '.github/workflows/pre-action-authorize-admission-v0.1-validation.yml'
+      - '.github/workflows/fcl-pre-action-authorize-admission-assessment-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-authorize-admission-assessment/**'
+      - 'protocols/fcl/v0.1/pre-action-bundle-assembly/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - '.github/workflows/pre-action-authorize-admission-v0.1-validation.yml'
+      - '.github/workflows/fcl-pre-action-authorize-admission-assessment-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Evaluate FCL authorize admission as evidence only
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Preserve historical generic admission behavior
+        run: |
+          node --check protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+          node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+          node protocols/integration/pre-action-authorize-admission/v0.1/test-import-safe-validator.js
+
+      - name: Materialize exact FCL assembly source once
+        timeout-minutes: 2
+        run: |
+          node protocols/fcl/v0.1/pre-action-bundle-assembly/test-pre-action-bundle-assembly.js \
+            /tmp/fcl-assessment-assembly-input.json \
+            /tmp/fcl-assessment-bundle.json \
+            /tmp/fcl-assessment-assembly-receipt.json
+
+      - name: Run FCL admission assessment conformance with cached assembly
+        timeout-minutes: 2
+        env:
+          FCL_ASSESSMENT_CACHED_ASSEMBLY_INPUT: /tmp/fcl-assessment-assembly-input.json
+          FCL_ASSESSMENT_CACHED_BUNDLE: /tmp/fcl-assessment-bundle.json
+          FCL_ASSESSMENT_CACHED_ASSEMBLY_RECEIPT: /tmp/fcl-assessment-assembly-receipt.json
+        run: |
+          node --check protocols/fcl/v0.1/pre-action-authorize-admission-assessment/pre-action-authorize-admission-assessment.js
+          node --check protocols/fcl/v0.1/pre-action-authorize-admission-assessment/test-pre-action-authorize-admission-assessment.js
+          node protocols/fcl/v0.1/pre-action-authorize-admission-assessment/test-pre-action-authorize-admission-assessment.js \
+            /tmp/fcl-assessment-input.json \
+            /tmp/fcl-generic-admission-assessment.json \
+            /tmp/fcl-assessment-receipt.json
+
+      - name: Validate FCL and generic assessment schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (
+                  Path('protocols/fcl/v0.1/pre-action-authorize-admission-assessment/pre-action-authorize-admission-assessment-input.schema.json'),
+                  Path('/tmp/fcl-assessment-input.json'),
+              ),
+              (
+                  Path('protocols/integration/pre-action-authorize-admission/v0.1/authorize-admission.schema.json'),
+                  Path('/tmp/fcl-generic-admission-assessment.json'),
+              ),
+              (
+                  Path('protocols/fcl/v0.1/pre-action-authorize-admission-assessment/pre-action-authorize-admission-assessment-receipt.schema.json'),
+                  Path('/tmp/fcl-assessment-receipt.json'),
+              ),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify assessment binding and non-effects
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          i = json.loads(Path('/tmp/fcl-assessment-input.json').read_text())
+          a = json.loads(Path('/tmp/fcl-generic-admission-assessment.json').read_text())
+          r = json.loads(Path('/tmp/fcl-assessment-receipt.json').read_text())
+          b = i['pre_action_bundle']
+          ar = i['assembly_receipt']
+
+          def canonical(v):
+              if v is None or isinstance(v, (bool, int, float, str)):
+                  return json.dumps(v, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(v, list):
+                  return '[' + ','.join(canonical(x) for x in v) + ']'
+              if isinstance(v, dict):
+                  return '{' + ','.join(json.dumps(k, ensure_ascii=False) + ':' + canonical(v[k]) for k in sorted(v)) + '}'
+              raise TypeError(type(v))
+
+          def content_hash(v):
+              p = {k: val for k, val in v.items() if k != 'content_hash'}
+              return 'sha256:' + hashlib.sha256(canonical(p).encode()).hexdigest()
+
+          assert a['content_hash'] == content_hash(a)
+          assert r['content_hash'] == content_hash(r)
+          assert a['decision']['status'] == 'admissible'
+          assert a['pre_action_bundle_ref']['content_hash'] == b['content_hash'] == r['bundle_content_hash']
+          assert r['assembly_receipt_hash'] == ar['content_hash']
+          assert r['action_permit_hash'] == b['core_receipts']['action_permit']['content_hash']
+          assert r['approval_hash'] == b['approval_binding']['content_hash']
+          assert r['target_binding_hash'] == b['target']['binding_hash']
+          assert r['frontier'] == b['target']['expected_predecessor_frontier']
+          assert r['authorization_must_occur_by'] == b['lifecycle_handoff']['authorization_must_occur_by']
+          assert r['next_safe_action'] == 'BIND_EXECUTION_LIFECYCLE_AUTHORIZE_PHASE'
+          assert all(v is True for v in r['assertions'].values())
+          assert all(v is False for v in r['non_effects'].values())
+          assert a['non_effects']['permit_consumed'] is False
+          assert a['non_effects']['execute_phase_entered'] is False
+          assert r['non_effects']['authorize_admitted'] is False
+          assert r['non_effects']['execution_admitted'] is False
+          print('Independent FCL admission assessment binding/non-effect proof verified')
+          PY
+
+      - name: Protect canonical predecessor implementations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" \
+            | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/(pre-action-bundle-assembly|pre-action-evidence-bridge|action-specific-approval|core-action-permit-binding)/|protocols/integration/(pre-action-evidence-bundle|execution-lifecycle)/v0\.1/)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: assessment slice modified protected predecessor implementations'
+            echo "$bad"
+            exit 1
+          fi
+          allowed_generic="$(printf '%s\n' "$changed" | grep -E '^protocols/integration/pre-action-authorize-admission/v0\.1/' || true)"
+          generic_bad="$(printf '%s\n' "$allowed_generic" \
+            | grep -v '^protocols/integration/pre-action-authorize-admission/v0\.1/validate-authorize-admission\.js$' \
+            | grep -v '^protocols/integration/pre-action-authorize-admission/v0\.1/test-import-safe-validator\.js$' || true)"
+          if [ -n "$generic_bad" ]; then
+            echo 'ERROR: generic admission changes exceed the import-safe seam'
+            echo "$generic_bad"
+            exit 1
+          fi
+          echo 'Predecessor ownership boundary preserved'
