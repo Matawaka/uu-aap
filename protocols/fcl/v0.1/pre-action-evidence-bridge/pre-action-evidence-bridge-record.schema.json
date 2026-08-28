@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/fcl/v0.1/pre-action-evidence-bridge/record.schema.json",
+  "title": "FCL PreAction Evidence Bridge Record v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "profile",
+    "bridge_id",
+    "reconciliation_fingerprint",
+    "action_permit_hash",
+    "selected_operation",
+    "target_operation",
+    "target_binding_hash",
+    "frontier",
+    "availability",
+    "projections",
+    "assertions",
+    "non_effects",
+    "next_safe_action",
+    "bridged_at",
+    "content_hash"
+  ],
+  "properties": {
+    "profile": {"const": "FCL_PRE_ACTION_EVIDENCE_BRIDGE_V0_1"},
+    "bridge_id": {"type": "string", "minLength": 1},
+    "reconciliation_fingerprint": {"$ref": "#/$defs/hash"},
+    "selected_operation": {"type": "string", "minLength": 1},
+    "target_operation": {"type": "string", "minLength": 1},
+    "target_binding_hash": {"$ref": "#/$defs/hash"},
+    "frontier": {"type": "string", "minLength": 1},
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_binding_content_hash",
+        "evidence_state_receipt_hash",
+        "evidence_availability_claim_hash",
+        "action_chain_state_receipt_hash",
+        "action_chain_availability_claim_hash",
+        "selection_content_hash",
+        "descriptor_content_hash",
+        "observation_content_hash",
+        "evidence_valid_until",
+        "action_chain_valid_until"
+      ],
+      "properties": {
+        "evidence_state_receipt_hash": {"$ref": "#/$defs/hash"},
+        "evidence_availability_claim_hash": {"$ref": "#/$defs/hash"},
+        "action_chain_state_receipt_hash": {"$ref": "#/$defs/hash"},
+        "action_chain_availability_claim_hash": {"$ref": "#/$defs/hash"},
+        "selection_content_hash": {"$ref": "#/$defs/hash"},
+        "descriptor_content_hash": {"$ref": "#/$defs/hash"},
+        "observation_content_hash": {"$ref": "#/$defs/hash"},
+        "evidence_valid_until": {"type": "string", "format": "date-time"},
+        "action_chain_valid_until": {"type": "string", "format": "date-time"},
+        "evidence_binding_content_hash": {"$ref": "#/$defs/hash"}
+      }
+    },
+    "projections": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["intent","authority","coordination"],
+      "properties": {
+        "intent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_receipt_hash","operation","target_binding_hash"],
+          "properties": {
+            "source_receipt_hash": {"$ref": "#/$defs/hash"},
+            "operation": {"type": "string", "minLength": 1},
+            "target_binding_hash": {"$ref": "#/$defs/hash"}
+          }
+        },
+        "authority": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_receipt_hash","authority_scope","target_binding_hash"],
+          "properties": {
+            "source_receipt_hash": {"$ref": "#/$defs/hash"},
+            "authority_scope": {"type": "string", "minLength": 1},
+            "target_binding_hash": {"$ref": "#/$defs/hash"}
+          }
+        },
+        "coordination": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["source_receipt_hash","target_binding_hash"],
+          "properties": {
+            "source_receipt_hash": {"$ref": "#/$defs/hash"},
+            "target_binding_hash": {"$ref": "#/$defs/hash"}
+          }
+        }
+      }
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation_mapping_exact",
+        "separate_availability_receipt_identities",
+        "availability_provenance_exact",
+        "target_projection_exact",
+        "source_receipts_preserved",
+        "no_semantic_relaxation"
+      ],
+      "properties": {
+        "operation_mapping_exact": {"const": true},
+        "separate_availability_receipt_identities": {"const": true},
+        "availability_provenance_exact": {"const": true},
+        "target_projection_exact": {"const": true},
+        "source_receipts_preserved": {"const": true},
+        "no_semantic_relaxation": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_receipt_rewritten",
+        "core_receipt_created",
+        "intent_created",
+        "authority_created",
+        "approval_created",
+        "action_permit_created",
+        "action_permit_consumed",
+        "pre_action_bundle_created",
+        "authorize_admitted",
+        "execution_admitted",
+        "action_performed"
+      ],
+      "properties": {
+        "source_receipt_rewritten": {"const": false},
+        "core_receipt_created": {"const": false},
+        "intent_created": {"const": false},
+        "authority_created": {"const": false},
+        "approval_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "action_permit_consumed": {"const": false},
+        "pre_action_bundle_created": {"const": false},
+        "authorize_admitted": {"const": false},
+        "execution_admitted": {"const": false},
+        "action_performed": {"const": false}
+      }
+    },
+    "next_safe_action": {"const": "ASSEMBLE_PRE_ACTION_EVIDENCE_BUNDLE"},
+    "bridged_at": {"type": "string", "format": "date-time"},
+    "content_hash": {"$ref": "#/$defs/hash"},
+    "action_permit_hash": {"$ref": "#/$defs/hash"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
