@@ -60,6 +60,9 @@ jobs:
       - name: Validate cross-product local interoperability
         run: node protocols/integration/cross-product-local-interoperability/v0.1/test-local-interoperability.js "$INTEROP_OUTPUT"
 
+      - name: Validate exact receipt/source scenario binding
+        run: node protocols/integration/cross-product-local-interoperability/v0.1/test-receipt-binding.js "$INTEROP_OUTPUT"
+
       - name: Validate cross-product schema/runtime parity
         run: node protocols/integration/cross-product-local-interoperability/v0.1/test-schema-runtime-parity.js
 
@@ -81,7 +84,11 @@ jobs:
         run: |
           node - <<'NODE'
           const fs = require('fs');
-          const text = fs.readFileSync('protocols/integration/cross-product-local-interoperability/v0.1/local-interoperability.js', 'utf8');
+          const files = [
+            'protocols/integration/cross-product-local-interoperability/v0.1/local-interoperability.js',
+            'protocols/integration/cross-product-local-interoperability/v0.1/receipt-binding.js'
+          ];
+          const text = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
           const forbidden = [
             'child_process',
             "require('http')",
