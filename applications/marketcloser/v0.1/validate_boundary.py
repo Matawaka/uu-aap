@@ -18,7 +18,7 @@ MARKETER_CONTRACT_PATH = ROOT / "products" / "marketer-pessimist" / "v0.1" / "pr
 ORIGIN_REVISION = "9d30ec25b64430235389526267c742ea37d36dba"
 ORIGIN_TREE = "ce7daa841e56ace21e05a982e0ca069113e56746"
 MARKETER_CONTRACT_HASH = "sha256:83a61669152e34221ab2df1f5024211356a10a4e347ef86b27a8e11d96f46fa6"
-EXPECTED_HASH = "sha256:b0c04caeb52dfca7258303ad8540b6ac119a4addf3078a9c795ff06b3a071289"
+EXPECTED_HASH = "sha256:143981c45d5a8cfa82261247325aef81da9686d5303ef9f696683ef6e5e9ee97"
 
 EXPECTED_STATES = [
     "REVIEW_OBSERVED",
@@ -50,6 +50,12 @@ EXPECTED_NON_EFFECTS = {
     "Deployment URL != Source Provenance Without Binding",
     "Audit Export != Full Case Export",
     "Audit Digest != Independent Attestation Without Declared Canonicalization",
+    "UU-AAP/T-inspired != UU-AAP Conformance",
+    "Live Pilot Evidence != Protocol Conformance",
+    "Application Event != Authority Effect",
+    "Audit Export != Automatic Transmission",
+    "Developer Analysis Authorization != External Publication Authority",
+    "Deployment Version != Application Boundary Version",
 }
 
 CASE_TOP_KEYS = {
