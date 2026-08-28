@@ -42,4 +42,6 @@ jobs:
       - name: Validate Bounded Execution Lifecycle
         run: node protocols/integration/execution-lifecycle/v0.1/validate-execution-lifecycle.js
       - name: Validate Authorize Admission Binding
-        run: node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+        run: |
+          node protocols/integration/pre-action-authorize-admission/v0.1/validate-authorize-admission.js
+          node protocols/integration/pre-action-authorize-admission/v0.1/test-import-safe-validator.js
