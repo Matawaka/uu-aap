@@ -1,0 +1,109 @@
+name: Cross-Product Local Interoperability v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/cross-product-local-interoperability/v0.1/**"
+      - "protocols/integration/ai-transport-reference/v0.1/**"
+      - "protocols/integration/ai-gateway/v0.1/**"
+      - "protocols/ial/v0.1/compact/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - "products/honest-hiring/v0.1/**"
+      - ".github/workflows/cross-product-local-interoperability-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "protocols/integration/cross-product-local-interoperability/v0.1/**"
+      - "protocols/integration/ai-transport-reference/v0.1/**"
+      - "protocols/integration/ai-gateway/v0.1/**"
+      - "protocols/ial/v0.1/compact/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - "products/honest-hiring/v0.1/**"
+      - ".github/workflows/cross-product-local-interoperability-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      INTEROP_OUTPUT: /tmp/cross-product-local-interop
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Re-run IAL Compact conformance
+        run: node protocols/ial/v0.1/compact/test-compact.js
+
+      - name: Re-run IAL Compact schema/runtime parity
+        run: node protocols/ial/v0.1/compact/test-schema-runtime-parity.js
+
+      - name: Re-run AI Gateway conformance
+        run: node protocols/integration/ai-gateway/v0.1/validate-gateway.js
+
+      - name: Re-run AI Gateway import safety
+        run: node protocols/integration/ai-gateway/v0.1/test-import-safe.js
+
+      - name: Re-run AI Transport Reference conformance
+        run: node protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js
+
+      - name: Re-run AI Transport schema/runtime parity
+        run: node protocols/integration/ai-transport-reference/v0.1/test-schema-runtime-parity.js
+
+      - name: Re-run AI Transport import safety
+        run: node protocols/integration/ai-transport-reference/v0.1/test-import-safe.js
+
+      - name: Validate cross-product local interoperability
+        run: node protocols/integration/cross-product-local-interoperability/v0.1/test-local-interoperability.js "$INTEROP_OUTPUT"
+
+      - name: Validate cross-product schema/runtime parity
+        run: node protocols/integration/cross-product-local-interoperability/v0.1/test-schema-runtime-parity.js
+
+      - name: Validate cross-product import safety
+        run: node protocols/integration/cross-product-local-interoperability/v0.1/test-import-safe.js
+
+      - name: Validate CLI boundary
+        run: |
+          node protocols/integration/cross-product-local-interoperability/v0.1/local-interoperability.js help
+          for cmd in send execute share merge activate publish; do
+            if node protocols/integration/cross-product-local-interoperability/v0.1/local-interoperability.js "$cmd" - >/tmp/cross-product.out 2>/tmp/cross-product.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "CROSS_PRODUCT_LOCAL_INTEROP_REJECTED" /tmp/cross-product.err
+          done
+
+      - name: Guard production surface as local read-only
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const text = fs.readFileSync('protocols/integration/cross-product-local-interoperability/v0.1/local-interoperability.js', 'utf8');
+          const forbidden = [
+            'child_process',
+            "require('http')",
+            "require('https')",
+            'http.request',
+            'https.request',
+            'fetch(',
+            'XMLHttpRequest',
+            'WebSocket',
+            'writeFileSync',
+            'writeFile(',
+            'appendFile',
+            'execSync',
+            'spawnSync'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: cross-product production surface is local read-only');
+          NODE
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
