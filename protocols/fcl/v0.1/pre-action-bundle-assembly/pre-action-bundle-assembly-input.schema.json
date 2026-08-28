@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/pre-action-bundle-assembly/pre-action-bundle-assembly-input.schema.json",
+  "title": "FCL PreAction Bundle Assembly Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "profile", "assembly_id", "bundle_id", "origin",
+    "bridge_input", "bridge_record", "approval_input", "approval_receipt", "assembled_at"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "pre-action-bundle-assembly-v0.1"},
+    "assembly_id": {"type": "string", "minLength": 1},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "bridge_input": {"type": "object"},
+    "bridge_record": {"type": "object"},
+    "approval_input": {"type": "object"},
+    "approval_receipt": {"type": "object"},
+    "assembled_at": {"type": "string", "format": "date-time"}
+  }
+}
