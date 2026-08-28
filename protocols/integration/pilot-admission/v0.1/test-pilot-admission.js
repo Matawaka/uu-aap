@@ -107,6 +107,46 @@ reject('unknown_input_field', () => {
   Runtime.validateInput(changed);
 }, /keys mismatch/);
 
+reject('receipt_ready_with_personal_data', () => {
+  const changed = clone(marketerReceipt);
+  changed.pilot.data_mode = 'real_personal';
+  changed.pilot.personal_data_involved = true;
+  changed.required_human_gates.data_protection_review_required = true;
+  changed.required_human_gates.participant_consent_required = true;
+  Runtime.rehash(changed);
+  Runtime.validateReceipt(changed);
+}, /READY status cannot carry personal data/);
+reject('receipt_personal_without_data_protection_gate', () => {
+  const changed = clone(hiringReceipt);
+  changed.required_human_gates.data_protection_review_required = false;
+  Runtime.rehash(changed);
+  Runtime.validateReceipt(changed);
+}, /requires data-protection review gate/);
+reject('receipt_personal_without_consent_gate', () => {
+  const changed = clone(hiringReceipt);
+  changed.required_human_gates.participant_consent_required = false;
+  Runtime.rehash(changed);
+  Runtime.validateReceipt(changed);
+}, /requires participant-consent gate/);
+reject('receipt_ready_with_external_effect', () => {
+  const changed = clone(marketerReceipt);
+  changed.pilot.external_effect_requested = true;
+  Runtime.rehash(changed);
+  Runtime.validateReceipt(changed);
+}, /unsafe pilot boundary must remain PILOT_BOUNDARY_UNSATISFIED/);
+reject('receipt_dp_status_with_irreversible_effect', () => {
+  const changed = clone(hiringReceipt);
+  changed.pilot.irreversible_effect_requested = true;
+  Runtime.rehash(changed);
+  Runtime.validateReceipt(changed);
+}, /unsafe pilot boundary must remain PILOT_BOUNDARY_UNSATISFIED/);
+reject('receipt_not_real_data', () => {
+  const changed = clone(marketerReceipt);
+  changed.pilot.real_data_involved = false;
+  Runtime.rehash(changed);
+  Runtime.validateReceipt(changed);
+}, /receipt must concern real data/);
+
 for (const claim of Runtime.FALSE_CLAIMS) {
   reject(`receipt_overclaim_${claim}`, () => {
     const changed = clone(marketerReceipt);
