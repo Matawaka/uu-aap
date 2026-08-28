@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/kontur/v0.1/readiness-interop/readiness-family-interop-receipt.schema.json",
+  "title": "KONTUR Family Readiness Interop Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "receipt_type",
+    "interop_id",
+    "evaluation_frontier",
+    "status",
+    "family",
+    "readiness",
+    "assertions",
+    "claims",
+    "next_safe_action",
+    "non_effects",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-KONTUR-FAMILY-READINESS-INTEROP"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "KONTURFamilyReadinessInteropReceipt"},
+    "interop_id": {"type": "string", "pattern": "^urn:uu-aap:kontur:family-readiness-interop:[0-9a-f]{24}$"},
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "status": {"const": "READINESS_EVIDENCE_AVAILABLE_FOR_FAMILY_INSPECTION"},
+    "family": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "family_id",
+        "family_version",
+        "historical_manifest_frontier",
+        "family_manifest_binding",
+        "readiness_member_id",
+        "readiness_member_evidence_status",
+        "readiness_to_activation_edge_status"
+      ],
+      "properties": {
+        "family_id": {"const": "kontur"},
+        "family_version": {"const": "0.1"},
+        "historical_manifest_frontier": {"type": "object"},
+        "family_manifest_binding": {"$ref": "#/$defs/binding"},
+        "readiness_member_id": {"const": "readiness-aggregator"},
+        "readiness_member_evidence_status": {"const": "implemented_experimental"},
+        "readiness_to_activation_edge_status": {"const": "established_evidence_dependency"}
+      }
+    },
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aggregation_receipt_binding",
+        "readiness_signal_binding",
+        "acceptance_receipt_binding",
+        "responsibility_policy_binding",
+        "readiness_epoch",
+        "readiness_signal_ready",
+        "source_acceptance_decision",
+        "human_activation_step_still_required"
+      ],
+      "properties": {
+        "aggregation_receipt_binding": {"$ref": "#/$defs/binding"},
+        "readiness_signal_binding": {"$ref": "#/$defs/binding"},
+        "acceptance_receipt_binding": {"$ref": "#/$defs/binding"},
+        "responsibility_policy_binding": {"$ref": "#/$defs/binding"},
+        "readiness_epoch": {"type": "integer", "minimum": 1},
+        "readiness_signal_ready": {"const": true},
+        "source_acceptance_decision": {"const": "accepted_for_activation_precondition"},
+        "human_activation_step_still_required": {"const": true}
+      }
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_evaluation_frontier_bound",
+        "historical_family_manifest_frontier_preserved",
+        "readiness_member_bound",
+        "readiness_acceptance_reproduced",
+        "family_edge_non_transfer_preserved",
+        "cross_member_data_access_default_denied",
+        "read_only_family_inspection_available"
+      ],
+      "properties": {
+        "exact_evaluation_frontier_bound": {"const": true},
+        "historical_family_manifest_frontier_preserved": {"const": true},
+        "readiness_member_bound": {"const": true},
+        "readiness_acceptance_reproduced": {"const": true},
+        "family_edge_non_transfer_preserved": {"const": true},
+        "cross_member_data_access_default_denied": {"const": true},
+        "read_only_family_inspection_available": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "activation_frontier_created",
+        "activation_authorized",
+        "activation_started",
+        "activation_intent_created",
+        "preflight_run",
+        "kernel_activated",
+        "responsibility_state_created",
+        "responsibility_accepted",
+        "host_designated",
+        "ledger_mutated",
+        "runtime_started",
+        "cross_member_data_access_admitted",
+        "authority_created",
+        "action_permit_created",
+        "execution_admitted",
+        "external_effect_performed",
+        "successor_authority_created"
+      ],
+      "properties": {
+        "activation_frontier_created": {"const": false},
+        "activation_authorized": {"const": false},
+        "activation_started": {"const": false},
+        "activation_intent_created": {"const": false},
+        "preflight_run": {"const": false},
+        "kernel_activated": {"const": false},
+        "responsibility_state_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "host_designated": {"const": false},
+        "ledger_mutated": {"const": false},
+        "runtime_started": {"const": false},
+        "cross_member_data_access_admitted": {"const": false},
+        "authority_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "execution_admitted": {"const": false},
+        "external_effect_performed": {"const": false},
+        "successor_authority_created": {"const": false}
+      }
+    },
+    "next_safe_action": {"const": "READ_ONLY_FAMILY_READINESS_INSPECTION_ONLY"},
+    "non_effects": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 11,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["artifact_type", "artifact_ref", "digest"],
+      "properties": {
+        "artifact_type": {"type": "string", "minLength": 1},
+        "artifact_ref": {"type": "string", "minLength": 1},
+        "digest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["canonicalization", "digest_algorithm", "digest_encoding", "value"],
+          "properties": {
+            "canonicalization": {"const": "RFC8785-JCS"},
+            "digest_algorithm": {"const": "SHA-256"},
+            "digest_encoding": {"const": "hex"},
+            "value": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/kontur/v0.1/readiness-interop/readiness-family-interop-input.schema.json",
+  "title": "KONTUR Family Readiness Interop Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol", "version", "artifact_type", "evaluation_frontier", "family_manifest", "readiness", "controls"],
+  "properties": {
+    "protocol": {"const": "UU-AAP-KONTUR-FAMILY-READINESS-INTEROP"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "KONTURFamilyReadinessInteropInput"},
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "family_manifest": {"$ref": "../family-manifest.schema.json"},
+    "readiness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aggregation_receipt", "readiness_signal", "responsibility_policy", "acceptance_receipt"],
+      "properties": {
+        "aggregation_receipt": {"$ref": "../../../../server/kontur/v0.1/kontur-readiness-aggregation.schema.json"},
+        "readiness_signal": {"$ref": "../../../../server/kontur/v0.1/kontur-readiness-signal.schema.json"},
+        "responsibility_policy": {"$ref": "../../../../server/kontur/v0.1/kontur-responsibility-policy.schema.json"},
+        "acceptance_receipt": {"$ref": "../../../../server/kontur/v0.1/kontur-readiness-acceptance.schema.json"}
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "surface",
+        "read_only",
+        "network_access_required",
+        "filesystem_write_required",
+        "activation_available",
+        "responsibility_acceptance_available",
+        "host_designation_available",
+        "ledger_write_available",
+        "runtime_start_available",
+        "action_permit_available",
+        "execution_available"
+      ],
+      "properties": {
+        "surface": {"const": "validate_inspect_only"},
+        "read_only": {"const": true},
+        "network_access_required": {"const": false},
+        "filesystem_write_required": {"const": false},
+        "activation_available": {"const": false},
+        "responsibility_acceptance_available": {"const": false},
+        "host_designation_available": {"const": false},
+        "ledger_write_available": {"const": false},
+        "runtime_start_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "execution_available": {"const": false}
+      }
+    }
+  }
+}

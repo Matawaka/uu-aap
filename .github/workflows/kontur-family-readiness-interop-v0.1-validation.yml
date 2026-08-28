@@ -1,0 +1,106 @@
+name: KONTUR Family Readiness Interoperability v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "products/kontur/v0.1/readiness-interop/**"
+      - "products/kontur/v0.1/family-manifest.json"
+      - "products/kontur/v0.1/family-manifest.schema.json"
+      - "products/kontur/v0.1/product-contract.json"
+      - "products/kontur/v0.1/validate_contract.py"
+      - "server/kontur/v0.1/readiness-aggregator.js"
+      - "server/kontur/v0.1/test-readiness-aggregator.js"
+      - "server/kontur/v0.1/kontur-readiness-aggregation.schema.json"
+      - "server/kontur/v0.1/kontur-readiness-signal.schema.json"
+      - "server/kontur/v0.1/kontur-readiness-acceptance.schema.json"
+      - "server/kontur/v0.1/kontur-responsibility-policy.schema.json"
+      - "server/kontur/v0.1/policies/reference-server.readiness-aggregation-policy.json"
+      - "server/kontur/v0.1/policies/reference-server.responsibility-policy.json"
+      - ".github/workflows/kontur-family-readiness-interop-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "products/kontur/v0.1/readiness-interop/**"
+      - "products/kontur/v0.1/family-manifest.json"
+      - "server/kontur/v0.1/readiness-aggregator.js"
+      - "server/kontur/v0.1/test-readiness-aggregator.js"
+      - ".github/workflows/kontur-family-readiness-interop-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/kontur-readiness-interop-pycache
+      READINESS_OUTPUT: /tmp/kontur-readiness-interop
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Validate unchanged KONTUR Product Family contract
+        run: python products/kontur/v0.1/validate_contract.py
+
+      - name: Rebuild canonical KONTUR Readiness Aggregator evidence
+        run: node server/kontur/v0.1/test-readiness-aggregator.js "$READINESS_OUTPUT"
+
+      - name: Validate KONTUR Family Readiness Interoperability
+        run: node products/kontur/v0.1/readiness-interop/test-readiness-family-interop.js "$READINESS_OUTPUT"
+
+      - name: Validate schema/runtime parity
+        run: node products/kontur/v0.1/readiness-interop/test-schema-runtime-parity.js
+
+      - name: Validate import safety
+        run: node products/kontur/v0.1/readiness-interop/test-import-safe.js
+
+      - name: Validate CLI command boundary
+        run: |
+          node products/kontur/v0.1/readiness-interop/readiness-family-interop.js help
+          for cmd in activate execute start designate write-ledger send; do
+            if node products/kontur/v0.1/readiness-interop/readiness-family-interop.js "$cmd" - >/tmp/kontur-interop.out 2>/tmp/kontur-interop.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "KONTUR_FAMILY_READINESS_INTEROP_REJECTED" /tmp/kontur-interop.err
+          done
+
+      - name: Guard production interop as local-only
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const text = fs.readFileSync('products/kontur/v0.1/readiness-interop/readiness-family-interop.js', 'utf8');
+          const forbidden = [
+            'child_process',
+            'http.request',
+            'https.request',
+            'fetch(',
+            'XMLHttpRequest',
+            'WebSocket',
+            'writeFileSync',
+            'writeFile(',
+            'appendFile',
+            'execSync',
+            'spawnSync'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: production interoperability surface is local read-only');
+          NODE
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
