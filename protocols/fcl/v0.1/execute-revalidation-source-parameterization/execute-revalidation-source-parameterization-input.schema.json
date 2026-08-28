@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/execute-revalidation-source-parameterization/execute-revalidation-source-parameterization-input.schema.json",
+  "title": "FCL Execute Revalidation Source Parameterization Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","profile","binding_id","decision_id","origin","authorize_binding_input","authorize_phase","fcl_authorize_phase_receipt","evaluated_at"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "execute-revalidation-source-parameterization-v0.1"},
+    "binding_id": {"type": "string", "minLength": 1},
+    "decision_id": {"type": "string", "minLength": 1},
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository","revision","tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "authorize_binding_input": {"type": "object"},
+    "authorize_phase": {"type": "object"},
+    "fcl_authorize_phase_receipt": {"type": "object"},
+    "evaluated_at": {"type": "string", "format": "date-time"}
+  }
+}
