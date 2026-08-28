@@ -1,0 +1,67 @@
+{
+  "protocol": "MARKETCLOSER-APPLICATION-BOUNDARY",
+  "version": "0.1",
+  "artifact_type": "MarketCloserSyntheticBoundaryCase",
+  "synthetic": true,
+  "case_id": "urn:uu-aap:marketcloser:synthetic-boundary-case:001",
+  "source": {
+    "mode": "synthetic_conformance",
+    "platform": "fictional-review-platform",
+    "public_review_observed": true,
+    "raw_review_may_contain_personal_data": true
+  },
+  "privacy": {
+    "raw_review_kept_application_side": true,
+    "human_minimization_reviewed": true,
+    "minimized_personal_data_present": false,
+    "minimized_sensitive_personal_data_present": false,
+    "raw_identity_crossed_marketer_boundary": false
+  },
+  "claim": {
+    "customer_claim_epistemic_status": "unverified_user_claim",
+    "merchant_explanation_epistemic_status": "unverified_user_claim",
+    "minimized_claim_text": "A fictional customer reports that pickup took longer than expected despite a stated short wait time."
+  },
+  "evidence": [
+    {
+      "evidence_ref": "urn:synthetic:marketcloser:order-reference:001",
+      "epistemic_status": "user_asserted_evidence_reference",
+      "finding": "unavailable",
+      "independently_verified": false
+    }
+  ],
+  "pressure_context": {
+    "platform_dependency_percent": 70,
+    "reserve_weeks": 4,
+    "data_age_days": 7,
+    "triage_only": true,
+    "epistemic_weight": false,
+    "truth_override": false,
+    "privacy_override": false
+  },
+  "marketer_boundary": {
+    "minimized_representation_ready": true,
+    "raw_review_transferred": false,
+    "authority_transferred": false,
+    "responsibility_transferred": false
+  },
+  "response_lifecycle": {
+    "response_candidate_created": true,
+    "human_approved_for_copy_export": true,
+    "copied": true,
+    "external_publication_authorized": false,
+    "publication_observed": false,
+    "published_claimed": false,
+    "state": "COPIED_PUBLICATION_UNVERIFIED"
+  },
+  "controls": {
+    "network_access_available": false,
+    "platform_mutation_available": false,
+    "external_publication_available": false,
+    "identity_resolution_available": false,
+    "action_permit_created": false,
+    "pilot_permit_created": false,
+    "execution_admitted": false,
+    "external_effect_performed": false
+  }
+}
