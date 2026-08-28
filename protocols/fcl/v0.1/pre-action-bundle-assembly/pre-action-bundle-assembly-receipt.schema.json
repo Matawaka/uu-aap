@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/pre-action-bundle-assembly/pre-action-bundle-assembly-receipt.schema.json",
+  "title": "FCL PreAction Bundle Assembly Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "assembly_id", "bundle_id", "bundle_content_hash",
+    "bridge_id", "bridge_content_hash", "reconciliation_fingerprint", "approval_id", "approval_fingerprint",
+    "approval_binding_hash", "action_permit_hash", "target_binding_hash", "frontier", "selected_operation",
+    "target_operation", "authority_scope", "freshness", "assertions", "non_effects", "next_safe_action",
+    "assembled_at", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "FCLPreActionBundleAssemblyReceipt"},
+    "assembly_id": {"type": "string", "minLength": 1},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "bundle_content_hash": {"$ref": "#/$defs/hash"},
+    "bridge_id": {"type": "string", "minLength": 1},
+    "bridge_content_hash": {"$ref": "#/$defs/hash"},
+    "reconciliation_fingerprint": {"$ref": "#/$defs/hash"},
+    "approval_id": {"type": "string", "minLength": 1},
+    "approval_fingerprint": {"$ref": "#/$defs/hash"},
+    "approval_binding_hash": {"$ref": "#/$defs/hash"},
+    "action_permit_hash": {"$ref": "#/$defs/hash"},
+    "target_binding_hash": {"$ref": "#/$defs/hash"},
+    "frontier": {"type": "string", "minLength": 1},
+    "selected_operation": {"type": "string", "minLength": 1},
+    "target_operation": {"type": "string", "minLength": 1},
+    "authority_scope": {"type": "string", "minLength": 1},
+    "freshness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "execution_availability_valid_until", "fcl_availability_valid_until", "approval_valid_until",
+        "action_permit_expires_at", "authorization_must_occur_by"
+      ],
+      "properties": {
+        "execution_availability_valid_until": {"type": "string", "format": "date-time"},
+        "fcl_availability_valid_until": {"type": "string", "format": "date-time"},
+        "approval_valid_until": {"type": "string", "format": "date-time"},
+        "action_permit_expires_at": {"type": "string", "format": "date-time"},
+        "authorization_must_occur_by": {"type": "string", "format": "date-time"}
+      }
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bridge_exactly_bound", "approval_exactly_bound", "same_action_permit_exact",
+        "same_action_permit_binding_input_exact", "target_exactly_bound", "four_way_horizon_bounded",
+        "bundle_reusable_semantics_composed", "bundle_materialized"
+      ],
+      "properties": {
+        "bridge_exactly_bound": {"const": true},
+        "approval_exactly_bound": {"const": true},
+        "same_action_permit_exact": {"const": true},
+        "same_action_permit_binding_input_exact": {"const": true},
+        "target_exactly_bound": {"const": true},
+        "four_way_horizon_bounded": {"const": true},
+        "bundle_reusable_semantics_composed": {"const": true},
+        "bundle_materialized": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_receipt_rewritten", "core_receipt_created", "intent_created", "authority_created",
+        "approval_created", "action_permit_created", "action_permit_consumed", "authorize_admitted",
+        "execution_admitted", "execute_phase_entered", "action_performed", "runtime_state_transitioned",
+        "future_action_permission_created"
+      ],
+      "properties": {
+        "source_receipt_rewritten": {"const": false},
+        "core_receipt_created": {"const": false},
+        "intent_created": {"const": false},
+        "authority_created": {"const": false},
+        "approval_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "action_permit_consumed": {"const": false},
+        "authorize_admitted": {"const": false},
+        "execution_admitted": {"const": false},
+        "execute_phase_entered": {"const": false},
+        "action_performed": {"const": false},
+        "runtime_state_transitioned": {"const": false},
+        "future_action_permission_created": {"const": false}
+      }
+    },
+    "next_safe_action": {"const": "PARAMETERIZE_PRE_ACTION_EVIDENCE_BUNDLE_FCL_HORIZON"},
+    "assembled_at": {"type": "string", "format": "date-time"},
+    "content_hash": {"$ref": "#/$defs/hash"}
+  },
+  "$defs": {
+    "hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
