@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/receipt.schema.json",
+  "title": "MarketCloserMinimizedRealReviewBridgeReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "receipt_id", "source_input",
+    "deployment_observation_binding", "minimization", "marketer_binding",
+    "transfer_boundary", "status", "claims", "non_effects",
+    "next_safe_action", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-MINIMIZED-REAL-REVIEW-BRIDGE"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "MarketCloserMinimizedRealReviewBridgeReceipt"},
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:marketcloser:minimized-real-review-bridge-receipt:[0-9a-f]{24}$"
+    },
+    "source_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bridge_id", "bridge_hash"],
+      "properties": {
+        "bridge_id": {"type": "string", "minLength": 1},
+        "bridge_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "deployment_observation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "receipt_id", "receipt_hash", "observation_status", "binding_status",
+        "deployment_verified", "source_provenance_established"
+      ],
+      "properties": {
+        "receipt_id": {"type": "string", "minLength": 1},
+        "receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "observation_status": {
+          "enum": ["SYNTHETIC_CONFORMANCE_OBSERVATION_RECORDED", "OPERATOR_DEPLOYMENT_OBSERVATION_RECORDED"]
+        },
+        "binding_status": {"const": "DEPLOYMENT_BINDING_INSUFFICIENT"},
+        "deployment_verified": {"const": false},
+        "source_provenance_established": {"const": false}
+      }
+    },
+    "minimization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "human_minimization_reviewed", "independent_privacy_verification",
+        "raw_review_text_included", "raw_reviewer_identity_included",
+        "personal_data_present", "sensitive_personal_data_present",
+        "protected_attribute_data_present", "psychological_vulnerability_data_present",
+        "cross_context_identifiers_present", "source_identity_inferred"
+      ],
+      "properties": {
+        "human_minimization_reviewed": {"const": true},
+        "independent_privacy_verification": {"const": false},
+        "raw_review_text_included": {"const": false},
+        "raw_reviewer_identity_included": {"const": false},
+        "personal_data_present": {"const": false},
+        "sensitive_personal_data_present": {"const": false},
+        "protected_attribute_data_present": {"const": false},
+        "psychological_vulnerability_data_present": {"const": false},
+        "cross_context_identifiers_present": {"const": false},
+        "source_identity_inferred": {"const": false}
+      }
+    },
+    "marketer_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "intake_id", "intake_hash", "candidate_id", "candidate_hash",
+        "candidate_state", "source_mode"
+      ],
+      "properties": {
+        "intake_id": {"type": "string", "minLength": 1},
+        "intake_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "candidate_id": {"type": "string", "minLength": 1},
+        "candidate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "candidate_state": {
+          "enum": ["SYNTHETIC_CONFORMANCE_CANDIDATE_READY", "REAL_REVIEW_CANDIDATE_READY"]
+        },
+        "source_mode": {"enum": ["synthetic_conformance", "real_non_personal"]}
+      }
+    },
+    "transfer_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "raw_review_transferred", "raw_identity_transferred", "personal_data_transferred",
+        "sensitive_personal_data_transferred", "protected_attribute_data_transferred",
+        "psychological_vulnerability_data_transferred", "cross_context_identifiers_transferred",
+        "business_pressure_transferred", "evidence_quality_promoted", "deployment_binding_inferred"
+      ],
+      "properties": {
+        "raw_review_transferred": {"const": false},
+        "raw_identity_transferred": {"const": false},
+        "personal_data_transferred": {"const": false},
+        "sensitive_personal_data_transferred": {"const": false},
+        "protected_attribute_data_transferred": {"const": false},
+        "psychological_vulnerability_data_transferred": {"const": false},
+        "cross_context_identifiers_transferred": {"const": false},
+        "business_pressure_transferred": {"const": false},
+        "evidence_quality_promoted": {"const": false},
+        "deployment_binding_inferred": {"const": false}
+      }
+    },
+    "status": {"enum": ["SYNTHETIC_MINIMIZED_BRIDGE_READY", "REAL_MINIMIZED_REVIEW_CANDIDATE_READY"]},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_deployment_observation_revalidated", "human_minimization_assertion_recorded",
+        "exact_marketer_intake_derived", "exact_marketer_candidate_derived",
+        "minimized_case_transferred", "deployment_binding_insufficiency_preserved",
+        "independent_privacy_verified", "deployment_verified", "source_provenance_established",
+        "raw_review_transferred", "reviewer_identity_transferred", "source_identity_inferred",
+        "business_pressure_transferred", "evidence_quality_promoted", "stress_test_run",
+        "stress_test_receipt_created", "response_candidate_created", "human_disposition_recorded",
+        "pilot_permit_created", "action_permit_created", "execution_admitted", "external_effect_performed"
+      ],
+      "properties": {
+        "exact_deployment_observation_revalidated": {"const": true},
+        "human_minimization_assertion_recorded": {"const": true},
+        "exact_marketer_intake_derived": {"const": true},
+        "exact_marketer_candidate_derived": {"const": true},
+        "minimized_case_transferred": {"const": true},
+        "deployment_binding_insufficiency_preserved": {"const": true},
+        "independent_privacy_verified": {"const": false},
+        "deployment_verified": {"const": false},
+        "source_provenance_established": {"const": false},
+        "raw_review_transferred": {"const": false},
+        "reviewer_identity_transferred": {"const": false},
+        "source_identity_inferred": {"const": false},
+        "business_pressure_transferred": {"const": false},
+        "evidence_quality_promoted": {"const": false},
+        "stress_test_run": {"const": false},
+        "stress_test_receipt_created": {"const": false},
+        "response_candidate_created": {"const": false},
+        "human_disposition_recorded": {"const": false},
+        "pilot_permit_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "execution_admitted": {"const": false},
+        "external_effect_performed": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "array", "minItems": 14, "maxItems": 14, "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "next_safe_action": {"const": "REAL_REVIEW_RUN_AUTHORITY_GATE_REQUIRED"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
