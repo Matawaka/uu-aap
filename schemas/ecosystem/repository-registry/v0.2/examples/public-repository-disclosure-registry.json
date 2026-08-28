@@ -1,0 +1,146 @@
+{
+  "schema_version": "0.2",
+  "registry_id": "matawaka-public-repository-disclosure-registry-2026-08-28-v0.2",
+  "owner": "Matawaka",
+  "observed_at": "2026-08-28T11:13:03Z",
+  "coverage": {
+    "public_inventory_observed": true,
+    "private_inventory_complete": false,
+    "private_repository_details_disclosed": false,
+    "full_ecosystem_disclosure_decision_complete": false,
+    "connector_private_scope_observed": true,
+    "all_private_projects_assessed": false,
+    "at_least_one_private_origin_publication_completed": true,
+    "next_safe_action": "CONTINUE_CLOSED_PRIVATE_PORTFOLIO_ASSESSMENT_WITHOUT_EXPANDING_PUBLIC_NAME_SURFACE"
+  },
+  "invariants": [
+    "Repository != Product",
+    "Repository Visibility != Disclosure Authorization",
+    "Private Repository Existence != Authorization to Publish Its Name",
+    "Open Source != Zero Monetization",
+    "Monetization Priority != Core Membership",
+    "Development Priority != Monetization Priority",
+    "Public Disclosure != Runtime Deployment",
+    "Public Projection != Private History Export",
+    "Authorization Receipt != Action Receipt != Outcome Receipt",
+    "Source Publication PASS != Binary Distribution Compliance PASS"
+  ],
+  "repositories": [
+    {
+      "repository_id": "uu-aap",
+      "full_name": "Matawaka/uu-aap",
+      "visibility": "public",
+      "evidence_state": "connector_verified",
+      "observed_main": {"commit_sha": "53279493e4e34afd3ce517dc41b35433e9a383d7", "tree_sha": "da723667d3045b02149894425dae2a81298291f5"},
+      "architectural_role": "open_protocol_and_architecture_substrate",
+      "product_plane": "shared_foundation",
+      "strategic_priority": "P0",
+      "development_wip_priority": "P1",
+      "monetization_priority": "P1",
+      "monetization_posture": "open_foundation_commercial_services",
+      "current_disclosure_state": "fully_public",
+      "recommended_disclosure_posture": "KEEP_FULLY_PUBLIC",
+      "recommendation_basis": [
+        "Interoperability and independent verification benefit from public specifications and reference validators.",
+        "Commercial value should concentrate in conformance, integration, hosted verification, support and governance rather than protocol-access scarcity."
+      ],
+      "next_development_gate": "Preserve a bounded Core change budget and prioritize cross-product interoperability and reusable evidence contracts.",
+      "commercial_surfaces": ["enterprise_integration", "hosted_verification", "conformance_tooling", "support_and_training", "canonical_service_and_governance"],
+      "non_effects": {"pricing_committed": false, "deployment_authorized": false, "license_changed": false, "private_repository_disclosed": false, "external_effect_authorized": false}
+    },
+    {
+      "repository_id": "marketcloser-public",
+      "full_name": "Matawaka/marketcloser-public",
+      "visibility": "public",
+      "evidence_state": "public_verified",
+      "observed_main": {"commit_sha": "3984a516ab4b5c5e193a77dc94f58e03af3afc5f", "tree_sha": "eb14db38c7bf54c22894bfffb6b8de8efea1192e"},
+      "architectural_role": "runnable_b2b_product_pilot_and_reference_consumer",
+      "product_plane": "domain_product",
+      "strategic_priority": "P0",
+      "development_wip_priority": "P0",
+      "monetization_priority": "P0",
+      "monetization_posture": "open_reference_paid_managed_product",
+      "current_disclosure_state": "fully_public",
+      "recommended_disclosure_posture": "KEEP_FULLY_PUBLIC",
+      "recommendation_basis": [
+        "The repository exposes a runnable local-first product pilot with bounded read-only integration and deployment receipts.",
+        "It remains the strongest near-term public evidence path for willingness-to-pay and confirmed business outcomes."
+      ],
+      "next_development_gate": "Prioritize customer discovery, confirmed-business outcomes and bounded paid-pilot readiness before new architecture layers.",
+      "commercial_surfaces": ["managed_hosting", "read_only_integrations", "onboarding_and_support", "bounded_paid_pilots", "evidence_and_audit_workflows"],
+      "non_effects": {"pricing_committed": false, "deployment_authorized": false, "license_changed": false, "private_repository_disclosed": false, "external_effect_authorized": false}
+    },
+    {
+      "repository_id": "truehire-public",
+      "full_name": "Matawaka/truehire-public",
+      "visibility": "public",
+      "evidence_state": "public_verified",
+      "observed_main": {"commit_sha": "99a8ed329f20d670b1130795eecff305c0c996bf", "tree_sha": "585cd1d24e6feecdfebdcfe54faf27db3d4b1475"},
+      "public_release_evidence": {
+        "release_anchor": "release/v0.1",
+        "projection_root": "sha256:41be1d4f43f16e7b10f7d4242e782651d326632efe4e56369de40051abb1351e",
+        "non_receipt_file_count": 45,
+        "total_public_file_count": 47,
+        "root_parent_count": 0,
+        "authorization_receipt_path": "PUBLIC_RELEASE_AUTHORIZATION.json",
+        "projection_receipt_path": "PUBLIC_PROJECTION.json"
+      },
+      "architectural_role": "public_reference_hiring_negotiation_and_decision_boundary_product",
+      "product_plane": "domain_product",
+      "strategic_priority": "P1",
+      "development_wip_priority": "P1",
+      "monetization_priority": "P1",
+      "monetization_posture": "open_reference_paid_managed_product",
+      "current_disclosure_state": "fully_public",
+      "recommended_disclosure_posture": "KEEP_FULLY_PUBLIC",
+      "recommendation_basis": [
+        "The public repository is a deterministic allowlisted projection with no private development history and an independently bound projection root.",
+        "The reference source preserves explicit intent, authority, contestability and no-hidden-ranking boundaries while leaving deployment and real candidate processing unauthorized.",
+        "Commercial value can remain in bounded pilots, managed integrations, private evidence workspaces, audit/contestability and enterprise conformance rather than source secrecy."
+      ],
+      "next_development_gate": "Before any real hiring pilot, require jurisdiction-specific human-impact review, real-data purpose/retention authority, contestability and release-specific binary compliance.",
+      "commercial_surfaces": ["bounded_paid_pilots", "managed_integrations", "private_evidence_workspace", "contestability_and_audit", "enterprise_conformance", "privacy_preserving_selective_disclosure"],
+      "non_effects": {"pricing_committed": false, "deployment_authorized": false, "license_changed": false, "private_repository_disclosed": false, "external_effect_authorized": false}
+    },
+    {
+      "repository_id": "vibe-coding-reality",
+      "full_name": "Matawaka/vibe-coding-reality",
+      "visibility": "public",
+      "evidence_state": "connector_verified",
+      "observed_main": {"commit_sha": "bcfbd797a87215ce095e6c24be5275897f64c124", "tree_sha": "290019663be14da208eb40844e46752a12197f6a"},
+      "architectural_role": "public_publication_provenance_and_adoption_entry",
+      "product_plane": "publication_and_adoption",
+      "strategic_priority": "P1",
+      "development_wip_priority": "P2",
+      "monetization_priority": "P2",
+      "monetization_posture": "public_content_audience_funnel",
+      "current_disclosure_state": "fully_public",
+      "recommended_disclosure_posture": "KEEP_FULLY_PUBLIC",
+      "recommendation_basis": [
+        "The repository is the canonical public provenance plane for the electronic edition.",
+        "Its highest ecosystem leverage remains communication, adoption and attribution rather than heavy engineering WIP."
+      ],
+      "next_development_gate": "Keep engineering WIP low; focus on distribution, reader feedback and measured adoption links into runnable products.",
+      "commercial_surfaces": ["print_and_audio", "education", "speaking", "community", "ecosystem_adoption_funnel"],
+      "non_effects": {"pricing_committed": false, "deployment_authorized": false, "license_changed": false, "private_repository_disclosed": false, "external_effect_authorized": false}
+    }
+  ],
+  "portfolio_decision": {
+    "development_focus": ["marketcloser-public", "truehire-public", "uu-aap", "vibe-coding-reality"],
+    "monetization_focus": ["marketcloser-public", "truehire-public", "uu-aap", "vibe-coding-reality"],
+    "keep_fully_public": ["uu-aap", "marketcloser-public", "truehire-public", "vibe-coding-reality"],
+    "all_private_projects_assessed": false,
+    "completed_public_projection_publications": ["truehire-public"],
+    "private_repository_names_added_by_this_registry": []
+  },
+  "monetization_model": {
+    "principle": "Open foundational specifications and public reference implementations can remain public while commercial value is created in managed operation, integration, verification, support, bounded pilots and privacy-preserving domain services.",
+    "layers": ["open_standards_and_specifications", "public_reference_implementations", "managed_hosting_integrations_verification_support", "bounded_paid_product_pilots", "domain_subscriptions_and_services", "enterprise_conformance_and_governance"]
+  },
+  "private_disclosure_gate": {
+    "required_checks": ["connector_verified_exact_frontier", "secret_token_private_data_scan", "ip_patent_trademark_disclosure_check", "third_party_license_check", "security_and_abuse_surface_review", "product_vs_protocol_role_classification", "monetization_impact_assessment", "canonical_lineage_and_provenance_receipt", "explicit_human_disclosure_decision"],
+    "default_when_incomplete": "KEEP_PRIVATE_AND_UNASSESSED"
+  },
+  "non_effects": {"repository_visibility_changed": false, "private_repository_name_published": false, "private_repository_content_published": false, "pricing_committed": false, "license_changed": false, "deployment_authorized": false, "candidate_data_processing_authorized": false, "employment_action_authorized": false, "binary_distribution_cleared": false, "external_effect_authorized": false},
+  "content_hash": "sha256:ebb4e2b80697ead872de59c776a9af8c41d5ca79402cb2f93b6c12558f726470"
+}
