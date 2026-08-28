@@ -1,0 +1,129 @@
+name: FCL Execution Lifecycle Authorize Phase Binding v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/**'
+      - 'protocols/fcl/v0.1/pre-action-authorize-admission-assessment/**'
+      - 'protocols/fcl/v0.1/pre-action-bundle-assembly/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/fcl-execution-lifecycle-authorize-phase-binding-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/**'
+      - 'protocols/fcl/v0.1/pre-action-authorize-admission-assessment/**'
+      - 'protocols/fcl/v0.1/pre-action-bundle-assembly/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/fcl-execution-lifecycle-authorize-phase-binding-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Bind authorize phase without execute
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Preserve historical lifecycle semantics and import-safe seam
+        run: |
+          node protocols/integration/execution-lifecycle/v0.1/validate-execution-lifecycle.js
+          node --check protocols/integration/execution-lifecycle/v0.1/validate-authorize-phase.js
+          node protocols/integration/execution-lifecycle/v0.1/test-authorize-phase-seam.js
+      - name: Materialize exact FCL assessment source once
+        timeout-minutes: 4
+        run: |
+          node protocols/fcl/v0.1/pre-action-authorize-admission-assessment/test-pre-action-authorize-admission-assessment.js /tmp/fcl-authorize-assessment-input.json /tmp/fcl-authorize-generic-assessment.json /tmp/fcl-authorize-assessment-receipt.json
+      - name: Run FCL authorize phase binding conformance with cached assessment
+        timeout-minutes: 2
+        env:
+          FCL_AUTHORIZE_CACHED_ASSESSMENT_INPUT: /tmp/fcl-authorize-assessment-input.json
+          FCL_AUTHORIZE_CACHED_GENERIC_ASSESSMENT: /tmp/fcl-authorize-generic-assessment.json
+          FCL_AUTHORIZE_CACHED_ASSESSMENT_RECEIPT: /tmp/fcl-authorize-assessment-receipt.json
+        run: |
+          node --check protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/execution-lifecycle-authorize-phase-binding.js
+          node --check protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/test-execution-lifecycle-authorize-phase-binding.js
+          node protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/test-execution-lifecycle-authorize-phase-binding.js /tmp/fcl-authorize-phase-input.json /tmp/fcl-authorize-phase.json /tmp/fcl-authorize-phase-receipt.json
+      - name: Validate FCL authorize binding schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/execution-lifecycle-authorize-phase-binding-input.schema.json'), Path('/tmp/fcl-authorize-phase-input.json')),
+              (Path('protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/execution-lifecycle-authorize-phase-binding-receipt.schema.json'), Path('/tmp/fcl-authorize-phase-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema=json.loads(schema_path.read_text(encoding='utf-8'))
+              instance=json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+      - name: Independently verify authorize binding and no future phase
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/fcl-authorize-phase-receipt.json').read_text())
+          p=json.loads(Path('/tmp/fcl-authorize-phase.json').read_text())
+          def canonical(v):
+              if v is None or isinstance(v,(bool,int,float,str)):
+                  return json.dumps(v,ensure_ascii=False,separators=(',',':'))
+              if isinstance(v,list): return '['+','.join(canonical(x) for x in v)+']'
+              if isinstance(v,dict): return '{'+','.join(json.dumps(k,ensure_ascii=False)+':'+canonical(v[k]) for k in sorted(v))+'}'
+              raise TypeError(type(v))
+          projection={k:v for k,v in r.items() if k!='content_hash'}
+          expected='sha256:'+hashlib.sha256(canonical(projection).encode()).hexdigest()
+          assert r['content_hash']==expected
+          assert r['authorize_phase']==p
+          assert p['status']=='authorized'
+          assert p['one_shot'] is True and p['consumed'] is False
+          assert p['action_permit_ref']['content_hash']==r['action_permit_hash']
+          assert p['approval_ref']['content_hash']==r['approval_hash']
+          assert p['target_binding_hash']==r['target_binding_hash']
+          assert p['frontier']==r['frontier']
+          assert p['admission_assessment_ref']['content_hash']==r['generic_assessment_hash']
+          assert all(v is True for v in r['assertions'].values())
+          assert all(v is False for v in r['non_effects'].values())
+          assert r['next_safe_action']=='PARAMETERIZE_EXECUTE_REVALIDATION_FCL_SOURCE'
+          assert 'execute' not in r and 'observe' not in r and 'close' not in r
+          print('Independent authorize-phase binding and no-future-phase proof verified')
+          PY
+      - name: Protect predecessor implementations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/(pre-action-bundle-assembly|pre-action-authorize-admission-assessment|action-specific-approval|pre-action-evidence-bridge|core-action-permit-binding)/|protocols/integration/(pre-action-evidence-bundle|execute-revalidation)/)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: authorize-phase binding modified protected predecessor paths'
+            echo "$bad"
+            exit 1
+          fi
+          unexpected_lifecycle="$(printf '%s\n' "$changed" | grep '^protocols/integration/execution-lifecycle/v0\.1/' | grep -Ev '/(validate-authorize-phase\.js|test-authorize-phase-seam\.js)$' || true)"
+          if [ -n "$unexpected_lifecycle" ]; then
+            echo 'ERROR: historical lifecycle implementation changed'
+            echo "$unexpected_lifecycle"
+            exit 1
+          fi
+          echo 'Protected predecessor implementations unchanged'
