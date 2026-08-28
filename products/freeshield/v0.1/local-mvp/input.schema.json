@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/freeshield/v0.1/local-mvp/input.schema.json",
+  "title": "FreeShieldProtectiveAssessmentInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "artifact_type", "input_id", "contract_binding",
+    "consumer_binding", "evaluation_frontier", "candidate", "authority",
+    "evidence", "constraints", "frontier_observation", "controls", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "FREESHIELD-LOCAL-MVP"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "FreeShieldProtectiveAssessmentInput"},
+    "input_id": {"type": "string", "pattern": "^urn:uu-aap:freeshield:protective-input:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "contract_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["contract_id", "product_id", "product_version", "content_hash"],
+      "properties": {
+        "contract_id": {"const": "freeshield-protective-contract"},
+        "product_id": {"const": "freeshield"},
+        "product_version": {"const": "0.1"},
+        "content_hash": {"const": "sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295"}
+      }
+    },
+    "consumer_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["product_id", "product_version", "product_contract_hash", "authority_transfer", "responsibility_transfer"],
+      "properties": {
+        "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$", "not": {"const": "freeshield"}},
+        "product_version": {"type": "string", "minLength": 1},
+        "product_contract_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "authority_transfer": {"const": false},
+        "responsibility_transfer": {"const": false}
+      }
+    },
+    "evaluation_frontier": {"$ref": "#/$defs/frontier"},
+    "candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id", "candidate_kind", "operation_class", "target_ref", "payload_digest", "intended_outcome", "declared_scope", "analysis_only", "external_effect_requested", "evidence_refs"],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "candidate_kind": {"type": "string", "minLength": 1},
+        "operation_class": {"type": "string", "minLength": 1},
+        "target_ref": {"type": "string", "minLength": 1},
+        "payload_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "intended_outcome": {"type": "string", "minLength": 1},
+        "declared_scope": {"$ref": "#/$defs/nonEmptyStringArray"},
+        "analysis_only": {"type": "boolean"},
+        "external_effect_requested": {"type": "boolean"},
+        "evidence_refs": {"$ref": "#/$defs/nonEmptyStringArray"}
+      },
+      "not": {"properties": {"analysis_only": {"const": true}, "external_effect_requested": {"const": true}}, "required": ["analysis_only", "external_effect_requested"]}
+    },
+    "authority": {
+      "type": "object", "additionalProperties": false,
+      "required": ["request_owner_role_id", "authority_scope", "authority_evidence_refs", "authority_lineage_complete", "action_permit_ref"],
+      "properties": {
+        "request_owner_role_id": {"type": "string", "minLength": 1},
+        "authority_scope": {"$ref": "#/$defs/nonEmptyStringArray"},
+        "authority_evidence_refs": {"$ref": "#/$defs/nonEmptyStringArray"},
+        "authority_lineage_complete": {"type": "boolean"},
+        "action_permit_ref": {"type": "null"}
+      }
+    },
+    "evidence": {
+      "type": "array", "minItems": 4,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "data_class", "quality", "source_ref", "provenance_ref", "digest", "observed_at", "applicable_scope"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "data_class": {"enum": ["candidate-envelope", "contract-authority-bundle", "constraint-bundle", "frontier-state"]},
+          "quality": {"enum": ["verified", "unverified", "stale", "conflicting"]},
+          "source_ref": {"type": "string", "minLength": 1},
+          "provenance_ref": {"type": "string", "minLength": 1},
+          "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "observed_at": {"type": "string", "format": "date-time"},
+          "applicable_scope": {"$ref": "#/$defs/nonEmptyStringArray"}
+        }
+      }
+    },
+    "constraints": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "source_ref", "scope", "statement", "disposition", "evidence_refs"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "source_ref": {"type": "string", "minLength": 1},
+          "scope": {"$ref": "#/$defs/nonEmptyStringArray"},
+          "statement": {"type": "string", "minLength": 1},
+          "disposition": {"enum": ["none", "narrow_scope", "require_evidence", "human_review", "block_effect"]},
+          "evidence_refs": {"$ref": "#/$defs/nonEmptyStringArray"}
+        }
+      }
+    },
+    "frontier_observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state_id", "observer_role_id", "observed_at", "quality", "digest"],
+      "properties": {
+        "state_id": {"type": "string", "minLength": 1},
+        "observer_role_id": {"type": "string", "minLength": 1},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "quality": {"enum": ["verified", "unverified", "stale", "conflicting"]},
+        "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["local_only", "read_only", "network_access_required", "filesystem_write_required", "provider_invocation_available", "actuator_control_available", "authority_creation_available", "responsibility_acceptance_available", "action_permit_creation_available", "execution_available", "external_effect_available", "automatic_retry"],
+      "properties": {
+        "local_only": {"const": true}, "read_only": {"const": true},
+        "network_access_required": {"const": false}, "filesystem_write_required": {"const": false},
+        "provider_invocation_available": {"const": false}, "actuator_control_available": {"const": false},
+        "authority_creation_available": {"const": false}, "responsibility_acceptance_available": {"const": false},
+        "action_permit_creation_available": {"const": false}, "execution_available": {"const": false},
+        "external_effect_available": {"const": false}, "automatic_retry": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "frontier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "nonEmptyStringArray": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}
