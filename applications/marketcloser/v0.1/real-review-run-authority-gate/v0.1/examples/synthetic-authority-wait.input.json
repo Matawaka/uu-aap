@@ -1,0 +1,38 @@
+{
+  "protocol": "MARKETCLOSER-REAL-REVIEW-RUN-AUTHORITY-GATE",
+  "version": "0.1",
+  "artifact_type": "MarketCloserRealReviewRunAuthorityGateInput",
+  "gate_id": "urn:uu-aap:marketcloser:real-review-run-authority-gate:synthetic-001",
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "c22967d4ebf82336bf772fa7526b6d4e7b54765e",
+    "observed_at": "2026-08-28T23:28:00Z"
+  },
+  "bridge_source": {
+    "mode": "repository_synthetic",
+    "path": "applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/examples/synthetic-minimized-review.input.json",
+    "expected_bridge_input_hash": "sha256:e42537ffbc5c21181d138949258668e0b04bf2c82f56f50a9f06365fdbe74a58"
+  },
+  "effect_actor_subject": {
+    "id": "actor:synthetic-marketcloser-reviewer",
+    "key_ref": "key:synthetic-marketcloser-reviewer"
+  },
+  "authority_verification_result": null,
+  "evaluated_at": "2026-08-28T23:30:00Z",
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "authority_grant_creation_available": false,
+    "live_root_mutation_available": false,
+    "stress_test_run_available": false,
+    "response_candidate_available": false,
+    "publication_available": false,
+    "provider_invocation_available": false,
+    "platform_mutation_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:28d148f84404487f3632a4a63415346f6af1b275e299d27436f4c8a3bbc6b774"
+}
