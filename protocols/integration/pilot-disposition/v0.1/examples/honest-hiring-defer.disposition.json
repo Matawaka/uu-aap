@@ -1,0 +1,32 @@
+{
+  "protocol": "UU-AAP-PRODUCT-PILOT-HUMAN-DISPOSITION",
+  "version": "0.1",
+  "artifact_type": "ProductPilotHumanDispositionInput",
+  "disposition_id": "urn:uu-aap:pilot-human-disposition:input:honest-hiring-defer",
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "392adeab56dba9ad69f9f0999f194597cab83fec"
+  },
+  "admission_candidate_path": "protocols/integration/pilot-admission/v0.1/examples/honest-hiring-real-personal.candidate.json",
+  "expected_product_id": "honest-hiring",
+  "decision": {
+    "decision_context": "synthetic_conformance",
+    "decision": "DEFER",
+    "reviewer_reference": "synthetic-reviewer:honest-hiring-defer-fixture",
+    "rationale": "Synthetic conformance fixture: defer while data-protection review remains separate.",
+    "recorded_at": "2026-08-28T17:15:00Z"
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "pilot_permit_creation_available": false,
+    "pilot_start_available": false,
+    "network_delivery_available": false,
+    "provider_invocation_available": false,
+    "account_mutation_available": false,
+    "external_effect_available": false,
+    "action_permit_available": false,
+    "execution_available": false
+  },
+  "content_hash": "sha256:652fa72237e7e998441bdfefe51f2c4e37111f1ec956cf50082dea4b55756a85"
+}

@@ -1,0 +1,32 @@
+{
+  "protocol": "UU-AAP-PRODUCT-PILOT-HUMAN-DISPOSITION",
+  "version": "0.1",
+  "artifact_type": "ProductPilotHumanDispositionInput",
+  "disposition_id": "urn:uu-aap:pilot-human-disposition:input:marketer-pessimist-defer",
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "392adeab56dba9ad69f9f0999f194597cab83fec"
+  },
+  "admission_candidate_path": "protocols/integration/pilot-admission/v0.1/examples/marketer-pessimist-real-non-personal.candidate.json",
+  "expected_product_id": "marketer-pessimist",
+  "decision": {
+    "decision_context": "synthetic_conformance",
+    "decision": "DEFER",
+    "reviewer_reference": "synthetic-reviewer:marketer-defer-fixture",
+    "rationale": "Synthetic conformance fixture: defer without creating pilot permission.",
+    "recorded_at": "2026-08-28T17:15:00Z"
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "pilot_permit_creation_available": false,
+    "pilot_start_available": false,
+    "network_delivery_available": false,
+    "provider_invocation_available": false,
+    "account_mutation_available": false,
+    "external_effect_available": false,
+    "action_permit_available": false,
+    "execution_available": false
+  },
+  "content_hash": "sha256:af1e2c3e87605b3e131a3434980f848247da5c012fa068c8756f421bb79fde84"
+}

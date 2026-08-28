@@ -1,0 +1,441 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.local/protocols/integration/pilot-disposition/v0.1/human-disposition-receipt.schema.json",
+  "title": "Product Pilot Human Disposition Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "receipt_type",
+    "receipt_id",
+    "evaluation_frontier",
+    "source_disposition",
+    "admission_predecessor",
+    "product",
+    "human_decision",
+    "disposition",
+    "required_followup_gates",
+    "claims",
+    "non_effects",
+    "next_safe_action",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": { "const": "UU-AAP-PRODUCT-PILOT-HUMAN-DISPOSITION" },
+    "version": { "const": "0.1" },
+    "receipt_type": { "const": "ProductPilotHumanDispositionReceipt" },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:pilot-human-disposition:receipt:[0-9a-f]{24}$"
+    },
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision"],
+      "properties": {
+        "repository": { "const": "Matawaka/uu-aap" },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "source_disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["disposition_id", "disposition_hash", "decision_context"],
+      "properties": {
+        "disposition_id": { "type": "string", "minLength": 1 },
+        "disposition_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "decision_context": { "enum": ["synthetic_conformance", "human_supplied"] }
+      }
+    },
+    "admission_predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_path",
+        "candidate_id",
+        "candidate_hash",
+        "preflight_receipt_type",
+        "preflight_receipt_id",
+        "preflight_receipt_hash",
+        "preflight_status",
+        "data_protection_review_required",
+        "participant_consent_required"
+      ],
+      "properties": {
+        "candidate_path": {
+          "enum": [
+            "protocols/integration/pilot-admission/v0.1/examples/marketer-pessimist-real-non-personal.candidate.json",
+            "protocols/integration/pilot-admission/v0.1/examples/honest-hiring-real-personal.candidate.json"
+          ]
+        },
+        "candidate_id": { "type": "string", "minLength": 1 },
+        "candidate_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "preflight_receipt_type": { "const": "ProductPilotAdmissionPreflightReceipt" },
+        "preflight_receipt_id": { "type": "string", "minLength": 1 },
+        "preflight_receipt_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "preflight_status": {
+          "enum": [
+            "READY_FOR_HUMAN_PILOT_ADMISSION_REVIEW",
+            "DATA_PROTECTION_REVIEW_REQUIRED",
+            "PILOT_BOUNDARY_UNSATISFIED"
+          ]
+        },
+        "data_protection_review_required": { "type": "boolean" },
+        "participant_consent_required": { "type": "boolean" }
+      }
+    },
+    "product": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "product_profile_id", "product_version"],
+      "properties": {
+        "product_id": { "enum": ["marketer-pessimist", "honest-hiring"] },
+        "product_profile_id": { "type": "string", "minLength": 1 },
+        "product_version": { "const": "0.1" }
+      }
+    },
+    "human_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_context",
+        "decision",
+        "reviewer_reference",
+        "rationale",
+        "recorded_at",
+        "reviewer_identity_verified",
+        "reviewer_authority_verified"
+      ],
+      "properties": {
+        "decision_context": { "enum": ["synthetic_conformance", "human_supplied"] },
+        "decision": { "enum": ["APPROVE", "DEFER", "REJECT"] },
+        "reviewer_reference": { "type": "string", "minLength": 1 },
+        "rationale": { "type": "string", "minLength": 1 },
+        "recorded_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"
+        },
+        "reviewer_identity_verified": { "const": false },
+        "reviewer_authority_verified": { "const": false }
+      }
+    },
+    "disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "reason_codes"],
+      "properties": {
+        "status": {
+          "enum": [
+            "HUMAN_ADMISSION_APPROVED_PERMIT_NOT_CREATED",
+            "PRODUCT_REVIEW_APPROVED_DATA_PROTECTION_STILL_REQUIRED",
+            "HUMAN_REVIEW_DEFERRED",
+            "HUMAN_REVIEW_REJECTED"
+          ]
+        },
+        "reason_codes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "required_followup_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewer_identity_verification_required_for_reliance",
+        "reviewer_authority_verification_required_for_reliance",
+        "data_protection_review_required",
+        "participant_consent_required",
+        "pilot_permit_required_before_start"
+      ],
+      "properties": {
+        "reviewer_identity_verification_required_for_reliance": { "const": true },
+        "reviewer_authority_verification_required_for_reliance": { "const": true },
+        "data_protection_review_required": { "type": "boolean" },
+        "participant_consent_required": { "type": "boolean" },
+        "pilot_permit_required_before_start": { "const": true }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_admission_candidate_revalidated",
+        "exact_admission_preflight_revalidated",
+        "human_decision_recorded",
+        "human_approval_recorded",
+        "human_deferral_recorded",
+        "human_rejection_recorded",
+        "reviewer_identity_verified",
+        "reviewer_authority_verified",
+        "product_owner_authority_verified",
+        "pilot_admitted",
+        "pilot_permit_created",
+        "real_pilot_started",
+        "participant_consent_recorded",
+        "data_protection_approved",
+        "external_effect_authorized",
+        "external_effect_performed",
+        "real_world_decision_authorized",
+        "account_mutation_authorized",
+        "network_delivery_performed",
+        "provider_invoked",
+        "authority_created",
+        "responsibility_accepted",
+        "action_permit_created",
+        "execution_admitted",
+        "stable_core_promotion_established",
+        "successor_authority_created"
+      ],
+      "properties": {
+        "exact_admission_candidate_revalidated": { "const": true },
+        "exact_admission_preflight_revalidated": { "const": true },
+        "human_decision_recorded": { "const": true },
+        "human_approval_recorded": { "type": "boolean" },
+        "human_deferral_recorded": { "type": "boolean" },
+        "human_rejection_recorded": { "type": "boolean" },
+        "reviewer_identity_verified": { "const": false },
+        "reviewer_authority_verified": { "const": false },
+        "product_owner_authority_verified": { "const": false },
+        "pilot_admitted": { "const": false },
+        "pilot_permit_created": { "const": false },
+        "real_pilot_started": { "const": false },
+        "participant_consent_recorded": { "const": false },
+        "data_protection_approved": { "const": false },
+        "external_effect_authorized": { "const": false },
+        "external_effect_performed": { "const": false },
+        "real_world_decision_authorized": { "const": false },
+        "account_mutation_authorized": { "const": false },
+        "network_delivery_performed": { "const": false },
+        "provider_invoked": { "const": false },
+        "authority_created": { "const": false },
+        "responsibility_accepted": { "const": false },
+        "action_permit_created": { "const": false },
+        "execution_admitted": { "const": false },
+        "stable_core_promotion_established": { "const": false },
+        "successor_authority_created": { "const": false }
+      }
+    },
+    "non_effects": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "Human Decision Recorded != Reviewer Identity Verified",
+          "Human Decision Recorded != Reviewer Authority Verified",
+          "Human Approval != PilotPermit",
+          "Human Approval != Pilot Start",
+          "Human Approval != ActionPermit",
+          "Human Approval != Execution Admission",
+          "Product-Owner Approval != Data-Protection Approval",
+          "Data-Protection Review Required != Consent Recorded",
+          "Reject or Defer != Sanction or Global Prohibition",
+          "Disposition Receipt != Successor Authority"
+        ]
+      }
+    },
+    "next_safe_action": {
+      "enum": [
+        "SEPARATE_AUTHORITY_BOUND_PILOT_PERMIT_REVIEW_REQUIRED",
+        "SEPARATE_DATA_PROTECTION_CONSENT_AND_AUTHORITY_REVIEW_REQUIRED",
+        "NO_PILOT_ACTION_UNTIL_NEW_HUMAN_REVIEW",
+        "STOP_THIS_PILOT_CANDIDATE_WITHOUT_SANCTION"
+      ]
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "admission_predecessor": {
+            "properties": {
+              "candidate_path": {
+                "const": "protocols/integration/pilot-admission/v0.1/examples/marketer-pessimist-real-non-personal.candidate.json"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "product": {
+            "properties": { "product_id": { "const": "marketer-pessimist" } }
+          },
+          "admission_predecessor": {
+            "properties": {
+              "preflight_status": { "const": "READY_FOR_HUMAN_PILOT_ADMISSION_REVIEW" },
+              "data_protection_review_required": { "const": false },
+              "participant_consent_required": { "const": false }
+            }
+          },
+          "required_followup_gates": {
+            "properties": {
+              "data_protection_review_required": { "const": false },
+              "participant_consent_required": { "const": false }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "admission_predecessor": {
+            "properties": {
+              "candidate_path": {
+                "const": "protocols/integration/pilot-admission/v0.1/examples/honest-hiring-real-personal.candidate.json"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "product": {
+            "properties": { "product_id": { "const": "honest-hiring" } }
+          },
+          "admission_predecessor": {
+            "properties": {
+              "preflight_status": { "const": "DATA_PROTECTION_REVIEW_REQUIRED" },
+              "data_protection_review_required": { "const": true },
+              "participant_consent_required": { "const": true }
+            }
+          },
+          "required_followup_gates": {
+            "properties": {
+              "data_protection_review_required": { "const": true },
+              "participant_consent_required": { "const": true }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "human_decision": {
+            "properties": { "decision_context": { "const": "synthetic_conformance" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "human_decision": {
+            "properties": { "decision": { "const": "DEFER" } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "human_decision": {
+            "properties": { "decision": { "const": "DEFER" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "disposition": {
+            "properties": { "status": { "const": "HUMAN_REVIEW_DEFERRED" } }
+          },
+          "claims": {
+            "properties": {
+              "human_approval_recorded": { "const": false },
+              "human_deferral_recorded": { "const": true },
+              "human_rejection_recorded": { "const": false }
+            }
+          },
+          "next_safe_action": { "const": "NO_PILOT_ACTION_UNTIL_NEW_HUMAN_REVIEW" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "human_decision": {
+            "properties": { "decision": { "const": "REJECT" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "disposition": {
+            "properties": { "status": { "const": "HUMAN_REVIEW_REJECTED" } }
+          },
+          "claims": {
+            "properties": {
+              "human_approval_recorded": { "const": false },
+              "human_deferral_recorded": { "const": false },
+              "human_rejection_recorded": { "const": true }
+            }
+          },
+          "next_safe_action": { "const": "STOP_THIS_PILOT_CANDIDATE_WITHOUT_SANCTION" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "human_decision": {
+            "properties": { "decision": { "const": "APPROVE" } }
+          },
+          "admission_predecessor": {
+            "properties": { "preflight_status": { "const": "READY_FOR_HUMAN_PILOT_ADMISSION_REVIEW" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "disposition": {
+            "properties": { "status": { "const": "HUMAN_ADMISSION_APPROVED_PERMIT_NOT_CREATED" } }
+          },
+          "claims": {
+            "properties": {
+              "human_approval_recorded": { "const": true },
+              "human_deferral_recorded": { "const": false },
+              "human_rejection_recorded": { "const": false }
+            }
+          },
+          "next_safe_action": { "const": "SEPARATE_AUTHORITY_BOUND_PILOT_PERMIT_REVIEW_REQUIRED" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "human_decision": {
+            "properties": { "decision": { "const": "APPROVE" } }
+          },
+          "admission_predecessor": {
+            "properties": { "preflight_status": { "const": "DATA_PROTECTION_REVIEW_REQUIRED" } }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "disposition": {
+            "properties": { "status": { "const": "PRODUCT_REVIEW_APPROVED_DATA_PROTECTION_STILL_REQUIRED" } }
+          },
+          "claims": {
+            "properties": {
+              "human_approval_recorded": { "const": true },
+              "human_deferral_recorded": { "const": false },
+              "human_rejection_recorded": { "const": false }
+            }
+          },
+          "next_safe_action": { "const": "SEPARATE_DATA_PROTECTION_CONSENT_AND_AUTHORITY_REVIEW_REQUIRED" }
+        }
+      }
+    }
+  ]
+}
