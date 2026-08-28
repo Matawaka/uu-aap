@@ -1,0 +1,163 @@
+name: MarketCloser Minimized Real Review Bridge v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/**"
+      - "applications/marketcloser/v0.1/deployment-observation/v0.1/**"
+      - "applications/marketcloser/v0.1/**"
+      - "products/marketer-pessimist/v0.1/real-review-intake/v0.1/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - ".github/workflows/marketcloser-minimized-real-review-bridge-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/**"
+      - "applications/marketcloser/v0.1/deployment-observation/v0.1/**"
+      - "applications/marketcloser/v0.1/**"
+      - "products/marketer-pessimist/v0.1/real-review-intake/v0.1/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - ".github/workflows/marketcloser-minimized-real-review-bridge-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: b82b16a170c6e8d250735c51f430a39cf3663558
+      BRIDGE: applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1
+      FIXTURE: applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/examples/synthetic-minimized-review.input.json
+      RECEIPT: /tmp/marketcloser-minimized-bridge-receipt.json
+      PYTHONPYCACHEPREFIX: /tmp/marketcloser-minimized-bridge-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run merged MarketCloser Application Boundary
+        run: python applications/marketcloser/v0.1/validate_boundary.py
+
+      - name: Re-run merged Deployment Observation predecessor
+        run: |
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-schema-runtime-parity.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-import-safe.js
+
+      - name: Re-run merged Marketer Pessimist Real Review Intake
+        run: |
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-schema-runtime-parity.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-import-safe.js
+
+      - name: Check bridge JavaScript syntax
+        run: |
+          node --check "$BRIDGE/bridge.js"
+          node --check "$BRIDGE/receipt-binding.js"
+          node --check "$BRIDGE/test-bridge.js"
+          node --check "$BRIDGE/test-receipt-binding.js"
+          node --check "$BRIDGE/test-schema-runtime-parity.js"
+          node --check "$BRIDGE/test-import-safe.js"
+
+      - name: Validate synthetic bridge fixture
+        run: node "$BRIDGE/bridge.js" validate "$FIXTURE"
+
+      - name: Run minimized bridge conformance
+        run: node "$BRIDGE/test-bridge.js"
+
+      - name: Validate exact bridge receipt source binding
+        run: node "$BRIDGE/test-receipt-binding.js"
+
+      - name: Validate schema/runtime parity
+        run: node "$BRIDGE/test-schema-runtime-parity.js"
+
+      - name: Validate import safety
+        run: node "$BRIDGE/test-import-safe.js"
+
+      - name: Generate canonical synthetic receipt
+        run: node "$BRIDGE/bridge.js" receipt "$FIXTURE" > "$RECEIPT"
+
+      - name: Validate input and receipt against JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          bridge = Path(os.environ['BRIDGE'])
+          fixture = Path(os.environ['FIXTURE'])
+          receipt = Path(os.environ['RECEIPT'])
+          pairs = [
+              (bridge / 'input.schema.json', fixture),
+              (bridge / 'receipt.schema.json', receipt),
+          ]
+          for schema_path, data_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              data = json.loads(data_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(data)
+              print(f'PASS: {data_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node "$BRIDGE/bridge.js" help
+          for cmd in analyze stress-test respond approve publish send campaign spend target admit permit run execute mutate; do
+            if node "$BRIDGE/bridge.js" "$cmd" - >/tmp/bridge.out 2>/tmp/bridge.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "MARKETCLOSER_MINIMIZED_REAL_REVIEW_BRIDGE_REJECTED" /tmp/bridge.err
+          done
+
+      - name: Guard production surface as local read-only
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const text = fs.readFileSync('applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/bridge.js', 'utf8');
+          const forbidden = [
+            'child_process', "require('http')", "require('https')", 'http.request', 'https.request',
+            'fetch(', 'XMLHttpRequest', 'WebSocket', 'writeFileSync', 'writeFile(', 'appendFile',
+            'execSync', 'spawnSync', 'OpenAI', 'Anthropic'
+          ];
+          for (const token of forbidden) if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          console.log('PASS: minimized review bridge production surface is local read-only');
+          NODE
+
+      - name: Confirm repository fixture is synthetic only
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          data = json.loads(Path(os.environ['FIXTURE']).read_text(encoding='utf-8'))
+          assert data['source_mode'] == 'synthetic_conformance'
+          assert data['deployment_observation']['observation']['method'] == 'synthetic_conformance'
+          assert data['deployment_observation']['deployment']['url'].endswith('.invalid')
+          assert data['deployment_observation']['source_artifact']['kind'] == 'synthetic_conformance'
+          assert data['minimized_case']['source_claim_epistemic_status'] == 'synthetic_claim'
+          assert data['minimization']['raw_review_text_included'] is False
+          assert data['minimization']['raw_reviewer_identity_included'] is False
+          print('PASS: repository bridge fixture is synthetic only')
+          PY
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
