@@ -1,6 +1,6 @@
 # FCL PreAction Bundle Assembly v0.1
 
-**Status:** experimental read-only artifact materializer  
+**Status:** experimental artifact materializer  
 **Issue:** #568  
 **Predecessor:** merged FCL PreAction Evidence Bridge v0.1 (#567)
 
@@ -18,17 +18,17 @@ FCL PreAction Bridge
 + FCLPreActionBundleAssemblyReceipt
 ```
 
-It does not authorize or execute anything.
+It does not admit authorize or execute anything.
 
 ## Exact-source rule
 
 Both source artifacts are reproducibility-bound:
 
-- the supplied bridge record must be exactly reproducible from the supplied bridge input;
-- the supplied approval receipt must be exactly reproducible from the supplied approval input;
-- the approval and bridge must carry byte-identical `ActionPermit` and ActionPermit binding input objects.
+- the bridge record must be exactly reproducible from its bridge input;
+- the approval receipt must be exactly reproducible from its approval input;
+- approval and bridge must carry byte-identical `ActionPermit` and ActionPermit binding input objects.
 
-Hash equality alone is not used as a substitute for exact source equality.
+Hash equality is not used as a substitute for exact source equality.
 
 ## Identifier separation
 
@@ -38,51 +38,58 @@ The assembler preserves the mapping established by the bridge:
 provider-neutral selected operation != FCL target operation
 ```
 
-For the current interrupt fixture this remains:
+For the current interrupt fixture:
 
 ```text
 interrupt_run != fcl.run.interrupt
 ```
 
-Approval binds the FCL target operation. Selection provenance keeps the provider-neutral operation.
+Selection provenance keeps the provider-neutral operation. Approval and the ActionPermit bind the FCL target operation.
 
-## Four-way authorization horizon
+## Derived freshness invariant
 
-Bridge mode has four independent freshness constraints:
-
-```text
-Execution Capability Availability
-FCL action-chain Availability
-Action-Specific Approval
-ActionPermit
-```
-
-The assembled bundle MUST advertise:
+A valid FCL ActionPermit is already bounded by its FCL AvailabilityClaim:
 
 ```text
-authorization_must_occur_by = min(all four horizons)
+ActionPermit.expires_at <= FCL AvailabilityClaim.valid_until
 ```
 
-This narrows the #567 bridge-mode lifecycle window. The historical no-bridge PreAction horizon remains the original three-way minimum.
+The canonical FCL ActionPermit validator rejects any permit that exceeds that availability horizon. Because the bridge revalidates the exact ActionPermit chain, FCL Availability is an explicit freshness source but cannot be an earlier independent lifecycle horizon than the permit.
 
-## Transitional compatibility projection
+Therefore every valid assembly must prove:
 
-The current raw reusable PreAction v0.1 validator still requires the historical three-way horizon. The assembler therefore validates the actual four-way bundle in two parts:
+```text
+min(Execution Availability, Approval, ActionPermit)
+==
+min(Execution Availability, FCL Availability, Approval, ActionPermit)
+```
 
-1. it verifies the actual bundle hash and exact four-way horizon;
-2. it creates a validation-only compatibility projection whose only semantic difference is replacing the four-way horizon with the historical three-way horizon, recomputes that projection hash, and passes the projection through the existing reusable validator with the exact bridge context.
+The reusable PreAction v0.1 horizon remains unchanged and is already FCL-bounded transitively through the permit.
 
-The compatibility projection is never emitted as the output bundle. A conformance case where FCL Availability is the earliest horizon proves that the stronger assembler accepts the actual bundle while the raw reusable validator rejects it specifically on the historical horizon rule.
+```text
+Explicit Freshness Source != Independent Limiting Horizon
+Derived Redundancy != Missing Constraint
+```
+
+## Direct reusable validation
+
+The output bundle is validated directly by the merged bridge-aware reusable API:
+
+```text
+validateBundle(bundle, evidenceContext, bridgeContext)
+```
+
+No compatibility projection, receipt rewrite, or horizon substitution is used.
 
 ## Downstream boundary
 
-Before any admission evaluation, the raw reusable PreAction validator itself must learn the four-way FCL horizon. Therefore the assembly receipt advances only to:
+The assembly receipt advances only to a read-only assessment step:
 
 ```text
-PARAMETERIZE_PRE_ACTION_EVIDENCE_BUNDLE_FCL_HORIZON
+EVALUATE_PRE_ACTION_AUTHORIZE_ADMISSION
 ```
 
-Only after that successor is complete should `PreAction Authorize Admission` be parameterized or evaluated for the bridged FCL path.
+This means the evidence bundle is available for an admission assessment. It does **not** mean authorize has been admitted, a permit has been consumed, or execution may begin.
 
 ## Canonical distinctions
 
@@ -91,7 +98,6 @@ Bundle Materialization != Authority Creation
 Bundle Materialization != Permit Creation
 Bundle Materialization != Permit Consumption
 Lifecycle Handoff To Authorize != Authorize Admission
-Bridge Horizon Narrowing != Semantic Relaxation
 Authorize Admission Assessment != Execution
 Approval Evidence != Authority Receipt
 Bridge Context != Approval
