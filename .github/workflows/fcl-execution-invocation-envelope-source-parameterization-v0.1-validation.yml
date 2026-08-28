@@ -1,0 +1,162 @@
+name: FCL Execution Invocation Envelope Source Parameterization v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/**'
+      - 'protocols/fcl/v0.1/execute-revalidation-source-parameterization/**'
+      - 'protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
+      - '.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/**'
+      - 'protocols/fcl/v0.1/execute-revalidation-source-parameterization/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - '.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Materialize invocation envelope without invoking actuator
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Preserve historical Invocation Envelope and parameterized parity
+        run: |
+          node protocols/integration/execution-invocation-envelope/v0.1/validate-invocation-envelope.js
+          node --check protocols/integration/execution-invocation-envelope/v0.1/validate-parameterized-envelope.js
+          node protocols/integration/execution-invocation-envelope/v0.1/test-parameterized-envelope.js
+
+      - name: Preserve historical Invocation to ActionReceipt post-execution boundary
+        run: node protocols/integration/invocation-action-receipt-binding/v0.1/validate-invocation-action-receipt-binding.js
+
+      - name: Materialize exact FCL revalidation source once
+        timeout-minutes: 6
+        run: |
+          node protocols/fcl/v0.1/execute-revalidation-source-parameterization/test-execute-revalidation-source-parameterization.js \
+            /tmp/fcl-invocation-revalidation-input.json \
+            /tmp/fcl-invocation-revalidation-decision.json \
+            /tmp/fcl-invocation-revalidation-receipt.json
+
+      - name: Run FCL invocation envelope conformance with cached revalidation source
+        timeout-minutes: 4
+        env:
+          FCL_INVOCATION_CACHED_REVALIDATION_INPUT: /tmp/fcl-invocation-revalidation-input.json
+          FCL_INVOCATION_CACHED_REVALIDATION_DECISION: /tmp/fcl-invocation-revalidation-decision.json
+          FCL_INVOCATION_CACHED_REVALIDATION_RECEIPT: /tmp/fcl-invocation-revalidation-receipt.json
+        run: |
+          node --check protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/execution-invocation-envelope-source-parameterization.js
+          node --check protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/test-execution-invocation-envelope-source-parameterization.js
+          node protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/test-execution-invocation-envelope-source-parameterization.js \
+            /tmp/fcl-invocation-input.json \
+            /tmp/fcl-invocation-envelope.json \
+            /tmp/fcl-invocation-receipt.json
+
+      - name: Validate generic and FCL envelope schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/execution-invocation-envelope-source-parameterization-input.schema.json'), Path('/tmp/fcl-invocation-input.json')),
+              (Path('protocols/integration/execution-invocation-envelope/v0.1/invocation-envelope.schema.json'), Path('/tmp/fcl-invocation-envelope.json')),
+              (Path('protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/execution-invocation-envelope-source-parameterization-receipt.schema.json'), Path('/tmp/fcl-invocation-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify envelope binding and no invocation effect
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          i = json.loads(Path('/tmp/fcl-invocation-input.json').read_text())
+          e = json.loads(Path('/tmp/fcl-invocation-envelope.json').read_text())
+          r = json.loads(Path('/tmp/fcl-invocation-receipt.json').read_text())
+          d = i['generic_revalidation_decision']
+          fr = i['fcl_revalidation_receipt']
+          b = i['revalidation_input']['authorize_binding_input']['assessment_input']['pre_action_bundle']
+
+          def canonical(v):
+              if v is None or isinstance(v, (bool, int, float, str)):
+                  return json.dumps(v, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(v, list):
+                  return '[' + ','.join(canonical(x) for x in v) + ']'
+              if isinstance(v, dict):
+                  return '{' + ','.join(json.dumps(k, ensure_ascii=False) + ':' + canonical(v[k]) for k in sorted(v)) + '}'
+              raise TypeError(type(v))
+
+          def content_hash(v):
+              p = {k: val for k, val in v.items() if k != 'content_hash'}
+              return 'sha256:' + hashlib.sha256(canonical(p).encode()).hexdigest()
+
+          assert e['content_hash'] == content_hash(e)
+          assert r['content_hash'] == content_hash(r)
+          assert e['execute_revalidation_ref']['decision_id'] == d['decision_id']
+          assert e['execute_revalidation_ref']['content_hash'] == d['content_hash'] == r['generic_revalidation_hash']
+          assert e['execute_revalidation_ref']['status'] == d['decision']['status'] == 'ready'
+          assert e['action_binding'] == d['action_binding']
+          assert e['evidence_binding']['action_permit_hash'] == d['freshness_binding']['action_permit_hash'] == b['core_receipts']['action_permit']['content_hash']
+          assert e['evidence_binding']['approval_hash'] == d['freshness_binding']['approval_hash'] == b['approval_binding']['content_hash']
+          assert e['invocation']['expires_at'] == d['freshness_binding']['execute_revalidation_must_occur_by']
+          assert e['invocation']['adapter_role'] == 'transport_only'
+          assert e['invocation']['one_shot'] is True and e['invocation']['consumed'] is False
+          assert e['non_effects']['actuator_invocation_emitted'] is False
+          assert e['non_effects']['permit_consumed'] is False
+          assert e['non_effects']['action_receipt_created'] is False
+          assert r['fcl_revalidation_receipt_hash'] == fr['content_hash']
+          assert r['target_binding_hash'] == b['target']['binding_hash']
+          assert r['frontier'] == b['target']['expected_predecessor_frontier']
+          assert r['next_safe_action'] == 'PARAMETERIZE_INVOCATION_ACTION_RECEIPT_FCL_SOURCE'
+          assert all(v is True for v in r['assertions'].values())
+          assert all(v is False for v in r['non_effects'].values())
+          print('Independent FCL invocation-envelope binding/non-effect proof verified')
+          PY
+
+      - name: Protect predecessor and post-execution implementations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" | grep -vE '^(\.github/workflows/fcl-execute-revalidation-source-parameterization-v0\.1-validation\.yml|\.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0\.1-validation\.yml|protocols/fcl/v0\.1/execution-invocation-envelope-source-parameterization/|protocols/integration/execution-invocation-envelope/v0\.1/(validate-parameterized-envelope\.js|test-parameterized-envelope\.js))' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: #577 diff exceeds allowed invocation-envelope parameterization slice'
+            echo "$bad"
+            exit 1
+          fi
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/execution-invocation-envelope/v0.1/validate-invocation-envelope.js
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/execution-invocation-envelope/v0.1/invocation-envelope.schema.json
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/execution-invocation-envelope/v0.1/conformance.fixture.json
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/
+          echo 'Historical envelope and post-execution boundary preserved; predecessor guard workflow-only compatibility update allowed'
