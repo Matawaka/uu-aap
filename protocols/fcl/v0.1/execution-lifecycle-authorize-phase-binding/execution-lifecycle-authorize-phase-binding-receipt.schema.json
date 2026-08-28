@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/execution-lifecycle-authorize-phase-binding/execution-lifecycle-authorize-phase-binding-receipt.schema.json",
+  "title": "FCL Execution Lifecycle Authorize Phase Binding Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","binding_id","source_assessment_id","generic_assessment_hash","fcl_assessment_receipt_hash","assembly_receipt_hash","bundle_id","bundle_content_hash","action_permit_hash","approval_hash","target_binding_hash","frontier","authorization_must_occur_by","authorize_phase","assertions","non_effects","next_safe_action","authorized_at","content_hash"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "FCLExecutionLifecycleAuthorizePhaseBindingReceipt"},
+    "binding_id": {"type": "string", "minLength": 1},
+    "source_assessment_id": {"type": "string", "minLength": 1},
+    "generic_assessment_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "fcl_assessment_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "assembly_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "bundle_content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "approval_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "target_binding_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "frontier": {"type": "string", "minLength": 1},
+    "authorization_must_occur_by": {"type": "string", "format": "date-time"},
+    "authorized_at": {"type": "string", "format": "date-time"},
+    "authorize_phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status","frontier","action_permit_issued_at","admission_assessed_at","authorized_at","expires_at","action_permit_ref","approval_ref","admission_assessment_ref","target_binding_hash","one_shot","consumed","assertions","non_effects"],
+      "properties": {
+        "status": {"const": "authorized"},
+        "frontier": {"type": "string", "minLength": 1},
+        "action_permit_issued_at": {"type": "string", "format": "date-time"},
+        "admission_assessed_at": {"type": "string", "format": "date-time"},
+        "authorized_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"},
+        "action_permit_ref": {"type": "object", "additionalProperties": false, "required": ["receipt_type","content_hash","frontier"], "properties": {"receipt_type": {"const": "ActionPermit"}, "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "frontier": {"type": "string", "minLength": 1}}},
+        "approval_ref": {"type": "object", "additionalProperties": false, "required": ["receipt_type","content_hash","frontier"], "properties": {"receipt_type": {"const": "ActionSpecificApprovalBinding"}, "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "frontier": {"type": "string", "minLength": 1}}},
+        "admission_assessment_ref": {"type": "object", "additionalProperties": false, "required": ["receipt_type","content_hash","frontier"], "properties": {"receipt_type": {"const": "PreActionAuthorizeAdmissionAssessment"}, "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}, "frontier": {"type": "string", "minLength": 1}}},
+        "target_binding_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "one_shot": {"const": true},
+        "consumed": {"const": false},
+        "assertions": {"type": "object", "additionalProperties": false, "required": ["action_specific","exact_target_bound","permit_preexists_admission"], "properties": {"action_specific": {"const": true}, "exact_target_bound": {"const": true}, "permit_preexists_admission": {"const": true}}},
+        "non_effects": {"type": "object", "additionalProperties": false, "required": ["action_performed","authority_expanded","future_action_authorized","action_permit_created_by_adapter"], "properties": {"action_performed": {"const": false}, "authority_expanded": {"const": false}, "future_action_authorized": {"const": false}, "action_permit_created_by_adapter": {"const": false}}}
+      }
+    },
+    "assertions": {"type": "object", "additionalProperties": false, "required": ["assessment_admissible","assessment_exactly_bound","authorize_phase_generic_validation_passed","action_permit_exactly_bound","approval_exactly_bound","target_exactly_bound","frontier_exactly_bound","permit_preexists_admission","partial_lifecycle_only","no_future_phase_synthesized"], "properties": {"assessment_admissible": {"const": true}, "assessment_exactly_bound": {"const": true}, "authorize_phase_generic_validation_passed": {"const": true}, "action_permit_exactly_bound": {"const": true}, "approval_exactly_bound": {"const": true}, "target_exactly_bound": {"const": true}, "frontier_exactly_bound": {"const": true}, "permit_preexists_admission": {"const": true}, "partial_lifecycle_only": {"const": true}, "no_future_phase_synthesized": {"const": true}}},
+    "non_effects": {"type": "object", "additionalProperties": false, "required": ["permit_consumed","execute_revalidation_ready","execute_phase_entered","execution_admitted","actuator_invocation_emitted","action_performed","outcome_observed","runtime_state_transitioned","future_action_permission_created","authority_expanded","successor_state_created","completed_lifecycle_created"], "properties": {"permit_consumed": {"const": false}, "execute_revalidation_ready": {"const": false}, "execute_phase_entered": {"const": false}, "execution_admitted": {"const": false}, "actuator_invocation_emitted": {"const": false}, "action_performed": {"const": false}, "outcome_observed": {"const": false}, "runtime_state_transitioned": {"const": false}, "future_action_permission_created": {"const": false}, "authority_expanded": {"const": false}, "successor_state_created": {"const": false}, "completed_lifecycle_created": {"const": false}}},
+    "next_safe_action": {"const": "PARAMETERIZE_EXECUTE_REVALIDATION_FCL_SOURCE"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
