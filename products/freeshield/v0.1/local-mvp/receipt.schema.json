@@ -1,0 +1,179 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/products/freeshield/v0.1/local-mvp/receipt.schema.json",
+  "title": "FreeShieldProtectiveAssessmentReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "receipt_id", "contract_binding",
+    "consumer_binding", "evaluation_frontier", "source_input", "state",
+    "candidate_summary", "authority_findings", "evidence_findings", "scope_findings",
+    "risk_hypotheses", "protective_outcome", "reconciliation_candidate",
+    "claims", "non_effects", "next_safe_action", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "FREESHIELD-LOCAL-MVP"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "FreeShieldProtectiveAssessmentReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:freeshield:protective-receipt:[0-9a-f]{24}$"},
+    "contract_binding": {"$ref": "#/$defs/contractBinding"},
+    "consumer_binding": {"$ref": "#/$defs/consumerBinding"},
+    "evaluation_frontier": {"$ref": "#/$defs/frontier"},
+    "source_input": {
+      "type": "object", "additionalProperties": false,
+      "required": ["input_id", "input_hash"],
+      "properties": {
+        "input_id": {"type": "string", "minLength": 1},
+        "input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "state": {"enum": ["UNKNOWN", "CONFLICT", "INSUFFICIENT_EVIDENCE", "SCOPE_UNBOUND", "ASSESSMENT_READY"]},
+    "candidate_summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id", "candidate_kind", "operation_class", "analysis_only", "external_effect_requested", "payload_digest"],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "candidate_kind": {"type": "string", "minLength": 1},
+        "operation_class": {"type": "string", "minLength": 1},
+        "analysis_only": {"type": "boolean"},
+        "external_effect_requested": {"type": "boolean"},
+        "payload_digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "authority_findings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authority_lineage_complete", "scope_covered", "action_permit_present", "authority_created", "authority_expanded"],
+      "properties": {
+        "authority_lineage_complete": {"type": "boolean"},
+        "scope_covered": {"type": "boolean"},
+        "action_permit_present": {"const": false},
+        "authority_created": {"const": false},
+        "authority_expanded": {"const": false}
+      }
+    },
+    "evidence_findings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verified_ids", "unverified_ids", "stale_ids", "conflicting_ids", "frontier_quality", "missing_required_evidence"],
+      "properties": {
+        "verified_ids": {"$ref": "#/$defs/stringArray"},
+        "unverified_ids": {"$ref": "#/$defs/stringArray"},
+        "stale_ids": {"$ref": "#/$defs/stringArray"},
+        "conflicting_ids": {"$ref": "#/$defs/stringArray"},
+        "frontier_quality": {"enum": ["verified", "unverified", "stale", "conflicting"]},
+        "missing_required_evidence": {"type": "boolean"}
+      }
+    },
+    "scope_findings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["declared_scope", "uncovered_scope", "scope_bound"],
+      "properties": {
+        "declared_scope": {"$ref": "#/$defs/nonEmptyStringArray"},
+        "uncovered_scope": {"$ref": "#/$defs/stringArray"},
+        "scope_bound": {"type": "boolean"}
+      }
+    },
+    "risk_hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["hypothesis_id", "code", "status", "description", "basis_refs"],
+        "properties": {
+          "hypothesis_id": {"type": "string", "minLength": 1},
+          "code": {"type": "string", "minLength": 1},
+          "status": {"const": "bounded_candidate"},
+          "description": {"type": "string", "minLength": 1},
+          "basis_refs": {"$ref": "#/$defs/nonEmptyStringArray"}
+        }
+      }
+    },
+    "protective_outcome": {
+      "type": "object", "additionalProperties": false,
+      "required": ["outcome", "status", "reason_codes", "human_disposition_required"],
+      "properties": {
+        "outcome": {"enum": ["ALLOW_ANALYSIS", "NARROW_SCOPE", "REQUIRE_EVIDENCE", "HUMAN_REVIEW", "BLOCK_EFFECT"]},
+        "status": {"const": "candidate"},
+        "reason_codes": {"$ref": "#/$defs/nonEmptyStringArray"},
+        "human_disposition_required": {"const": true}
+      }
+    },
+    "reconciliation_candidate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required", "owner_role_id", "reason_codes"],
+      "properties": {
+        "required": {"type": "boolean"},
+        "owner_role_id": {"const": "human-protection-owner"},
+        "reason_codes": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "protective_assessment_completed", "exact_contract_bound", "consumer_binding_preserved",
+        "evidence_lineage_preserved", "uncertainty_preserved", "human_disposition_required",
+        "truth_certified", "harm_proven", "intent_inferred", "liability_established",
+        "global_prohibition_created", "sanction_created", "blacklist_entry_created", "account_blocked",
+        "candidate_rejected", "employment_decision_made", "human_disposition_recorded", "actuator_blocked",
+        "external_system_mutated", "authority_created", "authority_expanded", "responsibility_accepted",
+        "action_permit_created", "execution_admitted", "provider_invoked", "network_delivery_performed",
+        "external_effect_performed", "stable_core_promotion_established", "successor_authority_created"
+      ],
+      "properties": {
+        "protective_assessment_completed": {"const": true},
+        "exact_contract_bound": {"const": true},
+        "consumer_binding_preserved": {"const": true},
+        "evidence_lineage_preserved": {"const": true},
+        "uncertainty_preserved": {"const": true},
+        "human_disposition_required": {"const": true},
+        "truth_certified": {"const": false}, "harm_proven": {"const": false},
+        "intent_inferred": {"const": false}, "liability_established": {"const": false},
+        "global_prohibition_created": {"const": false}, "sanction_created": {"const": false},
+        "blacklist_entry_created": {"const": false}, "account_blocked": {"const": false},
+        "candidate_rejected": {"const": false}, "employment_decision_made": {"const": false},
+        "human_disposition_recorded": {"const": false}, "actuator_blocked": {"const": false},
+        "external_system_mutated": {"const": false}, "authority_created": {"const": false},
+        "authority_expanded": {"const": false}, "responsibility_accepted": {"const": false},
+        "action_permit_created": {"const": false}, "execution_admitted": {"const": false},
+        "provider_invoked": {"const": false}, "network_delivery_performed": {"const": false},
+        "external_effect_performed": {"const": false}, "stable_core_promotion_established": {"const": false},
+        "successor_authority_created": {"const": false}
+      }
+    },
+    "non_effects": {"type": "array", "minItems": 12, "maxItems": 12, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "next_safe_action": {"const": "HUMAN_PROTECTIVE_DISPOSITION_REQUIRED"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "contractBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["contract_id", "product_id", "product_version", "content_hash"],
+      "properties": {
+        "contract_id": {"const": "freeshield-protective-contract"},
+        "product_id": {"const": "freeshield"},
+        "product_version": {"const": "0.1"},
+        "content_hash": {"const": "sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295"}
+      }
+    },
+    "consumerBinding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["product_id", "product_version", "product_contract_hash", "authority_transfer", "responsibility_transfer"],
+      "properties": {
+        "product_id": {"type": "string", "minLength": 1},
+        "product_version": {"type": "string", "minLength": 1},
+        "product_contract_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "authority_transfer": {"const": false},
+        "responsibility_transfer": {"const": false}
+      }
+    },
+    "frontier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "stringArray": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "nonEmptyStringArray": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}

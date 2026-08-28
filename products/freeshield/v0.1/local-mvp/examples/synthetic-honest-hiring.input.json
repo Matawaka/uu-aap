@@ -1,0 +1,147 @@
+{
+  "protocol": "FREESHIELD-LOCAL-MVP",
+  "version": "0.1",
+  "artifact_type": "FreeShieldProtectiveAssessmentInput",
+  "input_id": "urn:uu-aap:freeshield:protective-input:honest-hiring-fictional-comparison-001",
+  "contract_binding": {
+    "contract_id": "freeshield-protective-contract",
+    "product_id": "freeshield",
+    "product_version": "0.1",
+    "content_hash": "sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295"
+  },
+  "consumer_binding": {
+    "product_id": "honest-hiring",
+    "product_version": "0.1",
+    "product_contract_hash": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+    "authority_transfer": false,
+    "responsibility_transfer": false
+  },
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "2622d451c3ce49bc56072a5847b13b0dff390bf1",
+    "observed_at": "2026-08-28T15:08:50Z"
+  },
+  "candidate": {
+    "candidate_id": "honest-hiring-fictional-comparison-001",
+    "candidate_kind": "fictional_hiring_comparison_packet",
+    "operation_class": "local_human_review_analysis",
+    "target_ref": "urn:uu-aap:local:honest-hiring:comparison:001",
+    "payload_digest": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+    "intended_outcome": "Prepare one fictional requirement-by-requirement comparison packet for later human review.",
+    "declared_scope": [
+      "fictional-role-requirement-comparison",
+      "human-review-packet-preparation"
+    ],
+    "analysis_only": true,
+    "external_effect_requested": false,
+    "evidence_refs": [
+      "comparison-packet-digest",
+      "honest-hiring-contract",
+      "review-constraints",
+      "current-frontier"
+    ]
+  },
+  "authority": {
+    "request_owner_role_id": "human-hiring-owner",
+    "authority_scope": [
+      "fictional-role-requirement-comparison",
+      "human-review-packet-preparation"
+    ],
+    "authority_evidence_refs": [
+      "honest-hiring-contract"
+    ],
+    "authority_lineage_complete": true,
+    "action_permit_ref": null
+  },
+  "evidence": [
+    {
+      "id": "honest-hiring-contract",
+      "data_class": "contract-authority-bundle",
+      "quality": "verified",
+      "source_ref": "products/honest-hiring/v0.1/product-contract.json",
+      "provenance_ref": "sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae",
+      "digest": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "observed_at": "2026-08-28T15:08:50Z",
+      "applicable_scope": [
+        "fictional-role-requirement-comparison",
+        "human-review-packet-preparation"
+      ]
+    },
+    {
+      "id": "comparison-packet-digest",
+      "data_class": "candidate-envelope",
+      "quality": "verified",
+      "source_ref": "synthetic:honest-hiring-comparison-packet-001",
+      "provenance_ref": "synthetic-local-fixture",
+      "digest": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "observed_at": "2026-08-28T15:08:50Z",
+      "applicable_scope": [
+        "fictional-role-requirement-comparison"
+      ]
+    },
+    {
+      "id": "review-constraints",
+      "data_class": "constraint-bundle",
+      "quality": "verified",
+      "source_ref": "synthetic:honest-hiring-review-constraints-001",
+      "provenance_ref": "synthetic-local-fixture",
+      "digest": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "observed_at": "2026-08-28T15:08:50Z",
+      "applicable_scope": [
+        "fictional-role-requirement-comparison",
+        "human-review-packet-preparation"
+      ]
+    },
+    {
+      "id": "current-frontier",
+      "data_class": "frontier-state",
+      "quality": "verified",
+      "source_ref": "git:2622d451c3ce49bc56072a5847b13b0dff390bf1",
+      "provenance_ref": "repository-observation",
+      "digest": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "observed_at": "2026-08-28T15:08:50Z",
+      "applicable_scope": [
+        "fictional-role-requirement-comparison",
+        "human-review-packet-preparation"
+      ]
+    }
+  ],
+  "constraints": [
+    {
+      "id": "no-external-hiring-effect",
+      "source_ref": "honest-hiring-product-boundary",
+      "scope": [
+        "fictional-role-requirement-comparison",
+        "human-review-packet-preparation"
+      ],
+      "statement": "The protective review may support local analysis only and must not make or execute an employment decision.",
+      "disposition": "none",
+      "evidence_refs": [
+        "honest-hiring-contract",
+        "review-constraints"
+      ]
+    }
+  ],
+  "frontier_observation": {
+    "state_id": "git-main-after-pr-594",
+    "observer_role_id": "repository-observer",
+    "observed_at": "2026-08-28T15:08:50Z",
+    "quality": "verified",
+    "digest": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "network_access_required": false,
+    "filesystem_write_required": false,
+    "provider_invocation_available": false,
+    "actuator_control_available": false,
+    "authority_creation_available": false,
+    "responsibility_acceptance_available": false,
+    "action_permit_creation_available": false,
+    "execution_available": false,
+    "external_effect_available": false,
+    "automatic_retry": false
+  },
+  "content_hash": "sha256:c39d8a8e2cfb9b75f7d76963873000f2848f4d9f42b33eed5954908e42e73b16"
+}

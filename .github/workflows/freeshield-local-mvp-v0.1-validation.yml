@@ -1,0 +1,158 @@
+name: FREESHIELD Local Protective Assessment MVP v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "products/freeshield/v0.1/local-mvp/**"
+      - "products/freeshield/v0.1/product-contract.json"
+      - "products/freeshield/v0.1/validate_contract.py"
+      - "products/honest-hiring/v0.1/product-contract.json"
+      - "products/honest-hiring/v0.1/validate_contract.py"
+      - "schemas/product-contract/v0.1/**"
+      - ".github/workflows/freeshield-local-mvp-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "products/freeshield/v0.1/local-mvp/**"
+      - "products/freeshield/v0.1/product-contract.json"
+      - "products/honest-hiring/v0.1/product-contract.json"
+      - ".github/workflows/freeshield-local-mvp-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: 2622d451c3ce49bc56072a5847b13b0dff390bf1
+      FREESHIELD_CONTRACT_HASH: sha256:355ad149846745c6009dcf22a1ce059c47460bcdc49a9a9009620372282c8295
+      HONEST_HIRING_CONTRACT_HASH: sha256:796580b9a4dc3eb9f7b7bd9215ed1b9379182786caeafbdb15fada4353f1d2ae
+      MVP_EXAMPLE: products/freeshield/v0.1/local-mvp/examples/synthetic-honest-hiring.input.json
+      MVP_RECEIPT: /tmp/freeshield-protective-assessment.json
+      PYTHONPYCACHEPREFIX: /tmp/freeshield-local-mvp-pycache
+
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install JSON Schema validator
+        run: python -m pip install "jsonschema>=4.22,<5"
+
+      - name: Verify successor origin and predecessor Product Contract identities
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          freeshield = json.loads(Path('products/freeshield/v0.1/product-contract.json').read_text(encoding='utf-8'))
+          hiring = json.loads(Path('products/honest-hiring/v0.1/product-contract.json').read_text(encoding='utf-8'))
+          assert freeshield['identity']['content_hash'] == os.environ['FREESHIELD_CONTRACT_HASH']
+          assert freeshield['contract_id'] == 'freeshield-protective-contract'
+          assert hiring['identity']['content_hash'] == os.environ['HONEST_HIRING_CONTRACT_HASH']
+          assert hiring['product']['id'] == 'honest-hiring'
+          print('PASS: exact FREESHIELD and Honest Hiring predecessor identities preserved')
+          PY
+
+      - name: Re-run canonical FREESHIELD Product Contract validator
+        run: python products/freeshield/v0.1/validate_contract.py
+
+      - name: Re-run canonical Honest Hiring Product Contract validator
+        run: python products/honest-hiring/v0.1/validate_contract.py
+
+      - name: Check FREESHIELD local MVP JavaScript syntax
+        run: |
+          node --check products/freeshield/v0.1/local-mvp/protective-assessment.js
+          node --check products/freeshield/v0.1/local-mvp/receipt-binding.js
+          node --check products/freeshield/v0.1/local-mvp/test-protective-assessment.js
+          node --check products/freeshield/v0.1/local-mvp/test-receipt-binding.js
+
+      - name: Validate committed synthetic Honest Hiring input
+        run: node products/freeshield/v0.1/local-mvp/protective-assessment.js validate "$MVP_EXAMPLE"
+
+      - name: Run FREESHIELD local MVP conformance and outcome matrix
+        run: node products/freeshield/v0.1/local-mvp/test-protective-assessment.js "$MVP_RECEIPT"
+
+      - name: Validate exact protective receipt/input binding
+        run: node products/freeshield/v0.1/local-mvp/test-receipt-binding.js
+
+      - name: Validate schema/runtime parity
+        run: node products/freeshield/v0.1/local-mvp/test-schema-runtime-parity.js
+
+      - name: Validate import safety
+        run: node products/freeshield/v0.1/local-mvp/test-import-safe.js
+
+      - name: Validate input and generated receipt against JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          base = Path('products/freeshield/v0.1/local-mvp')
+          pairs = [
+              (base / 'input.schema.json', Path(os.environ['MVP_EXAMPLE'])),
+              (base / 'receipt.schema.json', Path(os.environ['MVP_RECEIPT'])),
+          ]
+          for schema_path, data_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              data = json.loads(data_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(data)
+              print(f'PASS: {data_path} validates against {schema_path}')
+          PY
+
+      - name: Validate CLI command boundary
+        run: |
+          node products/freeshield/v0.1/local-mvp/protective-assessment.js help
+          for cmd in block ban sanction blacklist reject hire send execute mutate publish; do
+            if node products/freeshield/v0.1/local-mvp/protective-assessment.js "$cmd" - >/tmp/freeshield-mvp.out 2>/tmp/freeshield-mvp.err; then
+              echo "forbidden command accepted: $cmd" >&2
+              exit 1
+            fi
+            grep -q "FREESHIELD_LOCAL_MVP_REJECTED" /tmp/freeshield-mvp.err
+          done
+
+      - name: Guard production runtime as local no-effect
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const files = [
+            'products/freeshield/v0.1/local-mvp/protective-assessment.js',
+            'products/freeshield/v0.1/local-mvp/receipt-binding.js'
+          ];
+          const text = files.map(file => fs.readFileSync(file, 'utf8')).join('\n');
+          const forbidden = [
+            'child_process',
+            "require('http')",
+            "require('https')",
+            'http.request',
+            'https.request',
+            'fetch(',
+            'XMLHttpRequest',
+            'WebSocket',
+            'writeFileSync',
+            'writeFile(',
+            'appendFile',
+            'execSync',
+            'spawnSync',
+            'OpenAI',
+            'Anthropic'
+          ];
+          for (const token of forbidden) {
+            if (text.includes(token)) throw new Error(`forbidden production surface: ${token}`);
+          }
+          console.log('PASS: FREESHIELD production MVP is deterministic local no-effect');
+          NODE
+
+      - name: Confirm repository checkout unchanged
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
