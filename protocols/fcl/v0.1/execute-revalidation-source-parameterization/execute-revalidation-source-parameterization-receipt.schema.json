@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/execute-revalidation-source-parameterization/execute-revalidation-source-parameterization-receipt.schema.json",
+  "title": "FCL Execute Revalidation Source Binding Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","binding_id","decision_id","generic_revalidation_hash","decision_status","authorize_phase_receipt_hash","generic_admission_hash","bundle_id","bundle_content_hash","action_permit_hash","approval_hash","target_binding_hash","frontier","authorization_must_occur_by","execute_revalidation_must_occur_by","assertions","non_effects","next_safe_action","evaluated_at","content_hash"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "FCLExecuteRevalidationSourceBindingReceipt"},
+    "binding_id": {"type": "string", "minLength": 1},
+    "decision_id": {"type": "string", "minLength": 1},
+    "generic_revalidation_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "decision_status": {"const": "ready"},
+    "authorize_phase_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "generic_admission_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "bundle_id": {"type": "string", "minLength": 1},
+    "bundle_content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "approval_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "target_binding_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "frontier": {"type": "string", "minLength": 1},
+    "authorization_must_occur_by": {"type": "string", "format": "date-time"},
+    "execute_revalidation_must_occur_by": {"type": "string", "format": "date-time"},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "assertions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authorize_phase_exactly_bound","authorize_admission_exactly_bound","parameterized_validator_passed","freshness_rechecked","action_permit_exactly_bound","approval_exactly_bound","target_exactly_bound","frontier_exactly_bound","permit_unconsumed","ready_is_pre_execute_evidence_only"],
+      "properties": {
+        "authorize_phase_exactly_bound": {"const": true},
+        "authorize_admission_exactly_bound": {"const": true},
+        "parameterized_validator_passed": {"const": true},
+        "freshness_rechecked": {"const": true},
+        "action_permit_exactly_bound": {"const": true},
+        "approval_exactly_bound": {"const": true},
+        "target_exactly_bound": {"const": true},
+        "frontier_exactly_bound": {"const": true},
+        "permit_unconsumed": {"const": true},
+        "ready_is_pre_execute_evidence_only": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["permit_consumed","invocation_envelope_created","actuator_invocation_emitted","action_receipt_created","action_performed","outcome_observed","execute_phase_entered_as_effect","runtime_state_transitioned","future_action_permission_created","authority_expanded"],
+      "properties": {
+        "permit_consumed": {"const": false},
+        "invocation_envelope_created": {"const": false},
+        "actuator_invocation_emitted": {"const": false},
+        "action_receipt_created": {"const": false},
+        "action_performed": {"const": false},
+        "outcome_observed": {"const": false},
+        "execute_phase_entered_as_effect": {"const": false},
+        "runtime_state_transitioned": {"const": false},
+        "future_action_permission_created": {"const": false},
+        "authority_expanded": {"const": false}
+      }
+    },
+    "next_safe_action": {"const": "PARAMETERIZE_EXECUTION_INVOCATION_ENVELOPE_FCL_SOURCE"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
