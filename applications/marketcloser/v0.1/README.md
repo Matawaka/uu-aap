@@ -141,13 +141,39 @@ A future deployment-binding receipt should bind at minimum:
 
 This v0.1 profile performs no network fetch.
 
-## Audit boundary
+The version of a deployed application and the version of this application-boundary contract are independent version axes:
+
+```text
+Deployment Version != Application Boundary Version
+```
+
+## Audit and conformance boundary
 
 Developer/pilot audit metadata is distinct from full review content and from platform publication evidence.
 
 ```text
 Audit Export != Full Case Export
 Audit Digest != Independent Attestation Without Declared Canonicalization
+Audit Export != Automatic Transmission
+```
+
+Observed application events do not create authority merely because they are durably recorded:
+
+```text
+Application Event != Authority Effect
+```
+
+A live application may describe itself as inspired by UU-AAP/T or another architecture without proving exact repository conformance. Real pilot evidence is evidence about the application/pilot, not automatic proof that every canonical UU-AAP receipt or invariant was exercised.
+
+```text
+UU-AAP/T-inspired != UU-AAP Conformance
+Live Pilot Evidence != Protocol Conformance
+```
+
+Authorization to analyze a manually shared developer/pilot artifact is narrower than authority to publish that artifact or its content externally:
+
+```text
+Developer Analysis Authorization != External Publication Authority
 ```
 
 No private pilot audit, raw review text or manually shared developer feedback is committed in this profile. The repository fixture is synthetic.
@@ -200,6 +226,8 @@ The validator checks:
 - business pressure has zero epistemic weight;
 - unverified evidence stays unverified;
 - copy/approval/publication remain distinct;
+- live pilot evidence remains distinct from protocol conformance;
+- audit sharing remains distinct from transmission/publication authority;
 - no external-effect capability is created;
 - canonical manifest hash is reproducible.
 
