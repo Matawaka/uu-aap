@@ -27,6 +27,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -42,5 +44,34 @@ jobs:
       - name: Validate Capability Selection
         run: node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
 
-      - name: Validate Execution Capability Availability Binding
-        run: node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+      - name: Validate historical Execution Capability Availability conformance
+        run: |
+          node --check protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+          node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+
+      - name: Validate parameterized import-safe selection binding
+        run: |
+          node --check protocols/integration/execution-capability-availability/v0.1/test-parameterized-validator.js
+          node protocols/integration/execution-capability-availability/v0.1/test-parameterized-validator.js
+
+      - name: Protect upstream/downstream protocol implementations for Availability slice changes
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE='${{ github.event.pull_request.base.sha }}'
+            HEAD_SHA='${{ github.event.pull_request.head.sha }}'
+          else
+            BASE="$(git rev-parse HEAD^)"
+            HEAD_SHA="$(git rev-parse HEAD)"
+          fi
+          changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
+          echo "$changed"
+          if echo "$changed" | grep -q '^protocols/integration/execution-capability-availability/v0\.1/'; then
+            bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/integration/execution-capability-descriptor/v0\.1/|protocols/integration/capability-selection/v0\.1/|protocols/integration/pre-action-evidence-bundle/v0\.1/|protocols/fcl/v0\.1/|proposals/poai/authority/)' || true)"
+            if [ -n "$bad" ]; then
+              echo 'ERROR: Availability slice changed a protected upstream/downstream protocol implementation'
+              echo "$bad"
+              exit 1
+            fi
+          fi
+          echo 'Availability dependency ownership boundary preserved'

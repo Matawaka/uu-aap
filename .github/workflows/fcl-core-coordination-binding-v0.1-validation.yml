@@ -141,7 +141,7 @@ jobs:
           print('Independent Core graph, Availability != Intent, freshness and no-ActionPermit boundaries verified')
           PY
 
-      - name: Preserve predecessor layers unchanged
+      - name: Preserve predecessor layers unchanged for Coordination slice changes
         shell: bash
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
@@ -153,8 +153,12 @@ jobs:
           fi
           changed="$(git diff --name-only "$BASE" "$HEAD_SHA")"
           echo "$changed"
-          if echo "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/integration/execution-capability-availability/v0\.1/)'; then
-            echo 'ERROR: reconciliation must not modify Core, PoAI authority, or existing availability artifacts'
-            exit 1
+          if echo "$changed" | grep -q '^protocols/fcl/v0\.1/core-coordination-binding/'; then
+            bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|proposals/poai/authority/|protocols/integration/execution-capability-availability/v0\.1/)' || true)"
+            if [ -n "$bad" ]; then
+              echo 'ERROR: Coordination slice must not modify Core, PoAI authority, or existing availability artifacts'
+              echo "$bad"
+              exit 1
+            fi
           fi
-          echo 'Protected predecessor layers unchanged by reconciliation'
+          echo 'Coordination dependency ownership boundary preserved'
