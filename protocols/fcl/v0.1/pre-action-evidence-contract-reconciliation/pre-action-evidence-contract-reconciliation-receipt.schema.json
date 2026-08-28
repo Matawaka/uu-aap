@@ -1,0 +1,133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/receipt.schema.json",
+  "title": "FCL PreAction Evidence Contract Reconciliation Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "reconciliation_id", "origin",
+    "mapping_fingerprint", "execution_availability_content_hash", "fcl_action_permit_hash",
+    "request_id", "requested_control", "run_id", "run_epoch", "chain_id", "intent_ref",
+    "selected_capability_id", "selected_descriptor_id", "selected_descriptor_content_hash",
+    "selected_operation", "fcl_scope", "fcl_target", "target_binding_hash", "frontier",
+    "execution_availability_valid_until", "fcl_availability_valid_until", "action_permit_expires_at",
+    "source_core_receipts", "compatibility", "assertions", "non_effects",
+    "next_safe_action", "reconciled_at", "fingerprint_sha256"
+  ],
+  "properties": {
+    "protocol": { "const": "FCL" },
+    "version": { "const": "0.1" },
+    "receipt_type": { "const": "FCLPreActionEvidenceContractReconciliationReceipt" },
+    "reconciliation_id": { "type": "string", "minLength": 1 },
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": { "const": "Matawaka/uu-aap" },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "mapping_fingerprint": { "$ref": "#/$defs/hash" },
+    "execution_availability_content_hash": { "$ref": "#/$defs/hash" },
+    "fcl_action_permit_hash": { "$ref": "#/$defs/hash" },
+    "request_id": { "type": "string", "minLength": 1 },
+    "requested_control": { "enum": ["REQUEST_INTERRUPT", "REQUEST_SUCCESSOR"] },
+    "run_id": { "type": "string", "minLength": 1 },
+    "run_epoch": { "type": "integer", "minimum": 0 },
+    "chain_id": { "type": "string", "minLength": 1 },
+    "intent_ref": { "type": "string", "minLength": 1 },
+    "selected_capability_id": { "type": "string", "minLength": 1 },
+    "selected_descriptor_id": { "type": "string", "minLength": 1 },
+    "selected_descriptor_content_hash": { "$ref": "#/$defs/hash" },
+    "selected_operation": { "type": "string", "minLength": 1 },
+    "fcl_scope": { "enum": ["fcl.run.interrupt", "fcl.run.successor.create"] },
+    "fcl_target": { "type": "string", "minLength": 1 },
+    "target_binding_hash": { "$ref": "#/$defs/hash" },
+    "frontier": { "type": "string", "minLength": 1 },
+    "execution_availability_valid_until": { "type": "string", "format": "date-time" },
+    "fcl_availability_valid_until": { "type": "string", "format": "date-time" },
+    "action_permit_expires_at": { "type": "string", "format": "date-time" },
+    "source_core_receipts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["execution_state_receipt_hash", "execution_availability_claim_hash", "fcl_state_receipt_hash", "fcl_availability_claim_hash", "fcl_intent_receipt_hash", "fcl_authority_receipt_hash", "fcl_coordination_receipt_hash"],
+      "properties": {
+        "execution_state_receipt_hash": { "$ref": "#/$defs/hash" },
+        "execution_availability_claim_hash": { "$ref": "#/$defs/hash" },
+        "fcl_state_receipt_hash": { "$ref": "#/$defs/hash" },
+        "fcl_availability_claim_hash": { "$ref": "#/$defs/hash" },
+        "fcl_intent_receipt_hash": { "$ref": "#/$defs/hash" },
+        "fcl_authority_receipt_hash": { "$ref": "#/$defs/hash" },
+        "fcl_coordination_receipt_hash": { "$ref": "#/$defs/hash" }
+      }
+    },
+    "compatibility": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mapping_selected_operation_to_fcl_scope_exact", "execution_availability_selection_identity_exact", "execution_availability_positive_and_fresh", "normalized_preaction_evidence_context_shape_valid", "fcl_action_permit_chain_valid", "fcl_scope_target_run_epoch_chain_exact", "preaction_frontier_revision_exact", "action_permit_target_binding_hash_present", "core_state_receipt_identity_equal", "core_availability_claim_identity_equal", "fcl_availability_embeds_selection_provenance", "selected_operation_equals_fcl_target_operation", "fcl_intent_exposes_preaction_operation", "fcl_intent_exposes_target_binding_hash", "fcl_authority_exposes_target_binding_hash", "fcl_coordination_exposes_target_binding_hash", "direct_preaction_bundle_contract_satisfied"],
+      "properties": {
+        "mapping_selected_operation_to_fcl_scope_exact": { "const": true },
+        "execution_availability_selection_identity_exact": { "const": true },
+        "execution_availability_positive_and_fresh": { "const": true },
+        "normalized_preaction_evidence_context_shape_valid": { "const": true },
+        "fcl_action_permit_chain_valid": { "const": true },
+        "fcl_scope_target_run_epoch_chain_exact": { "const": true },
+        "preaction_frontier_revision_exact": { "const": true },
+        "action_permit_target_binding_hash_present": { "const": true },
+        "core_state_receipt_identity_equal": { "const": false },
+        "core_availability_claim_identity_equal": { "const": false },
+        "fcl_availability_embeds_selection_provenance": { "const": false },
+        "selected_operation_equals_fcl_target_operation": { "const": false },
+        "fcl_intent_exposes_preaction_operation": { "const": false },
+        "fcl_intent_exposes_target_binding_hash": { "const": false },
+        "fcl_authority_exposes_target_binding_hash": { "const": false },
+        "fcl_coordination_exposes_target_binding_hash": { "const": false },
+        "direct_preaction_bundle_contract_satisfied": { "const": false }
+      }
+    },
+    "assertions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mapping_receipt_exactly_reproduced", "execution_availability_canonically_revalidated", "fcl_action_permit_canonically_revalidated", "cross_source_identity_exact", "shared_frontier_proven", "fresh_at_reconciliation", "compatibility_matrix_observed", "direct_bundle_fail_closed"],
+      "properties": {
+        "mapping_receipt_exactly_reproduced": { "const": true },
+        "execution_availability_canonically_revalidated": { "const": true },
+        "fcl_action_permit_canonically_revalidated": { "const": true },
+        "cross_source_identity_exact": { "const": true },
+        "shared_frontier_proven": { "const": true },
+        "fresh_at_reconciliation": { "const": true },
+        "compatibility_matrix_observed": { "const": true },
+        "direct_bundle_fail_closed": { "const": true }
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_receipt_rewritten", "core_receipt_created", "availability_observed", "intent_created", "authority_created", "approval_created", "action_permit_created", "action_permit_consumed", "pre_action_bundle_created", "authorize_admitted", "execution_admitted", "action_performed", "interrupt_completed", "successor_run_created", "runtime_state_transitioned", "future_action_permission_created", "legal_effect_established", "truth_certified", "causality_proven", "liability_established", "private_reasoning_included"],
+      "properties": {
+        "source_receipt_rewritten": { "const": false },
+        "core_receipt_created": { "const": false },
+        "availability_observed": { "const": false },
+        "intent_created": { "const": false },
+        "authority_created": { "const": false },
+        "approval_created": { "const": false },
+        "action_permit_created": { "const": false },
+        "action_permit_consumed": { "const": false },
+        "pre_action_bundle_created": { "const": false },
+        "authorize_admitted": { "const": false },
+        "execution_admitted": { "const": false },
+        "action_performed": { "const": false },
+        "interrupt_completed": { "const": false },
+        "successor_run_created": { "const": false },
+        "runtime_state_transitioned": { "const": false },
+        "future_action_permission_created": { "const": false },
+        "legal_effect_established": { "const": false },
+        "truth_certified": { "const": false },
+        "causality_proven": { "const": false },
+        "liability_established": { "const": false },
+        "private_reasoning_included": { "const": false }
+      }
+    },
+    "next_safe_action": { "const": "PARAMETERIZE_PRE_ACTION_FCL_EVIDENCE_BRIDGE" },
+    "reconciled_at": { "type": "string", "format": "date-time" },
+    "fingerprint_sha256": { "$ref": "#/$defs/hash" }
+  },
+  "$defs": { "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" } }
+}

@@ -1,0 +1,137 @@
+name: FCL PreAction Evidence Contract Reconciliation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/**'
+      - 'protocols/fcl/v0.1/capability-identity-mapping/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/fcl/v0.1/core-authority-binding/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - '.github/workflows/fcl-pre-action-evidence-contract-reconciliation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/**'
+      - 'protocols/fcl/v0.1/capability-identity-mapping/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/fcl/v0.1/core-authority-binding/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - '.github/workflows/fcl-pre-action-evidence-contract-reconciliation-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Prove FCL to PreAction compatibility boundary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Re-run canonical provider-neutral sources
+        run: |
+          node protocols/integration/execution-capability-descriptor/v0.1/validate-execution-capability-descriptor.js
+          node protocols/integration/execution-capability-descriptor/v0.1/test-import-safe-validator.js
+          node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+          node protocols/integration/capability-selection/v0.1/test-import-safe-validator.js
+          node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+          node protocols/integration/execution-capability-availability/v0.1/test-parameterized-validator.js
+      - name: Re-run canonical FCL sources
+        run: |
+          node protocols/fcl/v0.1/capability-identity-mapping/test-capability-identity-mapping.js
+          node protocols/fcl/v0.1/core-coordination-binding/test-core-coordination-binding.js
+          node protocols/fcl/v0.1/core-action-permit-binding/test-core-action-permit-binding.js
+      - name: Re-run current PreAction contract
+        run: |
+          node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
+      - name: Run reconciliation conformance
+        run: |
+          node --check protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/pre-action-evidence-contract-reconciliation.js
+          node --check protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/test-pre-action-evidence-contract-reconciliation.js
+          node protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/test-pre-action-evidence-contract-reconciliation.js \
+            /tmp/fcl-preaction-reconciliation-receipt.json \
+            /tmp/fcl-preaction-reconciliation-input.json
+      - name: Validate reconciliation schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/pre-action-evidence-contract-reconciliation-input.schema.json'), Path('/tmp/fcl-preaction-reconciliation-input.json')),
+              (Path('protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/pre-action-evidence-contract-reconciliation-receipt.schema.json'), Path('/tmp/fcl-preaction-reconciliation-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+      - name: Independently verify negative direct-compatibility result
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          r = json.loads(Path('/tmp/fcl-preaction-reconciliation-receipt.json').read_text())
+          def canonical(v):
+              if v is None or isinstance(v, (bool, int, float, str)):
+                  return json.dumps(v, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(v, list):
+                  return '[' + ','.join(canonical(x) for x in v) + ']'
+              if isinstance(v, dict):
+                  return '{' + ','.join(json.dumps(k, ensure_ascii=False) + ':' + canonical(v[k]) for k in sorted(v)) + '}'
+              raise TypeError(type(v))
+          p = dict(r); p['fingerprint_sha256'] = ''
+          expected = 'sha256:' + hashlib.sha256(canonical(p).encode()).hexdigest()
+          assert r['fingerprint_sha256'] == expected
+          c = r['compatibility']
+          assert c['mapping_selected_operation_to_fcl_scope_exact'] is True
+          assert c['execution_availability_positive_and_fresh'] is True
+          assert c['fcl_action_permit_chain_valid'] is True
+          assert c['selected_operation_equals_fcl_target_operation'] is False
+          assert c['core_state_receipt_identity_equal'] is False
+          assert c['core_availability_claim_identity_equal'] is False
+          assert c['direct_preaction_bundle_contract_satisfied'] is False
+          assert r['next_safe_action'] == 'PARAMETERIZE_PRE_ACTION_FCL_EVIDENCE_BRIDGE'
+          assert all(v is False for v in r['non_effects'].values())
+          print('Independent reconciliation boundary verified')
+          PY
+      - name: Protect canonical source implementations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          if printf '%s\n' "$changed" | grep -q '^protocols/fcl/v0\.1/pre-action-evidence-contract-reconciliation/'; then
+            bad="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/(capability-identity-mapping|core-action-permit-binding|core-coordination-binding|core-authority-binding|authority-evaluation)/|protocols/integration/(execution-capability-descriptor|capability-selection|execution-capability-availability|pre-action-evidence-bundle)/)' || true)"
+            if [ -n "$bad" ]; then
+              echo 'ERROR: reconciliation slice modified a protected source protocol'
+              echo "$bad"
+              exit 1
+            fi
+          fi
+          echo 'Source protocol ownership boundary preserved'
