@@ -1,0 +1,17 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"https://uu-aap.example/products/honest-hiring/v0.1/local-mvp/result.schema.json",
+  "title":"Honest Hiring Local Comparison Result v0.1",
+  "type":"object","additionalProperties":false,
+  "required":["protocol","version","artifact_type","result_id","source_input","requirement_receipt","freeshield_assessment_receipt","comparison_receipt","next_safe_action","content_hash"],
+  "properties":{
+    "protocol":{"const":"HONEST-HIRING-LOCAL-MVP"},"version":{"const":"0.1"},"artifact_type":{"const":"HonestHiringLocalComparisonResult"},
+    "result_id":{"type":"string","pattern":"^urn:uu-aap:honest-hiring:local-result:[0-9a-f]{24}$"},
+    "source_input":{"type":"object","additionalProperties":false,"required":["input_id","input_hash"],"properties":{"input_id":{"type":"string","minLength":1},"input_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}}},
+    "requirement_receipt":{"type":"object"},
+    "freeshield_assessment_receipt":{"type":"object"},
+    "comparison_receipt":{"type":"object"},
+    "next_safe_action":{"const":"HUMAN_PROTECTIVE_DISPOSITION_REQUIRED"},
+    "content_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}
+  }
+}
