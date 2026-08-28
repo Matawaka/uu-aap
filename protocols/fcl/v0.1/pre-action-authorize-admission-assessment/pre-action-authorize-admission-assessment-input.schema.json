@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/pre-action-authorize-admission-assessment/input.schema.json",
+  "title": "FCL PreAction Authorize Admission Assessment Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","profile","assessment_id","origin","assembly_input","pre_action_bundle","assembly_receipt","evaluated_at"],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "pre-action-authorize-admission-assessment-v0.1"},
+    "assessment_id": {"type": "string", "minLength": 1},
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository","revision","tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "assembly_input": {"type": "object"},
+    "pre_action_bundle": {"type": "object"},
+    "assembly_receipt": {"type": "object"},
+    "evaluated_at": {"type": "string", "format": "date-time"}
+  }
+}
