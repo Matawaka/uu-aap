@@ -1,0 +1,177 @@
+{
+  "protocol": "MARKETCLOSER-MINIMIZED-REAL-REVIEW-BRIDGE",
+  "version": "0.1",
+  "artifact_type": "MarketCloserMinimizedRealReviewBridgeInput",
+  "bridge_id": "urn:uu-aap:marketcloser:minimized-real-review-bridge:synthetic-001",
+  "evaluation_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "b82b16a170c6e8d250735c51f430a39cf3663558",
+    "observed_at": "2026-08-28T19:22:00Z"
+  },
+  "deployment_observation": {
+    "protocol": "MARKETCLOSER-DEPLOYMENT-OBSERVATION",
+    "version": "0.1",
+    "artifact_type": "MarketCloserDeploymentObservationInput",
+    "observation_id": "urn:uu-aap:marketcloser:deployment-observation:synthetic-001",
+    "boundary_binding": {
+      "application_id": "marketcloser",
+      "boundary_version": "0.1",
+      "boundary_hash": "sha256:143981c45d5a8cfa82261247325aef81da9686d5303ef9f696683ef6e5e9ee97",
+      "successor_frontier": "39af0064e71c545fd38edc65eacd073b7801f729"
+    },
+    "deployment": {
+      "url": "https://synthetic.marketcloser.invalid",
+      "supplied_by": "operator",
+      "independently_verified": false,
+      "reachability_verified": false
+    },
+    "observed_application": {
+      "application_id": "marketcloser",
+      "name": "MarketCloser",
+      "reported_version": "0.0.0-synthetic",
+      "reported_architecture_profile": "UU-AAP/T-inspired-synthetic",
+      "uu_aap_conformance_claimed": false
+    },
+    "source_artifact": {
+      "kind": "synthetic_conformance",
+      "artifact_ref": "urn:synthetic:marketcloser:deployment-audit:001",
+      "digest": {
+        "algorithm": "SHA-256",
+        "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "canonicalization_declared": false,
+        "canonicalization_profile": null,
+        "independently_attested": false
+      },
+      "private_material_committed": false
+    },
+    "observation": {
+      "method": "synthetic_conformance",
+      "observed_at": "2026-08-28T19:12:00Z",
+      "operator_supplied": true,
+      "independent": false,
+      "network_fetch_performed": false,
+      "dns_resolution_performed": false,
+      "artifact_deployment_binding_evidence_present": false,
+      "automatically_transmitted": false
+    },
+    "controls": {
+      "local_only": true,
+      "read_only": true,
+      "network_access_available": false,
+      "dns_resolution_available": false,
+      "platform_mutation_available": false,
+      "external_publication_available": false,
+      "provider_invocation_available": false,
+      "action_permit_available": false,
+      "pilot_permit_available": false,
+      "execution_available": false,
+      "external_effect_available": false
+    },
+    "content_hash": "sha256:10e978f18e354bb73f062c7bc534fa28b1688759b32ce4c3f6e4d8b9ba1b366f"
+  },
+  "source_mode": "synthetic_conformance",
+  "minimization": {
+    "human_minimization_reviewed": true,
+    "independent_privacy_verification": false,
+    "raw_review_text_included": false,
+    "raw_reviewer_identity_included": false,
+    "personal_data_present": false,
+    "sensitive_personal_data_present": false,
+    "protected_attribute_data_present": false,
+    "psychological_vulnerability_data_present": false,
+    "cross_context_identifiers_present": false,
+    "source_identity_inferred": false
+  },
+  "minimized_case": {
+    "source_claim_epistemic_status": "synthetic_claim",
+    "claim_package": {
+      "claim_id": "claim-synthetic-cafe-delay",
+      "data_class": "claim-content",
+      "claim_text": "A fictional cafe should not assume that a delivery-delay complaint proves a platform-side cause.",
+      "review_purpose": "Prepare a minimized synthetic review case for bounded Marketer Pessimist intake without raw review transfer.",
+      "scope": [
+        "Synthetic delivery-delay claim only",
+        "Minimized synthetic evidence only"
+      ],
+      "material_statements": [
+        {
+          "statement_id": "stmt-review-delay",
+          "data_class": "claim-content",
+          "text": "A fictional customer claim reports a long delivery wait.",
+          "classification": "observed_evidence",
+          "material": true,
+          "evidence_refs": [
+            "ev-review-claim"
+          ],
+          "falsification_probe": {
+            "status": "available",
+            "kind": "observation",
+            "description": "Compare the minimized claim against a separately supplied, human-reviewed synthetic source representation.",
+            "unavailable_reason": null
+          }
+        }
+      ]
+    },
+    "supporting_evidence": [
+      {
+        "evidence_id": "ev-review-claim",
+        "data_class": "evidence-bundle",
+        "summary": "Synthetic minimized representation of an unverified customer delay claim.",
+        "provenance_ref": "urn:synthetic:marketcloser:minimized-review-claim:001",
+        "source_epistemic_status": "synthetic_conformance",
+        "quality": "unverified",
+        "observed_at": "2026-08-28T19:20:00Z",
+        "supports_statement_ids": [
+          "stmt-review-delay"
+        ],
+        "contradicts_statement_ids": []
+      }
+    ],
+    "decision_constraints": {
+      "data_class": "decision-context",
+      "objectives": [
+        "Review the complaint evidence-first without assuming the claim is true."
+      ],
+      "constraints": [
+        "Do not transfer raw review text, identity or business-pressure context into Marketer Pessimist evidence."
+      ],
+      "unacceptable_outcomes": [
+        "Promoting an unverified evidence reference to verified evidence."
+      ],
+      "success_conditions": [
+        "A bounded Marketer Pessimist review candidate is derived while all external effects remain unavailable."
+      ]
+    },
+    "raw_review_omitted_from_marketer": true,
+    "pressure_context_omitted_from_marketer": true
+  },
+  "pressure_context": {
+    "present": true,
+    "platform_dependency_percent": 42,
+    "reserve_weeks": 8,
+    "data_age_days": 3,
+    "triage_only": true,
+    "transferred_to_marketer": false,
+    "epistemic_weight": false
+  },
+  "evidence_policy": {
+    "unverified_promoted_to_verified": false,
+    "deployment_binding_inferred": false,
+    "business_pressure_transferred": false
+  },
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "network_access_available": false,
+    "dns_resolution_available": false,
+    "provider_invocation_available": false,
+    "platform_mutation_available": false,
+    "external_publication_available": false,
+    "response_publication_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:e42537ffbc5c21181d138949258668e0b04bf2c82f56f50a9f06365fdbe74a58"
+}

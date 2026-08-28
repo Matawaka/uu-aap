@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/input.schema.json",
+  "title": "MarketCloserMinimizedRealReviewBridgeInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "artifact_type", "bridge_id", "evaluation_frontier",
+    "deployment_observation", "source_mode", "minimization", "minimized_case",
+    "pressure_context", "evidence_policy", "controls", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-MINIMIZED-REAL-REVIEW-BRIDGE"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserMinimizedRealReviewBridgeInput"},
+    "bridge_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:marketcloser:minimized-real-review-bridge:[a-z0-9][a-z0-9:-]{2,191}$"
+    },
+    "evaluation_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"const": "b82b16a170c6e8d250735c51f430a39cf3663558"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "deployment_observation": {
+      "type": "object",
+      "minProperties": 1,
+      "$comment": "Exact shape is delegated to merged MARKETCLOSER-DEPLOYMENT-OBSERVATION v0.1 validation; the bridge does not duplicate its schema."
+    },
+    "source_mode": {"enum": ["synthetic_conformance", "real_non_personal"]},
+    "minimization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "human_minimization_reviewed", "independent_privacy_verification",
+        "raw_review_text_included", "raw_reviewer_identity_included",
+        "personal_data_present", "sensitive_personal_data_present",
+        "protected_attribute_data_present", "psychological_vulnerability_data_present",
+        "cross_context_identifiers_present", "source_identity_inferred"
+      ],
+      "properties": {
+        "human_minimization_reviewed": {"const": true},
+        "independent_privacy_verification": {"const": false},
+        "raw_review_text_included": {"const": false},
+        "raw_reviewer_identity_included": {"const": false},
+        "personal_data_present": {"const": false},
+        "sensitive_personal_data_present": {"const": false},
+        "protected_attribute_data_present": {"const": false},
+        "psychological_vulnerability_data_present": {"const": false},
+        "cross_context_identifiers_present": {"const": false},
+        "source_identity_inferred": {"const": false}
+      }
+    },
+    "minimized_case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_claim_epistemic_status", "claim_package", "supporting_evidence",
+        "decision_constraints", "raw_review_omitted_from_marketer",
+        "pressure_context_omitted_from_marketer"
+      ],
+      "properties": {
+        "source_claim_epistemic_status": {"enum": ["synthetic_claim", "unverified_user_claim"]},
+        "claim_package": {
+          "type": "object",
+          "minProperties": 1,
+          "$comment": "Projected unchanged into merged Marketer Pessimist Real Review Intake and closed there."
+        },
+        "supporting_evidence": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/bridgeEvidence"}
+        },
+        "decision_constraints": {
+          "type": "object",
+          "minProperties": 1,
+          "$comment": "Projected unchanged into merged Marketer Pessimist Real Review Intake and closed there."
+        },
+        "raw_review_omitted_from_marketer": {"const": true},
+        "pressure_context_omitted_from_marketer": {"const": true}
+      }
+    },
+    "pressure_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "present", "platform_dependency_percent", "reserve_weeks", "data_age_days",
+        "triage_only", "transferred_to_marketer", "epistemic_weight"
+      ],
+      "properties": {
+        "present": {"type": "boolean"},
+        "platform_dependency_percent": {"type": "number", "minimum": 0, "maximum": 100},
+        "reserve_weeks": {"type": "number", "minimum": 0},
+        "data_age_days": {"type": "number", "minimum": 0},
+        "triage_only": {"const": true},
+        "transferred_to_marketer": {"const": false},
+        "epistemic_weight": {"const": false}
+      }
+    },
+    "evidence_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "unverified_promoted_to_verified", "deployment_binding_inferred",
+        "business_pressure_transferred"
+      ],
+      "properties": {
+        "unverified_promoted_to_verified": {"const": false},
+        "deployment_binding_inferred": {"const": false},
+        "business_pressure_transferred": {"const": false}
+      }
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_only", "read_only", "network_access_available", "dns_resolution_available",
+        "provider_invocation_available", "platform_mutation_available",
+        "external_publication_available", "response_publication_available",
+        "pilot_permit_available", "action_permit_available", "execution_available",
+        "external_effect_available"
+      ],
+      "properties": {
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "network_access_available": {"const": false},
+        "dns_resolution_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "platform_mutation_available": {"const": false},
+        "external_publication_available": {"const": false},
+        "response_publication_available": {"const": false},
+        "pilot_permit_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "execution_available": {"const": false},
+        "external_effect_available": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "bridgeEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_id", "data_class", "summary", "provenance_ref",
+        "source_epistemic_status", "quality", "observed_at",
+        "supports_statement_ids", "contradicts_statement_ids"
+      ],
+      "properties": {
+        "evidence_id": {"type": "string", "pattern": "^ev-[a-z0-9][a-z0-9-]{1,63}$"},
+        "data_class": {"const": "evidence-bundle"},
+        "summary": {"type": "string", "minLength": 1},
+        "provenance_ref": {"type": "string", "minLength": 1},
+        "source_epistemic_status": {
+          "enum": ["synthetic_conformance", "user_asserted_evidence_reference", "independently_verified"]
+        },
+        "quality": {"enum": ["verified", "unverified", "stale", "conflicting"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "supports_statement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+        "contradicts_statement_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string"}}
+      }
+    }
+  }
+}
