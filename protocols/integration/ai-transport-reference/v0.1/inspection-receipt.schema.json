@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/ai-transport-reference/v0.1/inspection-receipt.schema.json",
+  "title": "UU-AAP AI Transport Reference Inspection Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "receipt_type",
+    "profile",
+    "packet_id",
+    "packet_hash",
+    "frontier",
+    "consumer",
+    "ial",
+    "gateway",
+    "transport",
+    "claims",
+    "non_effects"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-TRANSPORT-REFERENCE"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "AITransportReferenceInspectionReceipt"},
+    "profile": {"const": "local-evidence-packet-v0.1"},
+    "packet_id": {"type": "string", "minLength": 1},
+    "packet_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "consumer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "product_version", "product_contract_hash"],
+      "properties": {
+        "product_id": {"type": "string", "minLength": 1},
+        "product_version": {"type": "string", "minLength": 1},
+        "product_contract_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "ial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["envelope_id", "envelope_hash", "elevation_level", "inspection_status"],
+      "properties": {
+        "envelope_id": {"type": "string", "minLength": 1},
+        "envelope_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "elevation_level": {"enum": ["E0", "E1", "E2", "E3"]},
+        "inspection_status": {"enum": ["IAL_NOT_REQUIRED", "ELEVATED"]}
+      }
+    },
+    "gateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request_id", "request_hash", "operation", "result"],
+      "properties": {
+        "request_id": {"type": "string", "minLength": 1},
+        "request_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "operation": {"enum": ["inspect", "qualify"]},
+        "result": {"enum": ["inspected", "qualified", "denied"]}
+      }
+    },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delivery_available",
+        "provider_bound",
+        "network_required",
+        "carried_core_receipt_types",
+        "action_permit_present"
+      ],
+      "properties": {
+        "delivery_available": {"const": false},
+        "provider_bound": {"const": false},
+        "network_required": {"const": false},
+        "carried_core_receipt_types": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "action_permit_present": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_frontier_bound",
+        "ial_revalidated",
+        "ial_inspection_reproduced",
+        "gateway_request_revalidated",
+        "gateway_decision_revalidated",
+        "transport_delivery_performed",
+        "authority_created",
+        "responsibility_accepted",
+        "action_permit_created",
+        "execution_admitted",
+        "external_effect_observed"
+      ],
+      "properties": {
+        "exact_frontier_bound": {"const": true},
+        "ial_revalidated": {"const": true},
+        "ial_inspection_reproduced": {"const": true},
+        "gateway_request_revalidated": {"const": true},
+        "gateway_decision_revalidated": {"const": true},
+        "transport_delivery_performed": {"const": false},
+        "authority_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "action_permit_created": {"const": false},
+        "execution_admitted": {"const": false},
+        "external_effect_observed": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 11,
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}
