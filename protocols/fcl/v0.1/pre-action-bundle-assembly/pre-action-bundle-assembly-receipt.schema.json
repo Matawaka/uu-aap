@@ -50,8 +50,9 @@
       "additionalProperties": false,
       "required": [
         "bridge_exactly_bound", "approval_exactly_bound", "same_action_permit_exact",
-        "same_action_permit_binding_input_exact", "target_exactly_bound", "four_way_horizon_bounded",
-        "bundle_reusable_semantics_composed", "bundle_materialized"
+        "same_action_permit_binding_input_exact", "target_exactly_bound",
+        "permit_within_fcl_availability_horizon", "three_way_equals_four_source_min",
+        "bundle_bridge_aware_validation_passed", "bundle_materialized"
       ],
       "properties": {
         "bridge_exactly_bound": {"const": true},
@@ -59,8 +60,9 @@
         "same_action_permit_exact": {"const": true},
         "same_action_permit_binding_input_exact": {"const": true},
         "target_exactly_bound": {"const": true},
-        "four_way_horizon_bounded": {"const": true},
-        "bundle_reusable_semantics_composed": {"const": true},
+        "permit_within_fcl_availability_horizon": {"const": true},
+        "three_way_equals_four_source_min": {"const": true},
+        "bundle_bridge_aware_validation_passed": {"const": true},
         "bundle_materialized": {"const": true}
       }
     },
@@ -89,11 +91,9 @@
         "future_action_permission_created": {"const": false}
       }
     },
-    "next_safe_action": {"const": "PARAMETERIZE_PRE_ACTION_EVIDENCE_BUNDLE_FCL_HORIZON"},
+    "next_safe_action": {"const": "EVALUATE_PRE_ACTION_AUTHORIZE_ADMISSION"},
     "assembled_at": {"type": "string", "format": "date-time"},
     "content_hash": {"$ref": "#/$defs/hash"}
   },
-  "$defs": {
-    "hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
-  }
+  "$defs": {"hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}}
 }
