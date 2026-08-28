@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/receipt.schema.json",
+  "title": "FCL Execution Invocation Envelope Source Binding Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "binding_id", "envelope_id", "envelope_content_hash",
+    "invocation_id", "adapter_id", "generic_revalidation_decision_id", "generic_revalidation_hash",
+    "fcl_revalidation_receipt_hash", "bundle_id", "bundle_content_hash", "action_permit_hash", "approval_hash",
+    "target_binding_hash", "frontier", "created_at", "expires_at", "assertions", "non_effects", "next_safe_action", "content_hash"
+  ],
+  "properties": {
+    "protocol": { "const": "FCL" },
+    "version": { "const": "0.1" },
+    "receipt_type": { "const": "FCLExecutionInvocationEnvelopeSourceBindingReceipt" },
+    "binding_id": { "type": "string", "minLength": 1 },
+    "envelope_id": { "type": "string", "minLength": 1 },
+    "envelope_content_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "invocation_id": { "type": "string", "minLength": 1 },
+    "adapter_id": { "type": "string", "minLength": 1 },
+    "generic_revalidation_decision_id": { "type": "string", "minLength": 1 },
+    "generic_revalidation_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "fcl_revalidation_receipt_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "bundle_id": { "type": "string", "minLength": 1 },
+    "bundle_content_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "action_permit_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "approval_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "target_binding_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "frontier": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "expires_at": { "type": "string", "format": "date-time" },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "revalidation_exactly_bound", "fcl_revalidation_receipt_exactly_bound", "parameterized_validator_passed",
+        "action_permit_exactly_bound", "approval_exactly_bound", "target_exactly_bound", "frontier_exactly_bound",
+        "transport_only_adapter", "guards_fail_closed", "envelope_one_shot_unconsumed", "envelope_is_pre_invocation_evidence_only"
+      ],
+      "properties": {
+        "revalidation_exactly_bound": { "const": true },
+        "fcl_revalidation_receipt_exactly_bound": { "const": true },
+        "parameterized_validator_passed": { "const": true },
+        "action_permit_exactly_bound": { "const": true },
+        "approval_exactly_bound": { "const": true },
+        "target_exactly_bound": { "const": true },
+        "frontier_exactly_bound": { "const": true },
+        "transport_only_adapter": { "const": true },
+        "guards_fail_closed": { "const": true },
+        "envelope_one_shot_unconsumed": { "const": true },
+        "envelope_is_pre_invocation_evidence_only": { "const": true }
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actuator_invocation_emitted", "envelope_consumed", "permit_consumed", "action_receipt_created",
+        "action_performed", "outcome_observed", "runtime_state_transitioned", "future_action_permission_created", "authority_expanded"
+      ],
+      "properties": {
+        "actuator_invocation_emitted": { "const": false },
+        "envelope_consumed": { "const": false },
+        "permit_consumed": { "const": false },
+        "action_receipt_created": { "const": false },
+        "action_performed": { "const": false },
+        "outcome_observed": { "const": false },
+        "runtime_state_transitioned": { "const": false },
+        "future_action_permission_created": { "const": false },
+        "authority_expanded": { "const": false }
+      }
+    },
+    "next_safe_action": { "const": "PARAMETERIZE_INVOCATION_ACTION_RECEIPT_FCL_SOURCE" },
+    "content_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}

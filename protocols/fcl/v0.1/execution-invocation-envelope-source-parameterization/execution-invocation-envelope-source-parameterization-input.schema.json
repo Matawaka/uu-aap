@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/uu-aap/protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/input.schema.json",
+  "title": "FCL Execution Invocation Envelope Source Parameterization Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "profile", "binding_id", "origin",
+    "revalidation_input", "generic_revalidation_decision", "fcl_revalidation_receipt",
+    "envelope_id", "created_at", "invocation_id", "adapter_id"
+  ],
+  "properties": {
+    "protocol": { "const": "FCL" },
+    "version": { "const": "0.1" },
+    "profile": { "const": "execution-invocation-envelope-source-parameterization-v0.1" },
+    "binding_id": { "type": "string", "minLength": 1 },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": { "const": "Matawaka/uu-aap" },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "tree": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "revalidation_input": { "type": "object" },
+    "generic_revalidation_decision": { "type": "object" },
+    "fcl_revalidation_receipt": { "type": "object" },
+    "envelope_id": { "type": "string", "minLength": 1 },
+    "created_at": { "type": "string", "format": "date-time" },
+    "invocation_id": { "type": "string", "minLength": 1 },
+    "adapter_id": { "type": "string", "minLength": 1 }
+  }
+}
