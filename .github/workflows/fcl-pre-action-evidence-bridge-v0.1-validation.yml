@@ -68,8 +68,9 @@ jobs:
 
       - name: Bound predecessor replay ownership
         run: |
-          echo 'Reconciliation and approval conformance are replayed once inside the bridge suite.'
-          echo 'Their dedicated fan-out workflows also run independently on this PR.'
+          echo 'Reconciliation is replayed once by bridge conformance.'
+          echo 'Approval mutations reuse the exact reconciled ActionPermit through the canonical cached runner.'
+          echo 'Dedicated predecessor workflows also run independently on this PR.'
 
       - name: Preserve historical PreAction behavior
         run: |
@@ -82,7 +83,8 @@ jobs:
         run: |
           node --check protocols/fcl/v0.1/pre-action-evidence-bridge/pre-action-evidence-bridge.js
           node --check protocols/fcl/v0.1/pre-action-evidence-bridge/test-pre-action-evidence-bridge.js
-          node protocols/fcl/v0.1/pre-action-evidence-bridge/test-pre-action-evidence-bridge.js \
+          node --check protocols/fcl/v0.1/pre-action-evidence-bridge/run-conformance-cached.js
+          node protocols/fcl/v0.1/pre-action-evidence-bridge/run-conformance-cached.js \
             /tmp/fcl-preaction-bridge-record.json \
             /tmp/fcl-preaction-bridge-input.json \
             /tmp/fcl-preaction-bridge-bundle.json
