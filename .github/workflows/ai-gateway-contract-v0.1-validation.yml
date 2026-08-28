@@ -41,3 +41,5 @@ jobs:
         run: node protocols/core/extensions/intent-evidence/v0.1/validate-intent-evidence.js
       - name: Validate AI Gateway contract
         run: node protocols/integration/ai-gateway/v0.1/validate-gateway.js
+      - name: Validate AI Gateway import safety
+        run: node protocols/integration/ai-gateway/v0.1/test-import-safe.js

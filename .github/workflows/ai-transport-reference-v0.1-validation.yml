@@ -1,0 +1,56 @@
+name: UU-AAP AI Transport Reference v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - "protocols/integration/ai-transport-reference/v0.1/**"
+      - "protocols/integration/ai-gateway/v0.1/**"
+      - "protocols/ial/v0.1/compact/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - "products/honest-hiring/v0.1/**"
+      - ".github/workflows/ai-transport-reference-v0.1-validation.yml"
+  push:
+    branches: [main]
+    paths:
+      - "protocols/integration/ai-transport-reference/v0.1/**"
+      - "protocols/integration/ai-gateway/v0.1/**"
+      - "protocols/ial/v0.1/compact/**"
+      - "products/marketer-pessimist/v0.1/**"
+      - "products/honest-hiring/v0.1/**"
+      - ".github/workflows/ai-transport-reference-v0.1-validation.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate IAL Compact v0.1
+        run: node protocols/ial/v0.1/compact/test-compact.js
+
+      - name: Validate IAL Compact schema/runtime parity
+        run: node protocols/ial/v0.1/compact/test-schema-runtime-parity.js
+
+      - name: Validate AI Gateway historical conformance
+        run: node protocols/integration/ai-gateway/v0.1/validate-gateway.js
+
+      - name: Validate AI Gateway import safety
+        run: node protocols/integration/ai-gateway/v0.1/test-import-safe.js
+
+      - name: Validate AI Transport Reference v0.1
+        run: node protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js
+
+      - name: Validate AI Transport schema/runtime parity
+        run: node protocols/integration/ai-transport-reference/v0.1/test-schema-runtime-parity.js
+
+      - name: Validate AI Transport SDK import safety
+        run: node protocols/integration/ai-transport-reference/v0.1/test-import-safe.js
+
+      - name: Validate AI Transport CLI surface
+        run: |
+          node protocols/integration/ai-transport-reference/v0.1/reference-transport.js help
+          ! node protocols/integration/ai-transport-reference/v0.1/reference-transport.js send - >/tmp/transport-send.out 2>/tmp/transport-send.err
+          grep -q "AI_TRANSPORT_REFERENCE_REJECTED" /tmp/transport-send.err

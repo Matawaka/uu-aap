@@ -1,6 +1,5 @@
 'use strict';
 const fs=require('fs'),path=require('path'),crypto=require('crypto');
-const F=JSON.parse(fs.readFileSync(path.join(__dirname,'conformance.fixture.json'),'utf8'));
 const OPS=new Set(['inspect','qualify','authorize','observe']);
 const RESULTS=new Set(['inspected','qualified','admissible','denied','approval_required']);
 const DECISION_NON=['intent_created','intent_inferred','authority_created','authority_expanded','responsibility_accepted','coordination_completed','action_permit_created','action_performed_by_gateway','frontier_refreshed','truth_certified','causality_proven','liability_established','universal_canonicality_established'];
@@ -78,6 +77,8 @@ function validateObservation(o,r){
 }
 function mutate(x,fn){const y=JSON.parse(JSON.stringify(x));fn(y);y.content_hash=hash(y);return y}
 function reject(n,fn){try{fn()}catch{return}bad(`negative accepted: ${n}`)}
+function runConformance(){
+const F=JSON.parse(fs.readFileSync(path.join(__dirname,'conformance.fixture.json'),'utf8'));
 validateCapability(F.capability_manifest);
 validateRequest(F.authorize_request);
 validateDecision(F.decision_receipt,F.authorize_request);
@@ -102,5 +103,7 @@ reject('gateway claims action performance',()=>validateObservation(mutate(O,x=>x
 reject('observation proves causality',()=>validateObservation(mutate(O,x=>x.non_effects.causality_proven=true),R));
 reject('blanket protocol consent',()=>validateRequest(mutate(R,x=>x.protocol_mode_consent.blanket_action_approval=true)));
 reject('provider-specific mandatory dependency',()=>validateCapability(mutate(C,x=>x.provider_neutral=false)));
-console.log('UU_AAP_AI_GATEWAY_CONTRACT_V0_1_PASS');
-module.exports={validateCapability,validateRequest,validateDecision,validateObservation,hash};
+return true;
+}
+if(require.main===module){runConformance();console.log('UU_AAP_AI_GATEWAY_CONTRACT_V0_1_PASS')}
+module.exports={validateCapability,validateRequest,validateDecision,validateObservation,hash,runConformance};

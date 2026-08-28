@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/integration/ai-transport-reference/v0.1/transport-packet.schema.json",
+  "title": "UU-AAP AI Transport Reference Packet v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "profile",
+    "artifact_type",
+    "packet_id",
+    "frontier",
+    "consumer",
+    "ial",
+    "gateway",
+    "transport",
+    "assertions",
+    "non_effects",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-AI-TRANSPORT-REFERENCE"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "local-evidence-packet-v0.1"},
+    "artifact_type": {"const": "AITransportReferencePacket"},
+    "packet_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:ai-transport-reference:[a-z0-9][a-z0-9:-]{2,191}$"
+    },
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"type": "string", "minLength": 1},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "consumer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["product_id", "product_version", "product_contract_hash"],
+      "properties": {
+        "product_id": {"type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$"},
+        "product_version": {"type": "string", "minLength": 1},
+        "product_contract_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "ial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["envelope", "inspection_receipt"],
+      "properties": {
+        "envelope": {"$ref": "../../../ial/v0.1/compact/compact-envelope.schema.json"},
+        "inspection_receipt": {"$ref": "../../../ial/v0.1/compact/inspection-receipt.schema.json"}
+      }
+    },
+    "gateway": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request", "decision"],
+      "properties": {
+        "request": {"$ref": "../../ai-gateway/v0.1/gateway-request.schema.json"},
+        "decision": {"$ref": "../../ai-gateway/v0.1/gateway-decision-receipt.schema.json"}
+      }
+    },
+    "transport": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "delivery_mode",
+        "provider_binding",
+        "network_access_required",
+        "filesystem_write_required",
+        "delivery_requested",
+        "external_effect_requested",
+        "authority_created",
+        "responsibility_accepted",
+        "action_permit_created",
+        "execution_admitted"
+      ],
+      "properties": {
+        "delivery_mode": {"const": "local_return_only"},
+        "provider_binding": {"const": "none"},
+        "network_access_required": {"const": false},
+        "filesystem_write_required": {"const": false},
+        "delivery_requested": {"const": false},
+        "external_effect_requested": {"const": false},
+        "authority_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "action_permit_created": {"const": false},
+        "execution_admitted": {"const": false}
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 3,
+      "items": {"type": "string", "minLength": 1},
+      "allOf": [
+        {"contains": {"const": "IAL and Gateway evidence are preserved without reinterpretation"}},
+        {"contains": {"const": "Packet is bound to one exact repository frontier"}},
+        {"contains": {"const": "Transport delivery is unavailable in the reference CLI"}}
+      ]
+    },
+    "non_effects": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 11,
+      "items": {"type": "string", "minLength": 1},
+      "allOf": [
+        {"contains": {"const": "Transport Packet != Transport Delivery"}},
+        {"contains": {"const": "Transport Validation != Network Send"}},
+        {"contains": {"const": "Transport != Authority"}},
+        {"contains": {"const": "Transport != Responsibility Acceptance"}},
+        {"contains": {"const": "Transport != ActionPermit"}},
+        {"contains": {"const": "Transport != Execution Admission"}},
+        {"contains": {"const": "IAL Inspection != Gateway Decision"}},
+        {"contains": {"const": "Gateway Decision != Core Receipt"}},
+        {"contains": {"const": "Consumer Binding != Authority Transfer"}},
+        {"contains": {"const": "Exact Frontier Binding != Frontier Refresh"}},
+        {"contains": {"const": "Provider Neutrality != Provider Invocation"}}
+      ]
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
