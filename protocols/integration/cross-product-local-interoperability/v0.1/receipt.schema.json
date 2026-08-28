@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/cross-product-local-interoperability/v0.1/receipt.schema.json",
+  "title": "CrossProductLocalInteropReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "receipt_type",
+    "scenario_id",
+    "scenario_hash",
+    "status",
+    "evaluation_frontier",
+    "lanes",
+    "shared_infrastructure",
+    "isolation",
+    "claims",
+    "non_effects",
+    "next_safe_action",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-CROSS-PRODUCT-LOCAL-INTEROP"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "CrossProductLocalInteropReceipt"},
+    "scenario_id": {"type": "string", "pattern": "^urn:uu-aap:cross-product-local-interop:"},
+    "scenario_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "status": {"const": "LOCAL_CROSS_PRODUCT_INTEROPERABILITY_OBSERVED"},
+    "evaluation_frontier": {"$ref": "#/$defs/frontier"},
+    "lanes": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/lane"}
+    },
+    "shared_infrastructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ial_protocol",
+        "ial_version",
+        "ial_profile",
+        "transport_protocol",
+        "transport_version",
+        "transport_profile",
+        "exact_frontier_shared",
+        "local_only",
+        "read_only"
+      ],
+      "properties": {
+        "ial_protocol": {"const": "IAL"},
+        "ial_version": {"const": "0.1"},
+        "ial_profile": {"const": "compact-envelope-v0.1"},
+        "transport_protocol": {"const": "UU-AAP-AI-TRANSPORT-REFERENCE"},
+        "transport_version": {"const": "0.1"},
+        "transport_profile": {"const": "local-evidence-packet-v0.1"},
+        "exact_frontier_shared": {"const": true},
+        "local_only": {"const": true},
+        "read_only": {"const": true}
+      }
+    },
+    "isolation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "distinct_product_ids",
+        "distinct_packet_ids",
+        "distinct_envelope_ids",
+        "distinct_gateway_request_ids",
+        "shared_product_evidence_ref_count"
+      ],
+      "properties": {
+        "distinct_product_ids": {"const": true},
+        "distinct_packet_ids": {"const": true},
+        "distinct_envelope_ids": {"const": true},
+        "distinct_gateway_request_ids": {"const": true},
+        "shared_product_evidence_ref_count": {"const": 0}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_cross_product_interoperability_observed",
+        "shared_infrastructure_reused",
+        "exact_frontier_shared",
+        "product_identity_isolation_preserved",
+        "product_semantics_remain_distinct",
+        "product_semantics_merged",
+        "cross_product_data_shared",
+        "cross_product_state_shared",
+        "authority_transferred_between_products",
+        "responsibility_transferred_between_products",
+        "authority_created",
+        "responsibility_accepted",
+        "action_permit_created",
+        "execution_admitted",
+        "transport_delivery_performed",
+        "provider_invoked",
+        "external_effect_performed",
+        "successor_authority_created",
+        "stable_core_promotion_established",
+        "universal_interoperability_established"
+      ],
+      "properties": {
+        "local_cross_product_interoperability_observed": {"const": true},
+        "shared_infrastructure_reused": {"const": true},
+        "exact_frontier_shared": {"const": true},
+        "product_identity_isolation_preserved": {"const": true},
+        "product_semantics_remain_distinct": {"const": true},
+        "product_semantics_merged": {"const": false},
+        "cross_product_data_shared": {"const": false},
+        "cross_product_state_shared": {"const": false},
+        "authority_transferred_between_products": {"const": false},
+        "responsibility_transferred_between_products": {"const": false},
+        "authority_created": {"const": false},
+        "responsibility_accepted": {"const": false},
+        "action_permit_created": {"const": false},
+        "execution_admitted": {"const": false},
+        "transport_delivery_performed": {"const": false},
+        "provider_invoked": {"const": false},
+        "external_effect_performed": {"const": false},
+        "successor_authority_created": {"const": false},
+        "stable_core_promotion_established": {"const": false},
+        "universal_interoperability_established": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "array",
+      "minItems": 12,
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "next_safe_action": {"const": "READ_ONLY_INTEROPERABILITY_REVIEW_ONLY"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "lane_id",
+        "product_id",
+        "product_version",
+        "product_contract_hash",
+        "transport_packet_id",
+        "transport_packet_hash",
+        "ial_envelope_id",
+        "ial_elevation_level",
+        "gateway_request_id",
+        "gateway_operation",
+        "gateway_result"
+      ],
+      "properties": {
+        "lane_id": {"enum": ["marketer-pessimist-e0", "honest-hiring-e1"]},
+        "product_id": {"enum": ["marketer-pessimist", "honest-hiring"]},
+        "product_version": {"const": "0.1"},
+        "product_contract_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "transport_packet_id": {"type": "string", "minLength": 1},
+        "transport_packet_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "ial_envelope_id": {"type": "string", "minLength": 1},
+        "ial_elevation_level": {"enum": ["E0", "E1"]},
+        "gateway_request_id": {"type": "string", "minLength": 1},
+        "gateway_operation": {"enum": ["inspect", "qualify"]},
+        "gateway_result": {"enum": ["inspected", "qualified"]}
+      }
+    }
+  }
+}

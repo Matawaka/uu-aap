@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/raw/main/protocols/integration/cross-product-local-interoperability/v0.1/scenario.schema.json",
+  "title": "CrossProductLocalInteropScenario v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "scenario_id",
+    "evaluation_frontier",
+    "lanes",
+    "controls",
+    "assertions",
+    "non_effects",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "UU-AAP-CROSS-PRODUCT-LOCAL-INTEROP"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "CrossProductLocalInteropScenario"},
+    "scenario_id": {"type": "string", "pattern": "^urn:uu-aap:cross-product-local-interop:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "evaluation_frontier": {"$ref": "#/$defs/frontier"},
+    "lanes": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {"$ref": "#/$defs/lane"}
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_only",
+        "read_only",
+        "network_access_required",
+        "filesystem_write_required",
+        "transport_delivery_available",
+        "provider_invocation_available",
+        "cross_product_data_sharing",
+        "cross_product_state_sharing",
+        "authority_transfer_available",
+        "responsibility_transfer_available",
+        "action_permit_available",
+        "execution_available",
+        "external_effect_available",
+        "automatic_retry"
+      ],
+      "properties": {
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "network_access_required": {"const": false},
+        "filesystem_write_required": {"const": false},
+        "transport_delivery_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "cross_product_data_sharing": {"const": false},
+        "cross_product_state_sharing": {"const": false},
+        "authority_transfer_available": {"const": false},
+        "responsibility_transfer_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "execution_available": {"const": false},
+        "external_effect_available": {"const": false},
+        "automatic_retry": {"const": false}
+      }
+    },
+    "assertions": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "non_effects": {
+      "type": "array",
+      "minItems": 12,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "lane": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lane_id", "product_id", "expected_role", "transport_packet"],
+      "properties": {
+        "lane_id": {"enum": ["marketer-pessimist-e0", "honest-hiring-e1"]},
+        "product_id": {"enum": ["marketer-pessimist", "honest-hiring"]},
+        "expected_role": {"enum": ["local_claim_inspection", "fictional_human_review_candidate"]},
+        "transport_packet": {"type": "object"}
+      }
+    }
+  }
+}
