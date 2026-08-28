@@ -47,6 +47,33 @@ const REQUIRED_NON_EFFECTS = {
   ActionPermit: {action_performed:false, outcome_observed:false, authority_expanded:false, liability_established:false},
 };
 
+const BRIDGE_PROFILE = "FCL_PRE_ACTION_EVIDENCE_BRIDGE_V0_1";
+const BRIDGE_KEYS = [
+  "profile","bridge_id","reconciliation_fingerprint","action_permit_hash","selected_operation","target_operation",
+  "target_binding_hash","frontier","availability","projections","assertions","non_effects",
+  "next_safe_action","bridged_at","content_hash"
+];
+const BRIDGE_AVAILABILITY_KEYS = [
+  "evidence_binding_content_hash","evidence_state_receipt_hash","evidence_availability_claim_hash",
+  "action_chain_state_receipt_hash","action_chain_availability_claim_hash",
+  "selection_content_hash","descriptor_content_hash","observation_content_hash",
+  "evidence_valid_until","action_chain_valid_until"
+];
+const BRIDGE_PROJECTION_KEYS = ["intent","authority","coordination"];
+const BRIDGE_INTENT_KEYS = ["source_receipt_hash","operation","target_binding_hash"];
+const BRIDGE_AUTHORITY_KEYS = ["source_receipt_hash","authority_scope","target_binding_hash"];
+const BRIDGE_COORDINATION_KEYS = ["source_receipt_hash","target_binding_hash"];
+const BRIDGE_ASSERTION_KEYS = [
+  "operation_mapping_exact","separate_availability_receipt_identities",
+  "availability_provenance_exact","target_projection_exact",
+  "source_receipts_preserved","no_semantic_relaxation"
+];
+const BRIDGE_NON_EFFECT_KEYS = [
+  "source_receipt_rewritten","core_receipt_created","intent_created","authority_created",
+  "approval_created","action_permit_created","action_permit_consumed",
+  "pre_action_bundle_created","authorize_admitted","execution_admitted","action_performed"
+];
+
 function checkCoreReceipt(r, expectedType, label) {
   if (!isObject(r)) fail(`${label} must be object`);
   if (r.protocol !== "UU-AAP Core" || r.version !== "0.1") fail(`${label} Core protocol mismatch`);
@@ -97,8 +124,65 @@ function validateEvidenceContext(context) {
   return true;
 }
 
-function validateBundle(b, evidenceContext = buildDefaultFixtureEvidenceContext()) {
+function validateEvidenceBridgeContext(bridge) {
+  exactKeys(bridge, BRIDGE_KEYS, "bridgeContext");
+  if (bridge.profile !== BRIDGE_PROFILE) fail("bridgeContext.profile mismatch");
+  nonEmpty(bridge.bridge_id, "bridgeContext.bridge_id");
+  checkHash(bridge.reconciliation_fingerprint, "bridgeContext.reconciliation_fingerprint");
+  checkHash(bridge.action_permit_hash, "bridgeContext.action_permit_hash");
+  nonEmpty(bridge.selected_operation, "bridgeContext.selected_operation");
+  nonEmpty(bridge.target_operation, "bridgeContext.target_operation");
+  checkHash(bridge.target_binding_hash, "bridgeContext.target_binding_hash");
+  nonEmpty(bridge.frontier, "bridgeContext.frontier");
+
+  exactKeys(bridge.availability, BRIDGE_AVAILABILITY_KEYS, "bridgeContext.availability");
+  for (const key of [
+    "evidence_binding_content_hash","evidence_state_receipt_hash","evidence_availability_claim_hash",
+    "action_chain_state_receipt_hash","action_chain_availability_claim_hash",
+    "selection_content_hash","descriptor_content_hash","observation_content_hash"
+  ]) checkHash(bridge.availability[key], `bridgeContext.availability.${key}`);
+  ms(bridge.availability.evidence_valid_until, "bridgeContext.availability.evidence_valid_until");
+  ms(bridge.availability.action_chain_valid_until, "bridgeContext.availability.action_chain_valid_until");
+  if (bridge.availability.evidence_state_receipt_hash === bridge.availability.action_chain_state_receipt_hash) {
+    fail("bridgeContext must preserve distinct generic/FCL StateReceipt identities");
+  }
+  if (bridge.availability.evidence_availability_claim_hash === bridge.availability.action_chain_availability_claim_hash) {
+    fail("bridgeContext must preserve distinct generic/FCL AvailabilityClaim identities");
+  }
+
+  exactKeys(bridge.projections, BRIDGE_PROJECTION_KEYS, "bridgeContext.projections");
+  exactKeys(bridge.projections.intent, BRIDGE_INTENT_KEYS, "bridgeContext.projections.intent");
+  exactKeys(bridge.projections.authority, BRIDGE_AUTHORITY_KEYS, "bridgeContext.projections.authority");
+  exactKeys(bridge.projections.coordination, BRIDGE_COORDINATION_KEYS, "bridgeContext.projections.coordination");
+  checkHash(bridge.projections.intent.source_receipt_hash, "bridgeContext.projections.intent.source_receipt_hash");
+  nonEmpty(bridge.projections.intent.operation, "bridgeContext.projections.intent.operation");
+  checkHash(bridge.projections.intent.target_binding_hash, "bridgeContext.projections.intent.target_binding_hash");
+  checkHash(bridge.projections.authority.source_receipt_hash, "bridgeContext.projections.authority.source_receipt_hash");
+  nonEmpty(bridge.projections.authority.authority_scope, "bridgeContext.projections.authority.authority_scope");
+  checkHash(bridge.projections.authority.target_binding_hash, "bridgeContext.projections.authority.target_binding_hash");
+  checkHash(bridge.projections.coordination.source_receipt_hash, "bridgeContext.projections.coordination.source_receipt_hash");
+  checkHash(bridge.projections.coordination.target_binding_hash, "bridgeContext.projections.coordination.target_binding_hash");
+
+  for (const projection of Object.values(bridge.projections)) {
+    if (projection.target_binding_hash !== bridge.target_binding_hash) fail("bridgeContext projection target hash mismatch");
+  }
+
+  exactKeys(bridge.assertions, BRIDGE_ASSERTION_KEYS, "bridgeContext.assertions");
+  for (const key of BRIDGE_ASSERTION_KEYS) if (bridge.assertions[key] !== true) fail(`bridgeContext.assertions.${key} must be true`);
+  exactKeys(bridge.non_effects, BRIDGE_NON_EFFECT_KEYS, "bridgeContext.non_effects");
+  for (const key of BRIDGE_NON_EFFECT_KEYS) if (bridge.non_effects[key] !== false) fail(`bridgeContext.non_effects.${key} must be false`);
+  if (bridge.next_safe_action !== "ASSEMBLE_PRE_ACTION_EVIDENCE_BUNDLE") fail("bridgeContext.next_safe_action mismatch");
+  ms(bridge.bridged_at, "bridgeContext.bridged_at");
+  checkHash(bridge.content_hash, "bridgeContext.content_hash");
+  if (bridge.content_hash !== sha256Object(bridge)) fail("bridgeContext content hash mismatch");
+  return true;
+}
+
+function validateBundle(b, evidenceContext = buildDefaultFixtureEvidenceContext(), bridgeContext = null) {
   validateEvidenceContext(evidenceContext);
+  const bridge = bridgeContext === undefined || bridgeContext === null ? null : bridgeContext;
+  if (bridge) validateEvidenceBridgeContext(bridge);
+
   if (!isObject(b)) fail("bundle must be object");
   if (schema.title !== "UU-AAP Pre-Action Evidence Bundle v0.1") fail("schema title mismatch");
   if (b.protocol !== "UU-AAP-PRE-ACTION-EVIDENCE-BUNDLE" || b.version !== "0.1" || b.artifact_type !== "PreActionEvidenceBundle") fail("bundle identity mismatch");
@@ -129,7 +213,14 @@ function validateBundle(b, evidenceContext = buildDefaultFixtureEvidenceContext(
     authority_scope:b.target.authority_scope,
   };
   if (b.target.binding_hash !== sha256Object(targetProjection, new Set())) fail("target binding hash mismatch");
-  if (b.target.operation !== b.selection_binding.operation) fail("target operation mismatch");
+  if (!bridge) {
+    if (b.target.operation !== b.selection_binding.operation) fail("target operation mismatch");
+  } else {
+    if (bridge.selected_operation !== b.selection_binding.operation) fail("bridge selected operation mismatch");
+    if (bridge.target_operation !== b.target.operation) fail("bridge target operation mismatch");
+    if (bridge.target_binding_hash !== b.target.binding_hash) fail("bridge target binding mismatch");
+    if (bridge.frontier !== b.target.expected_predecessor_frontier) fail("bridge frontier mismatch");
+  }
   if (b.target.expected_predecessor_frontier !== b.availability_binding.frontier) fail("target frontier mismatch");
 
   if (b.approval_binding.content_hash !== sha256Object(b.approval_binding)) fail("approval content hash mismatch");
@@ -148,8 +239,23 @@ function validateBundle(b, evidenceContext = buildDefaultFixtureEvidenceContext(
   checkCoreReceipt(c.coordination, "CoordinationReceipt", "coordination");
   checkCoreReceipt(c.action_permit, "ActionPermit", "action_permit");
 
-  if (c.state.content_hash !== af.core_state_receipt_hash) fail("state receipt not bound to availability profile");
-  if (c.availability.content_hash !== af.core_availability_claim_hash) fail("availability receipt not bound to availability profile");
+  if (!bridge) {
+    if (c.state.content_hash !== af.core_state_receipt_hash) fail("state receipt not bound to availability profile");
+    if (c.availability.content_hash !== af.core_availability_claim_hash) fail("availability receipt not bound to availability profile");
+  } else {
+    const bav = bridge.availability;
+    if (bav.evidence_binding_content_hash !== b.availability_binding.content_hash) fail("bridge evidence availability binding mismatch");
+    if (bav.evidence_state_receipt_hash !== af.core_state_receipt_hash) fail("bridge evidence StateReceipt mismatch");
+    if (bav.evidence_availability_claim_hash !== af.core_availability_claim_hash) fail("bridge evidence AvailabilityClaim mismatch");
+    if (bav.action_chain_state_receipt_hash !== c.state.content_hash) fail("bridge action-chain StateReceipt mismatch");
+    if (bav.action_chain_availability_claim_hash !== c.availability.content_hash) fail("bridge action-chain AvailabilityClaim mismatch");
+    if (bav.selection_content_hash !== b.selection_binding.content_hash) fail("bridge selection provenance mismatch");
+    if (bav.descriptor_content_hash !== b.selection_binding.descriptor_content_hash) fail("bridge descriptor provenance mismatch");
+    if (bav.observation_content_hash !== b.availability_binding.observation_content_hash) fail("bridge observation provenance mismatch");
+    if (bav.evidence_valid_until !== b.availability_binding.valid_until) fail("bridge evidence availability horizon mismatch");
+    if (bav.action_chain_valid_until !== c.availability.payload.valid_until) fail("bridge action-chain availability horizon mismatch");
+  }
+
   if (!same(c.state.subject,b.subject)) fail("bundle/state subject mismatch");
   for (const [name,r] of Object.entries(c)) {
     if (!same(r.subject,b.subject)) fail(`${name} subject mismatch`);
@@ -160,27 +266,48 @@ function validateBundle(b, evidenceContext = buildDefaultFixtureEvidenceContext(
   if (c.state.predecessor_receipt_hashes.length !== 0 || c.state.assertions.state_anchored !== true) fail("StateReceipt semantics mismatch");
   if (!setEq(c.availability.predecessor_receipt_hashes,[c.state.content_hash]) || c.availability.assertions.availability_qualified !== true) fail("AvailabilityClaim predecessor/qualification mismatch");
   if (c.availability.payload.status !== "available") fail("AvailabilityClaim status mismatch");
-  if (c.availability.payload.selection_record_hash !== b.selection_binding.content_hash) fail("AvailabilityClaim selection binding mismatch");
-  if (c.availability.payload.descriptor_content_hash !== b.selection_binding.descriptor_content_hash) fail("AvailabilityClaim descriptor binding mismatch");
-  if (c.availability.payload.availability_observation_hash !== b.availability_binding.observation_content_hash) fail("AvailabilityClaim observation binding mismatch");
-  if (c.availability.payload.valid_until !== b.availability_binding.valid_until) fail("AvailabilityClaim validity binding mismatch");
-  if (c.availability.assertions.capability !== `${b.selection_binding.selected_capability_id}#${b.target.operation}`) fail("AvailabilityClaim capability mismatch");
+  if (!bridge) {
+    if (c.availability.payload.selection_record_hash !== b.selection_binding.content_hash) fail("AvailabilityClaim selection binding mismatch");
+    if (c.availability.payload.descriptor_content_hash !== b.selection_binding.descriptor_content_hash) fail("AvailabilityClaim descriptor binding mismatch");
+    if (c.availability.payload.availability_observation_hash !== b.availability_binding.observation_content_hash) fail("AvailabilityClaim observation binding mismatch");
+    if (c.availability.payload.valid_until !== b.availability_binding.valid_until) fail("AvailabilityClaim validity binding mismatch");
+    if (c.availability.assertions.capability !== `${b.selection_binding.selected_capability_id}#${b.target.operation}`) fail("AvailabilityClaim capability mismatch");
+  }
 
   if (!setEq(c.intent.predecessor_receipt_hashes,[c.state.content_hash]) || c.intent.assertions.intent_declared !== true) fail("IntentReceipt predecessor/declaration mismatch");
-  if (c.intent.payload.operation !== b.target.operation || c.intent.assertions.target_binding_hash !== b.target.binding_hash) fail("IntentReceipt target mismatch");
+  if (!bridge) {
+    if (c.intent.payload.operation !== b.target.operation || c.intent.assertions.target_binding_hash !== b.target.binding_hash) fail("IntentReceipt target mismatch");
+  } else {
+    if (bridge.projections.intent.source_receipt_hash !== c.intent.content_hash) fail("bridge IntentReceipt source mismatch");
+    if (bridge.projections.intent.operation !== b.target.operation) fail("bridge intent operation mismatch");
+    if (bridge.projections.intent.target_binding_hash !== b.target.binding_hash) fail("bridge intent target mismatch");
+  }
 
   if (!setEq(c.authority_or_responsibility.predecessor_receipt_hashes,[c.intent.content_hash])) fail("Authority/Responsibility predecessor mismatch");
   if (c.authority_or_responsibility.receipt_type === "AuthorityReceipt" && c.authority_or_responsibility.assertions.authority_bound !== true) fail("AuthorityReceipt must assert authority_bound");
   if (c.authority_or_responsibility.assertions.authority_scope !== b.target.authority_scope) fail("authority scope mismatch");
-  if (c.authority_or_responsibility.assertions.target_binding_hash !== b.target.binding_hash) fail("authority target mismatch");
+  if (!bridge) {
+    if (c.authority_or_responsibility.assertions.target_binding_hash !== b.target.binding_hash) fail("authority target mismatch");
+  } else {
+    if (bridge.projections.authority.source_receipt_hash !== c.authority_or_responsibility.content_hash) fail("bridge AuthorityReceipt source mismatch");
+    if (bridge.projections.authority.authority_scope !== b.target.authority_scope) fail("bridge authority scope mismatch");
+    if (bridge.projections.authority.target_binding_hash !== b.target.binding_hash) fail("bridge authority target mismatch");
+  }
 
   const coordExpected=[c.availability.content_hash,c.intent.content_hash,c.authority_or_responsibility.content_hash];
   if (!setEq(c.coordination.predecessor_receipt_hashes,coordExpected)) fail("CoordinationReceipt must include Availability + Intent + Authority/Responsibility");
-  if (c.coordination.assertions.coordination_established !== true || c.coordination.assertions.target_binding_hash !== b.target.binding_hash) fail("CoordinationReceipt semantics mismatch");
+  if (c.coordination.assertions.coordination_established !== true) fail("CoordinationReceipt semantics mismatch");
+  if (!bridge) {
+    if (c.coordination.assertions.target_binding_hash !== b.target.binding_hash) fail("CoordinationReceipt semantics mismatch");
+  } else {
+    if (bridge.projections.coordination.source_receipt_hash !== c.coordination.content_hash) fail("bridge CoordinationReceipt source mismatch");
+    if (bridge.projections.coordination.target_binding_hash !== b.target.binding_hash) fail("bridge coordination target mismatch");
+  }
 
   const permitExpected=[c.state.content_hash,c.intent.content_hash,c.authority_or_responsibility.content_hash,c.coordination.content_hash];
   if (!setEq(c.action_permit.predecessor_receipt_hashes,permitExpected)) fail("ActionPermit predecessor graph mismatch");
   if (c.action_permit.assertions.action_permitted !== true) fail("ActionPermit must assert action_permitted");
+  if (bridge && bridge.action_permit_hash !== c.action_permit.content_hash) fail("bridge ActionPermit source mismatch");
   if (c.action_permit.assertions.target_binding_hash !== b.target.binding_hash || c.action_permit.payload.target_binding_hash !== b.target.binding_hash) fail("ActionPermit target mismatch");
   if (c.action_permit.payload.one_shot !== true || c.action_permit.payload.consumed !== false) fail("ActionPermit one-shot state mismatch");
 
@@ -190,6 +317,10 @@ function validateBundle(b, evidenceContext = buildDefaultFixtureEvidenceContext(
   if (assembled >= availabilityExpiry) fail("availability stale at bundle assembly");
   if (assembled >= approvalExpiry) fail("approval expired at bundle assembly");
   if (assembled >= permitExpiry) fail("ActionPermit expired at bundle assembly");
+  if (bridge) {
+    if (assembled < ms(bridge.bridged_at, "bridge bridged_at")) fail("bundle assembled before bridge");
+    if (assembled >= ms(bridge.availability.action_chain_valid_until, "bridge action-chain valid_until")) fail("FCL action-chain availability stale at bundle assembly");
+  }
   const horizon = Math.min(availabilityExpiry, approvalExpiry, permitExpiry);
   if (ms(b.lifecycle_handoff.authorization_must_occur_by,"authorization_must_occur_by") !== horizon) fail("authorization horizon must equal earliest expiry");
   if (horizon <= assembled) fail("authorization horizon already expired");
@@ -282,10 +413,12 @@ function runConformance() {
 if (require.main === module) runConformance();
 
 module.exports = {
+  BRIDGE_PROFILE,
   buildDefaultFixtureEvidenceContext,
   canonical,
   coreHash,
   sha256Object,
   validateBundle,
+  validateEvidenceBridgeContext,
   validateEvidenceContext,
 };

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/protocols/fcl/v0.1/pre-action-evidence-bridge/input.schema.json",
+  "title": "FCL PreAction Evidence Bridge Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol","version","profile","bridge_id","origin",
+    "reconciliation_input","reconciliation_receipt","bridged_at"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "pre-action-evidence-bridge-v0.1"},
+    "bridge_id": {"type": "string", "minLength": 1},
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository","revision","tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "reconciliation_input": {"type": "object"},
+    "reconciliation_receipt": {"type": "object"},
+    "bridged_at": {"type": "string", "format": "date-time"}
+  }
+}

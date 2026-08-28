@@ -1,0 +1,174 @@
+name: FCL PreAction Evidence Bridge v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/**'
+      - 'protocols/fcl/v0.1/capability-identity-mapping/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/fcl/v0.1/core-authority-binding/**'
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - '.github/workflows/fcl-pre-action-evidence-bridge-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/**'
+      - 'protocols/fcl/v0.1/capability-identity-mapping/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/fcl/v0.1/core-authority-binding/**'
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - '.github/workflows/fcl-pre-action-evidence-bridge-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Prove typed FCL projections without receipt rewrite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Re-run provider-neutral evidence sources
+        run: |
+          node protocols/integration/execution-capability-descriptor/v0.1/validate-execution-capability-descriptor.js
+          node protocols/integration/execution-capability-descriptor/v0.1/test-import-safe-validator.js
+          node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+          node protocols/integration/capability-selection/v0.1/test-import-safe-validator.js
+          node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+          node protocols/integration/execution-capability-availability/v0.1/test-parameterized-validator.js
+
+      - name: Re-run FCL reconciliation and approval sources
+        run: |
+          node protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/test-pre-action-evidence-contract-reconciliation.js
+          node protocols/fcl/v0.1/action-specific-approval/test-action-specific-approval.js
+
+      - name: Preserve historical PreAction behavior
+        run: |
+          node --check protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
+
+      - name: Run FCL bridge conformance
+        run: |
+          node --check protocols/fcl/v0.1/pre-action-evidence-bridge/pre-action-evidence-bridge.js
+          node --check protocols/fcl/v0.1/pre-action-evidence-bridge/test-pre-action-evidence-bridge.js
+          node protocols/fcl/v0.1/pre-action-evidence-bridge/test-pre-action-evidence-bridge.js \
+            /tmp/fcl-preaction-bridge-record.json \
+            /tmp/fcl-preaction-bridge-input.json \
+            /tmp/fcl-preaction-bridge-bundle.json
+
+      - name: Validate bridge and bundle schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (
+                  Path('protocols/fcl/v0.1/pre-action-evidence-bridge/pre-action-evidence-bridge-input.schema.json'),
+                  Path('/tmp/fcl-preaction-bridge-input.json'),
+              ),
+              (
+                  Path('protocols/fcl/v0.1/pre-action-evidence-bridge/pre-action-evidence-bridge-record.schema.json'),
+                  Path('/tmp/fcl-preaction-bridge-record.json'),
+              ),
+              (
+                  Path('protocols/integration/pre-action-evidence-bundle/v0.1/pre-action-evidence-bundle.schema.json'),
+                  Path('/tmp/fcl-preaction-bridge-bundle.json'),
+              ),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify bridge separation and bindings
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          bridge = json.loads(Path('/tmp/fcl-preaction-bridge-record.json').read_text())
+          bundle = json.loads(Path('/tmp/fcl-preaction-bridge-bundle.json').read_text())
+
+          def canonical(v):
+              if v is None or isinstance(v, (bool, int, float, str)):
+                  return json.dumps(v, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(v, list):
+                  return '[' + ','.join(canonical(x) for x in v) + ']'
+              if isinstance(v, dict):
+                  return '{' + ','.join(
+                      json.dumps(k, ensure_ascii=False) + ':' + canonical(v[k])
+                      for k in sorted(v)
+                  ) + '}'
+              raise TypeError(type(v))
+
+          def content_hash(value):
+              p = {k: v for k, v in value.items() if k != 'content_hash'}
+              return 'sha256:' + hashlib.sha256(canonical(p).encode()).hexdigest()
+
+          assert bridge['content_hash'] == content_hash(bridge)
+          assert bundle['content_hash'] == content_hash(bundle)
+          assert bridge['selected_operation'] != bridge['target_operation']
+          assert bundle['selection_binding']['operation'] == bridge['selected_operation']
+          assert bundle['target']['operation'] == bridge['target_operation']
+          assert bundle['target']['binding_hash'] == bridge['target_binding_hash']
+          assert bundle['core_receipts']['action_permit']['content_hash'] == bridge['action_permit_hash']
+          assert bridge['availability']['evidence_binding_content_hash'] == bundle['availability_binding']['content_hash']
+          assert bridge['availability']['evidence_state_receipt_hash'] != bridge['availability']['action_chain_state_receipt_hash']
+          assert bridge['availability']['evidence_availability_claim_hash'] != bridge['availability']['action_chain_availability_claim_hash']
+          assert all(v is True for v in bridge['assertions'].values())
+          assert all(v is False for v in bridge['non_effects'].values())
+          assert bridge['next_safe_action'] == 'ASSEMBLE_PRE_ACTION_EVIDENCE_BUNDLE'
+          print('Independent FCL bridge separation/binding proof verified')
+          PY
+
+      - name: Protect canonical source implementations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          protected="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/|protocols/integration/(execution-capability-descriptor|capability-selection|execution-capability-availability|execution-lifecycle|pre-action-authorize-admission|pre-action-evidence-bundle)/)' || true)"
+          bad="$(printf '%s\n' "$protected" \
+            | grep -v '^protocols/fcl/v0\.1/pre-action-evidence-bridge/' \
+            | grep -v '^protocols/integration/pre-action-evidence-bundle/v0\.1/validate-pre-action-evidence-bundle\.js$' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: bridge slice modified a protected source implementation'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'Canonical source ownership boundary preserved'

@@ -8,6 +8,7 @@ on:
       - 'protocols/integration/execution-capability-availability/v0.1/**'
       - 'protocols/integration/execution-lifecycle/v0.1/**'
       - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
       - '.github/workflows/pre-action-evidence-bundle-v0.1-validation.yml'
   push:
     branches: [main]
@@ -17,6 +18,7 @@ on:
       - 'protocols/integration/execution-capability-availability/v0.1/**'
       - 'protocols/integration/execution-lifecycle/v0.1/**'
       - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
       - '.github/workflows/pre-action-evidence-bundle-v0.1-validation.yml'
 
 permissions:
@@ -59,6 +61,17 @@ jobs:
           node --check protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
           node protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
 
+      - name: Validate bridge API surface when present
+        if: ${{ hashFiles('protocols/fcl/v0.1/pre-action-evidence-bridge/pre-action-evidence-bridge.js') != '' }}
+        run: |
+          node --check protocols/fcl/v0.1/pre-action-evidence-bridge/pre-action-evidence-bridge.js
+          node - <<'NODE'
+          const pre = require('./protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js');
+          if (typeof pre.validateEvidenceBridgeContext !== 'function') throw new Error('validateEvidenceBridgeContext export missing');
+          if (typeof pre.validateBundle !== 'function') throw new Error('validateBundle export missing');
+          console.log('Bridge-aware PreAction API exported');
+          NODE
+
       - name: Protect predecessor protocol implementations for PreAction slice changes
         shell: bash
         run: |
@@ -73,13 +86,14 @@ jobs:
           echo "$changed"
           slice_changed="$(echo "$changed" | grep -E '^protocols/integration/pre-action-evidence-bundle/v0\.1/' || true)"
           if [ -n "$slice_changed" ]; then
-            bad="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/integration/capability-selection/v0\.1/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/execution-lifecycle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/|protocols/fcl/v0\.1/)' || true)"
+            protected="$(echo "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/integration/capability-selection/v0\.1/|protocols/integration/execution-capability-availability/v0\.1/|protocols/integration/execution-lifecycle/v0\.1/|protocols/integration/pre-action-authorize-admission/v0\.1/|protocols/fcl/v0\.1/)' || true)"
+            bad="$(printf '%s\n' "$protected" | grep -v '^protocols/fcl/v0\.1/pre-action-evidence-bridge/' || true)"
             if [ -n "$bad" ]; then
               echo 'ERROR: PreAction slice changed a protected predecessor/downstream profile'
               echo "$bad"
               exit 1
             fi
-            echo 'PreAction slice changed; protected predecessor/downstream profiles unchanged'
+            echo 'PreAction slice changed; only the typed FCL bridge may co-evolve in this slice'
           else
             echo 'PreAction protocol implementation unchanged; dependency evolution accepted after full semantic revalidation'
           fi
