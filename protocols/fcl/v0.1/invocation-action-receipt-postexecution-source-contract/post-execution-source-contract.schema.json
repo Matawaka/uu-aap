@@ -1,0 +1,154 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FCL Invocation→ActionReceipt Post-Execution Source Contract v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "contract_id",
+    "status",
+    "source_envelope",
+    "source_action",
+    "performed_resource_ref_requirement",
+    "post_execution_validator",
+    "required_execution_evidence",
+    "required_action_receipt",
+    "assertions",
+    "non_effects",
+    "prepared_at",
+    "expires_at",
+    "next_safe_action",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "FCLInvocationActionReceiptPostExecutionSourceContract"},
+    "contract_id": {"type": "string", "minLength": 1},
+    "status": {"const": "awaiting_execution_evidence"},
+    "source_envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["envelope_id", "content_hash", "invocation_id", "adapter_id", "created_at", "expires_at"],
+      "properties": {
+        "envelope_id": {"type": "string", "minLength": 1},
+        "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "invocation_id": {"type": "string", "minLength": 1},
+        "adapter_id": {"type": "string", "minLength": 1},
+        "created_at": {"type": "string", "format": "date-time"},
+        "expires_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "source_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["subject_id", "subject_scope", "operation", "authority_scope", "action_permit_hash", "target_binding_hash", "predecessor_frontier"],
+      "properties": {
+        "subject_id": {"type": "string", "minLength": 1},
+        "subject_scope": {"type": "string", "minLength": 1},
+        "operation": {"type": "string", "minLength": 1},
+        "authority_scope": {"type": "string", "minLength": 1},
+        "action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "target_binding_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "predecessor_frontier": {"type": "string", "minLength": 1}
+      }
+    },
+    "performed_resource_ref_requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "value", "inference_from_target_binding_hash"],
+      "properties": {
+        "status": {"const": "required_from_execution_evidence"},
+        "value": {"type": "null"},
+        "inference_from_target_binding_hash": {"const": false}
+      }
+    },
+    "post_execution_validator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "version", "artifact_type", "source_mode"],
+      "properties": {
+        "protocol": {"const": "UU-AAP-INVOCATION-ACTION-RECEIPT-BINDING"},
+        "version": {"const": "0.1"},
+        "artifact_type": {"const": "InvocationActionReceiptBinding"},
+        "source_mode": {"const": "explicit_envelope_and_resource_ref"}
+      }
+    },
+    "required_execution_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["evidence_type", "emission_status", "expected_target_guard_passed", "expected_predecessor_guard_passed", "one_shot_envelope_consumed", "action_permit_consumed", "performed_resource_ref_required"],
+      "properties": {
+        "evidence_type": {"const": "ActuatorInvocationEvidence"},
+        "emission_status": {"const": "emitted"},
+        "expected_target_guard_passed": {"const": true},
+        "expected_predecessor_guard_passed": {"const": true},
+        "one_shot_envelope_consumed": {"const": true},
+        "action_permit_consumed": {"const": true},
+        "performed_resource_ref_required": {"const": true}
+      }
+    },
+    "required_action_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["protocol", "version", "receipt_type", "subject_id", "subject_scope", "predecessor_action_permit_hash", "predecessor_frontier", "action_performed", "performed_scope_rule", "effect_ref_rule"],
+      "properties": {
+        "protocol": {"const": "UU-AAP Core"},
+        "version": {"const": "0.1"},
+        "receipt_type": {"const": "ActionReceipt"},
+        "subject_id": {"type": "string", "minLength": 1},
+        "subject_scope": {"type": "string", "minLength": 1},
+        "predecessor_action_permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "predecessor_frontier": {"type": "string", "minLength": 1},
+        "action_performed": {"const": true},
+        "performed_scope_rule": {"const": "<operation>:<performed_resource_ref>"},
+        "effect_ref_rule": {"const": "invocation_evidence.content_hash"}
+      }
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["envelope_exactly_bound", "invocation_identity_exactly_bound", "action_permit_exactly_bound", "target_exactly_bound", "frontier_exactly_bound", "resource_identity_not_inferred", "execution_evidence_required", "action_receipt_requires_execution_evidence", "parameterized_validator_ready", "contract_is_pre_execution_evidence_only"],
+      "properties": {
+        "envelope_exactly_bound": {"const": true},
+        "invocation_identity_exactly_bound": {"const": true},
+        "action_permit_exactly_bound": {"const": true},
+        "target_exactly_bound": {"const": true},
+        "frontier_exactly_bound": {"const": true},
+        "resource_identity_not_inferred": {"const": true},
+        "execution_evidence_required": {"const": true},
+        "action_receipt_requires_execution_evidence": {"const": true},
+        "parameterized_validator_ready": {"const": true},
+        "contract_is_pre_execution_evidence_only": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actuator_invocation_emitted", "envelope_consumed", "permit_consumed", "invocation_evidence_created", "invocation_action_receipt_binding_created", "core_action_receipt_created", "action_performed", "outcome_observed", "successor_state_established", "runtime_state_transitioned", "causality_proven", "truth_certified", "liability_established", "authority_expanded", "future_action_permission_created"],
+      "properties": {
+        "actuator_invocation_emitted": {"const": false},
+        "envelope_consumed": {"const": false},
+        "permit_consumed": {"const": false},
+        "invocation_evidence_created": {"const": false},
+        "invocation_action_receipt_binding_created": {"const": false},
+        "core_action_receipt_created": {"const": false},
+        "action_performed": {"const": false},
+        "outcome_observed": {"const": false},
+        "successor_state_established": {"const": false},
+        "runtime_state_transitioned": {"const": false},
+        "causality_proven": {"const": false},
+        "truth_certified": {"const": false},
+        "liability_established": {"const": false},
+        "authority_expanded": {"const": false},
+        "future_action_permission_created": {"const": false}
+      }
+    },
+    "prepared_at": {"type": "string", "format": "date-time"},
+    "expires_at": {"type": "string", "format": "date-time"},
+    "next_safe_action": {"const": "BIND_FCL_RUNTIME_EXECUTION_EVIDENCE_SOURCE"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

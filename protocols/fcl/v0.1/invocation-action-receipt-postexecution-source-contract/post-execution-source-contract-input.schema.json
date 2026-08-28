@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "FCL Invocation→ActionReceipt Post-Execution Source Contract Input v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "profile",
+    "contract_id",
+    "origin",
+    "invocation_envelope_input",
+    "execution_invocation_envelope",
+    "fcl_invocation_envelope_receipt",
+    "prepared_at"
+  ],
+  "properties": {
+    "protocol": {"const": "FCL"},
+    "version": {"const": "0.1"},
+    "profile": {"const": "invocation-action-receipt-postexecution-source-contract-v0.1"},
+    "contract_id": {"type": "string", "minLength": 1},
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "invocation_envelope_input": {"type": "object"},
+    "execution_invocation_envelope": {"type": "object"},
+    "fcl_invocation_envelope_receipt": {"type": "object"},
+    "prepared_at": {"type": "string", "format": "date-time"}
+  }
+}

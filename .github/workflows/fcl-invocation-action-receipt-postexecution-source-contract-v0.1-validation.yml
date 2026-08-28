@@ -1,0 +1,175 @@
+name: FCL Invocation to ActionReceipt Post-Execution Source Contract v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/**'
+      - 'protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/**'
+      - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
+      - 'protocols/integration/execution-invocation-envelope/v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - '.github/workflows/fcl-invocation-action-receipt-postexecution-source-contract-v0.1-validation.yml'
+      - '.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/**'
+      - 'protocols/integration/invocation-action-receipt-binding/v0.1/**'
+      - '.github/workflows/fcl-invocation-action-receipt-postexecution-source-contract-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Prepare post-execution source contract without synthesizing execution
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Preserve historical Invocation to ActionReceipt and prove parameterized parity
+        run: |
+          node protocols/integration/invocation-action-receipt-binding/v0.1/validate-invocation-action-receipt-binding.js
+          node --check protocols/integration/invocation-action-receipt-binding/v0.1/validate-parameterized-binding.js
+          node protocols/integration/invocation-action-receipt-binding/v0.1/test-parameterized-binding.js
+
+      - name: Preserve merged invocation-envelope boundary
+        run: |
+          node protocols/integration/execution-invocation-envelope/v0.1/validate-invocation-envelope.js
+          node protocols/integration/execution-invocation-envelope/v0.1/test-parameterized-envelope.js
+
+      - name: Materialize exact FCL invocation-envelope source once
+        timeout-minutes: 7
+        run: |
+          node protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/test-execution-invocation-envelope-source-parameterization.js \
+            /tmp/fcl-postexec-invocation-input.json \
+            /tmp/fcl-postexec-invocation-envelope.json \
+            /tmp/fcl-postexec-invocation-receipt.json
+
+      - name: Run FCL post-execution source-contract conformance with cached envelope source
+        timeout-minutes: 3
+        env:
+          FCL_POSTEXEC_CACHED_INVOCATION_INPUT: /tmp/fcl-postexec-invocation-input.json
+          FCL_POSTEXEC_CACHED_INVOCATION_ENVELOPE: /tmp/fcl-postexec-invocation-envelope.json
+          FCL_POSTEXEC_CACHED_INVOCATION_RECEIPT: /tmp/fcl-postexec-invocation-receipt.json
+        run: |
+          node --check protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/invocation-action-receipt-postexecution-source-contract.js
+          node --check protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/test-invocation-action-receipt-postexecution-source-contract.js
+          node protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/test-invocation-action-receipt-postexecution-source-contract.js \
+            /tmp/fcl-postexec-contract-input.json \
+            /tmp/fcl-postexec-contract.json
+
+      - name: Validate FCL post-execution contract schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+
+          pairs = [
+              (Path('protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/post-execution-source-contract-input.schema.json'), Path('/tmp/fcl-postexec-contract-input.json')),
+              (Path('protocols/fcl/v0.1/invocation-action-receipt-postexecution-source-contract/post-execution-source-contract.schema.json'), Path('/tmp/fcl-postexec-contract.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify exact source binding and absent execution facts
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+
+          i = json.loads(Path('/tmp/fcl-postexec-contract-input.json').read_text())
+          c = json.loads(Path('/tmp/fcl-postexec-contract.json').read_text())
+          e = i['execution_invocation_envelope']
+          er = i['fcl_invocation_envelope_receipt']
+
+          def canonical(v):
+              if v is None or isinstance(v, (bool, int, float, str)):
+                  return json.dumps(v, ensure_ascii=False, separators=(',', ':'))
+              if isinstance(v, list):
+                  return '[' + ','.join(canonical(x) for x in v) + ']'
+              if isinstance(v, dict):
+                  return '{' + ','.join(json.dumps(k, ensure_ascii=False) + ':' + canonical(v[k]) for k in sorted(v)) + '}'
+              raise TypeError(type(v))
+
+          def content_hash(v):
+              p = {k: val for k, val in v.items() if k != 'content_hash'}
+              return 'sha256:' + hashlib.sha256(canonical(p).encode()).hexdigest()
+
+          assert c['content_hash'] == content_hash(c)
+          assert c['status'] == 'awaiting_execution_evidence'
+          assert c['source_envelope']['envelope_id'] == e['envelope_id'] == er['envelope_id']
+          assert c['source_envelope']['content_hash'] == e['content_hash'] == er['envelope_content_hash']
+          assert c['source_envelope']['invocation_id'] == e['invocation']['invocation_id'] == er['invocation_id']
+          assert c['source_envelope']['adapter_id'] == e['invocation']['adapter_id'] == er['adapter_id']
+          assert c['source_action']['action_permit_hash'] == e['evidence_binding']['action_permit_hash'] == er['action_permit_hash']
+          assert c['source_action']['target_binding_hash'] == e['action_binding']['target_binding_hash'] == er['target_binding_hash']
+          assert c['source_action']['predecessor_frontier'] == e['action_binding']['predecessor_frontier'] == er['frontier']
+          assert c['performed_resource_ref_requirement'] == {
+              'status': 'required_from_execution_evidence',
+              'value': None,
+              'inference_from_target_binding_hash': False,
+          }
+          assert c['required_execution_evidence']['emission_status'] == 'emitted'
+          assert c['required_execution_evidence']['one_shot_envelope_consumed'] is True
+          assert c['required_execution_evidence']['action_permit_consumed'] is True
+          assert c['required_execution_evidence']['performed_resource_ref_required'] is True
+          assert c['required_action_receipt']['predecessor_action_permit_hash'] == e['evidence_binding']['action_permit_hash']
+          assert c['required_action_receipt']['predecessor_frontier'] == e['action_binding']['predecessor_frontier']
+          assert c['required_action_receipt']['action_performed'] is True
+          assert c['required_action_receipt']['performed_scope_rule'] == '<operation>:<performed_resource_ref>'
+          assert c['required_action_receipt']['effect_ref_rule'] == 'invocation_evidence.content_hash'
+          assert all(v is True for v in c['assertions'].values())
+          assert all(v is False for v in c['non_effects'].values())
+          assert c['next_safe_action'] == 'BIND_FCL_RUNTIME_EXECUTION_EVIDENCE_SOURCE'
+          assert e['non_effects']['actuator_invocation_emitted'] is False
+          assert e['invocation']['consumed'] is False
+          assert e['non_effects']['permit_consumed'] is False
+          assert e['non_effects']['action_receipt_created'] is False
+          assert 'invocation_evidence' not in c
+          assert 'core_action_receipt' not in c
+          print('Independent FCL post-execution source-contract proof verified')
+          PY
+
+      - name: Protect historical execution implementations and exact #579 slice
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" | grep -vE '^(\.github/workflows/fcl-execution-invocation-envelope-source-parameterization-v0\.1-validation\.yml|\.github/workflows/fcl-invocation-action-receipt-postexecution-source-contract-v0\.1-validation\.yml|protocols/fcl/v0\.1/invocation-action-receipt-postexecution-source-contract/|protocols/integration/invocation-action-receipt-binding/v0\.1/(validate-parameterized-binding\.js|test-parameterized-binding\.js))' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: #579 diff exceeds allowed post-execution source-contract slice'
+            echo "$bad"
+            exit 1
+          fi
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/validate-invocation-action-receipt-binding.js
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/invocation-action-receipt-binding.schema.json
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/conformance.fixture.json
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/invocation-action-receipt-binding/v0.1/README.md
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/execution-invocation-envelope/v0.1/
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/fcl/v0.1/execution-invocation-envelope-source-parameterization/
+          echo 'Historical post-execution and merged envelope implementations preserved; only successor seams and CI ownership guard changed'
