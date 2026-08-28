@@ -135,10 +135,12 @@ jobs:
           protected="$(printf '%s\n' "$changed" | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/(execution-lifecycle-authorize-phase-binding|pre-action-authorize-admission-assessment|pre-action-bundle-assembly|action-specific-approval|core-action-permit-binding)/|protocols/integration/(execution-invocation-envelope|execute-revalidation)/v0\.1/)' || true)"
           bad="$(printf '%s\n' "$protected" \
             | grep -v '^protocols/integration/execute-revalidation/v0\.1/validate-parameterized-decision\.js$' \
-            | grep -v '^protocols/integration/execute-revalidation/v0\.1/test-parameterized-decision\.js$' || true)"
+            | grep -v '^protocols/integration/execute-revalidation/v0\.1/test-parameterized-decision\.js$' \
+            | grep -v '^protocols/integration/execution-invocation-envelope/v0\.1/validate-parameterized-envelope\.js$' \
+            | grep -v '^protocols/integration/execution-invocation-envelope/v0\.1/test-parameterized-envelope\.js$' || true)"
           if [ -n "$bad" ]; then
             echo 'ERROR: revalidation parameterization modified protected predecessor implementation'
             echo "$bad"
             exit 1
           fi
-          echo 'Protected predecessor implementations unchanged; parameterized Execute Revalidation seam allowed'
+          echo 'Protected predecessor implementations unchanged; parameterized Execute Revalidation and successor-owned Invocation Envelope seams allowed'
