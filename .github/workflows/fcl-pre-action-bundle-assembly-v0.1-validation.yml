@@ -1,0 +1,158 @@
+name: FCL PreAction Bundle Assembly v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-bundle-assembly/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/**'
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - '.github/workflows/fcl-pre-action-bundle-assembly-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/fcl/v0.1/pre-action-bundle-assembly/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-bridge/**'
+      - 'protocols/fcl/v0.1/pre-action-evidence-contract-reconciliation/**'
+      - 'protocols/fcl/v0.1/action-specific-approval/**'
+      - 'protocols/fcl/v0.1/core-action-permit-binding/**'
+      - 'protocols/fcl/v0.1/core-coordination-binding/**'
+      - 'protocols/integration/execution-capability-descriptor/v0.1/**'
+      - 'protocols/integration/capability-selection/v0.1/**'
+      - 'protocols/integration/execution-capability-availability/v0.1/**'
+      - 'protocols/integration/pre-action-evidence-bundle/v0.1/**'
+      - '.github/workflows/fcl-pre-action-bundle-assembly-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Materialize exact FCL PreAction bundle without authorize admission
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Re-run provider-neutral evidence sources
+        run: |
+          node protocols/integration/execution-capability-descriptor/v0.1/validate-execution-capability-descriptor.js
+          node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+          node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+          node protocols/integration/execution-capability-availability/v0.1/test-parameterized-validator.js
+
+      - name: Re-prove FCL permit is availability bounded
+        run: |
+          node protocols/fcl/v0.1/core-action-permit-binding/test-core-action-permit-binding.js \
+            /tmp/fcl-assembly-permit.json \
+            /tmp/fcl-assembly-permit-input.json
+
+      - name: Preserve historical and bridge-aware PreAction behavior
+        run: |
+          node --check protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/validate-pre-action-evidence-bundle.js
+          node protocols/integration/pre-action-evidence-bundle/v0.1/test-evidence-context.js
+
+      - name: Run FCL assembly conformance
+        timeout-minutes: 3
+        run: |
+          node --check protocols/fcl/v0.1/pre-action-bundle-assembly/pre-action-bundle-assembly.js
+          node --check protocols/fcl/v0.1/pre-action-bundle-assembly/test-pre-action-bundle-assembly.js
+          node protocols/fcl/v0.1/pre-action-bundle-assembly/test-pre-action-bundle-assembly.js \
+            /tmp/fcl-preaction-assembly-input.json \
+            /tmp/fcl-preaction-assembly-bundle.json \
+            /tmp/fcl-preaction-assembly-receipt.json
+
+      - name: Validate assembly schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('protocols/fcl/v0.1/pre-action-bundle-assembly/pre-action-bundle-assembly-input.schema.json'), Path('/tmp/fcl-preaction-assembly-input.json')),
+              (Path('protocols/integration/pre-action-evidence-bundle/v0.1/pre-action-evidence-bundle.schema.json'), Path('/tmp/fcl-preaction-assembly-bundle.json')),
+              (Path('protocols/fcl/v0.1/pre-action-bundle-assembly/pre-action-bundle-assembly-receipt.schema.json'), Path('/tmp/fcl-preaction-assembly-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema=json.loads(schema_path.read_text(encoding='utf-8'))
+              instance=json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Independently verify exact assembly and derived horizon invariant
+        run: |
+          python - <<'PY'
+          import hashlib,json
+          from datetime import datetime
+          from pathlib import Path
+          i=json.loads(Path('/tmp/fcl-preaction-assembly-input.json').read_text())
+          b=json.loads(Path('/tmp/fcl-preaction-assembly-bundle.json').read_text())
+          r=json.loads(Path('/tmp/fcl-preaction-assembly-receipt.json').read_text())
+          def canonical(v):
+              if v is None or isinstance(v,(bool,int,float,str)):
+                  return json.dumps(v,ensure_ascii=False,separators=(',',':'))
+              if isinstance(v,list): return '['+','.join(canonical(x) for x in v)+']'
+              if isinstance(v,dict): return '{'+','.join(json.dumps(k,ensure_ascii=False)+':'+canonical(v[k]) for k in sorted(v))+'}'
+              raise TypeError(type(v))
+          def h(value):
+              p={k:v for k,v in value.items() if k!='content_hash'}
+              return 'sha256:'+hashlib.sha256(canonical(p).encode()).hexdigest()
+          dt=lambda x: datetime.fromisoformat(x.replace('Z','+00:00'))
+          assert b['content_hash']==h(b)
+          assert r['content_hash']==h(r)
+          f=r['freshness']
+          three=min((f['execution_availability_valid_until'],f['approval_valid_until'],f['action_permit_expires_at']),key=dt)
+          four=min((f['execution_availability_valid_until'],f['fcl_availability_valid_until'],f['approval_valid_until'],f['action_permit_expires_at']),key=dt)
+          assert three==four==f['authorization_must_occur_by']==b['lifecycle_handoff']['authorization_must_occur_by']
+          assert dt(f['action_permit_expires_at']) <= dt(f['fcl_availability_valid_until'])
+          assert r['bundle_content_hash']==b['content_hash']
+          assert r['bridge_content_hash']==i['bridge_record']['content_hash']
+          assert r['approval_fingerprint']==i['approval_receipt']['fingerprint_sha256']
+          assert r['action_permit_hash']==b['core_receipts']['action_permit']['content_hash']
+          assert r['target_binding_hash']==b['target']['binding_hash']
+          assert r['selected_operation']!=r['target_operation']
+          assert all(v is True for v in r['assertions'].values())
+          assert all(v is False for v in r['non_effects'].values())
+          assert r['next_safe_action']=='EVALUATE_PRE_ACTION_AUTHORIZE_ADMISSION'
+          print('Independent exact assembly and derived FCL horizon invariant verified')
+          PY
+
+      - name: Protect predecessor implementations
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          changed="$(git diff --name-only "$BASE_SHA"...HEAD)"
+          echo "$changed"
+          bad="$(printf '%s\n' "$changed" \
+            | grep -E '^(protocols/core/v0\.1/|protocols/fcl/v0\.1/(pre-action-evidence-bridge|pre-action-evidence-contract-reconciliation|action-specific-approval|core-action-permit-binding|core-coordination-binding)/|protocols/integration/(execution-capability-descriptor|capability-selection|execution-capability-availability|pre-action-evidence-bundle|pre-action-authorize-admission)/)' || true)"
+          if [ -n "$bad" ]; then
+            echo 'ERROR: assembly slice modified protected predecessor implementations'
+            echo "$bad"
+            exit 1
+          fi
+          echo 'Predecessor implementations unchanged'
