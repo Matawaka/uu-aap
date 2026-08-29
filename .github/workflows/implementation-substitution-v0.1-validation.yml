@@ -144,14 +144,7 @@ jobs:
             tooling/implementation-substitution/v0.1/examples/marketcloser-copy-export-receipt-identity.input.json
           do
             node tooling/implementation-substitution/v0.1/implementation-substitution.js assess "$input" > /tmp/t5-receipt.json
-            node - <<'NODE'
-            const receipt = require('/tmp/t5-receipt.json');
-            if (receipt.decision !== 'SUBSTITUTABLE') throw new Error('real T4 substitution did not classify SUBSTITUTABLE');
-            if (receipt.assertions.whole_component_substitution_assessed !== false) throw new Error('whole-component scope overclaim');
-            for (const key of ['implementation_selected','runtime_activated','authority_created','responsibility_accepted','action_permit_created','execution_admitted','action_performed','external_effect_performed','universal_substitutability_established']) {
-              if (receipt.non_effects[key] !== false) throw new Error(`non-effect overclaim: ${key}`);
-            }
-            NODE
+            node -e "const receipt=require('/tmp/t5-receipt.json'); if(receipt.decision!=='SUBSTITUTABLE') throw new Error('real T4 substitution did not classify SUBSTITUTABLE'); if(receipt.assertions.whole_component_substitution_assessed!==false) throw new Error('whole-component scope overclaim'); for(const key of ['implementation_selected','runtime_activated','authority_created','responsibility_accepted','action_permit_created','execution_admitted','action_performed','external_effect_performed','universal_substitutability_established']) if(receipt.non_effects[key]!==false) throw new Error('non-effect overclaim: '+key);"
           done
 
       - name: Guard T5 production surface as read-only assessment
