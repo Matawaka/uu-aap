@@ -1,0 +1,39 @@
+{
+  "artifact_type": "UU-AAP-Accessibility-Review-Input",
+  "version": "0.1",
+  "origin_frontier": "bccc88edd556546abf20f58610b40ec67c127b85",
+  "reviewed_revision": "bccc88edd556546abf20f58610b40ec67c127b85",
+  "surface_equivalence_verified": true,
+  "reviewed_surfaces": [
+    {"path":"docs/index.html","blob_sha":"0a0d47c17c1c666f6f32f1e569097248c160662d"},
+    {"path":"docs/poai/index.html","blob_sha":"a121fa138e1f984f6876e640e5583beb74c7fa3a"},
+    {"path":"docs/poai/accessibility.js","blob_sha":"4c7837e567e51a29b0b88df9393332dd554e51c4"},
+    {"path":"docs/poai/styles.css","blob_sha":"ff742e95ac96f5d513483168ddd58ca1aa2766ea"}
+  ],
+  "observations": {
+    "scope_coverage_complete": true,
+    "semantic_structure_present": true,
+    "keyboard_navigation_present": true,
+    "focus_visibility_present": true,
+    "dynamic_status_live_region_present": false,
+    "responsive_reflow_rules_present": true,
+    "zoom_reflow_empirical_tested": false,
+    "screen_reader_empirical_tested": false,
+    "language_presentation_controls_present": true,
+    "language_accessibility_empirical_tested": false
+  },
+  "contrast_checks": [
+    {"id":"light-muted-on-surface-2","foreground":"#66717f","background":"#f0f2f5","threshold":4.5},
+    {"id":"dark-active-button-white-on-accent","foreground":"#ffffff","background":"#7aa2ff","threshold":4.5}
+  ],
+  "limitations": [
+    "terminal_and_cli_accessibility_remains_host_assistive_environment_dependent",
+    "inactive_or_future_product_surfaces_are_not_treated_as_current_active_interfaces"
+  ],
+  "claims": {
+    "wcag_conformance_certified": false,
+    "universal_accessibility_proven": false,
+    "legal_compliance_established": false,
+    "all_assistive_technologies_tested": false
+  }
+}
