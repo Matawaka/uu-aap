@@ -10,8 +10,8 @@ It exists to preserve:
 
 `Materialization Authority != Universal Canonicality`
 
-A positive result, `AUTHORIZED_IN_SCOPE`, means only that the supplied scoped authority evidence supports the exact subject, action, predecessor→successor target and materialization policy at the stated evaluation time. It does not perform recognition/materialization and does not create an ActionPermit or external effect.
+A positive result, `AUTHORIZED_IN_SCOPE`, means only that the supplied scoped authority evidence supports the exact subject, action, predecessor→successor target and the explicit materialization policy **id + version + scope** at the stated evaluation time. Policy scope is a required receipt field so a downstream recognition consumer cannot silently widen a repository/resource-local authorization into another policy domain.
 
-The evaluator is fail-closed on missing support, scope mismatch, dispute, expiry and revocation. Historical receipts remain provenance-bearing and are not rewritten by later policy or authority changes.
+The evaluator is fail-closed on missing policy scope, missing support, target/action scope mismatch, dispute, expiry and revocation. Historical receipts remain provenance-bearing and are not rewritten by later policy or authority changes.
 
 This profile is synthetic/read-only. It performs no repository mutation, runtime activation, release/tag operation, successor write, permission change, external effect, legal-status determination, truth claim or liability determination.
