@@ -1,0 +1,110 @@
+{
+  "artifact_type": "UU-AAP-Implementation-Substitution-Assessment-Input",
+  "version": "0.1",
+  "assessment_id": "urn:uu-aap:implementation-substitution:ai-transport-receipt-identity-t4",
+  "assessment_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "5d9d9e0faf35230ede54e8f49c71e049311b7e4a"
+  },
+  "consumer": {
+    "component_id": "AI-Transport-Reference",
+    "component_version": "0.1"
+  },
+  "substitution_scope": {
+    "scope_kind": "FUNCTION",
+    "scope_id": "receipt_identity_mechanics",
+    "whole_component_substitution": false
+  },
+  "incumbent": {
+    "implementation_id": "AI-Transport-Reference/component-local-receipt-identity",
+    "component_id": "AI-Transport-Reference",
+    "source_path": "protocols/integration/ai-transport-reference/v0.1/reference-transport.js",
+    "source_blob_sha": "2f3f1341bf860085edc513fcc6a59c01c2191b93",
+    "profile_ref": "component_local/content-hash-zero-field-v0.1"
+  },
+  "candidate": {
+    "implementation_id": "Receipt-Runtime/content-hash-zero-field-v0.1",
+    "component_id": "Receipt-Runtime",
+    "source_path": "tooling/receipt-runtime/v0.1/receipt-runtime.js",
+    "source_blob_sha": "a250faff20bcf25523c4e749a86f4e2b8fabae7c",
+    "profile_ref": "Receipt-Runtime/content-hash-zero-field-v0.1"
+  },
+  "dimensions": {
+    "wire_schema": {
+      "required": false,
+      "finding": "NOT_APPLICABLE",
+      "evidence_refs": ["scope:receipt_identity_mechanics"],
+      "reason": "The assessed replacement is internal receipt-identity mechanics; consumer wire/schema surfaces are explicitly outside this scope."
+    },
+    "semantic": {
+      "required": true,
+      "finding": "SATISFIED",
+      "evidence_refs": [
+        "tooling/receipt-runtime/v0.1/differential-baseline.json#AI-Transport-Reference",
+        "sha256:e1271d41f9092634d9ab571eb9844529962bb07c326934286ca6800d13dec185"
+      ],
+      "reason": "The exact zero-field identity projection, canonical JSON and historical hash are reproduced for the named consumer scope."
+    },
+    "conformance": {
+      "required": true,
+      "finding": "SATISFIED",
+      "evidence_refs": [
+        "node tooling/receipt-runtime/v0.1/test-receipt-runtime.js",
+        "node protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js",
+        "node protocols/integration/ai-transport-reference/v0.1/test-schema-runtime-parity.js",
+        "node protocols/integration/ai-transport-reference/v0.1/test-import-safe.js"
+      ],
+      "reason": "Differential and native consumer conformance are required to rerun at the bound T5 frontier."
+    },
+    "dependency_fit": {
+      "required": true,
+      "finding": "SATISFIED",
+      "evidence_refs": ["tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json#Receipt-Runtime"],
+      "reason": "The current consumer manifest declares Receipt-Runtime as a required RUNTIME_IMPORT dependency."
+    },
+    "effect_ceiling": {
+      "required": true,
+      "finding": "SATISFIED",
+      "evidence_refs": [
+        "tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json#effect_ceiling",
+        "tooling/component-manifest/v0.1/examples/receipt-runtime.component.json#effect_ceiling"
+      ],
+      "reason": "Consumer and candidate tooling remain no-effect under Component Manifest v0.1."
+    },
+    "authority_responsibility": {
+      "required": true,
+      "finding": "SATISFIED",
+      "evidence_refs": [
+        "tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json#effect_ceiling",
+        "tooling/component-manifest/v0.1/examples/receipt-runtime.component.json#effect_ceiling"
+      ],
+      "reason": "Neither side creates authority or accepts responsibility through this substitution scope."
+    },
+    "frontier_freshness": {
+      "required": true,
+      "finding": "SATISFIED",
+      "evidence_refs": [
+        "git:5d9d9e0faf35230ede54e8f49c71e049311b7e4a",
+        "git-blob:2f3f1341bf860085edc513fcc6a59c01c2191b93",
+        "git-blob:a250faff20bcf25523c4e749a86f4e2b8fabae7c"
+      ],
+      "reason": "Assessment binds the merged T4 frontier, historical incumbent blob and current candidate runtime blob exactly."
+    },
+    "consumer_operational": {
+      "required": true,
+      "finding": "SATISFIED",
+      "evidence_refs": [
+        "tooling/receipt-runtime/v0.1/differential-baseline.json#AI-Transport-Reference",
+        "protocols/integration/ai-transport-reference/v0.1/reference-transport.js#RECEIPT_IDENTITY_PROFILE"
+      ],
+      "reason": "The named consumer delegates to the exact candidate profile and preserves its native behavior under the T4 differential gate."
+    }
+  },
+  "content_hash": "sha256:dc634b538e37842839d85ab1438ceb96f0389d3f3a59bdaea4955d3c1fb8bd7f",
+  "constraints": {
+    "selection_requested": false,
+    "authorization_requested": false,
+    "activation_requested": false,
+    "execution_requested": false
+  }
+}
