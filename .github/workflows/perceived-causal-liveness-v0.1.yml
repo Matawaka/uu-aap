@@ -1,0 +1,32 @@
+name: Perceived Causal Liveness v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/experimental/perceived-causal-liveness/**'
+      - '.github/workflows/perceived-causal-liveness-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/experimental/perceived-causal-liveness/**'
+      - '.github/workflows/perceived-causal-liveness-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate liveness state machine
+        run: |
+          node --check protocols/experimental/perceived-causal-liveness/v0.1/liveness.js
+          node protocols/experimental/perceived-causal-liveness/v0.1/test-liveness.js
+      - name: Checkout unchanged
+        run: test -z "$(git status --porcelain)"
