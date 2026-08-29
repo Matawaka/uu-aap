@@ -1,0 +1,1 @@
+Privacy closure is repository-evidence bounded. It upgrades the internal governance dimension from PRESENT_UNVERIFIED only when the receipt and validator pass; it does not claim external certification, legal compliance, or universal downstream conformance.
