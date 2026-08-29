@@ -35,8 +35,9 @@ jobs:
         run: |
           node review/security/dependency-vulnerability/v0.1/inventory.js > /tmp/inventory.json
           node review/security/dependency-vulnerability/v0.1/python-import-resolution.js /tmp/inventory.json > /tmp/resolved-inventory.json
-          node review/security/dependency-vulnerability/v0.1/python-distribution-evidence.js /tmp/resolved-inventory.json > /tmp/distribution-evidence.json
-          node review/security/dependency-vulnerability/v0.1/python-distribution-binding.js /tmp/resolved-inventory.json /tmp/distribution-evidence.json > /tmp/distribution-binding.json
+          node review/security/dependency-vulnerability/v0.1/python-distribution-evidence.js > /tmp/distribution-evidence.json
+          node -e "const fs=require('fs');const e=require('/tmp/distribution-evidence.json');if(!Array.isArray(e.evidence))throw Error('distribution evidence artifact must contain evidence[]');fs.writeFileSync('/tmp/evidence-array.json',JSON.stringify(e.evidence,null,2))"
+          node review/security/dependency-vulnerability/v0.1/python-distribution-binding.js /tmp/resolved-inventory.json /tmp/evidence-array.json > /tmp/distribution-binding.json
           node review/security/dependency-vulnerability/v0.1/python-distribution-version-evidence.js /tmp/distribution-binding.json > /tmp/version-evidence.json
           node -e "const r=require('/tmp/version-evidence.json'); if(r.outcome!=='INSUFFICIENT_EVIDENCE') throw Error('version evidence must not promote outcome'); if(r.installed_version_proven!==false) throw Error('declared version must not prove runtime installation');"
       - name: Checkout unchanged
@@ -44,5 +45,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: python-distribution-version-evidence-v0.1-${{ github.sha }}
-          path: /tmp/version-evidence.json
+          path: |
+            /tmp/distribution-evidence.json
+            /tmp/distribution-binding.json
+            /tmp/version-evidence.json
           if-no-files-found: error
