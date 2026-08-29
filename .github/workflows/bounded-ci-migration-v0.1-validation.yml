@@ -39,6 +39,9 @@ env:
   HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
   HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
   FROZEN_WORKFLOW: /tmp/marketcloser-publication-observation.pre-t3d.yml
+  HISTORICAL_COPY_EXPORT_MANIFEST: tooling/conformance-parity/v0.1/historical/marketcloser-copy-export-receipt.component.json
+  HISTORICAL_COPY_EXPORT_MANIFEST_BLOB: 5356b1359abdc239ed5e3b3a58c3779f11035861
+  CURRENT_COPY_EXPORT_MANIFEST: tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
   SLICE: tooling/bounded-ci-migration/v0.1/marketcloser-marketer-pessimist.slice.json
   BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
   REPORT: /tmp/bounded-ci-migration-assessment.json
@@ -68,12 +71,13 @@ jobs:
       - name: Install JSON Schema validator
         run: python -m pip install 'jsonschema>=4.22,<5'
 
-      - name: Materialize exact pre-migration workflow
+      - name: Materialize exact pre-migration evidence
         run: |
           git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
           git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
           git show "${ORIGIN_FRONTIER}:${HISTORICAL_WORKFLOW}" > "$FROZEN_WORKFLOW"
           test "$(git hash-object "$FROZEN_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+          test "$(git hash-object "$HISTORICAL_COPY_EXPORT_MANIFEST")" = "$HISTORICAL_COPY_EXPORT_MANIFEST_BLOB"
 
       - name: Check T3d JavaScript syntax
         run: |
@@ -81,7 +85,7 @@ jobs:
           node --check tooling/bounded-ci-migration/v0.1/test-bounded-ci-migration.js
           node --check tooling/bounded-ci-migration/v0.1/test-import-safe.js
 
-      - name: Validate migration slice schema
+      - name: Validate migration slice schema and frozen graph binding
         run: |
           python - <<'PY'
           import json, os
@@ -96,6 +100,8 @@ jobs:
           assert instance['expected_slice_command_count'] == 5
           assert len(instance['component_ids']) == 3
           assert len(instance['rollback_commands']) == 5
+          assert os.environ['HISTORICAL_COPY_EXPORT_MANIFEST'] in instance['parent_manifest_paths']
+          assert os.environ['CURRENT_COPY_EXPORT_MANIFEST'] not in instance['parent_manifest_paths']
           PY
 
       - name: Re-run T3a T3b T3c semantics
@@ -192,10 +198,11 @@ jobs:
           grep -F "Runner.safeChildEnvironment" tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js >/dev/null
           grep -F "Runner.buildExecutionPlan" tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js >/dev/null
 
-      - name: Confirm frozen rollback workflow remains addressable
+      - name: Confirm frozen rollback evidence remains addressable
         run: |
           test "$(git rev-parse "${ORIGIN_FRONTIER}:${HISTORICAL_WORKFLOW}")" = "$HISTORICAL_WORKFLOW_BLOB"
           test "$(git hash-object "$FROZEN_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+          test "$(git hash-object "$HISTORICAL_COPY_EXPORT_MANIFEST")" = "$HISTORICAL_COPY_EXPORT_MANIFEST_BLOB"
 
       - name: Confirm checkout unchanged after migration evidence
         run: test -z "$(git status --porcelain)"

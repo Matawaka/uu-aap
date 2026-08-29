@@ -25,7 +25,7 @@ const MANIFESTS = [
   'tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json',
   'tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json',
   'tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json',
-  'tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json',
+  'tooling/conformance-parity/v0.1/historical/marketcloser-copy-export-receipt.component.json',
   'tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json'
 ];
 

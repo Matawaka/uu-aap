@@ -1,0 +1,114 @@
+name: Receipt Runtime SDK v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/receipt-runtime/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json'
+      - 'protocols/integration/ai-transport-reference/v0.1/**'
+      - 'applications/marketcloser/v0.1/copy-export-receipt/v0.1/**'
+      - '.github/workflows/receipt-runtime-v0.1-validation.yml'
+      - 'ROADMAP.md'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/receipt-runtime/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json'
+      - 'protocols/integration/ai-transport-reference/v0.1/**'
+      - 'applications/marketcloser/v0.1/copy-export-receipt/v0.1/**'
+      - '.github/workflows/receipt-runtime-v0.1-validation.yml'
+      - 'ROADMAP.md'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: eddc49d2b3978558c35f029d9a5bfb46b5e4f6c1
+  TRANSPORT_SOURCE: protocols/integration/ai-transport-reference/v0.1/reference-transport.js
+  TRANSPORT_SOURCE_BLOB: 2f3f1341bf860085edc513fcc6a59c01c2191b93
+  COPY_EXPORT_SOURCE: applications/marketcloser/v0.1/copy-export-receipt/v0.1/copy-export.js
+  COPY_EXPORT_SOURCE_BLOB: 84e9cc5fd9c5ef043a5d149a913340e1539b51a7
+  COPY_EXPORT_FIXTURE: applications/marketcloser/v0.1/copy-export-receipt/v0.1/examples/synthetic-copy-export-wait.input.json
+  COPY_EXPORT_FIXTURE_BLOB: d584dfb27e9f1b051f8e9df92a478d51bd28ef14
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact T4a origin evidence
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          test "$(git rev-parse "${ORIGIN_FRONTIER}:${TRANSPORT_SOURCE}")" = "$TRANSPORT_SOURCE_BLOB"
+          test "$(git rev-parse "${ORIGIN_FRONTIER}:${COPY_EXPORT_SOURCE}")" = "$COPY_EXPORT_SOURCE_BLOB"
+          test "$(git rev-parse "${ORIGIN_FRONTIER}:${COPY_EXPORT_FIXTURE}")" = "$COPY_EXPORT_FIXTURE_BLOB"
+
+      - name: Check Receipt Runtime JavaScript syntax
+        run: |
+          node --check tooling/receipt-runtime/v0.1/receipt-runtime.js
+          node --check tooling/receipt-runtime/v0.1/test-receipt-runtime.js
+          node --check tooling/receipt-runtime/v0.1/test-import-safe.js
+
+      - name: Validate Receipt Runtime and consumer component manifests
+        run: |
+          for manifest in \
+            tooling/component-manifest/v0.1/examples/receipt-runtime.component.json \
+            tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
+          do
+            node tooling/component-manifest/v0.1/validate-component-manifest.js "$manifest" >/dev/null
+          done
+
+      - name: Prove historical vs shared profile differential parity
+        run: node tooling/receipt-runtime/v0.1/test-receipt-runtime.js
+
+      - name: Verify Receipt Runtime import safety
+        run: node tooling/receipt-runtime/v0.1/test-import-safe.js
+
+      - name: Re-run AI Transport Reference conformance
+        run: |
+          node protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js
+          node protocols/integration/ai-transport-reference/v0.1/test-schema-runtime-parity.js
+          node protocols/integration/ai-transport-reference/v0.1/test-import-safe.js
+
+      - name: Re-run MarketCloser Copy Export conformance
+        run: |
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-copy-export.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-schema-runtime-parity.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-import-safe.js
+
+      - name: Assert explicit named profile delegation
+        run: |
+          grep -F "ReceiptRuntime.PROFILE_ZERO_CONTENT_HASH" "$TRANSPORT_SOURCE" >/dev/null
+          grep -F "ReceiptRuntime.PROFILE_OMIT_CONTENT_HASH" "$COPY_EXPORT_SOURCE" >/dev/null
+          grep -F '"component_id": "Receipt-Runtime"' tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json >/dev/null
+          grep -F '"component_id":"Receipt-Runtime"' tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json >/dev/null
+
+      - name: Guard Receipt Runtime as pure deterministic identity tooling
+        run: |
+          if grep -En "child_process|spawnSync|execSync|exec\\(|spawn\\(|require\\(['\"]fs|require\\(['\"]path|require\\(['\"]https|require\\(['\"]http|fetch\\(|net\\.|dgram|writeFile|appendFile|createWriteStream|OpenAI|Anthropic" \
+            tooling/receipt-runtime/v0.1/receipt-runtime.js; then
+            echo 'Forbidden I/O, execution, network or provider surface detected in Receipt Runtime' >&2
+            exit 1
+          fi
+          grep -F "require('crypto')" tooling/receipt-runtime/v0.1/receipt-runtime.js >/dev/null
+          grep -F "unknown receipt identity profile" tooling/receipt-runtime/v0.1/receipt-runtime.js >/dev/null
+
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"

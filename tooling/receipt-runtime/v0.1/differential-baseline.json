@@ -1,0 +1,31 @@
+{
+  "artifact_type": "UU-AAP-Receipt-Runtime-Differential-Baseline",
+  "version": "0.1",
+  "origin_frontier": "eddc49d2b3978558c35f029d9a5bfb46b5e4f6c1",
+  "consumers": [
+    {
+      "component_id": "AI-Transport-Reference",
+      "source_path": "protocols/integration/ai-transport-reference/v0.1/reference-transport.js",
+      "source_blob_sha": "2f3f1341bf860085edc513fcc6a59c01c2191b93",
+      "profile": "content-hash-zero-field-v0.1",
+      "vector": "nested-nonempty-content-hash",
+      "historical_hash": "sha256:e1271d41f9092634d9ab571eb9844529962bb07c326934286ca6800d13dec185"
+    },
+    {
+      "component_id": "MarketCloser-Copy-Export-Receipt",
+      "source_path": "applications/marketcloser/v0.1/copy-export-receipt/v0.1/copy-export.js",
+      "source_blob_sha": "84e9cc5fd9c5ef043a5d149a913340e1539b51a7",
+      "profile": "content-hash-omit-field-v0.1",
+      "fixture_path": "applications/marketcloser/v0.1/copy-export-receipt/v0.1/examples/synthetic-copy-export-wait.input.json",
+      "fixture_blob_sha": "d584dfb27e9f1b051f8e9df92a478d51bd28ef14",
+      "historical_hash": "sha256:60ce7e57b32827551f2a0da3d18a1e2ea4fe4751f51f184de34e2c11142ec41c"
+    }
+  ],
+  "claims": {
+    "shared_runtime_proven_for_listed_profiles_only": true,
+    "universal_canonicalization_proven": false,
+    "semantic_compatibility_proven": false,
+    "authority_created": false,
+    "historical_receipts_rewritten": false
+  }
+}
