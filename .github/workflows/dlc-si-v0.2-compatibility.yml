@@ -1,0 +1,29 @@
+name: DLC-SI v0.2 Compatibility
+on:
+  pull_request:
+    paths:
+      - 'protocols/dlc-si/v0.2/**'
+      - 'protocols/dlc-si/v0.1/**'
+      - 'protocols/experimental/dlc-si/v0.1/**'
+      - '.github/workflows/dlc-si-v0.2-compatibility.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/dlc-si/v0.2/**'
+      - 'protocols/dlc-si/v0.1/**'
+      - 'protocols/experimental/dlc-si/v0.1/**'
+      - '.github/workflows/dlc-si-v0.2-compatibility.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check protocols/dlc-si/v0.2/compatibility.js
+      - run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - run: node protocols/dlc-si/v0.2/test-compatibility.js
+      - run: test -z "$(git status --porcelain)"
