@@ -1,7 +1,7 @@
 'use strict';const assert=require('node:assert/strict');const {classifyIssue}=require('./classify.js');
-let r=classifyIssue({issue_ref:'#1',merged_prs:['#2'],merge_shas:['abc'],implementation_paths:['protocols/x'],acceptance_complete:true});assert.equal(r.state,'COMPLETED');assert.equal(r.automatic_closure_authorized,false);
-r=classifyIssue({issue_ref:'#2',merged_prs:['#3'],implementation_paths:[],acceptance_complete:null});assert.equal(r.state,'PARTIAL');
-r=classifyIssue({issue_ref:'#3',superseded_by:'#4'});assert.equal(r.state,'SUPERSEDED');
-r=classifyIssue({issue_ref:'#4',explicitly_still_open:true});assert.equal(r.state,'STILL_OPEN');
-r=classifyIssue({issue_ref:'#5'});assert.equal(r.state,'INSUFFICIENT_EVIDENCE');
-console.log('backlog reconciliation tests: ok');
+let r=classifyIssue({issue_ref:'#1',merged_prs:['#2'],merge_shas:['abc'],implementation_paths:['protocols/x'],acceptance_complete:true,roadmap_current:true});assert.equal(r.implementation_state,'COMPLETED');assert.equal(r.roadmap_state,'CURRENT');assert.equal(r.automatic_closure_authorized,false);
+r=classifyIssue({issue_ref:'#2',merged_prs:['#3'],implementation_paths:[],acceptance_complete:null,roadmap_current:true});assert.equal(r.implementation_state,'PARTIAL');assert.equal(r.roadmap_state,'CURRENT');
+r=classifyIssue({issue_ref:'#3',merged_prs:['#4'],implementation_paths:['protocols/y'],acceptance_complete:true,superseded_by:'#5'});assert.equal(r.implementation_state,'COMPLETED');assert.equal(r.roadmap_state,'SUPERSEDED');
+r=classifyIssue({issue_ref:'#4',explicitly_still_open:true});assert.equal(r.implementation_state,'STILL_OPEN');assert.equal(r.roadmap_state,'STILL_OPEN');
+r=classifyIssue({issue_ref:'#5'});assert.equal(r.implementation_state,'INSUFFICIENT_EVIDENCE');assert.equal(r.roadmap_state,'INSUFFICIENT_EVIDENCE');
+console.log('backlog reconciliation dual-axis tests: ok');
