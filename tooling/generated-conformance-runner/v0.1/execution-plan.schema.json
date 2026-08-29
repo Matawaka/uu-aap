@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:tooling:generated-conformance-execution-plan:v0.1",
+  "title": "UU-AAP Generated Conformance Execution Plan v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "version", "runner_origin_frontier", "target_component_id", "mode",
+    "source_workflow", "parity", "dependency_components", "commands", "plan_digest", "claims", "non_effects"
+  ],
+  "properties": {
+    "artifact_type": { "const": "UU-AAP-Generated-Conformance-Execution-Plan" },
+    "version": { "const": "0.1" },
+    "runner_origin_frontier": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "target_component_id": { "type": "string", "minLength": 1 },
+    "mode": { "const": "PREDECESSOR_ONLY" },
+    "source_workflow": {
+      "type": "object", "additionalProperties": false, "required": ["path", "blob_sha"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "blob_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "parity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verified", "manual_command_count", "graph_command_count"],
+      "properties": {
+        "verified": { "const": true },
+        "manual_command_count": { "type": "integer", "minimum": 1 },
+        "graph_command_count": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "dependency_components": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "commands": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["sequence", "component_id", "executable", "args"],
+        "properties": {
+          "sequence": { "type": "integer", "minimum": 1 },
+          "component_id": { "type": "string", "minLength": 1 },
+          "executable": { "enum": ["node", "python", "python3"] },
+          "args": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } }
+        }
+      }
+    },
+    "plan_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["parity_verified", "commands_executed", "target_component_commands_included", "authority_created", "compatibility_proven", "ci_narrowing_authorized"],
+      "properties": {
+        "parity_verified": { "const": true },
+        "commands_executed": { "const": false },
+        "target_component_commands_included": { "const": false },
+        "authority_created": { "const": false },
+        "compatibility_proven": { "const": false },
+        "ci_narrowing_authorized": { "const": false }
+      }
+    },
+    "non_effects": { "type": "array", "minItems": 5, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+  }
+}
