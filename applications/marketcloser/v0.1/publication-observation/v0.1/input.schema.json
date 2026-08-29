@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.local/marketcloser/publication-observation/v0.1/input.schema.json",
+  "title": "MarketCloserPublicationObservationInput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "artifact_type",
+    "observation_id",
+    "origin",
+    "copy_export_source",
+    "copy_export_receipt",
+    "observation",
+    "controls",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": { "const": "MARKETCLOSER-PUBLICATION-OBSERVATION" },
+    "version": { "const": "0.1" },
+    "artifact_type": { "const": "MarketCloserPublicationObservationInput" },
+    "observation_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:marketcloser:publication-observation:[a-z0-9][a-z0-9:-]{2,191}$"
+    },
+    "origin": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": { "const": "Matawaka/uu-aap" },
+        "revision": { "const": "d18416a0f11c5135ba9a4a04bfe366b25a0872eb" },
+        "tree": { "const": "426bc06cf8a59f6c779b1acf39d1264567911124" }
+      }
+    },
+    "copy_export_source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "path", "expected_copy_export_input_hash"],
+      "properties": {
+        "mode": { "enum": ["repository_synthetic", "local_private"] },
+        "path": { "type": "string", "minLength": 1 },
+        "expected_copy_export_input_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      }
+    },
+    "copy_export_receipt": { "type": ["object", "null"] },
+    "observation": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "context",
+            "method",
+            "observation_ref",
+            "observer_ref",
+            "observed_at",
+            "publication_url",
+            "result",
+            "match_mode",
+            "observed_content_hash",
+            "independently_verified"
+          ],
+          "properties": {
+            "context": {
+              "enum": [
+                "synthetic_conformance",
+                "application_observed",
+                "human_asserted",
+                "independent_observer"
+              ]
+            },
+            "method": {
+              "enum": [
+                "synthetic_probe",
+                "application_surface",
+                "human_visual",
+                "http_fetch"
+              ]
+            },
+            "observation_ref": { "type": "string", "minLength": 1 },
+            "observer_ref": { "type": "string", "minLength": 1 },
+            "observed_at": { "type": "string", "format": "date-time" },
+            "publication_url": { "type": "string", "format": "uri", "pattern": "^https://" },
+            "result": { "enum": ["not_observed", "content_mismatch", "content_match"] },
+            "match_mode": { "const": "exact_utf8_sha256" },
+            "observed_content_hash": {
+              "type": ["string", "null"],
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            "independently_verified": { "type": "boolean" }
+          }
+        }
+      ]
+    },
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "local_only",
+        "read_only",
+        "publication_observation_recording_available",
+        "network_fetch_available",
+        "publication_action_available",
+        "provider_invocation_available",
+        "platform_mutation_available",
+        "campaign_send_available",
+        "pilot_permit_available",
+        "action_permit_available",
+        "external_execution_available",
+        "external_effect_available"
+      ],
+      "properties": {
+        "local_only": { "const": true },
+        "read_only": { "const": true },
+        "publication_observation_recording_available": { "const": true },
+        "network_fetch_available": { "const": false },
+        "publication_action_available": { "const": false },
+        "provider_invocation_available": { "const": false },
+        "platform_mutation_available": { "const": false },
+        "campaign_send_available": { "const": false },
+        "pilot_permit_available": { "const": false },
+        "action_permit_available": { "const": false },
+        "external_execution_available": { "const": false },
+        "external_effect_available": { "const": false }
+      }
+    },
+    "content_hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}
