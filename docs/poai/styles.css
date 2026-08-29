@@ -4,9 +4,10 @@
   --surface: #ffffff;
   --surface-2: #f0f2f5;
   --text: #18202a;
-  --muted: #66717f;
+  --muted: #5f6975;
   --line: #d8dee6;
   --accent: #2357d9;
+  --accent-contrast: #ffffff;
   --good: #176b45;
   --bad: #a32626;
   --warn: #8a5a00;
@@ -16,7 +17,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --bg: #0e1116; --surface: #161b22; --surface-2: #20262e; --text: #edf2f7; --muted: #9ea9b7;
-    --line: #303844; --accent: #7aa2ff; --good: #5fc99a; --bad: #ff8a8a; --warn: #f2c269; --shadow: none;
+    --line: #303844; --accent: #7aa2ff; --accent-contrast: #161b22; --good: #5fc99a; --bad: #ff8a8a; --warn: #f2c269; --shadow: none;
   }
 }
 * { box-sizing: border-box; }
@@ -33,14 +34,14 @@ h3 { margin: 20px 0 10px; font-size: 15px; }
 .principles span, .badge { border: 1px solid var(--line); border-radius: 999px; padding: 5px 10px; background: var(--surface-2); font-size: 12px; font-weight: 650; }
 .language-switch { display: flex; gap: 6px; margin-top: 20px; }
 .language-switch button { min-width: 46px; padding: 7px 10px; }
-.language-switch button.active { background: var(--accent); color: white; border-color: var(--accent); }
+.language-switch button.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
 .notice { margin: 24px 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); display: grid; gap: 4px; }
 .notice span, .summary, .muted, .footnote { color: var(--muted); }
 .alpha-scope { margin-top: -12px; }
 .tabs { display: flex; gap: 8px; margin: 20px 0; }
 button, .file-label { appearance: none; border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 10px; padding: 9px 13px; font: inherit; font-weight: 650; cursor: pointer; }
 button:hover, .file-label:hover { border-color: var(--accent); }
-button.primary, button.active { background: var(--accent); color: white; border-color: var(--accent); }
+button.primary, button.active { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
 button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible, .file-label.focus-proxy {
   outline: 3px solid color-mix(in srgb, var(--accent) 72%, transparent);
   outline-offset: 3px;
