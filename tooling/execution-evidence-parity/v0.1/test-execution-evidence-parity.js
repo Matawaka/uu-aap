@@ -10,7 +10,7 @@ const Parity = require('./execution-evidence-parity.js');
 
 const ROOT = process.cwd();
 const BASELINE_PATH = 'tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json';
-const WORKFLOW_PATH = process.env.UU_AAP_HISTORICAL_WORKFLOW || '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml';
+const WORKFLOW_PATH = process.env.UU_AAP_HISTORICAL_WORKFLOW || process.env.FROZEN_HISTORICAL_WORKFLOW || process.env.FROZEN_WORKFLOW || '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml';
 const MANIFESTS = [
   'tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json',
   'tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json',
