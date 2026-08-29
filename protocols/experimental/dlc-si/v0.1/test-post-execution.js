@@ -1,0 +1,5 @@
+'use strict';const assert=require('node:assert/strict');const {postExecutionReceipt,assertContestVisible}=require('./post-execution.js');
+const action={type:'ContestedActionReceipt',mode:'TEMPORARY_PRECEDENCE',action_ref:'action:1',selected_claim_ref:'A',competing_claim_refs:['B'],contested:true,normative_victory:false,selection_erases_legitimacy:false};
+const r=postExecutionReceipt({contested_action_receipt:action,outcome_ref:'outcome:1',executed_at:'2026-08-29T16:00:00Z',lease_ref:'lease:1'});assert.equal(r.contested,true);assert.equal(r.normative_winner,null);assert.equal(r.execution_proves_legitimacy,false);assert.deepEqual(r.competing_claim_refs,['B']);assert.equal(r.requires_revisit,true);assert.equal(assertContestVisible(r),true);
+assert.throws(()=>postExecutionReceipt({contested_action_receipt:{...action,contested:false},outcome_ref:'o',executed_at:'t'}),/must remain contested/);
+console.log('dlc-si post-execution tests: ok');

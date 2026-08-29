@@ -1,0 +1,24 @@
+name: DLC-SI Post Execution v0.1
+on:
+  pull_request:
+    paths:
+      - 'protocols/experimental/dlc-si/v0.1/**'
+      - '.github/workflows/dlc-si-post-execution-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/experimental/dlc-si/v0.1/**'
+      - '.github/workflows/dlc-si-post-execution-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check protocols/experimental/dlc-si/v0.1/post-execution.js
+      - run: node protocols/experimental/dlc-si/v0.1/test-post-execution.js
+      - run: test -z "$(git status --porcelain)"
