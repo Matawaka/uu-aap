@@ -9,7 +9,7 @@ const DependencyImpact = require('../../dependency-impact/v0.1/dependency-impact
 
 const ROOT = path.resolve(__dirname, '../../..');
 const BASELINE_PATH = 'tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json';
-const WORKFLOW_PATH = '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml';
+const WORKFLOW_PATH = process.env.UU_AAP_HISTORICAL_WORKFLOW || '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml';
 const MANIFEST_PATHS = [
   'tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json',
   'tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json',
@@ -34,7 +34,7 @@ function deepClone(value) {
 
 function loadInputs() {
   const baseline = JSON.parse(fs.readFileSync(path.join(ROOT, BASELINE_PATH), 'utf8'));
-  const workflowText = fs.readFileSync(path.join(ROOT, WORKFLOW_PATH), 'utf8');
+  const workflowText = fs.readFileSync(path.resolve(ROOT, WORKFLOW_PATH), 'utf8');
   const entries = DependencyImpact.loadManifests(MANIFEST_PATHS, { repositoryRoot: ROOT });
   return { baseline, workflowText, entries };
 }
