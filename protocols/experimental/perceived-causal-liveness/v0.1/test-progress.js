@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {meaningfulProgress,createProgressReceipt}=require('./progress.js');
+const a={run_id:'r1',run_epoch:1,observed_at:'2026-08-29T15:00:00Z',current_phase:'collect',progress_kind:'observation',waiting_on:null,next_observable_event:'e1',checkpoint_ref:'c1'};
+assert.equal(meaningfulProgress(null,a),true);
+const r1=createProgressReceipt(a);
+assert.equal(r1.meaningful_progress,true);
+assert.equal(r1.extends_liveness_lease,true);
+const same={...a,observed_at:'2026-08-29T15:01:00Z'};
+const r2=createProgressReceipt(same,a);
+assert.equal(r2.meaningful_progress,false);
+assert.equal(r2.extends_liveness_lease,false);
+const changed={...same,current_phase:'validate'};
+assert.equal(createProgressReceipt(changed,a).meaningful_progress,true);
+assert.equal(r2.hidden_reasoning_disclosed,false);
+assert.equal(r2.external_effect_authority_created,false);
+console.log('progress receipt tests: ok');
