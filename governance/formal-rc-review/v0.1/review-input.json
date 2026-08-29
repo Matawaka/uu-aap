@@ -1,0 +1,16 @@
+{
+  "schema_version":"0.1",
+  "review_id":"formal-rc-governance-v0.1",
+  "origin_frontier":"f05f04779ae1bb8f4c2b0c7dfa20a7c4ffc1b5eb",
+  "dimensions":[
+    {"id":"security","state":"PASS","evidence_refs":["security/evidence-closure/v0.2","#672"],"limitation":"Evidence closure is bounded review evidence, not security certification."},
+    {"id":"privacy","state":"PRESENT_UNVERIFIED","evidence_refs":["protocols/integration/personal-sovereign-root/v0.1","protocols/integration/circumstantial-provenance/v0.1"],"limitation":"Repository boundaries are inspectable; no independent privacy certification is claimed."},
+    {"id":"accessibility","state":"INSUFFICIENT_EVIDENCE","evidence_refs":["docs/ROADMAP-CURRENT.md","#1","#7"],"limitation":"Repository discoverability exists but independent accessibility evaluation is not established."},
+    {"id":"contestability","state":"PASS","evidence_refs":["protocols/dlc-si/v0.2","runtime/perceived-causal-liveness/v0.1","#526","#528"],"limitation":"PASS is protocol-level contest/revisit/revalidation evidence, not legal-process certification."},
+    {"id":"ru_en_semantic_parity","state":"INSUFFICIENT_EVIDENCE","evidence_refs":["#1","#7"],"limitation":"No current deterministic paired normative corpus proves repository-wide RU/EN semantic parity."},
+    {"id":"ru_en_navigation_parity","state":"INSUFFICIENT_EVIDENCE","evidence_refs":["#1","#7"],"limitation":"No current deterministic repository-wide paired navigation audit is established."},
+    {"id":"release_governance_separation","state":"PASS","evidence_refs":["tooling/release-candidate-checkpoint/v0.3","docs/ROADMAP-CURRENT.md"],"limitation":"PASS only confirms explicit non-effect separation; it grants no release authority."}
+  ],
+  "external_gates":{"public_review":"WAITING_EXTERNAL","pilot_002":"WAITING_EXTERNAL"},
+  "non_effects":{"release_authorized":false,"publication_authorized":false,"certification_created":false,"legal_status_created":false,"runtime_activation_authorized":false,"action_permit_created":false,"external_review_fabricated":false}
+}
