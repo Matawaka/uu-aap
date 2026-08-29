@@ -1,0 +1,175 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.local/marketcloser/publication-observation/v0.1/receipt.schema.json",
+  "title": "MarketCloserPublicationObservationReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol",
+    "version",
+    "receipt_type",
+    "receipt_id",
+    "source_input",
+    "copy_export_binding",
+    "observation_binding",
+    "classification",
+    "observation_event_recorded",
+    "publication_observed",
+    "content_match",
+    "claims",
+    "non_effects",
+    "next_safe_action",
+    "content_hash"
+  ],
+  "properties": {
+    "protocol": { "const": "MARKETCLOSER-PUBLICATION-OBSERVATION" },
+    "version": { "const": "0.1" },
+    "receipt_type": { "const": "MarketCloserPublicationObservationReceipt" },
+    "receipt_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:marketcloser:publication-observation-receipt:[0-9a-f]{24}$"
+    },
+    "source_input": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["observation_id", "observation_hash"],
+      "properties": {
+        "observation_id": { "type": "string", "minLength": 1 },
+        "observation_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+      }
+    },
+    "copy_export_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "copy_export_id",
+        "copy_export_hash",
+        "receipt_present",
+        "receipt_id",
+        "receipt_hash",
+        "classification",
+        "draft_hash",
+        "copied_publication_unverified",
+        "exact_receipt_revalidated"
+      ],
+      "properties": {
+        "copy_export_id": { "type": "string", "minLength": 1 },
+        "copy_export_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "receipt_present": { "type": "boolean" },
+        "receipt_id": { "type": ["string", "null"] },
+        "receipt_hash": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+        "classification": { "type": ["string", "null"] },
+        "draft_hash": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+        "copied_publication_unverified": { "type": "boolean" },
+        "exact_receipt_revalidated": { "type": "boolean" }
+      }
+    },
+    "observation_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "present",
+        "context",
+        "method",
+        "observation_ref",
+        "observer_ref",
+        "observed_at",
+        "publication_url",
+        "result",
+        "match_mode",
+        "observed_content_hash",
+        "independently_verified"
+      ],
+      "properties": {
+        "present": { "type": "boolean" },
+        "context": { "type": ["string", "null"] },
+        "method": { "type": ["string", "null"] },
+        "observation_ref": { "type": ["string", "null"] },
+        "observer_ref": { "type": ["string", "null"] },
+        "observed_at": { "type": ["string", "null"], "format": "date-time" },
+        "publication_url": { "type": ["string", "null"], "format": "uri" },
+        "result": { "type": ["string", "null"] },
+        "match_mode": { "type": ["string", "null"] },
+        "observed_content_hash": { "type": ["string", "null"], "pattern": "^sha256:[0-9a-f]{64}$" },
+        "independently_verified": { "type": "boolean" }
+      }
+    },
+    "classification": {
+      "enum": [
+        "COPY_EXPORT_REQUIRED",
+        "PUBLICATION_OBSERVATION_REQUIRED",
+        "PUBLICATION_NOT_OBSERVED",
+        "PUBLICATION_CONTENT_MISMATCH",
+        "PUBLICATION_OBSERVED"
+      ]
+    },
+    "observation_event_recorded": { "type": "boolean" },
+    "publication_observed": { "type": "boolean" },
+    "content_match": { "type": "boolean" },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "exact_copy_export_source_revalidated",
+        "copied_exact_draft_bound",
+        "publication_observation_event_recorded",
+        "publication_resource_observed",
+        "exact_draft_publication_observed",
+        "content_hash_exact_match",
+        "observation_independently_verified",
+        "publication_authorized",
+        "publication_performed_by_runtime",
+        "publication_actor_identity_verified",
+        "deployment_provenance_established",
+        "runtime_network_accessed",
+        "provider_invoked",
+        "platform_mutated",
+        "campaign_sent",
+        "pilot_permit_created",
+        "action_permit_created",
+        "external_execution_admitted",
+        "external_effect_performed",
+        "successor_authority_created"
+      ],
+      "properties": {
+        "exact_copy_export_source_revalidated": { "type": "boolean" },
+        "copied_exact_draft_bound": { "type": "boolean" },
+        "publication_observation_event_recorded": { "type": "boolean" },
+        "publication_resource_observed": { "type": "boolean" },
+        "exact_draft_publication_observed": { "type": "boolean" },
+        "content_hash_exact_match": { "type": "boolean" },
+        "observation_independently_verified": { "type": "boolean" },
+        "publication_authorized": { "type": "boolean" },
+        "publication_performed_by_runtime": { "type": "boolean" },
+        "publication_actor_identity_verified": { "type": "boolean" },
+        "deployment_provenance_established": { "type": "boolean" },
+        "runtime_network_accessed": { "type": "boolean" },
+        "provider_invoked": { "type": "boolean" },
+        "platform_mutated": { "type": "boolean" },
+        "campaign_sent": { "type": "boolean" },
+        "pilot_permit_created": { "type": "boolean" },
+        "action_permit_created": { "type": "boolean" },
+        "external_execution_admitted": { "type": "boolean" },
+        "external_effect_performed": { "type": "boolean" },
+        "successor_authority_created": { "type": "boolean" }
+      }
+    },
+    "non_effects": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": { "type": "string" }
+    },
+    "next_safe_action": {
+      "enum": [
+        "OBTAIN_COPIED_PUBLICATION_UNVERIFIED",
+        "RECORD_PUBLICATION_OBSERVATION",
+        "REOBSERVATION_OR_HUMAN_REVIEW_REQUIRED",
+        "PUBLICATION_CONTENT_RECONCILIATION_REQUIRED",
+        "OUTCOME_EVIDENCE_REQUIRED"
+      ]
+    },
+    "content_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  }
+}
