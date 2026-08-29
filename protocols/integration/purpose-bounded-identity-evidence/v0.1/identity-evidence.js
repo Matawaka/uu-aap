@@ -12,7 +12,7 @@ function assessIdentityEvidence(input){
   if(input.cross_context_correlation_performed) throw new Error('cross-context correlation denied by default');
   if(input.biometric_required===true) throw new Error('biometric requirement forbidden');
   if(input.universal_identity_claim===true) throw new Error('universal identity claim forbidden');
-  if(input.legal_identity_claim===true && input.entitled_legal_identity_verifier!==true) throw new Error('legal identity claim requires separately entitled verifier');
+  if(input.legal_identity_claim===true) throw new Error('legal identity claim is outside v0.1');
 
   const supporting=input.evidence_refs.filter(e=>e&&e.status==='SUPPORTS_MATCH');
   const disputing=input.evidence_refs.filter(e=>e&&e.status==='DISPUTES_MATCH');
@@ -32,7 +32,7 @@ function assessIdentityEvidence(input){
     psr_root_ref:input.psr_root_ref,
     evidence_refs:input.evidence_refs,
     result,
-    legal_identity_established: input.legal_identity_claim===true && input.entitled_legal_identity_verifier===true && result==='MATCH_SUPPORTED',
+    legal_identity_established:false,
     universal_identity_proof:false,
     authority_established:false,
     intent_established:false,
