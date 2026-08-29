@@ -1,0 +1,162 @@
+name: Implementation Substitution Assessment v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/implementation-substitution/v0.1/**'
+      - 'tooling/receipt-runtime/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/implementation-substitution.component.json'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json'
+      - 'protocols/integration/ai-transport-reference/v0.1/**'
+      - 'applications/marketcloser/v0.1/copy-export-receipt/v0.1/**'
+      - '.github/workflows/implementation-substitution-v0.1-validation.yml'
+      - 'ROADMAP.md'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/implementation-substitution/v0.1/**'
+      - 'tooling/receipt-runtime/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/implementation-substitution.component.json'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json'
+      - 'protocols/integration/ai-transport-reference/v0.1/**'
+      - 'applications/marketcloser/v0.1/copy-export-receipt/v0.1/**'
+      - '.github/workflows/implementation-substitution-v0.1-validation.yml'
+      - 'ROADMAP.md'
+
+permissions:
+  contents: read
+
+env:
+  T5_ORIGIN_FRONTIER: 5d9d9e0faf35230ede54e8f49c71e049311b7e4a
+  T4_PRE_EXTRACTION_FRONTIER: eddc49d2b3978558c35f029d9a5bfb46b5e4f6c1
+  T4_BASELINE: tooling/receipt-runtime/v0.1/differential-baseline.json
+  T4_BASELINE_BLOB: e0b5a632c86e6d39a42ed666f00ccc237a348154
+  RECEIPT_RUNTIME_SOURCE: tooling/receipt-runtime/v0.1/receipt-runtime.js
+  RECEIPT_RUNTIME_SOURCE_BLOB: a250faff20bcf25523c4e749a86f4e2b8fabae7c
+  RECEIPT_RUNTIME_MANIFEST: tooling/component-manifest/v0.1/examples/receipt-runtime.component.json
+  RECEIPT_RUNTIME_MANIFEST_BLOB: 0e3981e52cb726f4e11bec90c6c13d406f77352d
+  AI_SOURCE: protocols/integration/ai-transport-reference/v0.1/reference-transport.js
+  AI_HISTORICAL_SOURCE_BLOB: 2f3f1341bf860085edc513fcc6a59c01c2191b93
+  AI_CURRENT_SOURCE_BLOB: 58ca1cdefef776557e869fd3c9c5be3640a8253b
+  AI_MANIFEST: tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json
+  AI_MANIFEST_BLOB: 92ba6cd786e81251e64f3580a80819e76746d9e3
+  COPY_SOURCE: applications/marketcloser/v0.1/copy-export-receipt/v0.1/copy-export.js
+  COPY_HISTORICAL_SOURCE_BLOB: 84e9cc5fd9c5ef043a5d149a913340e1539b51a7
+  COPY_CURRENT_SOURCE_BLOB: 02147134741fb69c2417e1d8a762f7f8e8ba66a0
+  COPY_MANIFEST: tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
+  COPY_MANIFEST_BLOB: 8b713b6b57b6ab6dcc92bf39b14b06f524ee3824
+  T5_MANIFEST: tooling/component-manifest/v0.1/examples/implementation-substitution.component.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact T4/T5 evidence frontiers
+        run: |
+          git cat-file -e "${T5_ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$T5_ORIGIN_FRONTIER" HEAD
+          git cat-file -e "${T4_PRE_EXTRACTION_FRONTIER}^{commit}"
+          test "$(git rev-parse "${T5_ORIGIN_FRONTIER}:${T4_BASELINE}")" = "$T4_BASELINE_BLOB"
+          test "$(git rev-parse "${T5_ORIGIN_FRONTIER}:${RECEIPT_RUNTIME_SOURCE}")" = "$RECEIPT_RUNTIME_SOURCE_BLOB"
+          test "$(git rev-parse "${T5_ORIGIN_FRONTIER}:${RECEIPT_RUNTIME_MANIFEST}")" = "$RECEIPT_RUNTIME_MANIFEST_BLOB"
+          test "$(git rev-parse "${T4_PRE_EXTRACTION_FRONTIER}:${AI_SOURCE}")" = "$AI_HISTORICAL_SOURCE_BLOB"
+          test "$(git rev-parse "${T5_ORIGIN_FRONTIER}:${AI_SOURCE}")" = "$AI_CURRENT_SOURCE_BLOB"
+          test "$(git rev-parse "${T5_ORIGIN_FRONTIER}:${AI_MANIFEST}")" = "$AI_MANIFEST_BLOB"
+          test "$(git rev-parse "${T4_PRE_EXTRACTION_FRONTIER}:${COPY_SOURCE}")" = "$COPY_HISTORICAL_SOURCE_BLOB"
+          test "$(git rev-parse "${T5_ORIGIN_FRONTIER}:${COPY_SOURCE}")" = "$COPY_CURRENT_SOURCE_BLOB"
+          test "$(git rev-parse "${T5_ORIGIN_FRONTIER}:${COPY_MANIFEST}")" = "$COPY_MANIFEST_BLOB"
+
+      - name: Check T5 JavaScript syntax
+        run: |
+          node --check tooling/implementation-substitution/v0.1/implementation-substitution.js
+          node --check tooling/implementation-substitution/v0.1/test-implementation-substitution.js
+          node --check tooling/implementation-substitution/v0.1/test-real-t4-substitutions.js
+          node --check tooling/implementation-substitution/v0.1/test-schema-runtime-parity.js
+          node --check tooling/implementation-substitution/v0.1/test-import-safe.js
+
+      - name: Re-run T4 differential and native consumer conformance
+        run: |
+          node tooling/receipt-runtime/v0.1/test-receipt-runtime.js
+          node tooling/receipt-runtime/v0.1/test-import-safe.js
+          node protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js
+          node protocols/integration/ai-transport-reference/v0.1/test-schema-runtime-parity.js
+          node protocols/integration/ai-transport-reference/v0.1/test-import-safe.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-copy-export.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-schema-runtime-parity.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-import-safe.js
+
+      - name: Validate current component metadata
+        run: |
+          for manifest in \
+            "$RECEIPT_RUNTIME_MANIFEST" \
+            "$AI_MANIFEST" \
+            "$COPY_MANIFEST" \
+            "$T5_MANIFEST"
+          do
+            node tooling/component-manifest/v0.1/validate-component-manifest.js "$manifest" >/dev/null
+          done
+
+      - name: Run T5 decision and fail-closed conformance
+        run: node tooling/implementation-substitution/v0.1/test-implementation-substitution.js
+
+      - name: Prove real T4 consumer-specific substitutions
+        run: node tooling/implementation-substitution/v0.1/test-real-t4-substitutions.js
+
+      - name: Verify T5 schema/runtime parity and import safety
+        run: |
+          node tooling/implementation-substitution/v0.1/test-schema-runtime-parity.js
+          node tooling/implementation-substitution/v0.1/test-import-safe.js
+
+      - name: Prove Receipt Runtime dependency is explicit in current graph
+        run: |
+          node tooling/dependency-impact/v0.1/dependency-impact.js impact-component \
+            Receipt-Runtime \
+            "$RECEIPT_RUNTIME_MANIFEST" \
+            "$T5_MANIFEST" \
+            >/tmp/t5-impact.json
+          node - <<'NODE'
+          const impact = require('/tmp/t5-impact.json');
+          const expected = ['Implementation-Substitution-Assessment','Receipt-Runtime'];
+          if (JSON.stringify(impact.affected_components) !== JSON.stringify(expected)) throw new Error('unexpected T5 impact closure');
+          if (!impact.non_effects.includes('impact_does_not_prove_substitutability')) throw new Error('dependency graph overclaimed substitution');
+          NODE
+
+      - name: Assess both real inputs through public CLI
+        run: |
+          for input in \
+            tooling/implementation-substitution/v0.1/examples/ai-transport-receipt-identity.input.json \
+            tooling/implementation-substitution/v0.1/examples/marketcloser-copy-export-receipt-identity.input.json
+          do
+            node tooling/implementation-substitution/v0.1/implementation-substitution.js assess "$input" > /tmp/t5-receipt.json
+            node -e "const receipt=require('/tmp/t5-receipt.json'); if(receipt.decision!=='SUBSTITUTABLE') throw new Error('real T4 substitution did not classify SUBSTITUTABLE'); if(receipt.assertions.whole_component_substitution_assessed!==false) throw new Error('whole-component scope overclaim'); for(const key of ['implementation_selected','runtime_activated','authority_created','responsibility_accepted','action_permit_created','execution_admitted','action_performed','external_effect_performed','universal_substitutability_established']) if(receipt.non_effects[key]!==false) throw new Error('non-effect overclaim: '+key);"
+          done
+
+      - name: Guard T5 production surface as read-only assessment
+        run: |
+          if grep -En "child_process|spawnSync|execSync|exec\\(|spawn\\(|require\\(['\"]https|require\\(['\"]http|fetch\\(|net\\.|dgram|writeFile|appendFile|createWriteStream|OpenAI|Anthropic" \
+            tooling/implementation-substitution/v0.1/implementation-substitution.js; then
+            echo 'Forbidden execution/network/write/provider surface detected in T5 runtime' >&2
+            exit 1
+          fi
+          grep -F "whole-component substitutability" tooling/implementation-substitution/v0.1/implementation-substitution.js >/dev/null
+          grep -F "implementation_selected: false" tooling/implementation-substitution/v0.1/implementation-substitution.js >/dev/null
+          grep -F "universal_substitutability_established: false" tooling/implementation-substitution/v0.1/implementation-substitution.js >/dev/null
+
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"
