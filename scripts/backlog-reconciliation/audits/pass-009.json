@@ -1,0 +1,32 @@
+{
+  "pass": "009",
+  "issue_ref": "#712",
+  "origin_frontier": "78db856ec04f18c3c8fbbde6fe85b73abd0c26d7",
+  "classification_mutates_issue": false,
+  "public_review": {
+    "roadmap_role": "WAITING_EXTERNAL",
+    "issue_refs": ["#1", "#2", "#3", "#4", "#5", "#6", "#7"],
+    "basis": ["published review window remains active through 2026-10-06", "external criticism is the intended missing input", "review surface existence is not review completion"]
+  },
+  "legacy_poai_level_3_4": {
+    "roadmap_role": "SUCCESSOR_NEEDED",
+    "issue_refs": ["#22", "#26", "#28", "#31", "#34", "#37", "#38", "#43", "#45", "#47", "#49", "#51", "#55", "#57", "#60", "#62", "#64", "#66", "#69", "#73", "#75", "#80", "#84", "#88", "#93", "#104"],
+    "basis": ["current ROADMAP has moved to reusable runtime/tooling convergence and post-T1-T5 governance/evidence work", "legacy issues encode level-specific research and acceptance surfaces from an earlier roadmap generation", "historical implementation completion is not inferred by this pass", "continuing concerns should be carried by explicit successor tasks rather than assumed current from open state"]
+  },
+  "operator_continuity": {
+    "issue_ref": "#255",
+    "roadmap_role": "WAITING_EXTERNAL",
+    "basis": ["remaining work requires independent standby-human custody, local/offline storage and recovery drill actions", "repository automation cannot safely manufacture those external conditions"]
+  },
+  "hygiene": {
+    "issue_ref": "#451",
+    "roadmap_role": "NO_OP_CLOSED_NOT_PLANNED",
+    "basis": ["title and body contained only test", "no bounded deliverable or roadmap semantics"]
+  },
+  "roadmap_document_gap": {
+    "issue_ref": "#713",
+    "roadmap_role": "CURRENT",
+    "basis": ["ROADMAP.md still marks T5/#646 CURRENT", "#646 and successor #648 are merged", "status/frontier markers require refresh without rewriting historical evidence sections"]
+  },
+  "non_effects": {"public_review_closed":false,"legacy_issue_completion_inferred":false,"frozen_poai_semantics_rewritten":false,"roadmap_priority_created_by_open_state":false}
+}
