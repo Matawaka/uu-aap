@@ -1,0 +1,160 @@
+name: Release Candidate Checkpoint v0.2 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/release-candidate-checkpoint/v0.2/**'
+      - 'docs/PROJECT-READINESS-CHECKPOINT-v0.2.md'
+      - 'ROADMAP.md'
+      - '.github/workflows/release-candidate-checkpoint-v0.2-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/release-candidate-checkpoint/v0.2/**'
+      - 'docs/PROJECT-READINESS-CHECKPOINT-v0.2.md'
+      - 'ROADMAP.md'
+      - '.github/workflows/release-candidate-checkpoint-v0.2-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      PREDECESSOR_CHECKPOINT_BLOB: 1bdedae95675209d22ad2226193fc0a6a88d4daf
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set assessed frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            target='${{ github.event.pull_request.base.sha }}'
+          else
+            target="$GITHUB_SHA"
+          fi
+          test "$target" != ""
+          echo "TARGET_FRONTIER=$target" >> "$GITHUB_ENV"
+
+      - name: Preserve v0.1 predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse "$TARGET_FRONTIER:docs/PROJECT-READINESS-CHECKPOINT-v0.1.md")" = "$PREDECESSOR_CHECKPOINT_BLOB"
+          test "$(git hash-object docs/PROJECT-READINESS-CHECKPOINT-v0.1.md)" = "$PREDECESSOR_CHECKPOINT_BLOB"
+
+      - name: Verify engineering source ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          for sha in \
+            04d811a391bf133e5ffe91931b1fd2d52656ec19 \
+            b119fac6f2b3702fd5ed158442bf3dd69e276a93 \
+            729a9e581c6e5b6dbae95ac3407227e1469cdb68 \
+            8197e803a242fe6d7729963ae7ac9a9fb389b3cc \
+            cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae \
+            eddc49d2b3978558c35f029d9a5bfb46b5e4f6c1 \
+            5d9d9e0faf35230ede54e8f49c71e049311b7e4a \
+            07009a16566fb839acd753215231c6a9c86a896d
+          do
+            git cat-file -e "$sha^{commit}"
+            git merge-base --is-ancestor "$sha" "$TARGET_FRONTIER"
+          done
+
+      - name: Verify engineering source paths
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in \
+            tooling/component-manifest/v0.1 \
+            tooling/dependency-impact/v0.1 \
+            tooling/conformance-parity/v0.1 \
+            tooling/generated-conformance-runner/v0.1 \
+            tooling/execution-evidence-parity/v0.1 \
+            tooling/bounded-ci-migration/v0.1 \
+            tooling/receipt-runtime/v0.1 \
+            tooling/implementation-substitution/v0.1
+          do
+            git cat-file -e "$TARGET_FRONTIER:$path"
+          done
+
+      - name: Syntax and schema JSON
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check tooling/release-candidate-checkpoint/v0.2/release-candidate-checkpoint.js
+          node -e "JSON.parse(require('node:fs').readFileSync('tooling/release-candidate-checkpoint/v0.2/checkpoint-input.schema.json','utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('tooling/release-candidate-checkpoint/v0.2/checkpoint-report.schema.json','utf8'))"
+          node -e "JSON.parse(require('node:fs').readFileSync('tooling/release-candidate-checkpoint/v0.2/post-t5-frontier.input.json','utf8'))"
+
+      - name: P0 semantic tests
+        run: |
+          node tooling/release-candidate-checkpoint/v0.2/test-release-candidate-checkpoint.js
+          node tooling/release-candidate-checkpoint/v0.2/test-schema-runtime-parity.js
+          node tooling/release-candidate-checkpoint/v0.2/test-import-safe.js
+
+      - name: Re-run T4 and T5 evidence regressions
+        run: |
+          node tooling/receipt-runtime/v0.1/test-receipt-runtime.js
+          node tooling/receipt-runtime/v0.1/test-import-safe.js
+          node tooling/implementation-substitution/v0.1/test-implementation-substitution.js
+          node tooling/implementation-substitution/v0.1/test-real-t4-substitutions.js
+          node tooling/implementation-substitution/v0.1/test-schema-runtime-parity.js
+          node tooling/implementation-substitution/v0.1/test-import-safe.js
+
+      - name: Rebind observations to assessed frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          const fs = require('node:fs');
+          const input = JSON.parse(fs.readFileSync('tooling/release-candidate-checkpoint/v0.2/post-t5-frontier.input.json','utf8'));
+          const target = process.env.TARGET_FRONTIER;
+          input.git_revision = target;
+          for (const gate of input.engineering_evidence) gate.observed_at_revision = target;
+          for (const gate of input.governance_evidence) gate.observed_at_revision = target;
+          fs.writeFileSync('/tmp/release-candidate-checkpoint-input.json', `${JSON.stringify(input, null, 2)}\n`);
+          NODE
+
+      - name: Generate factual checkpoint report
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tooling/release-candidate-checkpoint/v0.2/release-candidate-checkpoint.js /tmp/release-candidate-checkpoint-input.json > /tmp/release-candidate-checkpoint-report.json
+          node <<'NODE'
+          const report = require('/tmp/release-candidate-checkpoint-report.json');
+          if (report.git_revision !== process.env.TARGET_FRONTIER) throw new Error('frontier mismatch');
+          if (report.engineering.status !== 'PASS') throw new Error('engineering evidence did not pass');
+          if (report.governance.status !== 'REVIEW_PENDING') throw new Error('unexpected governance status');
+          if (report.decision !== 'RELEASE_CANDIDATE_REVIEW_PENDING') throw new Error('unexpected decision');
+          if (report.blocking_findings.length !== 0) throw new Error('unexpected blocking finding');
+          for (const key of ['release_authorized','publication_authorized','certification_granted','legal_status_established','authority_created','runtime_activated','ci_narrowing_authorized','assurance_escalated']) if (report[key] !== false) throw new Error(`${key} must remain false`);
+          NODE
+
+      - name: Production no-effect guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime=tooling/release-candidate-checkpoint/v0.2/release-candidate-checkpoint.js
+          ! grep -Eq "child_process|execSync|spawnSync|writeFile|appendFile|createWriteStream|node:http|node:https|node:net|node:dgram|fetch\\(" "$runtime"
+
+      - name: Checkout remains clean
+        run: test -z "$(git status --porcelain)"
+
+      - name: Upload checkpoint evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-candidate-checkpoint-v0.2-${{ github.sha }}
+          path: /tmp/release-candidate-checkpoint-report.json
+          if-no-files-found: error
