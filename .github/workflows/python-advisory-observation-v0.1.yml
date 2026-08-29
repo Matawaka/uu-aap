@@ -1,0 +1,52 @@
+name: Python Advisory Observation v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/python-advisory-observation-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/python-advisory-observation-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax and eligibility tests
+        run: |
+          node --check review/security/dependency-vulnerability/v0.1/python-advisory-observation.js
+          node review/security/dependency-vulnerability/v0.1/test-python-advisory-observation.js
+      - name: Materialize dependency chain and observe OSV
+        run: |
+          node review/security/dependency-vulnerability/v0.1/inventory.js > /tmp/inventory.json
+          node review/security/dependency-vulnerability/v0.1/python-import-resolution.js /tmp/inventory.json > /tmp/resolved-inventory.json
+          node review/security/dependency-vulnerability/v0.1/python-distribution-evidence.js > /tmp/distribution-evidence.json
+          node -e "const fs=require('fs');const e=require('/tmp/distribution-evidence.json');if(!Array.isArray(e.evidence))throw Error('distribution evidence must contain array');fs.writeFileSync('/tmp/evidence-array.json',JSON.stringify(e.evidence,null,2))"
+          node review/security/dependency-vulnerability/v0.1/python-distribution-binding.js /tmp/resolved-inventory.json /tmp/evidence-array.json > /tmp/distribution-binding.json
+          node review/security/dependency-vulnerability/v0.1/python-distribution-version-evidence.js /tmp/distribution-binding.json > /tmp/version-evidence.json
+          node review/security/dependency-vulnerability/v0.1/python-advisory-observation.js /tmp/version-evidence.json > /tmp/advisory-observation.json
+          node -e "const r=require('/tmp/advisory-observation.json');if(r.outcome!=='INSUFFICIENT_EVIDENCE')throw Error('observation must not promote outcome');if(r.zero_findings_means_safe!==false)throw Error('zero findings cannot mean safe');if(r.installed_version_proven!==false)throw Error('declared pin cannot prove installed version');"
+      - name: Checkout unchanged
+        run: test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-advisory-observation-v0.1-${{ github.sha }}
+          path: |
+            /tmp/version-evidence.json
+            /tmp/advisory-observation.json
+          if-no-files-found: error
