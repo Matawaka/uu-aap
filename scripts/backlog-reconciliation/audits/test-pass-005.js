@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const {classifyIssue}=require('../classify.js');
+const audit=JSON.parse(fs.readFileSync(path.join(__dirname,'pass-005.json'),'utf8'));
+const byRef=Object.fromEntries(audit.issues.map(e=>[e.issue_ref,classifyIssue(e)]));
+assert.equal(byRef['#381'].implementation_state,'COMPLETED');
+assert.equal(byRef['#381'].roadmap_state,'INSUFFICIENT_EVIDENCE');
+assert.equal(byRef['#341'].implementation_state,'INSUFFICIENT_EVIDENCE');
+assert.equal(byRef['#341'].roadmap_state,'INSUFFICIENT_EVIDENCE');
+assert.equal(byRef['#381'].automatic_closure_authorized,false);
+assert.equal(byRef['#341'].automatic_closure_authorized,false);
+assert.equal(fs.existsSync(path.join(process.cwd(),'protocols/integration/ci-dependency-hardening-audit/v0.1')),true);
+console.log('backlog reconciliation pass 005: ok');
