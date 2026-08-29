@@ -1,0 +1,212 @@
+name: MarketCloser Real Review Run Permit v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'applications/marketcloser/v0.1/**'
+      - 'products/marketer-pessimist/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/marketcloser-real-review-run-permit-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'applications/marketcloser/v0.1/**'
+      - 'products/marketer-pessimist/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/marketcloser-real-review-run-permit-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: 87714d88146ff88bc0bddddde84b99b26a639e2c
+      PERMIT: applications/marketcloser/v0.1/real-review-run-permit/v0.1
+      FIXTURE: applications/marketcloser/v0.1/real-review-run-permit/v0.1/examples/synthetic-permit-wait.input.json
+      WAIT_DECISION: /tmp/marketcloser-permit-wait-decision.json
+      POSITIVE_INPUT: /tmp/marketcloser-positive-permit-materialization.input.json
+      POSITIVE_PERMIT: /tmp/marketcloser-positive-run-permit.json
+      POSITIVE_DECISION: /tmp/marketcloser-positive-permit-decision.json
+      PYTHONPYCACHEPREFIX: /tmp/marketcloser-run-permit-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run merged MarketCloser Application Boundary
+        run: python applications/marketcloser/v0.1/validate_boundary.py
+
+      - name: Re-run merged Deployment Observation predecessor
+        run: |
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-schema-runtime-parity.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-import-safe.js
+
+      - name: Re-run merged Minimized Real Review Bridge predecessor
+        run: |
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-bridge.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-schema-runtime-parity.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-import-safe.js
+
+      - name: Re-run merged Real Review Run Authority Gate
+        run: |
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-authority-gate.js
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-schema-runtime-parity.js
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-import-safe.js
+
+      - name: Re-run canonical PoAI Authority Core
+        run: node proposals/poai/authority/test-authority.js /tmp/authority-grant.json /tmp/authority-verification.json
+
+      - name: Check permit JavaScript syntax
+        run: |
+          node --check "$PERMIT/permit.js"
+          node --check "$PERMIT/permit-binding.js"
+          node --check "$PERMIT/test-permit.js"
+          node --check "$PERMIT/test-receipt-binding.js"
+          node --check "$PERMIT/test-schema-runtime-parity.js"
+          node --check "$PERMIT/test-import-safe.js"
+
+      - name: Validate committed non-issuable fixture
+        run: node "$PERMIT/permit.js" validate "$FIXTURE"
+
+      - name: Confirm committed fixture does not create permit
+        run: |
+          node "$PERMIT/permit.js" decision "$FIXTURE" > "$WAIT_DECISION"
+          node - <<'NODE'
+          const fs = require('fs');
+          const receipt = JSON.parse(fs.readFileSync(process.env.WAIT_DECISION, 'utf8'));
+          if (receipt.classification !== 'AUTHORITY_NOT_READY_PERMIT_NOT_CREATED') throw new Error('committed fixture unexpectedly issuable');
+          if (receipt.permit_created !== false || receipt.permit_binding !== null) throw new Error('committed fixture leaked permit');
+          NODE
+          if node "$PERMIT/permit.js" materialize "$FIXTURE" >/tmp/unexpected-permit.json 2>/tmp/materialize-wait.err; then
+            echo 'Committed authority-wait fixture unexpectedly materialized a permit' >&2
+            exit 1
+          fi
+
+      - name: Run permit conformance and positive synthetic materialization
+        run: node "$PERMIT/test-permit.js"
+
+      - name: Validate exact permit source binding
+        run: node "$PERMIT/test-receipt-binding.js"
+
+      - name: Validate schema runtime parity
+        run: node "$PERMIT/test-schema-runtime-parity.js"
+
+      - name: Validate import safety
+        run: node "$PERMIT/test-import-safe.js"
+
+      - name: Generate positive synthetic artifacts for schema validation
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const Permit = require('./applications/marketcloser/v0.1/real-review-run-permit/v0.1/permit.js');
+          const wait = JSON.parse(fs.readFileSync(process.env.FIXTURE, 'utf8'));
+          const gatePath = '/tmp/marketcloser-positive-permit-gate.input.json';
+          if (!fs.existsSync(gatePath)) throw new Error('positive synthetic gate input missing');
+          const gate = JSON.parse(fs.readFileSync(gatePath, 'utf8'));
+          const input = JSON.parse(JSON.stringify(wait));
+          input.materialization_id = 'urn:uu-aap:marketcloser:real-review-run-permit-materialization:synthetic-positive-001';
+          input.authority_gate_source = { mode: 'local_private', path: gatePath, expected_gate_input_hash: gate.content_hash };
+          input.execution_frontier = {
+            repository: 'Matawaka/uu-aap',
+            revision: '1111111111111111111111111111111111111111',
+            tree: '2222222222222222222222222222222222222222',
+            observed_at: '2026-08-28T23:30:30Z'
+          };
+          input.requested_run.run_id = 'urn:uu-aap:marketcloser:real-review-run:synthetic-positive-001';
+          input.materialized_at = '2026-08-28T23:31:00Z';
+          Permit.rehash(input);
+          const permit = Permit.materializePermit(input);
+          const decision = Permit.deriveDecisionReceipt(input);
+          fs.writeFileSync(process.env.POSITIVE_INPUT, `${JSON.stringify(input, null, 2)}\n`);
+          fs.writeFileSync(process.env.POSITIVE_PERMIT, `${JSON.stringify(permit, null, 2)}\n`);
+          fs.writeFileSync(process.env.POSITIVE_DECISION, `${JSON.stringify(decision, null, 2)}\n`);
+          NODE
+
+      - name: Validate input decision and permit schemas independently
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          from referencing import Registry, Resource
+
+          base = Path(os.environ['PERMIT'])
+          input_schema = json.loads((base / 'input.schema.json').read_text(encoding='utf-8'))
+          decision_schema = json.loads((base / 'decision-receipt.schema.json').read_text(encoding='utf-8'))
+          permit_schema = json.loads((base / 'permit.schema.json').read_text(encoding='utf-8'))
+          registry = Registry().with_resource(input_schema['$id'], Resource.from_contents(input_schema))
+          checker = FormatChecker()
+          instances = [
+              (input_schema, json.loads(Path(os.environ['FIXTURE']).read_text(encoding='utf-8')), Registry()),
+              (decision_schema, json.loads(Path(os.environ['WAIT_DECISION']).read_text(encoding='utf-8')), registry),
+              (input_schema, json.loads(Path(os.environ['POSITIVE_INPUT']).read_text(encoding='utf-8')), Registry()),
+              (decision_schema, json.loads(Path(os.environ['POSITIVE_DECISION']).read_text(encoding='utf-8')), registry),
+              (permit_schema, json.loads(Path(os.environ['POSITIVE_PERMIT']).read_text(encoding='utf-8')), Registry()),
+          ]
+          for schema, instance, reg in instances:
+              Draft202012Validator(schema, registry=reg, format_checker=checker).validate(instance)
+          print('MarketCloser run permit JSON Schemas: PASS')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node "$PERMIT/permit.js" decision "$FIXTURE" >/dev/null
+          for cmd in run execute stress-test publish send campaign spend target; do
+            if node "$PERMIT/permit.js" "$cmd" "$FIXTURE" >/tmp/forbidden.out 2>/tmp/forbidden.err; then
+              echo "forbidden command unexpectedly succeeded: $cmd" >&2
+              exit 1
+            fi
+          done
+
+      - name: Guard production surface as local no-effect materializer
+        run: |
+          if grep -En "require\(['\"](http|https|net|tls|child_process)['\"]\)|\bfetch\s*\(" "$PERMIT/permit.js"; then
+            echo 'Unexpected network/process capability in permit materializer' >&2
+            exit 1
+          fi
+          node - <<'NODE'
+          const fs = require('fs');
+          const fixture = JSON.parse(fs.readFileSync(process.env.FIXTURE, 'utf8'));
+          if (fixture.authority_gate_source.mode !== 'repository_synthetic') throw new Error('committed fixture must use repository synthetic authority wait');
+          if (fixture.requested_run.max_invocations !== 1 || fixture.requested_run.one_shot !== true) throw new Error('committed fixture must stay one-shot');
+          for (const key of ['network_access_available','provider_invocation_available','platform_mutation_available','publication_available','pilot_permit_available','action_permit_available','external_execution_available','external_effect_available']) {
+            if (fixture.requested_run[key] !== false) throw new Error(`fixture expanded capability: ${key}`);
+          }
+          NODE
+
+      - name: Confirm no real permit is committed
+        run: |
+          test "$(find "$PERMIT/examples" -type f | wc -l)" -eq 1
+          test "$(basename "$(find "$PERMIT/examples" -type f)")" = 'synthetic-permit-wait.input.json'
+          ! grep -R 'REAL_RUN_PERMIT_MATERIALIZED' "$PERMIT/examples"
+
+      - name: Confirm repository checkout unchanged
+        run: test -z "$(git status --porcelain)"
