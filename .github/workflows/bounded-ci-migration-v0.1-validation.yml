@@ -1,0 +1,201 @@
+name: Bounded CI Migration Gate v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/bounded-ci-migration/v0.1/**'
+      - 'tooling/generated-conformance-runner/v0.1/**'
+      - 'tooling/execution-evidence-parity/v0.1/**'
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - '.github/workflows/bounded-ci-migration-v0.1-validation.yml'
+      - '.github/workflows/conformance-parity-v0.1-validation.yml'
+      - '.github/workflows/generated-conformance-runner-v0.1-validation.yml'
+      - '.github/workflows/execution-evidence-parity-v0.1-validation.yml'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - 'ROADMAP.md'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/bounded-ci-migration/v0.1/**'
+      - 'tooling/generated-conformance-runner/v0.1/**'
+      - 'tooling/execution-evidence-parity/v0.1/**'
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - '.github/workflows/bounded-ci-migration-v0.1-validation.yml'
+      - '.github/workflows/conformance-parity-v0.1-validation.yml'
+      - '.github/workflows/generated-conformance-runner-v0.1-validation.yml'
+      - '.github/workflows/execution-evidence-parity-v0.1-validation.yml'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - 'ROADMAP.md'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae
+  HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+  HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
+  FROZEN_WORKFLOW: /tmp/marketcloser-publication-observation.pre-t3d.yml
+  SLICE: tooling/bounded-ci-migration/v0.1/marketcloser-marketer-pessimist.slice.json
+  BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
+  REPORT: /tmp/bounded-ci-migration-assessment.json
+  RECEIPT: /tmp/bounded-ci-migration-execution-receipt.json
+  WORKFLOW_CHECK: /tmp/bounded-ci-workflow-migration-check.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Materialize exact pre-migration workflow
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          git show "${ORIGIN_FRONTIER}:${HISTORICAL_WORKFLOW}" > "$FROZEN_WORKFLOW"
+          test "$(git hash-object "$FROZEN_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+
+      - name: Check T3d JavaScript syntax
+        run: |
+          node --check tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js
+          node --check tooling/bounded-ci-migration/v0.1/test-bounded-ci-migration.js
+          node --check tooling/bounded-ci-migration/v0.1/test-import-safe.js
+
+      - name: Validate migration slice schema
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('tooling/bounded-ci-migration/v0.1/migration-slice.schema.json').read_text())
+          instance = json.loads(Path(os.environ['SLICE']).read_text())
+          Draft202012Validator(schema).validate(instance)
+          assert instance['origin_frontier'] == os.environ['ORIGIN_FRONTIER']
+          assert instance['historical_workflow']['blob_sha'] == os.environ['HISTORICAL_WORKFLOW_BLOB']
+          assert instance['expected_parent_command_count'] == 27
+          assert instance['expected_slice_command_count'] == 5
+          assert len(instance['component_ids']) == 3
+          assert len(instance['rollback_commands']) == 5
+          PY
+
+      - name: Re-run T3a T3b T3c semantics
+        run: |
+          node tooling/conformance-parity/v0.1/test-conformance-parity.js
+          node tooling/generated-conformance-runner/v0.1/test-generated-conformance-runner.js
+          node tooling/generated-conformance-runner/v0.1/test-import-safe.js
+          node tooling/execution-evidence-parity/v0.1/test-execution-evidence-parity.js
+          node tooling/execution-evidence-parity/v0.1/test-import-safe.js
+
+      - name: Run T3d unit and fail-closed tests
+        run: node tooling/bounded-ci-migration/v0.1/test-bounded-ci-migration.js
+
+      - name: Verify T3d import safety
+        run: node tooling/bounded-ci-migration/v0.1/test-import-safe.js
+
+      - name: Prove only the named production workflow block migrated
+        run: |
+          node tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js verify-workflow \
+            "$SLICE" "$FROZEN_WORKFLOW" "$HISTORICAL_WORKFLOW" > "$WORKFLOW_CHECK"
+          node - <<'NODE'
+          const r = require('/tmp/bounded-ci-workflow-migration-check.json');
+          if (r.triggers_unchanged !== true) throw new Error('workflow triggers changed');
+          if (r.non_target_steps_unchanged !== true) throw new Error('non-target workflow steps changed');
+          if (r.rollback_commands_bound !== true) throw new Error('rollback commands not bound');
+          if (r.generated_runner_invocation_present !== true) throw new Error('generated runner invocation missing');
+          if (r.claims.bulk_ci_migration_authorized !== false || r.claims.authority_created !== false) throw new Error('workflow migration check overclaimed authority');
+          NODE
+
+      - name: Verify exact rollback vs generated slice execution evidence
+        run: |
+          node tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js verify \
+            "$SLICE" "$BASELINE" "$FROZEN_WORKFLOW" > "$REPORT"
+
+      - name: Validate migration assessment and expose parent digest
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('tooling/bounded-ci-migration/v0.1/migration-assessment.schema.json').read_text())
+          report = json.loads(Path(os.environ['REPORT']).read_text())
+          Draft202012Validator(schema).validate(report)
+          print(f"T3D_CLASSIFICATION={report['classification']} PARENT_PLAN_DIGEST={report['parent_plan_digest']} STATUS_DIFFS={report['status_difference_count']} OUTPUT_DIFFS={report['output_difference_count']}")
+          assert report['classification'] == 'MIGRATION_ADMISSIBLE'
+          assert report['parent_command_count'] == 27
+          assert report['slice_command_count'] == 5
+          assert report['historical_baseline_range'] == {'start_sequence': 23, 'end_sequence': 27}
+          assert report['rollback_execution']['attempted'] == 5
+          assert report['rollback_execution']['succeeded'] == 5
+          assert report['generated_execution']['attempted'] == 5
+          assert report['generated_execution']['succeeded'] == 5
+          assert report['status_difference_count'] == 0
+          assert report['output_difference_count'] == 0
+          assert report['rollback_execution']['repository_changed_after_run'] is False
+          assert report['generated_execution']['repository_changed_after_run'] is False
+          assert report['claims']['migration_admissible'] is True
+          assert report['claims']['bulk_ci_migration_authorized'] is False
+          assert report['claims']['authority_created'] is False
+          PY
+
+      - name: Execute migrated production slice only
+        run: |
+          node tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js run \
+            "$SLICE" "$BASELINE" "$FROZEN_WORKFLOW" > "$RECEIPT"
+
+      - name: Validate migrated slice execution receipt
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('tooling/bounded-ci-migration/v0.1/execution-receipt.schema.json').read_text())
+          receipt = json.loads(Path(os.environ['RECEIPT']).read_text())
+          Draft202012Validator(schema).validate(receipt)
+          assert receipt['classification'] == 'MIGRATED_SLICE_SUCCESS'
+          assert receipt['execution']['attempted'] == 5
+          assert receipt['execution']['succeeded'] == 5
+          assert receipt['execution']['failed'] == 0
+          assert receipt['execution']['repository_changed_after_run'] is False
+          assert len(receipt['commands']) == 5
+          assert receipt['claims']['bulk_ci_migration_authorized'] is False
+          assert receipt['claims']['authority_created'] is False
+          PY
+
+      - name: Guard T3d as admission orchestration over T3b executor
+        run: |
+          if grep -En "child_process|spawnSync|execSync|exec\\(|spawn\\(|require\\(['\"]https|require\\(['\"]http|fetch\\(|OpenAI|Anthropic|writeFile|appendFile|createWriteStream" \
+            tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js; then
+            echo 'T3d duplicated execution/network/write surface instead of reusing T3b' >&2
+            exit 1
+          fi
+          grep -F "Runner.executePlan" tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js >/dev/null
+          grep -F "Runner.safeChildEnvironment" tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js >/dev/null
+          grep -F "Runner.buildExecutionPlan" tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js >/dev/null
+
+      - name: Confirm frozen rollback workflow remains addressable
+        run: |
+          test "$(git rev-parse "${ORIGIN_FRONTIER}:${HISTORICAL_WORKFLOW}")" = "$HISTORICAL_WORKFLOW_BLOB"
+          test "$(git hash-object "$FROZEN_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+
+      - name: Confirm checkout unchanged after migration evidence
+        run: test -z "$(git status --porcelain)"

@@ -27,7 +27,9 @@ permissions:
 env:
   ORIGIN_FRONTIER: b119fac6f2b3702fd5ed158442bf3dd69e276a93
   HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+  HISTORICAL_WORKFLOW_FRONTIER: cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae
   HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
+  FROZEN_HISTORICAL_WORKFLOW: /tmp/marketcloser-publication-observation.historical.yml
   BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
   REPORT: /tmp/marketcloser-publication-parity-report.json
 
@@ -46,11 +48,13 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Verify exact successor origin and historical workflow
+      - name: Verify exact successor origin and materialize historical workflow
         run: |
           git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
           git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
-          test "$(git rev-parse "HEAD:$HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+          git cat-file -e "${HISTORICAL_WORKFLOW_FRONTIER}^{commit}"
+          git show "${HISTORICAL_WORKFLOW_FRONTIER}:${HISTORICAL_WORKFLOW}" > "$FROZEN_HISTORICAL_WORKFLOW"
+          test "$(git hash-object "$FROZEN_HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
 
       - name: Check tooling JavaScript syntax
         run: |
@@ -94,7 +98,7 @@ jobs:
         run: |
           node tooling/conformance-parity/v0.1/conformance-parity.js assess \
             "$BASELINE" \
-            "$HISTORICAL_WORKFLOW" \
+            "$FROZEN_HISTORICAL_WORKFLOW" \
             tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json \
             tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json \
             tooling/component-manifest/v0.1/examples/marketer-pessimist-real-review-intake.component.json \
@@ -134,8 +138,10 @@ jobs:
             exit 1
           fi
 
-      - name: Confirm historical production workflow is untouched
-        run: git diff --exit-code "$ORIGIN_FRONTIER" -- "$HISTORICAL_WORKFLOW"
+      - name: Confirm frozen historical workflow remains addressable
+        run: |
+          test "$(git rev-parse "${HISTORICAL_WORKFLOW_FRONTIER}:${HISTORICAL_WORKFLOW}")" = "$HISTORICAL_WORKFLOW_BLOB"
+          test "$(git hash-object "$FROZEN_HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
 
       - name: Confirm repository checkout unchanged
         run: test -z "$(git status --porcelain)"

@@ -29,7 +29,9 @@ permissions:
 env:
   ORIGIN_FRONTIER: 729a9e581c6e5b6dbae95ac3407227e1469cdb68
   HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+  HISTORICAL_WORKFLOW_FRONTIER: cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae
   HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
+  FROZEN_HISTORICAL_WORKFLOW: /tmp/marketcloser-publication-observation.historical.yml
   BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
   PLAN: /tmp/generated-conformance-plan.json
   RECEIPT: /tmp/generated-conformance-receipt.json
@@ -57,11 +59,13 @@ jobs:
       - name: Install JSON Schema validator
         run: python -m pip install 'jsonschema>=4.22,<5'
 
-      - name: Verify exact runner origin and historical workflow
+      - name: Verify exact runner origin and materialize historical workflow
         run: |
           git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
           git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
-          test "$(git rev-parse "HEAD:$HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+          git cat-file -e "${HISTORICAL_WORKFLOW_FRONTIER}^{commit}"
+          git show "${HISTORICAL_WORKFLOW_FRONTIER}:${HISTORICAL_WORKFLOW}" > "$FROZEN_HISTORICAL_WORKFLOW"
+          test "$(git hash-object "$FROZEN_HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
 
       - name: Check runner JavaScript syntax
         run: |
@@ -104,7 +108,7 @@ jobs:
             tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json
           )
           node tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js plan \
-            "$BASELINE" "$HISTORICAL_WORKFLOW" "${MANIFESTS[@]}" > "$PLAN"
+            "$BASELINE" "$FROZEN_HISTORICAL_WORKFLOW" "${MANIFESTS[@]}" > "$PLAN"
 
       - name: Validate generated execution plan schema and boundary
         run: |
@@ -146,7 +150,7 @@ jobs:
             tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json
           )
           node tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js run \
-            "$BASELINE" "$HISTORICAL_WORKFLOW" "${MANIFESTS[@]}" > "$RECEIPT"
+            "$BASELINE" "$FROZEN_HISTORICAL_WORKFLOW" "${MANIFESTS[@]}" > "$RECEIPT"
 
       - name: Validate execution receipt schema and 27-command success
         run: |
@@ -182,8 +186,10 @@ jobs:
             exit 1
           fi
 
-      - name: Confirm historical workflow remains untouched
-        run: git diff --exit-code "$ORIGIN_FRONTIER" -- "$HISTORICAL_WORKFLOW"
+      - name: Confirm frozen historical workflow remains addressable
+        run: |
+          test "$(git rev-parse "${HISTORICAL_WORKFLOW_FRONTIER}:${HISTORICAL_WORKFLOW}")" = "$HISTORICAL_WORKFLOW_BLOB"
+          test "$(git hash-object "$FROZEN_HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
 
       - name: Confirm generated execution left checkout unchanged
         run: test -z "$(git status --porcelain)"
