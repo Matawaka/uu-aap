@@ -1,0 +1,38 @@
+{
+  "audit_id": "backlog-reconciliation-pass-001",
+  "origin_frontier": "e1b77f556231039dbfd0af88339e67ecaa4afdbb",
+  "scope": ["#365", "#367", "#369"],
+  "entries": [
+    {
+      "issue_ref": "#365",
+      "merged_prs": ["#366"],
+      "merge_shas": ["e52e36ecd3e5a8f6370b2104a89307030b85e342"],
+      "implementation_paths": ["protocols/integration/execute-revalidation/v0.1"],
+      "successor_usage_refs": ["#368"],
+      "acceptance_complete": true,
+      "evidence_note": "PR #366 implements the first deliverable under #365; merged successor #368 explicitly consumes the merged execute-revalidation predecessor."
+    },
+    {
+      "issue_ref": "#367",
+      "merged_prs": ["#368"],
+      "merge_shas": ["f45f138f1aab745d167dce5556fe449faf998e9c"],
+      "implementation_paths": ["protocols/integration/execution-invocation-envelope/v0.1"],
+      "successor_usage_refs": ["#370"],
+      "acceptance_complete": true,
+      "evidence_note": "PR #368 implements the first deliverable under #367; merged successor #370 explicitly consumes the merged invocation-envelope predecessor."
+    },
+    {
+      "issue_ref": "#369",
+      "merged_prs": ["#370"],
+      "merge_shas": ["e8218e9c9136ce5fb5bc1c24bbd88c9d5627ac33"],
+      "implementation_paths": ["protocols/integration/invocation-action-receipt-binding/v0.1"],
+      "successor_usage_refs": ["#372"],
+      "acceptance_complete": true,
+      "evidence_note": "PR #370 implements the first deliverable under #369; merged successor #372 explicitly preserves and consumes that predecessor."
+    }
+  ],
+  "non_effects": {
+    "issue_state_mutated": false,
+    "automatic_closure_authorized": false
+  }
+}
