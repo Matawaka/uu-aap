@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {revalidateAuthority}=require('./stall-authority-revalidation.js');
+const ok={state:'RUNNING',meaningful_progress:true,prior_authority_valid:true,target_unchanged:true,frontier_unchanged:true,permit_unexpired:true,permit_unconsumed:true};
+assert.equal(revalidateAuthority(ok).authority_restored,true);
+assert.equal(revalidateAuthority({...ok,state:'SUSPECTED_STALL'}).authority_restored,false);
+assert.equal(revalidateAuthority({...ok,meaningful_progress:false}).authority_restored,false);
+assert.deepEqual(revalidateAuthority({...ok,frontier_unchanged:false}).failed_checks,['frontier_unchanged']);
+assert.equal(revalidateAuthority({...ok,permit_unconsumed:false}).authority_restored,false);
+console.log('stall authority revalidation tests: ok');

@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {evaluateLiveness,recoverFromSuspectedStall}=require('./stall.js');
+const base={state:'RUNNING',last_meaningful_progress_at:'2026-08-29T15:00:00Z',suspect_after_ms:60000,close_after_ms:120000};
+assert.equal(evaluateLiveness({...base,now:'2026-08-29T15:00:30Z'}).next_state,'RUNNING');
+const s=evaluateLiveness({...base,now:'2026-08-29T15:01:10Z'});assert.equal(s.next_state,'SUSPECTED_STALL');assert.equal(s.external_effect_authority,false);
+const c=evaluateLiveness({...base,now:'2026-08-29T15:02:01Z'});assert.equal(c.next_state,'TIMED_OUT_CLOSED');assert.equal(c.external_effect_authority,false);
+assert.deepEqual(recoverFromSuspectedStall({meaningful_progress:false}),{recover:false,reason:'NO_MEANINGFUL_PROGRESS'});
+const r=recoverFromSuspectedStall({meaningful_progress:true});
+assert.equal(r.recover,true);assert.equal(r.next_state,'RUNNING');assert.equal(r.external_effect_authority,false);assert.equal(r.authority_revalidation_required,true);
+assert.throws(()=>evaluateLiveness({...base,now:'2026-08-29T14:59:00Z'}),/time reversal/);
+console.log('stall detector tests: ok');

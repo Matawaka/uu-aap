@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:perceived-causal-liveness:stall-recovery-receipt:v0.1",
+  "title": "Stall Recovery Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id","run_epoch","meaningful_progress_observed","liveness_state","external_effect_authority","authority_revalidation_required"],
+  "properties": {
+    "run_id": {"type":"string","minLength":1},
+    "run_epoch": {"type":"integer","minimum":0},
+    "meaningful_progress_observed": {"const": true},
+    "liveness_state": {"const":"RUNNING"},
+    "external_effect_authority": {"const": false},
+    "authority_revalidation_required": {"const": true}
+  }
+}
