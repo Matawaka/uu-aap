@@ -12,6 +12,12 @@ function evaluateLiveness({state,now,last_meaningful_progress_at,suspect_after_m
 }
 function recoverFromSuspectedStall(progressReceipt){
   if(!progressReceipt||progressReceipt.meaningful_progress!==true)return{recover:false,reason:'NO_MEANINGFUL_PROGRESS'};
-  return{recover:true,next_state:'RUNNING',reason:'MEANINGFUL_PROGRESS_OBSERVED'};
+  return{
+    recover:true,
+    next_state:'RUNNING',
+    external_effect_authority:false,
+    authority_revalidation_required:true,
+    reason:'MEANINGFUL_PROGRESS_OBSERVED_AUTHORITY_STILL_SUSPENDED'
+  };
 }
 module.exports={evaluateLiveness,recoverFromSuspectedStall};
