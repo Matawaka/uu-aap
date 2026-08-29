@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/tooling/execution-evidence-parity/v0.1/report.schema.json",
+  "title": "UU-AAP Execution Evidence Parity Report v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "version", "origin_frontier", "target_component_id", "source_workflow",
+    "command_set_count", "historical_execution", "generated_execution", "classification",
+    "status_difference_count", "output_difference_count", "command_comparisons", "claims", "non_effects"
+  ],
+  "properties": {
+    "artifact_type": { "const": "UU-AAP-Execution-Evidence-Parity-Report" },
+    "version": { "const": "0.1" },
+    "origin_frontier": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "target_component_id": { "type": "string", "minLength": 1 },
+    "source_workflow": {
+      "type": "object", "additionalProperties": false, "required": ["path", "blob_sha"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "blob_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "command_set_count": { "type": "integer", "minimum": 1 },
+    "historical_execution": { "$ref": "#/$defs/executionSummary" },
+    "generated_execution": { "$ref": "#/$defs/executionSummary" },
+    "classification": {
+      "enum": [
+        "EXACT_EXECUTION_EVIDENCE_PARITY",
+        "ORDER_INSENSITIVE_SUCCESS_OUTPUT_DIFFERS",
+        "ORDER_SENSITIVE_EXECUTION",
+        "REPOSITORY_MUTATION_DETECTED",
+        "INSUFFICIENT_EVIDENCE"
+      ]
+    },
+    "status_difference_count": { "type": "integer", "minimum": 0 },
+    "output_difference_count": { "type": "integer", "minimum": 0 },
+    "command_comparisons": {
+      "type": "array", "minItems": 1,
+      "items": { "$ref": "#/$defs/comparison" }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "complete_command_evidence_compared", "success_outcome_order_insensitive_this_frontier",
+        "exact_output_evidence_parity", "semantic_truth_established", "compatibility_proven",
+        "substitutability_proven", "authority_created", "ci_migration_authorized",
+        "universal_order_independence_proven"
+      ],
+      "properties": {
+        "complete_command_evidence_compared": { "const": true },
+        "success_outcome_order_insensitive_this_frontier": { "type": "boolean" },
+        "exact_output_evidence_parity": { "type": "boolean" },
+        "semantic_truth_established": { "const": false },
+        "compatibility_proven": { "const": false },
+        "substitutability_proven": { "const": false },
+        "authority_created": { "const": false },
+        "ci_migration_authorized": { "const": false },
+        "universal_order_independence_proven": { "const": false }
+      }
+    },
+    "non_effects": {
+      "type": "array", "minItems": 7, "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  },
+  "$defs": {
+    "executionSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["order_profile", "plan_digest", "attempted", "succeeded", "failed", "repository_changed_after_run", "result"],
+      "properties": {
+        "order_profile": { "enum": ["HISTORICAL_MANUAL_ORDER", "GENERATED_DEPENDENCY_FIRST_ORDER"] },
+        "plan_digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "attempted": { "type": "integer", "minimum": 0 },
+        "succeeded": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "repository_changed_after_run": { "type": "boolean" },
+        "result": { "enum": ["SUCCESS", "FAILED", "REPOSITORY_MUTATED"] }
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["exit_code", "signal", "success", "error_code", "stdout_sha256", "stdout_bytes", "stderr_sha256", "stderr_bytes"],
+      "properties": {
+        "exit_code": { "type": ["integer", "null"] },
+        "signal": { "type": ["string", "null"] },
+        "success": { "type": "boolean" },
+        "error_code": { "type": ["string", "null"] },
+        "stdout_sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "stdout_bytes": { "type": "integer", "minimum": 0 },
+        "stderr_sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+        "stderr_bytes": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "comparison": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "executable", "args", "component_id", "historical_sequence", "generated_sequence",
+        "status_equal", "output_evidence_equal", "historical", "generated"
+      ],
+      "properties": {
+        "executable": { "enum": ["node", "python", "python3"] },
+        "args": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+        "component_id": { "type": "string", "minLength": 1 },
+        "historical_sequence": { "type": "integer", "minimum": 1 },
+        "generated_sequence": { "type": "integer", "minimum": 1 },
+        "status_equal": { "type": "boolean" },
+        "output_evidence_equal": { "type": "boolean" },
+        "historical": { "$ref": "#/$defs/evidence" },
+        "generated": { "$ref": "#/$defs/evidence" }
+      }
+    }
+  }
+}

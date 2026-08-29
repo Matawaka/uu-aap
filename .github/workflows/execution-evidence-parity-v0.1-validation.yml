@@ -1,0 +1,155 @@
+name: Execution Evidence Parity v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/execution-evidence-parity/v0.1/**'
+      - 'tooling/generated-conformance-runner/v0.1/**'
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - '.github/workflows/execution-evidence-parity-v0.1-validation.yml'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - 'ROADMAP.md'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/execution-evidence-parity/v0.1/**'
+      - 'tooling/generated-conformance-runner/v0.1/**'
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - '.github/workflows/execution-evidence-parity-v0.1-validation.yml'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - 'ROADMAP.md'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 8197e803a242fe6d7729963ae7ac9a9fb389b3cc
+  HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+  HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
+  BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
+  REPORT: /tmp/execution-evidence-parity-report.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Verify exact T3c origin and historical workflow
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          test "$(git rev-parse "HEAD:$HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+
+      - name: Check T3c JavaScript syntax
+        run: |
+          node --check tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js
+          node --check tooling/execution-evidence-parity/v0.1/test-execution-evidence-parity.js
+          node --check tooling/execution-evidence-parity/v0.1/test-import-safe.js
+
+      - name: Re-run T3a and T3b predecessor semantics
+        run: |
+          node tooling/conformance-parity/v0.1/test-conformance-parity.js
+          node tooling/generated-conformance-runner/v0.1/test-generated-conformance-runner.js
+          node tooling/generated-conformance-runner/v0.1/test-import-safe.js
+
+      - name: Run T3c unit and fail-closed tests
+        run: node tooling/execution-evidence-parity/v0.1/test-execution-evidence-parity.js
+
+      - name: Verify T3c import safety
+        run: node tooling/execution-evidence-parity/v0.1/test-import-safe.js
+
+      - name: Execute historical and generated orders through shared runner
+        shell: bash
+        run: |
+          MANIFESTS=(
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-real-review-intake.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-application-boundary.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-deployment-observation.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-minimized-real-review-bridge.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-authority-gate.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-permit.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-local-run-revalidation.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-stress-test-adapter.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json
+          )
+          node tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js assess \
+            "$BASELINE" "$HISTORICAL_WORKFLOW" "${MANIFESTS[@]}" > "$REPORT"
+
+      - name: Validate report schema and complete 27 by 27 evidence
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('tooling/execution-evidence-parity/v0.1/report.schema.json').read_text())
+          report = json.loads(Path(os.environ['REPORT']).read_text())
+          Draft202012Validator(schema).validate(report)
+          assert report['command_set_count'] == 27
+          assert len(report['command_comparisons']) == 27
+          assert report['historical_execution']['attempted'] == 27
+          assert report['historical_execution']['succeeded'] == 27
+          assert report['historical_execution']['failed'] == 0
+          assert report['generated_execution']['attempted'] == 27
+          assert report['generated_execution']['succeeded'] == 27
+          assert report['generated_execution']['failed'] == 0
+          assert report['historical_execution']['repository_changed_after_run'] is False
+          assert report['generated_execution']['repository_changed_after_run'] is False
+          assert report['classification'] in {
+              'EXACT_EXECUTION_EVIDENCE_PARITY',
+              'ORDER_INSENSITIVE_SUCCESS_OUTPUT_DIFFERS'
+          }
+          assert report['status_difference_count'] == 0
+          assert report['claims']['success_outcome_order_insensitive_this_frontier'] is True
+          assert report['claims']['semantic_truth_established'] is False
+          assert report['claims']['compatibility_proven'] is False
+          assert report['claims']['substitutability_proven'] is False
+          assert report['claims']['authority_created'] is False
+          assert report['claims']['ci_migration_authorized'] is False
+          assert report['claims']['universal_order_independence_proven'] is False
+          PY
+
+      - name: Guard T3c as comparison-only orchestration
+        run: |
+          if grep -En "child_process|spawnSync|execSync|exec\\(|spawn\\(|require\\(['\"]https|require\\(['\"]http|fetch\\(|OpenAI|Anthropic|writeFile|appendFile|createWriteStream" \
+            tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js; then
+            echo 'T3c duplicated execution/network/write surface instead of reusing T3b' >&2
+            exit 1
+          fi
+          grep -F "Runner.executePlan" tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js >/dev/null
+          grep -F "Runner.safeChildEnvironment" tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js >/dev/null
+
+      - name: Confirm historical production workflow remains untouched
+        run: git diff --exit-code "$ORIGIN_FRONTIER" -- "$HISTORICAL_WORKFLOW"
+
+      - name: Confirm both execution modes left checkout unchanged
+        run: test -z "$(git status --porcelain)"
