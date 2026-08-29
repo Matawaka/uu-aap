@@ -1,0 +1,55 @@
+{
+  "artifact_type": "UU-AAP-Accessibility-ReReview-Input",
+  "version": "0.2",
+  "origin_frontier": "68b8e166355f91e3541bae4e34a4e9538dd616bf",
+  "reviewed_revision": "68b8e166355f91e3541bae4e34a4e9538dd616bf",
+  "surface_equivalence_verified": true,
+  "predecessor_review": {
+    "merge_frontier": "588b4643ed86a4835f87ed54f14828e62a3787b2",
+    "assessor_blob": "6baf8df3446ce21b32bb295a97e74c4718be81f2",
+    "input_blob": "ec0259c7c8290e7bd183e2ac4091e958b7dc48ba",
+    "outcome": "FAIL",
+    "blocking_findings": ["color_contrast"]
+  },
+  "remediation": {
+    "merge_frontier": "68b8e166355f91e3541bae4e34a4e9538dd616bf",
+    "pull_request": 652,
+    "findings": ["color_contrast", "dynamic_status_announcements"]
+  },
+  "reviewed_surfaces": [
+    {"path":"docs/index.html","blob_sha":"0a0d47c17c1c666f6f32f1e569097248c160662d"},
+    {"path":"docs/poai/index.html","blob_sha":"a121fa138e1f984f6876e640e5583beb74c7fa3a"},
+    {"path":"docs/poai/accessibility.js","blob_sha":"15a36b0ee606120baeb639ee5cd9f8390bf63c09"},
+    {"path":"docs/poai/styles.css","blob_sha":"be50b83bbe70c26cade53c558bd011db15515773"}
+  ],
+  "observations": {
+    "scope_coverage_complete": true,
+    "semantic_structure_present": true,
+    "keyboard_navigation_present": true,
+    "focus_visibility_present": true,
+    "dynamic_status_live_region_present": true,
+    "responsive_reflow_rules_present": true,
+    "zoom_reflow_empirical_tested": false,
+    "screen_reader_empirical_tested": false,
+    "language_presentation_controls_present": true,
+    "language_accessibility_empirical_tested": false
+  },
+  "contrast_checks": [
+    {"id":"light-muted-on-surface-2","foreground":"#5f6975","background":"#f0f2f5","threshold":4.5},
+    {"id":"light-active-button-on-accent","foreground":"#ffffff","background":"#2357d9","threshold":4.5},
+    {"id":"dark-active-button-on-accent","foreground":"#161b22","background":"#7aa2ff","threshold":4.5}
+  ],
+  "limitations": [
+    "zoom_reflow_empirical_validation_not_performed",
+    "screen_reader_empirical_validation_not_performed",
+    "bilingual_assistive_technology_empirical_validation_not_performed",
+    "terminal_and_cli_accessibility_remains_host_assistive_environment_dependent",
+    "inactive_or_future_product_surfaces_are_not_treated_as_current_active_interfaces"
+  ],
+  "claims": {
+    "wcag_conformance_certified": false,
+    "universal_accessibility_proven": false,
+    "legal_compliance_established": false,
+    "all_assistive_technologies_tested": false
+  }
+}
