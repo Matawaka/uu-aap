@@ -1,0 +1,19 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:schema:release-candidate-checkpoint:0.2",
+  "title":"UU-AAP Release Candidate Checkpoint v0.2",
+  "type":"object","additionalProperties":false,
+  "required":["artifact_type","version","git_revision","predecessor_checkpoint","engineering","governance","blocking_findings","decision","assurance_escalated","release_authorized","publication_authorized","certification_granted","legal_status_established","authority_created","runtime_activated","ci_narrowing_authorized","future_evolution_allowed","non_effects"],
+  "properties":{
+    "artifact_type":{"const":"UU-AAP-Release-Candidate-Checkpoint"},"version":{"const":"0.2"},
+    "git_revision":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "predecessor_checkpoint":{"const":"docs/PROJECT-READINESS-CHECKPOINT-v0.1.md"},
+    "engineering":{"type":"object","additionalProperties":false,"required":["status","gates"],"properties":{"status":{"enum":["PASS","INSUFFICIENT_EVIDENCE"]},"gates":{"type":"array","minItems":8,"maxItems":8}}},
+    "governance":{"type":"object","additionalProperties":false,"required":["status","gates"],"properties":{"status":{"enum":["PASS","REVIEW_PENDING"]},"gates":{"type":"array","minItems":5,"maxItems":5}}},
+    "blocking_findings":{"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "decision":{"enum":["BLOCKED","INSUFFICIENT_EVIDENCE","RELEASE_CANDIDATE_REVIEW_PENDING","READY"]},
+    "assurance_escalated":{"const":false},"release_authorized":{"const":false},"publication_authorized":{"const":false},"certification_granted":{"const":false},"legal_status_established":{"const":false},"authority_created":{"const":false},"runtime_activated":{"const":false},"ci_narrowing_authorized":{"const":false},
+    "future_evolution_allowed":{"const":true},
+    "non_effects":{"type":"array","items":{"type":"string"},"minItems":10,"uniqueItems":true}
+  }
+}
