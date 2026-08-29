@@ -1,0 +1,16 @@
+{
+  "pass":"004",
+  "issue_ref":"#703",
+  "classification_mutates_issue":false,
+  "automatic_closure_authorized":false,
+  "issues":[
+    {"issue_ref":"#393","merged_prs":["#394"],"merge_shas":["9064987d5a269fe6b6dd297013b680dc8988a4e1"],"implementation_paths":["protocols/integration/latent-evidentiary-knowledge/v0.1"],"successor_usage_refs":["#396"],"acceptance_complete":true},
+    {"issue_ref":"#395","merged_prs":["#396"],"merge_shas":["1a3ac30b5275bf0f488882faa050cba7b84ba31a"],"implementation_paths":["protocols/integration/three-layer-commitment-root/v0.1"],"successor_usage_refs":["#398"],"acceptance_complete":true},
+    {"issue_ref":"#397","merged_prs":["#398"],"merge_shas":["71ddf09b32681f2728067ab4c42ce1e640edac96"],"implementation_paths":["protocols/integration/preventive-intent-challenge-v0.1"],"successor_usage_refs":["#402"],"acceptance_complete":true},
+    {"issue_ref":"#401","merged_prs":["#402"],"merge_shas":["e59ab20d1582728b6d7395cce4b7883d9e7dbaa1"],"implementation_paths":["protocols/experimental/ambient-pressure-by-uncertainty/v0.1"],"successor_usage_refs":["#404"],"acceptance_complete":true},
+    {"issue_ref":"#403","merged_prs":["#404"],"merge_shas":["79e18451985963ed93ac0a9a7d1df93da2108ff7"],"implementation_paths":["protocols/experimental/future-optionality-non-commitment/v0.1"],"successor_usage_refs":["#406"],"acceptance_complete":true},
+    {"issue_ref":"#405","merged_prs":["#406"],"merge_shas":["676b8c3bfc7d10595a17f4595a88bf477cf8fc48"],"implementation_paths":["protocols/experimental/cross-layer-invariant-stability/v0.1"],"successor_usage_refs":["#408"],"acceptance_complete":true},
+    {"issue_ref":"#407","merged_prs":["#408"],"merge_shas":["4f24a966f70f96673995c775fa350af4e0f8f0f0"],"implementation_paths":["protocols/experimental/canonical-stability-checkpoint/v0.1"],"successor_usage_refs":["#410"],"acceptance_complete":true},
+    {"issue_ref":"#409","merged_prs":["#410"],"merge_shas":["9ed03f99d4ccab7896b62664ecd273f2919c5bb8"],"implementation_paths":["protocols/experimental/post-checkpoint-successor-evolution/v0.1"],"successor_usage_refs":["#412"],"acceptance_complete":true}
+  ]
+}
