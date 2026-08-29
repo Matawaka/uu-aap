@@ -1,15 +1,16 @@
 # UU-AAP Ecosystem Roadmap
 
-**Status:** reusable-runtime/tooling convergence after first bounded CI migration proof  
-**Current evidence baseline:** `cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae` (Execution Evidence Parity v0.1, PR #640)  
-**Current reusable-tooling increment:** Issue #641 / PR #642  
+**Status:** reusable-runtime/tooling convergence after first bounded CI migration and two-consumer receipt-runtime extraction  
+**Current evidence baseline:** `eddc49d2b3978558c35f029d9a5bfb46b5e4f6c1` (Bounded CI Migration Gate v0.1, PR #642)  
+**Current reusable-tooling increment:** Issue #643 / PR #644  
 **Stable semantic substrate:** [`protocols/core/v0.1/`](protocols/core/v0.1/)  
 **Component metadata:** [`tooling/component-manifest/v0.1/`](tooling/component-manifest/v0.1/)  
 **Dependency/impact:** [`tooling/dependency-impact/v0.1/`](tooling/dependency-impact/v0.1/)  
 **Command-set parity:** [`tooling/conformance-parity/v0.1/`](tooling/conformance-parity/v0.1/)  
 **Generated execution:** [`tooling/generated-conformance-runner/v0.1/`](tooling/generated-conformance-runner/v0.1/)  
 **Execution-evidence parity:** [`tooling/execution-evidence-parity/v0.1/`](tooling/execution-evidence-parity/v0.1/)  
-**Current bounded migration gate:** [`tooling/bounded-ci-migration/v0.1/`](tooling/bounded-ci-migration/v0.1/)
+**Bounded migration gate:** [`tooling/bounded-ci-migration/v0.1/`](tooling/bounded-ci-migration/v0.1/)  
+**Current receipt runtime:** [`tooling/receipt-runtime/v0.1/`](tooling/receipt-runtime/v0.1/)
 
 The repository has crossed the point where the main architectural bottleneck is adding semantic protocol layers. The seven-primitive semantic Core remains stable while repeated implementation patterns are being extracted into reusable, independently testable engineering substrate.
 
@@ -61,6 +62,11 @@ Execution Evidence Parity != Substitutability
 Execution Evidence Parity != CI Migration Authorization
 One Migrated Block != Global CI Migration
 Migration Admission != Runtime Authority
+Shared Runtime != Universal Canonicalization Algorithm
+Same SHA-256 Primitive != Same Identity Projection
+Profile Selection != Semantic Compatibility
+Hash Equality != Receipt Truth
+Hash Equality != Authority
 Substitutable != Selected
 Substitutable != Authorized
 Substitutable != Activated
@@ -279,7 +285,7 @@ Execution Parity != Substitutability
 Execution Parity != CI Migration Authorization
 ```
 
-### T3d — Bounded CI Migration Gate v0.1 — CURRENT (#641 / PR #642)
+### T3d — Bounded CI Migration Gate v0.1 — COMPLETED (#641/#642)
 
 Purpose: convert exact T3a–T3c evidence into one narrowly scoped CI deduplication without turning successful parity into blanket migration authority.
 
@@ -316,9 +322,7 @@ pinned historical 27-command parent-plan digest:
 sha256:a643108a09da50da90912de327bdef273afe380840ad22502b9fb3c6424ec3bb
 ```
 
-T3d first reconstructs and validates the entire frozen 27-command plan, then selects the exact three-component/five-command slice. A five-command subset cannot become independently authoritative merely by matching command strings.
-
-First migration evidence on PR #642:
+Merged migration evidence:
 
 ```text
 parent plan commands         = 27
@@ -335,7 +339,7 @@ workflow triggers changed    = false
 non-target workflow steps    = unchanged
 ```
 
-The live production workflow now calls the bounded generated slice for those five predecessor commands. Historical T3a/T3b/T3c workflows materialize the frozen pre-migration workflow from Git history, preserving their original evidence semantics after the live migration.
+Historical T3a/T3b/T3c workflows materialize the frozen pre-migration workflow from Git history, preserving their original evidence semantics after the live migration.
 
 ```text
 One Migrated Block != Global CI Migration
@@ -347,50 +351,98 @@ Rollback Evidence Must Remain Addressable
 Trigger Preservation != Conformance Equivalence
 ```
 
-Exit condition for T3d:
+### T4 — Receipt Runtime SDK v0.1 — CURRENT (#643 / PR #644)
 
-- pinned parent-plan digest passes fail-closed validation;
-- migration assessment remains `MIGRATION_ADMISSIBLE`;
-- live MarketCloser generated slice remains 5/5 success;
-- frozen T3a/T3b/T3c evidence remains reproducible;
-- all non-target MarketCloser predecessor blocks remain unchanged;
-- no other workflow block is migrated in the same increment.
+Purpose: extract repeated deterministic receipt/content identity operations only where independent consumers demonstrate byte-identical historical behavior.
 
-### T4 — Receipt Runtime SDK v0.1 — NEXT
-
-Extract repeated receipt-engineering operations only after at least two independent existing components prove byte-identical behavior through the shared runtime.
-
-Candidate APIs:
+The first extraction deliberately begins with two components from different architectural lines:
 
 ```text
-validateEnvelope()
-canonicalize(profile, value)
-identityProjection(profile, receipt)
-computeHash(profile, receipt)
-verifyHash()
-verifyFrontier()
-verifyPredecessors()
-verifyNonEffects()
-buildReceipt()
-rehashReceipt()
+AI-Transport-Reference
+MarketCloser-Copy-Export-Receipt
 ```
 
-Critical rule:
+Their historical algorithms share recursive key sorting and SHA-256, but **do not share the same identity projection**:
+
+```text
+AI Transport:
+content-hash-zero-field-v0.1
+  -> retain content_hash
+  -> set it to ""
+  -> canonicalize
+  -> SHA-256
+
+MarketCloser Copy/Export:
+content-hash-omit-field-v0.1
+  -> remove content_hash
+  -> canonicalize
+  -> SHA-256
+```
+
+The shared runtime therefore exposes explicit profile-dispatched operations:
+
+```text
+canonicalize(value)
+project(profile, value)
+canonicalJson(profile, value)
+computeContentHash(profile, value)
+verifyContentHash(profile, value)
+rehash(profile, value)
+deepEqualCanonical(left, right)
+```
+
+T4a uses a two-stage differential proof.
+
+Stage 1 — before delegation:
+
+```text
+component-local canonicalization/hash/rehash
+vs
+shared runtime selected profile
+```
+
+The unchanged consumers reproduced exact historical canonical bytes/hashes and deep-equal rehash results before any refactor.
+
+Stage 2 — after delegation:
+
+- AI Transport keeps its public `canonicalize`, `computeContentHash` and `rehash` API but delegates through `content-hash-zero-field-v0.1`;
+- Copy/Export keeps the same public operations but delegates through `content-hash-omit-field-v0.1`;
+- both native conformance suites remain green;
+- frozen origin source blobs and differential hashes remain addressable;
+- wrong-profile substitution is explicitly rejected by differential evidence;
+- Receipt Runtime itself has no filesystem, network, process execution or provider surface.
+
+Component Manifest now represents this real reuse explicitly:
+
+```text
+Receipt-Runtime                 kind=TOOLING
+AI-Transport-Reference          --RUNTIME_IMPORT--> Receipt-Runtime
+MarketCloser-Copy-Export-Receipt --RUNTIME_IMPORT--> Receipt-Runtime
+```
+
+The consumers declare `named_profile` rather than pretending the shared runtime created one universal canonicalization rule.
 
 ```text
 Shared Runtime != Universal Canonicalization Algorithm
+Same SHA-256 Primitive != Same Identity Projection
+Profile Selection != Semantic Compatibility
+Hash Equality != Receipt Truth
+Hash Equality != Authority
+Runtime Reuse != Core Promotion
+Refactor Success != Historical Receipt Rewrite
 ```
 
-Existing component-local identity rules remain historical truth. Shared runtime dispatches through explicit canonicalization profiles rather than rewriting old receipts.
+T4a does **not** yet extract frontier, predecessor, non-effect, storage or schema semantics. Those helpers require separate independent repetition evidence.
 
-Migration exit condition:
+Exit condition for T4 v0.1 first slice:
 
-- at least two independent components produce byte-identical historical outputs before/after refactor;
-- import safety is preserved;
-- no runtime activation/external effect is introduced;
-- component-local implementation remains a rollback path during the candidate phase.
+- both independent consumer histories remain byte-stable before and after delegation;
+- both explicit profile identities are preserved in code and manifests;
+- existing native consumer conformance remains green;
+- no new authority/effect surface exists;
+- rollback evidence remains addressable at the pre-extraction frontier.
 
-### T5 — Implementation Substitution Assessment v0.1
+### T5 — Implementation Substitution Assessment v0.1 — NEXT
 
 Compose already-existing evidence planes:
 
@@ -520,7 +572,7 @@ shared:
   constrained conformance orchestration
   execution-evidence parity
   bounded migration evidence
-  receipt utilities
+  profile-dispatched receipt identity
 ```
 
 The objective is lower duplicate engineering, not weaker validation.
@@ -531,6 +583,7 @@ Generated Dependency Set != Inferred Safety
 Parity Success != Validation Removal
 Execution Evidence Parity != Automatic Migration
 One Successful Migration != Bulk Migration Authorization
+Receipt Runtime Reuse != Semantic Unification
 ```
 
 ## 8. Compatibility and migration policy
@@ -538,6 +591,7 @@ One Successful Migration != Bulk Migration Authorization
 - Core v0.1 remains the historical semantic compatibility surface.
 - Existing component canonicalization rules are never silently normalized.
 - Existing receipts are never rewritten in place.
+- Shared receipt-runtime behavior requires an explicit named profile whenever historical projections differ.
 - Cross-version protocol consumption continues through Evolution/Compatibility receipts.
 - Component substitution requires a consumer-specific assessment.
 - Historical command-set parity is orchestration evidence, not migration permission.
@@ -554,13 +608,14 @@ One Successful Migration != Bulk Migration Authorization
 3. **Completed:** Graph-vs-Manual Conformance Parity v0.1 (#635/#636).
 4. **Completed:** Generated Conformance Runner v0.1 (#637/#638).
 5. **Completed:** Historical-vs-Generated Execution Evidence Parity v0.1 (#639/#640).
-6. **Current:** Bounded CI Migration Gate v0.1 for one five-command Marketer Pessimist predecessor block (#641 / PR #642).
-7. **Next:** Receipt Runtime SDK v0.1 with at least two byte-identical differential consumers.
-8. Implementation Substitution Assessment v0.1.
-9. Expand manifests only when required by concrete proofs; do not mass-migrate repository metadata.
-10. Evaluate Human Decision Gate and Observation/Provenance extraction from independent real consumers.
-11. Add generic provenance-store candidate only after common storage/replay requirements are demonstrated.
-12. Re-evaluate ecosystem release-candidate readiness after reusable receipt runtime and bounded substitution evidence exist.
+6. **Completed:** Bounded CI Migration Gate v0.1 for one five-command Marketer Pessimist predecessor block (#641/#642).
+7. **Current:** Receipt Runtime SDK v0.1 with two independent profile-dispatched differential consumers (#643 / PR #644).
+8. **Next:** Implementation Substitution Assessment v0.1.
+9. Expand receipt-runtime helpers only when two independent components prove the exact repeated operation; do not generalize from adjacent code alone.
+10. Expand manifests only when required by concrete proofs; do not mass-migrate repository metadata.
+11. Evaluate Human Decision Gate and Observation/Provenance extraction from independent real consumers.
+12. Add generic provenance-store candidate only after common storage/replay requirements are demonstrated.
+13. Re-evaluate ecosystem release-candidate readiness after reusable receipt runtime and bounded substitution evidence exist.
 
 Each item remains a separate review/merge gate. No item automatically authorizes its successor.
 
@@ -587,6 +642,7 @@ At minimum:
 - explicit execution-evidence classification;
 - at least one bounded CI migration with preserved rollback evidence;
 - provider-neutral transport interoperability;
+- at least two independent consumers of a profile-dispatched receipt runtime with byte-stable historical identities;
 - explicit version/migration policy;
 - at least one non-trivial implementation-substitution assessment;
 - security, privacy, accessibility and contestability review;
@@ -605,6 +661,7 @@ fewer duplicated mechanisms
 + reusable conformance
 + observable execution evidence
 + bounded reversible migration
++ profile-dispatched receipt identity
 + replaceable implementations
 + preserved semantic boundaries
 ```
@@ -616,6 +673,7 @@ more universal semantic layers
 + product-specific reverse dependencies
 + larger manually maintained CI chains
 + implicit migration from one successful experiment
++ one canonicalization algorithm forced across historical components
 ```
 
 The next proof of architectural universality is not another abstract primitive. It is evidence that independent components can share receipt-runtime mechanics while preserving their historical identity rules, and that implementation substitution is claimed only when consumer-specific evidence supports it.
