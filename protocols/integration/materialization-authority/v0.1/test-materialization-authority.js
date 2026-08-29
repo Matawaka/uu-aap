@@ -14,6 +14,7 @@ const authority={
 const base={
   policy_id:'policy:synthetic-materialization',
   policy_version:'0.1',
+  policy_scope:'repo:synthetic',
   subject_ref:'subject:synthetic:operator',
   action:'successor.materialize',
   predecessor_ref:'state:001',
@@ -29,6 +30,7 @@ const base={
 
 let r=assessMaterializationAuthority(base);
 assert.equal(r.result,'AUTHORIZED_IN_SCOPE');
+assert.equal(r.policy_scope,base.policy_scope);
 assert.equal(r.materialization_authority_supported,true);
 assert.equal(r.execution_authority_created,false);
 assert.equal(r.universal_canonicality_established,false);
@@ -45,6 +47,7 @@ assert.equal(r.result,'EXPIRED');
 r=assessMaterializationAuthority({...base,authority_receipts:[{...authority,result:'INSUFFICIENT_EVIDENCE'}]});
 assert.equal(r.result,'INSUFFICIENT_EVIDENCE');
 
+assert.throws(()=>assessMaterializationAuthority({...base,policy_scope:''}));
 assert.throws(()=>assessMaterializationAuthority({...base,execution_authority_requested:true}));
 assert.throws(()=>assessMaterializationAuthority({...base,action_permit_requested:true}));
 assert.throws(()=>assessMaterializationAuthority({...base,universal_canonicality_claim:true}));

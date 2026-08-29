@@ -4,7 +4,7 @@ const RESULTS=new Set(['AUTHORIZED_IN_SCOPE','DISPUTED','EXPIRED','REVOKED','OUT
 
 function assessMaterializationAuthority(input){
   if(!input||typeof input!=='object') throw new Error('input required');
-  for(const k of ['policy_id','policy_version','subject_ref','action','predecessor_ref','successor_ref','evaluation_time']) if(!input[k]) throw new Error(`${k} required`);
+  for(const k of ['policy_id','policy_version','policy_scope','subject_ref','action','predecessor_ref','successor_ref','evaluation_time']) if(!input[k]) throw new Error(`${k} required`);
   if(input.action!=='successor.materialize'&&input.action!=='successor.recognize') throw new Error('unsupported materialization action');
   if(!Array.isArray(input.authority_receipts)||input.authority_receipts.length===0) throw new Error('authority_receipts required');
   if(input.execution_authority_requested===true) throw new Error('execution authority forbidden');
@@ -40,6 +40,7 @@ function assessMaterializationAuthority(input){
     version:'0.1',
     policy_id:input.policy_id,
     policy_version:input.policy_version,
+    policy_scope:input.policy_scope,
     subject_ref:input.subject_ref,
     action:input.action,
     predecessor_ref:input.predecessor_ref,
