@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const audit=JSON.parse(fs.readFileSync(path.join(__dirname,'pass-009.json'),'utf8'));
+assert.equal(audit.classification_mutates_issue,false);
+assert.equal(audit.public_review.roadmap_role,'WAITING_EXTERNAL');
+assert.deepEqual(audit.public_review.issue_refs,['#1','#2','#3','#4','#5','#6','#7']);
+assert.equal(audit.legacy_poai_level_3_4.roadmap_role,'SUCCESSOR_NEEDED');
+assert.equal(audit.legacy_poai_level_3_4.issue_refs.length,26);
+assert.equal(audit.operator_continuity.roadmap_role,'WAITING_EXTERNAL');
+assert.equal(audit.hygiene.roadmap_role,'NO_OP_CLOSED_NOT_PLANNED');
+assert.equal(audit.roadmap_document_gap.issue_ref,'#713');
+assert.equal(audit.roadmap_document_gap.roadmap_role,'CURRENT');
+assert.equal(audit.non_effects.public_review_closed,false);
+assert.equal(audit.non_effects.legacy_issue_completion_inferred,false);
+console.log('backlog reconciliation pass 009: ok');
