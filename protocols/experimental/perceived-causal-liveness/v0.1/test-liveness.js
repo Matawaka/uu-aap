@@ -1,0 +1,17 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {validateRunState,transition,acceptLateResult,successorCapsule}=require('./liveness.js');
+const live={run_id:'r1',run_epoch:1,state:'RUNNING',lease_expires_at:'2026-08-29T16:00:00Z',external_effect_authority:true};
+const stall={...live,state:'SUSPECTED_STALL'};
+const closed={...live,state:'TIMED_OUT_CLOSED',external_effect_authority:false};
+assert.equal(validateRunState(live),true);
+assert.equal(transition(live,stall).state,'SUSPECTED_STALL');
+assert.equal(transition(stall,closed).state,'TIMED_OUT_CLOSED');
+assert.throws(()=>transition(closed,live),/terminal state cannot transition/);
+assert.throws(()=>validateRunState({...closed,external_effect_authority:true}),/terminal run retains authority/);
+assert.deepEqual(acceptLateResult(closed,{run_epoch:1}),{accepted_as_active:false,reason:'RUN_CLOSED'});
+assert.deepEqual(acceptLateResult({...live,run_epoch:2},{run_epoch:1}),{accepted_as_active:false,reason:'STALE_EPOCH'});
+const c=successorCapsule(closed,{phase:'tool_observed'});
+assert.equal(c.transfers_authority,false);
+assert.equal(c.hidden_reasoning_transferred,false);
+console.log('perceived causal liveness v0.1 tests: ok');
