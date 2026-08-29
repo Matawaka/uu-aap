@@ -1,0 +1,16 @@
+'use strict';
+const fs = require('fs');
+const path = require('path');
+const CopyExport = require('./copy-export.js');
+const assert = (c,m)=>{if(!c)throw new Error(m);};
+const inputSchema = JSON.parse(fs.readFileSync(path.resolve(__dirname,'input.schema.json'),'utf8'));
+const receiptSchema = JSON.parse(fs.readFileSync(path.resolve(__dirname,'receipt.schema.json'),'utf8'));
+assert(JSON.stringify(Object.keys(inputSchema.properties).sort())===JSON.stringify([...CopyExport.INPUT_KEYS].sort()),'input schema/runtime key mismatch');
+assert(JSON.stringify(Object.keys(inputSchema.properties.event.oneOf[1].properties).sort())===JSON.stringify([...CopyExport.EVENT_KEYS].sort()),'event schema/runtime key mismatch');
+assert(JSON.stringify(Object.keys(inputSchema.properties.controls.properties).sort())===JSON.stringify([...CopyExport.CONTROL_KEYS].sort()),'control schema/runtime key mismatch');
+assert(JSON.stringify(Object.keys(receiptSchema.properties).sort())===JSON.stringify([...CopyExport.RECEIPT_KEYS].sort()),'receipt schema/runtime key mismatch');
+assert(JSON.stringify(receiptSchema.properties.classification.enum.slice().sort())===JSON.stringify([...CopyExport.CLASSIFICATIONS].sort()),'classification vocabulary mismatch');
+assert(JSON.stringify(inputSchema.properties.event.oneOf[1].properties.context.enum.slice().sort())===JSON.stringify([...CopyExport.EVENT_CONTEXTS].sort()),'event context vocabulary mismatch');
+assert(JSON.stringify(inputSchema.properties.event.oneOf[1].properties.method.enum.slice().sort())===JSON.stringify([...CopyExport.EVENT_METHODS].sort()),'event method vocabulary mismatch');
+assert(JSON.stringify(Object.keys(receiptSchema.properties.claims.properties).sort())===JSON.stringify([...CopyExport.CLAIM_KEYS].sort()),'claim schema/runtime key mismatch');
+console.log('MarketCloser Copy/Export Receipt schema/runtime parity: PASS');
