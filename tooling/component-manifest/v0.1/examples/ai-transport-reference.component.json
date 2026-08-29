@@ -10,7 +10,7 @@
   },
   "source_frontier": {
     "repository": "Matawaka/uu-aap",
-    "revision": "2707fdcabb06967ef1d0a60cae8d9123dada8ef2"
+    "revision": "db1e3eb8dea30811f4bb93bda3a256472d141015"
   },
   "exports": {
     "interfaces": [
@@ -41,6 +41,13 @@
       "required": true,
       "interface": "AIGatewayDecision",
       "notes": "Transport revalidates Gateway request and decision through the predecessor API."
+    },
+    {
+      "component_id": "Receipt-Runtime",
+      "edge_kind": "RUNTIME_IMPORT",
+      "required": true,
+      "interface": "ReceiptRuntime",
+      "notes": "Transport delegates deterministic content identity to the explicit zero-content-hash profile."
     },
     {
       "component_id": "UU-AAP-Core",
@@ -80,8 +87,8 @@
     "accepts_responsibility": false
   },
   "canonicalization": {
-    "mode": "component_local",
-    "profile_ref": null
+    "mode": "named_profile",
+    "profile_ref": "Receipt-Runtime/content-hash-zero-field-v0.1"
   },
   "evolution_ref": null,
   "non_effects": [
@@ -91,5 +98,5 @@
     "manifest_presence_does_not_publish_or_release",
     "manifest_validation_does_not_attest_runtime_behavior"
   ],
-  "content_hash": "sha256:4fad04f2f6f55cf32bf0dca110442726716a131867a3fa30b48851806f0f9b89"
+  "content_hash": "sha256:6ecfbaa8f0226e145487421f0ae13b9ca3db3e8546a7a28cd01cfc0337b4149d"
 }
