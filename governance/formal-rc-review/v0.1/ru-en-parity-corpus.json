@@ -1,0 +1,56 @@
+{
+  "schema_version":"0.1",
+  "receipt_type":"RUENParityCorpus",
+  "origin_frontier":"0a92e0e10f48065fa51bd6cdb84dac452f9723a3",
+  "normative_language":"EN",
+  "repository_wide_parity_claimed":false,
+  "pairs":[
+    {
+      "pair_id":"root-entry",
+      "en":"README.md",
+      "ru":"README.ru.md",
+      "ru_role":"EXPLANATORY_NAVIGATION",
+      "semantic_checks":["human_agency","possibility_intent_authority_separation","public_review_path","no_automatic_external_effect"],
+      "navigation_checks":["root_entry","public_review","pilot_002"]
+    },
+    {
+      "pair_id":"spec-v0.1",
+      "en":"SPEC.md",
+      "ru":"SPEC.ru.md",
+      "ru_role":"EXPLANATORY_TRANSLATION",
+      "semantic_checks":["english_normative_source","scoped_responsibility","uncertainty_preserved","selective_disclosure_privacy","contestability"],
+      "navigation_checks":[]
+    },
+    {
+      "pair_id":"public-review",
+      "en":"PUBLIC_REVIEW.md",
+      "ru":"PUBLIC_REVIEW.ru.md",
+      "ru_role":"EXPLANATORY_QUICK_PATH",
+      "semantic_checks":["review_not_endorsement","comment_not_identity_authority","disposition_not_normative_change","external_action_requires_human_confirmation"],
+      "navigation_checks":["issue_422","root_ru","pilot_002_ru"]
+    },
+    {
+      "pair_id":"core-pilot-002",
+      "en":"pilots/core-pilot-002/README.md",
+      "ru":"pilots/core-pilot-002/README.ru.md",
+      "ru_role":"EXPLANATORY_ADAPTATION",
+      "semantic_checks":["submission_not_accepted_claim","identity_not_authority","disposition_not_normative_change","human_gate_not_automatic_mutation","waiting_external_preserved"],
+      "navigation_checks":["issue_422","root_ru","public_review_ru"]
+    }
+  ],
+  "semantic_result":"PASS_BOUNDED_PAIRED_CORPUS",
+  "navigation_result":"PASS_BOUNDED_PAIRED_CORPUS",
+  "limitations":[
+    "Russian documents are explanatory translations/adaptations and do not create an independent normative branch.",
+    "This receipt covers only the explicitly enumerated pairs.",
+    "Repository-wide RU/EN parity is not claimed.",
+    "Semantic parity means preserved governance boundaries, not sentence-by-sentence translation identity."
+  ],
+  "non_effects":{
+    "russian_normative_branch_created":false,
+    "repository_wide_parity_certified":false,
+    "translation_certification_created":false,
+    "release_authorized":false,
+    "external_review_fabricated":false
+  }
+}

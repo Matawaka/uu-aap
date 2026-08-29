@@ -1,0 +1,42 @@
+name: RU EN Governance Parity v0.1
+on:
+  pull_request:
+    paths:
+      - 'README.md'
+      - 'README.ru.md'
+      - 'SPEC.md'
+      - 'SPEC.ru.md'
+      - 'PUBLIC_REVIEW.md'
+      - 'PUBLIC_REVIEW.ru.md'
+      - 'pilots/core-pilot-002/README.md'
+      - 'pilots/core-pilot-002/README.ru.md'
+      - 'governance/formal-rc-review/v0.1/ru-en-parity-corpus.json'
+      - 'governance/formal-rc-review/v0.1/validate-ru-en-parity.js'
+      - '.github/workflows/ru-en-governance-parity-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'README.md'
+      - 'README.ru.md'
+      - 'SPEC.md'
+      - 'SPEC.ru.md'
+      - 'PUBLIC_REVIEW.md'
+      - 'PUBLIC_REVIEW.ru.md'
+      - 'pilots/core-pilot-002/README.md'
+      - 'pilots/core-pilot-002/README.ru.md'
+      - 'governance/formal-rc-review/v0.1/ru-en-parity-corpus.json'
+      - 'governance/formal-rc-review/v0.1/validate-ru-en-parity.js'
+      - '.github/workflows/ru-en-governance-parity-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node governance/formal-rc-review/v0.1/validate-ru-en-parity.js
+      - run: node governance/formal-rc-review/v0.1/test-review.js
+      - run: test -z "$(git status --porcelain)"
