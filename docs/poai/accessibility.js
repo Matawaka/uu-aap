@@ -58,6 +58,14 @@
     input.addEventListener('blur', () => label.classList.remove('focus-proxy'));
   }
 
+  function setupLiveStatus() {
+    const summary = document.getElementById('summaryLine');
+    if (!summary) return;
+    summary.setAttribute('role', 'status');
+    summary.setAttribute('aria-live', 'polite');
+    summary.setAttribute('aria-atomic', 'true');
+  }
+
   const moduleChain = [
     ['PoAIReviewCues', 'review-cues.js', 'review-cues'],
     ['PoAIReviewSidecar', 'review-sidecar.js', 'review-sidecar'],
@@ -105,6 +113,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     setupTabs();
     setupFileFocusProxy();
+    setupLiveStatus();
     loadModule(0);
   });
 })();
