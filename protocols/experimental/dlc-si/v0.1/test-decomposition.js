@@ -1,0 +1,5 @@
+'use strict';const assert=require('node:assert/strict');const {assessDecomposition,chooseMode}=require('./decomposition.js');
+let a=assessDecomposition({options:[{option_id:'time-split',dimension:'TIME',safe:true,preserves_causal_value_a:true,preserves_causal_value_b:true}]});assert.equal(a.decomposition_required,true);assert.equal(chooseMode(a).mode,'PARTITIONED_OR_DEFERRED_REQUIRED');
+a=assessDecomposition({options:[{option_id:'late-B',dimension:'TIME',safe:true,preserves_causal_value_a:true,preserves_causal_value_b:false}]});assert.equal(a.decomposition_required,false);assert.equal(a.formal_decomposition_without_preserved_value,true);assert.equal(chooseMode(a).mode,'TEMPORARY_PRECEDENCE_ELIGIBLE');assert.equal(chooseMode(a).requires_separate_bounded_precedence_authority,true);
+a=assessDecomposition({options:[{option_id:'unsafe',dimension:'SCOPE',safe:false,preserves_causal_value_a:true,preserves_causal_value_b:true}]});assert.equal(a.decomposition_required,false);assert.equal(a.normative_winner,null);
+console.log('dlc-si decomposition tests: ok');
