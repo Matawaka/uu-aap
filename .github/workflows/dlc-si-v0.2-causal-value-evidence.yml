@@ -1,0 +1,25 @@
+name: DLC-SI v0.2 Causal Value Evidence
+on:
+  pull_request:
+    paths:
+      - 'protocols/dlc-si/v0.2/**'
+      - '.github/workflows/dlc-si-v0.2-causal-value-evidence.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/dlc-si/v0.2/**'
+      - '.github/workflows/dlc-si-v0.2-causal-value-evidence.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check protocols/dlc-si/v0.2/causal-value-evidence.js
+      - run: node protocols/dlc-si/v0.2/test-causal-value-evidence.js
+      - run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - run: test -z "$(git status --porcelain)"
