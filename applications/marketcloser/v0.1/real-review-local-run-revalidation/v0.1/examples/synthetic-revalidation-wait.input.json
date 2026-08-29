@@ -1,0 +1,41 @@
+{
+  "protocol": "MARKETCLOSER-REAL-REVIEW-LOCAL-RUN-REVALIDATION",
+  "version": "0.1",
+  "artifact_type": "MarketCloserRealReviewLocalRunRevalidationInput",
+  "revalidation_id": "urn:uu-aap:marketcloser:real-review-local-run-revalidation:synthetic-wait-001",
+  "origin": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "72f6ea7185b75ecf6ca459c8f88c8c613f3ae968",
+    "tree": "4610936795b5726eb074d4b0431e6d5b919e0d13"
+  },
+  "materialization_source": {
+    "mode": "repository_synthetic",
+    "path": "applications/marketcloser/v0.1/real-review-run-permit/v0.1/examples/synthetic-permit-wait.input.json",
+    "expected_materialization_input_hash": "sha256:c02ce80619782678949cd4980ff48a93206bb625f6d40fa5aecb1c806b5f4fd2"
+  },
+  "permit": null,
+  "observed_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "72f6ea7185b75ecf6ca459c8f88c8c613f3ae968",
+    "tree": "4610936795b5726eb074d4b0431e6d5b919e0d13",
+    "observed_at": "2026-08-29T02:09:00Z"
+  },
+  "revalidated_at": "2026-08-29T02:09:10Z",
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "stress_test_run_available": false,
+    "real_stress_test_adapter_available": false,
+    "network_access_available": false,
+    "filesystem_write_available": false,
+    "provider_invocation_available": false,
+    "platform_mutation_available": false,
+    "response_candidate_available": false,
+    "publication_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "external_execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:a4743623009e9895d1c1814bcf0f97f98dbaf59af5603c69c3b212e34cc1507a"
+}
