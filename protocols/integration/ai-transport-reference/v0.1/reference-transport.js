@@ -1,15 +1,16 @@
 'use strict';
 
-const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 
 const IAL = require('../../../ial/v0.1/compact/ial-compact.js');
 const Gateway = require('../../ai-gateway/v0.1/validate-gateway.js');
+const ReceiptRuntime = require('../../../../tooling/receipt-runtime/v0.1/receipt-runtime.js');
 
 const PROTOCOL = 'UU-AAP-AI-TRANSPORT-REFERENCE';
 const VERSION = '0.1';
 const PROFILE = 'local-evidence-packet-v0.1';
+const RECEIPT_IDENTITY_PROFILE = ReceiptRuntime.PROFILE_ZERO_CONTENT_HASH;
 
 const PACKET_KEYS = [
   'protocol',
@@ -123,32 +124,18 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (!isObject(value)) return value;
-  const result = {};
-  for (const key of Object.keys(value).sort()) result[key] = canonicalize(value[key]);
-  return result;
-}
-
-function contentProjection(packet) {
-  const projected = clone(packet);
-  projected.content_hash = '';
-  return projected;
-}
+const canonicalize = ReceiptRuntime.canonicalize;
 
 function computeContentHash(packet) {
-  const canonical = JSON.stringify(canonicalize(contentProjection(packet)));
-  return `sha256:${crypto.createHash('sha256').update(canonical, 'utf8').digest('hex')}`;
+  return ReceiptRuntime.computeContentHash(RECEIPT_IDENTITY_PROFILE, packet);
 }
 
 function rehash(packet) {
-  packet.content_hash = computeContentHash(packet);
-  return packet;
+  return ReceiptRuntime.rehash(RECEIPT_IDENTITY_PROFILE, packet);
 }
 
 function deepEqualCanonical(left, right) {
-  return JSON.stringify(canonicalize(left)) === JSON.stringify(canonicalize(right));
+  return ReceiptRuntime.deepEqualCanonical(left, right);
 }
 
 function validateTransportRef(ref, label, frontier) {
@@ -488,6 +475,7 @@ module.exports = {
   PROTOCOL,
   VERSION,
   PROFILE,
+  RECEIPT_IDENTITY_PROFILE,
   PACKET_KEYS,
   TRANSPORT_KEYS,
   REQUIRED_ASSERTIONS,
