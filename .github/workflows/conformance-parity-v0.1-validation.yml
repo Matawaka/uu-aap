@@ -1,0 +1,141 @@
+name: Graph-vs-Manual Conformance Parity v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - 'tooling/dependency-impact/v0.1/**'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - '.github/workflows/conformance-parity-v0.1-validation.yml'
+      - 'ROADMAP.md'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - 'tooling/dependency-impact/v0.1/**'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - '.github/workflows/conformance-parity-v0.1-validation.yml'
+      - 'ROADMAP.md'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: b119fac6f2b3702fd5ed158442bf3dd69e276a93
+  HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+  HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
+  BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
+  REPORT: /tmp/marketcloser-publication-parity-report.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact successor origin and historical workflow
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          test "$(git rev-parse "HEAD:$HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+
+      - name: Check tooling JavaScript syntax
+        run: |
+          node --check tooling/conformance-parity/v0.1/conformance-parity.js
+          node --check tooling/conformance-parity/v0.1/test-conformance-parity.js
+          node --check tooling/conformance-parity/v0.1/test-import-safe.js
+
+      - name: Re-run Component Manifest conformance
+        run: |
+          node tooling/component-manifest/v0.1/test-component-manifest.js
+          node tooling/component-manifest/v0.1/test-import-safe.js
+          for manifest in \
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json \
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json \
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-real-review-intake.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-application-boundary.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-deployment-observation.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-minimized-real-review-bridge.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-authority-gate.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-permit.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-local-run-revalidation.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-stress-test-adapter.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json
+          do
+            node tooling/component-manifest/v0.1/validate-component-manifest.js "$manifest" >/dev/null
+          done
+
+      - name: Re-run Dependency Impact conformance
+        run: |
+          node tooling/dependency-impact/v0.1/test-dependency-impact.js
+          node tooling/dependency-impact/v0.1/test-import-safe.js
+
+      - name: Run graph-vs-manual parity conformance
+        run: node tooling/conformance-parity/v0.1/test-conformance-parity.js
+
+      - name: Produce parity report without executing discovered commands
+        run: |
+          node tooling/conformance-parity/v0.1/conformance-parity.js assess \
+            "$BASELINE" \
+            "$HISTORICAL_WORKFLOW" \
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json \
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json \
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-real-review-intake.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-application-boundary.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-deployment-observation.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-minimized-real-review-bridge.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-authority-gate.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-permit.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-local-run-revalidation.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-real-stress-test-adapter.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json \
+            > "$REPORT"
+
+      - name: Assert exact 27-command parity and no-effect result
+        run: |
+          node - <<'NODE'
+          const report = require('/tmp/marketcloser-publication-parity-report.json');
+          if (report.parity !== true) throw new Error('graph/manual predecessor parity failed');
+          if (report.manual_command_count !== 27 || report.graph_command_count !== 27) throw new Error('expected exact 27-command parity');
+          if (report.dependency_components.length !== 14) throw new Error('expected 14 predecessor components');
+          if (report.missing_from_graph.length || report.extra_in_graph.length) throw new Error('unexpected parity diff');
+          if (report.commands_executed !== false) throw new Error('parity tool executed commands');
+          if (report.production_workflow_modified !== false) throw new Error('parity report claims workflow mutation');
+          if (report.ci_narrowing_authorized !== false) throw new Error('parity report authorized CI narrowing');
+          if (report.compatibility_proven !== false || report.authority_created !== false) throw new Error('parity report overclaimed semantics');
+          NODE
+
+      - name: Guard parity production surface as discovery-only
+        run: |
+          if grep -En "child_process|exec\\(|spawn\\(|fetch\\(|require\\(['\"]https|require\\(['\"]http|net\\.|dgram|writeFile|appendFile|createWriteStream" \
+            tooling/conformance-parity/v0.1/conformance-parity.js; then
+            echo 'Forbidden execution/network/write surface detected in parity runtime' >&2
+            exit 1
+          fi
+
+      - name: Confirm historical production workflow is untouched
+        run: git diff --exit-code "$ORIGIN_FRONTIER" -- "$HISTORICAL_WORKFLOW"
+
+      - name: Confirm repository checkout unchanged
+        run: test -z "$(git status --porcelain)"
