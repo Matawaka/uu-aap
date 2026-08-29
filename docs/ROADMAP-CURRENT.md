@@ -1,8 +1,8 @@
 # UU-AAP Current Roadmap Marker
 
-Status: current-roadmap successor marker after post-T1–T5 convergence, Security Evidence Closure, Perceived Causal Liveness, DLC-SI v0.2, and backlog reconciliation.
+Status: current-roadmap successor marker after post-T1–T5 convergence, Security Evidence Closure, Perceived Causal Liveness, DLC-SI v0.2, evidence/provenance closure, and backlog reconciliation.
 
-Canonical origin frontier for this marker: `e7b547353abbbb9eb42c892e68904e73d93c5fb5`.
+Canonical origin frontier for this marker: `355cc6ccc06ef73380768066572fc05afdc4f52a`.
 
 `ROADMAP.md` remains historical architectural evidence for the reusable-tooling convergence line. Its T1–T5 sections are not rewritten by this marker.
 
@@ -14,19 +14,22 @@ Canonical origin frontier for this marker: `e7b547353abbbb9eb42c892e68904e73d93c
 - T4 Receipt Runtime SDK v0.1 — COMPLETED.
 - T5 Implementation Substitution Assessment v0.1 — COMPLETED via #646.
 - Post-T1–T5 Release Candidate Checkpoint v0.2 — materialized via #648; engineering passed while governance review remained explicitly separate.
-- Security Evidence Closure — completed through #672 and successor evidence.
-- Perceived Causal Liveness — completed through #528 acceptance closure.
-- DLC-SI — canonical v0.1 preserved; v0.2 successor semantics and acceptance completed through #526.
-- Live-acceptance audit schema hardening #341 — completed via #348; reconciliation uncertainty corrected by pass-010.
+- Security Evidence Closure — COMPLETED through #672 and successor evidence.
+- Perceived Causal Liveness — COMPLETED through #528 acceptance closure.
+- DLC-SI — canonical v0.1 preserved; v0.2 successor semantics and acceptance COMPLETED through #526.
+- Live-acceptance audit schema hardening #341 — COMPLETED via #348; reconciliation uncertainty corrected by pass-010.
 - Backlog Reconciliation v0.1 — COMPLETED through #697 and passes 001–010.
-- Personal Sovereign Root / Personal Evidence Fabric #447 — completed via #448.
+- Personal Sovereign Root / Personal Evidence Fabric #447 — COMPLETED via #448.
+- Circumstantial Provenance / Evidence Independence #449 — COMPLETED via #721 at `355cc6ccc06ef73380768066572fc05afdc4f52a`.
+- KONTUR bounded fallibility / anti-solver umbrella #445 — historical first implementation acceptance COMPLETED; future cautious evolution moved to successor #722.
 
 ## Current actionable lanes
 
-1. Complete Circumstantial Provenance / Evidence Independence (#449) as the current evidence/provenance successor to PSR/PEF.
-2. Continue KONTUR Game Companion (#445) as a parallel bounded pilot, reusing common runtime semantics rather than becoming a Core dependency.
-3. Keep Public Review #1–#7 and Core Pilot 002 successor #718 in `WAITING_EXTERNAL` until actual external evidence arrives; #422 remains a target surface.
-4. Keep IP filing/patent tracks separate from architecture critical path where they require applicant, legal, or time-dependent decisions.
+1. Keep KONTUR Game Companion successor #722 as a **parallel** bounded field/product evolution lane, not a Core dependency or automatic live-runtime mandate.
+2. Keep Public Review #1–#7 and Core Pilot 002 successor #718 in `WAITING_EXTERNAL` until actual external evidence arrives; #422 remains a target surface.
+3. Keep IP filing/patent tracks separate from architecture critical path where they require applicant, legal, or time-dependent decisions.
+4. For the legacy PoAI Level 3/4 research line, create a fresh successor only when a current concrete need is selected; do not treat historical open state as current implementation priority.
+5. Before adding another semantic Core layer, prefer integration, field evidence, reusable-engine/tooling consolidation, or a new bounded successor checkpoint justified by current evidence.
 
 ## Roadmap-role vocabulary
 
@@ -44,7 +47,7 @@ The older open Level 3/4 research and acceptance issues are retained as historic
 
 `Insufficient Evidence at T1 != Unimplemented Forever`.
 
-When later evidence is found, a new additive reconciliation receipt may supersede the current classification while preserving the earlier audit as an honest record of what was known then. Pass-010 applied this rule to #341; the same evidence discipline identified #447 as already completed.
+When later evidence is found, a new additive reconciliation receipt may supersede the current classification while preserving the earlier audit as an honest record of what was known then. This rule corrected #341 and identified #447 and #445 as already completed beyond their original bounded acceptance.
 
 ## Invariants
 
@@ -61,6 +64,10 @@ When later evidence is found, a new additive reconciliation receipt may supersed
 `Successor Needed != Historical Work Invalid`
 
 `Later Evidence != Earlier Audit Rewrite`
+
+`Parallel Pilot != Stable-Core Dependency`
+
+`Field Evidence != Automatic Runtime Authority`
 
 `Roadmap Marker != Release Authorization`
 
