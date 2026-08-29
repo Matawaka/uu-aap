@@ -1,12 +1,14 @@
 # UU-AAP Ecosystem Roadmap
 
 **Status:** reusable-runtime/tooling convergence after multi-product infrastructure proof  
-**Current evidence baseline:** `b119fac6f2b3702fd5ed158442bf3dd69e276a93` (Dependency / Impact Graph v0.1, PR #634)  
-**Current reusable-tooling increment:** Issue #635  
+**Current evidence baseline:** `8197e803a242fe6d7729963ae7ac9a9fb389b3cc` (Generated Conformance Runner v0.1, PR #638)  
+**Current reusable-tooling increment:** Issue #639  
 **Stable semantic substrate:** [`protocols/core/v0.1/`](protocols/core/v0.1/)  
 **Component/tooling first slice:** [`tooling/component-manifest/v0.1/`](tooling/component-manifest/v0.1/)  
 **Dependency/impact slice:** [`tooling/dependency-impact/v0.1/`](tooling/dependency-impact/v0.1/)  
-**Current parity slice:** [`tooling/conformance-parity/v0.1/`](tooling/conformance-parity/v0.1/)
+**Conformance parity slice:** [`tooling/conformance-parity/v0.1/`](tooling/conformance-parity/v0.1/)  
+**Generated execution slice:** [`tooling/generated-conformance-runner/v0.1/`](tooling/generated-conformance-runner/v0.1/)  
+**Current execution-evidence parity slice:** [`tooling/execution-evidence-parity/v0.1/`](tooling/execution-evidence-parity/v0.1/)
 
 This roadmap reflects the implemented repository after the Phase C/D productization and interoperability work. The project is no longer primarily blocked on adding semantic protocol layers. The current bottleneck is repeated engineering work around component metadata, dependency traversal, conformance orchestration, receipt utilities and implementation substitution evidence.
 
@@ -31,6 +33,8 @@ Component Manifest
   -> Dependency / Impact Graph
   -> Graph-vs-Manual Conformance Parity
   -> Generated Conformance Runner
+  -> Execution Evidence Parity
+  -> bounded CI Migration Gate
   -> Receipt Runtime SDK
   -> Implementation Substitution Assessment
 ```
@@ -49,6 +53,11 @@ Declared Interface != Compatibility Proof
 Conformance Evidence != Authority
 Parity Discovery != Command Execution
 Parity Success != Permission To Narrow CI
+Execution Plan != Authority
+Command Success != Semantic Truth
+Execution Evidence Parity != Compatibility Proof
+Execution Evidence Parity != Substitutability
+Execution Evidence Parity != CI Migration Authorization
 Substitutable != Selected
 Substitutable != Authorized
 Transport != Authority
@@ -211,7 +220,7 @@ Completion evidence:
 - conformance command discovery performs no command execution;
 - graph reachability does not imply authority, responsibility, compatibility or substitutability.
 
-### T3a — Graph-vs-Manual Conformance Parity v0.1 — CURRENT (#635 / PR #636)
+### T3a — Graph-vs-Manual Conformance Parity v0.1 — COMPLETED (#635/#636)
 
 Purpose: prove one long historical manually maintained predecessor/conformance chain can be reproduced **exactly** from Component Manifest + Dependency Graph evidence before any generated runner executes commands.
 
@@ -228,7 +237,7 @@ The frozen `Re-run ... predecessors` blocks contain exactly:
 27 manual predecessor commands
 ```
 
-The current parity slice materializes the workflow-covered MarketCloser / Marketer Pessimist dependency closure:
+The parity slice materializes the workflow-covered MarketCloser / Marketer Pessimist dependency closure:
 
 ```text
 MarketCloser-Publication-Observation
@@ -250,7 +259,7 @@ Marketer-Pessimist-Real-Review-Intake
 -> Marketer-Pessimist-Local-MVP
 ```
 
-Current differential proof on PR #636:
+Completion evidence merged in #636:
 
 ```text
 manual predecessor command count = 27
@@ -285,37 +294,141 @@ Equal Command Sets != Authority
 Parity Success != Permission To Narrow CI
 ```
 
-Exit condition:
+### T3b — Generated Conformance Runner v0.1 — COMPLETED (#637/#638)
 
-- exact 27↔27 parity succeeds on dedicated CI;
-- Component Manifest and Dependency Impact predecessor conformance is rerun;
-- import safety and read-only behavior remain proven;
-- the historical MarketCloser production workflow remains byte-identical;
-- no graph-derived command has yet been executed by reusable tooling.
+Purpose: execute only the exact parity-proven predecessor command plan through one constrained reusable execution boundary.
 
-### T3b — Generated Conformance Runner v0.1
+Merged runner properties:
 
-Only after T3a parity is merged may reusable tooling execute graph-derived conformance commands.
+- constrained `node | python | python3` executable allowlist;
+- argument arrays with `shell=false`;
+- exact component/frontier/workflow binding;
+- deterministic dependency-first ordering;
+- stop-on-first-failure;
+- bounded child environment without common credential-bearing variables;
+- stdout/stderr digests and byte counts instead of raw output in receipts;
+- repository content snapshot before/after execution;
+- explicit execution plan and execution receipt.
 
-The runner must consume Component Manifest + Dependency / Impact evidence rather than rediscovering dependencies independently.
+First execution proof merged in #638:
 
-Requirements:
+```text
+14 predecessor components
+27 parity-proven commands
+27 attempted
+27 succeeded
+0 failed
+repository_changed_after_run = false
+historical workflow modified = false
+```
 
-- constrained executable/args representation;
-- no arbitrary shell expansion;
-- exact component/frontier binding;
-- stable deterministic ordering;
-- fail closed on unresolved mandatory dependency or cycle;
-- explicit execution report for every command;
-- no implicit authority, compatibility or release claim;
-- no production CI trigger narrowing merely because one parity case passed.
-
-First execution proof should replay the same 27-command MarketCloser predecessor set in a separate review-only workflow and compare results with the historical workflow before any migration decision.
+Mandatory boundary:
 
 ```text
 Generated Command Set != Automatic Execution Authority
 Runner Success != CI Migration Decision
 Runner Success != Permission To Delete Historical Workflow
+Generated Runner != Product Runtime
+Conformance Execution != External Effect Authorization
+```
+
+### T3c — Historical vs Generated Execution Evidence Parity v0.1 — CURRENT (#639 / PR #640)
+
+Purpose: determine whether changing only the order from the frozen historical manual order to the generated dependency-first order changes per-command execution evidence.
+
+Both order profiles reuse the same merged T3b executor and the same exact 27-command set:
+
+```text
+HISTORICAL_MANUAL_ORDER
+GENERATED_DEPENDENCY_FIRST_ORDER
+```
+
+Comparison is performed by command identity rather than sequence number over:
+
+```text
+exit_code
+signal
+success
+error_code
+stdout_sha256
+stdout_bytes
+stderr_sha256
+stderr_bytes
+```
+
+First T3c evidence on PR #640:
+
+```text
+historical attempted/succeeded = 27 / 27
+generated attempted/succeeded  = 27 / 27
+status_difference_count = 0
+output_difference_count = 0
+classification = EXACT_EXECUTION_EVIDENCE_PARITY
+repository changed after either run = false
+historical workflow modified = false
+```
+
+This is bounded evidence for the exact workflow binding and frontier only.
+
+```text
+Execution Evidence Parity != Semantic Truth
+Output Digest Equality != Behavioral Equivalence Beyond This Frontier
+Order Insensitivity Here != Universal Order Independence
+Execution Parity != Compatibility Proof
+Execution Parity != Substitutability
+Execution Parity != Authority
+Execution Parity != CI Migration Authorization
+```
+
+Fail-closed vectors include:
+
+- workflow/blob or baseline drift;
+- manual/generated command-set mismatch;
+- duplicate, missing or injected execution result;
+- target-component command leakage into predecessor-only evidence;
+- incomplete stopped-early evidence;
+- repository mutation after either execution mode.
+
+Exit condition:
+
+- both orders complete all 27 commands;
+- process status/signal evidence is compared by identity;
+- output digests/byte counts are compared by identity;
+- classification is explicit rather than inferred from overall CI success;
+- historical workflow remains unchanged;
+- `ci_migration_authorized` remains false.
+
+### T3d — Bounded CI Migration Gate v0.1 — NEXT
+
+Purpose: evaluate whether **one** historical manual predecessor block may be replaced by Generated Conformance Runner invocation after exact T3c evidence exists.
+
+This is a migration/governance gate, not a new dependency or execution engine.
+
+Preconditions:
+
+```text
+T3a exact command-set parity
++ T3b successful generated execution
++ T3c EXACT_EXECUTION_EVIDENCE_PARITY
+```
+
+First candidate migration should remain deliberately narrow:
+
+- replace only predecessor orchestration, not target-component checks;
+- preserve the frozen historical workflow in Git history;
+- keep equivalent path-trigger coverage;
+- preserve fail-closed behavior on unresolved dependency/parity drift;
+- provide an explicit rollback/fallback path;
+- compare generated-runner evidence again after the workflow change;
+- do not delete other dedicated workflows merely because one migration succeeds.
+
+Mandatory boundary:
+
+```text
+Migration Review Eligible != Migration Authorized
+One Workflow Migration != Universal CI Replacement
+CI Cost Reduction != Validation Weakening
+Historical Workflow Replacement != Historical Evidence Deletion
 ```
 
 ### T4 — Receipt Runtime SDK v0.1
@@ -499,8 +612,9 @@ new domain semantics
 shared:
   dependency resolution
   impact analysis
-  differential parity proof
+  differential command-set parity
   constrained conformance orchestration
+  execution-evidence parity
   receipt utilities
 ```
 
@@ -510,6 +624,7 @@ The objective is reduced duplicate engineering, not fewer safety checks.
 CI Cost Reduction != Validation Weakening
 Generated Dependency Set != Inferred Safety
 Parity Success != Validation Removal
+Execution Evidence Parity != Automatic Migration
 ```
 
 ## 9. Compatibility and migration policy
@@ -519,8 +634,10 @@ Parity Success != Validation Removal
 - Existing receipts are never rewritten in place.
 - Cross-version protocol consumption continues through Evolution/Compatibility receipts.
 - Component substitution requires its own consumer-specific assessment.
-- Workflow parity is evidence for reusable orchestration, not automatic permission to change CI coverage.
-- Historical workflow removal/narrowing requires a separate migration decision after generated-runner differential evidence.
+- Workflow command-set parity is evidence for reusable orchestration, not automatic permission to change CI coverage.
+- Generated execution success is execution evidence, not a CI migration decision.
+- Exact historical-vs-generated execution evidence parity makes a bounded migration review eligible; it does not authorize the migration itself.
+- Historical workflow removal/narrowing requires a separate T3d decision with rollback evidence.
 - Schema/catalog cleanup may add logical resolution before any physical file relocation.
 - Deprecation remains append-only with preserved historical meaning.
 
@@ -528,15 +645,16 @@ Parity Success != Validation Removal
 
 1. **Completed:** Component Manifest v0.1 — schema, read-only validator, initial component examples and dedicated CI (#631/#632).
 2. **Completed:** Dependency / Impact Graph v0.1 over Component Manifest + existing interface evidence (#633/#634).
-3. **Current:** Graph-vs-Manual Conformance Parity v0.1 against the 27-command MarketCloser Publication Observation predecessor baseline (#635 / PR #636).
-4. Generated Conformance Runner v0.1 with constrained commands, deterministic ordering and a differential execution report.
-5. Historical-workflow vs generated-runner execution parity; CI migration remains a separate decision.
-6. Receipt Runtime SDK v0.1 first extraction with two byte-identical differential consumers.
-7. Implementation Substitution Assessment v0.1.
-8. Expand manifests only to components needed by those proofs; do not mass-migrate the repository prematurely.
-9. Evaluate Human Decision Gate and Observation/Provenance extraction from at least two independent real consumers.
-10. Add generic provenance-store candidate only after storage/replay requirements are common across multiple products.
-11. Re-evaluate ecosystem release-candidate readiness after reusable tooling and bounded substitution evidence exist.
+3. **Completed:** Graph-vs-Manual Conformance Parity v0.1 against the 27-command MarketCloser Publication Observation predecessor baseline (#635/#636).
+4. **Completed:** Generated Conformance Runner v0.1 with constrained process execution and 27/27 generated predecessor success (#637/#638).
+5. **Current:** Historical-vs-generated Execution Evidence Parity v0.1 with per-command process/output digest comparison (#639 / PR #640).
+6. Bounded CI Migration Gate v0.1 for one historical predecessor orchestration block; no universal CI replacement.
+7. Receipt Runtime SDK v0.1 first extraction with two byte-identical differential consumers.
+8. Implementation Substitution Assessment v0.1.
+9. Expand manifests only to components needed by those proofs; do not mass-migrate the repository prematurely.
+10. Evaluate Human Decision Gate and Observation/Provenance extraction from at least two independent real consumers.
+11. Add generic provenance-store candidate only after storage/replay requirements are common across multiple products.
+12. Re-evaluate ecosystem release-candidate readiness after reusable tooling and bounded substitution evidence exist.
 
 Each item remains a separate review/merge gate. No item automatically authorizes its successor.
 
@@ -559,7 +677,9 @@ At minimum:
 - reusable Component Manifests for multiple independent layers;
 - machine-derived dependency/impact graph;
 - exact graph-vs-manual conformance parity with at least one historical workflow;
-- generated conformance execution with differential evidence against the historical workflow;
+- generated dependency-first conformance execution;
+- explicit historical-vs-generated execution evidence classification;
+- at least one bounded CI migration proof or an explicit reason migration remains deferred;
 - provider-neutral transport interoperability;
 - explicit version/migration policy;
 - at least one implementation-substitution assessment with a non-trivial result;
@@ -577,6 +697,7 @@ fewer duplicated mechanisms
 + more explicit interfaces
 + stronger dependency evidence
 + reusable conformance
++ observable execution evidence
 + replaceable implementations
 + preserved semantic boundaries
 ```
@@ -589,4 +710,4 @@ more universal semantic layers
 + larger manually maintained CI chains
 ```
 
-The next proof of architectural universality is therefore not another abstract primitive. It is evidence that independent implementations and products can reuse the same tooling, be impact-analyzed mechanically, reproduce historical conformance coverage exactly, preserve historical receipt identity and be substituted only when consumer-specific evidence says that substitution is safe.
+The next proof of architectural universality is therefore not another abstract primitive. It is evidence that independent implementations and products can reuse the same tooling, be impact-analyzed mechanically, reproduce historical conformance coverage exactly, execute that coverage through a constrained shared runner, compare order-sensitive execution evidence explicitly, preserve historical receipt identity and be substituted only when consumer-specific evidence says that substitution is safe.
