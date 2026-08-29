@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/real-review-run-permit/v0.1/decision-receipt.schema.json",
+  "title": "MarketCloserRealReviewRunPermitMaterializationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "receipt_id", "source_input",
+    "authority_gate_binding", "execution_frontier", "requested_run", "classification",
+    "permit_created", "permit_binding", "claims", "non_effects", "next_safe_action",
+    "evaluated_at", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-REVIEW-RUN-PERMIT"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "MarketCloserRealReviewRunPermitMaterializationReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run-permit-materialization-receipt:[0-9a-f]{24}$"},
+    "source_input": {
+      "type": "object", "additionalProperties": false,
+      "required": ["materialization_id", "materialization_hash"],
+      "properties": {
+        "materialization_id": {"type": "string", "minLength": 1},
+        "materialization_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "authority_gate_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "gate_id", "gate_hash", "gate_receipt_id", "gate_receipt_hash", "gate_classification",
+        "authority_verified", "required_scope", "required_target", "authority_verification_id",
+        "bridge_receipt_hash", "marketer_candidate_id", "marketer_candidate_hash"
+      ],
+      "properties": {
+        "gate_id": {"type": "string", "minLength": 1},
+        "gate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "gate_receipt_id": {"type": "string", "minLength": 1},
+        "gate_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "gate_classification": {"enum": [
+          "SYNTHETIC_AUTHORITY_CONFORMANCE_READY", "AUTHORITY_EVIDENCE_REQUIRED",
+          "AUTHORITY_SCOPE_MISMATCH", "AUTHORITY_TARGET_MISMATCH", "AUTHORITY_SUBJECT_MISMATCH",
+          "AUTHORITY_EVIDENCE_STALE", "AUTHORITY_VERIFIED_RUN_PERMIT_NOT_CREATED"
+        ]},
+        "authority_verified": {"type": "boolean"},
+        "required_scope": {"const": "marketcloser.real-review.run"},
+        "required_target": {"type": "string", "minLength": 1},
+        "authority_verification_id": {"type": ["string", "null"]},
+        "bridge_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "marketer_candidate_id": {"type": "string", "minLength": 1},
+        "marketer_candidate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "execution_frontier": {"$ref": "input.schema.json#/$defs/frontier"},
+    "requested_run": {"$ref": "input.schema.json#/$defs/requestedRun"},
+    "classification": {"enum": [
+      "AUTHORITY_NOT_READY_PERMIT_NOT_CREATED",
+      "SYNTHETIC_RUN_PERMIT_MATERIALIZED",
+      "REAL_RUN_PERMIT_MATERIALIZED"
+    ]},
+    "permit_created": {"type": "boolean"},
+    "permit_binding": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["permit_id", "permit_hash"],
+          "properties": {
+            "permit_id": {"type": "string", "minLength": 1},
+            "permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+          }
+        }
+      ]
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "exact_authority_gate_revalidated", "exact_bridge_and_candidate_binding_preserved",
+        "execution_frontier_recorded", "one_shot_constraint_recorded", "pre_run_revalidation_required",
+        "pilot_permit_created", "action_permit_created", "stress_test_run", "stress_test_receipt_created",
+        "response_candidate_created", "provider_invoked", "network_accessed", "platform_mutated",
+        "publication_authorized", "external_execution_admitted", "external_effect_performed",
+        "successor_authority_created"
+      ],
+      "properties": {
+        "exact_authority_gate_revalidated": {"const": true},
+        "exact_bridge_and_candidate_binding_preserved": {"const": true},
+        "execution_frontier_recorded": {"const": true},
+        "one_shot_constraint_recorded": {"const": true},
+        "pre_run_revalidation_required": {"const": true},
+        "pilot_permit_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "stress_test_run": {"const": false},
+        "stress_test_receipt_created": {"const": false},
+        "response_candidate_created": {"const": false},
+        "provider_invoked": {"const": false},
+        "network_accessed": {"const": false},
+        "platform_mutated": {"const": false},
+        "publication_authorized": {"const": false},
+        "external_execution_admitted": {"const": false},
+        "external_effect_performed": {"const": false},
+        "successor_authority_created": {"const": false}
+      }
+    },
+    "non_effects": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "next_safe_action": {"enum": ["REAL_REVIEW_LOCAL_RUN_REVALIDATION_REQUIRED", "OBTAIN_POSITIVE_REAL_REVIEW_RUN_AUTHORITY_GATE"]},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

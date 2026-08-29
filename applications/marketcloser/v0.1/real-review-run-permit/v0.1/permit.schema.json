@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/real-review-run-permit/v0.1/permit.schema.json",
+  "title": "MarketCloserRealReviewRunPermit v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "artifact_type", "permit_id", "source_materialization",
+    "authority_gate_binding", "bridge_binding", "execution_frontier", "run",
+    "issued_at", "valid_until", "one_shot", "max_invocations", "remaining_invocations",
+    "consumed", "frontier_revalidation_required", "authority_revalidation_required",
+    "capabilities", "non_effects", "next_safe_action", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-REVIEW-RUN-PERMIT"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserRealReviewRunPermit"},
+    "permit_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run-permit:[0-9a-f]{24}$"},
+    "source_materialization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["materialization_id", "materialization_hash"],
+      "properties": {
+        "materialization_id": {"type": "string", "minLength": 1},
+        "materialization_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "authority_gate_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "gate_id", "gate_hash", "gate_receipt_id", "gate_receipt_hash", "gate_classification",
+        "authority_verified", "required_scope", "required_target", "authority_verification_id",
+        "bridge_receipt_hash", "marketer_candidate_id", "marketer_candidate_hash"
+      ],
+      "properties": {
+        "gate_id": {"type": "string", "minLength": 1},
+        "gate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "gate_receipt_id": {"type": "string", "minLength": 1},
+        "gate_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "gate_classification": {"enum": ["SYNTHETIC_AUTHORITY_CONFORMANCE_READY", "AUTHORITY_VERIFIED_RUN_PERMIT_NOT_CREATED"]},
+        "authority_verified": {"const": true},
+        "required_scope": {"const": "marketcloser.real-review.run"},
+        "required_target": {"type": "string", "minLength": 1},
+        "authority_verification_id": {"type": "string", "minLength": 1},
+        "bridge_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "marketer_candidate_id": {"type": "string", "minLength": 1},
+        "marketer_candidate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "bridge_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["bridge_receipt_hash", "marketer_candidate_id", "marketer_candidate_hash", "marketer_candidate_state"],
+      "properties": {
+        "bridge_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "marketer_candidate_id": {"type": "string", "minLength": 1},
+        "marketer_candidate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "marketer_candidate_state": {"enum": ["SYNTHETIC_CONFORMANCE_CANDIDATE_READY", "REAL_REVIEW_CANDIDATE_READY"]}
+      }
+    },
+    "execution_frontier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "tree", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "run": {
+      "type": "object", "additionalProperties": false,
+      "required": ["run_id", "operation", "deterministic_input_bound"],
+      "properties": {
+        "run_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run:[a-z0-9][a-z0-9:-]{2,191}$"},
+        "operation": {"const": "marketer-pessimist.real-review.stress-test.v0.1"},
+        "deterministic_input_bound": {"const": true}
+      }
+    },
+    "issued_at": {"type": "string", "format": "date-time"},
+    "valid_until": {"type": "string", "format": "date-time"},
+    "one_shot": {"const": true},
+    "max_invocations": {"const": 1},
+    "remaining_invocations": {"const": 1},
+    "consumed": {"const": false},
+    "frontier_revalidation_required": {"const": true},
+    "authority_revalidation_required": {"const": true},
+    "capabilities": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "local_analysis_permitted", "network_access_permitted", "filesystem_write_permitted",
+        "provider_invocation_permitted", "platform_mutation_permitted", "response_publication_permitted",
+        "pilot_permit_created", "action_permit_created", "external_execution_permitted",
+        "external_effect_permitted"
+      ],
+      "properties": {
+        "local_analysis_permitted": {"const": true},
+        "network_access_permitted": {"const": false},
+        "filesystem_write_permitted": {"const": false},
+        "provider_invocation_permitted": {"const": false},
+        "platform_mutation_permitted": {"const": false},
+        "response_publication_permitted": {"const": false},
+        "pilot_permit_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "external_execution_permitted": {"const": false},
+        "external_effect_permitted": {"const": false}
+      }
+    },
+    "non_effects": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "next_safe_action": {"const": "REAL_REVIEW_LOCAL_RUN_REVALIDATION_REQUIRED"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

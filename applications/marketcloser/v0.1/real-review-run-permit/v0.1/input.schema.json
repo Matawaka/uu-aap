@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/real-review-run-permit/v0.1/input.schema.json",
+  "title": "MarketCloserRealReviewRunPermitMaterializationInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "artifact_type", "materialization_id", "permit_origin",
+    "authority_gate_source", "execution_frontier", "requested_run", "materialized_at",
+    "controls", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-REVIEW-RUN-PERMIT"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserRealReviewRunPermitMaterializationInput"},
+    "materialization_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run-permit-materialization:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "permit_origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"const": "87714d88146ff88bc0bddddde84b99b26a639e2c"},
+        "tree": {"const": "d305e58633c87832895791232f34ecb399de487f"}
+      }
+    },
+    "authority_gate_source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "path", "expected_gate_input_hash"],
+      "properties": {
+        "mode": {"enum": ["repository_synthetic", "local_private"]},
+        "path": {"type": "string", "minLength": 1},
+        "expected_gate_input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "execution_frontier": {"$ref": "#/$defs/frontier"},
+    "requested_run": {"$ref": "#/$defs/requestedRun"},
+    "materialized_at": {"type": "string", "format": "date-time"},
+    "controls": {"$ref": "#/$defs/controls"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "frontier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "tree", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "requestedRun": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "run_id", "operation", "one_shot", "max_invocations", "valid_for_seconds",
+        "local_only", "read_only", "deterministic_input_bound", "pre_run_revalidation_required",
+        "network_access_available", "filesystem_write_available", "provider_invocation_available",
+        "platform_mutation_available", "response_candidate_available", "publication_available",
+        "pilot_permit_available", "action_permit_available", "external_execution_available",
+        "external_effect_available"
+      ],
+      "properties": {
+        "run_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run:[a-z0-9][a-z0-9:-]{2,191}$"},
+        "operation": {"const": "marketer-pessimist.real-review.stress-test.v0.1"},
+        "one_shot": {"const": true},
+        "max_invocations": {"const": 1},
+        "valid_for_seconds": {"type": "integer", "minimum": 1, "maximum": 3600},
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "deterministic_input_bound": {"const": true},
+        "pre_run_revalidation_required": {"const": true},
+        "network_access_available": {"const": false},
+        "filesystem_write_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "platform_mutation_available": {"const": false},
+        "response_candidate_available": {"const": false},
+        "publication_available": {"const": false},
+        "pilot_permit_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "external_execution_available": {"const": false},
+        "external_effect_available": {"const": false}
+      }
+    },
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "local_only", "read_only", "permit_materialization_available", "stress_test_run_available",
+        "network_access_available", "provider_invocation_available", "platform_mutation_available",
+        "publication_available", "pilot_permit_available", "action_permit_available",
+        "external_execution_available", "external_effect_available"
+      ],
+      "properties": {
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "permit_materialization_available": {"const": true},
+        "stress_test_run_available": {"const": false},
+        "network_access_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "platform_mutation_available": {"const": false},
+        "publication_available": {"const": false},
+        "pilot_permit_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "external_execution_available": {"const": false},
+        "external_effect_available": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "protocol": "MARKETCLOSER-REAL-REVIEW-RUN-PERMIT",
+  "version": "0.1",
+  "artifact_type": "MarketCloserRealReviewRunPermitMaterializationInput",
+  "materialization_id": "urn:uu-aap:marketcloser:real-review-run-permit-materialization:synthetic-wait-001",
+  "permit_origin": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "87714d88146ff88bc0bddddde84b99b26a639e2c",
+    "tree": "d305e58633c87832895791232f34ecb399de487f"
+  },
+  "authority_gate_source": {
+    "mode": "repository_synthetic",
+    "path": "applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/examples/synthetic-authority-wait.input.json",
+    "expected_gate_input_hash": "sha256:28d148f84404487f3632a4a63415346f6af1b275e299d27436f4c8a3bbc6b774"
+  },
+  "execution_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "87714d88146ff88bc0bddddde84b99b26a639e2c",
+    "tree": "d305e58633c87832895791232f34ecb399de487f",
+    "observed_at": "2026-08-29T01:48:00Z"
+  },
+  "requested_run": {
+    "run_id": "urn:uu-aap:marketcloser:real-review-run:synthetic-wait-001",
+    "operation": "marketer-pessimist.real-review.stress-test.v0.1",
+    "one_shot": true,
+    "max_invocations": 1,
+    "valid_for_seconds": 900,
+    "local_only": true,
+    "read_only": true,
+    "deterministic_input_bound": true,
+    "pre_run_revalidation_required": true,
+    "network_access_available": false,
+    "filesystem_write_available": false,
+    "provider_invocation_available": false,
+    "platform_mutation_available": false,
+    "response_candidate_available": false,
+    "publication_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "external_execution_available": false,
+    "external_effect_available": false
+  },
+  "materialized_at": "2026-08-29T01:49:00Z",
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "permit_materialization_available": true,
+    "stress_test_run_available": false,
+    "network_access_available": false,
+    "provider_invocation_available": false,
+    "platform_mutation_available": false,
+    "publication_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "external_execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:c02ce80619782678949cd4980ff48a93206bb625f6d40fa5aecb1c806b5f4fd2"
+}
