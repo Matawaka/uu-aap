@@ -1,0 +1,45 @@
+name: Python Import Resolution v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/python-import-resolution-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/python-import-resolution-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax and tests
+        run: |
+          node --check review/security/dependency-vulnerability/v0.1/python-import-resolution.js
+          node review/security/dependency-vulnerability/v0.1/test-python-import-resolution.js
+      - name: Materialize and resolve inventory
+        run: |
+          node review/security/dependency-vulnerability/v0.1/inventory.js > /tmp/inventory.json
+          node review/security/dependency-vulnerability/v0.1/python-import-resolution.js /tmp/inventory.json > /tmp/resolved-inventory.json
+          node -e "const r=require('/tmp/resolved-inventory.json'); if(r.outcome!=='INSUFFICIENT_EVIDENCE') throw Error('classification must not promote outcome'); if(r.python_resolution.unresolved_means_safe!==false) throw Error('unsafe semantics');"
+      - name: Checkout unchanged
+        run: test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-import-resolution-v0.1-${{ github.sha }}
+          path: /tmp/resolved-inventory.json
+          if-no-files-found: error
