@@ -1,0 +1,78 @@
+{
+  "artifact_type": "UU-AAP-Component-Manifest",
+  "manifest_version": "0.1",
+  "component": {
+    "id": "AI-Gateway",
+    "version": "0.1",
+    "kind": "PROFILE",
+    "status": "experimental",
+    "path": "protocols/integration/ai-gateway/v0.1"
+  },
+  "source_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "04d811a391bf133e5ffe91931b1fd2d52656ec19"
+  },
+  "exports": {
+    "interfaces": [
+      "AIGateway"
+    ],
+    "receipt_types": [
+      "GatewayDecisionReceipt",
+      "GatewayObservationReceipt"
+    ],
+    "schemas": [
+      "protocols/integration/ai-gateway/v0.1/capability-manifest.schema.json",
+      "protocols/integration/ai-gateway/v0.1/gateway-request.schema.json",
+      "protocols/integration/ai-gateway/v0.1/gateway-decision-receipt.schema.json",
+      "protocols/integration/ai-gateway/v0.1/gateway-observation-receipt.schema.json"
+    ],
+    "runtime_entrypoints": [
+      "protocols/integration/ai-gateway/v0.1/validate-gateway.js"
+    ]
+  },
+  "dependencies": [
+    {
+      "component_id": "UU-AAP-Core",
+      "edge_kind": "EVIDENCE",
+      "required": true,
+      "interface": "typed Core receipt references",
+      "notes": "Gateway authorization and observation semantics consume exact-frontier Core evidence without creating Core receipts."
+    }
+  ],
+  "conformance": {
+    "commands": [
+      {
+        "executable": "node",
+        "args": [
+          "protocols/integration/ai-gateway/v0.1/validate-gateway.js"
+        ]
+      },
+      {
+        "executable": "node",
+        "args": [
+          "protocols/integration/ai-gateway/v0.1/test-import-safe.js"
+        ]
+      }
+    ]
+  },
+  "effect_ceiling": {
+    "external_effect_emission": false,
+    "runtime_activation": false,
+    "execution_admission": false,
+    "creates_authority": false,
+    "accepts_responsibility": false
+  },
+  "canonicalization": {
+    "mode": "component_local",
+    "profile_ref": null
+  },
+  "evolution_ref": null,
+  "non_effects": [
+    "declared_interface_does_not_prove_compatibility",
+    "dependency_edge_does_not_transfer_authority",
+    "manifest_presence_does_not_activate_runtime",
+    "manifest_presence_does_not_publish_or_release",
+    "manifest_validation_does_not_attest_runtime_behavior"
+  ],
+  "content_hash": "sha256:1079cd7b0ddd572c4727b25761119f98526ac641bfb9ecd8d40cc108d337ffd3"
+}

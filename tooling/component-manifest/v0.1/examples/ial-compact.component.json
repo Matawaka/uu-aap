@@ -1,0 +1,67 @@
+{
+  "artifact_type": "UU-AAP-Component-Manifest",
+  "manifest_version": "0.1",
+  "component": {
+    "id": "IAL-Compact",
+    "version": "0.1",
+    "kind": "PROFILE",
+    "status": "experimental",
+    "path": "protocols/ial/v0.1/compact"
+  },
+  "source_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "04d811a391bf133e5ffe91931b1fd2d52656ec19"
+  },
+  "exports": {
+    "interfaces": [
+      "IALCompactEnvelope"
+    ],
+    "receipt_types": [
+      "IALCompactInspectionReceipt"
+    ],
+    "schemas": [
+      "protocols/ial/v0.1/compact/compact-envelope.schema.json",
+      "protocols/ial/v0.1/compact/inspection-receipt.schema.json"
+    ],
+    "runtime_entrypoints": [
+      "protocols/ial/v0.1/compact/ial-compact.js"
+    ]
+  },
+  "dependencies": [],
+  "conformance": {
+    "commands": [
+      {
+        "executable": "node",
+        "args": [
+          "protocols/ial/v0.1/compact/test-compact.js"
+        ]
+      },
+      {
+        "executable": "node",
+        "args": [
+          "protocols/ial/v0.1/compact/test-schema-runtime-parity.js"
+        ]
+      }
+    ]
+  },
+  "effect_ceiling": {
+    "external_effect_emission": false,
+    "runtime_activation": false,
+    "execution_admission": false,
+    "creates_authority": false,
+    "accepts_responsibility": false
+  },
+  "canonicalization": {
+    "mode": "component_local",
+    "profile_ref": null
+  },
+  "evolution_ref": null,
+  "non_effects": [
+    "declared_interface_does_not_prove_compatibility",
+    "dependency_edge_does_not_transfer_authority",
+    "manifest_presence_does_not_activate_runtime",
+    "manifest_presence_does_not_publish_or_release",
+    "manifest_validation_does_not_attest_runtime_behavior"
+  ],
+  "content_hash": "sha256:e4315fae28a4884bb8ebb6619ad074fd43b3aa3537eb77ffd28eaf6f35abd795"
+}
