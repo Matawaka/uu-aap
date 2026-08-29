@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {precedenceLease,leaseStatus,authorizeUnderLease,revisitReceipt}=require('./lease.js');
+const resolution={mode:'TEMPORARY_PRECEDENCE',selected_claim_ref:'A',competing_claim_refs:['B'],revisit_triggers:['NEW_EVIDENCE']};
+const lease=precedenceLease({lease_id:'lease:1',resolution,starts_at:'2026-08-29T16:00:00Z',expires_at:'2026-08-29T16:01:00Z'});
+const active=leaseStatus({lease,now:'2026-08-29T16:00:30Z'});assert.equal(active.active,true);assert.equal(authorizeUnderLease({lease,status:active,claim_ref:'A'}).authorized,true);
+const expired=leaseStatus({lease,now:'2026-08-29T16:01:00Z'});assert.equal(expired.status,'EXPIRED');assert.equal(expired.reopen_contention,true);assert.equal(authorizeUnderLease({lease,status:expired,claim_ref:'A'}).authorized,false);
+const revisit=leaseStatus({lease,now:'2026-08-29T16:00:30Z',trigger:'NEW_EVIDENCE'});assert.equal(revisit.status,'REVISIT_REQUIRED');assert.equal(revisit.active,false);
+const receipt=revisitReceipt({lease,status:expired,observed_at:'2026-08-29T16:01:00Z'});assert.deepEqual(receipt.preserved_claim_refs,['A','B']);assert.equal(receipt.normative_winner,null);
+const revoked=leaseStatus({lease,now:'2026-08-29T16:00:30Z',revoked:true,trigger:'AUTHORITY_CHANGE'});assert.equal(revoked.active,false);assert.equal(revoked.reopen_contention,true);
+console.log('dlc-si lease tests: ok');
