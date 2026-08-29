@@ -16,7 +16,7 @@ const assert = (condition, message) => { if (!condition) throw new Error(message
   const substitutions = [
     source => { source.request_id = 'urn:uu-aap:marketcloser:response-candidate-request:synthetic-substitution-001'; },
     source => { source.customer_context.tone = 'concise_factual'; },
-    source => { source.customer_context.selected_statement_ids = [...source.customer_context.selected_statement_ids].reverse(); },
+    source => { source.customer_context.context_id = 'urn:synthetic:marketcloser:response-context:substituted-001'; },
     source => { source.disposition_receipt.human_decision.rationale = 'Substituted rationale'; Response.rehash(source.disposition_receipt); }
   ];
   for (const mutate of substitutions) {
