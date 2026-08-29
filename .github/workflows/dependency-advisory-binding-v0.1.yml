@@ -1,0 +1,106 @@
+name: Dependency Advisory Binding v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/dependency-advisory-binding-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/dependency-advisory-binding-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  assess:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Syntax check
+        run: |
+          node --check review/security/dependency-vulnerability/v0.1/inventory.js
+          node --check review/security/dependency-vulnerability/v0.1/advisory-binding.js
+
+      - name: Materialize exact dependency inventory
+        run: node review/security/dependency-vulnerability/v0.1/inventory.js > /tmp/dependency-inventory-v0.1.json
+
+      - name: Bind current inventory into advisory input
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const fs = require('node:fs');
+          const inventory = JSON.parse(fs.readFileSync('/tmp/dependency-inventory-v0.1.json','utf8'));
+          const input = {
+            artifact_type: 'UU-AAP-Dependency-Advisory-Evidence',
+            version: '0.1',
+            reviewed_revision: inventory.reviewed_revision,
+            inventory,
+            advisory_evidence: []
+          };
+          fs.writeFileSync('/tmp/dependency-advisory.input.json', `${JSON.stringify(input, null, 2)}\n`);
+          NODE
+
+      - name: Assess fail-closed current advisory coverage
+        run: |
+          node review/security/dependency-vulnerability/v0.1/advisory-binding.js /tmp/dependency-advisory.input.json > /tmp/dependency-advisory.report.json
+          node <<'NODE'
+          const r = require('/tmp/dependency-advisory.report.json');
+          if (r.reviewed_revision !== process.env.GITHUB_SHA) throw new Error('reviewed revision mismatch');
+          if (r.outcome !== 'INSUFFICIENT_EVIDENCE') throw new Error(`expected INSUFFICIENT_EVIDENCE, got ${r.outcome}`);
+          if (r.blocking !== false) throw new Error('inventory-only advisory gap must not fabricate blocking finding');
+          if (r.vulnerability_free_proven !== false) throw new Error('vulnerability-free overclaim');
+          if (r.remediation_authorized || r.release_authorized || r.runtime_activated) throw new Error('authority overclaim');
+          NODE
+
+      - name: Negative semantic tests
+        run: |
+          node <<'NODE'
+          const { assess } = require('./review/security/dependency-vulnerability/v0.1/advisory-binding.js');
+          const base = {
+            artifact_type: 'UU-AAP-Dependency-Advisory-Evidence',
+            version: '0.1',
+            reviewed_revision: '1111111111111111111111111111111111111111',
+            inventory: {
+              artifact_type: 'UU-AAP-Dependency-Inventory', version: '0.1',
+              reviewed_revision: '1111111111111111111111111111111111111111',
+              surfaces: [{path:'.github/workflows/x.yml',class:'workflow',refs:[{kind:'github_action',reference:'actions/checkout@v4'}]}]
+            },
+            advisory_evidence: []
+          };
+          let r = assess(base);
+          if (r.outcome !== 'INSUFFICIENT_EVIDENCE' || !r.uncovered_dependency_kinds.includes('github_action')) throw new Error('uncovered action must remain insufficient');
+          r = assess({...base, advisory_evidence:[{source:'synthetic-test',covered_kinds:['github_action'],result:'no_known_advisory'}]});
+          if (r.outcome !== 'PASS' || r.vulnerability_free_proven !== false) throw new Error('scoped PASS semantics broken');
+          r = assess({...base, advisory_evidence:[{source:'synthetic-test',covered_kinds:['github_action'],result:'known_advisory',advisory_id:'TEST-1'}]});
+          if (r.outcome !== 'FAIL' || r.blocking !== true) throw new Error('known advisory must fail');
+          let rejected = false;
+          try { assess({...base, inventory:{...base.inventory, reviewed_revision:'2222222222222222222222222222222222222222'}}); } catch { rejected = true; }
+          if (!rejected) throw new Error('stale inventory must fail closed');
+          NODE
+
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"
+
+      - name: Upload advisory evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-advisory-binding-v0.1-${{ github.sha }}
+          path: |
+            /tmp/dependency-inventory-v0.1.json
+            /tmp/dependency-advisory.input.json
+            /tmp/dependency-advisory.report.json
+          if-no-files-found: error
