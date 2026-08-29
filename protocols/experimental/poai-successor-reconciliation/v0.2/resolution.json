@@ -1,0 +1,67 @@
+{
+  "type": "LegacyPoAISuccessorResolution",
+  "version": "0.2",
+  "source_map": {
+    "path": "protocols/experimental/poai-successor-reconciliation/v0.1/legacy-successor-map.json",
+    "version": "0.1",
+    "blob_sha": "7a8f27f6d5edd4a5d1bd14c52de586e0e0161947"
+  },
+  "resolution_frontier": "9c382c3da350d1a27c766116490c9acde6f2a12f",
+  "umbrella_issue": "#744",
+  "resolved_entries": [
+    {
+      "family": "PERSISTENT_KEY_CONTINUITY",
+      "prior_relation": "NEEDS_SUCCESSOR",
+      "resolved_relation": "SUPERSEDED_BY",
+      "current_refs": [
+        "protocols/integration/personal-sovereign-root/v0.1/"
+      ],
+      "evidence_refs": ["#447"],
+      "note": "PSR/PEF preserves continuity across key rotation/recovery without equating a person with a persistent browser key. Browser-local persistence is not promoted to Core."
+    },
+    {
+      "family": "IDENTITY_EVIDENCE",
+      "prior_relation": "NEEDS_SUCCESSOR",
+      "resolved_relation": "SUPERSEDED_BY",
+      "current_refs": [
+        "protocols/integration/personal-sovereign-root/v0.1/",
+        "protocols/integration/purpose-bounded-identity-evidence/v0.1/"
+      ],
+      "evidence_refs": ["#746", "#749", "04fcc868f7c57516d36912c955c4dbda167f3344"],
+      "note": "Purpose-bounded identity evidence consumes PSR/PEF continuity without converting account control, key continuity or a bounded match into legal identity or authority."
+    },
+    {
+      "family": "SCOPED_AUTHORITY_EVIDENCE",
+      "prior_relation": "NEEDS_SUCCESSOR",
+      "resolved_relation": "SUPERSEDED_BY",
+      "current_refs": [
+        "protocols/integration/scoped-authority-evidence/v0.1/"
+      ],
+      "evidence_refs": ["#747", "#750", "92d0e8604be67c55d924278765642d9960ab54d0"],
+      "note": "Scoped authority evidence now separates issuer entitlement, subject, action/target scope, validity, dispute, revocation and delegation boundaries while remaining distinct from materialization authority."
+    },
+    {
+      "family": "MATERIALIZATION_AND_POLICY_RELATIVE_CANONICALITY",
+      "prior_relation": "NEEDS_SUCCESSOR",
+      "resolved_relation": "SUPERSEDED_BY",
+      "current_refs": [
+        "protocols/integration/materialization-authority/v0.1/",
+        "protocols/integration/policy-relative-materialization/v0.1/",
+        "protocols/dlc-si/v0.2/"
+      ],
+      "evidence_refs": ["#751", "#748", "#753", "9c382c3da350d1a27c766116490c9acde6f2a12f"],
+      "note": "Dedicated materialization authority precedes recognition; recognition is exact-policy/exact-scope/exact-successor and remains policy-relative. Contention, stays, appeals and supersession stay observable without universal canonicality."
+    }
+  ],
+  "unresolved_successor_families": [],
+  "non_effects": {
+    "source_map_rewritten": false,
+    "legacy_rfc_rewritten": false,
+    "historical_issue_state_inferred": false,
+    "poai_v_conformance_created": false,
+    "universal_canonicality_created": false,
+    "execution_authority_created": false,
+    "external_effect_authority_created": false,
+    "release_or_certification_created": false
+  }
+}
