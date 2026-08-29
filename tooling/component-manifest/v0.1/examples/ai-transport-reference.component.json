@@ -1,0 +1,95 @@
+{
+  "artifact_type": "UU-AAP-Component-Manifest",
+  "manifest_version": "0.1",
+  "component": {
+    "id": "AI-Transport-Reference",
+    "version": "0.1",
+    "kind": "TRANSPORT",
+    "status": "experimental",
+    "path": "protocols/integration/ai-transport-reference/v0.1"
+  },
+  "source_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "2707fdcabb06967ef1d0a60cae8d9123dada8ef2"
+  },
+  "exports": {
+    "interfaces": [
+      "AITransportReferencePacket"
+    ],
+    "receipt_types": [
+      "AITransportReferenceInspectionReceipt"
+    ],
+    "schemas": [
+      "protocols/integration/ai-transport-reference/v0.1/transport-packet.schema.json",
+      "protocols/integration/ai-transport-reference/v0.1/inspection-receipt.schema.json"
+    ],
+    "runtime_entrypoints": [
+      "protocols/integration/ai-transport-reference/v0.1/reference-transport.js"
+    ]
+  },
+  "dependencies": [
+    {
+      "component_id": "IAL-Compact",
+      "edge_kind": "RUNTIME_IMPORT",
+      "required": true,
+      "interface": "IALCompactEnvelope",
+      "notes": "Transport revalidates and inspects the exact IAL Compact envelope."
+    },
+    {
+      "component_id": "AI-Gateway",
+      "edge_kind": "RUNTIME_IMPORT",
+      "required": true,
+      "interface": "AIGatewayDecision",
+      "notes": "Transport revalidates Gateway request and decision through the predecessor API."
+    },
+    {
+      "component_id": "UU-AAP-Core",
+      "edge_kind": "EVIDENCE",
+      "required": false,
+      "interface": "typed Core receipt carriage",
+      "notes": "The v0.1 profile can carry bounded Core evidence but rejects ActionPermit carriage."
+    }
+  ],
+  "conformance": {
+    "commands": [
+      {
+        "executable": "node",
+        "args": [
+          "protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js"
+        ]
+      },
+      {
+        "executable": "node",
+        "args": [
+          "protocols/integration/ai-transport-reference/v0.1/test-schema-runtime-parity.js"
+        ]
+      },
+      {
+        "executable": "node",
+        "args": [
+          "protocols/integration/ai-transport-reference/v0.1/test-import-safe.js"
+        ]
+      }
+    ]
+  },
+  "effect_ceiling": {
+    "external_effect_emission": false,
+    "runtime_activation": false,
+    "execution_admission": false,
+    "creates_authority": false,
+    "accepts_responsibility": false
+  },
+  "canonicalization": {
+    "mode": "component_local",
+    "profile_ref": null
+  },
+  "evolution_ref": null,
+  "non_effects": [
+    "declared_interface_does_not_prove_compatibility",
+    "dependency_edge_does_not_transfer_authority",
+    "manifest_presence_does_not_activate_runtime",
+    "manifest_presence_does_not_publish_or_release",
+    "manifest_validation_does_not_attest_runtime_behavior"
+  ],
+  "content_hash": "sha256:4fad04f2f6f55cf32bf0dca110442726716a131867a3fa30b48851806f0f9b89"
+}

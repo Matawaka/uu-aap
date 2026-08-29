@@ -1,251 +1,486 @@
 # UU-AAP Ecosystem Roadmap
 
-**Status:** portfolio-oriented successor to the original Public Draft roadmap  
-**Portfolio baseline:** `55dda89ac681e2c7ffbc90f00fe33852c35e8c65` (PR #513)  
-**Reusable Product Contract baseline:** `70c1dfe0e2d4f3e8401050c4e7f56a5e76d11b4d` (PR #515)  
-**Маркетолог Пессимиста contract baseline:** `c831b643a9b984a274c5093033c28ea4a8a26794` (PR #517)  
-**FREESHIELD contract baseline:** `18a57f46eac60576ecc7ff9777888cd2b45230a2` (PR #519)  
-**Честный найм contract baseline:** `04078a72415b681bc588d801169fc5d9abee3e9b` (PR #521)  
-**KONTUR Product Family baseline:** `b4faf8e759e5839b6d5ddf9ce461231b2d85375c` (PR #523)  
-**Current language-productization increment:** Issue #524  
-**Related:** completed Issue #512 and `docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`
+**Status:** reusable-runtime/tooling convergence after multi-product infrastructure proof  
+**Current evidence baseline:** `2707fdcabb06967ef1d0a60cae8d9123dada8ef2` (MarketCloser Publication Observation v0.1, PR #630)  
+**Current reusable-tooling increment:** Issue #631  
+**Stable semantic substrate:** [`protocols/core/v0.1/`](protocols/core/v0.1/)  
+**Component/tooling first slice:** [`tooling/component-manifest/v0.1/`](tooling/component-manifest/v0.1/)
 
-This roadmap reflects the implemented repository rather than the original August 2026 public-draft plan.
+This roadmap reflects the implemented repository after the Phase C/D productization and interoperability work. The project is no longer primarily blocked on adding semantic protocol layers. The current bottleneck is repeated engineering work around component metadata, dependency traversal, conformance orchestration, receipt utilities and implementation substitution evidence.
 
-## Strategic objective
+## 1. Strategic objective
 
-Prove that one stable-core candidate, one responsibility-boundary language and one provider-neutral transport system can support multiple independent products without mixing product semantics, authority, responsibility, data or successor decisions.
+Preserve the seven-primitive Core and the already-separated protocol/product semantics while turning repeated implementation patterns into reusable, independently testable engineering substrate.
 
 ```text
-Stable-Core candidate
-  -> Intent/Action Language
-  -> AI Gateway / Transport
-  -> bounded responsibility runtime and protective checks
-  -> independent domain products
-  -> comparable receipts and human-controlled successor decisions
+Stable semantic Core
+        ↓
+Registry / Negotiation / Attestation / Evolution
+        ↓
+IAL / FCL / bounded integration profiles
+        ↓
+AI Gateway / Transport / adapters
+        ↓
+independent products and applications
+
+        + cross-cutting reusable tooling
+
+Component Manifest
+  -> Dependency / Impact Graph
+  -> Generated Conformance Runner
+  -> Receipt Runtime SDK
+  -> Implementation Substitution Assessment
 ```
 
-A dependency edge is not an authority transfer.
+The tooling plane describes, validates and composes existing components. It must not silently become a new authority plane or a hidden replacement for Core semantics.
 
-## Portfolio invariants
+## 2. Governing invariants
 
 ```text
 Core != Product
 Product Success != Stable-Core Requirement
+Reusable Tooling != Stable-Core Primitive
+Component Manifest != Release Registry
+Dependency Edge != Authority Transfer
+Declared Interface != Compatibility Proof
+Conformance Evidence != Authority
+Substitutable != Selected
+Substitutable != Authorized
 Transport != Authority
 IAL Expression != Execution Admission
-KONTUR Responsibility State != ActionPermit
-Protective Review != Automatic Block or Sanction
-Product Contract != Product Runtime
-Application Filed != Application Registered
+Human Approval != ActionPermit
+Observation != Causality Proof
+Stored Receipt != Truth
 ```
 
-## Foundation already implemented
+No reusable extraction may reinterpret historical receipts or strengthen an existing component's authority/effect semantics.
 
-The repository already contains:
+## 3. Evidence that justifies the tooling shift
 
-- UU-AAP Core v0.1 experimental stable-core candidate and reusable receipt-chain validation;
-- real Core Pilots for continuity/recovery, bounded multi-agent delegation, single-use external effects and observe-before-retry reconciliation;
-- Intent/Action Language v0.1 responsibility-boundary and handoff profile;
-- provider-neutral AI Gateway, adapters, harnesses, evaluations and bounded execution lifecycle profiles;
-- KONTUR server Responsibility Kernel, Readiness Aggregator, activation boundary, responsibility ledger, live-host boundaries and Game Companion field-pilot evidence;
-- a privacy-preserving IP rights/filing pipeline for exact software objects;
-- Product Contract v0.1 schema, template, exact-frontier no-effect example and fail-closed validator;
-- canonical candidate Product Contracts for Маркетолог Пессимиста, FREESHIELD and Честный найм;
-- KONTUR Product Family Contract binding six family members without activation, shared-data admission, execution authority or Stable-Core promotion;
-- a candidate IAL Compact Envelope and read-only CLI binding Маркетолог Пессимиста and Честный найм through `parse -> validate -> inspect -> STOP`.
+The repository now contains independent repetitions of the same engineering structures across Core, IAL, FCL, execution lifecycle, product pilots and MarketCloser:
 
-The applicant reports that the selected Core software-registration application has been submitted externally. A separate privacy-safe filing checkpoint is still required; submission does not establish registration.
+- exact source/frontier binding;
+- schema + runtime parity checks;
+- deterministic receipt/content identities;
+- predecessor/source binding tests;
+- explicit assertions and non-effects;
+- import-safety checks;
+- human disposition/approval boundaries;
+- post-effect observation boundaries;
+- dedicated CI that re-runs predecessor chains.
 
-## Portfolio balance policy
+The repetition is now broad enough to extract reusable tooling from demonstrated common behavior rather than inventing a generic abstraction in advance.
 
-- At most two active domain-product implementation lines at once.
-- No new universal Core primitive without at least two named product consumers and one cross-product conformance case.
-- Every named product receives a compact Product Contract before deep implementation.
-- Product-specific semantics may not become reverse dependencies of Core.
-- A shared layer must gain a consumable product path within the next two increments.
-- KONTUR remains in consolidation and measurement mode before more conversational layers are added.
+## 4. Implemented foundation
 
-## Phase A — Portfolio convergence
+### 4.1 Semantic substrate
 
-1. [x] Publish the ecosystem state, product portfolio manifest and rebuilt roadmap.
-2. [ ] Bind the applicant-reported filing event to a privacy-safe receipt digest when retained evidence is available.
-3. [x] Add a reusable Product Contract v0.1 schema, validator and template.
-4. [ ] Add a cross-product interface/dependency registry separate from Core membership and release status.
-5. [ ] Keep Public Review and Core Pilot 002 open for honest external counterexamples.
+Implemented and retained as separate responsibilities:
 
-Reusable Product Contract: [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/).
+- **UU-AAP Core v0.1** — seven typed primitives from State/Evidence through Successor State;
+- **Stack Evolution / Compatibility v0.1** — explicit successor manifests and compatibility receipts;
+- **Protocol Registry v0.1** — exact immutable protocol release resolution;
+- **Capability Negotiation v0.1** — exact declared-capability comparison;
+- **Capability Attestation v0.1** — reproducible conformance evidence for exact implementations;
+- **Interface Registry v0.1** — machine-readable reusable interface/dependency index;
+- **IAL v0.1** — E0–E3 responsibility boundary and explicit handoff;
+- **FCL v0.1** — observable liveness, terminal closure and successor continuation;
+- bounded execution lifecycle and observation/successor integration profiles.
 
-**Exit condition:** every ecosystem direction has an explicit role, maturity class, dependency direction and next gate.
+### 4.2 Productized shared infrastructure
 
-## Phase B — Canonical product definitions
+Completed after the earlier roadmap snapshot:
 
-1. [x] **Маркетолог Пессимиста** — [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/); local evidence/claim stress testing, no campaign send, profiling or autonomous persuasion.
-2. [x] **FREESHIELD** — [`products/freeshield/v0.1/`](products/freeshield/v0.1/); scoped protective assessment without actuator control, sanction, global prohibition or authority creation.
-3. [x] **Честный найм** — [`products/honest-hiring/v0.1/`](products/honest-hiring/v0.1/); evidence-first contestable hiring support without automatic rejection, ranking, protected-attribute inference or external effects.
-4. [x] **KONTUR Product Family Contract** — [`products/kontur/v0.1/`](products/kontur/v0.1/); binds readiness, activation, kernel, ledger, live-host and Game Companion evidence while keeping member roles distinct.
+- IAL Compact Envelope / CLI;
+- provider-neutral AI Transport Reference CLI/SDK;
+- KONTUR family readiness read-only interoperability projection;
+- two-product local interoperability scenario using the same IAL + transport infrastructure.
 
-KONTUR family sequence:
+This proves bounded reuse of shared infrastructure without merging product identity, state, evidence, authority or responsibility.
+
+### 4.3 Independent local product evidence
+
+Completed local no-effect/measurable lines include:
+
+- Маркетолог Пессимиста local stress-test MVP;
+- FREESHIELD local protective assessment MVP;
+- Честный найм local comparison MVP with exact FREESHIELD binding;
+- KONTUR consolidated measurable demo.
+
+These provide the independent consumers required to evaluate which abstractions are genuinely reusable.
+
+### 4.4 Bounded pilot/application progression
+
+Phase-E style work has progressed through reusable pilot admission/human-disposition surfaces and into a richer MarketCloser application chain. MarketCloser intentionally remains distinct from the reusable Marketer Pessimist analytical core.
+
+The application line now exercises repeated boundaries for:
 
 ```text
-independent evidence
--> readiness aggregation
--> human activation boundary
--> responsibility kernel
--> append-only ledger
--> bounded product/pilot consumers
--> observation / recovery / successor evidence
+observation
+-> privacy/minimization
+-> bounded analysis
+-> human disposition
+-> response candidate
+-> human approval
+-> copy/export
+-> publication observation
+-> successor evidence
 ```
 
-The family contract fixes:
+This line remains a consumer/evidence source. Product/application-specific semantics must not become reverse dependencies of reusable Core or tooling.
+
+## 5. Current phase — Reusable Runtime & Tooling Convergence
+
+### T1 — Component Manifest v0.1 — CURRENT (#631)
+
+Purpose: describe an existing component through one read-only engineering metadata surface without modifying the component.
+
+Required fields include:
+
+- component identity/version/kind/status;
+- repository path and exact source frontier;
+- exported interfaces, receipts, schemas and runtime entrypoints;
+- typed dependency edges;
+- conformance commands;
+- effect/authority ceiling;
+- canonicalization declaration;
+- evolution reference;
+- explicit non-effects;
+- deterministic manifest identity.
+
+First consumers:
 
 ```text
-automatic_activation = false
-automatic_host_designation = false
-automatic_ledger_mutation = false
-automatic_runtime_start = false
-cross_member_data_access_default = denied
+UU-AAP-Core
+AI-Transport-Reference
 ```
 
-**Exit condition reached:** all named products have canonical effects, non-effects, human gates, data boundaries, receipts and IP object boundaries.
+Exit condition:
 
-## Phase C — Language and transport productization
+- schema + validator + examples + CI pass;
+- at least two independent existing components are represented without semantic changes;
+- validation is read-only and import-safe;
+- manifest presence creates no compatibility/publication/activation claim.
 
-1. [ ] **Current:** publish the IAL Compact Envelope and read-only CLI at [`protocols/ial/v0.1/compact/`](protocols/ial/v0.1/compact/) for `parse -> validate -> inspect`, with execution unavailable by construction.
-2. [ ] Publish one provider-neutral AI Transport reference CLI/SDK carrying Core and IAL evidence through exact-frontier adapters.
-3. [ ] Expose the implemented KONTUR Readiness Aggregator through a read-only product-family interoperability example without creating activation or responsibility acceptance.
-4. [ ] Run one local interoperability scenario consumed by at least two products.
+### T2 — Dependency / Impact Graph v0.1
 
-IAL Compact v0.1 first binds two independent consumers:
+Build a read-only graph from Component Manifests and existing interface metadata.
+
+Minimum edge vocabulary:
 
 ```text
-Маркетолог Пессимиста -> E0 local analysis
-Честный найм -> E1 observable human-review packet
+RUNTIME_IMPORT
+SCHEMA
+EVIDENCE
+CONFORMANCE
+TRANSPORT
+OPTIONAL_ADAPTER
+TEST_ONLY
 ```
 
-The Compact CLI exposes only:
+Minimum CLI/API questions:
 
 ```text
-parse
-validate
-inspect
-help
+reverse-deps(component)
+transitive-deps(component)
+affected-components(changed-paths)
+affected-conformance(changed-paths)
+why-dependent(A, B)
+cycles()
 ```
 
-It fixes:
+Exit condition:
+
+- one current manually maintained predecessor chain can be reproduced from graph evidence;
+- no CI trigger is narrowed merely because no direct import was observed;
+- graph reachability does not imply authority, responsibility or compatibility.
+
+### T3 — Generated Conformance Runner v0.1
+
+Use manifest/impact evidence to generate or execute the same deterministic conformance chain that is currently hand-maintained in large workflows.
+
+First proof target: choose one long existing successor workflow such as the MarketCloser publication-observation line and demonstrate:
 
 ```text
-execute_command_available = false
-network_access_required = false
-filesystem_write_required = false
-responsibility_accepted = false
-execution_admitted = false
-materialization_permitted = false
+manual predecessor test set
+==
+graph-derived predecessor test set
 ```
 
-E2 and E3 inspection identify required downstream handoff/Action Gate/materialization steps without satisfying them.
+before changing any production CI trigger.
 
-**Exit condition:** IAL and transport are usable infrastructure rather than only formal profiles.
+Requirements:
 
-## Phase D — Product MVPs
+- constrained executable/args representation;
+- no arbitrary shell expansion;
+- exact component/frontier binding;
+- stable ordering;
+- fail closed on unresolved mandatory dependency;
+- differential proof against the predecessor workflow.
 
-### Маркетолог Пессимиста
+### T4 — Receipt Runtime SDK v0.1
+
+Extract repeated receipt engineering operations only after two independent components prove byte-identical behavior through the shared runtime.
+
+Candidate APIs:
 
 ```text
-claim / plan
-  -> evidence split
-  -> assumptions
-  -> counterarguments
-  -> causal alternatives
-  -> falsifiers
-  -> missing evidence
-  -> human disposition
+validateEnvelope()
+canonicalize(profile, value)
+identityProjection(profile, receipt)
+computeHash(profile, receipt)
+verifyHash()
+verifyFrontier()
+verifyPredecessors()
+verifyNonEffects()
+buildReceipt()
+rehashReceipt()
 ```
 
-### FREESHIELD
+Critical rule:
 
 ```text
-ALLOW_ANALYSIS | NARROW_SCOPE | REQUIRE_EVIDENCE | HUMAN_REVIEW | BLOCK_EFFECT
+Shared Runtime != Universal Canonicalization Algorithm
 ```
 
-`BLOCK_EFFECT` is scoped non-admissibility for one exact effect candidate, not actuator execution, guilt, diagnosis, blacklist, global prohibition or sanction.
+Existing component-local identity rules remain historical truth. Shared runtime dispatches through explicit canonicalization profiles rather than rewriting old receipts.
 
-### Честный найм
+Migration exit condition:
+
+- at least two independent components produce byte-identical historical outputs before/after refactor;
+- import safety preserved;
+- no runtime activation/external effect introduced;
+- rollback to component-local implementation remains possible during the candidate phase.
+
+### T5 — Implementation Substitution Assessment v0.1
+
+Compose already-existing evidence planes:
 
 ```text
-attributable role requirements
-  -> candidate-supplied job evidence
-  -> lineage / relevance / uncertainty
-  -> bounded comparison candidate
-  -> FREESHIELD assessment
-  -> human review
-  -> contestable disposition
-  -> correction / appeal successor receipt
+Registry
++ Negotiation
++ Attestation
++ Evolution Compatibility
++ Interface / Component metadata
+        ↓
+consumer-specific SubstitutionAssessmentReceipt
 ```
 
-The first pilot MUST be fully fictional and synthetic. Real applicant data or employment effects require a separate later authorization and data-protection review.
+Required decisions:
 
-### KONTUR
+```text
+SUBSTITUTABLE
+ADAPTER_REQUIRED
+NOT_SUBSTITUTABLE
+INSUFFICIENT_EVIDENCE
+```
 
-Consolidate the existing stack into one bounded measurable demo with:
+Assessment ladder should distinguish:
 
-- exact family/member identity;
-- readiness/activation separation;
-- lifecycle and ledger lineage;
-- host observation/designation separation;
-- Game Companion dependency-chain evidence;
-- pause/recovery;
-- privacy-minimized field outcomes;
-- resource and human-interruption metrics.
+1. wire/schema compatibility;
+2. semantic compatibility;
+3. conformance compatibility;
+4. dependency compatibility;
+5. effect-ceiling compatibility;
+6. authority/responsibility compatibility;
+7. frontier/freshness compatibility;
+8. consumer-specific operational substitutability.
 
-The Product Family Contract does not activate KONTUR and does not authorize live Game Companion behavior.
+Mandatory boundary:
 
-**Exit condition:** each active product has a runnable local no-effect scenario and fail-closed validation.
+```text
+Substitutable != Selected
+Substitutable != Authorized
+Substitutable != Activated
+Substitutable != Executed
+```
 
-## Phase E — Bounded product pilots
+This phase is the point at which UU-AAP can begin to make evidence-backed implementation-interchangeability claims rather than only protocol/interface compatibility claims.
 
-Each product follows the same ladder:
+## 6. Secondary reusable candidates — extraction only after T1–T3 evidence
 
-1. canonical Product Contract;
-2. deterministic synthetic conformance;
-3. runnable local no-effect pilot;
-4. one bounded real pilot;
-5. execution/outcome receipt;
-6. post-run assessment;
-7. independent review or contestability case.
+These are not immediate Core additions. They are candidate profiles/runtime services derived from repetition already visible in independent products.
 
-No pilot result creates a successor permit or Stable-Core requirement.
+### Human Decision Gate
 
-## Phase F — Ecosystem interoperability and release candidate
+Candidate common artifacts:
 
-An ecosystem release candidate requires at least three independent vertical evidence lines:
+```text
+HumanDecisionRequest
+HumanDecisionReceipt
+```
+
+with bounded states such as `APPROVE | REJECT | DEFER | REQUEST_CHANGES | ABSTAIN`.
+
+It must preserve:
+
+```text
+Human Approval != Authority
+Human Approval != ActionPermit
+Human Approval != Execution
+```
+
+### Observation / Provenance Profile
+
+Candidate common envelope for Core outcome observation, KONTUR external observation, deployment observation, publication observation and future physical/world-state sensors.
+
+```text
+what
+source
+observed_at
+method
+digest
+independence class
+frontier
+```
+
+Observation remains distinct from execution and causal proof.
+
+### Generic Provenance Store
+
+Content-addressed append-only storage/retrieval for receipts and lineage:
+
+```text
+put
+get
+predecessors
+successors
+lineage
+heads
+by-frontier
+verify-graph
+```
+
+The store must carry no truth/authority semantics by itself.
+
+### Bounded Interaction Lifecycle
+
+A reusable FSM/profile may be justified if MarketCloser, Honest Hiring, KONTUR and future products continue to repeat a common candidate → review → effect-candidate → observation → closure structure.
+
+It remains above Core unless separate promotion evidence proves otherwise.
+
+## 7. Parallel product/pilot policy during tooling extraction
+
+Tooling convergence must not freeze useful bounded product evidence, but it changes WIP priorities.
+
+- Keep at most **one major reusable-tooling line** and **one bounded product/application evidence line** active at the same time.
+- New product semantics do not enter Core merely to simplify tooling.
+- Every new shared abstraction must have at least two independent existing consumers before extraction.
+- A tooling change that modifies component output requires differential compatibility evidence.
+- A product pilot may reveal a missing shared abstraction; it may not itself declare that abstraction Core-required.
+- MarketCloser remains an application consumer of Marketer Pessimist and other reusable infrastructure, not a replacement for those layers.
+- KONTUR remains a major independent evidence line and must not become a reverse dependency of generic tooling.
+
+## 8. CI and dependency-cost objective
+
+The immediate engineering acceleration target is to replace repeated manual predecessor orchestration with evidence-driven reuse while preserving fail-closed behavior.
+
+Current pattern:
+
+```text
+new boundary
++ schema
++ runtime
++ hash/source binding
++ parity test
++ import-safety test
++ negative tests
++ dedicated workflow
++ manually duplicated predecessor reruns
+```
+
+Target pattern:
+
+```text
+new domain semantics
++ Component Manifest
++ domain-specific conformance
+
+shared:
+  dependency resolution
+  impact analysis
+  constrained conformance orchestration
+  receipt utilities
+```
+
+The objective is reduced duplicate engineering, not fewer safety checks.
+
+```text
+CI Cost Reduction != Validation Weakening
+Generated Dependency Set != Inferred Safety
+```
+
+## 9. Compatibility and migration policy
+
+- Core v0.1 remains the historical semantic compatibility surface.
+- Existing protocol/component canonicalization rules are not silently normalized.
+- Existing receipts are never rewritten in place.
+- Cross-version protocol consumption continues through Evolution/Compatibility receipts.
+- Component substitution requires its own consumer-specific assessment.
+- Schema/catalog cleanup may add logical resolution before any physical file relocation.
+- Deprecation remains append-only with preserved historical meaning.
+
+## 10. Near-term merge sequence
+
+1. **Current:** Component Manifest v0.1 — schema, read-only validator, two existing-component examples and dedicated CI (#631).
+2. Dependency / Impact Graph v0.1 over Component Manifest + existing interface evidence.
+3. Graph-vs-manual dependency parity case using one long current CI predecessor chain.
+4. Generated Conformance Runner v0.1 with constrained commands and deterministic ordering.
+5. Receipt Runtime SDK v0.1 first extraction with two byte-identical differential consumers.
+6. Implementation Substitution Assessment v0.1.
+7. Expand manifests only to components needed by those proofs; do not mass-migrate the repository prematurely.
+8. Evaluate Human Decision Gate and Observation/Provenance extraction from at least two independent real consumers.
+9. Add generic provenance-store candidate only after storage/replay requirements are common across multiple products.
+10. Re-evaluate ecosystem release-candidate readiness after reusable tooling and bounded substitution evidence exist.
+
+Each item remains a separate review/merge gate. No item automatically authorizes its successor.
+
+## 11. Release-candidate criteria
+
+An ecosystem release candidate should now require both vertical evidence and horizontal reuse evidence.
+
+### Vertical evidence
+
+At least three independent lines, including:
 
 - KONTUR;
-- Маркетолог Пессимиста;
-- Честный найм or an independently exercised FREESHIELD implementation.
+- Маркетолог Пессимиста / MarketCloser application evidence kept semantically distinct;
+- Честный найм or an independently exercised FREESHIELD line.
 
-Required outputs:
+### Horizontal evidence
 
-- cross-product conformance matrix;
-- provider-neutral transport interoperability report;
-- Russian and English navigation;
+At minimum:
+
+- reusable Component Manifests for multiple independent layers;
+- machine-derived dependency/impact graph;
+- generated conformance parity with at least one historical manual workflow;
+- provider-neutral transport interoperability;
+- explicit version/migration policy;
+- at least one implementation-substitution assessment with a non-trivial result;
 - security, privacy, accessibility and contestability review;
-- versioned migration policy;
-- independent implementation or external review evidence.
+- Russian and English navigation.
 
-A release candidate is not automatically a release, standard, certification or legal registration.
+A release candidate is not automatically a release, standard, certification, legal registration, universal interoperability proof or authority grant.
 
-## Near-term merge sequence
+## 12. Current architectural direction
 
-1. **Completed:** Ecosystem State + Portfolio Manifest + Roadmap (#513).
-2. **Evidence-gated:** privacy-safe filing checkpoint after a private receipt digest exists.
-3. **Completed:** reusable Product Contract v0.1 (#515).
-4. **Completed:** Маркетолог Пессимиста Product Contract v0.1 (#517).
-5. **Completed:** FREESHIELD Protective Contract v0.1 (#519).
-6. **Completed:** Честный найм Product Contract v0.1 (#521).
-7. **Completed:** KONTUR Product Family Contract and consolidation boundary (#523).
-8. **Current:** IAL Compact Envelope + read-only CLI conformance (Issue #524).
-9. AI Transport Reference CLI/SDK.
-10. Synthetic product pilots and cross-product interoperability.
+The project should optimize for:
 
-Every item remains a separate review and human merge gate.
+```text
+fewer duplicated mechanisms
++ more explicit interfaces
++ stronger dependency evidence
++ reusable conformance
++ replaceable implementations
++ preserved semantic boundaries
+```
+
+rather than:
+
+```text
+more universal semantic layers
++ more product-specific reverse dependencies
++ larger manually maintained CI chains
+```
+
+The next proof of architectural universality is therefore not another abstract primitive. It is evidence that independent implementations and products can reuse the same tooling, be impact-analyzed mechanically, preserve historical receipt identity and be substituted only when consumer-specific evidence says that substitution is safe.
