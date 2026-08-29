@@ -1,14 +1,14 @@
 {
   "schema_version":"0.1",
   "review_id":"formal-rc-governance-v0.1",
-  "origin_frontier":"f05f04779ae1bb8f4c2b0c7dfa20a7c4ffc1b5eb",
+  "origin_frontier":"98bb48fea9886115d27cf3afec7f94cbbe231d29",
   "dimensions":[
     {"id":"security","state":"PASS","evidence_refs":["security/evidence-closure/v0.2","#672"],"limitation":"Evidence closure is bounded review evidence, not security certification."},
-    {"id":"privacy","state":"PRESENT_UNVERIFIED","evidence_refs":["protocols/integration/personal-sovereign-root/v0.1","protocols/integration/circumstantial-provenance/v0.1"],"limitation":"Repository boundaries are inspectable; no independent privacy certification is claimed."},
-    {"id":"accessibility","state":"INSUFFICIENT_EVIDENCE","evidence_refs":["docs/ROADMAP-CURRENT.md","#1","#7"],"limitation":"Repository discoverability exists but independent accessibility evaluation is not established."},
+    {"id":"privacy","state":"PASS","evidence_refs":["governance/formal-rc-review/v0.1/privacy-evidence-closure.json","protocols/integration/personal-sovereign-root/v0.1","protocols/integration/circumstantial-provenance/v0.1","#729"],"limitation":"PASS means bounded repository-evidence review; no independent privacy certification or universal downstream compliance is claimed."},
+    {"id":"accessibility","state":"PASS","evidence_refs":["governance/formal-rc-review/v0.1/accessibility-evidence.json","README.md","PUBLIC_REVIEW.md","#730"],"limitation":"PASS covers repository inspectability and usable textual paths only; no WCAG or assistive-technology certification is claimed."},
     {"id":"contestability","state":"PASS","evidence_refs":["protocols/dlc-si/v0.2","runtime/perceived-causal-liveness/v0.1","#526","#528"],"limitation":"PASS is protocol-level contest/revisit/revalidation evidence, not legal-process certification."},
-    {"id":"ru_en_semantic_parity","state":"INSUFFICIENT_EVIDENCE","evidence_refs":["#1","#7"],"limitation":"No current deterministic paired normative corpus proves repository-wide RU/EN semantic parity."},
-    {"id":"ru_en_navigation_parity","state":"INSUFFICIENT_EVIDENCE","evidence_refs":["#1","#7"],"limitation":"No current deterministic repository-wide paired navigation audit is established."},
+    {"id":"ru_en_semantic_parity","state":"PASS","evidence_refs":["governance/formal-rc-review/v0.1/ru-en-parity-corpus.json","README.md","README.ru.md","SPEC.md","SPEC.ru.md","PUBLIC_REVIEW.md","PUBLIC_REVIEW.ru.md","#731"],"limitation":"PASS is limited to the explicit paired corpus and preserved governance boundaries; English remains normative and repository-wide sentence-level translation parity is not claimed."},
+    {"id":"ru_en_navigation_parity","state":"PASS","evidence_refs":["governance/formal-rc-review/v0.1/ru-en-parity-corpus.json","README.md","README.ru.md","PUBLIC_REVIEW.md","PUBLIC_REVIEW.ru.md","pilots/core-pilot-002/README.md","pilots/core-pilot-002/README.ru.md","#731"],"limitation":"PASS covers explicit paired entry/review/Pilot 002 navigation only; repository-wide bilingual navigation coverage is not claimed."},
     {"id":"release_governance_separation","state":"PASS","evidence_refs":["tooling/release-candidate-checkpoint/v0.3","docs/ROADMAP-CURRENT.md"],"limitation":"PASS only confirms explicit non-effect separation; it grants no release authority."}
   ],
   "external_gates":{"public_review":"WAITING_EXTERNAL","pilot_002":"WAITING_EXTERNAL"},
