@@ -1,0 +1,24 @@
+name: Formal RC Governance Review v0.1
+on:
+  pull_request:
+    paths:
+      - 'governance/formal-rc-review/v0.1/**'
+      - '.github/workflows/formal-rc-governance-review-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'governance/formal-rc-review/v0.1/**'
+      - '.github/workflows/formal-rc-governance-review-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check governance/formal-rc-review/v0.1/review.js
+      - run: node governance/formal-rc-review/v0.1/test-review.js
+      - run: test -z "$(git status --porcelain)"
