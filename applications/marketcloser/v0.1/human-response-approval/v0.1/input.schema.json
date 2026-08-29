@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:marketcloser-human-response-approval-input:v0.1",
+  "title": "MarketCloserHumanResponseApprovalInput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","artifact_type","approval_id","origin","response_source","response_candidate_receipt","decision","decided_at","controls","content_hash"],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-HUMAN-RESPONSE-APPROVAL"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserHumanResponseApprovalInput"},
+    "approval_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:human-response-approval:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository","revision","tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"const": "92533e6f84f036c1e45daa8ae18fe22957707f10"},
+        "tree": {"const": "b1c11f4756055eb69e4c212726f39facddd8f41e"}
+      }
+    },
+    "response_source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode","path","expected_response_input_hash"],
+      "properties": {
+        "mode": {"enum": ["repository_synthetic","local_private"]},
+        "path": {"type": "string", "minLength": 1},
+        "expected_response_input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "response_candidate_receipt": {"type": ["object","null"]},
+    "decision": {
+      "oneOf": [
+        {"type": "null"},
+        {
+          "type": "object", "additionalProperties": false,
+          "required": ["context","value","reviewer_ref","rationale"],
+          "properties": {
+            "context": {"enum": ["synthetic_conformance","human_supplied"]},
+            "value": {"enum": ["REJECT_RESPONSE","REQUEST_RESPONSE_CHANGES","APPROVE_FOR_COPY_EXPORT"]},
+            "reviewer_ref": {"type": "string", "minLength": 1},
+            "rationale": {"type": "string", "minLength": 1}
+          }
+        }
+      ]
+    },
+    "decided_at": {"type": ["string","null"], "format": "date-time"},
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": ["local_only","read_only","human_response_approval_recording_available","copy_export_authorization_available","copy_export_execution_available","publication_available","provider_invocation_available","network_access_available","platform_mutation_available","campaign_send_available","pilot_permit_available","action_permit_available","external_execution_available","external_effect_available"],
+      "properties": {
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "human_response_approval_recording_available": {"const": true},
+        "copy_export_authorization_available": {"const": true},
+        "copy_export_execution_available": {"const": false},
+        "publication_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "network_access_available": {"const": false},
+        "platform_mutation_available": {"const": false},
+        "campaign_send_available": {"const": false},
+        "pilot_permit_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "external_execution_available": {"const": false},
+        "external_effect_available": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"decision": {"type": "null"}}, "required": ["decision"]},
+      "then": {"properties": {"decided_at": {"type": "null"}}},
+      "else": {"properties": {"response_candidate_receipt": {"type": "object"}, "decided_at": {"type": "string", "format": "date-time"}}}
+    }
+  ]
+}
