@@ -97,4 +97,4 @@ jobs:
             tooling/component-manifest/v0.1/examples/receipt-runtime.component.json \
             tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
             >/tmp/receipt-runtime-impact.json
-          node -e "const x=require('/tmp/receipt-runtime-impact.json'); const e=['AI-Transport-Reference','Receipt-Runtime']; if(JSON.stringify(x.affected_components)!==JSON.stringify(e)) process.exit(1); if(x.claims.authority_created!==false||x.claims.substitutability_proven!==false) process.exit(1)"
+          node -e "const x=require('/tmp/receipt-runtime-impact.json'); const e=['AI-Transport-Reference','Receipt-Runtime']; if(JSON.stringify(x.affected_components)!==JSON.stringify(e)) process.exit(1); for(const n of ['impact_does_not_authorize_change','impact_does_not_prove_substitutability','dependency_reachability_does_not_transfer_authority']) if(!x.non_effects.includes(n)) process.exit(1)"
