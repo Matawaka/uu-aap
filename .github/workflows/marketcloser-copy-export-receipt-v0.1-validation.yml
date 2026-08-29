@@ -162,7 +162,7 @@ jobs:
 
       - name: Guard production surface as local non-actuating event recorder
         run: |
-          if grep -En "writeFile|appendFile|createWriteStream|child_process|exec\\(|spawn\\(|fetch\\(|http\\.|https\\.|net\\.|dgram|clipboard|OpenAI|Anthropic" "$LAYER/copy-export.js" "$LAYER/receipt-binding.js"; then
+          if grep -En "writeFile|appendFile|createWriteStream|child_process|exec\\(|spawn\\(|fetch\\(|http\\.|https\\.|net\\.|dgram|navigator\\.clipboard|clipboardy|xclip|pbcopy|OpenAI|Anthropic" "$LAYER/copy-export.js" "$LAYER/receipt-binding.js"; then
             echo 'Forbidden production mutation/network/provider/clipboard surface detected' >&2
             exit 1
           fi
