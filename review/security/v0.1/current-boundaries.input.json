@@ -1,0 +1,54 @@
+{
+  "artifact_type": "UU-AAP-Security-Review-Input",
+  "version": "0.1",
+  "origin_frontier": "f58cdf60b76f87fcceb146333e3cb9445596a295",
+  "reviewed_revision": "f58cdf60b76f87fcceb146333e3cb9445596a295",
+  "source_equivalence_verified": true,
+  "reviewed_surfaces": [
+    {"path":"SECURITY.md","blob_sha":"79375f601f1ccb5f345ad4f877a55ec3847c5497"},
+    {"path":"docs/AUDIT-HARDENING-v0.1.md","blob_sha":"1bdd384b1d0255b63f37589bad564fc1d60b7ffa"},
+    {"path":"protocols/integration/ci-dependency-hardening-audit/v0.1/README.md","blob_sha":"22fd730f47cb53b3df7d7a584c6543acfe51c6d3"}
+  ],
+  "observations": {
+    "explicit_threat_model_present": true,
+    "cryptographic_non_overclaim_present": true,
+    "revision_provenance_fail_closed": true,
+    "stale_revision_gate_present": true,
+    "ci_narrowing_fails_closed_on_incomplete_evidence": true,
+    "main_ruleset_active": true,
+    "main_deletion_forbidden": true,
+    "main_non_fast_forward_forbidden": true,
+    "main_pull_request_required": true,
+    "main_squash_only": true,
+    "main_no_bypass_actors": true,
+    "main_required_status_checks": [
+      "PoAI Genesis validation",
+      "PoAI Authority Root validation",
+      "CCRP validation",
+      "PoAI CCRP pre-materialization validation"
+    ],
+    "main_required_approving_review_count": 0,
+    "main_strict_required_status_checks_policy": false,
+    "dependency_vulnerability_review_current": false,
+    "secret_exposure_review_current": false,
+    "deployment_surface_security_review_current": false,
+    "workflow_supply_chain_review_current": false,
+    "adversarial_surface_review_current": false
+  },
+  "limitations": [
+    "required_approving_review_count_is_zero",
+    "strict_required_status_checks_policy_is_false",
+    "dependency_vulnerability_review_not_established_at_current_frontier",
+    "secret_exposure_review_not_established_at_current_frontier",
+    "deployment_surface_security_review_not_established_at_current_frontier",
+    "workflow_supply_chain_review_not_established_at_current_frontier",
+    "repository_wide_adversarial_security_review_not_established_at_current_frontier"
+  ],
+  "claims": {
+    "security_certified": false,
+    "vulnerability_free_proven": false,
+    "secret_free_proven": false,
+    "legal_compliance_established": false,
+    "all_surfaces_tested": false
+  }
+}
