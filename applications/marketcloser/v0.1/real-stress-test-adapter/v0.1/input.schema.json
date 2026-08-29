@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:marketcloser:real-stress-test-adapter:input:v0.1",
+  "title": "MarketCloserRealStressTestAdapterInput",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","artifact_type","adapter_id","origin","revalidation_source","operation","controls","content_hash"],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-STRESS-TEST-ADAPTER"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserRealStressTestAdapterInput"},
+    "adapter_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-stress-test-adapter:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "origin": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository","revision","tree"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"const": "2e06c019d2d94a2e72e13d461906ad508b987293"},
+        "tree": {"const": "f02e2960f64585ee02dcec9f93a069d1f8658991"}
+      }
+    },
+    "revalidation_source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode","path","expected_revalidation_input_hash"],
+      "properties": {
+        "mode": {"enum": ["repository_synthetic","local_private"]},
+        "path": {"type": "string", "minLength": 1},
+        "expected_revalidation_input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "operation": {"const": "marketer-pessimist.real-review.stress-test.v0.1"},
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "local_only","read_only","local_stress_test_compute_available","network_access_available",
+        "filesystem_write_available","provider_invocation_available","platform_mutation_available",
+        "response_candidate_available","human_disposition_available","publication_available",
+        "pilot_permit_available","action_permit_available","external_execution_available","external_effect_available"
+      ],
+      "properties": {
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "local_stress_test_compute_available": {"const": true},
+        "network_access_available": {"const": false},
+        "filesystem_write_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "platform_mutation_available": {"const": false},
+        "response_candidate_available": {"const": false},
+        "human_disposition_available": {"const": false},
+        "publication_available": {"const": false},
+        "pilot_permit_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "external_execution_available": {"const": false},
+        "external_effect_available": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

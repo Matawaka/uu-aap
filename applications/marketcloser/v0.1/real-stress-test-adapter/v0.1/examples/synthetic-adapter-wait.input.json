@@ -1,0 +1,34 @@
+{
+  "protocol": "MARKETCLOSER-REAL-STRESS-TEST-ADAPTER",
+  "version": "0.1",
+  "artifact_type": "MarketCloserRealStressTestAdapterInput",
+  "adapter_id": "urn:uu-aap:marketcloser:real-stress-test-adapter:synthetic-wait-001",
+  "origin": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "2e06c019d2d94a2e72e13d461906ad508b987293",
+    "tree": "f02e2960f64585ee02dcec9f93a069d1f8658991"
+  },
+  "revalidation_source": {
+    "mode": "repository_synthetic",
+    "path": "applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/examples/synthetic-revalidation-wait.input.json",
+    "expected_revalidation_input_hash": "sha256:a4743623009e9895d1c1814bcf0f97f98dbaf59af5603c69c3b212e34cc1507a"
+  },
+  "operation": "marketer-pessimist.real-review.stress-test.v0.1",
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "local_stress_test_compute_available": true,
+    "network_access_available": false,
+    "filesystem_write_available": false,
+    "provider_invocation_available": false,
+    "platform_mutation_available": false,
+    "response_candidate_available": false,
+    "human_disposition_available": false,
+    "publication_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "external_execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:8822c118052489c8638cc996ea4abe2a415b38349c3bf17c16429aed976d50cb"
+}

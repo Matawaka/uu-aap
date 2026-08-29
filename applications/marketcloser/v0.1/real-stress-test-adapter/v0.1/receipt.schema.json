@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:marketcloser:real-stress-test-adapter:receipt:v0.1",
+  "title": "MarketCloserRealStressTestReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol","version","receipt_type","receipt_id","source_input","revalidation_binding",
+    "permit_binding","candidate_binding","classification","analysis","execution","claims",
+    "non_effects","next_safe_action","content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-STRESS-TEST-ADAPTER"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "MarketCloserRealStressTestReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-stress-test-receipt:[0-9a-f]{24}$"},
+    "source_input": {
+      "type": "object", "additionalProperties": false,
+      "required": ["adapter_id","adapter_hash"],
+      "properties": {
+        "adapter_id": {"type": "string", "minLength": 1},
+        "adapter_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "revalidation_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["revalidation_id","revalidation_hash","receipt_id","receipt_hash","classification","local_run_ready"],
+      "properties": {
+        "revalidation_id": {"type": "string", "minLength": 1},
+        "revalidation_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "receipt_id": {"type": "string", "minLength": 1},
+        "receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "classification": {"enum": ["SYNTHETIC_LOCAL_RUN_READY","REAL_LOCAL_RUN_READY"]},
+        "local_run_ready": {"const": true}
+      }
+    },
+    "permit_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["permit_id","permit_hash","logical_invocation_id","logical_invocation_count","logically_consumed","compute_replay_idempotent"],
+      "properties": {
+        "permit_id": {"type": "string", "minLength": 1},
+        "permit_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "logical_invocation_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-stress-test-logical-invocation:[0-9a-f]{24}$"},
+        "logical_invocation_count": {"const": 1},
+        "logically_consumed": {"const": true},
+        "compute_replay_idempotent": {"const": true}
+      }
+    },
+    "candidate_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_id","candidate_hash","candidate_state","source_mode","bridge_receipt_hash"],
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "candidate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "candidate_state": {"enum": ["SYNTHETIC_CONFORMANCE_CANDIDATE_READY","REAL_REVIEW_CANDIDATE_READY"]},
+        "source_mode": {"enum": ["synthetic_conformance","real_non_personal"]},
+        "bridge_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "classification": {"enum": ["SYNTHETIC_STRESS_TEST_COMPLETED","REAL_STRESS_TEST_COMPLETED"]},
+    "analysis": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "state","uncertainty_states","classification_summary","evidence_lineage","counterarguments",
+        "causal_alternatives","falsifiers","missing_evidence","recommendation_candidate","success_criteria"
+      ],
+      "properties": {
+        "state": {"enum": ["UNKNOWN","CONFLICT","INSUFFICIENT_EVIDENCE","CANDIDATE_READY"]},
+        "uncertainty_states": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"enum": ["UNKNOWN","CONFLICT","INSUFFICIENT_EVIDENCE","CANDIDATE_READY"]}},
+        "classification_summary": {
+          "type": "object", "additionalProperties": false,
+          "required": ["counts","statement_ids_by_classification"],
+          "properties": {
+            "counts": {"$ref": "#/$defs/classificationCounts"},
+            "statement_ids_by_classification": {"$ref": "#/$defs/classificationArrays"}
+          }
+        },
+        "evidence_lineage": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["statement_id","classification","evidence_refs","evidence_quality"],
+            "properties": {
+              "statement_id": {"type": "string", "minLength": 1},
+              "classification": {"enum": ["observed_evidence","interpretation","assumption","hypothesis","declared_objective"]},
+              "evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+              "evidence_quality": {"type": "array", "uniqueItems": true, "items": {"enum": ["verified","unverified","stale","conflicting"]}}
+            }
+          }
+        },
+        "counterarguments": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["candidate_id","statement_id","status","reason_code","text","basis_evidence_refs"],
+            "properties": {
+              "candidate_id": {"type": "string", "minLength": 1},
+              "statement_id": {"type": "string", "minLength": 1},
+              "status": {"const": "candidate"},
+              "reason_code": {"type": "string", "minLength": 1},
+              "text": {"type": "string", "minLength": 1},
+              "basis_evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+            }
+          }
+        },
+        "causal_alternatives": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["candidate_id","statement_id","status","text","basis_evidence_refs"],
+            "properties": {
+              "candidate_id": {"type": "string", "minLength": 1},
+              "statement_id": {"type": "string", "minLength": 1},
+              "status": {"const": "candidate"},
+              "text": {"type": "string", "minLength": 1},
+              "basis_evidence_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+            }
+          }
+        },
+        "falsifiers": {
+          "type": "array", "minItems": 1,
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["statement_id","status","kind","description","unavailable_reason"],
+            "properties": {
+              "statement_id": {"type": "string", "minLength": 1},
+              "status": {"enum": ["available","unavailable"]},
+              "kind": {"enum": ["observation","test","none"]},
+              "description": {"type": ["string","null"]},
+              "unavailable_reason": {"type": ["string","null"]}
+            }
+          }
+        },
+        "missing_evidence": {
+          "type": "array",
+          "items": {
+            "type": "object", "additionalProperties": false,
+            "required": ["gap_id","statement_id","code","evidence_ref","description"],
+            "properties": {
+              "gap_id": {"type": "string", "minLength": 1},
+              "statement_id": {"type": "string", "minLength": 1},
+              "code": {"type": "string", "minLength": 1},
+              "evidence_ref": {"type": ["string","null"]},
+              "description": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "recommendation_candidate": {
+          "type": "object", "additionalProperties": false,
+          "required": ["candidate","rationale_codes","human_disposition_required"],
+          "properties": {
+            "candidate": {"enum": ["REQUEST_MORE_EVIDENCE_CANDIDATE","HUMAN_RECONCILIATION_REQUIRED","READY_FOR_HUMAN_DISPOSITION_CANDIDATE"]},
+            "rationale_codes": {"type": "array", "items": {"type": "string", "minLength": 1}},
+            "human_disposition_required": {"const": true}
+          }
+        },
+        "success_criteria": {
+          "type": "object", "additionalProperties": false,
+          "required": ["material_claim_classification","recommendation_falsifiability","no_external_effect"],
+          "properties": {
+            "material_claim_classification": {"const": true},
+            "recommendation_falsifiability": {"type": "boolean"},
+            "no_external_effect": {"const": true}
+          }
+        }
+      }
+    },
+    "execution": {
+      "type": "object", "additionalProperties": false,
+      "required": ["operation","local_compute_performed","provider_invoked","network_accessed","filesystem_written","platform_mutated","external_effect_performed"],
+      "properties": {
+        "operation": {"const": "marketer-pessimist.real-review.stress-test.v0.1"},
+        "local_compute_performed": {"const": true},
+        "provider_invoked": {"const": false},
+        "network_accessed": {"const": false},
+        "filesystem_written": {"const": false},
+        "platform_mutated": {"const": false},
+        "external_effect_performed": {"const": false}
+      }
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "exact_revalidation_rederived","exact_candidate_rederived","deterministic_analysis_completed",
+        "logical_permit_consumption_recorded","same_permit_same_candidate_same_logical_invocation",
+        "human_disposition_still_required","truth_certified","claim_rejected","automatic_negative_judgment",
+        "response_candidate_created","human_disposition_recorded","publication_authorized","provider_invoked",
+        "network_accessed","filesystem_written","platform_mutated","pilot_permit_created","action_permit_created",
+        "external_execution_admitted","external_effect_performed","successor_authority_created"
+      ],
+      "properties": {
+        "exact_revalidation_rederived": {"const": true},
+        "exact_candidate_rederived": {"const": true},
+        "deterministic_analysis_completed": {"const": true},
+        "logical_permit_consumption_recorded": {"const": true},
+        "same_permit_same_candidate_same_logical_invocation": {"const": true},
+        "human_disposition_still_required": {"const": true},
+        "truth_certified": {"const": false},
+        "claim_rejected": {"const": false},
+        "automatic_negative_judgment": {"const": false},
+        "response_candidate_created": {"const": false},
+        "human_disposition_recorded": {"const": false},
+        "publication_authorized": {"const": false},
+        "provider_invoked": {"const": false},
+        "network_accessed": {"const": false},
+        "filesystem_written": {"const": false},
+        "platform_mutated": {"const": false},
+        "pilot_permit_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "external_execution_admitted": {"const": false},
+        "external_effect_performed": {"const": false},
+        "successor_authority_created": {"const": false}
+      }
+    },
+    "non_effects": {
+      "const": [
+        "Real Source != Synthetic Fixture",
+        "Deterministic Analysis != Truth",
+        "Counterargument != Rejection",
+        "Risk Hypothesis != Proof of Harm",
+        "Stress-Test Completed != Response Candidate",
+        "Stress-Test Completed != Human Disposition",
+        "Stress-Test Completed != Publication Authority",
+        "Logical Permit Consumption != ActionPermit Consumption",
+        "Compute Replay != New Logical Invocation",
+        "Successful Analysis != Successor Authority"
+      ]
+    },
+    "next_safe_action": {"const": "HUMAN_ANALYSIS_DISPOSITION_GATE_REQUIRED"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "classificationCounts": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observed_evidence","interpretation","assumption","hypothesis","declared_objective"],
+      "properties": {
+        "observed_evidence": {"type": "integer", "minimum": 0},
+        "interpretation": {"type": "integer", "minimum": 0},
+        "assumption": {"type": "integer", "minimum": 0},
+        "hypothesis": {"type": "integer", "minimum": 0},
+        "declared_objective": {"type": "integer", "minimum": 0}
+      }
+    },
+    "classificationArrays": {
+      "type": "object", "additionalProperties": false,
+      "required": ["observed_evidence","interpretation","assumption","hypothesis","declared_objective"],
+      "properties": {
+        "observed_evidence": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "interpretation": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "assumption": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "hypothesis": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "declared_objective": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}

@@ -1,0 +1,171 @@
+name: MarketCloser Real Stress-Test Adapter v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/**'
+      - '.github/workflows/marketcloser-real-stress-test-adapter-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/**'
+      - '.github/workflows/marketcloser-real-stress-test-adapter-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 2e06c019d2d94a2e72e13d461906ad508b987293
+  ADAPTER: applications/marketcloser/v0.1/real-stress-test-adapter/v0.1
+  FIXTURE: applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/examples/synthetic-adapter-wait.input.json
+  POS_INPUT: /tmp/marketcloser-adapter-positive-input.json
+  POS_RECEIPT: /tmp/marketcloser-adapter-positive-receipt.json
+  PYTHONPYCACHEPREFIX: /tmp/marketcloser-real-stress-test-adapter-pycache
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run MarketCloser application and data predecessors
+        run: |
+          python applications/marketcloser/v0.1/validate_boundary.py
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-bridge.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-receipt-binding.js
+
+      - name: Re-run authority permit and revalidation predecessors
+        run: |
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-authority-gate.js
+          node applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-permit.js
+          node applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/test-revalidation.js
+          node applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/test-receipt-binding.js
+
+      - name: Re-run Marketer Pessimist predecessors
+        run: |
+          python products/marketer-pessimist/v0.1/validate_contract.py
+          node products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js
+          node products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js
+
+      - name: Preserve synthetic-only Local MVP boundary
+        run: |
+          grep -q "controls.synthetic_only === true" products/marketer-pessimist/v0.1/local-mvp/stress-test.js
+          if grep -q "local-mvp/stress-test.js" "$ADAPTER/adapter.js" "$ADAPTER/engine.js"; then
+            echo 'Production real adapter must not import synthetic-only Local MVP runtime' >&2
+            exit 1
+          fi
+
+      - name: Check adapter JavaScript syntax
+        run: |
+          node --check "$ADAPTER/engine.js"
+          node --check "$ADAPTER/adapter.js"
+          node --check "$ADAPTER/receipt-binding.js"
+          node --check "$ADAPTER/synthetic-positive-helper.js"
+          node --check "$ADAPTER/test-engine-parity.js"
+          node --check "$ADAPTER/test-adapter.js"
+          node --check "$ADAPTER/test-receipt-binding.js"
+          node --check "$ADAPTER/test-schema-runtime-parity.js"
+          node --check "$ADAPTER/test-import-safe.js"
+
+      - name: Validate committed non-ready adapter fixture
+        run: node "$ADAPTER/adapter.js" validate "$FIXTURE"
+
+      - name: Confirm committed fixture remains non-ready
+        run: |
+          node "$ADAPTER/adapter.js" inspect "$FIXTURE" >/tmp/marketcloser-adapter-wait-inspection.json
+          node - <<'NODE'
+          const r = require('/tmp/marketcloser-adapter-wait-inspection.json');
+          if (r.adapter_status !== 'REVALIDATION_NOT_READY' || r.stress_test_run !== false) throw new Error('committed adapter fixture became ready');
+          NODE
+          if node "$ADAPTER/adapter.js" stress-test "$FIXTURE" >/tmp/unexpected-adapter-run.json 2>/tmp/expected-adapter-rejection.log; then
+            echo 'Committed non-ready fixture unexpectedly executed stress-test' >&2
+            exit 1
+          fi
+
+      - name: Prove analytical parity with Local MVP
+        run: node "$ADAPTER/test-engine-parity.js"
+
+      - name: Run adapter conformance and synthetic logical execution
+        run: node "$ADAPTER/test-adapter.js"
+
+      - name: Validate exact adapter receipt source binding
+        run: node "$ADAPTER/test-receipt-binding.js"
+
+      - name: Validate schema runtime parity
+        run: node "$ADAPTER/test-schema-runtime-parity.js"
+
+      - name: Validate import safety
+        run: node "$ADAPTER/test-import-safe.js"
+
+      - name: Validate positive input and receipt JSON Schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          pairs = [
+              (Path('applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/input.schema.json'), Path('/tmp/marketcloser-adapter-positive-input.json')),
+              (Path('applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/receipt.schema.json'), Path('/tmp/marketcloser-adapter-positive-receipt.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node "$ADAPTER/adapter.js" help >/dev/null
+          node "$ADAPTER/adapter.js" validate "$FIXTURE" >/dev/null
+          node "$ADAPTER/adapter.js" inspect "$FIXTURE" >/dev/null
+          for command in publish send campaign spend target profile provider mutate execute authorize permit retry response; do
+            if node "$ADAPTER/adapter.js" "$command" "$FIXTURE" >/tmp/forbidden.out 2>/tmp/forbidden.err; then
+              echo "Forbidden command unexpectedly succeeded: $command" >&2
+              exit 1
+            fi
+          done
+
+      - name: Guard production runtime as local deterministic no-effect
+        run: |
+          if grep -En "writeFile|appendFile|createWriteStream|child_process|exec\\(|spawn\\(|fetch\\(|http\\.|https\\.|net\\.|dgram" "$ADAPTER/adapter.js" "$ADAPTER/engine.js" "$ADAPTER/receipt-binding.js"; then
+            echo 'Forbidden production mutation/network/process surface detected' >&2
+            exit 1
+          fi
+
+      - name: Confirm no real pilot evidence or ready permit is committed
+        run: |
+          ! grep -R "matawaka-marketcloser-public-34a3.twc1.net" "$ADAPTER"
+          ! grep -R '"classification"[[:space:]]*:[[:space:]]*"REAL_STRESS_TEST_COMPLETED"' "$ADAPTER/examples"
+          ! grep -R '"permit"[[:space:]]*:[[:space:]]*{' "$ADAPTER/examples"
+
+      - name: Confirm repository checkout unchanged
+        run: test -z "$(git status --porcelain)"
