@@ -4,6 +4,9 @@ on:
   pull_request:
     paths:
       - 'tooling/receipt-runtime/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json'
       - 'protocols/integration/ai-transport-reference/v0.1/**'
       - 'applications/marketcloser/v0.1/copy-export-receipt/v0.1/**'
       - '.github/workflows/receipt-runtime-v0.1-validation.yml'
@@ -12,6 +15,9 @@ on:
     branches: [main]
     paths:
       - 'tooling/receipt-runtime/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json'
       - 'protocols/integration/ai-transport-reference/v0.1/**'
       - 'applications/marketcloser/v0.1/copy-export-receipt/v0.1/**'
       - '.github/workflows/receipt-runtime-v0.1-validation.yml'
@@ -58,7 +64,17 @@ jobs:
           node --check tooling/receipt-runtime/v0.1/test-receipt-runtime.js
           node --check tooling/receipt-runtime/v0.1/test-import-safe.js
 
-      - name: Prove component-local vs shared profile differential parity
+      - name: Validate Receipt Runtime and consumer component manifests
+        run: |
+          for manifest in \
+            tooling/component-manifest/v0.1/examples/receipt-runtime.component.json \
+            tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
+            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
+          do
+            node tooling/component-manifest/v0.1/validate-component-manifest.js "$manifest" >/dev/null
+          done
+
+      - name: Prove historical vs shared profile differential parity
         run: node tooling/receipt-runtime/v0.1/test-receipt-runtime.js
 
       - name: Verify Receipt Runtime import safety
@@ -76,6 +92,13 @@ jobs:
           node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-receipt-binding.js
           node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-schema-runtime-parity.js
           node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-import-safe.js
+
+      - name: Assert explicit named profile delegation
+        run: |
+          grep -F "ReceiptRuntime.PROFILE_ZERO_CONTENT_HASH" "$TRANSPORT_SOURCE" >/dev/null
+          grep -F "ReceiptRuntime.PROFILE_OMIT_CONTENT_HASH" "$COPY_EXPORT_SOURCE" >/dev/null
+          grep -F '"component_id": "Receipt-Runtime"' tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json >/dev/null
+          grep -F '"component_id":"Receipt-Runtime"' tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json >/dev/null
 
       - name: Guard Receipt Runtime as pure deterministic identity tooling
         run: |
