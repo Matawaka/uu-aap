@@ -1,0 +1,13 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {contention,resolve,contestedActionReceipt}=require('./core.js');
+const ct=contention({claims:[{claim_id:'A',legitimate:true,legitimacy_ref:'proof:A'},{claim_id:'B',legitimate:true,legitimacy_ref:'proof:B'}],interface_descriptor:{interface_id:'single',capacity:1},ccrp_ref:'ccrp:1'});
+assert.equal(ct.interface_singular,true);assert.equal(ct.normative_winner,null);
+const policy={type:'BOUNDED_PRECEDENCE_POLICY',policy_id:'policy:1',human_authority_ref:'human:1',scope:'interface:single',max_lease_ms:60000,allowed_grounds:['TIME_CRITICAL'],revisit_triggers:['LEASE_EXPIRY','NEW_EVIDENCE']};
+const r=resolve({contention:ct,mode:'TEMPORARY_PRECEDENCE',selected_claim_ref:'A',ground:'TIME_CRITICAL',lease_ms:30000,policy});
+assert.equal(r.precedence_basis,'PREAUTHORIZED_BOUNDED_POLICY');assert.equal(r.normative_winner,null);assert.deepEqual(r.competing_claim_refs,['B']);assert.equal(r.creates_permanent_authority,false);
+const receipt=contestedActionReceipt({resolution:r,action_ref:'action:1'});assert.equal(receipt.contested,true);assert.equal(receipt.normative_victory,false);assert.equal(receipt.selection_erases_legitimacy,false);
+assert.throws(()=>resolve({contention:ct,mode:'TEMPORARY_PRECEDENCE',selected_claim_ref:'A',ground:'CONVENIENCE',lease_ms:30000,policy}),/outside bounded policy/);
+assert.throws(()=>resolve({contention:ct,mode:'TEMPORARY_PRECEDENCE',selected_claim_ref:'A',ground:'TIME_CRITICAL',lease_ms:60001,policy}),/exceeds bounded policy/);
+const u=resolve({contention:ct,mode:'UNRESOLVED'});assert.equal(u.human_resolution_required,true);
+console.log('dlc-si core tests: ok');
