@@ -1,0 +1,81 @@
+name: Dependency Impact Graph v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/ial-compact.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-gateway.component.json'
+      - '.github/workflows/dependency-impact-v0.1-validation.yml'
+      - 'ROADMAP.md'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/ial-compact.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-gateway.component.json'
+      - '.github/workflows/dependency-impact-v0.1-validation.yml'
+      - 'ROADMAP.md'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check tooling/dependency-impact/v0.1/dependency-impact.js
+          node --check tooling/dependency-impact/v0.1/test-dependency-impact.js
+          node --check tooling/dependency-impact/v0.1/test-import-safe.js
+
+      - name: Re-run Component Manifest conformance
+        run: |
+          node tooling/component-manifest/v0.1/test-component-manifest.js
+          node tooling/component-manifest/v0.1/test-import-safe.js
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/uu-aap-core.component.json
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/ial-compact.component.json
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/ai-gateway.component.json
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json
+
+      - name: Run dependency graph conformance
+        run: node tooling/dependency-impact/v0.1/test-dependency-impact.js
+
+      - name: Verify dependency graph import safety
+        run: node tooling/dependency-impact/v0.1/test-import-safe.js
+
+      - name: Prove graph analysis is read-only
+        run: |
+          before="$(git status --porcelain)"
+          node tooling/dependency-impact/v0.1/dependency-impact.js impact-path \
+            protocols/ial/v0.1/compact/ial-compact.js \
+            tooling/component-manifest/v0.1/examples/uu-aap-core.component.json \
+            tooling/component-manifest/v0.1/examples/ial-compact.component.json \
+            tooling/component-manifest/v0.1/examples/ai-gateway.component.json \
+            tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
+            >/tmp/dependency-impact.json
+          after="$(git status --porcelain)"
+          test "$before" = "$after"
+
+      - name: Prove acceptance impact
+        run: |
+          node tooling/dependency-impact/v0.1/dependency-impact.js impact-component \
+            UU-AAP-Core \
+            tooling/component-manifest/v0.1/examples/uu-aap-core.component.json \
+            tooling/component-manifest/v0.1/examples/ial-compact.component.json \
+            tooling/component-manifest/v0.1/examples/ai-gateway.component.json \
+            tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
+            >/tmp/core-impact.json
+          node -e "const x=require('/tmp/core-impact.json'); const e=['AI-Gateway','AI-Transport-Reference','UU-AAP-Core']; if(JSON.stringify(x.affected_components)!==JSON.stringify(e)) process.exit(1)"
