@@ -10,7 +10,9 @@ The profile consumes a dedicated `MaterializationAuthorityReceipt` and may produ
 - `REJECTED`
 - `INSUFFICIENT_EVIDENCE`
 
-A recognition is always relative to an exact policy id/version/scope and exact predecessor→successor pair.
+A recognition is always relative to an exact policy id/version/scope and exact predecessor→successor pair. The authority receipt must itself be `AUTHORIZED_IN_SCOPE`, explicitly support materialization authority, bind the same policy id/version/scope and exact target, and have an evaluation time no later than the recognition decision time.
+
+An optional recognition validity window is fail-closed: a decision outside that window is `DEFERRED`, not silently recognized. One referenced conflict set or one dispute is sufficient for `CONTESTED`; the profile never requires multiple conflicts before preserving contention. Stays also defer recognition. Appeal and supersession references remain provenance-bearing without rewriting earlier receipts.
 
 Core boundaries:
 
@@ -23,6 +25,8 @@ Core boundaries:
 `Materialization Authority != Execution Authority`
 
 `Recognition Receipt != ActionPermit`
+
+`Later Authority Evidence != Earlier Recognition Authority`
 
 Competing structurally valid successors remain observable. A conflict/dispute does not become normative victory merely because one candidate was selected elsewhere. Historical predecessor evidence, Decision Boundary and Knowledge Cutoff are not rewritten.
 
