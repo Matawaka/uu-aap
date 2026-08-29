@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:marketcloser-human-response-approval-receipt:v0.1",
+  "title": "MarketCloserHumanResponseApprovalReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","receipt_id","source_input","response_binding","human_decision","classification","approved_for_copy_export","copy_export_authorized","claims","non_effects","next_safe_action","decided_at","content_hash"],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-HUMAN-RESPONSE-APPROVAL"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "MarketCloserHumanResponseApprovalReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:human-response-approval-receipt:[0-9a-f]{24}$"},
+    "source_input": {
+      "type": "object", "additionalProperties": false,
+      "required": ["approval_id","approval_hash"],
+      "properties": {
+        "approval_id": {"type": "string", "minLength": 1},
+        "approval_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "response_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["request_id","request_hash","receipt_present","receipt_id","receipt_hash","classification","candidate_id","draft_hash","exact_receipt_revalidated","candidate_ready"],
+      "properties": {
+        "request_id": {"type": "string", "minLength": 1},
+        "request_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "receipt_present": {"type": "boolean"},
+        "receipt_id": {"type": ["string","null"]},
+        "receipt_hash": {"oneOf": [{"type": "null"},{"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}]},
+        "classification": {"type": ["string","null"]},
+        "candidate_id": {"type": ["string","null"]},
+        "draft_hash": {"oneOf": [{"type": "null"},{"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}]},
+        "exact_receipt_revalidated": {"type": "boolean"},
+        "candidate_ready": {"type": "boolean"}
+      }
+    },
+    "human_decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["present","context","value","reviewer_ref","rationale"],
+      "properties": {
+        "present": {"type": "boolean"},
+        "context": {"type": ["string","null"]},
+        "value": {"type": ["string","null"]},
+        "reviewer_ref": {"type": ["string","null"]},
+        "rationale": {"type": ["string","null"]}
+      }
+    },
+    "classification": {"enum": ["RESPONSE_CANDIDATE_REQUIRED","HUMAN_RESPONSE_DECISION_REQUIRED","RESPONSE_REJECTED","RESPONSE_CHANGES_REQUIRED","APPROVED_FOR_COPY_EXPORT"]},
+    "approved_for_copy_export": {"type": "boolean"},
+    "copy_export_authorized": {"type": "boolean"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["exact_response_source_revalidated","response_candidate_present","response_candidate_exactly_revalidated","human_response_decision_recorded","reviewer_reference_recorded","decision_rationale_recorded","approval_bound_to_exact_draft","copy_export_authorized","reviewer_identity_verified","reviewer_authority_verified","draft_modified","copy_export_performed","publication_authorized","provider_invoked","network_accessed","platform_mutated","campaign_sent","pilot_permit_created","action_permit_created","external_execution_admitted","external_effect_performed","successor_authority_created"],
+      "properties": {
+        "exact_response_source_revalidated": {"type": "boolean"},
+        "response_candidate_present": {"type": "boolean"},
+        "response_candidate_exactly_revalidated": {"type": "boolean"},
+        "human_response_decision_recorded": {"type": "boolean"},
+        "reviewer_reference_recorded": {"type": "boolean"},
+        "decision_rationale_recorded": {"type": "boolean"},
+        "approval_bound_to_exact_draft": {"type": "boolean"},
+        "copy_export_authorized": {"type": "boolean"},
+        "reviewer_identity_verified": {"const": false},
+        "reviewer_authority_verified": {"const": false},
+        "draft_modified": {"const": false},
+        "copy_export_performed": {"const": false},
+        "publication_authorized": {"const": false},
+        "provider_invoked": {"const": false},
+        "network_accessed": {"const": false},
+        "platform_mutated": {"const": false},
+        "campaign_sent": {"const": false},
+        "pilot_permit_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "external_execution_admitted": {"const": false},
+        "external_effect_performed": {"const": false},
+        "successor_authority_created": {"const": false}
+      }
+    },
+    "non_effects": {"type": "array", "items": {"type": "string"}, "uniqueItems": true, "minItems": 11, "maxItems": 11},
+    "next_safe_action": {"enum": ["OBTAIN_RESPONSE_CANDIDATE_RECEIPT","RECORD_EXPLICIT_HUMAN_RESPONSE_DECISION","STOP_AFTER_RESPONSE_REJECTION","RESPONSE_CANDIDATE_REVISION_REQUIRED","COPY_EXPORT_RECEIPT_REQUIRED"]},
+    "decided_at": {"type": ["string","null"], "format": "date-time"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
