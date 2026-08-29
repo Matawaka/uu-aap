@@ -34,9 +34,5 @@ assert.equal(r.result,'NOT_ASSESSED');
 assert.throws(()=>assessIdentityEvidence({...base,cross_context_correlation_performed:true}));
 assert.throws(()=>assessIdentityEvidence({...base,biometric_required:true}));
 assert.throws(()=>assessIdentityEvidence({...base,universal_identity_claim:true}));
-assert.throws(()=>assessIdentityEvidence({...base,legal_identity_claim:true,entitled_legal_identity_verifier:false}));
-
-r=assessIdentityEvidence({...base,legal_identity_claim:true,entitled_legal_identity_verifier:true});
-assert.equal(r.legal_identity_established,true);
-assert.equal(r.authority_established,false);
+assert.throws(()=>assessIdentityEvidence({...base,legal_identity_claim:true}));
 console.log('purpose-bounded identity evidence v0.1: ok');
