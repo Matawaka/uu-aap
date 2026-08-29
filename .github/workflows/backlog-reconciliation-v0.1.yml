@@ -29,4 +29,5 @@ jobs:
       - run: node scripts/backlog-reconciliation/audits/test-pass-006.js
       - run: node scripts/backlog-reconciliation/audits/test-pass-008.js
       - run: node scripts/backlog-reconciliation/audits/test-pass-009.js
+      - run: node scripts/backlog-reconciliation/audits/test-pass-010.js
       - run: test -z "$(git status --porcelain)"
