@@ -1,0 +1,166 @@
+name: MarketCloser Real Review Run Authority Gate v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/**'
+      - 'applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/**'
+      - 'applications/marketcloser/v0.1/deployment-observation/v0.1/**'
+      - 'applications/marketcloser/v0.1/application-boundary.json'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/marketcloser-real-review-run-authority-gate-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/**'
+      - 'applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/**'
+      - 'applications/marketcloser/v0.1/deployment-observation/v0.1/**'
+      - 'applications/marketcloser/v0.1/application-boundary.json'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/marketcloser-real-review-run-authority-gate-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      ORIGIN_FRONTIER: c22967d4ebf82336bf772fa7526b6d4e7b54765e
+      GATE: applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1
+      FIXTURE: applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/examples/synthetic-authority-wait.input.json
+      RECEIPT: /tmp/marketcloser-authority-gate-receipt.json
+      PYTHONPYCACHEPREFIX: /tmp/marketcloser-authority-gate-pycache
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run merged MarketCloser Application Boundary
+        run: python applications/marketcloser/v0.1/validate_boundary.py
+
+      - name: Re-run merged Deployment Observation predecessor
+        run: |
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+
+      - name: Re-run merged Minimized Real Review Bridge predecessor
+        run: |
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-bridge.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-schema-runtime-parity.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-import-safe.js
+
+      - name: Re-run canonical PoAI Authority Core
+        run: |
+          node --check proposals/poai/authority/tools/authority-core.js
+          node proposals/poai/authority/test-authority.js /tmp/authority-grant.json /tmp/authority-verification.json
+
+      - name: Check authority gate JavaScript syntax
+        run: |
+          node --check "$GATE/authority-gate.js"
+          node --check "$GATE/receipt-binding.js"
+          node --check "$GATE/test-authority-gate.js"
+          node --check "$GATE/test-receipt-binding.js"
+          node --check "$GATE/test-schema-runtime-parity.js"
+          node --check "$GATE/test-import-safe.js"
+
+      - name: Validate committed authority-wait fixture
+        run: node "$GATE/authority-gate.js" validate "$FIXTURE"
+
+      - name: Run authority gate conformance
+        run: node "$GATE/test-authority-gate.js"
+
+      - name: Validate exact authority gate source binding
+        run: node "$GATE/test-receipt-binding.js"
+
+      - name: Validate schema/runtime parity
+        run: node "$GATE/test-schema-runtime-parity.js"
+
+      - name: Validate import safety
+        run: node "$GATE/test-import-safe.js"
+
+      - name: Generate canonical waiting receipt
+        run: node "$GATE/authority-gate.js" evaluate "$FIXTURE" > "$RECEIPT"
+
+      - name: Validate input and receipt against JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          gate = Path(os.environ['GATE'])
+          pairs = [
+              (gate/'input.schema.json', Path(os.environ['FIXTURE'])),
+              (gate/'receipt.schema.json', Path(os.environ['RECEIPT'])),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node "$GATE/authority-gate.js" help | grep -q 'validate'
+          node "$GATE/authority-gate.js" help | grep -q 'evaluate'
+          for cmd in grant permit run stress-test publish send execute; do
+            if node "$GATE/authority-gate.js" "$cmd" "$FIXTURE" >/tmp/out 2>/tmp/err; then
+              echo "forbidden command unexpectedly succeeded: $cmd" >&2
+              exit 1
+            fi
+          done
+
+      - name: Confirm live GitHub root did not gain MarketCloser scope
+        run: |
+          node - <<'NODE'
+          const root = require('./proposals/poai/authority/roots/github/Matawaka.uu-aap.authority-root.json');
+          if (root.accepted_actions.includes('marketcloser.real-review.run')) {
+            throw new Error('live GitHub root unexpectedly grants MarketCloser review-run scope');
+          }
+          console.log('Live GitHub root unchanged: no MarketCloser run scope');
+          NODE
+
+      - name: Guard gate production surface as local read-only
+        run: |
+          ! grep -Eq "require\(['\"](http|https|net|dns|child_process)" "$GATE/authority-gate.js"
+          ! grep -Eq "fetch\(|axios|request\(" "$GATE/authority-gate.js"
+
+      - name: Confirm committed fixture does not fabricate authority
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          x = json.loads(Path(os.environ['FIXTURE']).read_text(encoding='utf-8'))
+          assert x['authority_verification_result'] is None
+          assert x['bridge_source']['mode'] == 'repository_synthetic'
+          assert 'synthetic-minimized-review.input.json' in x['bridge_source']['path']
+          assert x['controls']['authority_grant_creation_available'] is False
+          assert x['controls']['live_root_mutation_available'] is False
+          assert x['controls']['stress_test_run_available'] is False
+          print('Committed authority fixture remains synthetic waiting-state only')
+          PY
+
+      - name: Confirm repository checkout unchanged
+        run: git diff --exit-code

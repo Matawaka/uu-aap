@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/input.schema.json",
+  "title": "MarketCloserRealReviewRunAuthorityGateInput v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "artifact_type", "gate_id", "evaluation_frontier",
+    "bridge_source", "effect_actor_subject", "authority_verification_result",
+    "evaluated_at", "controls", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-REVIEW-RUN-AUTHORITY-GATE"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserRealReviewRunAuthorityGateInput"},
+    "gate_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run-authority-gate:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "evaluation_frontier": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "revision", "observed_at"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "revision": {"const": "c22967d4ebf82336bf772fa7526b6d4e7b54765e"},
+        "observed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "bridge_source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["mode", "path", "expected_bridge_input_hash"],
+      "properties": {
+        "mode": {"enum": ["repository_synthetic", "local_private"]},
+        "path": {"type": "string", "minLength": 1},
+        "expected_bridge_input_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "effect_actor_subject": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "key_ref"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "key_ref": {"type": "string", "minLength": 1}
+      }
+    },
+    "authority_verification_result": {
+      "oneOf": [
+        {"type": "null"},
+        {"type": "object", "description": "Delegated to canonical PoAI Authority Core validateVerificationResult()."}
+      ]
+    },
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "controls": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "local_only", "read_only", "authority_grant_creation_available",
+        "live_root_mutation_available", "stress_test_run_available",
+        "response_candidate_available", "publication_available", "provider_invocation_available",
+        "platform_mutation_available", "pilot_permit_available", "action_permit_available",
+        "execution_available", "external_effect_available"
+      ],
+      "properties": {
+        "local_only": {"const": true},
+        "read_only": {"const": true},
+        "authority_grant_creation_available": {"const": false},
+        "live_root_mutation_available": {"const": false},
+        "stress_test_run_available": {"const": false},
+        "response_candidate_available": {"const": false},
+        "publication_available": {"const": false},
+        "provider_invocation_available": {"const": false},
+        "platform_mutation_available": {"const": false},
+        "pilot_permit_available": {"const": false},
+        "action_permit_available": {"const": false},
+        "execution_available": {"const": false},
+        "external_effect_available": {"const": false}
+      }
+    },
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}

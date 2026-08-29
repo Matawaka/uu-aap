@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/receipt.schema.json",
+  "title": "MarketCloserRealReviewRunAuthorityGateReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "protocol", "version", "receipt_type", "receipt_id", "source_input",
+    "bridge_binding", "authority_requirement", "authority_evidence", "classification",
+    "authority_verified", "run_permit_created", "claims", "non_effects",
+    "next_safe_action", "evaluated_at", "content_hash"
+  ],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-REVIEW-RUN-AUTHORITY-GATE"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "MarketCloserRealReviewRunAuthorityGateReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run-authority-gate-receipt:[0-9a-f]{24}$"},
+    "source_input": {
+      "type": "object", "additionalProperties": false,
+      "required": ["gate_id", "gate_hash"],
+      "properties": {
+        "gate_id": {"type": "string", "minLength": 1},
+        "gate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "bridge_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "bridge_id", "bridge_hash", "bridge_receipt_id", "bridge_receipt_hash",
+        "bridge_status", "marketer_candidate_id", "marketer_candidate_hash", "marketer_candidate_state"
+      ],
+      "properties": {
+        "bridge_id": {"type": "string", "minLength": 1},
+        "bridge_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "bridge_receipt_id": {"type": "string", "minLength": 1},
+        "bridge_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "bridge_status": {"enum": ["SYNTHETIC_MINIMIZED_BRIDGE_READY", "REAL_MINIMIZED_REVIEW_CANDIDATE_READY"]},
+        "marketer_candidate_id": {"type": "string", "minLength": 1},
+        "marketer_candidate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "marketer_candidate_state": {"enum": ["SYNTHETIC_CONFORMANCE_CANDIDATE_READY", "REAL_REVIEW_CANDIDATE_READY"]}
+      }
+    },
+    "authority_requirement": {
+      "type": "object", "additionalProperties": false,
+      "required": ["required_scope", "required_target", "effect_actor_subject"],
+      "properties": {
+        "required_scope": {"const": "marketcloser.real-review.run"},
+        "required_target": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-run:bridge-sha256:[0-9a-f]{64}$"},
+        "effect_actor_subject": {
+          "type": "object", "additionalProperties": false,
+          "required": ["id", "key_ref"],
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "key_ref": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    },
+    "authority_evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "present", "verification_result_valid", "verification_id", "verified_at",
+        "result_status", "result_required_scope", "result_target", "result_subject",
+        "scope_match", "target_match", "subject_match", "fresh"
+      ],
+      "properties": {
+        "present": {"type": "boolean"},
+        "verification_result_valid": {"type": "boolean"},
+        "verification_id": {"type": ["string", "null"]},
+        "verified_at": {"type": ["string", "null"], "format": "date-time"},
+        "result_status": {"enum": ["established", "not_established", null]},
+        "result_required_scope": {"type": ["string", "null"]},
+        "result_target": {"type": ["string", "null"]},
+        "result_subject": {
+          "oneOf": [
+            {"type": "null"},
+            {
+              "type": "object", "additionalProperties": false,
+              "required": ["id", "key_ref"],
+              "properties": {
+                "id": {"type": "string", "minLength": 1},
+                "key_ref": {"type": "string", "minLength": 1}
+              }
+            }
+          ]
+        },
+        "scope_match": {"type": "boolean"},
+        "target_match": {"type": "boolean"},
+        "subject_match": {"type": "boolean"},
+        "fresh": {"type": "boolean"}
+      }
+    },
+    "classification": {
+      "enum": [
+        "SYNTHETIC_AUTHORITY_CONFORMANCE_READY",
+        "AUTHORITY_EVIDENCE_REQUIRED",
+        "AUTHORITY_SCOPE_MISMATCH",
+        "AUTHORITY_TARGET_MISMATCH",
+        "AUTHORITY_SUBJECT_MISMATCH",
+        "AUTHORITY_EVIDENCE_STALE",
+        "AUTHORITY_VERIFIED_RUN_PERMIT_NOT_CREATED"
+      ]
+    },
+    "authority_verified": {"type": "boolean"},
+    "run_permit_created": {"const": false},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "exact_bridge_revalidated", "exact_bridge_receipt_bound", "application_run_scope_declared",
+        "exact_run_target_declared", "authority_core_reused", "human_approval_treated_as_authority",
+        "repository_authority_treated_as_application_authority", "fcl_scope_treated_as_marketcloser_scope",
+        "authority_grant_created", "live_authority_root_modified", "run_permit_created", "stress_test_run",
+        "stress_test_receipt_created", "response_candidate_created", "human_disposition_recorded",
+        "pilot_permit_created", "action_permit_created", "execution_admitted", "publication_authorized",
+        "external_effect_performed"
+      ],
+      "properties": {
+        "exact_bridge_revalidated": {"const": true},
+        "exact_bridge_receipt_bound": {"const": true},
+        "application_run_scope_declared": {"const": true},
+        "exact_run_target_declared": {"const": true},
+        "authority_core_reused": {"const": true},
+        "human_approval_treated_as_authority": {"const": false},
+        "repository_authority_treated_as_application_authority": {"const": false},
+        "fcl_scope_treated_as_marketcloser_scope": {"const": false},
+        "authority_grant_created": {"const": false},
+        "live_authority_root_modified": {"const": false},
+        "run_permit_created": {"const": false},
+        "stress_test_run": {"const": false},
+        "stress_test_receipt_created": {"const": false},
+        "response_candidate_created": {"const": false},
+        "human_disposition_recorded": {"const": false},
+        "pilot_permit_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "execution_admitted": {"const": false},
+        "publication_authorized": {"const": false},
+        "external_effect_performed": {"const": false}
+      }
+    },
+    "non_effects": {"type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "next_safe_action": {"enum": ["OBTAIN_MATCHING_APPLICATION_AUTHORITY_EVIDENCE", "STOP_AFTER_SYNTHETIC_AUTHORITY_CONFORMANCE", "REAL_REVIEW_RUN_PERMIT_REQUIRED"]},
+    "evaluated_at": {"type": "string", "format": "date-time"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
