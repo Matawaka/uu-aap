@@ -1,0 +1,61 @@
+{
+  "artifact_type": "UU-AAP-Component-Manifest",
+  "manifest_version": "0.1",
+  "component": {
+    "id": "Implementation-Substitution-Assessment",
+    "version": "0.1",
+    "kind": "TOOLING",
+    "status": "experimental",
+    "path": "tooling/implementation-substitution/v0.1"
+  },
+  "source_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "de6c2a1fcf3d195ca20f48980679c7a818082b4f"
+  },
+  "exports": {
+    "interfaces": ["ImplementationSubstitutionAssessment"],
+    "receipt_types": ["SubstitutionAssessmentReceipt"],
+    "schemas": [
+      "tooling/implementation-substitution/v0.1/assessment-input.schema.json",
+      "tooling/implementation-substitution/v0.1/substitution-assessment-receipt.schema.json"
+    ],
+    "runtime_entrypoints": ["tooling/implementation-substitution/v0.1/implementation-substitution.js"]
+  },
+  "dependencies": [
+    {
+      "component_id": "Receipt-Runtime",
+      "edge_kind": "RUNTIME_IMPORT",
+      "required": true,
+      "interface": "ReceiptRuntime",
+      "notes": "Assessment reuses the explicit omit-content-hash Receipt Runtime identity profile; Receipt Runtime does not provide substitution semantics."
+    }
+  ],
+  "conformance": {
+    "commands": [
+      {"executable": "node", "args": ["tooling/implementation-substitution/v0.1/test-implementation-substitution.js"]},
+      {"executable": "node", "args": ["tooling/implementation-substitution/v0.1/test-real-t4-substitutions.js"]},
+      {"executable": "node", "args": ["tooling/implementation-substitution/v0.1/test-schema-runtime-parity.js"]},
+      {"executable": "node", "args": ["tooling/implementation-substitution/v0.1/test-import-safe.js"]}
+    ]
+  },
+  "effect_ceiling": {
+    "external_effect_emission": false,
+    "runtime_activation": false,
+    "execution_admission": false,
+    "creates_authority": false,
+    "accepts_responsibility": false
+  },
+  "canonicalization": {
+    "mode": "named_profile",
+    "profile_ref": "Receipt-Runtime/content-hash-omit-field-v0.1"
+  },
+  "evolution_ref": null,
+  "non_effects": [
+    "declared_interface_does_not_prove_compatibility",
+    "dependency_edge_does_not_transfer_authority",
+    "manifest_presence_does_not_activate_runtime",
+    "manifest_presence_does_not_publish_or_release",
+    "manifest_validation_does_not_attest_runtime_behavior"
+  ],
+  "content_hash": "sha256:ab13243ae80349654e69c003e0d461ab9b7b9a6777ef2c126c1a42aa6e2faf73"
+}
