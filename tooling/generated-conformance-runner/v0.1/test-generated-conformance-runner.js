@@ -9,7 +9,7 @@ const Runner = require('./generated-conformance-runner.js');
 
 const ROOT = process.cwd();
 const BASELINE_PATH = 'tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json';
-const WORKFLOW_PATH = '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml';
+const WORKFLOW_PATH = process.env.UU_AAP_HISTORICAL_WORKFLOW || '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml';
 const MANIFESTS = [
   'tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json',
   'tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json',
@@ -31,7 +31,7 @@ const MANIFESTS = [
 function loadInputs() {
   return {
     baseline: JSON.parse(fs.readFileSync(path.join(ROOT, BASELINE_PATH), 'utf8')),
-    workflowText: fs.readFileSync(path.join(ROOT, WORKFLOW_PATH), 'utf8'),
+    workflowText: fs.readFileSync(path.resolve(ROOT, WORKFLOW_PATH), 'utf8'),
     entries: DependencyImpact.loadManifests(MANIFESTS, { repositoryRoot: ROOT })
   };
 }
@@ -60,14 +60,12 @@ assert.strictEqual(plan.claims.target_component_commands_included, false);
 assert(!plan.commands.some((command) => command.component_id === plan.target_component_id));
 assert.strictEqual(new Set(plan.commands.map((command) => `${command.executable}\u0000${command.args.join('\u0000')}`)).size, 27);
 
-// The dependency-first plan must place reusable Marketer predecessors before the intake and bridge.
 const order = new Map(plan.dependency_components.map((id, index) => [id, index]));
 assert(order.get('Marketer-Pessimist-Product-Contract') < order.get('Marketer-Pessimist-Real-Review-Intake'));
 assert(order.get('Marketer-Pessimist-Local-MVP') < order.get('Marketer-Pessimist-Real-Review-Intake'));
 assert(order.get('Marketer-Pessimist-Real-Review-Intake') < order.get('MarketCloser-Minimized-Real-Review-Bridge'));
 assert(order.get('MarketCloser-Copy-Export-Receipt') > order.get('MarketCloser-Human-Response-Approval'));
 
-// Baseline deletion and injection are rejected at the earlier exact workflow-binding gate.
 const missingBaseline = JSON.parse(JSON.stringify(inputs.baseline));
 missingBaseline.commands.pop();
 missingBaseline.command_count = missingBaseline.commands.length;
@@ -84,7 +82,6 @@ expectThrow(
   /committed baseline does not exactly match historical predecessor command order\/content/
 );
 
-// Execution-plan validation rejects executable expansion, shell composition, duplicates and target commands.
 const badExecutable = JSON.parse(JSON.stringify(plan));
 badExecutable.commands[0].executable = 'bash';
 expectThrow(() => Runner.validateExecutionPlan(badExecutable), /executable is not allowed/);
@@ -102,7 +99,6 @@ const targetIncluded = JSON.parse(JSON.stringify(plan));
 targetIncluded.commands[0].component_id = targetIncluded.target_component_id;
 expectThrow(() => Runner.validateExecutionPlan(targetIncluded), /target component command included/);
 
-// Mock execution proves stop-on-first-failure without starting real child processes.
 const failedReceipt = Runner.executePlan(plan, {
   repositoryRoot: ROOT,
   snapshotter: () => 'same-snapshot',
@@ -121,7 +117,6 @@ assert.strictEqual(failedReceipt.failed_command_count, 1);
 assert.strictEqual(failedReceipt.stopped_early, true);
 assert.strictEqual(failedReceipt.repository_changed_after_run, false);
 
-// Repository mutation dominates an otherwise successful execution result.
 let snapshotCall = 0;
 const mutatedReceipt = Runner.executePlan(plan, {
   repositoryRoot: ROOT,
@@ -134,7 +129,6 @@ assert.strictEqual(mutatedReceipt.succeeded_command_count, 27);
 assert.strictEqual(mutatedReceipt.repository_changed_after_run, true);
 assert.strictEqual(mutatedReceipt.claims.all_commands_succeeded, false);
 
-// Bounded child environment preserves runtime essentials but strips common credential surfaces.
 const env = Runner.safeChildEnvironment({
   PATH: '/usr/bin', HOME: '/tmp/home', LANG: 'C.UTF-8',
   GITHUB_TOKEN: 'secret', OPENAI_API_KEY: 'secret', PASSWORD: 'secret', CI: 'true'
