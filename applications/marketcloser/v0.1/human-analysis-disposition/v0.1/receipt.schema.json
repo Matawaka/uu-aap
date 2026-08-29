@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:marketcloser-human-analysis-disposition-receipt:v0.1",
+  "title": "MarketCloserHumanAnalysisDispositionReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","receipt_id","source_input","analysis_binding","human_decision","classification","human_disposition_recorded","claims","non_effects","next_safe_action","decided_at","content_hash"],
+  "properties": {
+    "protocol":{"const":"MARKETCLOSER-HUMAN-ANALYSIS-DISPOSITION"},
+    "version":{"const":"0.1"},
+    "receipt_type":{"const":"MarketCloserHumanAnalysisDispositionReceipt"},
+    "receipt_id":{"type":"string","pattern":"^urn:uu-aap:marketcloser:human-analysis-disposition-receipt:[0-9a-f]{24}$"},
+    "source_input": {
+      "type":"object","additionalProperties":false,
+      "required":["disposition_id","disposition_hash"],
+      "properties": {
+        "disposition_id":{"type":"string","minLength":1},
+        "disposition_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "analysis_binding": {
+      "type":"object","additionalProperties":false,
+      "required":["adapter_id","adapter_hash","adapter_status","receipt_present","receipt_id","receipt_hash","receipt_classification","logical_invocation_id","analysis_state","recommendation_candidate","exact_receipt_revalidated"],
+      "properties": {
+        "adapter_id":{"type":"string","minLength":1},
+        "adapter_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},
+        "adapter_status":{"enum":["REVALIDATION_NOT_READY","SYNTHETIC_ADAPTER_READY","REAL_ADAPTER_READY"]},
+        "receipt_present":{"type":"boolean"},
+        "receipt_id":{"type":["string","null"]},
+        "receipt_hash":{"oneOf":[{"type":"null"},{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}]},
+        "receipt_classification":{"oneOf":[{"type":"null"},{"enum":["SYNTHETIC_STRESS_TEST_COMPLETED","REAL_STRESS_TEST_COMPLETED"]}]},
+        "logical_invocation_id":{"type":["string","null"]},
+        "analysis_state":{"oneOf":[{"type":"null"},{"enum":["UNKNOWN","CONFLICT","INSUFFICIENT_EVIDENCE","CANDIDATE_READY"]}]},
+        "recommendation_candidate":{"oneOf":[{"type":"null"},{"enum":["REQUEST_MORE_EVIDENCE_CANDIDATE","HUMAN_RECONCILIATION_REQUIRED","READY_FOR_HUMAN_DISPOSITION_CANDIDATE"]}]},
+        "exact_receipt_revalidated":{"type":"boolean"}
+      }
+    },
+    "human_decision": {
+      "type":"object","additionalProperties":false,
+      "required":["present","context","value","reviewer_ref","rationale"],
+      "properties": {
+        "present":{"type":"boolean"},
+        "context":{"oneOf":[{"type":"null"},{"enum":["synthetic_conformance","human_supplied"]}]},
+        "value":{"oneOf":[{"type":"null"},{"enum":["REJECT","CORRECT","REQUEST_MORE_EVIDENCE","ACCEPT_FOR_HUMAN_USE"]}]},
+        "reviewer_ref":{"type":["string","null"]},
+        "rationale":{"type":["string","null"]}
+      }
+    },
+    "classification":{"enum":["ANALYSIS_RESULT_REQUIRED","HUMAN_DECISION_REQUIRED","ANALYSIS_REJECTED_FOR_HUMAN_USE","ANALYSIS_CORRECTION_REQUIRED","MORE_EVIDENCE_REQUIRED","ANALYSIS_ACCEPTED_FOR_HUMAN_USE"]},
+    "human_disposition_recorded":{"type":"boolean"},
+    "claims": {
+      "type":"object","additionalProperties":false,
+      "required":["exact_adapter_source_revalidated","analysis_result_present","analysis_result_exactly_revalidated","human_disposition_recorded","reviewer_reference_recorded","decision_rationale_recorded","truth_certified","reviewer_identity_verified","reviewer_authority_verified","source_rewritten","global_prohibition_created","response_candidate_created","publication_authorized","campaign_send_authorized","provider_invoked","network_accessed","platform_mutated","pilot_permit_created","action_permit_created","external_execution_admitted","external_effect_performed","successor_authority_created"],
+      "properties": {
+        "exact_adapter_source_revalidated":{"const":true},
+        "analysis_result_present":{"type":"boolean"},
+        "analysis_result_exactly_revalidated":{"type":"boolean"},
+        "human_disposition_recorded":{"type":"boolean"},
+        "reviewer_reference_recorded":{"type":"boolean"},
+        "decision_rationale_recorded":{"type":"boolean"},
+        "truth_certified":{"const":false},
+        "reviewer_identity_verified":{"const":false},
+        "reviewer_authority_verified":{"const":false},
+        "source_rewritten":{"const":false},
+        "global_prohibition_created":{"const":false},
+        "response_candidate_created":{"const":false},
+        "publication_authorized":{"const":false},
+        "campaign_send_authorized":{"const":false},
+        "provider_invoked":{"const":false},
+        "network_accessed":{"const":false},
+        "platform_mutated":{"const":false},
+        "pilot_permit_created":{"const":false},
+        "action_permit_created":{"const":false},
+        "external_execution_admitted":{"const":false},
+        "external_effect_performed":{"const":false},
+        "successor_authority_created":{"const":false}
+      }
+    },
+    "non_effects": {
+      "type":"array","minItems":12,"maxItems":12,"uniqueItems":true,
+      "items":{"enum":["Stress-Test Result != Human Disposition","Human Disposition != Truth","REJECT != Global Prohibition","CORRECT != Source Rewrite","Request More Evidence != Negative Evidence","Accept For Human Use != Response Candidate","Accept For Human Use != Publication Authority","Human Decision Recorded != Reviewer Identity Verified","Human Decision Recorded != Reviewer Authority Verified","Disposition Receipt != ActionPermit","Disposition Receipt != External Effect","Successful Analysis != Successor Authority"]}
+    },
+    "next_safe_action":{"enum":["OBTAIN_COMPLETED_STRESS_TEST_RECEIPT","RECORD_EXPLICIT_HUMAN_ANALYSIS_DISPOSITION","STOP_AFTER_ANALYSIS_REJECTION","ANALYSIS_CORRECTION_SUCCESSOR_REQUIRED","EVIDENCE_SUCCESSOR_REQUIRED","RESPONSE_CANDIDATE_CONSTRUCTION_REQUIRED"]},
+    "decided_at":{"oneOf":[{"type":"null"},{"type":"string","format":"date-time"}]},
+    "content_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}
+  }
+}
