@@ -1,0 +1,51 @@
+name: Python Distribution Binding v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/python-distribution-binding-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/python-distribution-binding-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  bind:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax and tests
+        run: |
+          node --check review/security/dependency-vulnerability/v0.1/python-distribution-binding.js
+          node --check review/security/dependency-vulnerability/v0.1/python-distribution-evidence.js
+          node review/security/dependency-vulnerability/v0.1/test-python-distribution-binding.js
+      - name: Materialize resolved inventory and distribution evidence
+        run: |
+          node review/security/dependency-vulnerability/v0.1/inventory.js > /tmp/inventory.json
+          node review/security/dependency-vulnerability/v0.1/python-import-resolution.js /tmp/inventory.json > /tmp/resolved-inventory.json
+          node review/security/dependency-vulnerability/v0.1/python-distribution-evidence.js > /tmp/distribution-evidence.json
+          node -e "const fs=require('fs');const e=require('/tmp/distribution-evidence.json');fs.writeFileSync('/tmp/evidence-array.json',JSON.stringify(e.evidence,null,2))"
+          node review/security/dependency-vulnerability/v0.1/python-distribution-binding.js /tmp/resolved-inventory.json /tmp/evidence-array.json > /tmp/distribution-binding.json
+          node -e "const r=require('/tmp/distribution-binding.json');if(r.outcome!=='INSUFFICIENT_EVIDENCE')throw Error('binding must not promote outcome');if(r.installation_proven!==false)throw Error('installation must remain unproven');"
+      - name: Checkout unchanged
+        run: test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-distribution-binding-v0.1-${{ github.sha }}
+          path: |
+            /tmp/distribution-evidence.json
+            /tmp/distribution-binding.json
+          if-no-files-found: error
