@@ -1,11 +1,12 @@
 # UU-AAP Ecosystem Roadmap
 
 **Status:** reusable-runtime/tooling convergence after multi-product infrastructure proof  
-**Current evidence baseline:** `04d811a391bf133e5ffe91931b1fd2d52656ec19` (Component Manifest v0.1, PR #632)  
-**Current reusable-tooling increment:** Issue #633  
+**Current evidence baseline:** `b119fac6f2b3702fd5ed158442bf3dd69e276a93` (Dependency / Impact Graph v0.1, PR #634)  
+**Current reusable-tooling increment:** Issue #635  
 **Stable semantic substrate:** [`protocols/core/v0.1/`](protocols/core/v0.1/)  
 **Component/tooling first slice:** [`tooling/component-manifest/v0.1/`](tooling/component-manifest/v0.1/)  
-**Current dependency/impact slice:** [`tooling/dependency-impact/v0.1/`](tooling/dependency-impact/v0.1/)
+**Dependency/impact slice:** [`tooling/dependency-impact/v0.1/`](tooling/dependency-impact/v0.1/)  
+**Current parity slice:** [`tooling/conformance-parity/v0.1/`](tooling/conformance-parity/v0.1/)
 
 This roadmap reflects the implemented repository after the Phase C/D productization and interoperability work. The project is no longer primarily blocked on adding semantic protocol layers. The current bottleneck is repeated engineering work around component metadata, dependency traversal, conformance orchestration, receipt utilities and implementation substitution evidence.
 
@@ -28,6 +29,7 @@ independent products and applications
 
 Component Manifest
   -> Dependency / Impact Graph
+  -> Graph-vs-Manual Conformance Parity
   -> Generated Conformance Runner
   -> Receipt Runtime SDK
   -> Implementation Substitution Assessment
@@ -45,6 +47,8 @@ Component Manifest != Release Registry
 Dependency Edge != Authority Transfer
 Declared Interface != Compatibility Proof
 Conformance Evidence != Authority
+Parity Discovery != Command Execution
+Parity Success != Permission To Narrow CI
 Substitutable != Selected
 Substitutable != Authorized
 Transport != Authority
@@ -159,15 +163,15 @@ AI-Transport-Reference
 Completion evidence:
 
 - schema + validator + examples + CI merged in #632;
-- two independent existing components represented without semantic changes;
+- independent existing components represented without semantic changes;
 - validation is read-only and import-safe;
 - manifest presence creates no compatibility/publication/activation claim.
 
-### T2 — Dependency / Impact Graph v0.1 — CURRENT (#633)
+### T2 — Dependency / Impact Graph v0.1 — COMPLETED (#633/#634)
 
-Build a read-only graph from Component Manifests and existing interface metadata.
+Purpose: build a read-only graph from Component Manifests and typed engineering dependency metadata.
 
-Minimum edge vocabulary:
+Edge vocabulary:
 
 ```text
 RUNTIME_IMPORT
@@ -179,7 +183,7 @@ OPTIONAL_ADAPTER
 TEST_ONLY
 ```
 
-Minimum CLI/API questions:
+Implemented CLI/API questions include:
 
 ```text
 reverse-deps(component)
@@ -190,7 +194,7 @@ why-dependent(A, B)
 cycles()
 ```
 
-First acceptance graph expands Component Manifest coverage with `IAL-Compact` and `AI-Gateway` and reconstructs:
+The first acceptance graph expanded Component Manifest coverage with `IAL-Compact` and `AI-Gateway` and reconstructed:
 
 ```text
 IAL-Compact -> AI-Transport-Reference
@@ -199,36 +203,120 @@ UU-AAP-Core -> AI-Gateway -> AI-Transport-Reference
 
 while preserving the direct optional Core-evidence carriage edge declared by AI Transport.
 
-Exit condition:
+Completion evidence:
 
-- one current manually understood predecessor chain can be reproduced from graph evidence;
+- Dependency / Impact Graph merged in #634;
 - path and component impact deterministically derive affected component/conformance sets;
 - required unresolved dependencies and cycles fail closed;
-- no CI trigger is narrowed merely because no direct import was observed;
+- conformance command discovery performs no command execution;
 - graph reachability does not imply authority, responsibility, compatibility or substitutability.
 
-### T3 — Generated Conformance Runner v0.1
+### T3a — Graph-vs-Manual Conformance Parity v0.1 — CURRENT (#635 / PR #636)
 
-Use manifest/impact evidence to generate or execute the same deterministic conformance chain that is currently hand-maintained in large workflows.
+Purpose: prove one long historical manually maintained predecessor/conformance chain can be reproduced **exactly** from Component Manifest + Dependency Graph evidence before any generated runner executes commands.
 
-First proof target: choose one long existing successor workflow such as the MarketCloser publication-observation line and demonstrate:
+Historical proof target:
 
 ```text
-manual predecessor test set
-==
-graph-derived predecessor test set
+.github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+Git blob: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
 ```
 
-before changing any production CI trigger.
+The frozen `Re-run ... predecessors` blocks contain exactly:
+
+```text
+27 manual predecessor commands
+```
+
+The current parity slice materializes the workflow-covered MarketCloser / Marketer Pessimist dependency closure:
+
+```text
+MarketCloser-Publication-Observation
+-> MarketCloser-Copy-Export-Receipt
+-> MarketCloser-Human-Response-Approval
+-> MarketCloser-Response-Candidate
+-> MarketCloser-Human-Analysis-Disposition
+-> MarketCloser-Real-Stress-Test-Adapter
+-> MarketCloser-Real-Review-Local-Run-Revalidation
+-> MarketCloser-Real-Review-Run-Permit
+-> MarketCloser-Real-Review-Run-Authority-Gate
+-> MarketCloser-Minimized-Real-Review-Bridge
+-> MarketCloser-Deployment-Observation
+-> MarketCloser-Application-Boundary
+
+bridge / intake branch:
+Marketer-Pessimist-Real-Review-Intake
+-> Marketer-Pessimist-Product-Contract
+-> Marketer-Pessimist-Local-MVP
+```
+
+Current differential proof on PR #636:
+
+```text
+manual predecessor command count = 27
+graph-derived predecessor command count = 27
+missing_from_graph = []
+extra_in_graph = []
+commands_executed = false
+historical production workflow modified = false
+```
+
+The baseline is not trusted by itself: parity tooling first recomputes and checks the exact Git blob identity of the historical workflow, re-extracts the predecessor commands, verifies exact baseline order/content, and only then compares against graph-derived commands.
+
+Fail-closed vectors include:
+
+- workflow blob drift;
+- committed baseline drift;
+- missing graph command;
+- extra graph command;
+- duplicate command;
+- unresolved required dependency;
+- dependency cycle;
+- unknown target component.
+
+Mandatory boundary:
+
+```text
+Parity Discovery != Command Execution
+Manual Workflow != Universal Dependency Truth
+Workflow Coverage != Complete Runtime Import Graph
+Equal Command Sets != Compatibility Proof
+Equal Command Sets != Authority
+Parity Success != Permission To Narrow CI
+```
+
+Exit condition:
+
+- exact 27↔27 parity succeeds on dedicated CI;
+- Component Manifest and Dependency Impact predecessor conformance is rerun;
+- import safety and read-only behavior remain proven;
+- the historical MarketCloser production workflow remains byte-identical;
+- no graph-derived command has yet been executed by reusable tooling.
+
+### T3b — Generated Conformance Runner v0.1
+
+Only after T3a parity is merged may reusable tooling execute graph-derived conformance commands.
+
+The runner must consume Component Manifest + Dependency / Impact evidence rather than rediscovering dependencies independently.
 
 Requirements:
 
 - constrained executable/args representation;
 - no arbitrary shell expansion;
 - exact component/frontier binding;
-- stable ordering;
-- fail closed on unresolved mandatory dependency;
-- differential proof against the predecessor workflow.
+- stable deterministic ordering;
+- fail closed on unresolved mandatory dependency or cycle;
+- explicit execution report for every command;
+- no implicit authority, compatibility or release claim;
+- no production CI trigger narrowing merely because one parity case passed.
+
+First execution proof should replay the same 27-command MarketCloser predecessor set in a separate review-only workflow and compare results with the historical workflow before any migration decision.
+
+```text
+Generated Command Set != Automatic Execution Authority
+Runner Success != CI Migration Decision
+Runner Success != Permission To Delete Historical Workflow
+```
 
 ### T4 — Receipt Runtime SDK v0.1
 
@@ -387,7 +475,7 @@ Tooling convergence must not freeze useful bounded product evidence, but it chan
 
 The immediate engineering acceleration target is to replace repeated manual predecessor orchestration with evidence-driven reuse while preserving fail-closed behavior.
 
-Current pattern:
+Historical pattern:
 
 ```text
 new boundary
@@ -411,6 +499,7 @@ new domain semantics
 shared:
   dependency resolution
   impact analysis
+  differential parity proof
   constrained conformance orchestration
   receipt utilities
 ```
@@ -420,6 +509,7 @@ The objective is reduced duplicate engineering, not fewer safety checks.
 ```text
 CI Cost Reduction != Validation Weakening
 Generated Dependency Set != Inferred Safety
+Parity Success != Validation Removal
 ```
 
 ## 9. Compatibility and migration policy
@@ -429,21 +519,24 @@ Generated Dependency Set != Inferred Safety
 - Existing receipts are never rewritten in place.
 - Cross-version protocol consumption continues through Evolution/Compatibility receipts.
 - Component substitution requires its own consumer-specific assessment.
+- Workflow parity is evidence for reusable orchestration, not automatic permission to change CI coverage.
+- Historical workflow removal/narrowing requires a separate migration decision after generated-runner differential evidence.
 - Schema/catalog cleanup may add logical resolution before any physical file relocation.
 - Deprecation remains append-only with preserved historical meaning.
 
 ## 10. Near-term merge sequence
 
 1. **Completed:** Component Manifest v0.1 — schema, read-only validator, initial component examples and dedicated CI (#631/#632).
-2. **Current:** Dependency / Impact Graph v0.1 over Component Manifest + existing interface evidence (#633).
-3. Graph-vs-manual dependency parity case using one long current CI predecessor chain.
-4. Generated Conformance Runner v0.1 with constrained commands and deterministic ordering.
-5. Receipt Runtime SDK v0.1 first extraction with two byte-identical differential consumers.
-6. Implementation Substitution Assessment v0.1.
-7. Expand manifests only to components needed by those proofs; do not mass-migrate the repository prematurely.
-8. Evaluate Human Decision Gate and Observation/Provenance extraction from at least two independent real consumers.
-9. Add generic provenance-store candidate only after storage/replay requirements are common across multiple products.
-10. Re-evaluate ecosystem release-candidate readiness after reusable tooling and bounded substitution evidence exist.
+2. **Completed:** Dependency / Impact Graph v0.1 over Component Manifest + existing interface evidence (#633/#634).
+3. **Current:** Graph-vs-Manual Conformance Parity v0.1 against the 27-command MarketCloser Publication Observation predecessor baseline (#635 / PR #636).
+4. Generated Conformance Runner v0.1 with constrained commands, deterministic ordering and a differential execution report.
+5. Historical-workflow vs generated-runner execution parity; CI migration remains a separate decision.
+6. Receipt Runtime SDK v0.1 first extraction with two byte-identical differential consumers.
+7. Implementation Substitution Assessment v0.1.
+8. Expand manifests only to components needed by those proofs; do not mass-migrate the repository prematurely.
+9. Evaluate Human Decision Gate and Observation/Provenance extraction from at least two independent real consumers.
+10. Add generic provenance-store candidate only after storage/replay requirements are common across multiple products.
+11. Re-evaluate ecosystem release-candidate readiness after reusable tooling and bounded substitution evidence exist.
 
 Each item remains a separate review/merge gate. No item automatically authorizes its successor.
 
@@ -465,7 +558,8 @@ At minimum:
 
 - reusable Component Manifests for multiple independent layers;
 - machine-derived dependency/impact graph;
-- generated conformance parity with at least one historical manual workflow;
+- exact graph-vs-manual conformance parity with at least one historical workflow;
+- generated conformance execution with differential evidence against the historical workflow;
 - provider-neutral transport interoperability;
 - explicit version/migration policy;
 - at least one implementation-substitution assessment with a non-trivial result;
@@ -495,4 +589,4 @@ more universal semantic layers
 + larger manually maintained CI chains
 ```
 
-The next proof of architectural universality is therefore not another abstract primitive. It is evidence that independent implementations and products can reuse the same tooling, be impact-analyzed mechanically, preserve historical receipt identity and be substituted only when consumer-specific evidence says that substitution is safe.
+The next proof of architectural universality is therefore not another abstract primitive. It is evidence that independent implementations and products can reuse the same tooling, be impact-analyzed mechanically, reproduce historical conformance coverage exactly, preserve historical receipt identity and be substituted only when consumer-specific evidence says that substitution is safe.
