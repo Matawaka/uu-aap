@@ -1,0 +1,76 @@
+{
+  "artifact_type": "UU-AAP-Bounded-CI-Migration-Slice",
+  "version": "0.1",
+  "origin_frontier": "cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae",
+  "historical_workflow": {
+    "path": ".github/workflows/marketcloser-publication-observation-v0.1-validation.yml",
+    "frontier": "cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae",
+    "blob_sha": "b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72"
+  },
+  "baseline_path": "tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json",
+  "target_component_id": "MarketCloser-Publication-Observation",
+  "migrated_step_name": "Re-run Marketer Pessimist predecessors",
+  "current_step_name": "Run Marketer Pessimist predecessors via bounded generated slice",
+  "parent_manifest_paths": [
+    "tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json",
+    "tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json",
+    "tooling/component-manifest/v0.1/examples/marketer-pessimist-real-review-intake.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-application-boundary.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-deployment-observation.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-minimized-real-review-bridge.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-authority-gate.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-permit.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-real-review-local-run-revalidation.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-real-stress-test-adapter.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json",
+    "tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json"
+  ],
+  "component_ids": [
+    "Marketer-Pessimist-Product-Contract",
+    "Marketer-Pessimist-Local-MVP",
+    "Marketer-Pessimist-Real-Review-Intake"
+  ],
+  "rollback_commands": [
+    {
+      "executable": "python",
+      "args": ["products/marketer-pessimist/v0.1/validate_contract.py"]
+    },
+    {
+      "executable": "node",
+      "args": ["products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js"]
+    },
+    {
+      "executable": "node",
+      "args": ["products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js"]
+    },
+    {
+      "executable": "node",
+      "args": ["products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js"]
+    },
+    {
+      "executable": "node",
+      "args": ["products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js"]
+    }
+  ],
+  "expected_parent_command_count": 27,
+  "expected_slice_command_count": 5,
+  "expected_parent_plan_digest": null,
+  "claims": {
+    "bulk_ci_migration_authorized": false,
+    "authority_created": false,
+    "compatibility_proven": false,
+    "substitutability_proven": false
+  },
+  "non_effects": [
+    "one_migrated_block_does_not_authorize_global_ci_migration",
+    "exact_execution_evidence_does_not_create_migration_authority",
+    "migration_admission_does_not_prove_compatibility",
+    "migration_admission_does_not_prove_substitutability",
+    "migration_admission_does_not_create_runtime_authority",
+    "rollback_evidence_remains_historical_evidence_not_live_execution_authority",
+    "trigger_preservation_does_not_prove_conformance_equivalence"
+  ]
+}

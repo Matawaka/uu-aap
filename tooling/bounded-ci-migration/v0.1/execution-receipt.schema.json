@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:tooling:bounded-ci-migration-execution-receipt:v0.1",
+  "title": "UU-AAP Bounded CI Migration Execution Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "version", "origin_frontier", "historical_workflow",
+    "target_component_id", "migrated_step_name", "current_step_name", "component_ids",
+    "parent_plan_digest", "slice_plan_digest", "classification", "execution", "commands",
+    "claims", "non_effects"
+  ],
+  "properties": {
+    "artifact_type": { "const": "UU-AAP-Bounded-CI-Migration-Execution-Receipt" },
+    "version": { "const": "0.1" },
+    "origin_frontier": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "historical_workflow": { "$ref": "#/$defs/historicalWorkflow" },
+    "target_component_id": { "type": "string", "minLength": 1 },
+    "migrated_step_name": { "type": "string", "minLength": 1 },
+    "current_step_name": { "type": "string", "minLength": 1 },
+    "component_ids": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "parent_plan_digest": { "$ref": "#/$defs/digest" },
+    "slice_plan_digest": { "$ref": "#/$defs/digest" },
+    "classification": { "enum": ["MIGRATED_SLICE_SUCCESS", "ROLLBACK_REQUIRED"] },
+    "execution": { "$ref": "#/$defs/executionSummary" },
+    "commands": { "type": "array", "minItems": 1, "items": { "type": "object" } },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": [
+        "migrated_slice_succeeded", "one_block_only", "bulk_ci_migration_authorized",
+        "authority_created", "compatibility_proven", "substitutability_proven", "external_effect_authorized"
+      ],
+      "properties": {
+        "migrated_slice_succeeded": { "type": "boolean" },
+        "one_block_only": { "const": true },
+        "bulk_ci_migration_authorized": { "const": false },
+        "authority_created": { "const": false },
+        "compatibility_proven": { "const": false },
+        "substitutability_proven": { "const": false },
+        "external_effect_authorized": { "const": false }
+      }
+    },
+    "non_effects": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "historicalWorkflow": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path", "frontier", "blob_sha"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "frontier": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "blob_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "executionSummary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["plan_digest", "attempted", "succeeded", "failed", "stopped_early", "repository_changed_after_run", "result"],
+      "properties": {
+        "plan_digest": { "$ref": "#/$defs/digest" },
+        "attempted": { "type": "integer", "minimum": 0 },
+        "succeeded": { "type": "integer", "minimum": 0 },
+        "failed": { "type": "integer", "minimum": 0 },
+        "stopped_early": { "type": "boolean" },
+        "repository_changed_after_run": { "type": "boolean" },
+        "result": { "enum": ["SUCCESS", "FAILED", "REPOSITORY_MUTATED"] }
+      }
+    }
+  }
+}
