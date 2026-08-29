@@ -1,0 +1,190 @@
+name: Generated Conformance Runner v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/generated-conformance-runner/v0.1/**'
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - '.github/workflows/generated-conformance-runner-v0.1-validation.yml'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - 'ROADMAP.md'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/generated-conformance-runner/v0.1/**'
+      - 'tooling/conformance-parity/v0.1/**'
+      - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/component-manifest/v0.1/examples/marketcloser-*.component.json'
+      - 'tooling/component-manifest/v0.1/examples/marketer-pessimist-*.component.json'
+      - '.github/workflows/generated-conformance-runner-v0.1-validation.yml'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+      - 'ROADMAP.md'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 729a9e581c6e5b6dbae95ac3407227e1469cdb68
+  HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+  HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
+  BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
+  PLAN: /tmp/generated-conformance-plan.json
+  RECEIPT: /tmp/generated-conformance-receipt.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Verify exact runner origin and historical workflow
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+          test "$(git rev-parse "HEAD:$HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+
+      - name: Check runner JavaScript syntax
+        run: |
+          node --check tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js
+          node --check tooling/generated-conformance-runner/v0.1/test-generated-conformance-runner.js
+          node --check tooling/generated-conformance-runner/v0.1/test-import-safe.js
+
+      - name: Re-run reusable tooling predecessors
+        run: |
+          node tooling/component-manifest/v0.1/test-component-manifest.js
+          node tooling/component-manifest/v0.1/test-import-safe.js
+          node tooling/dependency-impact/v0.1/test-dependency-impact.js
+          node tooling/dependency-impact/v0.1/test-import-safe.js
+          node tooling/conformance-parity/v0.1/test-conformance-parity.js
+          node tooling/conformance-parity/v0.1/test-import-safe.js
+
+      - name: Run Generated Conformance Runner unit and fail-closed tests
+        run: node tooling/generated-conformance-runner/v0.1/test-generated-conformance-runner.js
+
+      - name: Verify runner import safety
+        run: node tooling/generated-conformance-runner/v0.1/test-import-safe.js
+
+      - name: Build parity-gated execution plan
+        shell: bash
+        run: |
+          MANIFESTS=(
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-real-review-intake.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-application-boundary.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-deployment-observation.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-minimized-real-review-bridge.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-authority-gate.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-permit.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-local-run-revalidation.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-stress-test-adapter.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json
+          )
+          node tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js plan \
+            "$BASELINE" "$HISTORICAL_WORKFLOW" "${MANIFESTS[@]}" > "$PLAN"
+
+      - name: Validate generated execution plan schema and boundary
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('tooling/generated-conformance-runner/v0.1/execution-plan.schema.json').read_text())
+          plan = json.loads(Path(os.environ['PLAN']).read_text())
+          Draft202012Validator(schema).validate(plan)
+          assert plan['mode'] == 'PREDECESSOR_ONLY'
+          assert plan['parity']['verified'] is True
+          assert plan['parity']['manual_command_count'] == 27
+          assert plan['parity']['graph_command_count'] == 27
+          assert len(plan['dependency_components']) == 14
+          assert len(plan['commands']) == 27
+          assert all(c['component_id'] != plan['target_component_id'] for c in plan['commands'])
+          assert plan['claims']['commands_executed'] is False
+          PY
+
+      - name: Execute exact generated predecessor plan
+        shell: bash
+        run: |
+          MANIFESTS=(
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-product-contract.component.json
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-local-mvp.component.json
+            tooling/component-manifest/v0.1/examples/marketer-pessimist-real-review-intake.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-application-boundary.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-deployment-observation.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-minimized-real-review-bridge.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-authority-gate.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-run-permit.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-review-local-run-revalidation.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-real-stress-test-adapter.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
+            tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json
+          )
+          node tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js run \
+            "$BASELINE" "$HISTORICAL_WORKFLOW" "${MANIFESTS[@]}" > "$RECEIPT"
+
+      - name: Validate execution receipt schema and 27-command success
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          schema = json.loads(Path('tooling/generated-conformance-runner/v0.1/execution-receipt.schema.json').read_text())
+          receipt = json.loads(Path(os.environ['RECEIPT']).read_text())
+          Draft202012Validator(schema).validate(receipt)
+          assert receipt['result'] == 'SUCCESS'
+          assert receipt['planned_command_count'] == 27
+          assert receipt['attempted_command_count'] == 27
+          assert receipt['succeeded_command_count'] == 27
+          assert receipt['failed_command_count'] == 0
+          assert receipt['stopped_early'] is False
+          assert receipt['repository_changed_after_run'] is False
+          assert receipt['claims']['all_commands_succeeded'] is True
+          assert receipt['claims']['compatibility_proven'] is False
+          assert receipt['claims']['authority_created'] is False
+          assert receipt['claims']['ci_narrowing_authorized'] is False
+          assert all(c['success'] is True for c in receipt['commands'])
+          PY
+
+      - name: Guard constrained process execution surface
+        run: |
+          ! grep -En "execSync|exec\\(|spawn\\(" tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js
+          grep -F "spawnSync" tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js >/dev/null
+          grep -F "shell: false" tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js >/dev/null
+          if grep -En "require\\(['\"]https|require\\(['\"]http|fetch\\(|OpenAI|Anthropic|writeFile|appendFile|createWriteStream" \
+            tooling/generated-conformance-runner/v0.1/generated-conformance-runner.js; then
+            echo 'Forbidden runner network/provider/write surface detected' >&2
+            exit 1
+          fi
+
+      - name: Confirm historical workflow remains untouched
+        run: git diff --exit-code "$ORIGIN_FRONTIER" -- "$HISTORICAL_WORKFLOW"
+
+      - name: Confirm generated execution left checkout unchanged
+        run: test -z "$(git status --porcelain)"
