@@ -1,0 +1,10 @@
+'use strict';
+const fs=require('node:fs');const path=require('node:path');
+const x=JSON.parse(fs.readFileSync(path.join(__dirname,'privacy-evidence-closure.json'),'utf8'));
+const required=['payload_minimization_supported','commitment_reference_sufficient_where_protocol_allows','cross_context_correlation_default_denied'];
+for(const k of required) if(x.claims[k]!==true) throw Error(`${k} must be true`);
+for(const k of ['behavioral_profile_required','psychological_profile_required','total_history_required','identity_resolution_created','authority_created','external_effect_authorized']) if(x.claims[k]!==false) throw Error(`${k} must remain false`);
+for(const [k,v] of Object.entries(x.non_effects)) if(v!==false) throw Error(`non-effect escalated: ${k}`);
+if(x.governance_state!=='PASS_BOUNDED_REPOSITORY_EVIDENCE') throw Error('unexpected governance state');
+if(!Array.isArray(x.limitations)||x.limitations.length<3) throw Error('limitations required');
+console.log('privacy governance evidence closure: ok');
