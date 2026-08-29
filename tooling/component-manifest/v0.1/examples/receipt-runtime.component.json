@@ -1,0 +1,62 @@
+{
+  "artifact_type": "UU-AAP-Component-Manifest",
+  "manifest_version": "0.1",
+  "component": {
+    "id": "Receipt-Runtime",
+    "version": "0.1",
+    "kind": "TOOLING",
+    "status": "experimental",
+    "path": "tooling/receipt-runtime/v0.1"
+  },
+  "source_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "db1e3eb8dea30811f4bb93bda3a256472d141015"
+  },
+  "exports": {
+    "interfaces": [
+      "ReceiptRuntime"
+    ],
+    "receipt_types": [],
+    "schemas": [],
+    "runtime_entrypoints": [
+      "tooling/receipt-runtime/v0.1/receipt-runtime.js"
+    ]
+  },
+  "dependencies": [],
+  "conformance": {
+    "commands": [
+      {
+        "executable": "node",
+        "args": [
+          "tooling/receipt-runtime/v0.1/test-receipt-runtime.js"
+        ]
+      },
+      {
+        "executable": "node",
+        "args": [
+          "tooling/receipt-runtime/v0.1/test-import-safe.js"
+        ]
+      }
+    ]
+  },
+  "effect_ceiling": {
+    "external_effect_emission": false,
+    "runtime_activation": false,
+    "execution_admission": false,
+    "creates_authority": false,
+    "accepts_responsibility": false
+  },
+  "canonicalization": {
+    "mode": "component_local",
+    "profile_ref": null
+  },
+  "evolution_ref": null,
+  "non_effects": [
+    "declared_interface_does_not_prove_compatibility",
+    "dependency_edge_does_not_transfer_authority",
+    "manifest_presence_does_not_activate_runtime",
+    "manifest_presence_does_not_publish_or_release",
+    "manifest_validation_does_not_attest_runtime_behavior"
+  ],
+  "content_hash": "sha256:956e7e4db99f9d8662c4d31d8b9464fccb42408651db2606d5466a3868dec1aa"
+}
