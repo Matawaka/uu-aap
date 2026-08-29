@@ -1,0 +1,5 @@
+'use strict';const assert=require('node:assert/strict');const {relation,safeWorkGate}=require('./incomparability.js');
+const r=relation({claim_a_ref:'A',claim_b_ref:'B',relation:'INCOMPARABLE',evidence_refs:['e1']});assert.equal(r.normative_winner,null);assert.equal(r.forced_order,false);
+const g=safeWorkGate({claim_relation:r,work_items:[{work_id:'observe',reversible:true,conflicts_with_contested_portion:false},{work_id:'prepare',reversible:true,conflicts_with_contested_portion:false},{work_id:'commit',reversible:false,conflicts_with_contested_portion:true}]});assert.equal(g.irreversible_conflict_frozen,true);assert.equal(g.work[0].may_proceed,true);assert.equal(g.work[1].may_proceed,true);assert.equal(g.work[2].may_proceed,false);assert.equal(g.external_effect_authority_created,false);
+const m=relation({claim_a_ref:'A',claim_b_ref:'B',relation:'MUTUALLY_INCOMPATIBLE'});const gm=safeWorkGate({claim_relation:m,work_items:[{work_id:'simulate',reversible:true,conflicts_with_contested_portion:false}]});assert.equal(gm.work[0].may_proceed,true);
+console.log('dlc-si incomparability tests: ok');
