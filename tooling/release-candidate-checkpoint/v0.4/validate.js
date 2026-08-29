@@ -1,0 +1,12 @@
+'use strict';
+const fs=require('node:fs');const path=require('node:path');
+const x=JSON.parse(fs.readFileSync(path.join(__dirname,'checkpoint.json'),'utf8'));
+if(x.schema_version!=='0.4'||x.checkpoint_type!=='ReleaseCandidateCheckpoint')throw Error('identity');
+if(x.engineering_convergence!=='PASS')throw Error('engineering');
+if(x.security_evidence!=='EVIDENCE_CLOSED_BOUNDED')throw Error('security');
+if(x.internal_governance!=='PASS')throw Error('governance');
+if(x.external_gates?.public_review!=='WAITING_EXTERNAL'||x.external_gates?.pilot_002!=='WAITING_EXTERNAL')throw Error('external gates');
+if(x.decision!=='RELEASE_CANDIDATE_EXTERNAL_EVIDENCE_PENDING')throw Error('decision');
+for(const [k,v] of Object.entries(x.non_effects))if(v!==false)throw Error(`forbidden effect: ${k}`);
+if(!Array.isArray(x.limitations)||x.limitations.length<4)throw Error('limitations');
+console.log('release candidate checkpoint v0.4: ok');

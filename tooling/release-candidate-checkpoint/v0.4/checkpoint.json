@@ -1,0 +1,20 @@
+{
+  "schema_version":"0.4",
+  "checkpoint_type":"ReleaseCandidateCheckpoint",
+  "origin_frontier":"60fca921dcad8dbbc8693dae738b7e47f4ef5d30",
+  "predecessor":"tooling/release-candidate-checkpoint/v0.3",
+  "engineering_convergence":"PASS",
+  "security_evidence":"EVIDENCE_CLOSED_BOUNDED",
+  "internal_governance":"PASS",
+  "internal_governance_receipt":"governance/formal-rc-review/v0.1/review-input.json",
+  "external_gates":{"public_review":"WAITING_EXTERNAL","pilot_002":"WAITING_EXTERNAL"},
+  "parallel_lanes":{"kontur_successor":"NON_CORE_PARALLEL"},
+  "decision":"RELEASE_CANDIDATE_EXTERNAL_EVIDENCE_PENDING",
+  "limitations":[
+    "Internal governance PASS is bounded repository evidence, not external validation.",
+    "Public Review and Pilot 002 remain unresolved external gates.",
+    "Security evidence closure is not security certification.",
+    "No release, publication, certification or legal status is implied."
+  ],
+  "non_effects":{"release_authorized":false,"publication_authorized":false,"tag_authorized":false,"certification_created":false,"legal_status_created":false,"runtime_activation_authorized":false,"action_permit_created":false,"external_validation_claimed":false}
+}
