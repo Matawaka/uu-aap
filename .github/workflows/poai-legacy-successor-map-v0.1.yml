@@ -20,6 +20,6 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - run: node protocols/experimental/poai-successor-reconciliation/v0.1/test-map.js
-      - run: node protocols/core/v0.1/test-core.js
+      - run: node --check protocols/core/v0.1/validate-core.js
       - run: node protocols/dlc-si/v0.1/test-dlc-si.js
       - run: test -z "$(git status --porcelain)"
