@@ -4,16 +4,22 @@ on:
   pull_request:
     paths:
       - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/receipt-runtime/v0.1/**'
       - 'tooling/component-manifest/v0.1/examples/ial-compact.component.json'
       - 'tooling/component-manifest/v0.1/examples/ai-gateway.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
       - '.github/workflows/dependency-impact-v0.1-validation.yml'
       - 'ROADMAP.md'
   push:
     branches: [main]
     paths:
       - 'tooling/dependency-impact/v0.1/**'
+      - 'tooling/receipt-runtime/v0.1/**'
       - 'tooling/component-manifest/v0.1/examples/ial-compact.component.json'
       - 'tooling/component-manifest/v0.1/examples/ai-gateway.component.json'
+      - 'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
+      - 'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json'
       - '.github/workflows/dependency-impact-v0.1-validation.yml'
       - 'ROADMAP.md'
 
@@ -48,6 +54,7 @@ jobs:
           node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/uu-aap-core.component.json
           node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/ial-compact.component.json
           node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/ai-gateway.component.json
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/receipt-runtime.component.json
           node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json
 
       - name: Run dependency graph conformance
@@ -64,6 +71,7 @@ jobs:
             tooling/component-manifest/v0.1/examples/uu-aap-core.component.json \
             tooling/component-manifest/v0.1/examples/ial-compact.component.json \
             tooling/component-manifest/v0.1/examples/ai-gateway.component.json \
+            tooling/component-manifest/v0.1/examples/receipt-runtime.component.json \
             tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
             >/tmp/dependency-impact.json
           after="$(git status --porcelain)"
@@ -76,6 +84,17 @@ jobs:
             tooling/component-manifest/v0.1/examples/uu-aap-core.component.json \
             tooling/component-manifest/v0.1/examples/ial-compact.component.json \
             tooling/component-manifest/v0.1/examples/ai-gateway.component.json \
+            tooling/component-manifest/v0.1/examples/receipt-runtime.component.json \
             tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
             >/tmp/core-impact.json
           node -e "const x=require('/tmp/core-impact.json'); const e=['AI-Gateway','AI-Transport-Reference','UU-AAP-Core']; if(JSON.stringify(x.affected_components)!==JSON.stringify(e)) process.exit(1)"
+
+          node tooling/dependency-impact/v0.1/dependency-impact.js impact-path \
+            tooling/receipt-runtime/v0.1/receipt-runtime.js \
+            tooling/component-manifest/v0.1/examples/uu-aap-core.component.json \
+            tooling/component-manifest/v0.1/examples/ial-compact.component.json \
+            tooling/component-manifest/v0.1/examples/ai-gateway.component.json \
+            tooling/component-manifest/v0.1/examples/receipt-runtime.component.json \
+            tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json \
+            >/tmp/receipt-runtime-impact.json
+          node -e "const x=require('/tmp/receipt-runtime-impact.json'); const e=['AI-Transport-Reference','Receipt-Runtime']; if(JSON.stringify(x.affected_components)!==JSON.stringify(e)) process.exit(1); if(x.claims.authority_created!==false||x.claims.substitutability_proven!==false) process.exit(1)"
