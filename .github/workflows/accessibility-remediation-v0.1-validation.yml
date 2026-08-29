@@ -1,0 +1,108 @@
+name: Accessibility Remediation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'docs/poai/accessibility.js'
+      - 'docs/poai/styles.css'
+      - '.github/workflows/accessibility-remediation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/poai/accessibility.js'
+      - 'docs/poai/styles.css'
+      - '.github/workflows/accessibility-remediation-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    env:
+      REVIEW_FRONTIER: 588b4643ed86a4835f87ed54f14828e62a3787b2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bind remediation to merged review
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "${REVIEW_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$REVIEW_FRONTIER" HEAD
+          git cat-file -e "$REVIEW_FRONTIER:review/accessibility/v0.1/accessibility-review.js"
+          git diff --quiet "$REVIEW_FRONTIER" -- review/accessibility/v0.1
+
+      - name: Constrain remediation diff
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --name-only "$REVIEW_FRONTIER"...HEAD | sort > /tmp/changed.txt
+          cat >/tmp/allowed.txt <<'EOF'
+          .github/workflows/accessibility-remediation-v0.1-validation.yml
+          docs/poai/accessibility.js
+          docs/poai/styles.css
+          EOF
+          sort -o /tmp/allowed.txt /tmp/allowed.txt
+          diff -u /tmp/allowed.txt /tmp/changed.txt
+
+      - name: Verify JavaScript syntax and existing keyboard focus behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check docs/poai/accessibility.js
+          grep -F "setAttribute('role', 'tablist')" docs/poai/accessibility.js >/dev/null
+          for key in ArrowRight ArrowLeft Home End; do grep -F "$key" docs/poai/accessibility.js >/dev/null; done
+          grep -F 'button:focus-visible' docs/poai/styles.css >/dev/null
+
+      - name: Verify one bounded live validation status
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F "document.getElementById('summaryLine')" docs/poai/accessibility.js >/dev/null
+          grep -F "summary.setAttribute('role', 'status')" docs/poai/accessibility.js >/dev/null
+          grep -F "summary.setAttribute('aria-live', 'polite')" docs/poai/accessibility.js >/dev/null
+          grep -F "summary.setAttribute('aria-atomic', 'true')" docs/poai/accessibility.js >/dev/null
+          test "$(grep -Fc "setAttribute('aria-live', 'polite')" docs/poai/accessibility.js)" -eq 1
+
+      - name: Verify contrast remediation numerically
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const css = fs.readFileSync('docs/poai/styles.css', 'utf8');
+          function rgb(hex) { const h=hex.replace('#',''); return [0,2,4].map(i=>parseInt(h.slice(i,i+2),16)/255); }
+          function channel(c) { return c <= 0.03928 ? c/12.92 : ((c+0.055)/1.055)**2.4; }
+          function luminance(hex) { const [r,g,b]=rgb(hex).map(channel); return .2126*r+.7152*g+.0722*b; }
+          function ratio(a,b) { const x=luminance(a), y=luminance(b); return (Math.max(x,y)+.05)/(Math.min(x,y)+.05); }
+          for (const required of ['--muted: #5f6975','--accent: #2357d9','--accent-contrast: #ffffff','--accent: #7aa2ff','--accent-contrast: #161b22','color: var(--accent-contrast)']) {
+            if (!css.includes(required)) throw new Error(`missing remediation token/rule: ${required}`);
+          }
+          const results = {
+            light_muted_on_surface2: ratio('#5f6975','#f0f2f5'),
+            light_active: ratio('#ffffff','#2357d9'),
+            dark_active: ratio('#161b22','#7aa2ff'),
+            dark_link: ratio('#7aa2ff','#161b22'),
+          };
+          console.log(results);
+          for (const [name,value] of Object.entries(results)) if (value < 4.5) throw new Error(`${name} contrast ${value} < 4.5`);
+          NODE
+
+      - name: Preserve review-first causal boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! git diff --name-only "$REVIEW_FRONTIER"...HEAD | grep -E '^(protocols|tooling/release-candidate-checkpoint|review/accessibility)/'
+          test -f review/accessibility/v0.1/current-surfaces.input.json
+          test -f review/accessibility/v0.1/accessibility-review.js
+
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"
