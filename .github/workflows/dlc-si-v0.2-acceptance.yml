@@ -1,0 +1,25 @@
+name: DLC-SI v0.2 Acceptance
+on:
+  pull_request:
+    paths:
+      - 'protocols/dlc-si/v0.2/**'
+      - '.github/workflows/dlc-si-v0.2-acceptance.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/dlc-si/v0.2/**'
+      - '.github/workflows/dlc-si-v0.2-acceptance.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - run: node --check protocols/dlc-si/v0.2/ccrp-mapping.js
+      - run: node protocols/dlc-si/v0.2/test-acceptance.js
+      - run: test -z "$(git status --porcelain)"
