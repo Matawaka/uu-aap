@@ -1,9 +1,9 @@
 'use strict';
 
-const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const Approval = require(path.resolve(__dirname, '../../human-response-approval/v0.1/approval.js'));
+const ReceiptRuntime = require('../../../../../tooling/receipt-runtime/v0.1/receipt-runtime.js');
 
 const PROTOCOL = 'MARKETCLOSER-COPY-EXPORT-RECEIPT';
 const VERSION = '0.1';
@@ -11,6 +11,7 @@ const INPUT_TYPE = 'MarketCloserCopyExportInput';
 const RECEIPT_TYPE = 'MarketCloserCopyExportReceipt';
 const ORIGIN_FRONTIER = '70dcca94b87f392bb74861765133306691f5d165';
 const ORIGIN_TREE = 'a15e79f2fe0ea0e3d2f547f6f4e53645c2e2a36a';
+const RECEIPT_IDENTITY_PROFILE = ReceiptRuntime.PROFILE_OMIT_CONTENT_HASH;
 const CLASSIFICATIONS = Object.freeze(['APPROVAL_REQUIRED','COPY_EXPORT_EVENT_REQUIRED','COPIED_PUBLICATION_UNVERIFIED']);
 const EVENT_CONTEXTS = Object.freeze(['synthetic_conformance','application_observed','human_asserted']);
 const EVENT_METHODS = Object.freeze(['clipboard_copy','local_text_export']);
@@ -49,17 +50,9 @@ const REQUIRED_NON_EFFECTS = Object.freeze([
 
 class MarketCloserCopyExportError extends Error {}
 const req = (condition, message) => { if (!condition) throw new MarketCloserCopyExportError(message); };
-const clone = value => JSON.parse(JSON.stringify(value));
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (value && typeof value === 'object') return Object.fromEntries(Object.keys(value).sort().map(key => [key, canonicalize(value[key])]));
-  return value;
-}
-function computeContentHash(value) {
-  const copy = clone(value); delete copy.content_hash;
-  return `sha256:${crypto.createHash('sha256').update(JSON.stringify(canonicalize(copy)), 'utf8').digest('hex')}`;
-}
-function rehash(value) { value.content_hash = computeContentHash(value); return value; }
+const canonicalize = ReceiptRuntime.canonicalize;
+function computeContentHash(value) { return ReceiptRuntime.computeContentHash(RECEIPT_IDENTITY_PROFILE, value); }
+function rehash(value) { return ReceiptRuntime.rehash(RECEIPT_IDENTITY_PROFILE, value); }
 function exact(value, keys, label) {
   req(value && typeof value === 'object' && !Array.isArray(value), `${label} must be object`);
   req(JSON.stringify(Object.keys(value).sort()) === JSON.stringify([...keys].sort()), `${label} key mismatch`);
@@ -69,7 +62,7 @@ function str(value, label, pattern = null) {
   if (pattern) req(pattern.test(value), `${label} invalid`);
 }
 function instant(value, label) { str(value, label); const n = Date.parse(value); req(Number.isFinite(n), `${label} invalid date-time`); return n; }
-function deepEqual(a,b) { return JSON.stringify(canonicalize(a)) === JSON.stringify(canonicalize(b)); }
+function deepEqual(a,b) { return ReceiptRuntime.deepEqualCanonical(a,b); }
 function repositoryRoot() { return path.resolve(__dirname, '../../../../../'); }
 function resolveApprovalPath(source) {
   const root = repositoryRoot();
@@ -248,4 +241,4 @@ function usage() { return ['MarketCloser Copy/Export Receipt v0.1','','Usage:','
 function runCli(argv) { const command=argv[0]||'help'; if(['help','--help','-h'].includes(command)) return {text:`${usage()}\n`,exitCode:0}; req(['validate','receipt'].includes(command),`unsupported command: ${command}`); req(argv.length===2,`${command} requires exactly one input path or -`); const input=readInput(argv[1]); const result=command==='validate'?validationReceipt(input):deriveReceipt(input); return {text:`${JSON.stringify(canonicalize(result),null,2)}\n`,exitCode:0}; }
 function main(){ try{const r=runCli(process.argv.slice(2));process.stdout.write(r.text);process.exitCode=r.exitCode;}catch(error){process.stderr.write(`${JSON.stringify({error:'MARKETCLOSER_COPY_EXPORT_REJECTED',message:error.message||String(error)})}\n`);process.exitCode=1;} }
 if(require.main===module) main();
-module.exports={MarketCloserCopyExportError,PROTOCOL,VERSION,INPUT_TYPE,RECEIPT_TYPE,ORIGIN_FRONTIER,ORIGIN_TREE,CLASSIFICATIONS,EVENT_CONTEXTS,EVENT_METHODS,INPUT_KEYS,EVENT_KEYS,CONTROL_KEYS,RECEIPT_KEYS,FALSE_CLAIMS,CLAIM_KEYS,REQUIRED_NON_EFFECTS,canonicalize,computeContentHash,rehash,validateEvent,validateInput,loadApprovalInput,nextAction,deriveReceipt,validateReceipt,validationReceipt,parseText,readInput,usage,runCli};
+module.exports={MarketCloserCopyExportError,PROTOCOL,VERSION,INPUT_TYPE,RECEIPT_TYPE,ORIGIN_FRONTIER,ORIGIN_TREE,RECEIPT_IDENTITY_PROFILE,CLASSIFICATIONS,EVENT_CONTEXTS,EVENT_METHODS,INPUT_KEYS,EVENT_KEYS,CONTROL_KEYS,RECEIPT_KEYS,FALSE_CLAIMS,CLAIM_KEYS,REQUIRED_NON_EFFECTS,canonicalize,computeContentHash,rehash,validateEvent,validateInput,loadApprovalInput,nextAction,deriveReceipt,validateReceipt,validationReceipt,parseText,readInput,usage,runCli};
