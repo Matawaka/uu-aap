@@ -1,0 +1,23 @@
+{
+  "pass": "008",
+  "issue_ref": "#710",
+  "origin_frontier": "d7b4a0488bfa30d239dd3f64363e5d5b0c155eb5",
+  "classification_mutates_issue": false,
+  "vocabulary": ["CURRENT", "SUCCESSOR_NEEDED", "WAITING_EXTERNAL", "TARGET_SURFACE", "INSUFFICIENT_EVIDENCE"],
+  "issues": [
+    {"issue_ref":"#341","roadmap_role":"CURRENT","basis":["pass-005: implementation evidence insufficient","bounded schema-hardening deliverable remains explicit"]},
+    {"issue_ref":"#418","roadmap_role":"WAITING_EXTERNAL","basis":["Pilot 002 requires one real external participant input","run admission remains fail-closed without it"]},
+    {"issue_ref":"#420","roadmap_role":"WAITING_EXTERNAL","basis":["admission rule explicitly returns waiting_for_external_input until eligible review exists"]},
+    {"issue_ref":"#422","roadmap_role":"TARGET_SURFACE","basis":["dedicated public intake point","project-authored prompt is explicitly not external evidence"]},
+    {"issue_ref":"#435","roadmap_role":"TARGET_SURFACE","basis":["dedicated Pilot 004 effect target","target existence is not execution authority"]},
+    {"issue_ref":"#440","roadmap_role":"TARGET_SURFACE","basis":["dedicated Pilot 005 ambiguous-acknowledgement target","target exists for observation/reconciliation"]},
+    {"issue_ref":"#445","roadmap_role":"CURRENT","basis":["current KONTUR companion pilot line","bounded fallibility/anti-solver acceptance remains actionable"]},
+    {"issue_ref":"#447","roadmap_role":"CURRENT","basis":["PSR/PEF is an uncompleted reusable evidence-profile deliverable","matches current evidence/provenance roadmap lane"]},
+    {"issue_ref":"#449","roadmap_role":"CURRENT","basis":["Circumstantial Provenance is an uncompleted reusable evidence-profile deliverable","depends conceptually on PSR/PEF"]},
+    {"issue_ref":"#486","roadmap_role":"WAITING_EXTERNAL","basis":["remaining steps include applicant/private EPGU actions and external filing receipt","repository must not infer FILED"]},
+    {"issue_ref":"#492","roadmap_role":"WAITING_EXTERNAL","basis":["2027 legal/examination frontier and filing-strategy decisions remain external/time-dependent"]},
+    {"issue_ref":"#697","roadmap_role":"CURRENT","basis":["reconciliation remains active until remaining open backlog is role-classified","pass-008 is a direct successor audit"]}
+  ],
+  "excluded_for_separate_comparison": ["#1-#7", "older PoAI Level 3/4 open line", "operator continuity #255"],
+  "non_effects": {"issue_state_mutated":false,"roadmap_priority_created":false,"external_authority_created":false}
+}
