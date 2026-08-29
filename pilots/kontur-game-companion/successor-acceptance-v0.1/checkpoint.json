@@ -1,0 +1,34 @@
+{
+  "type": "KONTURSuccessorAcceptanceCheckpoint",
+  "version": "0.1",
+  "origin_frontier": "86c6240c398ee4a7c8067509e3ef9bd1e52f3889",
+  "umbrella_issue": "#722",
+  "checkpoint_issue": "#742",
+  "evidence": {
+    "historical_umbrella": "#445",
+    "pcl_pause_resume": "#737",
+    "pcl_progress_visibility": "#739",
+    "dlc_si_attention_contention": "#741",
+    "cross_layer_validation": "KONTUR Game Companion cross-layer chain validation"
+  },
+  "criteria": {
+    "optional_parallel_not_core_dependency": "PASS",
+    "companion_not_solver_preserved": "PASS",
+    "pause_resume_runtime_continuity_fail_closed": "PASS",
+    "visible_progress_bounded_non_cot": "PASS",
+    "singular_interface_preserves_competing_legitimacy": "PASS",
+    "live_external_capabilities_remain_unauthorized": "PASS",
+    "synthetic_integration_slice_complete": "PASS"
+  },
+  "result": "INTEGRATION_SLICE_PASS",
+  "field_validation": "NOT_CLAIMED",
+  "stable_core_promotion": false,
+  "live_kontur_activation": false,
+  "new_observation_session_authorized": false,
+  "live_transport_authorized": false,
+  "game_control_authorized": false,
+  "background_activity_authorized": false,
+  "external_effect_authority_created": false,
+  "action_permit_created": false,
+  "synthetic_evidence_substitutes_field_evidence": false
+}
