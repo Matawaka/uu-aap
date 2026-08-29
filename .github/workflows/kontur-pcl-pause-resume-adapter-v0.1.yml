@@ -1,0 +1,27 @@
+name: KONTUR PCL Pause Resume Adapter v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/runtime-liveness-adapter/v0.1/**'
+      - 'protocols/experimental/perceived-causal-liveness/v0.1/**'
+      - '.github/workflows/kontur-pcl-pause-resume-adapter-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/kontur-game-companion/runtime-liveness-adapter/v0.1/**'
+      - 'protocols/experimental/perceived-causal-liveness/v0.1/**'
+      - '.github/workflows/kontur-pcl-pause-resume-adapter-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node pilots/kontur-game-companion/runtime-liveness-adapter/v0.1/test-adapter.js
