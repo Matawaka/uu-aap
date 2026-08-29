@@ -1,10 +1,11 @@
 # UU-AAP Ecosystem Roadmap
 
 **Status:** reusable-runtime/tooling convergence after multi-product infrastructure proof  
-**Current evidence baseline:** `2707fdcabb06967ef1d0a60cae8d9123dada8ef2` (MarketCloser Publication Observation v0.1, PR #630)  
-**Current reusable-tooling increment:** Issue #631  
+**Current evidence baseline:** `04d811a391bf133e5ffe91931b1fd2d52656ec19` (Component Manifest v0.1, PR #632)  
+**Current reusable-tooling increment:** Issue #633  
 **Stable semantic substrate:** [`protocols/core/v0.1/`](protocols/core/v0.1/)  
-**Component/tooling first slice:** [`tooling/component-manifest/v0.1/`](tooling/component-manifest/v0.1/)
+**Component/tooling first slice:** [`tooling/component-manifest/v0.1/`](tooling/component-manifest/v0.1/)  
+**Current dependency/impact slice:** [`tooling/dependency-impact/v0.1/`](tooling/dependency-impact/v0.1/)
 
 This roadmap reflects the implemented repository after the Phase C/D productization and interoperability work. The project is no longer primarily blocked on adding semantic protocol layers. The current bottleneck is repeated engineering work around component metadata, dependency traversal, conformance orchestration, receipt utilities and implementation substitution evidence.
 
@@ -131,7 +132,7 @@ This line remains a consumer/evidence source. Product/application-specific seman
 
 ## 5. Current phase — Reusable Runtime & Tooling Convergence
 
-### T1 — Component Manifest v0.1 — CURRENT (#631)
+### T1 — Component Manifest v0.1 — COMPLETED (#631/#632)
 
 Purpose: describe an existing component through one read-only engineering metadata surface without modifying the component.
 
@@ -148,21 +149,21 @@ Required fields include:
 - explicit non-effects;
 - deterministic manifest identity.
 
-First consumers:
+Initial consumers:
 
 ```text
 UU-AAP-Core
 AI-Transport-Reference
 ```
 
-Exit condition:
+Completion evidence:
 
-- schema + validator + examples + CI pass;
-- at least two independent existing components are represented without semantic changes;
+- schema + validator + examples + CI merged in #632;
+- two independent existing components represented without semantic changes;
 - validation is read-only and import-safe;
 - manifest presence creates no compatibility/publication/activation claim.
 
-### T2 — Dependency / Impact Graph v0.1
+### T2 — Dependency / Impact Graph v0.1 — CURRENT (#633)
 
 Build a read-only graph from Component Manifests and existing interface metadata.
 
@@ -182,18 +183,29 @@ Minimum CLI/API questions:
 
 ```text
 reverse-deps(component)
-transitive-deps(component)
+transitive-dependents(component)
 affected-components(changed-paths)
 affected-conformance(changed-paths)
 why-dependent(A, B)
 cycles()
 ```
 
+First acceptance graph expands Component Manifest coverage with `IAL-Compact` and `AI-Gateway` and reconstructs:
+
+```text
+IAL-Compact -> AI-Transport-Reference
+UU-AAP-Core -> AI-Gateway -> AI-Transport-Reference
+```
+
+while preserving the direct optional Core-evidence carriage edge declared by AI Transport.
+
 Exit condition:
 
-- one current manually maintained predecessor chain can be reproduced from graph evidence;
+- one current manually understood predecessor chain can be reproduced from graph evidence;
+- path and component impact deterministically derive affected component/conformance sets;
+- required unresolved dependencies and cycles fail closed;
 - no CI trigger is narrowed merely because no direct import was observed;
-- graph reachability does not imply authority, responsibility or compatibility.
+- graph reachability does not imply authority, responsibility, compatibility or substitutability.
 
 ### T3 — Generated Conformance Runner v0.1
 
@@ -422,8 +434,8 @@ Generated Dependency Set != Inferred Safety
 
 ## 10. Near-term merge sequence
 
-1. **Current:** Component Manifest v0.1 — schema, read-only validator, two existing-component examples and dedicated CI (#631).
-2. Dependency / Impact Graph v0.1 over Component Manifest + existing interface evidence.
+1. **Completed:** Component Manifest v0.1 — schema, read-only validator, initial component examples and dedicated CI (#631/#632).
+2. **Current:** Dependency / Impact Graph v0.1 over Component Manifest + existing interface evidence (#633).
 3. Graph-vs-manual dependency parity case using one long current CI predecessor chain.
 4. Generated Conformance Runner v0.1 with constrained commands and deterministic ordering.
 5. Receipt Runtime SDK v0.1 first extraction with two byte-identical differential consumers.
