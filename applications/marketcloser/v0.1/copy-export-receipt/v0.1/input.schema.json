@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:marketcloser-copy-export-input:v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","artifact_type","copy_export_id","origin","approval_source","approval_receipt","event","controls","content_hash"],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-COPY-EXPORT-RECEIPT"},
+    "version": {"const": "0.1"},
+    "artifact_type": {"const": "MarketCloserCopyExportInput"},
+    "copy_export_id": {"type":"string","pattern":"^urn:uu-aap:marketcloser:copy-export:[a-z0-9][a-z0-9:-]{2,191}$"},
+    "origin": {
+      "type":"object","additionalProperties":false,"required":["repository","revision","tree"],
+      "properties":{"repository":{"const":"Matawaka/uu-aap"},"revision":{"const":"70dcca94b87f392bb74861765133306691f5d165"},"tree":{"const":"a15e79f2fe0ea0e3d2f547f6f4e53645c2e2a36a"}}
+    },
+    "approval_source": {
+      "type":"object","additionalProperties":false,"required":["mode","path","expected_approval_input_hash"],
+      "properties":{"mode":{"enum":["repository_synthetic","local_private"]},"path":{"type":"string","minLength":1},"expected_approval_input_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}}
+    },
+    "approval_receipt": {"type":["object","null"]},
+    "event": {
+      "oneOf": [
+        {"type":"null"},
+        {
+          "type":"object","additionalProperties":false,
+          "required":["context","method","event_ref","actor_ref","performed_at","draft_hash","payload_hash","application_event_observed","independently_verified"],
+          "properties":{
+            "context":{"enum":["synthetic_conformance","application_observed","human_asserted"]},
+            "method":{"enum":["clipboard_copy","local_text_export"]},
+            "event_ref":{"type":"string","minLength":1},
+            "actor_ref":{"type":"string","minLength":1},
+            "performed_at":{"type":"string","format":"date-time"},
+            "draft_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},
+            "payload_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},
+            "application_event_observed":{"type":"boolean"},
+            "independently_verified":{"const":false}
+          }
+        }
+      ]
+    },
+    "controls": {
+      "type":"object","additionalProperties":false,
+      "required":["local_only","read_only","copy_export_event_recording_available","os_clipboard_mutation_available","filesystem_export_write_available","publication_available","provider_invocation_available","network_access_available","platform_mutation_available","campaign_send_available","pilot_permit_available","action_permit_available","external_execution_available","external_effect_available"],
+      "properties":{
+        "local_only":{"const":true},"read_only":{"const":true},"copy_export_event_recording_available":{"const":true},
+        "os_clipboard_mutation_available":{"const":false},"filesystem_export_write_available":{"const":false},"publication_available":{"const":false},
+        "provider_invocation_available":{"const":false},"network_access_available":{"const":false},"platform_mutation_available":{"const":false},"campaign_send_available":{"const":false},
+        "pilot_permit_available":{"const":false},"action_permit_available":{"const":false},"external_execution_available":{"const":false},"external_effect_available":{"const":false}
+      }
+    },
+    "content_hash": {"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf": [
+    {"if":{"properties":{"approval_receipt":{"type":"null"}}},"then":{"properties":{"event":{"type":"null"}}}}
+  ]
+}
