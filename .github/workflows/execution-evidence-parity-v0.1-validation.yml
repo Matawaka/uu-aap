@@ -34,6 +34,8 @@ env:
   HISTORICAL_WORKFLOW_FRONTIER: cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae
   HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
   FROZEN_HISTORICAL_WORKFLOW: /tmp/marketcloser-publication-observation.historical.yml
+  HISTORICAL_COPY_EXPORT_MANIFEST: tooling/conformance-parity/v0.1/historical/marketcloser-copy-export-receipt.component.json
+  HISTORICAL_COPY_EXPORT_MANIFEST_BLOB: 5356b1359abdc239ed5e3b3a58c3779f11035861
   BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
   REPORT: /tmp/execution-evidence-parity-report.json
 
@@ -60,13 +62,14 @@ jobs:
       - name: Install JSON Schema validator
         run: python -m pip install 'jsonschema>=4.22,<5'
 
-      - name: Verify exact T3c origin and materialize historical workflow
+      - name: Verify exact T3c origin and historical evidence
         run: |
           git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
           git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
           git cat-file -e "${HISTORICAL_WORKFLOW_FRONTIER}^{commit}"
           git show "${HISTORICAL_WORKFLOW_FRONTIER}:${HISTORICAL_WORKFLOW}" > "$FROZEN_HISTORICAL_WORKFLOW"
           test "$(git hash-object "$FROZEN_HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+          test "$(git hash-object "$HISTORICAL_COPY_EXPORT_MANIFEST")" = "$HISTORICAL_COPY_EXPORT_MANIFEST_BLOB"
 
       - name: Check T3c JavaScript syntax
         run: |
@@ -103,7 +106,7 @@ jobs:
             tooling/component-manifest/v0.1/examples/marketcloser-human-analysis-disposition.component.json
             tooling/component-manifest/v0.1/examples/marketcloser-response-candidate.component.json
             tooling/component-manifest/v0.1/examples/marketcloser-human-response-approval.component.json
-            tooling/component-manifest/v0.1/examples/marketcloser-copy-export-receipt.component.json
+            "$HISTORICAL_COPY_EXPORT_MANIFEST"
             tooling/component-manifest/v0.1/examples/marketcloser-publication-observation.component.json
           )
           node tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js assess \
@@ -153,10 +156,11 @@ jobs:
           grep -F "Runner.executePlan" tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js >/dev/null
           grep -F "Runner.safeChildEnvironment" tooling/execution-evidence-parity/v0.1/execution-evidence-parity.js >/dev/null
 
-      - name: Confirm frozen historical workflow remains addressable
+      - name: Confirm frozen historical evidence remains addressable
         run: |
           test "$(git rev-parse "${HISTORICAL_WORKFLOW_FRONTIER}:${HISTORICAL_WORKFLOW}")" = "$HISTORICAL_WORKFLOW_BLOB"
           test "$(git hash-object "$FROZEN_HISTORICAL_WORKFLOW")" = "$HISTORICAL_WORKFLOW_BLOB"
+          test "$(git hash-object "$HISTORICAL_COPY_EXPORT_MANIFEST")" = "$HISTORICAL_COPY_EXPORT_MANIFEST_BLOB"
 
       - name: Confirm both execution modes left checkout unchanged
         run: test -z "$(git status --porcelain)"
