@@ -1,0 +1,41 @@
+{
+  "artifact_type": "UU-AAP-Privacy-Review-Input",
+  "version": "0.1",
+  "origin_frontier": "744d2fd12fce012555dfac993921f078c56dc88d",
+  "reviewed_revision": "744d2fd12fce012555dfac993921f078c56dc88d",
+  "source_equivalence_verified": true,
+  "reviewed_surfaces": [
+    {"path":"review/ISSUE-02-privacy-coercion.md","blob_sha":"5cc9ec1ff2db6735e115ec47dc65c97a1952d3e6"},
+    {"path":"docs/poai/README.md","blob_sha":"2e91087e08d29fd96915ae92a7952a1f589e166e"},
+    {"path":"products/kontur/v0.1/consolidated-demo/README.md","blob_sha":"89469d2849848716545399ad1bfed36b58db93cc"},
+    {"path":"applications/marketcloser/v0.1/README.md","blob_sha":"cf9784a2e3921f37fe3ae75be6e24c1a7467752f"}
+  ],
+  "observations": {
+    "browser_local_json_processing": true,
+    "no_upload_endpoint": true,
+    "no_analytics_dependency": true,
+    "raw_personal_data_minimized": true,
+    "sensitive_personal_cross_boundary_forbidden": true,
+    "identity_resolution_unavailable": true,
+    "personal_targeting_unavailable": true,
+    "raw_history_excluded": true,
+    "transcripts_excluded": true,
+    "identity_correlation_excluded": true,
+    "profiling_excluded": true,
+    "private_audit_retention_policy_current": false,
+    "private_audit_deletion_policy_current": false,
+    "surveillance_authenticity_escalation_forbidden": false,
+    "repository_wide_coercive_collection_assessed": false
+  },
+  "limitations": [
+    "sampled_independent_privacy_boundaries_do_not_cover_every_repository_component",
+    "private_audit_retention_and_deletion_policy_not_established_by_reviewed_evidence",
+    "surveillance_extension_authenticity_escalation_rule_not_established_by_reviewed_evidence"
+  ],
+  "claims": {
+    "privacy_compliance_certified": false,
+    "legal_compliance_established": false,
+    "absence_of_surveillance_proven": false,
+    "repository_wide_privacy_proven": false
+  }
+}
