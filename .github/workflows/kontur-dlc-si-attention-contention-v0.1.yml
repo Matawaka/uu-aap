@@ -1,0 +1,25 @@
+name: KONTUR DLC-SI Attention Contention v0.1
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/dlc-si-attention-contention/**'
+      - '.github/workflows/kontur-dlc-si-attention-contention-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/kontur-game-companion/dlc-si-attention-contention/**'
+      - '.github/workflows/kontur-dlc-si-attention-contention-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check pilots/kontur-game-companion/dlc-si-attention-contention/adapter.js
+      - run: node pilots/kontur-game-companion/dlc-si-attention-contention/test-adapter.js
+      - run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - run: test -z "$(git status --porcelain)"
