@@ -1,0 +1,10 @@
+'use strict';
+const assert=require('node:assert/strict');
+const c=require('./checkpoint.json');
+assert.equal(c.type,'KONTURSuccessorAcceptanceCheckpoint');
+assert.equal(c.result,'INTEGRATION_SLICE_PASS');
+for(const [name,state] of Object.entries(c.criteria)) assert.equal(state,'PASS',`${name} must pass`);
+assert.equal(c.field_validation,'NOT_CLAIMED');
+for(const k of ['stable_core_promotion','live_kontur_activation','new_observation_session_authorized','live_transport_authorized','game_control_authorized','background_activity_authorized','external_effect_authority_created','action_permit_created','synthetic_evidence_substitutes_field_evidence']) assert.equal(c[k],false,`${k} must remain false`);
+for(const ref of ['#737','#739','#741']) assert.equal(Object.values(c.evidence).includes(ref),true,`${ref} evidence required`);
+console.log('KONTUR successor acceptance v0.1: INTEGRATION_SLICE_PASS');
