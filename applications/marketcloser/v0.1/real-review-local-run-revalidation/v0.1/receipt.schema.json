@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://uu-aap.example/applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/receipt.schema.json",
+  "title": "MarketCloserRealReviewLocalRunRevalidationReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["protocol","version","receipt_type","receipt_id","source_input","materialization_binding","permit_binding","frontier_revalidation","authority_revalidation","candidate_binding","classification","local_run_ready","stress_test_run","claims","non_effects","next_safe_action","revalidated_at","content_hash"],
+  "properties": {
+    "protocol": {"const": "MARKETCLOSER-REAL-REVIEW-LOCAL-RUN-REVALIDATION"},
+    "version": {"const": "0.1"},
+    "receipt_type": {"const": "MarketCloserRealReviewLocalRunRevalidationReceipt"},
+    "receipt_id": {"type": "string", "pattern": "^urn:uu-aap:marketcloser:real-review-local-run-revalidation-receipt:[0-9a-f]{24}$"},
+    "source_input": {
+      "type": "object", "additionalProperties": false,
+      "required": ["revalidation_id","revalidation_hash"],
+      "properties": {
+        "revalidation_id": {"type": "string", "minLength": 1},
+        "revalidation_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+      }
+    },
+    "materialization_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["materialization_id","materialization_hash","decision_classification","decision_hash","permit_created"],
+      "properties": {
+        "materialization_id": {"type": "string", "minLength": 1},
+        "materialization_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "decision_classification": {"enum": ["AUTHORITY_NOT_READY_PERMIT_NOT_CREATED","SYNTHETIC_RUN_PERMIT_MATERIALIZED","REAL_RUN_PERMIT_MATERIALIZED"]},
+        "decision_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "permit_created": {"type": "boolean"}
+      }
+    },
+    "permit_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["present","permit_id","permit_hash","one_shot","consumed","remaining_invocations","operation"],
+      "properties": {
+        "present": {"type": "boolean"},
+        "permit_id": {"type": ["string","null"]},
+        "permit_hash": {"type": ["string","null"]},
+        "one_shot": {"type": "boolean"},
+        "consumed": {"type": "boolean"},
+        "remaining_invocations": {"type": "integer", "minimum": 0},
+        "operation": {"type": ["string","null"]}
+      }
+    },
+    "frontier_revalidation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["expected_revision","expected_tree","observed_revision","observed_tree","revision_match","tree_match","within_validity_window","frontier_time_valid"],
+      "properties": {
+        "expected_revision": {"type": ["string","null"]}, "expected_tree": {"type": ["string","null"]},
+        "observed_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "observed_tree": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "revision_match": {"type": "boolean"}, "tree_match": {"type": "boolean"},
+        "within_validity_window": {"type": "boolean"}, "frontier_time_valid": {"type": "boolean"}
+      }
+    },
+    "authority_revalidation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["result_present","canonical_result_valid","status_established","scope_match","target_match","subject_match","verified_not_future","within_freshness_window","root_accepted_by_policy","issuer_entitlement_chain_valid"],
+      "properties": {
+        "result_present": {"type": "boolean"}, "canonical_result_valid": {"type": "boolean"},
+        "status_established": {"type": "boolean"}, "scope_match": {"type": "boolean"},
+        "target_match": {"type": "boolean"}, "subject_match": {"type": "boolean"},
+        "verified_not_future": {"type": "boolean"}, "within_freshness_window": {"type": "boolean"},
+        "root_accepted_by_policy": {"type": "boolean"}, "issuer_entitlement_chain_valid": {"type": "boolean"}
+      }
+    },
+    "candidate_binding": {
+      "type": "object", "additionalProperties": false,
+      "required": ["bridge_receipt_hash","marketer_candidate_id","marketer_candidate_hash","exact_materialization_match"],
+      "properties": {
+        "bridge_receipt_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "marketer_candidate_id": {"type": "string", "minLength": 1},
+        "marketer_candidate_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+        "exact_materialization_match": {"type": "boolean"}
+      }
+    },
+    "classification": {"enum": ["PERMIT_REQUIRED","PERMIT_INVALID","PERMIT_EXPIRED","PERMIT_FRONTIER_STALE","PERMIT_ALREADY_CONSUMED","PERMIT_INVOCATION_COUNT_INVALID","AUTHORITY_REVALIDATION_FAILED","CANDIDATE_BINDING_MISMATCH","SYNTHETIC_LOCAL_RUN_READY","REAL_LOCAL_RUN_READY"]},
+    "local_run_ready": {"type": "boolean"},
+    "stress_test_run": {"const": false},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["exact_materialization_source_revalidated","current_frontier_observed","synthetic_local_mvp_not_invoked","revalidation_only_boundary_preserved","stress_test_run","stress_test_receipt_created","synthetic_local_mvp_invoked","real_source_relabelled_synthetic","response_candidate_created","pilot_permit_created","action_permit_created","provider_invoked","network_accessed","filesystem_written","platform_mutated","publication_authorized","external_execution_admitted","external_effect_performed","successor_authority_created"],
+      "properties": {
+        "exact_materialization_source_revalidated": {"const": true},
+        "current_frontier_observed": {"const": true},
+        "synthetic_local_mvp_not_invoked": {"const": true},
+        "revalidation_only_boundary_preserved": {"const": true},
+        "stress_test_run": {"const": false}, "stress_test_receipt_created": {"const": false},
+        "synthetic_local_mvp_invoked": {"const": false}, "real_source_relabelled_synthetic": {"const": false},
+        "response_candidate_created": {"const": false}, "pilot_permit_created": {"const": false},
+        "action_permit_created": {"const": false}, "provider_invoked": {"const": false},
+        "network_accessed": {"const": false}, "filesystem_written": {"const": false},
+        "platform_mutated": {"const": false}, "publication_authorized": {"const": false},
+        "external_execution_admitted": {"const": false}, "external_effect_performed": {"const": false},
+        "successor_authority_created": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true,
+      "items": {"enum": ["Permit Possession != Current Preconditions","Authority Previously Verified != Authority Still Current","Main Changed != Permit Still Current","Revalidation Ready != Stress-Test Executed","Real Candidate != Synthetic Local MVP Input","Run Permit != PilotPermit","Run Permit != ActionPermit","Local Run Ready != Publication Authority","Consumed Permit != Retry Permission","Successful Revalidation != Successor Authority"]}
+    },
+    "next_safe_action": {"enum": ["REAL_STRESS_TEST_ADAPTER_REQUIRED","STOP_AND_REPAIR_REVALIDATION_PRECONDITIONS"]},
+    "revalidated_at": {"type": "string", "format": "date-time"},
+    "content_hash": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}
+  }
+}
