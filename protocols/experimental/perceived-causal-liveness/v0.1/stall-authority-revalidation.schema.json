@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:perceived-causal-liveness:stall-authority-revalidation:v0.1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["state","meaningful_progress","prior_authority_valid","target_unchanged","frontier_unchanged","permit_unexpired","permit_unconsumed"],
+  "properties":{
+    "state":{"const":"RUNNING"},
+    "meaningful_progress":{"const":true},
+    "prior_authority_valid":{"type":"boolean"},
+    "target_unchanged":{"type":"boolean"},
+    "frontier_unchanged":{"type":"boolean"},
+    "permit_unexpired":{"type":"boolean"},
+    "permit_unconsumed":{"type":"boolean"}
+  }
+}
