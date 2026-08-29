@@ -1,0 +1,45 @@
+{
+  "artifact_type": "UU-AAP-Component-Manifest",
+  "manifest_version": "0.1",
+  "component": {
+    "id": "example-component",
+    "version": "0.1",
+    "kind": "TOOLING",
+    "status": "experimental",
+    "path": "tooling/example-component/v0.1"
+  },
+  "source_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "0000000000000000000000000000000000000000"
+  },
+  "exports": {
+    "interfaces": [],
+    "receipt_types": [],
+    "schemas": [],
+    "runtime_entrypoints": []
+  },
+  "dependencies": [],
+  "conformance": {
+    "commands": []
+  },
+  "effect_ceiling": {
+    "external_effect_emission": false,
+    "runtime_activation": false,
+    "execution_admission": false,
+    "creates_authority": false,
+    "accepts_responsibility": false
+  },
+  "canonicalization": {
+    "mode": "component_local",
+    "profile_ref": null
+  },
+  "evolution_ref": null,
+  "non_effects": [
+    "manifest_presence_does_not_publish_or_release",
+    "dependency_edge_does_not_transfer_authority",
+    "declared_interface_does_not_prove_compatibility",
+    "manifest_validation_does_not_attest_runtime_behavior",
+    "manifest_presence_does_not_activate_runtime"
+  ],
+  "content_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+}
