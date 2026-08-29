@@ -1,0 +1,47 @@
+{
+  "artifact_type": "UU-AAP-Manual-Conformance-Baseline",
+  "version": "0.1",
+  "source": {
+    "workflow_path": ".github/workflows/marketcloser-publication-observation-v0.1-validation.yml",
+    "workflow_blob_sha": "b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72",
+    "scope": "steps_named_re_run_*_predecessors"
+  },
+  "target_component_id": "MarketCloser-Publication-Observation",
+  "command_count": 27,
+  "commands": [
+    {"executable":"python","args":["applications/marketcloser/v0.1/validate_boundary.py"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-bridge.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-authority-gate.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-permit.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/test-revalidation.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/test-engine-parity.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/test-adapter.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/human-analysis-disposition/v0.1/test-disposition.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/human-analysis-disposition/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/response-candidate/v0.1/test-response-candidate.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/response-candidate/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/human-response-approval/v0.1/test-approval.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/human-response-approval/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-copy-export.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-receipt-binding.js"]},
+    {"executable":"node","args":["applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-schema-runtime-parity.js"]},
+    {"executable":"python","args":["products/marketer-pessimist/v0.1/validate_contract.py"]},
+    {"executable":"node","args":["products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js"]},
+    {"executable":"node","args":["products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js"]},
+    {"executable":"node","args":["products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js"]},
+    {"executable":"node","args":["products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js"]}
+  ],
+  "non_effects": [
+    "manual_baseline_does_not_define_universal_dependency_truth",
+    "baseline_extraction_does_not_execute_commands",
+    "workflow_coverage_does_not_prove_complete_runtime_import_graph",
+    "manual_command_presence_does_not_create_authority",
+    "baseline_parity_does_not_authorize_ci_narrowing"
+  ]
+}
