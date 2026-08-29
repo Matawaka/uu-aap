@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:marketcloser-copy-export-receipt:v0.1",
+  "type":"object","additionalProperties":false,
+  "required":["protocol","version","receipt_type","receipt_id","source_input","approval_binding","event_binding","classification","copy_export_event_recorded","copy_export_event_asserts_performed","claims","non_effects","next_safe_action","content_hash"],
+  "properties":{
+    "protocol":{"const":"MARKETCLOSER-COPY-EXPORT-RECEIPT"},
+    "version":{"const":"0.1"},
+    "receipt_type":{"const":"MarketCloserCopyExportReceipt"},
+    "receipt_id":{"type":"string","pattern":"^urn:uu-aap:marketcloser:copy-export-receipt:[0-9a-f]{24}$"},
+    "source_input":{"type":"object","additionalProperties":false,"required":["copy_export_id","copy_export_hash"],"properties":{"copy_export_id":{"type":"string","minLength":1},"copy_export_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}}},
+    "approval_binding":{"type":"object","additionalProperties":false,"required":["approval_id","approval_hash","receipt_present","receipt_id","receipt_hash","classification","draft_hash","copy_export_authorized","exact_receipt_revalidated"],"properties":{
+      "approval_id":{"type":"string","minLength":1},"approval_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},"receipt_present":{"type":"boolean"},
+      "receipt_id":{"type":["string","null"]},"receipt_hash":{"anyOf":[{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},{"type":"null"}]},
+      "classification":{"type":["string","null"]},"draft_hash":{"anyOf":[{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},{"type":"null"}]},
+      "copy_export_authorized":{"type":"boolean"},"exact_receipt_revalidated":{"type":"boolean"}
+    }},
+    "event_binding":{"type":"object","additionalProperties":false,"required":["present","context","method","event_ref","actor_ref","performed_at","draft_hash","payload_hash","application_event_observed","independently_verified"],"properties":{
+      "present":{"type":"boolean"},"context":{"type":["string","null"]},"method":{"type":["string","null"]},"event_ref":{"type":["string","null"]},"actor_ref":{"type":["string","null"]},
+      "performed_at":{"anyOf":[{"type":"string","format":"date-time"},{"type":"null"}]},"draft_hash":{"anyOf":[{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},{"type":"null"}]},
+      "payload_hash":{"anyOf":[{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"},{"type":"null"}]},"application_event_observed":{"type":"boolean"},"independently_verified":{"const":false}
+    }},
+    "classification":{"enum":["APPROVAL_REQUIRED","COPY_EXPORT_EVENT_REQUIRED","COPIED_PUBLICATION_UNVERIFIED"]},
+    "copy_export_event_recorded":{"type":"boolean"},"copy_export_event_asserts_performed":{"type":"boolean"},
+    "claims":{"type":"object","additionalProperties":false,"required":["exact_approval_source_revalidated","approved_exact_draft_bound","copy_export_event_recorded","copy_export_event_asserts_performed","event_payload_matches_approved_draft","copy_export_independently_verified","actor_identity_verified","os_clipboard_state_attested","filesystem_export_state_attested","publication_observed","publication_authorized","provider_invoked","network_accessed","platform_mutated","campaign_sent","pilot_permit_created","action_permit_created","external_execution_admitted","external_effect_performed","successor_authority_created"],"properties":{
+      "exact_approval_source_revalidated":{"const":true},"approved_exact_draft_bound":{"type":"boolean"},"copy_export_event_recorded":{"type":"boolean"},"copy_export_event_asserts_performed":{"type":"boolean"},"event_payload_matches_approved_draft":{"type":"boolean"},
+      "copy_export_independently_verified":{"const":false},"actor_identity_verified":{"const":false},"os_clipboard_state_attested":{"const":false},"filesystem_export_state_attested":{"const":false},"publication_observed":{"const":false},"publication_authorized":{"const":false},"provider_invoked":{"const":false},"network_accessed":{"const":false},"platform_mutated":{"const":false},"campaign_sent":{"const":false},"pilot_permit_created":{"const":false},"action_permit_created":{"const":false},"external_execution_admitted":{"const":false},"external_effect_performed":{"const":false},"successor_authority_created":{"const":false}
+    }},
+    "non_effects":{"type":"array","minItems":10,"maxItems":10,"uniqueItems":true,"items":{"type":"string"}},
+    "next_safe_action":{"enum":["OBTAIN_APPROVED_FOR_COPY_EXPORT","RECORD_COPY_EXPORT_EVENT","PUBLICATION_OBSERVATION_REQUIRED"]},
+    "content_hash":{"type":"string","pattern":"^sha256:[0-9a-f]{64}$"}
+  },
+  "allOf":[
+    {"if":{"properties":{"classification":{"const":"COPIED_PUBLICATION_UNVERIFIED"}}},"then":{"properties":{"copy_export_event_recorded":{"const":true},"copy_export_event_asserts_performed":{"const":true},"next_safe_action":{"const":"PUBLICATION_OBSERVATION_REQUIRED"},"approval_binding":{"properties":{"copy_export_authorized":{"const":true}}},"event_binding":{"properties":{"present":{"const":true}}}}}},
+    {"if":{"properties":{"classification":{"const":"COPY_EXPORT_EVENT_REQUIRED"}}},"then":{"properties":{"copy_export_event_recorded":{"const":false},"copy_export_event_asserts_performed":{"const":false},"next_safe_action":{"const":"RECORD_COPY_EXPORT_EVENT"},"approval_binding":{"properties":{"copy_export_authorized":{"const":true}}},"event_binding":{"properties":{"present":{"const":false}}}}}},
+    {"if":{"properties":{"classification":{"const":"APPROVAL_REQUIRED"}}},"then":{"properties":{"copy_export_event_recorded":{"const":false},"copy_export_event_asserts_performed":{"const":false},"next_safe_action":{"const":"OBTAIN_APPROVED_FOR_COPY_EXPORT"},"approval_binding":{"properties":{"copy_export_authorized":{"const":false}}},"event_binding":{"properties":{"present":{"const":false}}}}}}
+  ]
+}

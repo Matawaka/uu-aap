@@ -1,0 +1,35 @@
+{
+  "protocol": "MARKETCLOSER-COPY-EXPORT-RECEIPT",
+  "version": "0.1",
+  "artifact_type": "MarketCloserCopyExportInput",
+  "copy_export_id": "urn:uu-aap:marketcloser:copy-export:synthetic-wait-001",
+  "origin": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "70dcca94b87f392bb74861765133306691f5d165",
+    "tree": "a15e79f2fe0ea0e3d2f547f6f4e53645c2e2a36a"
+  },
+  "approval_source": {
+    "mode": "repository_synthetic",
+    "path": "applications/marketcloser/v0.1/human-response-approval/v0.1/examples/synthetic-approval-wait.input.json",
+    "expected_approval_input_hash": "sha256:023efc173da77a30ee559a0e8e559971f7e250a43de3e9a2348fad7f867193eb"
+  },
+  "approval_receipt": null,
+  "event": null,
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "copy_export_event_recording_available": true,
+    "os_clipboard_mutation_available": false,
+    "filesystem_export_write_available": false,
+    "publication_available": false,
+    "provider_invocation_available": false,
+    "network_access_available": false,
+    "platform_mutation_available": false,
+    "campaign_send_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "external_execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:60ce7e57b32827551f2a0da3d18a1e2ea4fe4751f51f184de34e2c11142ec41c"
+}
