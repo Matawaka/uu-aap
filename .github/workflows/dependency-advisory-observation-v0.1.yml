@@ -1,0 +1,89 @@
+name: Dependency Advisory Observation v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/dependency-advisory-observation-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate observation code
+        run: |
+          node --check review/security/dependency-vulnerability/v0.1/observe-action-advisories.js
+          node --check review/security/dependency-vulnerability/v0.1/advisory-binding.js
+          node review/security/dependency-vulnerability/v0.1/test-live-observation-boundary.js
+          node review/security/dependency-vulnerability/v0.1/test-advisory-binding.js
+
+      - name: Materialize current dependency inventory
+        run: node review/security/dependency-vulnerability/v0.1/inventory.js > /tmp/dependency-inventory.json
+
+      - name: Observe public GitHub Action repository advisories
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node review/security/dependency-vulnerability/v0.1/observe-action-advisories.js /tmp/dependency-inventory.json > /tmp/action-advisory-observation.json
+
+      - name: Bind live observation into advisory assessment
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const inventory = JSON.parse(fs.readFileSync('/tmp/dependency-inventory.json','utf8'));
+          const observation = JSON.parse(fs.readFileSync('/tmp/action-advisory-observation.json','utf8'));
+          const input = {
+            artifact_type: 'UU-AAP-Dependency-Advisory-Evidence',
+            version: '0.1',
+            reviewed_revision: inventory.reviewed_revision,
+            inventory,
+            advisory_evidence: [observation.binding_evidence]
+          };
+          fs.writeFileSync('/tmp/advisory-evidence-live.json', JSON.stringify(input, null, 2) + '\n');
+          NODE
+          node review/security/dependency-vulnerability/v0.1/advisory-binding.js /tmp/advisory-evidence-live.json > /tmp/advisory-assessment-live.json
+
+      - name: Enforce conservative live outcome
+        run: |
+          node <<'NODE'
+          const observation = require('/tmp/action-advisory-observation.json');
+          const assessment = require('/tmp/advisory-assessment-live.json');
+          if (assessment.vulnerability_free_proven !== false) throw new Error('overclaim: vulnerability-free');
+          if (assessment.remediation_authorized !== false) throw new Error('overclaim: remediation authority');
+          if (assessment.release_authorized !== false) throw new Error('overclaim: release authority');
+          if (assessment.runtime_activated !== false) throw new Error('overclaim: runtime activation');
+          if (observation.binding_evidence.result === 'unsupported' && assessment.advisory_covered_kinds.includes('github_action')) {
+            throw new Error('unsupported observation counted as coverage');
+          }
+          if (assessment.outcome === 'PASS' && assessment.uncovered_dependency_kinds.length !== 0) {
+            throw new Error('PASS with uncovered dependency kinds');
+          }
+          NODE
+
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"
+
+      - name: Upload live advisory evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-advisory-observation-v0.1-${{ github.sha }}
+          path: |
+            /tmp/dependency-inventory.json
+            /tmp/action-advisory-observation.json
+            /tmp/advisory-evidence-live.json
+            /tmp/advisory-assessment-live.json
+          if-no-files-found: error
