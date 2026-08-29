@@ -1,0 +1,15 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {mapCcrpConflict,verifyMapping}=require('./ccrp-mapping.js');
+const {relation,safeWorkGate}=require('../../experimental/dlc-si/v0.1/incomparability.js');
+const {assessDecomposition,chooseMode}=require('../../experimental/dlc-si/v0.1/decomposition.js');
+const {buildReceipt}=require('../v0.1/dlc-si.js');
+const fixture=require('../v0.1/examples/temporary-precedence.contention.json');
+const ccrp={protocol:'CCRP',record_id:'ccrp:test',conflicts:[{id:'x',type:'normative'}],human_resolution_required:true};
+const m=mapCcrpConflict({ccrp_record:ccrp,ccrp_ref:'urn:ccrp:test',dlc_si_contention_ref:'urn:dlc:test'});assert.equal(verifyMapping(m,ccrp),true);assert.deepEqual(m.ccrp_record,ccrp);assert.equal(m.information_loss,false);
+const rel=relation({claim_a_ref:'A',claim_b_ref:'B',relation:'INCOMPARABLE',evidence_refs:['e1']});assert.equal(rel.forced_order,false);assert.equal(rel.normative_winner,null);
+const sw=safeWorkGate({claim_relation:rel,work_items:[{work_id:'observe',reversible:true,conflicts_with_contested_portion:false},{work_id:'mutate',reversible:false,conflicts_with_contested_portion:true}]});assert.equal(sw.work[0].may_proceed,true);assert.equal(sw.work[1].may_proceed,false);
+const da=assessDecomposition({options:[{option_id:'split',dimension:'TIME',safe:true,preserves_causal_value_a:true,preserves_causal_value_b:true}]});assert.equal(chooseMode(da).mode,'PARTITIONED_OR_DEFERRED_REQUIRED');
+const live=buildReceipt(fixture);assert.equal(live.contest_visible,true);assert.equal(live.execution_admitted,false);assert.equal(live.preserved_claim_ids.length>=2,true);
+const expired=JSON.parse(JSON.stringify(fixture));expired.evaluated_at=expired.proposed_resolution.lease.expires_at;const er=buildReceipt(expired);assert.equal(er.status,'UNRESOLVED');assert.equal(er.precedence_effective,false);assert.equal(er.action_gate_candidate,false);assert.deepEqual(er.reopened_by,['lease_expiry']);
+console.log('dlc-si v0.2 acceptance recomposition: ok');
