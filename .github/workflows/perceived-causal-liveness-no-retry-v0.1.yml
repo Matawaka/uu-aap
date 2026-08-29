@@ -1,0 +1,32 @@
+name: Perceived Causal Liveness No Retry v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/experimental/perceived-causal-liveness/v0.1/**'
+      - '.github/workflows/perceived-causal-liveness-no-retry-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/experimental/perceived-causal-liveness/v0.1/**'
+      - '.github/workflows/perceived-causal-liveness-no-retry-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate no-retry semantics
+        run: |
+          node --check protocols/experimental/perceived-causal-liveness/v0.1/pending-effect.js
+          node protocols/experimental/perceived-causal-liveness/v0.1/test-pending-effect.js
+      - name: Checkout unchanged
+        run: test -z "$(git status --porcelain)"
