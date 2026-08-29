@@ -1,0 +1,31 @@
+{
+  "pass_id": "backlog-reconciliation-pass-002",
+  "origin_frontier": "7798ea6d916647df7f4b8f26f3e0e83f5af5d17d",
+  "issues": [
+    {
+      "issue_ref": "#371",
+      "merged_prs": ["#372"],
+      "merge_shas": ["92861add44fbfc7ab5a9a12f1ce2b5fd176da3b6"],
+      "implementation_paths": ["protocols/integration/observation-core-successor-binding/v0.1"],
+      "successor_usage_refs": ["#374"],
+      "acceptance_complete": true
+    },
+    {
+      "issue_ref": "#373",
+      "merged_prs": ["#374"],
+      "merge_shas": ["fe0bb4cd4a7a47d7a2c69a9f8d91b9b382a8d322"],
+      "implementation_paths": ["protocols/integration/bounded-action-lifecycle-closure/v0.1"],
+      "successor_usage_refs": ["#376"],
+      "acceptance_complete": true
+    },
+    {
+      "issue_ref": "#375",
+      "merged_prs": ["#376"],
+      "merge_shas": ["87d721131c8e499380ac0481495d864b1d05f01e"],
+      "implementation_paths": ["protocols/integration/bounded-action-e2e/v0.1"],
+      "successor_usage_refs": ["#378"],
+      "acceptance_complete": true
+    }
+  ],
+  "classification_mutates_issue": false
+}
