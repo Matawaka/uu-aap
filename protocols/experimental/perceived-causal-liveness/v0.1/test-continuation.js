@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {checkpointCommit,continuationCapsule,materializeSuccessor}=require('./continuation.js');
+const cp=checkpointCommit({run_id:'run-a',run_epoch:7,committed_at:'2026-08-29T15:30:00Z',intent_ref:'intent:1',constraints:['no-write'],completed_observations:['obs:1'],remaining_work:['task:2']});
+assert.equal(cp.hidden_reasoning_included,false);assert.equal(cp.authority_included,false);
+const cap=continuationCapsule({closed_run:{run_id:'run-a',run_epoch:7,state:'TIMED_OUT_CLOSED'},checkpoint:cp});
+assert.equal(cap.transfers_authority,false);assert.equal(cap.successor_authority_required,true);
+const s=materializeSuccessor({capsule:cap,successor_run_id:'run-b',successor_epoch:8,new_lease_expires_at:'2026-08-29T16:00:00Z'});
+assert.equal(s.state,'RUNNING');assert.equal(s.external_effect_authority,false);assert.equal(s.authority_revalidation_required,true);
+assert.throws(()=>materializeSuccessor({capsule:cap,successor_run_id:'run-a',successor_epoch:8,new_lease_expires_at:'x'}),/new run_id/);
+assert.throws(()=>materializeSuccessor({capsule:cap,successor_run_id:'run-b',successor_epoch:7,new_lease_expires_at:'x'}),/epoch must advance/);
+console.log('continuation tests: ok');
