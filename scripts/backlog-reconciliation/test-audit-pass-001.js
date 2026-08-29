@@ -8,11 +8,12 @@ assert.deepEqual(audit.scope,['#365','#367','#369']);
 assert.equal(audit.non_effects.issue_state_mutated,false);
 assert.equal(audit.non_effects.automatic_closure_authorized,false);
 for(const entry of audit.entries){
-  const receipt=classifyIssue(entry);
-  assert.equal(receipt.state,'COMPLETED',`${entry.issue_ref} must reconcile as COMPLETED`);
+  const receipt=classifyIssue({...entry,roadmap_current:false});
+  assert.equal(receipt.implementation_state,'COMPLETED',`${entry.issue_ref} must reconcile implementation as COMPLETED`);
+  assert.equal(receipt.roadmap_state,'INSUFFICIENT_EVIDENCE',`${entry.issue_ref} roadmap state is not inferred from implementation completion`);
   assert.equal(receipt.automatic_closure_authorized,false);
   assert.ok(receipt.successor_usage_refs.length>0);
   assert.ok(receipt.merge_shas.length>0);
   assert.ok(receipt.implementation_paths.length>0);
 }
-console.log('backlog reconciliation pass 001: ok');
+console.log('backlog reconciliation pass 001 dual-axis: ok');

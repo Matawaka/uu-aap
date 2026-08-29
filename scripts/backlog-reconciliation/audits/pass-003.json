@@ -1,0 +1,43 @@
+{
+  "scope": ["#377", "#379", "#383", "#385"],
+  "classification_mutates_issue": false,
+  "automatic_closure_authorized": false,
+  "entries": [
+    {
+      "issue_ref": "#377",
+      "merged_prs": ["#378"],
+      "merge_shas": ["ef1da13c4cb1fbfb67229d8d216015e8f4d02f25"],
+      "implementation_paths": ["protocols/integration/bounded-action-adversarial/v0.1"],
+      "successor_usage_refs": ["#380"],
+      "acceptance_complete": true,
+      "roadmap_current": false
+    },
+    {
+      "issue_ref": "#379",
+      "merged_prs": ["#380"],
+      "merge_shas": ["46c34f33badd642af6c3876b01116026247ae29e"],
+      "implementation_paths": ["protocols/interface-registry/v0.1"],
+      "successor_usage_refs": ["#382", "#384"],
+      "acceptance_complete": true,
+      "roadmap_current": false
+    },
+    {
+      "issue_ref": "#383",
+      "merged_prs": ["#384"],
+      "merge_shas": ["e8e617347443773e6e0667b01b213a2f5b4389cd"],
+      "implementation_paths": ["protocols/integration/historical-composability-audit/v0.1"],
+      "successor_usage_refs": ["#386"],
+      "acceptance_complete": true,
+      "roadmap_current": false
+    },
+    {
+      "issue_ref": "#385",
+      "merged_prs": ["#386"],
+      "merge_shas": ["82efd2e591bdd93db34af694394a785e14b39d37"],
+      "implementation_paths": ["protocols/integration/release-candidate-checkpoint/v0.1"],
+      "successor_usage_refs": [],
+      "acceptance_complete": true,
+      "superseded_by": "RC_CHECKPOINT_VNEXT"
+    }
+  ]
+}
