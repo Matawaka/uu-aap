@@ -114,6 +114,7 @@ jobs:
           schema = json.loads(Path('tooling/execution-evidence-parity/v0.1/report.schema.json').read_text())
           report = json.loads(Path(os.environ['REPORT']).read_text())
           Draft202012Validator(schema).validate(report)
+          print(f"T3C_CLASSIFICATION={report['classification']} STATUS_DIFFS={report['status_difference_count']} OUTPUT_DIFFS={report['output_difference_count']}")
           assert report['command_set_count'] == 27
           assert len(report['command_comparisons']) == 27
           assert report['historical_execution']['attempted'] == 27
