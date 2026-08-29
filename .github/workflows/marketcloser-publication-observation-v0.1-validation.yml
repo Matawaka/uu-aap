@@ -1,0 +1,180 @@
+name: MarketCloser Publication Observation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'applications/marketcloser/v0.1/publication-observation/v0.1/**'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'applications/marketcloser/v0.1/publication-observation/v0.1/**'
+      - '.github/workflows/marketcloser-publication-observation-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: d18416a0f11c5135ba9a4a04bfe366b25a0872eb
+  LAYER: applications/marketcloser/v0.1/publication-observation/v0.1
+  FIXTURE: applications/marketcloser/v0.1/publication-observation/v0.1/examples/synthetic-publication-wait.input.json
+  WAIT_RECEIPT: /tmp/marketcloser-publication-wait-receipt.json
+  POS_INPUT: /tmp/marketcloser-publication-positive-input.json
+  POS_RECEIPT: /tmp/marketcloser-publication-positive-receipt.json
+  PYTHONPYCACHEPREFIX: /tmp/marketcloser-publication-observation-pycache
+
+jobs:
+  validate:
+    name: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run MarketCloser application and data predecessors
+        run: |
+          python applications/marketcloser/v0.1/validate_boundary.py
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-bridge.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-receipt-binding.js
+
+      - name: Re-run authority permit and revalidation predecessors
+        run: |
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-authority-gate.js
+          node applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-permit.js
+          node applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/test-revalidation.js
+          node applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/test-receipt-binding.js
+
+      - name: Re-run analytical and human-disposition predecessors
+        run: |
+          node applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/test-engine-parity.js
+          node applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/test-adapter.js
+          node applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/human-analysis-disposition/v0.1/test-disposition.js
+          node applications/marketcloser/v0.1/human-analysis-disposition/v0.1/test-receipt-binding.js
+
+      - name: Re-run response approval and copy/export predecessors
+        run: |
+          node applications/marketcloser/v0.1/response-candidate/v0.1/test-response-candidate.js
+          node applications/marketcloser/v0.1/response-candidate/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/human-response-approval/v0.1/test-approval.js
+          node applications/marketcloser/v0.1/human-response-approval/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-copy-export.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-receipt-binding.js
+          node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-schema-runtime-parity.js
+
+      - name: Re-run Marketer Pessimist predecessors
+        run: |
+          python products/marketer-pessimist/v0.1/validate_contract.py
+          node products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js
+          node products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js
+          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js
+
+      - name: Check publication observation JavaScript syntax
+        run: |
+          node --check "$LAYER/publication-observation.js"
+          node --check "$LAYER/receipt-binding.js"
+          node --check "$LAYER/synthetic-positive-helper.js"
+          node --check "$LAYER/test-publication-observation.js"
+          node --check "$LAYER/test-receipt-binding.js"
+          node --check "$LAYER/test-schema-runtime-parity.js"
+          node --check "$LAYER/test-import-safe.js"
+
+      - name: Validate committed waiting fixture
+        run: node "$LAYER/publication-observation.js" validate "$FIXTURE"
+
+      - name: Confirm committed fixture remains waiting
+        run: |
+          node "$LAYER/publication-observation.js" receipt "$FIXTURE" > "$WAIT_RECEIPT"
+          node - <<'NODE'
+          const r = require('/tmp/marketcloser-publication-wait-receipt.json');
+          if (r.classification !== 'COPY_EXPORT_REQUIRED') throw new Error('committed publication fixture unexpectedly advanced');
+          if (r.observation_event_recorded !== false || r.publication_observed !== false) throw new Error('committed fixture observed publication');
+          if (r.claims.publication_authorized !== false || r.claims.external_effect_performed !== false) throw new Error('committed fixture overclaimed authority/effect');
+          NODE
+
+      - name: Run publication observation conformance
+        run: node "$LAYER/test-publication-observation.js"
+
+      - name: Validate exact publication observation source binding
+        run: node "$LAYER/test-receipt-binding.js"
+
+      - name: Validate schema runtime parity
+        run: node "$LAYER/test-schema-runtime-parity.js"
+
+      - name: Validate import safety
+        run: node "$LAYER/test-import-safe.js"
+
+      - name: Validate waiting and positive JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          base = Path(os.environ['LAYER'])
+          pairs = [
+              (base / 'input.schema.json', Path(os.environ['FIXTURE'])),
+              (base / 'receipt.schema.json', Path(os.environ['WAIT_RECEIPT'])),
+              (base / 'input.schema.json', Path(os.environ['POS_INPUT'])),
+              (base / 'receipt.schema.json', Path(os.environ['POS_RECEIPT'])),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID schema: {instance_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node "$LAYER/publication-observation.js" help >/dev/null
+          node "$LAYER/publication-observation.js" validate "$FIXTURE" >/dev/null
+          node "$LAYER/publication-observation.js" receipt "$FIXTURE" >/dev/null
+          for command in fetch observe publish send respond campaign provider mutate execute authorize permit; do
+            if node "$LAYER/publication-observation.js" "$command" "$FIXTURE" >/tmp/forbidden.out 2>/tmp/forbidden.err; then
+              echo "Forbidden imperative command unexpectedly succeeded: $command" >&2
+              exit 1
+            fi
+          done
+
+      - name: Guard production surface as non-network observation recorder
+        run: |
+          if grep -En "writeFile|appendFile|createWriteStream|child_process|exec\\(|spawn\\(|fetch\\(|require\\(['\"]https|require\\(['\"]http|net\\.|dgram|OpenAI|Anthropic" "$LAYER/publication-observation.js" "$LAYER/receipt-binding.js"; then
+            echo 'Forbidden production mutation/network/provider surface detected' >&2
+            exit 1
+          fi
+
+      - name: Confirm no real or positive publication evidence is committed
+        run: |
+          ! grep -R "matawaka-marketcloser-public-34a3.twc1.net" "$LAYER"
+          ! grep -R '"copy_export_receipt"[[:space:]]*:[[:space:]]*{' "$LAYER/examples"
+          ! grep -R '"observation"[[:space:]]*:[[:space:]]*{' "$LAYER/examples"
+          ! grep -R '"classification"[[:space:]]*:[[:space:]]*"PUBLICATION_OBSERVED"' "$LAYER/examples"
+          ! grep -R '"publication_observed"[[:space:]]*:[[:space:]]*true' "$LAYER/examples"
+
+      - name: Confirm repository checkout unchanged
+        run: test -z "$(git status --porcelain)"
