@@ -8,6 +8,7 @@ const MANIFESTS = [
   'tooling/component-manifest/v0.1/examples/uu-aap-core.component.json',
   'tooling/component-manifest/v0.1/examples/ial-compact.component.json',
   'tooling/component-manifest/v0.1/examples/ai-gateway.component.json',
+  'tooling/component-manifest/v0.1/examples/receipt-runtime.component.json',
   'tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json'
 ];
 
@@ -29,7 +30,7 @@ function main() {
 
   assert.deepStrictEqual(
     graph.components.map((component) => component.id),
-    ['AI-Gateway', 'AI-Transport-Reference', 'IAL-Compact', 'UU-AAP-Core']
+    ['AI-Gateway', 'AI-Transport-Reference', 'IAL-Compact', 'Receipt-Runtime', 'UU-AAP-Core']
   );
   assert.strictEqual(graph.unresolved_required_dependencies.length, 0);
   assert.deepStrictEqual(graph.cycles, []);
@@ -37,6 +38,10 @@ function main() {
   const ialReverse = Impact.reverseDependencies(graph, 'IAL-Compact');
   assert.deepStrictEqual(ialReverse.map((item) => item.component_id), ['AI-Transport-Reference']);
   assert.strictEqual(ialReverse[0].edge_kind, 'RUNTIME_IMPORT');
+
+  const runtimeReverse = Impact.reverseDependencies(graph, 'Receipt-Runtime');
+  assert.deepStrictEqual(runtimeReverse.map((item) => item.component_id), ['AI-Transport-Reference']);
+  assert.strictEqual(runtimeReverse[0].edge_kind, 'RUNTIME_IMPORT');
 
   const coreDependents = Impact.transitiveDependents(graph, 'UU-AAP-Core');
   assert.deepStrictEqual(coreDependents, ['AI-Gateway', 'AI-Transport-Reference']);
@@ -51,9 +56,27 @@ function main() {
     command.args.includes('protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js')
   ));
 
+  const runtimeImpact = Impact.impactFromPaths(graph, [
+    'tooling/receipt-runtime/v0.1/receipt-runtime.js'
+  ]);
+  assert.deepStrictEqual(runtimeImpact.directly_changed_components, ['Receipt-Runtime']);
+  assert.deepStrictEqual(runtimeImpact.affected_components, ['AI-Transport-Reference', 'Receipt-Runtime']);
+  assert(runtimeImpact.conformance_commands.some((command) =>
+    command.component_id === 'Receipt-Runtime' &&
+    command.args.includes('tooling/receipt-runtime/v0.1/test-receipt-runtime.js')
+  ));
+  assert(runtimeImpact.conformance_commands.some((command) =>
+    command.component_id === 'AI-Transport-Reference' &&
+    command.args.includes('protocols/integration/ai-transport-reference/v0.1/test-reference-transport.js')
+  ));
+
   const gatewayPath = Impact.whyDependent(graph, 'AI-Transport-Reference', 'AI-Gateway');
   assert.deepStrictEqual(gatewayPath.components, ['AI-Transport-Reference', 'AI-Gateway']);
   assert.strictEqual(gatewayPath.edges[0].edge_kind, 'RUNTIME_IMPORT');
+
+  const runtimePath = Impact.whyDependent(graph, 'AI-Transport-Reference', 'Receipt-Runtime');
+  assert.deepStrictEqual(runtimePath.components, ['AI-Transport-Reference', 'Receipt-Runtime']);
+  assert.strictEqual(runtimePath.edges[0].edge_kind, 'RUNTIME_IMPORT');
 
   const corePath = Impact.whyDependent(graph, 'AI-Gateway', 'UU-AAP-Core');
   assert.deepStrictEqual(corePath.components, ['AI-Gateway', 'UU-AAP-Core']);
@@ -95,7 +118,7 @@ function main() {
   expectImpactError(() => Impact.impactFromPaths(graph, ['unowned/path.txt']), 'no component owns changed path');
 
   const graphJson = JSON.stringify(Impact.graphSummary(graph));
-  const impactJson = JSON.stringify(pathImpact);
+  const impactJson = JSON.stringify(runtimeImpact);
   for (const prohibited of ['authority_created":true', 'responsibility_accepted":true', 'substitutable":true']) {
     assert(!graphJson.includes(prohibited));
     assert(!impactJson.includes(prohibited));
