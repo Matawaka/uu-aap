@@ -1,0 +1,9 @@
+{
+  "profile": "perceived-causal-liveness-stall-authority-v0.1",
+  "suspected_stall_suspends_external_effect_authority": true,
+  "meaningful_progress_restores_liveness": true,
+  "meaningful_progress_restores_authority": false,
+  "fresh_authority_revalidation_required": true,
+  "terminal_closure_irreversible": true,
+  "closed_run_can_reacquire_authority": false
+}
