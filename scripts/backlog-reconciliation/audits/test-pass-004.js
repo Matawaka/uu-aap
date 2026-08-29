@@ -10,7 +10,7 @@ assert.equal(audit.issues.length,8);
 for(const e of audit.issues){
   const r=classifyIssue(e);
   assert.equal(r.implementation_state,'COMPLETED',`${e.issue_ref} implementation must be COMPLETED`);
-  assert.equal(r.roadmap_state,'CURRENT',`${e.issue_ref} roadmap state remains CURRENT absent explicit supersession evidence`);
+  assert.equal(r.roadmap_state,'INSUFFICIENT_EVIDENCE',`${e.issue_ref} roadmap state must remain unknown without explicit current/supersession evidence`);
   assert.equal(r.automatic_closure_authorized,false);
   for(const p of e.implementation_paths) assert.equal(fs.existsSync(path.join(process.cwd(),p)),true,`${e.issue_ref} implementation path missing: ${p}`);
 }
