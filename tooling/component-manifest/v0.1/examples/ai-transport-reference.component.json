@@ -21,7 +21,7 @@
     ],
     "schemas": [
       "protocols/integration/ai-transport-reference/v0.1/transport-packet.schema.json",
-      "protocols/integration/ai-transport-reference/v0.1/transport-inspection-receipt.schema.json"
+      "protocols/integration/ai-transport-reference/v0.1/inspection-receipt.schema.json"
     ],
     "runtime_entrypoints": [
       "protocols/integration/ai-transport-reference/v0.1/reference-transport.js"
@@ -91,5 +91,5 @@
     "manifest_presence_does_not_publish_or_release",
     "manifest_validation_does_not_attest_runtime_behavior"
   ],
-  "content_hash": "sha256:REPLACE_ME"
+  "content_hash": "sha256:4fad04f2f6f55cf32bf0dca110442726716a131867a3fa30b48851806f0f9b89"
 }
