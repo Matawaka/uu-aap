@@ -1,0 +1,45 @@
+{
+  "artifact_type": "UU-AAP-Contestability-Review-Input",
+  "version": "0.1",
+  "origin_frontier": "7545f9159c360b499f3fce9c70b249edfb707d1a",
+  "reviewed_revision": "7545f9159c360b499f3fce9c70b249edfb707d1a",
+  "source_equivalence_verified": true,
+  "reviewed_surfaces": [
+    {"path":"review/ISSUE-05-contestability-appeal.md","blob_sha":"6df9c92ac04fc4ba77c1544a5f0ab73ded6e3c38"},
+    {"path":"pilots/core-pilot-002/README.md","blob_sha":"3112d41334a898aaab1af9db24556d6e746c3499"},
+    {"path":"docs/poai/appeal-sidecar.js","blob_sha":"a18f615226d168e2df860a47fab87e41e7935da8"},
+    {"path":"products/honest-hiring/v0.1/README.ru.md","blob_sha":"e1be40fdc6f03d17ab2389680322ba27aa56fa64"}
+  ],
+  "observations": {
+    "original_objection_preserved": true,
+    "dissent_preserved": true,
+    "disposition_separate_from_mutation": true,
+    "reviewer_identity_authority_separated": true,
+    "competing_interpretations_coexist": true,
+    "plural_reviews_non_overwrite": true,
+    "appeal_request_separate": true,
+    "appellant_authority_standing_unknown": true,
+    "appeal_requested_action_non_effecting": true,
+    "undisclosed_appellant_supported": true,
+    "correction_successor_preserves_predecessor": true,
+    "challenge_not_negative_signal": true,
+    "human_appeal_review_required": true,
+    "private_evidence_challenge_project_wide_covered": false,
+    "pseudonymous_challenger_empirically_exercised": false,
+    "reputational_harm_after_correction_addressed": false,
+    "unfair_registry_case_empirically_exercised": false
+  },
+  "limitations": [
+    "private_evidence_challenge_not_established_project_wide",
+    "pseudonymous_or_anonymous_challenger_not_empirically_exercised",
+    "post_correction_reputational_harm_handling_not_established",
+    "unfair_registry_case_not_empirically_exercised"
+  ],
+  "claims": {
+    "legal_due_process_established": false,
+    "legal_appeal_right_established": false,
+    "universal_contestability_proven": false,
+    "correction_success_guaranteed": false,
+    "anonymous_pseudonymous_access_proven": false
+  }
+}

@@ -1,0 +1,208 @@
+name: Contestability Review v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'review/contestability/v0.1/**'
+      - '.github/workflows/contestability-review-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/contestability/v0.1/**'
+      - '.github/workflows/contestability-review-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 7545f9159c360b499f3fce9c70b249edfb707d1a
+  INPUT: review/contestability/v0.1/current-boundaries.input.json
+  REPORT: /tmp/contestability-review-v0.1.json
+  ACCESSIBILITY_REPORT: /tmp/accessibility-rereview-v0.2.json
+  PRIVACY_REPORT: /tmp/privacy-review-v0.1.json
+  P0_INPUT: /tmp/release-candidate-after-contestability.input.json
+  P0_REPORT: /tmp/release-candidate-after-contestability.report.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bind current reviewed frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(git rev-parse HEAD)"
+          echo "TARGET_FRONTIER=$target" >> "$GITHUB_ENV"
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" "$target"
+
+      - name: Prove reviewed evidence surfaces are byte-identical to origin
+        shell: bash
+        run: |
+          set -euo pipefail
+          check_blob() {
+            path="$1" expected="$2"
+            test "$(git rev-parse "${ORIGIN_FRONTIER}:$path")" = "$expected"
+            test "$(git rev-parse "${TARGET_FRONTIER}:$path")" = "$expected"
+          }
+          check_blob review/ISSUE-05-contestability-appeal.md 6df9c92ac04fc4ba77c1544a5f0ab73ded6e3c38
+          check_blob pilots/core-pilot-002/README.md 3112d41334a898aaab1af9db24556d6e746c3499
+          check_blob docs/poai/appeal-sidecar.js a18f615226d168e2df860a47fab87e41e7935da8
+          check_blob products/honest-hiring/v0.1/README.ru.md e1be40fdc6f03d17ab2389680322ba27aa56fa64
+
+      - name: Verify factual contestability observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F 'resolution != erasure of objection' pilots/core-pilot-002/README.md >/dev/null
+          grep -F 'Multiple interpretations or competing review submissions may coexist.' pilots/core-pilot-002/README.md >/dev/null
+          grep -F 'No disposition state itself performs an external mutation.' pilots/core-pilot-002/README.md >/dev/null
+          grep -F 'reviewer identity != reviewer authority' pilots/core-pilot-002/README.md >/dev/null
+          grep -F "declaration: appellantLabel ? 'self_declared' : 'undisclosed'" docs/poai/appeal-sidecar.js >/dev/null
+          grep -F "authority_status: 'unknown'" docs/poai/appeal-sidecar.js >/dev/null
+          grep -F "standing_status: 'unknown'" docs/poai/appeal-sidecar.js >/dev/null
+          grep -F 'establishes_effect: false' docs/poai/appeal-sidecar.js >/dev/null
+          grep -F 'Candidate Challenge != Negative Signal' products/honest-hiring/v0.1/README.ru.md >/dev/null
+          grep -F 'Correction != History Deletion' products/honest-hiring/v0.1/README.ru.md >/dev/null
+          grep -F 'Original evidence сохраняется. Correction создаёт successor state.' products/honest-hiring/v0.1/README.ru.md >/dev/null
+          grep -F 'Human appeal reviewer' products/honest-hiring/v0.1/README.ru.md >/dev/null
+          grep -F 'evidence must remain private' review/ISSUE-05-contestability-appeal.md >/dev/null
+          grep -F 'anonymous or pseudonymous challenger' review/ISSUE-05-contestability-appeal.md >/dev/null
+          grep -F 'correction should not erase reputational harm' review/ISSUE-05-contestability-appeal.md >/dev/null
+          grep -F 'registry acts unfairly' review/ISSUE-05-contestability-appeal.md >/dev/null
+
+      - name: Run bounded Contestability Review tests
+        run: |
+          node --check review/contestability/v0.1/contestability-review.js
+          node review/contestability/v0.1/test-contestability-review.js
+          node review/contestability/v0.1/test-import-safe.js
+          node -e "JSON.parse(require('node:fs').readFileSync(process.env.INPUT,'utf8'))"
+
+      - name: Rebind Contestability Review to equivalent current frontier and assess
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          const fs = require('node:fs');
+          const input = JSON.parse(fs.readFileSync(process.env.INPUT, 'utf8'));
+          input.reviewed_revision = process.env.TARGET_FRONTIER;
+          input.source_equivalence_verified = true;
+          fs.writeFileSync('/tmp/contestability-review-input.json', `${JSON.stringify(input, null, 2)}\n`);
+          NODE
+          node review/contestability/v0.1/contestability-review.js /tmp/contestability-review-input.json > "$REPORT"
+          node <<'NODE'
+          const r = require('/tmp/contestability-review-v0.1.json');
+          if (r.reviewed_revision !== process.env.TARGET_FRONTIER) throw new Error('contestability frontier mismatch');
+          if (r.outcome !== 'INSUFFICIENT_EVIDENCE') throw new Error(`expected INSUFFICIENT_EVIDENCE, got ${r.outcome}`);
+          if (r.failed_dimensions.length !== 0) throw new Error('unexpected contestability failure');
+          const expected = ['private_evidence_challenge','pseudonymous_challenger','reputational_harm_after_correction','unfair_registry_case'];
+          if (JSON.stringify(r.insufficient_evidence_dimensions) !== JSON.stringify(expected)) throw new Error('unexpected evidence gaps');
+          if (r.p0_mapping.status !== 'INSUFFICIENT_EVIDENCE' || r.p0_mapping.blocking !== false) throw new Error('unexpected P0 mapping');
+          if (r.legal_due_process_established || r.legal_appeal_right_established || r.universal_contestability_proven || r.release_authorized || r.authority_created || r.runtime_activated) throw new Error('contestability overclaim');
+          NODE
+
+      - name: Recompute current Accessibility and Privacy outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          const fs = require('node:fs');
+          const accessibility = JSON.parse(fs.readFileSync('review/accessibility/v0.2/current-surfaces.input.json','utf8'));
+          accessibility.reviewed_revision = process.env.TARGET_FRONTIER;
+          accessibility.surface_equivalence_verified = true;
+          fs.writeFileSync('/tmp/accessibility-input.json', `${JSON.stringify(accessibility, null, 2)}\n`);
+          const privacy = JSON.parse(fs.readFileSync('review/privacy/v0.1/current-boundaries.input.json','utf8'));
+          privacy.reviewed_revision = process.env.TARGET_FRONTIER;
+          privacy.source_equivalence_verified = true;
+          fs.writeFileSync('/tmp/privacy-input.json', `${JSON.stringify(privacy, null, 2)}\n`);
+          NODE
+          node review/accessibility/v0.2/accessibility-rereview.js /tmp/accessibility-input.json > "$ACCESSIBILITY_REPORT"
+          node review/privacy/v0.1/privacy-review.js /tmp/privacy-input.json > "$PRIVACY_REPORT"
+          node <<'NODE'
+          const a = require('/tmp/accessibility-rereview-v0.2.json');
+          const p = require('/tmp/privacy-review-v0.1.json');
+          if (a.outcome !== 'INSUFFICIENT_EVIDENCE' || a.p0_mapping.blocking) throw new Error('accessibility progression lost');
+          if (p.outcome !== 'INSUFFICIENT_EVIDENCE' || p.p0_mapping.blocking) throw new Error('privacy progression lost');
+          NODE
+
+      - name: Re-run Release Candidate Checkpoint with current governance outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          const fs = require('node:fs');
+          const input = JSON.parse(fs.readFileSync('tooling/release-candidate-checkpoint/v0.2/post-t5-frontier.input.json','utf8'));
+          const accessibility = JSON.parse(fs.readFileSync('/tmp/accessibility-rereview-v0.2.json','utf8'));
+          const privacy = JSON.parse(fs.readFileSync('/tmp/privacy-review-v0.1.json','utf8'));
+          const contestability = JSON.parse(fs.readFileSync('/tmp/contestability-review-v0.1.json','utf8'));
+          const target = process.env.TARGET_FRONTIER;
+          input.git_revision = target;
+          for (const gate of input.engineering_evidence) gate.observed_at_revision = target;
+          for (const gate of input.governance_evidence) gate.observed_at_revision = target;
+          const setGate = (id, report, source, note) => {
+            const gate = input.governance_evidence.find((x) => x.gate_id === id);
+            gate.status = report.p0_mapping.status;
+            gate.blocking = report.p0_mapping.blocking;
+            gate.source_path = source;
+            gate.reviewed_revision = target;
+            gate.explicit_review_outcome = true;
+            gate.note = note;
+          };
+          setGate('accessibility', accessibility, 'review/accessibility/v0.2/README.md', 'Accessibility re-review verified remediation; empirical assistive-technology evidence remains incomplete.');
+          setGate('privacy', privacy, 'review/privacy/v0.1/README.md', 'Privacy review found protective boundaries with unresolved project-wide retention, authenticity-escalation and coercive-collection evidence.');
+          setGate('contestability', contestability, 'review/contestability/v0.1/README.md', 'Contestability review found preserved objections, plural review and appeal/correction boundaries with four remaining project-wide empirical cases.');
+          fs.writeFileSync(process.env.P0_INPUT, `${JSON.stringify(input, null, 2)}\n`);
+          NODE
+          node tooling/release-candidate-checkpoint/v0.2/release-candidate-checkpoint.js "$P0_INPUT" > "$P0_REPORT"
+          node <<'NODE'
+          const r = require('/tmp/release-candidate-after-contestability.report.json');
+          if (r.git_revision !== process.env.TARGET_FRONTIER) throw new Error('P0 frontier mismatch');
+          if (r.engineering.status !== 'PASS') throw new Error('engineering regression');
+          if (r.decision !== 'RELEASE_CANDIDATE_REVIEW_PENDING') throw new Error(`unexpected P0 decision ${r.decision}`);
+          if (r.blocking_findings.length !== 0) throw new Error('unexpected blocking finding');
+          if (r.release_authorized || r.publication_authorized || r.certification_granted || r.legal_status_established || r.authority_created || r.runtime_activated) throw new Error('P0 overclaim');
+          NODE
+
+      - name: Constrain Contestability Review diff to evidence only
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected="$(printf '%s\n' \
+            .github/workflows/contestability-review-v0.1-validation.yml \
+            review/contestability/v0.1/README.md \
+            review/contestability/v0.1/contestability-review.js \
+            review/contestability/v0.1/current-boundaries.input.json \
+            review/contestability/v0.1/test-contestability-review.js \
+            review/contestability/v0.1/test-import-safe.js | sort)"
+          actual="$(git diff --name-only "$ORIGIN_FRONTIER"...HEAD | sort)"
+          test "$actual" = "$expected"
+
+      - name: Guard review runtime as read-only assessment
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime=review/contestability/v0.1/contestability-review.js
+          ! grep -Eq 'child_process|execSync|spawnSync|writeFile|appendFile|createWriteStream|node:http|node:https|node:net|node:dgram|fetch\(' "$runtime"
+
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"
+
+      - name: Upload contestability and checkpoint evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: contestability-review-v0.1-${{ github.sha }}
+          path: |
+            /tmp/contestability-review-v0.1.json
+            /tmp/release-candidate-after-contestability.report.json
+          if-no-files-found: error
