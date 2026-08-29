@@ -1,0 +1,18 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:circumstantial-provenance:v0.1",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["schema_version","assessment_id","claim_target","scope","evidence_items","lineage_gaps","result","cross_context_correlation_authorized","non_effects"],
+  "properties":{
+    "schema_version":{"const":"0.1"},
+    "assessment_id":{"type":"string","minLength":1},
+    "claim_target":{"type":"string","minLength":1},
+    "scope":{"type":"string","minLength":1},
+    "evidence_items":{"type":"array","minItems":2,"items":{"type":"object","additionalProperties":false,"required":["evidence_id","origin_class","independence_group","dependency_refs","relation","commitment_ref","full_payload_required"],"properties":{"evidence_id":{"type":"string","minLength":1},"origin_class":{"enum":["direct_observation","document","witness_receipt","system_record","derived_copy","other"]},"independence_group":{"type":"string","minLength":1},"dependency_refs":{"type":"array","uniqueItems":true,"items":{"type":"string","minLength":1}},"relation":{"enum":["supports","contradicts","unresolved"]},"commitment_ref":{"type":"string","minLength":1},"full_payload_required":{"type":"boolean"}}}},
+    "lineage_gaps":{"type":"array","items":{"type":"object","additionalProperties":false,"required":["gap_id","between_refs","status"],"properties":{"gap_id":{"type":"string","minLength":1},"between_refs":{"type":"array","minItems":2,"maxItems":2,"items":{"type":"string","minLength":1}},"status":{"const":"explicit_unresolved_gap"}}}},
+    "result":{"enum":["supported","partially_supported","inconclusive","contradicted"]},
+    "cross_context_correlation_authorized":{"const":false},
+    "non_effects":{"type":"object","additionalProperties":false,"required":["identity_proven","authorship_proven","intent_proven","authority_created","causality_proven","responsibility_assigned","liability_assigned","canonical_verdict_created"],"properties":{"identity_proven":{"const":false},"authorship_proven":{"const":false},"intent_proven":{"const":false},"authority_created":{"const":false},"causality_proven":{"const":false},"responsibility_assigned":{"const":false},"liability_assigned":{"const":false},"canonical_verdict_created":{"const":false}}}
+  }
+}

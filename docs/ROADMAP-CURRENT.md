@@ -17,16 +17,16 @@ Canonical origin frontier for this marker: `e7b547353abbbb9eb42c892e68904e73d93c
 - Security Evidence Closure — completed through #672 and successor evidence.
 - Perceived Causal Liveness — completed through #528 acceptance closure.
 - DLC-SI — canonical v0.1 preserved; v0.2 successor semantics and acceptance completed through #526.
-- Live-acceptance audit schema hardening #341 — historical deliverable already completed via #348; earlier reconciliation uncertainty is superseded by pass-010 evidence.
-- Backlog Reconciliation — active cleanup/reclassification line under #697.
+- Live-acceptance audit schema hardening #341 — completed via #348; reconciliation uncertainty corrected by pass-010.
+- Backlog Reconciliation v0.1 — COMPLETED through #697 and passes 001–010.
+- Personal Sovereign Root / Personal Evidence Fabric #447 — completed via #448.
 
 ## Current actionable lanes
 
-1. Finish backlog/roadmap reconciliation and keep open-state distinct from current priority.
-2. Develop Personal Sovereign Root / Personal Evidence Fabric (#447), then Circumstantial Provenance / Evidence Independence (#449).
-3. Continue KONTUR Game Companion (#445) as a parallel bounded pilot, reusing common runtime semantics rather than becoming a Core dependency.
-4. Keep Public Review #1–#7 and Core Pilot 002 successor #718 in `WAITING_EXTERNAL` until actual external evidence arrives; #422 remains a target surface.
-5. Keep IP filing/patent tracks separate from architecture critical path where they require applicant, legal, or time-dependent decisions.
+1. Complete Circumstantial Provenance / Evidence Independence (#449) as the current evidence/provenance successor to PSR/PEF.
+2. Continue KONTUR Game Companion (#445) as a parallel bounded pilot, reusing common runtime semantics rather than becoming a Core dependency.
+3. Keep Public Review #1–#7 and Core Pilot 002 successor #718 in `WAITING_EXTERNAL` until actual external evidence arrives; #422 remains a target surface.
+4. Keep IP filing/patent tracks separate from architecture critical path where they require applicant, legal, or time-dependent decisions.
 
 ## Roadmap-role vocabulary
 
@@ -44,7 +44,7 @@ The older open Level 3/4 research and acceptance issues are retained as historic
 
 `Insufficient Evidence at T1 != Unimplemented Forever`.
 
-When later evidence is found, a new additive reconciliation receipt may supersede the current classification while preserving the earlier audit as an honest record of what was known then. Pass-010 applies this rule to #341.
+When later evidence is found, a new additive reconciliation receipt may supersede the current classification while preserving the earlier audit as an honest record of what was known then. Pass-010 applied this rule to #341; the same evidence discipline identified #447 as already completed.
 
 ## Invariants
 

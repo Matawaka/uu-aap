@@ -1,0 +1,25 @@
+name: Circumstantial Provenance v0.1 validation
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/circumstantial-provenance/v0.1/**'
+      - '.github/workflows/circumstantial-provenance-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/circumstantial-provenance/v0.1/**'
+      - '.github/workflows/circumstantial-provenance-v0.1-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js
+      - run: node protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js
+      - run: node protocols/integration/personal-sovereign-root/v0.1/validate-personal-sovereign-root.js
+      - run: test -z "$(git status --porcelain)"

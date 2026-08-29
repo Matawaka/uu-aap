@@ -1,0 +1,16 @@
+{
+  "schema_version":"0.1",
+  "assessment_id":"cp-example-001",
+  "claim_target":"psr-successor-continuity-example",
+  "scope":"bounded provenance support only",
+  "evidence_items":[
+    {"evidence_id":"ev-direct","origin_class":"direct_observation","independence_group":"g-observer","dependency_refs":[],"relation":"supports","commitment_ref":"sha256:1111111111111111111111111111111111111111111111111111111111111111","full_payload_required":false},
+    {"evidence_id":"ev-witness","origin_class":"witness_receipt","independence_group":"g-witness","dependency_refs":[],"relation":"supports","commitment_ref":"sha256:2222222222222222222222222222222222222222222222222222222222222222","full_payload_required":false},
+    {"evidence_id":"ev-copy","origin_class":"derived_copy","independence_group":"g-observer","dependency_refs":["ev-direct"],"relation":"unresolved","commitment_ref":"sha256:3333333333333333333333333333333333333333333333333333333333333333","full_payload_required":false},
+    {"evidence_id":"ev-contradiction","origin_class":"document","independence_group":"g-document","dependency_refs":[],"relation":"contradicts","commitment_ref":"sha256:4444444444444444444444444444444444444444444444444444444444444444","full_payload_required":true}
+  ],
+  "lineage_gaps":[{"gap_id":"gap-1","between_refs":["ev-direct","ev-witness"],"status":"explicit_unresolved_gap"}],
+  "result":"partially_supported",
+  "cross_context_correlation_authorized":false,
+  "non_effects":{"identity_proven":false,"authorship_proven":false,"intent_proven":false,"authority_created":false,"causality_proven":false,"responsibility_assigned":false,"liability_assigned":false,"canonical_verdict_created":false}
+}
