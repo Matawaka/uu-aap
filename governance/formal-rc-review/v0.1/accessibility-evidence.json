@@ -1,0 +1,22 @@
+{
+  "schema_version":"0.1",
+  "receipt_type":"AccessibilityGovernanceEvidence",
+  "origin_frontier":"0abdab8bbaa665ee0cb01278353fe27fdf5da9d6",
+  "scope":"repository inspectability and usable-path evidence",
+  "evidence_refs":["README.md","docs/ROADMAP-CURRENT.md","governance/formal-rc-review/v0.1/README.md","#1","#7"],
+  "claims":{
+    "human_readable_entrypoints_present":true,
+    "machine_readable_evidence_has_human_explanation":true,
+    "critical_governance_states_are_textual_not_color_only":true,
+    "public_review_surface_identifiable":true,
+    "external_accessibility_certification_present":false,
+    "wcag_conformance_claimed":false
+  },
+  "limitations":[
+    "This is repository inspectability evidence, not an external accessibility audit.",
+    "It does not prove assistive-technology compatibility for every consumer UI.",
+    "Public Review remains an independent external evidence source."
+  ],
+  "governance_state":"PASS_BOUNDED_REPOSITORY_EVIDENCE",
+  "non_effects":{"accessibility_certification_created":false,"wcag_conformance_declared":false,"release_authorized":false,"external_review_fabricated":false}
+}
