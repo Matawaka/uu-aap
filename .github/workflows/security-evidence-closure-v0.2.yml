@@ -1,0 +1,39 @@
+name: Security Evidence Closure v0.2
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/**'
+      - '.github/workflows/**'
+  push:
+    branches: [main]
+    paths:
+      - 'review/security/**'
+      - '.github/workflows/**'
+
+permissions:
+  contents: read
+
+jobs:
+  assess:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run closure assessment
+        run: |
+          node --check review/security/v0.2/security-evidence-closure.js
+          node review/security/v0.2/security-evidence-closure.js > /tmp/security-evidence-closure-v0.2.json
+          node -e "const r=require('/tmp/security-evidence-closure-v0.2.json'); if(r.closure_complete!==true) throw Error('closure not complete'); if(!['PASS','FAIL','INSUFFICIENT_EVIDENCE'].includes(r.outcome)) throw Error('invalid outcome'); if(r.security_certified||r.release_authorized||r.remediation_authorized) throw Error('authority overclaim'); const need=['dependency_vulnerability_assessment','secret_exposure_assessment','deployment_surface_assessment','workflow_supply_chain_assessment','adversarial_surface_assessment']; for(const k of need) if(!r.dimensions[k]) throw Error('missing '+k);"
+      - name: Checkout unchanged
+        run: test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: security-evidence-closure-v0.2-${{ github.sha }}
+          path: /tmp/security-evidence-closure-v0.2.json
+          if-no-files-found: error
