@@ -1,8 +1,8 @@
 # UU-AAP Ecosystem Roadmap
 
-**Status:** reusable-runtime/tooling convergence after first bounded CI migration and two-consumer receipt-runtime extraction  
-**Current evidence baseline:** `eddc49d2b3978558c35f029d9a5bfb46b5e4f6c1` (Bounded CI Migration Gate v0.1, PR #642)  
-**Current reusable-tooling increment:** Issue #643 / PR #644  
+**Status:** reusable-runtime/tooling convergence after byte-stable receipt-runtime extraction and first consumer-specific substitution proof  
+**Current evidence baseline:** `5d9d9e0faf35230ede54e8f49c71e049311b7e4a` (Receipt Runtime SDK v0.1, PR #644)  
+**Current reusable-tooling increment:** Issue #645 / PR #646  
 **Stable semantic substrate:** [`protocols/core/v0.1/`](protocols/core/v0.1/)  
 **Component metadata:** [`tooling/component-manifest/v0.1/`](tooling/component-manifest/v0.1/)  
 **Dependency/impact:** [`tooling/dependency-impact/v0.1/`](tooling/dependency-impact/v0.1/)  
@@ -10,7 +10,8 @@
 **Generated execution:** [`tooling/generated-conformance-runner/v0.1/`](tooling/generated-conformance-runner/v0.1/)  
 **Execution-evidence parity:** [`tooling/execution-evidence-parity/v0.1/`](tooling/execution-evidence-parity/v0.1/)  
 **Bounded migration gate:** [`tooling/bounded-ci-migration/v0.1/`](tooling/bounded-ci-migration/v0.1/)  
-**Current receipt runtime:** [`tooling/receipt-runtime/v0.1/`](tooling/receipt-runtime/v0.1/)
+**Receipt runtime:** [`tooling/receipt-runtime/v0.1/`](tooling/receipt-runtime/v0.1/)  
+**Current substitution assessment:** [`tooling/implementation-substitution/v0.1/`](tooling/implementation-substitution/v0.1/)
 
 The repository has crossed the point where the main architectural bottleneck is adding semantic protocol layers. The seven-primitive semantic Core remains stable while repeated implementation patterns are being extracted into reusable, independently testable engineering substrate.
 
@@ -71,6 +72,9 @@ Substitutable != Selected
 Substitutable != Authorized
 Substitutable != Activated
 Substitutable != Executed
+Narrow Scope Substitutable != Whole Component Substitutable
+Consumer A Substitutable != Consumer B Substitutable
+Historical Parity != Future Compatibility
 Transport != Authority
 IAL Expression != Execution Admission
 Human Approval != ActionPermit
@@ -351,11 +355,11 @@ Rollback Evidence Must Remain Addressable
 Trigger Preservation != Conformance Equivalence
 ```
 
-### T4 — Receipt Runtime SDK v0.1 — CURRENT (#643 / PR #644)
+### T4 — Receipt Runtime SDK v0.1 — COMPLETED (#643/#644)
 
 Purpose: extract repeated deterministic receipt/content identity operations only where independent consumers demonstrate byte-identical historical behavior.
 
-The first extraction deliberately begins with two components from different architectural lines:
+The first extraction used two components from different architectural lines:
 
 ```text
 AI-Transport-Reference
@@ -391,36 +395,23 @@ rehash(profile, value)
 deepEqualCanonical(left, right)
 ```
 
-T4a uses a two-stage differential proof.
+T4a used a two-stage differential proof: first alongside unchanged local implementations, then after real consumer delegation. Both consumers retained byte-stable historical identity and native conformance.
 
-Stage 1 — before delegation:
+Merged T4 frontier:
 
 ```text
-component-local canonicalization/hash/rehash
-vs
-shared runtime selected profile
+5d9d9e0faf35230ede54e8f49c71e049311b7e4a
 ```
 
-The unchanged consumers reproduced exact historical canonical bytes/hashes and deep-equal rehash results before any refactor.
-
-Stage 2 — after delegation:
-
-- AI Transport keeps its public `canonicalize`, `computeContentHash` and `rehash` API but delegates through `content-hash-zero-field-v0.1`;
-- Copy/Export keeps the same public operations but delegates through `content-hash-omit-field-v0.1`;
-- both native conformance suites remain green;
-- frozen origin source blobs and differential hashes remain addressable;
-- wrong-profile substitution is explicitly rejected by differential evidence;
-- Receipt Runtime itself has no filesystem, network, process execution or provider surface.
-
-Component Manifest now represents this real reuse explicitly:
+Component Manifest represents the real reuse explicitly:
 
 ```text
-Receipt-Runtime                 kind=TOOLING
-AI-Transport-Reference          --RUNTIME_IMPORT--> Receipt-Runtime
+Receipt-Runtime                  kind=TOOLING
+AI-Transport-Reference           --RUNTIME_IMPORT--> Receipt-Runtime
 MarketCloser-Copy-Export-Receipt --RUNTIME_IMPORT--> Receipt-Runtime
 ```
 
-The consumers declare `named_profile` rather than pretending the shared runtime created one universal canonicalization rule.
+Historical T3 evidence remains separately addressable through the frozen pre-T4 Copy/Export Component Manifest rather than being silently recomputed using the current T4 dependency graph.
 
 ```text
 Shared Runtime != Universal Canonicalization Algorithm
@@ -430,33 +421,42 @@ Hash Equality != Receipt Truth
 Hash Equality != Authority
 Runtime Reuse != Core Promotion
 Refactor Success != Historical Receipt Rewrite
+Current Dependency Graph != Historical Evidence Graph
 ```
 
-T4a does **not** yet extract frontier, predecessor, non-effect, storage or schema semantics. Those helpers require separate independent repetition evidence.
+T4 did **not** extract frontier, predecessor, non-effect, storage or schema semantics. Those helpers still require separate independent repetition evidence.
 
-Exit condition for T4 v0.1 first slice:
+### T5 — Implementation Substitution Assessment v0.1 — CURRENT (#645 / PR #646)
 
-- both independent consumer histories remain byte-stable before and after delegation;
-- both explicit profile identities are preserved in code and manifests;
-- existing native consumer conformance remains green;
-- no new authority/effect surface exists;
-- rollback evidence remains addressable at the pre-extraction frontier.
+Purpose: turn already-existing evidence into a bounded, consumer-specific replacement decision without confusing compatibility, selection or execution with substitution.
 
-### T5 — Implementation Substitution Assessment v0.1 — NEXT
-
-Compose already-existing evidence planes:
+Existing evidence planes remain distinct:
 
 ```text
-Registry
-+ Negotiation
-+ Attestation
-+ Evolution Compatibility
-+ Interface / Component metadata
-        ↓
-consumer-specific SubstitutionAssessmentReceipt
+Protocol Registry      -> exact immutable protocol resolution
+Capability Negotiation -> declared compatibility
+Capability Attestation -> reproducible conformance evidence
+Stack Evolution        -> cross-version translation compatibility
+Interface Registry     -> interface discovery
+Component Manifest     -> component/dependency/effect metadata
+Dependency Impact      -> engineering reachability
+Receipt Runtime        -> deterministic receipt identity mechanics
 ```
 
-Required decisions:
+T5 reduces explicit evidence across eight dimensions:
+
+```text
+wire_schema
+semantic
+conformance
+dependency_fit
+effect_ceiling
+authority_responsibility
+frontier_freshness
+consumer_operational
+```
+
+Decision vocabulary:
 
 ```text
 SUBSTITUTABLE
@@ -465,14 +465,78 @@ NOT_SUBSTITUTABLE
 INSUFFICIENT_EVIDENCE
 ```
 
-Assessment should distinguish wire/schema, semantic, conformance, dependency, effect-ceiling, authority/responsibility, frontier/freshness and consumer-specific operational compatibility.
+Fail-closed precedence:
 
 ```text
+UNSATISFIED
+  -> NOT_SUBSTITUTABLE
+else INSUFFICIENT_EVIDENCE
+  -> INSUFFICIENT_EVIDENCE
+else ADAPTER_REQUIRED
+  -> ADAPTER_REQUIRED
+else
+  -> SUBSTITUTABLE
+```
+
+The first real evidence does not invent a new whole runtime. It assesses the two already completed T4 replacements at the exact merged T4 frontier.
+
+```text
+consumer: AI-Transport-Reference
+scope: FUNCTION / receipt_identity_mechanics
+incumbent: historical component-local zero-field identity
+candidate: Receipt-Runtime/content-hash-zero-field-v0.1
+result: SUBSTITUTABLE
+```
+
+and:
+
+```text
+consumer: MarketCloser-Copy-Export-Receipt
+scope: FUNCTION / receipt_identity_mechanics
+incumbent: historical component-local omit-field identity
+candidate: Receipt-Runtime/content-hash-omit-field-v0.1
+result: SUBSTITUTABLE
+```
+
+Before accepting either real assessment, dedicated CI re-runs the T4 differential baseline and both native consumer conformance suites, checks exact historical/current Git blobs, current named profiles, required `RUNTIME_IMPORT` edges and no-effect ceilings.
+
+T5 v0.1 deliberately refuses a broader claim:
+
+```text
+scope_kind = FUNCTION | INTERFACE
+whole_component_substitution = false
+```
+
+It also rejects any input requesting implementation selection, authorization, activation or execution.
+
+Synthetic fail-closed vectors exercise every decision and precedence among simultaneous blockers.
+
+```text
+Protocol Resolution != Substitution
+Declared Compatibility != Substitution
+Conformance Attestation != Substitution
+CompatibilityReceipt != SubstitutionAssessmentReceipt
+Substitution Assessment != Capability Selection
+Substitution Assessment != ActionPermit
 Substitutable != Selected
 Substitutable != Authorized
 Substitutable != Activated
 Substitutable != Executed
+Narrow Scope Substitutable != Whole Component Substitutable
+Consumer A Substitutable != Consumer B Substitutable
+Historical Parity != Future Compatibility
 ```
+
+Every `SubstitutionAssessmentReceipt` keeps selection, activation, authority creation/expansion, responsibility acceptance, ActionPermit creation, execution, external effects, universal compatibility/substitutability and historical evidence rewriting false.
+
+Exit condition for T5 v0.1:
+
+- all four decision classes are exercised fail-closed;
+- both real T4 consumer-specific function assessments classify `SUBSTITUTABLE` only after exact evidence revalidation;
+- whole-component assessment remains rejected;
+- the assessment component is explicit in Component Manifest and Dependency Impact without allowing graph reachability to prove substitution;
+- public CLI and import surface remain deterministic and read-only;
+- no selection, authorization, activation or production runtime switch occurs.
 
 ## 5. Secondary reusable candidates
 
@@ -573,6 +637,7 @@ shared:
   execution-evidence parity
   bounded migration evidence
   profile-dispatched receipt identity
+  consumer-specific substitution assessment
 ```
 
 The objective is lower duplicate engineering, not weaker validation.
@@ -584,6 +649,7 @@ Parity Success != Validation Removal
 Execution Evidence Parity != Automatic Migration
 One Successful Migration != Bulk Migration Authorization
 Receipt Runtime Reuse != Semantic Unification
+Substitution Evidence != Selection Or Activation
 ```
 
 ## 8. Compatibility and migration policy
@@ -594,6 +660,8 @@ Receipt Runtime Reuse != Semantic Unification
 - Shared receipt-runtime behavior requires an explicit named profile whenever historical projections differ.
 - Cross-version protocol consumption continues through Evolution/Compatibility receipts.
 - Component substitution requires a consumer-specific assessment.
+- A successful narrow-scope assessment does not imply whole-component substitutability or substitutability for another consumer.
+- A substitution assessment never performs selection, authorization, activation or execution.
 - Historical command-set parity is orchestration evidence, not migration permission.
 - Generated execution success is execution evidence, not authority.
 - Exact execution-evidence parity makes bounded migration review possible; it does not authorize unrelated migrations.
@@ -609,13 +677,14 @@ Receipt Runtime Reuse != Semantic Unification
 4. **Completed:** Generated Conformance Runner v0.1 (#637/#638).
 5. **Completed:** Historical-vs-Generated Execution Evidence Parity v0.1 (#639/#640).
 6. **Completed:** Bounded CI Migration Gate v0.1 for one five-command Marketer Pessimist predecessor block (#641/#642).
-7. **Current:** Receipt Runtime SDK v0.1 with two independent profile-dispatched differential consumers (#643 / PR #644).
-8. **Next:** Implementation Substitution Assessment v0.1.
-9. Expand receipt-runtime helpers only when two independent components prove the exact repeated operation; do not generalize from adjacent code alone.
-10. Expand manifests only when required by concrete proofs; do not mass-migrate repository metadata.
-11. Evaluate Human Decision Gate and Observation/Provenance extraction from independent real consumers.
-12. Add generic provenance-store candidate only after common storage/replay requirements are demonstrated.
-13. Re-evaluate ecosystem release-candidate readiness after reusable receipt runtime and bounded substitution evidence exist.
+7. **Completed:** Receipt Runtime SDK v0.1 with two independent profile-dispatched differential consumers (#643/#644).
+8. **Current:** Implementation Substitution Assessment v0.1 with two real narrow-scope T4 consumer assessments (#645 / PR #646).
+9. Expand substitution beyond `FUNCTION | INTERFACE` only after separate whole-component evidence exists; do not infer it from T5 v0.1 success.
+10. Expand receipt-runtime helpers only when two independent components prove the exact repeated operation; do not generalize from adjacent code alone.
+11. Expand manifests only when required by concrete proofs; do not mass-migrate repository metadata.
+12. Evaluate Human Decision Gate and Observation/Provenance extraction from independent real consumers.
+13. Add generic provenance-store candidate only after common storage/replay requirements are demonstrated.
+14. Re-evaluate ecosystem release-candidate readiness after T5 merge and explicit security/privacy/accessibility/contestability review.
 
 Each item remains a separate review/merge gate. No item automatically authorizes its successor.
 
@@ -644,7 +713,7 @@ At minimum:
 - provider-neutral transport interoperability;
 - at least two independent consumers of a profile-dispatched receipt runtime with byte-stable historical identities;
 - explicit version/migration policy;
-- at least one non-trivial implementation-substitution assessment;
+- at least one non-trivial, consumer-specific implementation-substitution assessment;
 - security, privacy, accessibility and contestability review;
 - Russian and English navigation.
 
@@ -662,7 +731,7 @@ fewer duplicated mechanisms
 + observable execution evidence
 + bounded reversible migration
 + profile-dispatched receipt identity
-+ replaceable implementations
++ consumer-specific replaceability evidence
 + preserved semantic boundaries
 ```
 
@@ -674,6 +743,7 @@ more universal semantic layers
 + larger manually maintained CI chains
 + implicit migration from one successful experiment
 + one canonicalization algorithm forced across historical components
++ whole-component substitutability inferred from a narrow refactor
 ```
 
-The next proof of architectural universality is not another abstract primitive. It is evidence that independent components can share receipt-runtime mechanics while preserving their historical identity rules, and that implementation substitution is claimed only when consumer-specific evidence supports it.
+The next proof of architectural universality is not another abstract primitive. It is evidence that reusable mechanisms can be replaced or reused under explicit consumer-specific evidence without turning compatibility, parity or reachability into silent selection, authority or execution.
