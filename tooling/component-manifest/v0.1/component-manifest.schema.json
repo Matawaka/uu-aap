@@ -1,0 +1,140 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:tooling:component-manifest:v0.1",
+  "title": "UU-AAP Component Manifest v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "manifest_version",
+    "component",
+    "source_frontier",
+    "exports",
+    "dependencies",
+    "conformance",
+    "effect_ceiling",
+    "canonicalization",
+    "non_effects",
+    "content_hash"
+  ],
+  "properties": {
+    "artifact_type": { "const": "UU-AAP-Component-Manifest" },
+    "manifest_version": { "const": "0.1" },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "kind", "status", "path"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1 },
+        "kind": {
+          "enum": ["CORE", "PROFILE", "RUNTIME", "ADAPTER", "TRANSPORT", "PRODUCT", "APPLICATION", "TOOLING"]
+        },
+        "status": { "enum": ["stable", "experimental", "candidate", "historical"] },
+        "path": { "type": "string", "minLength": 1 }
+      }
+    },
+    "source_frontier": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "revision"],
+      "properties": {
+        "repository": { "type": "string", "minLength": 1 },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "exports": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interfaces", "receipt_types", "schemas", "runtime_entrypoints"],
+      "properties": {
+        "interfaces": { "$ref": "#/$defs/uniqueStrings" },
+        "receipt_types": { "$ref": "#/$defs/uniqueStrings" },
+        "schemas": { "$ref": "#/$defs/uniqueStrings" },
+        "runtime_entrypoints": { "$ref": "#/$defs/uniqueStrings" }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["component_id", "edge_kind", "required"],
+        "properties": {
+          "component_id": { "type": "string", "minLength": 1 },
+          "edge_kind": {
+            "enum": ["RUNTIME_IMPORT", "SCHEMA", "EVIDENCE", "CONFORMANCE", "TRANSPORT", "OPTIONAL_ADAPTER", "TEST_ONLY"]
+          },
+          "required": { "type": "boolean" },
+          "interface": { "type": ["string", "null"] },
+          "notes": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "conformance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["commands"],
+      "properties": {
+        "commands": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["executable", "args"],
+            "properties": {
+              "executable": { "enum": ["node", "python", "python3"] },
+              "args": {
+                "type": "array",
+                "minItems": 1,
+                "items": { "type": "string", "minLength": 1 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "effect_ceiling": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "external_effect_emission",
+        "runtime_activation",
+        "execution_admission",
+        "creates_authority",
+        "accepts_responsibility"
+      ],
+      "properties": {
+        "external_effect_emission": { "type": "boolean" },
+        "runtime_activation": { "type": "boolean" },
+        "execution_admission": { "type": "boolean" },
+        "creates_authority": { "type": "boolean" },
+        "accepts_responsibility": { "type": "boolean" }
+      }
+    },
+    "canonicalization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "profile_ref"],
+      "properties": {
+        "mode": { "enum": ["component_local", "named_profile"] },
+        "profile_ref": { "type": ["string", "null"] }
+      }
+    },
+    "evolution_ref": { "type": ["string", "null"] },
+    "non_effects": {
+      "type": "array",
+      "minItems": 5,
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "content_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" }
+  },
+  "$defs": {
+    "uniqueStrings": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}
