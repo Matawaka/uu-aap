@@ -1,0 +1,229 @@
+name: Security Review v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/v0.1/**'
+      - '.github/workflows/security-review-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/security/v0.1/**'
+      - '.github/workflows/security-review-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: f58cdf60b76f87fcceb146333e3cb9445596a295
+  INPUT: review/security/v0.1/current-boundaries.input.json
+  REPORT: /tmp/security-review-v0.1.json
+  P0_INPUT: /tmp/release-candidate-after-security.input.json
+  P0_REPORT: /tmp/release-candidate-after-security.report.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Bind current reviewed frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="$(git rev-parse HEAD)"
+          echo "TARGET_FRONTIER=$target" >> "$GITHUB_ENV"
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" "$target"
+
+      - name: Prove reviewed security surfaces are byte-identical to origin
+        shell: bash
+        run: |
+          set -euo pipefail
+          check_blob() {
+            path="$1" expected="$2"
+            test "$(git rev-parse "${ORIGIN_FRONTIER}:$path")" = "$expected"
+            test "$(git rev-parse "${TARGET_FRONTIER}:$path")" = "$expected"
+          }
+          check_blob SECURITY.md 79375f601f1ccb5f345ad4f877a55ec3847c5497
+          check_blob docs/AUDIT-HARDENING-v0.1.md 1bdd384b1d0255b63f37589bad564fc1d60b7ffa
+          check_blob protocols/integration/ci-dependency-hardening-audit/v0.1/README.md 22fd730f47cb53b3df7d7a584c6543acfe51c6d3
+
+      - name: Verify factual security source observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F '## Primary threats' SECURITY.md >/dev/null
+          grep -F 'Stolen or delegated signing credentials.' SECURITY.md >/dev/null
+          grep -F 'It cannot establish that:' SECURITY.md >/dev/null
+          grep -F 'well-formed predecessor SHA != verified predecessor provenance' docs/AUDIT-HARDENING-v0.1.md >/dev/null
+          grep -F 'stale local HEAD' docs/AUDIT-HARDENING-v0.1.md >/dev/null
+          grep -F 'CI cost != permission to weaken validation' protocols/integration/ci-dependency-hardening-audit/v0.1/README.md >/dev/null
+          grep -F 'safe_to_narrow' protocols/integration/ci-dependency-hardening-audit/v0.1/README.md >/dev/null
+          grep -F 'evidence set is intentionally insufficient' protocols/integration/ci-dependency-hardening-audit/v0.1/README.md >/dev/null
+
+      - name: Verify current main ruleset read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL -H 'Accept: application/vnd.github+json' \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/rulesets/21190721" \
+            > /tmp/main-ruleset.json
+          node <<'NODE'
+          const r = require('/tmp/main-ruleset.json');
+          const need = [
+            'PoAI Genesis validation',
+            'PoAI Authority Root validation',
+            'CCRP validation',
+            'PoAI CCRP pre-materialization validation',
+          ].sort();
+          const fail = (m) => { throw new Error(m); };
+          if (r.name !== 'Protect main — protocol integrity' || r.target !== 'branch' || r.enforcement !== 'active') fail('main ruleset identity/enforcement mismatch');
+          if (!r.conditions || !r.conditions.ref_name || !r.conditions.ref_name.include.includes('refs/heads/main')) fail('main not covered');
+          const types = new Set((r.rules || []).map((x) => x.type));
+          for (const type of ['deletion','non_fast_forward','pull_request','required_status_checks']) if (!types.has(type)) fail(`missing rule ${type}`);
+          const pr = r.rules.find((x) => x.type === 'pull_request');
+          if (!pr || JSON.stringify(pr.parameters.allowed_merge_methods) !== JSON.stringify(['squash'])) fail('squash-only merge not established');
+          const checks = r.rules.find((x) => x.type === 'required_status_checks');
+          const got = checks.parameters.required_status_checks.map((x) => x.context).sort();
+          if (JSON.stringify(got) !== JSON.stringify(need)) fail('required status-check set mismatch');
+          if ((r.bypass_actors || []).length !== 0) fail('ruleset bypass actor present');
+          if (pr.parameters.required_approving_review_count !== 0) fail('review count observation drifted');
+          if (checks.parameters.strict_required_status_checks_policy !== false) fail('strict status policy observation drifted');
+          NODE
+
+      - name: Run bounded Security Review tests
+        run: |
+          node --check review/security/v0.1/security-review.js
+          node review/security/v0.1/test-security-review.js
+          node review/security/v0.1/test-import-safe.js
+          node -e "JSON.parse(require('node:fs').readFileSync(process.env.INPUT,'utf8'))"
+
+      - name: Rebind Security Review to current equivalent frontier and assess
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          const fs = require('node:fs');
+          const input = JSON.parse(fs.readFileSync(process.env.INPUT,'utf8'));
+          input.reviewed_revision = process.env.TARGET_FRONTIER;
+          input.source_equivalence_verified = true;
+          fs.writeFileSync('/tmp/security-review-input.json', `${JSON.stringify(input, null, 2)}\n`);
+          NODE
+          node review/security/v0.1/security-review.js /tmp/security-review-input.json > "$REPORT"
+          node <<'NODE'
+          const r = require('/tmp/security-review-v0.1.json');
+          if (r.reviewed_revision !== process.env.TARGET_FRONTIER) throw new Error('security review frontier mismatch');
+          if (r.outcome !== 'INSUFFICIENT_EVIDENCE') throw new Error(`expected INSUFFICIENT_EVIDENCE, got ${r.outcome}`);
+          if (r.failed_dimensions.length !== 0) throw new Error('unexpected security failure');
+          if (r.p0_mapping.status !== 'INSUFFICIENT_EVIDENCE' || r.p0_mapping.blocking !== false) throw new Error('unexpected security P0 mapping');
+          NODE
+
+      - name: Recompute prior governance outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          const fs = require('node:fs');
+          const specs = [
+            ['review/accessibility/v0.2/current-surfaces.input.json','/tmp/accessibility.input.json','surface_equivalence_verified'],
+            ['review/privacy/v0.1/current-boundaries.input.json','/tmp/privacy.input.json','source_equivalence_verified'],
+            ['review/contestability/v0.1/current-boundaries.input.json','/tmp/contestability.input.json','source_equivalence_verified'],
+          ];
+          for (const [src,dst,flag] of specs) {
+            const x = JSON.parse(fs.readFileSync(src,'utf8'));
+            x.reviewed_revision = process.env.TARGET_FRONTIER;
+            x[flag] = true;
+            fs.writeFileSync(dst, `${JSON.stringify(x, null, 2)}\n`);
+          }
+          NODE
+          node review/accessibility/v0.2/accessibility-rereview.js /tmp/accessibility.input.json > /tmp/accessibility.report.json
+          node review/privacy/v0.1/privacy-review.js /tmp/privacy.input.json > /tmp/privacy.report.json
+          node review/contestability/v0.1/contestability-review.js /tmp/contestability.input.json > /tmp/contestability.report.json
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          for (const path of ['/tmp/accessibility.report.json','/tmp/privacy.report.json','/tmp/contestability.report.json']) {
+            const r = require(path);
+            if (r.reviewed_revision !== process.env.TARGET_FRONTIER) throw new Error(`${path} frontier mismatch`);
+            if (r.outcome !== 'INSUFFICIENT_EVIDENCE') throw new Error(`${path} unexpected outcome ${r.outcome}`);
+            if (r.p0_mapping.blocking !== false) throw new Error(`${path} unexpectedly blocking`);
+          }
+          NODE
+
+      - name: Re-run Release Candidate Checkpoint with current governance outcomes
+        shell: bash
+        run: |
+          set -euo pipefail
+          TARGET_FRONTIER="$TARGET_FRONTIER" node <<'NODE'
+          const fs = require('node:fs');
+          const input = JSON.parse(fs.readFileSync('tooling/release-candidate-checkpoint/v0.2/post-t5-frontier.input.json','utf8'));
+          const reports = {
+            accessibility: JSON.parse(fs.readFileSync('/tmp/accessibility.report.json','utf8')),
+            privacy: JSON.parse(fs.readFileSync('/tmp/privacy.report.json','utf8')),
+            contestability: JSON.parse(fs.readFileSync('/tmp/contestability.report.json','utf8')),
+            security: JSON.parse(fs.readFileSync('/tmp/security-review-v0.1.json','utf8')),
+          };
+          const target = process.env.TARGET_FRONTIER;
+          input.git_revision = target;
+          for (const gate of input.engineering_evidence) gate.observed_at_revision = target;
+          for (const gate of input.governance_evidence) gate.observed_at_revision = target;
+          const sources = {
+            accessibility: 'review/accessibility/v0.2/README.md',
+            privacy: 'review/privacy/v0.1/README.md',
+            contestability: 'review/contestability/v0.1/README.md',
+            security: 'review/security/v0.1/README.md',
+          };
+          for (const [gateId, report] of Object.entries(reports)) {
+            const gate = input.governance_evidence.find((x) => x.gate_id === gateId);
+            gate.status = report.p0_mapping.status;
+            gate.blocking = report.p0_mapping.blocking;
+            gate.source_path = sources[gateId];
+            gate.reviewed_revision = target;
+            gate.explicit_review_outcome = true;
+            gate.note = `Current-frontier ${gateId} review outcome: ${report.outcome}.`;
+          }
+          fs.writeFileSync(process.env.P0_INPUT, `${JSON.stringify(input, null, 2)}\n`);
+          NODE
+          node tooling/release-candidate-checkpoint/v0.2/release-candidate-checkpoint.js "$P0_INPUT" > "$P0_REPORT"
+          node <<'NODE'
+          const r = require('/tmp/release-candidate-after-security.report.json');
+          if (r.git_revision !== process.env.TARGET_FRONTIER) throw new Error('P0 frontier mismatch');
+          if (r.engineering.status !== 'PASS') throw new Error('engineering regression');
+          if (r.decision !== 'RELEASE_CANDIDATE_REVIEW_PENDING') throw new Error(`expected RELEASE_CANDIDATE_REVIEW_PENDING, got ${r.decision}`);
+          if (r.blocking_findings.length !== 0) throw new Error(`unexpected blocking findings: ${r.blocking_findings.join(',')}`);
+          if (r.release_authorized || r.publication_authorized || r.certification_granted || r.legal_status_established || r.authority_created || r.runtime_activated) throw new Error('P0 overclaim');
+          NODE
+
+      - name: Constrain Security Review diff to evidence only
+        shell: bash
+        run: |
+          set -euo pipefail
+          bad="$(git diff --name-only "$ORIGIN_FRONTIER"...HEAD | grep -Ev '^(review/security/v0\.1/|\.github/workflows/security-review-v0\.1-validation\.yml$)' || true)"
+          test -z "$bad" || { echo "$bad"; exit 1; }
+
+      - name: Guard Security Review runtime as read-only assessment
+        shell: bash
+        run: |
+          set -euo pipefail
+          runtime=review/security/v0.1/security-review.js
+          ! grep -Eq 'child_process|execSync|spawnSync|writeFile|appendFile|createWriteStream|node:http|node:https|node:net|node:dgram|fetch\(' "$runtime"
+
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"
+
+      - name: Upload security and checkpoint evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-review-v0.1-${{ github.sha }}
+          path: |
+            /tmp/security-review-v0.1.json
+            /tmp/release-candidate-after-security.report.json
+          if-no-files-found: error
