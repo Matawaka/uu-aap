@@ -70,7 +70,7 @@ jobs:
       - name: Re-run Marketer Pessimist predecessors
         run: |
           python products/marketer-pessimist/v0.1/validate_contract.py
-          node products/marketer-pessimist/v0.1/local-mvp/test-mvp.js
+          node products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js
           node products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js
           node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js
           node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js
