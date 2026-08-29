@@ -1,0 +1,35 @@
+{
+  "protocol": "MARKETCLOSER-HUMAN-ANALYSIS-DISPOSITION",
+  "version": "0.1",
+  "artifact_type": "MarketCloserHumanAnalysisDispositionInput",
+  "disposition_id": "urn:uu-aap:marketcloser:human-analysis-disposition:synthetic-wait-001",
+  "origin": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "0dd0b5a041590e44ee12a9bbd923025b87497d25",
+    "tree": "aca7503ad04c47cd7038ea3a22b02c4273073976"
+  },
+  "analysis_source": {
+    "mode": "repository_synthetic",
+    "path": "applications/marketcloser/v0.1/real-stress-test-adapter/v0.1/examples/synthetic-adapter-wait.input.json",
+    "expected_adapter_input_hash": "sha256:8822c118052489c8638cc996ea4abe2a415b38349c3bf17c16429aed976d50cb"
+  },
+  "analysis_receipt": null,
+  "decision": null,
+  "decided_at": null,
+  "controls": {
+    "local_only": true,
+    "read_only": true,
+    "human_disposition_recording_available": true,
+    "response_candidate_available": false,
+    "publication_available": false,
+    "provider_invocation_available": false,
+    "network_access_available": false,
+    "platform_mutation_available": false,
+    "campaign_send_available": false,
+    "pilot_permit_available": false,
+    "action_permit_available": false,
+    "external_execution_available": false,
+    "external_effect_available": false
+  },
+  "content_hash": "sha256:7da228978fb5d244c2fd813b07a0d0b41a3c510c0821847288d61416fcd8dac3"
+}
