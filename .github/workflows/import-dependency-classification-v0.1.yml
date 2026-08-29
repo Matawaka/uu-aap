@@ -1,0 +1,50 @@
+name: Import Dependency Classification v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/import-dependency-classification-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/security/dependency-vulnerability/v0.1/**'
+      - '.github/workflows/import-dependency-classification-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  classify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run classification tests
+        run: |
+          node --check review/security/dependency-vulnerability/v0.1/inventory.js
+          node review/security/dependency-vulnerability/v0.1/test-import-classification.js
+      - name: Materialize classified inventory
+        run: node review/security/dependency-vulnerability/v0.1/inventory.js > /tmp/dependency-inventory-classified.json
+      - name: Guard semantics
+        run: |
+          node <<'NODE'
+          const r = require('/tmp/dependency-inventory-classified.json');
+          if (r.artifact_type !== 'UU-AAP-Dependency-Inventory') throw new Error('wrong artifact type');
+          if (!r.reference_classification_counts) throw new Error('classification counts missing');
+          if (typeof r.unresolved_imports_present !== 'boolean') throw new Error('unresolved marker missing');
+          if (r.advisory_assessment_performed !== false || r.vulnerability_free_proven !== false) throw new Error('inventory overclaim');
+          if (r.outcome !== 'INSUFFICIENT_EVIDENCE') throw new Error('classification must not promote inventory outcome');
+          NODE
+      - name: Confirm checkout unchanged
+        run: test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: import-dependency-classification-v0.1-${{ github.sha }}
+          path: /tmp/dependency-inventory-classified.json
+          if-no-files-found: error
