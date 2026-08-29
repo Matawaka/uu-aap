@@ -1,0 +1,37 @@
+{
+  "schema_version": "0.1",
+  "receipt_type": "PrivacyGovernanceEvidenceClosure",
+  "origin_frontier": "e77d78363e8793335de474918f04149eb788a10b",
+  "evidence_refs": [
+    "protocols/integration/personal-sovereign-root/v0.1",
+    "protocols/integration/circumstantial-provenance/v0.1",
+    "runtime/perceived-causal-liveness/v0.1",
+    "#448",
+    "#721"
+  ],
+  "claims": {
+    "payload_minimization_supported": true,
+    "commitment_reference_sufficient_where_protocol_allows": true,
+    "cross_context_correlation_default_denied": true,
+    "behavioral_profile_required": false,
+    "psychological_profile_required": false,
+    "total_history_required": false,
+    "identity_resolution_created": false,
+    "authority_created": false,
+    "external_effect_authorized": false
+  },
+  "limitations": [
+    "Repository evidence closure is not independent privacy certification.",
+    "This receipt does not prove every downstream implementation preserves these boundaries.",
+    "External privacy review remains separate where required."
+  ],
+  "governance_state": "PASS_BOUNDED_REPOSITORY_EVIDENCE",
+  "non_effects": {
+    "privacy_certification_created": false,
+    "legal_compliance_declared": false,
+    "cross_context_correlation_authorized": false,
+    "profile_construction_authorized": false,
+    "identity_resolution_authorized": false,
+    "release_authorized": false
+  }
+}
