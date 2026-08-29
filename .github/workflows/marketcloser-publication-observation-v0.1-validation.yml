@@ -86,13 +86,27 @@ jobs:
           node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-receipt-binding.js
           node applications/marketcloser/v0.1/copy-export-receipt/v0.1/test-schema-runtime-parity.js
 
-      - name: Re-run Marketer Pessimist predecessors
+      - name: Run Marketer Pessimist predecessors via bounded generated slice
+        env:
+          T3D_HISTORICAL_FRONTIER: cdab3d75c3fdc21ec3dc61000b7dc732d3ee11ae
+          T3D_HISTORICAL_WORKFLOW: .github/workflows/marketcloser-publication-observation-v0.1-validation.yml
+          T3D_HISTORICAL_WORKFLOW_BLOB: b8306d2accf12c0ac4d1324b5992fd4f6ae7ee72
+          T3D_SLICE: tooling/bounded-ci-migration/v0.1/marketcloser-marketer-pessimist.slice.json
+          T3D_BASELINE: tooling/conformance-parity/v0.1/marketcloser-publication.manual-baseline.json
+          T3D_FROZEN_WORKFLOW: /tmp/marketcloser-publication-observation.pre-t3d.yml
+          T3D_RECEIPT: /tmp/marketcloser-marketer-pessimist-migrated-slice-receipt.json
         run: |
-          python products/marketer-pessimist/v0.1/validate_contract.py
-          node products/marketer-pessimist/v0.1/local-mvp/test-stress-test.js
-          node products/marketer-pessimist/v0.1/local-mvp/test-receipt-binding.js
-          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-intake.js
-          node products/marketer-pessimist/v0.1/real-review-intake/v0.1/test-candidate-binding.js
+          git show "${T3D_HISTORICAL_FRONTIER}:${T3D_HISTORICAL_WORKFLOW}" > "$T3D_FROZEN_WORKFLOW"
+          test "$(git hash-object "$T3D_FROZEN_WORKFLOW")" = "$T3D_HISTORICAL_WORKFLOW_BLOB"
+          node tooling/bounded-ci-migration/v0.1/bounded-ci-migration.js run \
+            "$T3D_SLICE" "$T3D_BASELINE" "$T3D_FROZEN_WORKFLOW" > "$T3D_RECEIPT"
+          node - <<'NODE'
+          const r = require('/tmp/marketcloser-marketer-pessimist-migrated-slice-receipt.json');
+          if (r.classification !== 'MIGRATED_SLICE_SUCCESS') throw new Error('bounded Marketer Pessimist predecessor migration failed');
+          if (r.execution.attempted !== 5 || r.execution.succeeded !== 5 || r.execution.failed !== 0) throw new Error('expected exact 5-command generated slice success');
+          if (r.execution.repository_changed_after_run !== false) throw new Error('generated predecessor slice changed repository content');
+          if (r.claims.bulk_ci_migration_authorized !== false || r.claims.authority_created !== false) throw new Error('migration receipt overclaimed authority');
+          NODE
 
       - name: Check publication observation JavaScript syntax
         run: |
