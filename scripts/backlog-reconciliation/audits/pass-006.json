@@ -1,0 +1,13 @@
+{
+  "pass":"006",
+  "issue_ref":"#707",
+  "classification_mutates_issue":false,
+  "automatic_closure_authorized":false,
+  "issues":[
+    {"issue_ref":"#426","merged_prs":["#427","#432"],"merge_shas":["757953acdd9f936862e913812aa7d4c3c6c8528d","5c39351a9c10d82befd30018c9c5915c70e88ae4"],"implementation_paths":["pilots/core-pilot-003","pilots/core-pilot-003/run-001"],"successor_usage_refs":["#430","#433"],"acceptance_complete":true},
+    {"issue_ref":"#430","merged_prs":["#431","#432"],"merge_shas":["57aabd7957441a816ad380040dc5e5663bdcd858","5c39351a9c10d82befd30018c9c5915c70e88ae4"],"implementation_paths":["pilots/core-pilot-003/run-001"],"successor_usage_refs":["#433"],"acceptance_complete":true},
+    {"issue_ref":"#433","merged_prs":["#434","#437"],"merge_shas":["d9cfe44aa327e81dcb1a7e8823f0e9eee2322e74","0edc5ef0538b56f96d174bb2dfc94a842e65209b"],"implementation_paths":["pilots/core-pilot-004","pilots/core-pilot-004/run-001"],"successor_usage_refs":["#438"],"acceptance_complete":true},
+    {"issue_ref":"#438","merged_prs":["#439","#442","#444"],"merge_shas":["711b9b203ae637170e2780e214161e196f29ce48","098baf9ec9ed8a2db5aec52281c880505182415b","06cd94208f43f3fe44956eee532d39f4a378f953"],"implementation_paths":["pilots/core-pilot-005","pilots/core-pilot-005/run-001","pilots/core-pilot-005/reconciliation-closure"],"successor_usage_refs":["#681"],"acceptance_complete":true},
+    {"issue_ref":"#443","merged_prs":["#444"],"merge_shas":["06cd94208f43f3fe44956eee532d39f4a378f953"],"implementation_paths":["pilots/core-pilot-005/reconciliation-closure"],"successor_usage_refs":["#681"],"acceptance_complete":true}
+  ]
+}
