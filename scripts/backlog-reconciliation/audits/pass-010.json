@@ -1,0 +1,21 @@
+{
+  "pass":"010",
+  "issue_ref":"#719",
+  "origin_frontier":"3cf13fee28dd5d310d9708c2ab4ce863120de1f0",
+  "corrections":[
+    {"issue_ref":"#341","previous_state":"INSUFFICIENT_EVIDENCE","implementation_state":"COMPLETED","merged_pr":"#348","merge_sha":"261dcc1f10d50944ac2661f282cc224fbfea159f","evidence":"live-acceptance-audit.schema.json added while historical partial_acceptance preserved"}
+  ],
+  "historical_closures":[
+    {"issue_ref":"#412","merged_pr":"#413","merge_sha":"e134e612d1913aa9c26ea88ebe6ab3b3ae6c6741"},
+    {"issue_ref":"#414","merged_pr":"#415","merge_sha":"f1172065a444594cfee3ec51868cab92340c4819"},
+    {"issue_ref":"#416","merged_pr":"#417","merge_sha":"879aa71b4738f5e4beb52470a7a8275cfbffb930"},
+    {"issue_ref":"#418","merged_pr":"#419","merge_sha":"d36a107f8bf784f3b8cdda31bd451c6f63a3fbb0"},
+    {"issue_ref":"#420","merged_pr":"#421","merge_sha":"54717d39645f4f56913fae5fbf40674ca2c851b1"},
+    {"issue_ref":"#423","merged_pr":"#424","merge_sha":"60472a01657391747fea0aa1f08bda7e728b4d38"}
+  ],
+  "preserved_open_roles":[
+    {"issue_ref":"#422","roadmap_role":"TARGET_SURFACE"},
+    {"issue_ref":"#718","roadmap_role":"WAITING_EXTERNAL"}
+  ],
+  "non_effects":{"earlier_audit_rewritten":false,"external_input_fabricated":false,"run_001_claimed":false}
+}
