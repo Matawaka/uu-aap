@@ -1,0 +1,41 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:schema:release-candidate-checkpoint-input:0.2",
+  "title":"UU-AAP Release Candidate Checkpoint Input v0.2",
+  "type":"object",
+  "additionalProperties":false,
+  "required":["artifact_type","version","git_revision","engineering_evidence","governance_evidence"],
+  "properties":{
+    "artifact_type":{"const":"UU-AAP-Release-Candidate-Checkpoint-Input"},
+    "version":{"const":"0.2"},
+    "git_revision":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+    "engineering_evidence":{"type":"array","minItems":8,"maxItems":8,"items":{"$ref":"#/$defs/engineeringGate"}},
+    "governance_evidence":{"type":"array","minItems":5,"maxItems":5,"items":{"$ref":"#/$defs/governanceGate"}}
+  },
+  "$defs":{
+    "engineeringGate":{
+      "type":"object","additionalProperties":false,
+      "required":["gate_id","status","blocking","source_path","source_revision","observed_at_revision","source_present_at_frontier","source_ancestor_verified","conformance_evidence_verified"],
+      "properties":{
+        "gate_id":{"enum":["component_manifest","dependency_impact_graph","conformance_parity","generated_conformance_runner","execution_evidence_parity","bounded_ci_migration","receipt_runtime","implementation_substitution"]},
+        "status":{"enum":["PASS","INSUFFICIENT_EVIDENCE"]},
+        "blocking":{"type":"boolean"},"source_path":{"type":"string","minLength":1},
+        "source_revision":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "observed_at_revision":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "source_present_at_frontier":{"type":"boolean"},"source_ancestor_verified":{"type":"boolean"},"conformance_evidence_verified":{"type":"boolean"}
+      }
+    },
+    "governanceGate":{
+      "type":"object","additionalProperties":false,
+      "required":["gate_id","status","blocking","source_path","reviewed_revision","observed_at_revision","explicit_review_outcome","note"],
+      "properties":{
+        "gate_id":{"enum":["security","privacy","accessibility","contestability","ru_en_semantic_navigation_parity"]},
+        "status":{"enum":["PASS","PRESENT_UNVERIFIED","MISSING","INSUFFICIENT_EVIDENCE"]},
+        "blocking":{"type":"boolean"},"source_path":{"type":["string","null"]},
+        "reviewed_revision":{"type":["string","null"],"pattern":"^[0-9a-f]{40}$"},
+        "observed_at_revision":{"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "explicit_review_outcome":{"type":"boolean"},"note":{"type":"string","minLength":1}
+      }
+    }
+  }
+}
