@@ -1,0 +1,212 @@
+name: MarketCloser Real Review Local Run Revalidation v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'applications/marketcloser/v0.1/**'
+      - 'products/marketer-pessimist/v0.1/**'
+      - 'proposals/poai/authority/**'
+      - '.github/workflows/marketcloser-real-review-local-run-revalidation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'applications/marketcloser/v0.1/**'
+      - '.github/workflows/marketcloser-real-review-local-run-revalidation-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 72f6ea7185b75ecf6ca459c8f88c8c613f3ae968
+  LAYER: applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1
+  FIXTURE: applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/examples/synthetic-revalidation-wait.input.json
+  WAIT_RECEIPT: /tmp/marketcloser-revalidation-wait-receipt.json
+  READY_INPUT: /tmp/marketcloser-revalidation-ready-input.json
+  READY_RECEIPT: /tmp/marketcloser-revalidation-ready-receipt.json
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Verify exact successor origin
+        run: |
+          git cat-file -e "${ORIGIN_FRONTIER}^{commit}"
+          git merge-base --is-ancestor "$ORIGIN_FRONTIER" HEAD
+
+      - name: Re-run merged MarketCloser Application Boundary
+        run: python applications/marketcloser/v0.1/validate_boundary.py
+
+      - name: Re-run merged Deployment Observation predecessor
+        run: |
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-deployment-observation.js
+          node applications/marketcloser/v0.1/deployment-observation/v0.1/test-receipt-binding.js
+
+      - name: Re-run merged Minimized Real Review Bridge predecessor
+        run: |
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-bridge.js
+          node applications/marketcloser/v0.1/minimized-real-review-bridge/v0.1/test-receipt-binding.js
+
+      - name: Re-run merged Real Review Run Authority Gate
+        run: |
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-authority-gate.js
+          node applications/marketcloser/v0.1/real-review-run-authority-gate/v0.1/test-receipt-binding.js
+
+      - name: Re-run merged Real Review Run Permit
+        run: |
+          node applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-permit.js
+          node applications/marketcloser/v0.1/real-review-run-permit/v0.1/test-receipt-binding.js
+
+      - name: Re-run canonical PoAI Authority Core
+        run: node proposals/poai/authority/test-authority.js /tmp/revalidation-authority-grant.json /tmp/revalidation-authority-result.json
+
+      - name: Preserve Marketer synthetic-only predecessor boundary
+        run: |
+          node --check products/marketer-pessimist/v0.1/local-mvp/stress-test.js
+          grep -q 'synthetic_only' products/marketer-pessimist/v0.1/local-mvp/stress-test.js
+          if grep -q 'local-mvp/stress-test.js' "$LAYER/revalidation.js"; then
+            echo 'revalidation runtime must not import synthetic-only Local MVP stress-test' >&2
+            exit 1
+          fi
+
+      - name: Check revalidation JavaScript syntax
+        run: |
+          node --check "$LAYER/revalidation.js"
+          node --check "$LAYER/receipt-binding.js"
+          node --check "$LAYER/synthetic-positive-helper.js"
+          node --check "$LAYER/test-revalidation.js"
+          node --check "$LAYER/test-receipt-binding.js"
+          node --check "$LAYER/test-schema-runtime-parity.js"
+          node --check "$LAYER/test-import-safe.js"
+
+      - name: Validate committed non-ready fixture
+        run: node "$LAYER/revalidation.js" validate "$FIXTURE"
+
+      - name: Confirm committed fixture stops at PERMIT_REQUIRED
+        run: |
+          node "$LAYER/revalidation.js" receipt "$FIXTURE" > "$WAIT_RECEIPT"
+          node - <<'NODE'
+          const fs = require('fs');
+          const r = JSON.parse(fs.readFileSync(process.env.WAIT_RECEIPT, 'utf8'));
+          if (r.classification !== 'PERMIT_REQUIRED') throw new Error(`unexpected committed classification: ${r.classification}`);
+          if (r.local_run_ready !== false || r.stress_test_run !== false) throw new Error('committed fixture became runnable');
+          NODE
+
+      - name: Run local run revalidation conformance
+        run: node "$LAYER/test-revalidation.js"
+
+      - name: Validate exact revalidation receipt source binding
+        run: node "$LAYER/test-receipt-binding.js"
+
+      - name: Validate schema runtime parity
+        run: node "$LAYER/test-schema-runtime-parity.js"
+
+      - name: Validate import safety
+        run: node "$LAYER/test-import-safe.js"
+
+      - name: Generate positive synthetic readiness artifacts
+        run: |
+          node - <<'NODE'
+          const fs = require('fs');
+          const R = require('./applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/revalidation.js');
+          const H = require('./applications/marketcloser/v0.1/real-review-local-run-revalidation/v0.1/synthetic-positive-helper.js');
+          (async () => {
+            const built = await H.buildPositive({
+              gatePath: '/tmp/marketcloser-schema-ready-gate.json',
+              materializationPath: '/tmp/marketcloser-schema-ready-materialization.json'
+            });
+            const input = {
+              protocol: R.PROTOCOL, version: R.VERSION, artifact_type: R.INPUT_TYPE,
+              revalidation_id: 'urn:uu-aap:marketcloser:real-review-local-run-revalidation:schema-ready-001',
+              origin: { repository: 'Matawaka/uu-aap', revision: R.ORIGIN_FRONTIER, tree: R.ORIGIN_TREE },
+              materialization_source: { mode: 'local_private', path: built.materializationPath, expected_materialization_input_hash: built.materializationInput.content_hash },
+              permit: built.permit,
+              observed_frontier: { repository: 'Matawaka/uu-aap', revision: R.ORIGIN_FRONTIER, tree: R.ORIGIN_TREE, observed_at: '2026-08-29T02:08:40Z' },
+              revalidated_at: '2026-08-29T02:08:45Z',
+              controls: {
+                local_only: true, read_only: true, stress_test_run_available: false,
+                real_stress_test_adapter_available: false, network_access_available: false,
+                filesystem_write_available: false, provider_invocation_available: false,
+                platform_mutation_available: false, response_candidate_available: false,
+                publication_available: false, pilot_permit_available: false, action_permit_available: false,
+                external_execution_available: false, external_effect_available: false
+              }, content_hash: ''
+            };
+            R.rehash(input);
+            const receipt = R.deriveReceipt(input);
+            if (receipt.classification !== 'SYNTHETIC_LOCAL_RUN_READY') throw new Error('synthetic ready artifact not ready');
+            fs.writeFileSync(process.env.READY_INPUT, `${JSON.stringify(input, null, 2)}\n`);
+            fs.writeFileSync(process.env.READY_RECEIPT, `${JSON.stringify(receipt, null, 2)}\n`);
+          })().catch(e => { console.error(e.stack || e); process.exit(1); });
+          NODE
+
+      - name: Validate input and receipt JSON Schemas
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          layer = Path(os.environ['LAYER'])
+          pairs = [
+              (layer/'input.schema.json', Path(os.environ['FIXTURE'])),
+              (layer/'receipt.schema.json', Path(os.environ['WAIT_RECEIPT'])),
+              (layer/'input.schema.json', Path(os.environ['READY_INPUT'])),
+              (layer/'receipt.schema.json', Path(os.environ['READY_RECEIPT'])),
+          ]
+          for schema_path, instance_path in pairs:
+              schema = json.loads(schema_path.read_text(encoding='utf-8'))
+              instance = json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'VALID {instance_path}')
+          PY
+
+      - name: Validate CLI boundary
+        run: |
+          node "$LAYER/revalidation.js" help >/tmp/revalidation-help.txt
+          if node "$LAYER/revalidation.js" run "$FIXTURE" >/tmp/revalidation-forbidden.out 2>/tmp/revalidation-forbidden.err; then
+            echo 'forbidden run command unexpectedly succeeded' >&2
+            exit 1
+          fi
+          if node "$LAYER/revalidation.js" stress-test "$FIXTURE" >/tmp/revalidation-forbidden2.out 2>/tmp/revalidation-forbidden2.err; then
+            echo 'forbidden stress-test command unexpectedly succeeded' >&2
+            exit 1
+          fi
+
+      - name: Guard production runtime as read-only and non-executing
+        run: |
+          if grep -Eq 'child_process|\.spawn\(|\.exec\(|fetch\(|axios|http\.request|https\.request|writeFile|appendFile' "$LAYER/revalidation.js"; then
+            echo 'forbidden effectful production surface detected' >&2
+            exit 1
+          fi
+          grep -q "stress_test_run: false" "$LAYER/revalidation.js"
+          grep -q "REAL_STRESS_TEST_ADAPTER_REQUIRED" "$LAYER/revalidation.js"
+
+      - name: Confirm committed fixture contains no permit
+        run: |
+          python - <<'PY'
+          import json, os
+          v=json.load(open(os.environ['FIXTURE'], encoding='utf-8'))
+          assert v['permit'] is None
+          print('Committed revalidation fixture is non-ready and contains no permit')
+          PY
+
+      - name: Confirm repository checkout unchanged
+        run: test -z "$(git status --porcelain)"
