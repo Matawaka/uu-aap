@@ -1,0 +1,25 @@
+name: Release Candidate Checkpoint v0.3 validation
+on:
+  pull_request:
+    paths:
+      - 'tooling/release-candidate-checkpoint/v0.3/**'
+      - '.github/workflows/release-candidate-checkpoint-v0.3-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/release-candidate-checkpoint/v0.3/**'
+      - '.github/workflows/release-candidate-checkpoint-v0.3-validation.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check tooling/release-candidate-checkpoint/v0.3/validate-checkpoint.js
+      - run: node tooling/release-candidate-checkpoint/v0.3/validate-checkpoint.js
+      - run: node tooling/release-candidate-checkpoint/v0.2/test-release-candidate-checkpoint.js
+      - run: test -z "$(git status --porcelain)"

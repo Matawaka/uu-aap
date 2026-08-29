@@ -1,0 +1,22 @@
+{
+  "checkpoint_version":"0.3",
+  "origin_frontier":"dbbb7177748b55a0805bb609cc270252c9d88b76",
+  "predecessor_checkpoint":"tooling/release-candidate-checkpoint/v0.2",
+  "evidence":[
+    {"id":"stable-core-tooling","state":"PASS","refs":["#648"],"claim":"T1-T5 and post-T1-T5 checkpoint evidence remain integrated"},
+    {"id":"security-evidence-closure","state":"EVIDENCE_CLOSED","refs":["#672"],"claim":"security dimensions have explicit evidence outcomes; this is not a blanket security certification"},
+    {"id":"perceived-causal-liveness","state":"PASS","refs":["#528"],"claim":"protocol-level acceptance criteria completed; production timeout/UI deployment is not claimed"},
+    {"id":"dlc-si","state":"PASS","refs":["#526"],"claim":"v0.1 predecessor preserved and v0.2 acceptance completed"},
+    {"id":"personal-evidence-fabric","state":"PASS","refs":["#447","#448"],"claim":"PSR/PEF v0.1 bounded profile completed"},
+    {"id":"circumstantial-provenance","state":"PASS","refs":["#449","#721"],"claim":"evidence independence/provenance profile completed"},
+    {"id":"backlog-roadmap-reconciliation","state":"PASS","refs":["#697","#720","#723"],"claim":"historical closure and current-role reconciliation completed for v0.1 scope"},
+    {"id":"kontur-parallel-successor","state":"PARALLEL_NON_CORE","refs":["#722"],"claim":"parallel pilot/product evolution does not create Stable Core dependency"},
+    {"id":"public-review","state":"WAITING_EXTERNAL","refs":["#1","#2","#3","#4","#5","#6","#7"],"claim":"published external review window remains open"},
+    {"id":"pilot-002-external-input","state":"WAITING_EXTERNAL","refs":["#718","#422"],"claim":"real run remains gated on eligible external participant evidence"}
+  ],
+  "engineering_convergence":"PASS",
+  "governance_state":"REVIEW_PENDING",
+  "external_evidence_state":"WAITING_EXTERNAL",
+  "decision":"RELEASE_CANDIDATE_REVIEW_PENDING",
+  "non_effects":{"release_authorized":false,"tag_authorized":false,"publication_authorized":false,"runtime_activation_authorized":false,"action_permit_created":false,"canonicality_created":false,"certification_created":false,"legal_status_created":false}
+}
