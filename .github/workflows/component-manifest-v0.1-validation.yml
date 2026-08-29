@@ -1,0 +1,54 @@
+name: Component Manifest v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/component-manifest/v0.1/**'
+      - '.github/workflows/component-manifest-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/component-manifest/v0.1/**'
+      - '.github/workflows/component-manifest-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check tooling/component-manifest/v0.1/validate-component-manifest.js
+          node --check tooling/component-manifest/v0.1/test-component-manifest.js
+          node --check tooling/component-manifest/v0.1/test-import-safe.js
+
+      - name: Validate component examples
+        run: |
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/uu-aap-core.component.json
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/ai-transport-reference.component.json
+
+      - name: Run Component Manifest conformance
+        run: node tooling/component-manifest/v0.1/test-component-manifest.js
+
+      - name: Verify import safety
+        run: node tooling/component-manifest/v0.1/test-import-safe.js
+
+      - name: Prove validator is read-only
+        run: |
+          before="$(git status --porcelain)"
+          node tooling/component-manifest/v0.1/validate-component-manifest.js tooling/component-manifest/v0.1/examples/uu-aap-core.component.json >/tmp/component-manifest-result.json
+          after="$(git status --porcelain)"
+          test "$before" = "$after"
