@@ -1,0 +1,11 @@
+'use strict';
+const assert=require('node:assert/strict');
+const {humanLivenessView}=require('./human-view.js');
+const p={observed_at:'2026-08-29T16:20:00Z',current_phase:'tool-observation',waiting_on:'ci',next_observable_event:'workflow completion'};
+let v=humanLivenessView({run:{run_id:'r1',run_epoch:1,state:'RUNNING',external_effect_authority:true},progress_receipt:p});
+assert.equal(v.last_confirmed_progress_at,p.observed_at);assert.equal(v.next_safe_action,'WAIT_FOR_OBSERVABLE_PROGRESS');assert.equal(v.hidden_reasoning_disclosed,false);
+v=humanLivenessView({run:{run_id:'r1',run_epoch:1,state:'SUSPECTED_STALL',external_effect_authority:false},progress_receipt:p});
+assert.match(v.next_safe_action,/NO_EXTERNAL_EFFECT/);assert.equal(v.external_effect_authority,false);
+v=humanLivenessView({run:{run_id:'r1',run_epoch:1,state:'TIMED_OUT_CLOSED',external_effect_authority:false},progress_receipt:p,continuation_available:true});
+assert.equal(v.terminal_state_certain,true);assert.match(v.next_safe_action,/FRESH_AUTHORITY_REQUIRED/);
+console.log('human liveness view tests: ok');
