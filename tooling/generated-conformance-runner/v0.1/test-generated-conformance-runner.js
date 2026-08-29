@@ -67,16 +67,22 @@ assert(order.get('Marketer-Pessimist-Local-MVP') < order.get('Marketer-Pessimist
 assert(order.get('Marketer-Pessimist-Real-Review-Intake') < order.get('MarketCloser-Minimized-Real-Review-Bridge'));
 assert(order.get('MarketCloser-Copy-Export-Receipt') > order.get('MarketCloser-Human-Response-Approval'));
 
-// Baseline deletion and injection both fail the parity admission gate.
+// Baseline deletion and injection are rejected at the earlier exact workflow-binding gate.
 const missingBaseline = JSON.parse(JSON.stringify(inputs.baseline));
 missingBaseline.commands.pop();
 missingBaseline.command_count = missingBaseline.commands.length;
-expectThrow(() => Runner.buildExecutionPlan({ ...inputs, baseline: missingBaseline }), /parity gate failed/);
+expectThrow(
+  () => Runner.buildExecutionPlan({ ...inputs, baseline: missingBaseline }),
+  /committed baseline does not exactly match historical predecessor command order\/content/
+);
 
 const extraBaseline = JSON.parse(JSON.stringify(inputs.baseline));
 extraBaseline.commands.push({ executable: 'node', args: ['tooling/generated-conformance-runner/v0.1/not-in-graph.js'] });
 extraBaseline.command_count = extraBaseline.commands.length;
-expectThrow(() => Runner.buildExecutionPlan({ ...inputs, baseline: extraBaseline }), /parity gate failed/);
+expectThrow(
+  () => Runner.buildExecutionPlan({ ...inputs, baseline: extraBaseline }),
+  /committed baseline does not exactly match historical predecessor command order\/content/
+);
 
 // Execution-plan validation rejects executable expansion, shell composition, duplicates and target commands.
 const badExecutable = JSON.parse(JSON.stringify(plan));
