@@ -69,14 +69,13 @@ jobs:
           node --check tooling/generated-conformance-runner/v0.1/test-generated-conformance-runner.js
           node --check tooling/generated-conformance-runner/v0.1/test-import-safe.js
 
-      - name: Re-run reusable tooling predecessors
+      - name: Re-run reusable tooling predecessor semantics
         run: |
           node tooling/component-manifest/v0.1/test-component-manifest.js
           node tooling/component-manifest/v0.1/test-import-safe.js
           node tooling/dependency-impact/v0.1/test-dependency-impact.js
           node tooling/dependency-impact/v0.1/test-import-safe.js
           node tooling/conformance-parity/v0.1/test-conformance-parity.js
-          node tooling/conformance-parity/v0.1/test-import-safe.js
 
       - name: Run Generated Conformance Runner unit and fail-closed tests
         run: node tooling/generated-conformance-runner/v0.1/test-generated-conformance-runner.js
