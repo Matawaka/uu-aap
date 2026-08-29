@@ -28,5 +28,7 @@ jobs:
         run: |
           node --check protocols/experimental/perceived-causal-liveness/v0.1/stall.js
           node protocols/experimental/perceived-causal-liveness/v0.1/test-stall.js
+          node --check protocols/experimental/perceived-causal-liveness/v0.1/stall-authority-revalidation.js
+          node protocols/experimental/perceived-causal-liveness/v0.1/test-stall-authority-revalidation.js
       - name: Checkout unchanged
         run: test -z "$(git status --porcelain)"
