@@ -1,0 +1,123 @@
+{
+  "type": "LegacyPoAISuccessorMap",
+  "version": "0.1",
+  "origin_frontier": "8ea60c0acecf43e1e70a745e8f1a4dbd0f0e0ba4",
+  "umbrella_issue": "#744",
+  "relations": ["PRESERVED", "REUSED", "SUPERSEDED_BY", "NEEDS_SUCCESSOR", "OUT_OF_SCOPE"],
+  "entries": [
+    {
+      "family": "REVIEW_PLURALITY_AND_REVIEW_HORIZON",
+      "legacy_issues": ["#34", "#37", "#38", "#43"],
+      "legacy_invariant": "review context != decision context; conflicting reviews may coexist",
+      "current_refs": ["protocols/core/v0.1/", "protocols/dlc-si/v0.2/"],
+      "relation": "REUSED",
+      "note": "Preserve later-evidence horizon and plurality; use current typed evidence plus DLC-SI only when singular action/representation forces contention."
+    },
+    {
+      "family": "APPEAL_CONTEST_REQUEST",
+      "legacy_issues": ["#45", "#47"],
+      "legacy_invariant": "appeal request != adjudication != reversal",
+      "current_refs": ["protocols/core/v0.1/", "protocols/dlc-si/v0.2/"],
+      "relation": "REUSED",
+      "note": "Contest evidence remains distinct from resolution and effect; no request creates authority or reversal."
+    },
+    {
+      "family": "ADJUDICATION_RESOLUTION",
+      "legacy_issues": ["#49", "#51"],
+      "legacy_invariant": "declared disposition != executed effect != observed outcome",
+      "current_refs": ["protocols/core/v0.1/", "protocols/dlc-si/v0.2/"],
+      "relation": "REUSED",
+      "note": "Resolution can be represented as bounded evidence/coordination; competing legitimate resolutions remain observable."
+    },
+    {
+      "family": "EXECUTION_REPORT",
+      "legacy_issues": ["#55", "#57"],
+      "legacy_invariant": "execution report != verified execution != observed outcome",
+      "current_refs": ["protocols/core/v0.1/", "protocols/ial/", "protocols/fcl/"],
+      "relation": "SUPERSEDED_BY",
+      "note": "Current Action Gate / Outcome-Provenance plus bounded lifecycle surfaces supersede a dedicated mutable execution-status worldview."
+    },
+    {
+      "family": "EXECUTION_VERIFICATION",
+      "legacy_issues": ["#60", "#62"],
+      "legacy_invariant": "verification report != verified fact != observed outcome",
+      "current_refs": ["protocols/attestation/", "protocols/core/v0.1/"],
+      "relation": "SUPERSEDED_BY",
+      "note": "Attestation/conformance evidence is explicit and still does not certify truth, compliance or outcome."
+    },
+    {
+      "family": "OBSERVED_OUTCOME",
+      "legacy_issues": ["#64", "#66"],
+      "legacy_invariant": "outcome observation != causal attribution != responsibility",
+      "current_refs": ["protocols/core/v0.1/"],
+      "relation": "REUSED",
+      "note": "Outcome/Provenance/Successor State is a Stable Core primitive; later evidence must not move the original knowledge cutoff."
+    },
+    {
+      "family": "SUCCESSOR_PROPOSAL",
+      "legacy_issues": ["#69"],
+      "legacy_invariant": "successor proposal != successor record != canonical successor",
+      "current_refs": ["protocols/core/v0.1/", "protocols/registry/", "protocols/negotiation/"],
+      "relation": "SUPERSEDED_BY",
+      "note": "Current successor-state and compatibility/registry infrastructure separates proposal/evolution from activation and canonicality."
+    },
+    {
+      "family": "DETERMINISTIC_BINDING_AND_SIGNATURE",
+      "legacy_issues": ["#73", "#80"],
+      "legacy_invariant": "digest != signature != identity != authority != truth",
+      "current_refs": ["tooling/receipt-runtime/v0.1/", "protocols/attestation/"],
+      "relation": "SUPERSEDED_BY",
+      "note": "Deterministic receipt identity and attestation are reusable current infrastructure; signature validity still cannot upgrade truth or authority."
+    },
+    {
+      "family": "PERSISTENT_KEY_CONTINUITY",
+      "legacy_issues": ["#84"],
+      "legacy_invariant": "persistent key continuity != verified identity != authority",
+      "current_refs": [],
+      "relation": "NEEDS_SUCCESSOR",
+      "note": "Current reusable stack does not need browser-local key persistence as a Core primitive; a successor identity/evidence profile must decide whether any reusable continuity claim is still required."
+    },
+    {
+      "family": "IDENTITY_EVIDENCE",
+      "legacy_issues": ["#88"],
+      "legacy_invariant": "account-control evidence != legal identity != authority",
+      "current_refs": [],
+      "relation": "NEEDS_SUCCESSOR",
+      "note": "Requires explicit mapping to current personal/evidence architecture without reviving account control as identity proof."
+    },
+    {
+      "family": "SCOPED_AUTHORITY_EVIDENCE",
+      "legacy_issues": ["#93"],
+      "legacy_invariant": "authority evidence != verified authority != materialization authority",
+      "current_refs": ["protocols/core/v0.1/"],
+      "relation": "NEEDS_SUCCESSOR",
+      "note": "Core has Authority/Responsibility semantics, but cross-system evidence of issuer entitlement/delegation needs an explicit modern successor profile rather than legacy self-issued claims."
+    },
+    {
+      "family": "MATERIALIZATION_AND_POLICY_RELATIVE_CANONICALITY",
+      "legacy_issues": ["#104"],
+      "legacy_invariant": "proposal != approval != authority != materialization != canonicality != truth",
+      "current_refs": ["protocols/core/v0.1/", "protocols/dlc-si/v0.2/", "protocols/registry/"],
+      "relation": "NEEDS_SUCCESSOR",
+      "note": "Current stack has successor, contention and registry pieces but no single policy-relative materialization receipt should be inferred from them."
+    },
+    {
+      "family": "LEGACY_LEVEL_31_4_LABELS_AS_MATURITY_HIERARCHY",
+      "legacy_issues": ["#22", "#28", "#31", "#75"],
+      "legacy_invariant": "validity != completeness != truth; no scalar maturity score",
+      "current_refs": ["ROADMAP.md"],
+      "relation": "OUT_OF_SCOPE",
+      "note": "Legacy level numbering is historical roadmap vocabulary, not a current reusable protocol primitive or trust hierarchy."
+    }
+  ],
+  "non_effects": {
+    "historical_artifact_rewritten": false,
+    "poai_v_conformance_created": false,
+    "canonical_successor_created": false,
+    "identity_verified": false,
+    "authority_verified": false,
+    "materialization_authority_created": false,
+    "external_effect_authority_created": false,
+    "automatic_issue_closure_authorized": false
+  }
+}

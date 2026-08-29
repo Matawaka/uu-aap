@@ -1,0 +1,25 @@
+name: PoAI Legacy Successor Map v0.1
+on:
+  pull_request:
+    paths:
+      - 'protocols/experimental/poai-successor-reconciliation/v0.1/**'
+      - '.github/workflows/poai-legacy-successor-map-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/experimental/poai-successor-reconciliation/v0.1/**'
+      - '.github/workflows/poai-legacy-successor-map-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node protocols/experimental/poai-successor-reconciliation/v0.1/test-map.js
+      - run: node --check protocols/core/v0.1/validate-core.js
+      - run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - run: test -z "$(git status --porcelain)"
