@@ -1,0 +1,130 @@
+{
+  "schema_version": "kontur-bounded-interaction-evidence-envelope-v0.1",
+  "issue": 759,
+  "origin_main": "bb199c6272b36d871c62a25517ecb7f32b768106",
+  "mode": "SYNTHETIC_CONFORMANCE_ONLY",
+  "source_admission": {
+    "path": "pilots/kontur-game-companion/useful-interaction-evidence-admission-v0.1/admission.json",
+    "git_blob_sha1": "bb8576453c1695c9b703aa61e5d56c61e9f68e1e",
+    "decision_state": "DEFER_FIELD_USEFULNESS_CLAIM"
+  },
+  "scope": {
+    "scope_id": "game:synthetic:clockwork-garden:bounded-interaction-evidence",
+    "package_is_partial_permitted": true,
+    "raw_transcript_present": false,
+    "total_history_required": false,
+    "player_identifier_present": false,
+    "durable_profile_present": false
+  },
+  "commitment_profile": {
+    "canonicalization": "json-sort-keys-compact-v0.1",
+    "hash_algorithm": "sha256",
+    "event_hash_minimalism_reused": true,
+    "event_hash_proves_semantic_truth": false,
+    "payload_required_for_commitment": false
+  },
+  "events": [
+    {
+      "event_id": "evt:req:001",
+      "ordinal": 1,
+      "event_class": "PLAYER_REQUEST_OR_HELP_DEPTH_REQUEST",
+      "categorical_value": {"request_class": "HINT_REQUEST", "requested_help_depth": "HINT"},
+      "evidence_refs": ["urn:synthetic:kontur:trace:turn:10"],
+      "event_hash": "sha256:3c5652a62d8615ed623c6d02e5c2297f87ded09b94b64c4000a6a3c479db28cc",
+      "raw_text_present": false,
+      "total_history_required": false
+    },
+    {
+      "event_id": "evt:repair:002",
+      "ordinal": 2,
+      "event_class": "PLAYER_CORRECTION_OR_CHALLENGE_AND_LOCAL_REPAIR_OUTCOME",
+      "categorical_value": {"input_class": "CORRECTION", "repair_outcome": "REVISED", "global_truth_promoted": false},
+      "evidence_refs": ["urn:synthetic:kontur:trace:turn:3", "urn:synthetic:kontur:trace:turn:4"],
+      "event_hash": "sha256:f03da993dc699fecf1266e1e5d2c46c60987c0be0b19b1dbb407df0f3b3b30c3",
+      "raw_text_present": false,
+      "total_history_required": false
+    },
+    {
+      "event_id": "evt:pause:003",
+      "ordinal": 3,
+      "event_class": "PLAYER_DECLINE_IGNORE_OR_PAUSE_AND_RESPECT_OUTCOME",
+      "categorical_value": {"player_action": "PAUSE", "respect_outcome": "RESPECTED", "old_intent_carried": false},
+      "evidence_refs": ["urn:synthetic:kontur:trace:turn:7", "urn:synthetic:kontur:trace:turn:9"],
+      "event_hash": "sha256:1ca3a3db63d3281f66c5213519412374269f7b8165add660bea189a811bbee9f",
+      "raw_text_present": false,
+      "total_history_required": false
+    },
+    {
+      "event_id": "evt:offer:004",
+      "ordinal": 4,
+      "event_class": "ASSISTANCE_OR_CUE_CLASS_ACTUALLY_OFFERED",
+      "categorical_value": {"offer_class": "HINT", "solution_disclosed": false},
+      "evidence_refs": ["urn:synthetic:kontur:trace:turn:11"],
+      "event_hash": "sha256:ac7db273b6b1ebd113d4f5dfe2b05c1950d0aa821b25e65656567d1c25b541c5",
+      "raw_text_present": false,
+      "total_history_required": false
+    },
+    {
+      "event_id": "evt:answer:005",
+      "ordinal": 5,
+      "event_class": "DIRECT_ANSWER_BOUND_TO_EXPLICIT_ANSWER_REQUEST_WHEN_APPLICABLE",
+      "categorical_value": {"direct_answer_offered": true, "explicit_answer_request_bound": true, "future_solution_authority": false},
+      "evidence_refs": ["urn:synthetic:kontur:trace:turn:14", "urn:synthetic:kontur:trace:turn:15"],
+      "event_hash": "sha256:d24b326504084262aab9f3a303f103bd441461241609e6e1a4927d18d601991c",
+      "raw_text_present": false,
+      "total_history_required": false
+    },
+    {
+      "event_id": "evt:focus:006",
+      "ordinal": 6,
+      "event_class": "PLAYER_SELECTED_FOCUS_PRESERVATION_WHEN_APPLICABLE",
+      "categorical_value": {"player_selected_focus_present": true, "focus_preserved": true, "predicted_interest_override": false},
+      "evidence_refs": ["urn:synthetic:kontur:trace:focus:gate-mechanism"],
+      "event_hash": "sha256:0691f39c1640c18bf9e2aaa63869bff6582bce24e0b36e14b6522ec75dbd5726",
+      "raw_text_present": false,
+      "total_history_required": false
+    },
+    {
+      "event_id": "evt:prov:007",
+      "ordinal": 7,
+      "event_class": "SOURCE_EVENT_COMMITMENT_OR_PROVENANCE",
+      "categorical_value": {"provenance_class": "SYNTHETIC_TRACE_REFERENCE", "source_commitment_present": true},
+      "evidence_refs": ["urn:synthetic:kontur:integrated-conversation-trace:v0.1"],
+      "event_hash": "sha256:2840156f50e169734dd018a524cc305b5b8fb9fcb9a9b9eca78546443d4f9d87",
+      "raw_text_present": false,
+      "total_history_required": false
+    }
+  ],
+  "claims": {
+    "interaction_semantics_interface_valid": true,
+    "field_evidence_established": false,
+    "field_usefulness_established": false,
+    "real_player_satisfaction_established": false,
+    "real_player_effectiveness_established": false,
+    "semantic_truth_proven_by_hash": false,
+    "identity_proven": false,
+    "dependency_diagnosed": false
+  },
+  "measurement_boundary": {
+    "aggregation_mode": "CATEGORICAL_EVIDENCE_VECTOR",
+    "scalar_usefulness_score": false,
+    "engagement_objective": false,
+    "retention_objective": false,
+    "dependency_objective": false,
+    "session_duration_as_reward": false,
+    "message_count_as_reward": false,
+    "return_frequency_as_reward": false,
+    "correction_as_negative_reward": false,
+    "pause_decline_ignore_as_negative_reward": false
+  },
+  "non_effects": {
+    "new_observation_authorized": false,
+    "response_authority_created": false,
+    "runtime_activation_authorized": false,
+    "action_permit_created": false,
+    "game_control_authorized": false,
+    "player_profile_created": false,
+    "stable_core_promotion": false,
+    "external_effect_authority_created": false
+  }
+}
