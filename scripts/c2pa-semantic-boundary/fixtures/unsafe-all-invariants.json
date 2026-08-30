@@ -1,0 +1,34 @@
+{
+  "case_id": "unsafe-valid-provenance-semantic-promotion",
+  "description": "Synthetic consumer-layer claims that over-promote C2PA evidence into UU-AAP/PoAI semantics.",
+  "evidence": [
+    {"id": "e-signer", "kind": "c2pa.signer"},
+    {"id": "e-action", "kind": "c2pa.action"},
+    {"id": "e-ingredient", "kind": "c2pa.ingredient"},
+    {"id": "e-ai", "kind": "c2pa.ai_disclosure"},
+    {"id": "e-receipt", "kind": "c2pa.repository_receipt"},
+    {"id": "e-integrity", "kind": "c2pa.integrity"},
+    {"id": "e-provenance", "kind": "c2pa.artifact_provenance"}
+  ],
+  "claims": [
+    {"id": "c-author", "kind": "uu_aap.author", "value": "signer", "evidence_refs": ["e-signer"]},
+    {"id": "c-decision", "kind": "uu_aap.decision", "value": "approved", "evidence_refs": ["e-action"]},
+    {"id": "c-concept", "kind": "uu_aap.concept_origin", "value": "ingredient", "evidence_refs": ["e-ingredient"]},
+    {"id": "c-authority", "kind": "uu_aap.authority", "value": "human", "evidence_refs": ["e-ai"]},
+    {"id": "c-review", "kind": "uu_aap.review_complete", "value": true, "evidence_refs": ["e-receipt"]},
+    {"id": "c-truth", "kind": "epistemic.truth", "value": true, "evidence_refs": ["e-integrity"]},
+    {"id": "c-availability", "kind": "poai.decision_time_availability", "value": true, "evidence_refs": ["e-provenance"]}
+  ],
+  "expected": {
+    "semantic_boundary_passed": false,
+    "rule_ids": [
+      "I1_SIGNER_NOT_GOVERNANCE",
+      "I2_ACTION_NOT_DECISION",
+      "I3_INGREDIENT_NOT_CONCEPT_ORIGIN",
+      "I4_AI_DISCLOSURE_NOT_AUTHORITY",
+      "I5_RECEIPT_NOT_TRUTH_REVIEW_AUTHORIZATION",
+      "I6_INTEGRITY_NOT_TRUTH",
+      "I7_PROVENANCE_NOT_DECISION_TIME_AVAILABILITY"
+    ]
+  }
+}
