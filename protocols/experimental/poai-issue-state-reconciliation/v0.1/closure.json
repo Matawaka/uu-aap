@@ -1,0 +1,57 @@
+{
+  "type": "LegacyPoAIIssueStateClosure",
+  "version": "0.1",
+  "issue": "#765",
+  "origin_frontier": "5d4b3d878e0872be31ad282d50bd17cea052cf71",
+  "source_map": {
+    "path": "protocols/experimental/poai-successor-reconciliation/v0.1/legacy-successor-map.json",
+    "blob_sha": "7a8f27f6d5edd4a5d1bd14c52de586e0e0161947"
+  },
+  "resolution_overlay": {
+    "path": "protocols/experimental/poai-successor-reconciliation/v0.2/resolution.json",
+    "blob_sha": "b03c0b5996fa17a120ccc48f8258ca2515e96430"
+  },
+  "closure_candidates": [
+    {
+      "issue": "#84",
+      "family": "PERSISTENT_KEY_CONTINUITY",
+      "required_prior_relation": "NEEDS_SUCCESSOR",
+      "required_resolution_relation": "SUPERSEDED_BY"
+    },
+    {
+      "issue": "#88",
+      "family": "IDENTITY_EVIDENCE",
+      "required_prior_relation": "NEEDS_SUCCESSOR",
+      "required_resolution_relation": "SUPERSEDED_BY"
+    },
+    {
+      "issue": "#93",
+      "family": "SCOPED_AUTHORITY_EVIDENCE",
+      "required_prior_relation": "NEEDS_SUCCESSOR",
+      "required_resolution_relation": "SUPERSEDED_BY"
+    },
+    {
+      "issue": "#104",
+      "family": "MATERIALIZATION_AND_POLICY_RELATIVE_CANONICALITY",
+      "required_prior_relation": "NEEDS_SUCCESSOR",
+      "required_resolution_relation": "SUPERSEDED_BY"
+    }
+  ],
+  "closure_action": {
+    "state": "closed",
+    "state_reason": "completed",
+    "authorized_only_after_merged_green_pr": true,
+    "preserve_issue_body": true,
+    "preserve_historical_artifacts": true
+  },
+  "non_claims": {
+    "poai_v_conformance": false,
+    "verified_human_or_legal_identity": false,
+    "verified_universal_authority": false,
+    "universal_canonicality": false,
+    "release_or_certification": false,
+    "execution_authority": false,
+    "external_effect_authority": false,
+    "closure_of_unlisted_issues": false
+  }
+}
