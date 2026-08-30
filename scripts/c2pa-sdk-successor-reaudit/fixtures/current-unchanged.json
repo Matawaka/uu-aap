@@ -1,0 +1,22 @@
+{
+  "schema": "urn:uu-aap:c2pa-sdk-current-observation:0.2",
+  "observation_source": "deterministic_fixture",
+  "swift": {
+    "available": true,
+    "pr_state": "open",
+    "pr_head_sha": "b43d93b7c15daca4f04d33284b821fd1330bbf88",
+    "main_sha": "30a6790dc3044e29bb998fe9e7a597d3f33375ea",
+    "candidate_public_binary_release": "v0.0.12",
+    "candidate_reader_crjson_present": true,
+    "candidate_claim_generator_additional_fields_present": true,
+    "main_public_binary_release": "v0.0.12",
+    "main_claim_generator_additional_fields_present": false
+  },
+  "android": {
+    "available": true,
+    "main_sha": "077035cda5bf6849abf270829b98af789cc31e4f",
+    "ignore_unknown_keys": true,
+    "claim_generator_additional_fields_present": false,
+    "assertion_definition_custom_present": true
+  }
+}

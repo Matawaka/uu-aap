@@ -1,0 +1,60 @@
+{
+  "schema": "urn:uu-aap:c2pa-sdk-preservation-reaudit-baseline:0.2",
+  "issue": 790,
+  "repository_predecessor_main": "bcec8138cd819db96346d03c81009dbeaf4cd58f",
+  "historical_contract": {
+    "pr": 783,
+    "merge_sha": "22c656f39003cbdfff939516e6a3d9acca13d9c4",
+    "path": "scripts/c2pa-cross-sdk-preservation/contract.json",
+    "status": "INCOMPLETE",
+    "p0_3_complete": false
+  },
+  "swift": {
+    "repository": "contentauth/c2pa-swift",
+    "evidence_pr": 781,
+    "evidence_head_sha": "7258f0896429fe0d0ebe8d9aca4b9a509bfda815",
+    "upstream_pr": 161,
+    "baseline_pr_state": "open",
+    "baseline_pr_head_sha": "b43d93b7c15daca4f04d33284b821fd1330bbf88",
+    "candidate_contract": {
+      "public_binary_release": "v0.0.12",
+      "reader_crjson_present": true,
+      "claim_generator_additional_fields_present": true
+    },
+    "default_branch_observation_at_baseline": {
+      "main_sha": "30a6790dc3044e29bb998fe9e7a597d3f33375ea",
+      "public_binary_release": "v0.0.12",
+      "claim_generator_additional_fields_present": false
+    },
+    "historical_surfaces": {
+      "unknown_field_preservation_source_contract": "PASS",
+      "external_swiftpm_consumer_roundtrip": "BLOCKED"
+    }
+  },
+  "android": {
+    "repository": "contentauth/c2pa-android",
+    "evidence_pr": 782,
+    "evidence_head_sha": "adb64fc5a3f31753e68833f4182cd56c9ba3ee94",
+    "baseline_main_sha": "077035cda5bf6849abf270829b98af789cc31e4f",
+    "interface_contract": {
+      "ignore_unknown_keys": true,
+      "claim_generator_additional_fields_present": false,
+      "assertion_definition_custom_present": true
+    },
+    "historical_surfaces": {
+      "external_reference_generic_roundtrip": "INCOMPATIBLE",
+      "claim_generator_unknown_nested_extension": "LOSSY",
+      "governance_promotion_guard_on_tested_claim_path": "PASS"
+    }
+  },
+  "invariants": [
+    "successor observation != historical rewrite",
+    "upstream unchanged != gap resolved",
+    "upstream changed != old evidence false",
+    "old evidence valid historically != current compatibility established",
+    "source change detected != round-trip PASS",
+    "packaging change detected != preservation PASS",
+    "ignore unknown != preserve unknown",
+    "preserve unknown != trust unknown"
+  ]
+}
