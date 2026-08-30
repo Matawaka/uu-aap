@@ -1,0 +1,76 @@
+name: C2PA Semantic Boundary v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-semantic-boundary/**'
+      - '.github/workflows/c2pa-semantic-boundary-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-semantic-boundary/**'
+      - '.github/workflows/c2pa-semantic-boundary-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-rubric:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check scripts/c2pa-semantic-boundary/evaluate.js
+      - run: node --check scripts/c2pa-semantic-boundary/check-live-report.js
+      - run: node --check scripts/c2pa-semantic-boundary/test.js
+      - run: node scripts/c2pa-semantic-boundary/test.js
+      - run: test -z "$(git status --porcelain)"
+
+  live-upstream-c2pa:
+    runs-on: ubuntu-latest
+    env:
+      C2PATOOL_VERSION: '0.27.16'
+      C2PATOOL_ARCHIVE_SHA256: '62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663'
+      UPSTREAM_COMMIT: 'c09f0340524b088a81475f7b7eaab5ba7042772f'
+      UPSTREAM_ASSET_BLOB_SHA: '091271d557d1a88afbf0b3f01f6125f78506a6ae'
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Fetch pinned c2patool binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v${C2PATOOL_VERSION}/c2patool-v${C2PATOOL_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --silent --show-error "$url" --output /tmp/c2patool.tar.gz
+          echo "${C2PATOOL_ARCHIVE_SHA256}  /tmp/c2patool.tar.gz" | sha256sum --check --strict
+          mkdir -p /tmp/c2patool
+          tar -xzf /tmp/c2patool.tar.gz -C /tmp/c2patool
+          bin="$(find /tmp/c2patool -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+      - name: Fetch pinned upstream C2PA asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://raw.githubusercontent.com/contentauth/c2pa-conformance-tool-cli/${UPSTREAM_COMMIT}/testfiles/assets/PXL_20260208_202351558.jpg"
+          curl --fail --location --silent --show-error "$url" --output /tmp/c2pa-live.jpg
+          test "$(git hash-object /tmp/c2pa-live.jpg)" = "${UPSTREAM_ASSET_BLOB_SHA}"
+      - name: Validate real C2PA asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/c2pa-live.jpg > /tmp/c2pa-report.json
+          test -s /tmp/c2pa-report.json
+      - name: Catch unsafe signer to author promotion
+        run: >-
+          node scripts/c2pa-semantic-boundary/check-live-report.js
+          /tmp/c2pa-report.json
+          scripts/c2pa-semantic-boundary/rubric-v0.1.json
+          scripts/c2pa-semantic-boundary/fixtures/live-signer-overlay.json
+      - run: test -z "$(git status --porcelain)"
