@@ -1,0 +1,55 @@
+name: C2PA Swift Round Trip v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-swift-roundtrip/**'
+      - '.github/workflows/c2pa-swift-roundtrip-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-swift-roundtrip/**'
+      - '.github/workflows/c2pa-swift-roundtrip-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pinned-swift-candidate:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Select Xcode 16.4
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+          xcodebuild -version
+          swift --version
+      - name: Copy fixture package outside repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-swift-roundtrip
+          cp -R scripts/c2pa-swift-roundtrip /tmp/c2pa-swift-roundtrip
+      - name: Resolve pinned candidate dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          swift package --package-path /tmp/c2pa-swift-roundtrip resolve
+      - name: Execute decode inspect encode round trip
+        shell: bash
+        run: |
+          set -euo pipefail
+          swift run --package-path /tmp/c2pa-swift-roundtrip RoundTripFixture \
+            "$GITHUB_WORKSPACE/scripts/c2pa-swift-roundtrip/fixtures/claim-generator-info.json" \
+            "$GITHUB_WORKSPACE/scripts/c2pa-swift-roundtrip/fixtures/external-reference.json" \
+            | tee /tmp/c2pa-swift-roundtrip-receipt.json
+          test -s /tmp/c2pa-swift-roundtrip-receipt.json
+          grep -q '"assertion_payload_semantic_roundtrip" : true' /tmp/c2pa-swift-roundtrip-receipt.json
+          grep -q '"claim_generator_unknown_field_semantic_roundtrip" : true' /tmp/c2pa-swift-roundtrip-receipt.json
+          grep -q '"unknown_field_promoted_to_authority_or_trust" : false' /tmp/c2pa-swift-roundtrip-receipt.json
+          grep -q '"p0_3_complete" : false' /tmp/c2pa-swift-roundtrip-receipt.json
+      - run: test -z "$(git status --porcelain)"
