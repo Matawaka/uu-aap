@@ -155,12 +155,26 @@ jobs:
       - name: Prove no live resolution dependency
         run: |
           python - <<'PY'
+          import ast
           from pathlib import Path
-          workflow=Path('.github/workflows/c2pa-soft-binding-poai-availability-v0.1.yml').read_text()
-          forbidden=['c2pa.trufo.ai', 'trustmark.decode(', 'pip install trustmark']
-          for token in forbidden:
-              assert token not in workflow, token
-          print('live third-party resolver/model dependency absent: PASS')
+
+          forbidden_roots = {'requests', 'httpx', 'urllib', 'socket', 'trustmark'}
+          forbidden_calls = {'urlopen'}
+          for path in [
+              Path('scripts/c2pa-soft-binding-poai-availability/validate.py'),
+              Path('scripts/c2pa-soft-binding-poai-availability/test.py'),
+          ]:
+              tree = ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      for alias in node.names:
+                          assert alias.name.split('.')[0] not in forbidden_roots, (path, alias.name)
+                  elif isinstance(node, ast.ImportFrom):
+                      root = (node.module or '').split('.')[0]
+                      assert root not in forbidden_roots, (path, node.module)
+                  elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                      assert node.func.id not in forbidden_calls, (path, node.func.id)
+          print('live third-party resolver/model dependency absent from executable P0.8 code: PASS')
           PY
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
