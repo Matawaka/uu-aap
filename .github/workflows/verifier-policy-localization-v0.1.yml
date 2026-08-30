@@ -1,0 +1,88 @@
+name: P1.6 Verifier Technical Policy + EN/RU Localization v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verifier-policy-localization/**'
+      - 'SECURITY.md'
+      - 'CONTRIBUTING.md'
+      - 'CODE_OF_CONDUCT.md'
+      - '.github/workflows/verifier-policy-localization-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verifier-policy-localization/**'
+      - 'SECURITY.md'
+      - 'CONTRIBUTING.md'
+      - 'CODE_OF_CONDUCT.md'
+      - '.github/workflows/verifier-policy-localization-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: technical policy + localized shell isolation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Syntax check P1.6 implementation
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/verifier-policy-localization/build_policy_l10n.py'),
+              Path('scripts/verifier-policy-localization/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          node --check scripts/verifier-policy-localization/runtime.js
+          node --check scripts/verifier-policy-localization/test-browser.js
+      - name: Prove policy bindings and EN/RU localization isolation
+        run: python scripts/verifier-policy-localization/test.py
+      - name: Re-run P1.1 through P1.5 verifier firewalls
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+      - name: Confirm Core and SPEC remain untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/ SPEC.md; then
+            echo 'ERROR: P1.6 must not modify UU-AAP Core or SPEC' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P1.6 policy/localization acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'localized presentation != localized protocol semantics'
+          echo 'static UI shell -> EN | RU'
+          echo 'machine tokens + user evidence -> canonical / not translated'
+          echo 'existing verifier JSON -> byte-identical'
+          echo 'immutable P1.1 reference -> byte-identical'
+          echo 'policy sources -> exact Git-blob bound'
+          echo 'legal/WCAG compliance certification -> NOT CLAIMED'
+          echo 'PASS: P1.6 verifier technical policy + EN/RU localization v0.1'

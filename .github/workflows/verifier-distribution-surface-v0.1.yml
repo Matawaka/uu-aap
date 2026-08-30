@@ -9,11 +9,16 @@ on:
       - 'scripts/verifier-interactive-surface/**'
       - 'scripts/verifier-evidence-adapter/**'
       - 'scripts/verifier-candidate-acceptance/**'
+      - 'scripts/verifier-policy-localization/**'
+      - 'SECURITY.md'
+      - 'CONTRIBUTING.md'
+      - 'CODE_OF_CONDUCT.md'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
       - '.github/workflows/verifier-interactive-surface-v0.1.yml'
       - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
       - '.github/workflows/verifier-candidate-acceptance-v0.1.yml'
+      - '.github/workflows/verifier-policy-localization-v0.1.yml'
   push:
     branches: [main]
     paths:
@@ -23,11 +28,16 @@ on:
       - 'scripts/verifier-interactive-surface/**'
       - 'scripts/verifier-evidence-adapter/**'
       - 'scripts/verifier-candidate-acceptance/**'
+      - 'scripts/verifier-policy-localization/**'
+      - 'SECURITY.md'
+      - 'CONTRIBUTING.md'
+      - 'CODE_OF_CONDUCT.md'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
       - '.github/workflows/verifier-interactive-surface-v0.1.yml'
       - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
       - '.github/workflows/verifier-candidate-acceptance-v0.1.yml'
+      - '.github/workflows/verifier-policy-localization-v0.1.yml'
   workflow_dispatch:
 
 permissions:
@@ -102,6 +112,8 @@ jobs:
               Path('scripts/verifier-evidence-adapter/test.py'),
               Path('scripts/verifier-candidate-acceptance/build_acceptance_site.py'),
               Path('scripts/verifier-candidate-acceptance/test.py'),
+              Path('scripts/verifier-policy-localization/build_policy_l10n.py'),
+              Path('scripts/verifier-policy-localization/test.py'),
           ]:
               ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
               print(f'PASS syntax: {path}')
@@ -112,6 +124,8 @@ jobs:
           node --check scripts/verifier-evidence-adapter/test-browser.js
           node --check scripts/verifier-candidate-acceptance/app.js
           node --check scripts/verifier-candidate-acceptance/test-browser.js
+          node --check scripts/verifier-policy-localization/runtime.js
+          node --check scripts/verifier-policy-localization/test-browser.js
       - name: Re-run P1.1 semantic firewall unchanged
         run: python scripts/verifier-presentation-contract/test.py
       - name: Prove package, legacy CLI and Pages equivalence
@@ -208,18 +222,39 @@ jobs:
           assert result['acceptance_policy']['acceptance_strengthens_claim_semantics'] is False
           assert result['aggregate_score_present'] is False
           assert result['aggregate_verdict_present'] is False
-          print('P1.5 deployed result shape: PASS')
+          print('P1.5 deployed explicit materialization shape: PASS')
           PY
-      - name: Confirm Core remains untouched
+      - name: Prove P1.6 technical policy and localization isolation
+        run: python scripts/verifier-policy-localization/test.py
+      - name: Augment validated artifact with P1.6 policy and EN/RU static shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verifier-policy-localization/build_policy_l10n.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/policy/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/assets/messages.json"
+          grep -q 'href="verifier/policy/"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/interactive/index.html"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/index.html"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/accept/index.html"
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/policy/index.html"; then
+            echo 'ERROR: P1.6 policy HTML introduced an external network target' >&2
+            exit 1
+          fi
+          node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
+      - name: Confirm Core and SPEC remain untouched
         shell: bash
         run: |
           set -euo pipefail
           base_ref="${{ github.base_ref || 'main' }}"
           git fetch -q origin "$base_ref" --depth=1
           base_sha="$(git rev-parse FETCH_HEAD)"
-          if ! git diff --quiet "$base_sha" -- protocols/core/; then
-            echo 'ERROR: verifier distribution must not modify UU-AAP Core' >&2
-            git diff --name-only "$base_sha" -- protocols/core/ >&2
+          if ! git diff --quiet "$base_sha" -- protocols/core/ SPEC.md; then
+            echo 'ERROR: verifier distribution must not modify UU-AAP Core or SPEC' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md >&2
             exit 1
           fi
       - name: Working tree remains clean
@@ -230,7 +265,7 @@ jobs:
           path: ${{ runner.temp }}/uuaap-pages
 
   acceptance:
-    name: P1.2/P1.3/P1.4/P1.5 one-source distribution acceptance
+    name: P1.2/P1.3/P1.4/P1.5/P1.6 one-source distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -239,12 +274,13 @@ jobs:
           echo 'interactive input -> explicit seven-dimension claims only'
           echo 'external observation -> bounded adapter -> candidate claim only'
           echo 'candidate claim -> explicit ACCEPT | REJECT | DEFER -> materialized P1.3 input'
-          echo 'candidate claim != accepted claim; actor ref != identity != authority'
-          echo 'acceptance does not strengthen candidate semantics'
+          echo 'localized presentation != localized protocol semantics'
+          echo 'static verifier shell -> EN | RU; user evidence + machine tokens -> canonical'
+          echo 'technical policy -> implementation-backed; legal/WCAG certification -> NOT CLAIMED'
           echo 'browser input -> local only'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2 distribution + P1.3 interaction + P1.4 adapters + P1.5 acceptance'
+          echo 'PASS: P1.2-P1.6 verifier distribution stack'
 
   deploy:
     name: deploy validated verifier to GitHub Pages
