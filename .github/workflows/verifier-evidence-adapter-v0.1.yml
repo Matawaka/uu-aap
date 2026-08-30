@@ -1,0 +1,157 @@
+name: P1.4 Evidence Adapter Layer v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-presentation-contract/**'
+      - 'scripts/verifier-distribution-surface/**'
+      - 'scripts/verifier-interactive-surface/**'
+      - 'scripts/verifier-evidence-adapter/**'
+      - '.github/workflows/verifier-presentation-contract-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/verifier-interactive-surface-v0.1.yml'
+      - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-evidence-adapter/**'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: bounded adapter + candidate isolation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install package and schema validator outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+      - name: Validate P1.4 input and result schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          from uuaap_verifier_presentation import adapt_evidence
+          root=Path('scripts/verifier-evidence-adapter')
+          fixture=json.loads((root/'fixture.json').read_text(encoding='utf-8'))
+          input_schema=json.loads((root/'adapter-input.schema.json').read_text(encoding='utf-8'))
+          result_schema=json.loads((root/'adapter-result.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(input_schema)
+          Draft202012Validator.check_schema(result_schema)
+          Draft202012Validator(input_schema).validate(fixture)
+          result=adapt_evidence(fixture)
+          Draft202012Validator(result_schema).validate(result)
+          print('P1.4 input/result JSON Schema: PASS')
+          PY
+      - name: Syntax check P1.4 implementations
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py'),
+              Path('scripts/verifier-evidence-adapter/build_adapter_site.py'),
+              Path('scripts/verifier-evidence-adapter/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          node --check scripts/verifier-evidence-adapter/app.js
+          node --check scripts/verifier-evidence-adapter/test-browser.js
+      - name: Prove bounded adapters and browser equivalence
+        run: python scripts/verifier-evidence-adapter/test.py
+      - name: Re-run P1.1/P1.2/P1.3 verifier firewalls
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+      - name: Build layered local Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-distribution-surface/build_site.py --output "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          python scripts/verifier-interactive-surface/build_interactive_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          python scripts/verifier-evidence-adapter/build_adapter_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/app.js"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/example.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/example-result.json"
+          grep -q 'href="verifier/adapt/"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/index.html"; then
+            echo 'ERROR: adapter HTML introduced an external network target' >&2
+            exit 1
+          fi
+      - name: Prove deployed example remains candidate-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/adapt'
+          result=json.loads((root/'example-result.json').read_text(encoding='utf-8'))
+          assert result['candidate_claims']['integrity'] == []
+          assert result['candidate_claims']['identity'] == []
+          assert len(result['candidate_claims']['provenance']) == 1
+          assert len(result['candidate_claims']['availability']) == 1
+          assert len(result['candidate_claims']['authority']) == 1
+          assert len(result['candidate_claims']['responsibility']) == 1
+          assert result['candidate_claims']['truth'] == []
+          assert result['adapter_policy']['candidate_claims_require_explicit_acceptance'] is True
+          assert result['adapter_policy']['auto_acceptance_permitted'] is False
+          assert result['aggregate_score_present'] is False
+          assert result['aggregate_verdict_present'] is False
+          print('P1.4 deployed candidate-only shape: PASS')
+          PY
+      - name: Confirm Core and SPEC remain untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/ SPEC.md; then
+            echo 'ERROR: P1.4 must not modify UU-AAP Core or SPEC' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P1.4 candidate-only adapter acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'external observation -> bounded adapter -> candidate claim'
+          echo 'candidate claim != accepted verifier claim'
+          echo 'C2PA -> provenance only'
+          echo 'PoAI -> availability only'
+          echo 'authority != responsibility; truth remains unpopulated'
+          echo 'unknown adapter -> UNMAPPED'
+          echo 'aggregate verdict -> FORBIDDEN'
+          echo 'PASS: P1.4 evidence adapter layer v0.1'
