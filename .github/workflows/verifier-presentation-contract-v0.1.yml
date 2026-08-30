@@ -3,11 +3,13 @@ name: P1.1 Layered Verifier Presentation Contract v0.1
 on:
   pull_request:
     paths:
+      - 'packages/uuaap-verifier-presentation/**'
       - 'scripts/verifier-presentation-contract/**'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
   push:
     branches: [main]
     paths:
+      - 'packages/uuaap-verifier-presentation/**'
       - 'scripts/verifier-presentation-contract/**'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
   workflow_dispatch:
@@ -33,6 +35,13 @@ jobs:
         with: {python-version: '3.13'}
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
+      - name: Install canonical verifier package without mutating checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package"
       - name: Install JSON Schema validator
         run: python -m pip install 'jsonschema>=4.22,<5'
       - name: Bind exact predecessor semantics
@@ -49,6 +58,7 @@ jobs:
           import ast
           from pathlib import Path
           for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/core.py'),
               Path('scripts/verifier-presentation-contract/build.py'),
               Path('scripts/verifier-presentation-contract/render.py'),
               Path('scripts/verifier-presentation-contract/test.py'),
@@ -97,13 +107,14 @@ jobs:
         run: node scripts/c2pa-semantic-adversarial-corpus/test-corpus.js
       - name: Re-run P0.8 temporal counterfactuals unchanged
         run: python scripts/c2pa-soft-binding-poai-availability/test.py
-      - name: Prove renderer has no network or model dependency
+      - name: Prove canonical renderer has no network or model dependency
         run: |
           python - <<'PY'
           import ast
           from pathlib import Path
           forbidden={'requests','httpx','urllib','socket','subprocess','trustmark'}
           for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/core.py'),
               Path('scripts/verifier-presentation-contract/build.py'),
               Path('scripts/verifier-presentation-contract/render.py'),
           ]:
@@ -115,7 +126,7 @@ jobs:
                   elif isinstance(node, ast.ImportFrom):
                       root=(node.module or '').split('.')[0]
                       assert root not in forbidden, (path, node.module)
-          print('reference contract/renderer network-model independence: PASS')
+          print('canonical package/compatibility CLIs network-model independence: PASS')
           PY
       - name: Confirm Core remains untouched
         shell: bash

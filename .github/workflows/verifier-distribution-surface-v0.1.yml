@@ -1,0 +1,145 @@
+name: P1.2 Verifier Distribution Surface v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-presentation-contract/**'
+      - 'scripts/verifier-distribution-surface/**'
+      - '.github/workflows/verifier-presentation-contract-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-presentation-contract/**'
+      - 'scripts/verifier-distribution-surface/**'
+      - '.github/workflows/verifier-presentation-contract-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: package + Pages semantic equivalence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Install reusable verifier package without mutating checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package"
+      - name: Prove installed package is independently importable
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp
+          python - <<'PY'
+          import uuaap_verifier_presentation as verifier
+          assert verifier.DIMENSION_ORDER == (
+              'integrity','identity','provenance','availability','authority','responsibility','truth'
+          )
+          assert callable(verifier.build_presentation)
+          assert callable(verifier.render)
+          print('installed reusable verifier package: PASS')
+          PY
+      - name: Syntax check distribution implementation
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/core.py'),
+              Path('scripts/verifier-presentation-contract/build.py'),
+              Path('scripts/verifier-presentation-contract/render.py'),
+              Path('scripts/verifier-distribution-surface/build_site.py'),
+              Path('scripts/verifier-distribution-surface/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+      - name: Re-run P1.1 semantic firewall unchanged
+        run: python scripts/verifier-presentation-contract/test.py
+      - name: Prove package, legacy CLI and Pages equivalence
+        run: python scripts/verifier-distribution-surface/test.py
+      - name: Build GitHub Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-distribution-surface/build_site.py --output "${RUNNER_TEMP}/uuaap-pages"
+          test -s "${RUNNER_TEMP}/uuaap-pages/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/presentation.json"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test "$(grep -o 'data-dimension="' "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" | wc -l)" -eq 7
+      - name: Prove generated site is static and non-scalar
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -REqi '<script|https?://|Verified True|trust score|truth score|overall trust|overall verdict|umbrella verified' "${RUNNER_TEMP}/uuaap-pages"; then
+            echo 'ERROR: generated Pages surface introduced external/runtime or aggregate semantics' >&2
+            exit 1
+          fi
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
+            echo 'ERROR: P1.2 must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Upload validated Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/uuaap-pages
+
+  acceptance:
+    name: P1.2 one-source distribution acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'canonical package == legacy P1.1 CLI == Pages verifier'
+          echo 'seven dimensions -> preserved'
+          echo 'aggregate verdict -> FORBIDDEN'
+          echo 'PR deployment -> DISABLED'
+          echo 'PASS: P1.2 verifier distribution surface v0.1'
+
+  deploy:
+    name: deploy validated verifier to GitHub Pages
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [validate, acceptance]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy validated Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
