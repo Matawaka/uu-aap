@@ -1,0 +1,137 @@
+{
+  "profile": "uu-aap.patent-track.technical-family-inventory.v0.1",
+  "issue": 771,
+  "parent_issue": 492,
+  "origin_main": "739f0364172b336f80d870a1ae55418203f059d4",
+  "family": {
+    "family_id": "CORE_RECEIPT_CHAIN_VALIDATOR_001",
+    "name": "UU-AAP Core v0.1 receipt-chain validation and cryptographic state linkage",
+    "inventory_scope": "IMPLEMENTATION_OBSERVABLE_TECHNICAL_ELEMENTS_ONLY",
+    "patentability_conclusion": false,
+    "invention_claim_created": false
+  },
+  "current_sources": [
+    {
+      "path": "protocols/core/v0.1/validate-core.js",
+      "git_blob_sha1": "19b8cc90f34ad2eb3819d02d6335f584c65caa46",
+      "role": "EXECUTABLE_VALIDATOR"
+    },
+    {
+      "path": "protocols/core/v0.1/receipt-envelope.schema.json",
+      "git_blob_sha1": "38d2d439ad6a1065da96cc9e5f2190734fd2cd7b",
+      "role": "TYPED_RECEIPT_SCHEMA"
+    },
+    {
+      "path": "protocols/core/v0.1/end-to-end.fixture.json",
+      "git_blob_sha1": "9ed65bfae43f157f6fb051bf6460ebaec13ea480",
+      "role": "CONFORMANCE_CHAIN_FIXTURE"
+    },
+    {
+      "path": "protocols/core/v0.1/README.md",
+      "git_blob_sha1": "290483f9704704160337d5c06800f3e66d32e05a",
+      "role": "NORMATIVE_IMPLEMENTATION_DESCRIPTION"
+    }
+  ],
+  "origin_provenance": {
+    "architecture_issue": 303,
+    "origin_pr": 320,
+    "origin_merge_sha": "fd3a3fa7e84c11a80d2af5ff389fe10979720ef9",
+    "origin_merge_timestamp_utc": "2026-08-24T14:01:17Z",
+    "origin_merge_timestamp_plus05": "2026-08-24T19:01:17+05:00",
+    "disclosure_class": "EARLIEST_KNOWN_REPOSITORY_PUBLIC_DISCLOSURE",
+    "universal_prior_art_search_completed": false,
+    "external_novelty_search_completed": false
+  },
+  "implementation_observable_elements": [
+    {
+      "element_id": "DETERMINISTIC_RECEIPT_IDENTITY_HASH",
+      "description": "Deterministic recursively key-sorted receipt identity projection is hashed with SHA-256 and checked against content_hash.",
+      "implementation_refs": ["protocols/core/v0.1/validate-core.js", "protocols/core/v0.1/end-to-end.fixture.json"],
+      "technical_mechanism_observed": true,
+      "patentable_invention_established": false
+    },
+    {
+      "element_id": "TYPED_PREDECESSOR_HASH_CHAIN",
+      "description": "Typed receipts reference predecessor receipt hashes and the validator resolves those references before accepting dependent transitions.",
+      "implementation_refs": ["protocols/core/v0.1/validate-core.js", "protocols/core/v0.1/receipt-envelope.schema.json", "protocols/core/v0.1/end-to-end.fixture.json"],
+      "technical_mechanism_observed": true,
+      "patentable_invention_established": false
+    },
+    {
+      "element_id": "FAIL_CLOSED_ACTION_PREREQUISITE_GATE",
+      "description": "ActionPermit validation rejects missing, unknown, mismatched or semantically insufficient predecessor receipt prerequisites.",
+      "implementation_refs": ["protocols/core/v0.1/validate-core.js", "protocols/core/v0.1/end-to-end.fixture.json"],
+      "technical_mechanism_observed": true,
+      "patentable_invention_established": false
+    },
+    {
+      "element_id": "FRONTIER_CONSISTENCY_ENFORCEMENT",
+      "description": "Pre-action receipt frontiers must agree and outcome/successor transitions are checked for exact frontier linkage.",
+      "implementation_refs": ["protocols/core/v0.1/validate-core.js", "protocols/core/v0.1/end-to-end.fixture.json"],
+      "technical_mechanism_observed": true,
+      "patentable_invention_established": false
+    },
+    {
+      "element_id": "ASSERTION_NON_EFFECT_BOUNDARY_VALIDATION",
+      "description": "Receipt-specific assertions are accepted only with required explicit non-effects that prevent stronger authority, truth, causality or liability semantics from being inferred by the validator.",
+      "implementation_refs": ["protocols/core/v0.1/validate-core.js", "protocols/core/v0.1/receipt-envelope.schema.json"],
+      "technical_mechanism_observed": true,
+      "patentable_invention_established": false
+    },
+    {
+      "element_id": "OUTCOME_TO_SUCCESSOR_STATE_LINKAGE",
+      "description": "Observed outcome receipts and successor state receipts preserve predecessor hashes and exact successor revision linkage instead of rewriting the predecessor state.",
+      "implementation_refs": ["protocols/core/v0.1/validate-core.js", "protocols/core/v0.1/end-to-end.fixture.json"],
+      "technical_mechanism_observed": true,
+      "patentable_invention_established": false
+    }
+  ],
+  "abstract_or_semantic_context": [
+    {
+      "context_id": "SEVEN_LAYER_ARCHITECTURAL_MEANING",
+      "classification": "NOT_CLASSIFIED_AS_TECHNICAL_MECHANISM_BY_THIS_INVENTORY"
+    },
+    {
+      "context_id": "RESPONSIBILITY_OR_LIABILITY_NORMATIVE_MEANING",
+      "classification": "NOT_CLASSIFIED_AS_TECHNICAL_MECHANISM_BY_THIS_INVENTORY"
+    },
+    {
+      "context_id": "GOVERNANCE_OR_INSTITUTIONAL_AUTHORITY_RULES",
+      "classification": "NOT_CLASSIFIED_AS_TECHNICAL_MECHANISM_BY_THIS_INVENTORY"
+    }
+  ],
+  "deferred_gates": {
+    "inventorship_identified_from_actual_creative_technical_contribution": false,
+    "novelty_search_completed": false,
+    "inventive_step_analysis_completed": false,
+    "industrial_applicability_analysis_completed": false,
+    "ru_2027_programmable_means_examination_practice_reviewed": false,
+    "foreign_jurisdiction_strategy_decided": false,
+    "claim_drafting_completed": false,
+    "patent_filing_decision_made": false
+  },
+  "claims": {
+    "repository_provenance_established": true,
+    "current_source_bytes_bound": true,
+    "earliest_known_repository_public_disclosure_bound": true,
+    "inventorship_established": false,
+    "ownership_established": false,
+    "novelty_established": false,
+    "inventive_step_established": false,
+    "industrial_applicability_established": false,
+    "patentability_established": false,
+    "patent_application_prepared": false,
+    "patent_application_filed": false,
+    "patent_right_granted": false
+  },
+  "non_effects": {
+    "external_patent_search_submitted": false,
+    "filing_authority_created": false,
+    "application_submitted": false,
+    "fee_paid": false,
+    "private_identity_data_published": false,
+    "source_release_or_tag_created": false,
+    "core_semantics_changed": false,
+    "external_effect_authority_created": false
+  }
+}
