@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:c2pa-sdk-preservation-reaudit-receipt:0.2",
+  "title": "C2PASDKPreservationReauditReceipt v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "issue",
+    "repository_predecessor_main",
+    "historical_contract",
+    "historical_evidence",
+    "observation_source",
+    "swift",
+    "android",
+    "overall",
+    "current_compatibility_established",
+    "current_lossless_preservation_established",
+    "next_gate",
+    "non_effects",
+    "invariants",
+    "baseline_sha256",
+    "observation_sha256",
+    "receipt_fingerprint_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:c2pa-sdk-preservation-reaudit-receipt:0.2"},
+    "issue": {"const": 790},
+    "repository_predecessor_main": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "historical_contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pr", "merge_sha", "path", "status", "p0_3_complete"],
+      "properties": {
+        "pr": {"const": 783},
+        "merge_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "path": {"const": "scripts/c2pa-cross-sdk-preservation/contract.json"},
+        "status": {"const": "INCOMPLETE"},
+        "p0_3_complete": {"const": false}
+      }
+    },
+    "historical_evidence": {"type": "object"},
+    "observation_source": {"type": "string", "minLength": 1},
+    "swift": {"$ref": "#/$defs/sdkResult"},
+    "android": {"$ref": "#/$defs/sdkResult"},
+    "overall": {
+      "enum": ["NO_RECLASSIFICATION_REQUIRED", "TARGETED_REAUDIT_REQUIRED", "OBSERVATION_INCOMPLETE"]
+    },
+    "current_compatibility_established": {"const": false},
+    "current_lossless_preservation_established": {"const": false},
+    "next_gate": {
+      "enum": [
+        "NO_TARGETED_REAUDIT_UNTIL_RELEVANT_UPSTREAM_CHANGE",
+        "TARGETED_EXECUTABLE_REAUDIT_REQUIRED",
+        "RETRY_UPSTREAM_OBSERVATION"
+      ]
+    },
+    "non_effects": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"const": false}
+    },
+    "invariants": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "baseline_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observation_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "receipt_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "sdkResult": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["classification", "reasons", "observation"],
+      "properties": {
+        "classification": {
+          "enum": ["UNCHANGED", "CHANGED_REAUDIT_REQUIRED", "RESOLVED_CANDIDATE_RETEST_REQUIRED", "UNAVAILABLE"]
+        },
+        "reasons": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+        "observation": {"type": "object"}
+      }
+    }
+  }
+}
