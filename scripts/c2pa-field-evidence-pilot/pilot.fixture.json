@@ -1,0 +1,371 @@
+{
+  "schema": "urn:uu-aap:c2pa-field-evidence-public-interest-pilot:0.1",
+  "roadmap_issue": 778,
+  "roadmap_surface": "P0.5",
+  "predecessor": {
+    "main_sha": "9ff804a01c045601e3f5517dd9e3c919ba0b5674",
+    "surface": "P0.4 C2PA MCP -> PoAI -> UU-AAP layered agent composition"
+  },
+  "status": "COMPLETE",
+  "p0_5_complete": true,
+  "scenario": {
+    "kind": "synthetic_public_interest_timeline",
+    "description": "A public-interest editorial desk receives multiple field-evidence resources around one publication decision. One ProofMode-modeled capture exists before the cutoff but arrives too late, another is available but unused, and an AI analysis is considered without gaining publication authority.",
+    "real_incident_claimed": false,
+    "decision": "Whether to publish a time-sensitive public-interest field report",
+    "knowledge_cutoff": "2026-08-30T09:30:00Z"
+  },
+  "capture_workflow": {
+    "provider": "guardianproject/proofmode-android",
+    "pinned_sha": "b7588b9d6b5e0df892cc929bf7d76ca03d9f5c07",
+    "readme_git_blob": "ab0309c2084e3daf00ec62b729d7e49e9fd2ad3d",
+    "observed_c2pa_baseline": "2.3",
+    "c2pa_2_4_conformance_claimed": false,
+    "observed_properties": [
+      "proof metadata may be stored separately from original media",
+      "chain-of-custody support includes SHA-256 hashes and OpenPGP signatures",
+      "capture proof can be shared with the media and related proof files",
+      "persistent account identity is not required"
+    ],
+    "does_not_establish": [
+      "factual truth of the depicted event",
+      "decision-time availability to a later decision-maker",
+      "consideration or reliance by that decision-maker",
+      "publication authority or scoped responsibility",
+      "C2PA 2.4 conformance"
+    ]
+  },
+  "resource_timeline": [
+    {
+      "resource_id": "proofmode-capture-late",
+      "captured_at": "2026-08-30T09:05:00Z",
+      "delivered_at": "2026-08-30T10:05:00Z",
+      "relationship_to_cutoff": "exists_before_cutoff_delivered_after_cutoff"
+    },
+    {
+      "resource_id": "proofmode-capture-unused",
+      "captured_at": "2026-08-30T09:10:00Z",
+      "delivered_at": "2026-08-30T09:20:00Z",
+      "relationship_to_cutoff": "available_before_cutoff_not_used"
+    },
+    {
+      "resource_id": "agent-analysis-used",
+      "captured_at": "2026-08-30T09:18:00Z",
+      "delivered_at": "2026-08-30T09:24:00Z",
+      "relationship_to_cutoff": "available_and_considered_without_decision_authority"
+    }
+  ],
+  "poai_record": {
+    "protocol": "PoAI",
+    "protocol_version": "0.0.1",
+    "profile": "D",
+    "record_id": "urn:poai:example:field-evidence-public-interest:001",
+    "subject": {
+      "type": "decision",
+      "id": "decision:publish-field-report-001",
+      "label": "Whether to publish a time-sensitive public-interest field report",
+      "description": "Synthetic P0.5 timeline separating capture provenance, decision-time availability, consideration, authority and responsibility."
+    },
+    "decision_boundary": {
+      "opened_at": "2026-08-30T08:45:00Z",
+      "closed_at": "2026-08-30T09:35:00Z",
+      "knowledge_cutoff": "2026-08-30T09:30:00Z",
+      "precision": "minute",
+      "timezone": "UTC",
+      "status": "live_record",
+      "notes": "The incident is synthetic; the capture-workflow properties are pinned to the cited ProofMode repository frontier."
+    },
+    "actors": [
+      {
+        "actor_id": "field-reporter-1",
+        "actor_type": "human",
+        "name": "Synthetic field reporter"
+      },
+      {
+        "actor_id": "editor-1",
+        "actor_type": "human",
+        "name": "Synthetic public-interest editor"
+      },
+      {
+        "actor_id": "agent-1",
+        "actor_type": "ai_system",
+        "name": "Synthetic editorial analysis agent"
+      }
+    ],
+    "intelligence_resources": [
+      {
+        "resource_id": "proofmode-capture-late",
+        "resource_type": "document",
+        "label": "ProofMode-modeled field capture delivered after cutoff"
+      },
+      {
+        "resource_id": "proofmode-capture-unused",
+        "resource_type": "document",
+        "label": "ProofMode-modeled field capture available before cutoff but unused"
+      },
+      {
+        "resource_id": "agent-analysis-used",
+        "resource_type": "ai_system",
+        "label": "Agent analysis available and considered before cutoff"
+      }
+    ],
+    "availability": [
+      {
+        "availability_id": "availability:proofmode-capture-late",
+        "resource_id": "proofmode-capture-late",
+        "subject_id": "decision:publish-field-report-001",
+        "dimensions": {
+          "identity": "available",
+          "discoverability": "partial",
+          "reachability": "available",
+          "authorization": "available",
+          "temporal_fit": "unavailable",
+          "context_sufficiency": "partial",
+          "execution_capability": "available",
+          "delivery": "unavailable"
+        },
+        "overall_status": "unavailable",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:proofmode-capture-late"
+        ],
+        "reason": "The capture and proof material existed before the cutoff but reached the editor only after the cutoff."
+      },
+      {
+        "availability_id": "availability:proofmode-capture-unused",
+        "resource_id": "proofmode-capture-unused",
+        "subject_id": "decision:publish-field-report-001",
+        "dimensions": {
+          "identity": "available",
+          "discoverability": "available",
+          "reachability": "available",
+          "authorization": "available",
+          "temporal_fit": "available",
+          "context_sufficiency": "available",
+          "execution_capability": "available",
+          "delivery": "available"
+        },
+        "overall_status": "available",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:proofmode-capture-unused"
+        ],
+        "reason": "The capture was delivered before the cutoff and was decision-time available."
+      },
+      {
+        "availability_id": "availability:agent-analysis-used",
+        "resource_id": "agent-analysis-used",
+        "subject_id": "decision:publish-field-report-001",
+        "dimensions": {
+          "identity": "available",
+          "discoverability": "available",
+          "reachability": "available",
+          "authorization": "available",
+          "temporal_fit": "available",
+          "context_sufficiency": "available",
+          "execution_capability": "available",
+          "delivery": "available"
+        },
+        "overall_status": "available",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:agent-analysis-used"
+        ],
+        "reason": "The agent output was delivered and available before the cutoff."
+      }
+    ],
+    "consideration": [
+      {
+        "consideration_id": "consideration:proofmode-capture-late",
+        "resource_id": "proofmode-capture-late",
+        "status": "not_used",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:proofmode-capture-late"
+        ],
+        "reason": "Post-cutoff delivery cannot be backfilled as historical consideration."
+      },
+      {
+        "consideration_id": "consideration:proofmode-capture-unused",
+        "resource_id": "proofmode-capture-unused",
+        "status": "not_used",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:proofmode-capture-unused"
+        ],
+        "reason": "Decision-time availability does not imply that the editor considered or relied on the capture."
+      },
+      {
+        "consideration_id": "consideration:agent-analysis-used",
+        "resource_id": "agent-analysis-used",
+        "status": "considered",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:agent-analysis-used"
+        ],
+        "reason": "The agent analysis was considered, but consideration does not grant the agent decision authority."
+      }
+    ],
+    "alternatives": [
+      {
+        "alternative_id": "publish-with-bounded-evidence",
+        "label": "Publish using only evidence available and considered before the cutoff"
+      },
+      {
+        "alternative_id": "defer-for-late-capture",
+        "label": "Defer publication until the late field capture can be reviewed"
+      }
+    ],
+    "authority": [
+      {
+        "actor_id": "field-reporter-1",
+        "scopes": [
+          "observe"
+        ],
+        "status": "limited"
+      },
+      {
+        "actor_id": "editor-1",
+        "scopes": [
+          "decide",
+          "approve",
+          "review"
+        ],
+        "status": "accepted"
+      },
+      {
+        "actor_id": "agent-1",
+        "scopes": [
+          "request_analysis",
+          "recommend"
+        ],
+        "status": "limited"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "existence-not-availability",
+        "rule": "Capture/provenance existence before the cutoff must not be promoted into decision-time availability without delivery and access evidence."
+      },
+      {
+        "constraint_id": "availability-not-use",
+        "rule": "Decision-time availability must not be promoted into consideration or reliance without separate evidence."
+      },
+      {
+        "constraint_id": "use-not-authority",
+        "rule": "Considered agent output must not grant the agent decide or approve authority."
+      },
+      {
+        "constraint_id": "proof-not-truth",
+        "rule": "Capture integrity/provenance must not be presented as factual truth of the depicted event."
+      }
+    ],
+    "uncertainty": [
+      {
+        "uncertainty_id": "truth-status",
+        "status": "not_verified",
+        "statement": "Neither ProofMode-style capture proof nor C2PA provenance alone establishes factual truth."
+      },
+      {
+        "uncertainty_id": "late-capture-content",
+        "status": "unknown",
+        "statement": "The late capture may be relevant to a successor review, but its effect on the historical decision cannot be backfilled."
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "evidence:proofmode-capture-late",
+        "class": "E2",
+        "type": "proofmode_modeled_capture_provenance",
+        "availability": "captured_before_cutoff_delivered_after_cutoff",
+        "source": "guardianproject/proofmode-android@b7588b9d6b5e0df892cc929bf7d76ca03d9f5c07"
+      },
+      {
+        "evidence_id": "evidence:proofmode-capture-unused",
+        "class": "E2",
+        "type": "proofmode_modeled_capture_provenance",
+        "availability": "delivered_before_cutoff_not_used",
+        "source": "guardianproject/proofmode-android@b7588b9d6b5e0df892cc929bf7d76ca03d9f5c07"
+      },
+      {
+        "evidence_id": "evidence:agent-analysis-used",
+        "class": "E2",
+        "type": "agent_analysis_result",
+        "availability": "delivered_before_cutoff_and_considered"
+      }
+    ],
+    "artifact_binding": {
+      "status": "other",
+      "sha256": null,
+      "binding_source": "The pilot models multiple capture/proof artifacts rather than one canonical publication artifact."
+    },
+    "contestability": {
+      "channel_available": true,
+      "appeal_available": true,
+      "notes": "Late evidence can create a successor review without rewriting the historical decision-time record."
+    },
+    "outcome": {
+      "status": "not_applicable"
+    },
+    "links": {
+      "capture_workflow": "#capture_workflow",
+      "uuaap_layer": "#uuaap_layer"
+    },
+    "versioning": {
+      "record_version": 1,
+      "previous_record": null,
+      "successor_record": null,
+      "change_summary": "Initial P0.5 field-evidence public-interest timeline fixture."
+    }
+  },
+  "uuaap_layer": {
+    "source_contract": "protocols/core/v0.1",
+    "representation": "composition projection; not a standalone Core receipt",
+    "capture_actor_authority": {
+      "actor_id": "field-reporter-1",
+      "scopes": [
+        "observe"
+      ],
+      "status": "limited"
+    },
+    "publication_authority": {
+      "actor_id": "editor-1",
+      "scopes": [
+        "decide",
+        "approve"
+      ],
+      "status": "accepted"
+    },
+    "agent_authority": {
+      "actor_id": "agent-1",
+      "scopes": [
+        "request_analysis",
+        "recommend"
+      ],
+      "status": "limited"
+    },
+    "scoped_responsibility": {
+      "actor_id": "editor-1",
+      "scope": "publication_decision",
+      "status": "accepted"
+    },
+    "non_effects": {
+      "capture_signature_equals_factual_truth": false,
+      "capture_signer_equals_publication_authority": false,
+      "capture_existence_equals_decision_time_availability": false,
+      "availability_equals_consideration": false,
+      "agent_consideration_equals_decision_authority": false,
+      "late_evidence_rewrites_historical_decision": false
+    }
+  },
+  "expected_result": {
+    "late_capture": "PROVENANCE_EXISTS_NOT_AVAILABLE",
+    "available_unused_capture": "AVAILABLE_NOT_USED",
+    "agent_analysis": "USED_WITHOUT_DECISION_AUTHORITY",
+    "publication_authority": "HUMAN_EDITOR",
+    "scoped_responsibility": "HUMAN_EDITOR",
+    "factual_truth": "NOT_ESTABLISHED",
+    "single_trust_score_permitted": false,
+    "semantic_collapse_permitted": false
+  }
+}
