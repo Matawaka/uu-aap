@@ -1,0 +1,126 @@
+name: C2PA Cross-SDK Preservation Contract v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-cross-sdk-preservation/**'
+      - '.github/workflows/c2pa-cross-sdk-preservation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-cross-sdk-preservation/**'
+      - '.github/workflows/c2pa-cross-sdk-preservation-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWIFT_EVIDENCE_SHA: 7258f0896429fe0d0ebe8d9aca4b9a509bfda815
+  ANDROID_EVIDENCE_SHA: adb64fc5a3f31753e68833f4182cd56c9ba3ee94
+  SWIFT_UPSTREAM_SHA: b43d93b7c15daca4f04d33284b821fd1330bbf88
+  ANDROID_UPSTREAM_SHA: 077035cda5bf6849abf270829b98af789cc31e4f
+  SHARED_EXTERNAL_GIT_BLOB: b324c12d86ee82f02ef0fe0b71c9c7d215d40613
+
+jobs:
+  contract:
+    name: explicit state contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Validate non-ordinal cross-SDK contract
+        run: >-
+          python scripts/c2pa-cross-sdk-preservation/validate-contract.py
+          scripts/c2pa-cross-sdk-preservation/contract.json
+      - run: test -z "$(git status --porcelain)"
+
+  shared-fixtures:
+    name: shared fixture identity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Fetch immutable evidence heads
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo=https://github.com/Matawaka/uu-aap.git
+          rm -rf /tmp/uu-aap-evidence
+          git init -q /tmp/uu-aap-evidence
+          git -C /tmp/uu-aap-evidence remote add origin "$repo"
+          git -C /tmp/uu-aap-evidence fetch -q --depth=1 origin "$SWIFT_EVIDENCE_SHA"
+          git -C /tmp/uu-aap-evidence tag swift-evidence FETCH_HEAD
+          git -C /tmp/uu-aap-evidence fetch -q --depth=1 origin "$ANDROID_EVIDENCE_SHA"
+          git -C /tmp/uu-aap-evidence tag android-evidence FETCH_HEAD
+      - name: Prove byte-identical external-reference fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo=/tmp/uu-aap-evidence
+          git -C "$repo" show swift-evidence:scripts/c2pa-swift-roundtrip/fixtures/external-reference.json > /tmp/swift-external.json
+          git -C "$repo" show android-evidence:scripts/c2pa-android-preservation/fixtures/external-reference.json > /tmp/android-external.json
+          cmp /tmp/swift-external.json /tmp/android-external.json
+          test "$(git hash-object /tmp/swift-external.json)" = "$SHARED_EXTERNAL_GIT_BLOB"
+          test "$(git hash-object /tmp/android-external.json)" = "$SHARED_EXTERNAL_GIT_BLOB"
+      - name: Prove semantically identical unknown extension subtree
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo=/tmp/uu-aap-evidence
+          git -C "$repo" show swift-evidence:scripts/c2pa-swift-roundtrip/fixtures/claim-generator-info.json > /tmp/swift-claim.json
+          git -C "$repo" show android-evidence:scripts/c2pa-android-preservation/fixtures/claim-generator-info.json > /tmp/android-claim.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          s = json.loads(Path('/tmp/swift-claim.json').read_text())
+          a = json.loads(Path('/tmp/android-claim.json').read_text())
+          key = 'org.example.uu_aap_reference'
+          assert s[key] == a[key], 'extension payload differs across SDK fixtures'
+          assert s['operating_system'] != a['operating_system'], 'platform-specific known fixture field should differ'
+          s2 = dict(s); a2 = dict(a)
+          s2.pop('operating_system'); a2.pop('operating_system')
+          assert s2 == a2, 'unexpected difference beyond operating_system'
+          print('shared extension semantic equality: PASS')
+          PY
+      - run: test -z "$(git status --porcelain)"
+
+  upstream-frontiers:
+    name: immutable upstream frontier anchors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Verify pinned Swift source observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-swift
+          git clone -q https://github.com/contentauth/c2pa-swift.git /tmp/c2pa-swift
+          git -C /tmp/c2pa-swift checkout -q "$SWIFT_UPSTREAM_SHA"
+          test "$(git -C /tmp/c2pa-swift rev-parse HEAD)" = "$SWIFT_UPSTREAM_SHA"
+          grep -q 'additionalFields' /tmp/c2pa-swift/Library/Sources/Manifest/ClaimGeneratorInfo.swift
+          grep -q 'decodeAdditionalFields' /tmp/c2pa-swift/Library/Sources/Manifest/AdditionalFields.swift
+          grep -q 'encodeAdditionalFields' /tmp/c2pa-swift/Library/Sources/Manifest/AdditionalFields.swift
+          grep -q 'c2pa_reader_crjson' /tmp/c2pa-swift/Library/Sources/Reader.swift
+          grep -q 'releases/download/v0.0.12/C2PAC.xcframework.zip' /tmp/c2pa-swift/Package.swift
+      - name: Verify pinned Android source observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-android
+          git clone -q https://github.com/contentauth/c2pa-android.git /tmp/c2pa-android
+          git -C /tmp/c2pa-android checkout -q "$ANDROID_UPSTREAM_SHA"
+          test "$(git -C /tmp/c2pa-android rev-parse HEAD)" = "$ANDROID_UPSTREAM_SHA"
+          grep -q 'ignoreUnknownKeys = true' /tmp/c2pa-android/library/src/main/kotlin/org/contentauth/c2pa/C2PAJson.kt
+          grep -q 'data class Custom' /tmp/c2pa-android/library/src/main/kotlin/org/contentauth/c2pa/manifest/AssertionDefinition.kt
+          if grep -q 'additionalFields' /tmp/c2pa-android/library/src/main/kotlin/org/contentauth/c2pa/manifest/ClaimGeneratorInfo.kt; then
+            echo 'Android pinned ClaimGeneratorInfo preservation frontier changed unexpectedly.' >&2
+            exit 1
+          fi
+      - run: test -z "$(git status --porcelain)"

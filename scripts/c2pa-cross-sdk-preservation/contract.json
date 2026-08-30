@@ -1,0 +1,138 @@
+{
+  "schema": "urn:uu-aap:c2pa-cross-sdk-preservation-contract:0.1",
+  "roadmap_issue": 778,
+  "predecessor": {
+    "pr": 780,
+    "main_sha": "4387d95046ac16264e05d0c14012501cef466dfd",
+    "surface": "standard C2PA 2.4 c2pa.external-reference hashed binding"
+  },
+  "status": "INCOMPLETE",
+  "p0_3_complete": false,
+  "state_model": {
+    "PASS": "The narrowly named surface was executed or inspected at the pinned frontier and satisfied its stated acceptance condition.",
+    "LOSSY": "Input is accepted, but semantically relevant unmodeled data is not preserved across the tested read/write cycle.",
+    "BLOCKED": "The requested executable observation cannot be reached because a packaging or interface frontier prevents the consumer path from running.",
+    "INCOMPATIBLE": "The SDK explicitly rejects the tested surface at a named stage; the incompatibility is surfaced rather than normalized or hidden."
+  },
+  "equivalence_rules": {
+    "json_byte_identity_required": false,
+    "json_object_key_order_semantic": false,
+    "json_whitespace_semantic": false,
+    "json_values_semantic": true,
+    "json_types_semantic": true,
+    "json_nesting_semantic": true,
+    "json_array_order_semantic": true,
+    "json_field_presence_semantic": true,
+    "c2pa_binary_or_jumbf_canonicalization_redefined": false
+  },
+  "invariants": [
+    "Preservation evidence does not grant trust.",
+    "Unknown or extension data must not be silently promoted into UU-AAP authorship, authority, responsibility, review, truth, or trust semantics.",
+    "C2PA artifact provenance remains distinct from PoAI decision-time availability and UU-AAP governance of meaning.",
+    "SDK incompatibility must remain explicit; adapters may bridge representation but may not rewrite semantic authority.",
+    "A future SDK frontier that changes an observed state must invalidate the old executable receipt and require explicit reclassification."
+  ],
+  "shared_fixtures": {
+    "external_reference": {
+      "label": "c2pa.external-reference",
+      "byte_identical_across_tested_consumers": true,
+      "git_blob_sha": "b324c12d86ee82f02ef0fe0b71c9c7d215d40613",
+      "swift": {
+        "evidence_pr": 781,
+        "evidence_head_sha": "7258f0896429fe0d0ebe8d9aca4b9a509bfda815",
+        "path": "scripts/c2pa-swift-roundtrip/fixtures/external-reference.json"
+      },
+      "android": {
+        "evidence_pr": 782,
+        "evidence_head_sha": "adb64fc5a3f31753e68833f4182cd56c9ba3ee94",
+        "path": "scripts/c2pa-android-preservation/fixtures/external-reference.json"
+      }
+    },
+    "claim_generator_extension": {
+      "extension_key": "org.example.uu_aap_reference",
+      "extension_payload_semantically_equal_across_tested_consumers": true,
+      "known_platform_field_allowed_to_differ": "operating_system",
+      "swift": {
+        "evidence_pr": 781,
+        "evidence_head_sha": "7258f0896429fe0d0ebe8d9aca4b9a509bfda815",
+        "path": "scripts/c2pa-swift-roundtrip/fixtures/claim-generator-info.json"
+      },
+      "android": {
+        "evidence_pr": 782,
+        "evidence_head_sha": "adb64fc5a3f31753e68833f4182cd56c9ba3ee94",
+        "path": "scripts/c2pa-android-preservation/fixtures/claim-generator-info.json"
+      }
+    }
+  },
+  "consumers": [
+    {
+      "sdk": "contentauth/c2pa-swift",
+      "upstream_frontier": {
+        "pr": 161,
+        "head_sha": "b43d93b7c15daca4f04d33284b821fd1330bbf88",
+        "stacked_base_sha": "7f337301de08a3d35a07abbf36ccc5f490e8b391"
+      },
+      "evidence_pr": 781,
+      "evidence_head_sha": "7258f0896429fe0d0ebe8d9aca4b9a509bfda815",
+      "surfaces": [
+        {
+          "id": "unknown-field-preservation-source-contract",
+          "state": "PASS",
+          "evidence_kind": "pinned source inspection",
+          "roundtrip_executed": false,
+          "finding": "ClaimGeneratorInfo exposes additionalFields and the candidate source contains decode/encode helpers for unknown fields."
+        },
+        {
+          "id": "external-swiftpm-consumer-roundtrip",
+          "state": "BLOCKED",
+          "evidence_kind": "external SwiftPM build",
+          "roundtrip_executed": false,
+          "failure_stage": "consumer_build",
+          "finding": "Pinned source calls c2pa_reader_crjson while public Package.swift still references C2PAC v0.0.12, so the external consumer cannot build to the round-trip harness."
+        }
+      ],
+      "authority_or_trust_promotion_executably_assessed": false
+    },
+    {
+      "sdk": "contentauth/c2pa-android",
+      "upstream_frontier": {
+        "head_sha": "077035cda5bf6849abf270829b98af789cc31e4f",
+        "observed_native_dependency": "c2pa-rs v0.90.0"
+      },
+      "evidence_pr": 782,
+      "evidence_head_sha": "adb64fc5a3f31753e68833f4182cd56c9ba3ee94",
+      "surfaces": [
+        {
+          "id": "external-reference-generic-roundtrip",
+          "state": "INCOMPATIBLE",
+          "evidence_kind": "official Gradle project JVM unit test",
+          "roundtrip_executed": true,
+          "decode_accepted": true,
+          "failure_stage": "encode_rejected",
+          "exception": "kotlinx.serialization.SerializationException",
+          "finding": "The generic AssertionDefinition.Custom path accepts c2pa.external-reference on decode but re-encode is rejected because Serializer for class 'Custom' is not found."
+        },
+        {
+          "id": "claim-generator-unknown-nested-extension",
+          "state": "LOSSY",
+          "evidence_kind": "official Gradle project JVM unit test",
+          "roundtrip_executed": true,
+          "decode_accepted": true,
+          "unknown_field_preserved": false,
+          "finding": "C2PAJson tolerates the unknown nested field on decode via ignoreUnknownKeys=true, but ClaimGeneratorInfo has no preservation map and the field disappears on encode."
+        },
+        {
+          "id": "governance-promotion-guard-on-tested-claim-path",
+          "state": "PASS",
+          "evidence_kind": "official Gradle project JVM unit test",
+          "roundtrip_executed": true,
+          "finding": "No dropped unknown claim field was promoted into author, authority, responsibility, trust, trusted, or publication_authorization keys."
+        }
+      ],
+      "authority_or_trust_promotion_executably_assessed": true
+    }
+  ],
+  "aggregate_score_permitted": false,
+  "overall_interpretation": "Two real official SDK consumers were exercised against the same external-reference fixture, but the observed frontiers do not establish cross-SDK lossless preservation. Swift is blocked before executable round-trip by source/binary packaging skew; Android explicitly rejects generic external-reference re-encode and is tolerant-but-lossy for an unknown nested modeled-object field.",
+  "next_gate": "Re-run this contract against a consumable Swift preservation frontier and an Android frontier or adapter path that can preserve/re-emit the tested data without semantic promotion."
+}
