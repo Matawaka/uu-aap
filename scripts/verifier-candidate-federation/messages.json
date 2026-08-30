@@ -1,0 +1,34 @@
+{
+  "en": {
+    "root.candidates_link": "Open the local candidate source federation",
+    "candidates.heading": "UU-AAP Local Candidate Source Federation",
+    "candidates.description": "Combine already validated P1.4 evidence-adapter candidates and P1.8 identity candidates into one seven-bucket candidate set while preserving source provenance.",
+    "candidates.privacy": "Privacy boundary: selected files and pasted JSON stay in this browser. This page has no server upload, model, analytics or external runtime dependency.",
+    "candidates.semantic": "Semantic boundary: federation is not acceptance, ranking, consensus, confidence or trust. Source order is history/presentation order only. CAWG roles and W3C review attestations remain auxiliary and never become candidates.",
+    "candidates.attest_link": "Open the P1.8 scoped attestation bridge",
+    "candidates.adapt_link": "Open the P1.4 bounded evidence adapter",
+    "candidates.accept_link": "Open the historical P1.5 adapter-candidate acceptance gate",
+    "candidates.reference_link": "Open the immutable seven-dimension reference verifier",
+    "candidates.example_link": "Open the example federation input JSON",
+    "candidates.result_link": "Open the example federated candidate set JSON",
+    "candidates.file_label": "Select a local federation JSON file:",
+    "candidates.paste_label": "Or paste/edit validated P1.4 + P1.8 source results:",
+    "candidates.action": "Federate candidate sources"
+  },
+  "ru": {
+    "root.candidates_link": "Открыть локальную федерацию источников кандидатов",
+    "candidates.heading": "Локальная федерация источников кандидатов UU-AAP",
+    "candidates.description": "Объединить уже валидированные кандидаты адаптера P1.4 и identity-кандидаты P1.8 в единый набор из семи корзин с сохранением происхождения источника.",
+    "candidates.privacy": "Граница приватности: выбранные файлы и вставленный JSON остаются в этом браузере. Страница не выполняет загрузку на сервер, вызовы модели, аналитику или внешние runtime-зависимости.",
+    "candidates.semantic": "Семантическая граница: федерация не является принятием, ранжированием, консенсусом, уверенностью или доверием. Порядок источников — только исторический/презентационный порядок. Роли CAWG и review-attestations W3C остаются вспомогательными и не становятся кандидатами.",
+    "candidates.attest_link": "Открыть scoped attestation bridge P1.8",
+    "candidates.adapt_link": "Открыть bounded evidence adapter P1.4",
+    "candidates.accept_link": "Открыть исторический gate принятия adapter-кандидатов P1.5",
+    "candidates.reference_link": "Открыть неизменяемый эталонный семимерный verifier",
+    "candidates.example_link": "Открыть пример входного JSON федерации",
+    "candidates.result_link": "Открыть пример JSON федеративного набора кандидатов",
+    "candidates.file_label": "Выберите локальный JSON-файл федерации:",
+    "candidates.paste_label": "Или вставьте/отредактируйте валидированные результаты P1.4 + P1.8:",
+    "candidates.action": "Федерировать источники кандидатов"
+  }
+}

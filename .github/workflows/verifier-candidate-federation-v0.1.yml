@@ -1,4 +1,4 @@
-name: P1.2 Verifier Distribution Surface v0.1
+name: P1.9 Candidate Source Federation v0.1
 
 on:
   pull_request:
@@ -13,40 +13,25 @@ on:
       - 'scripts/verifier-contestability/**'
       - 'scripts/verifier-scoped-attestations/**'
       - 'scripts/verifier-candidate-federation/**'
-      - 'SECURITY.md'
-      - 'CONTRIBUTING.md'
-      - 'CODE_OF_CONDUCT.md'
       - 'SPEC.md'
       - 'CONTESTABILITY.md'
-      - '.github/workflows/verifier-*.yml'
+      - '.github/workflows/verifier-candidate-federation-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
   push:
     branches: [main]
     paths:
       - 'packages/uuaap-verifier-presentation/**'
-      - 'scripts/verifier-*/**'
-      - 'SECURITY.md'
-      - 'CONTRIBUTING.md'
-      - 'CODE_OF_CONDUCT.md'
-      - 'SPEC.md'
-      - 'CONTESTABILITY.md'
-      - '.github/workflows/verifier-*.yml'
+      - 'scripts/verifier-candidate-federation/**'
+      - '.github/workflows/verifier-candidate-federation-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 env:
   PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
   validate:
-    name: package + Pages semantic equivalence
+    name: plural candidate composition without acceptance
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,33 +40,74 @@ jobs:
         with: {python-version: '3.13'}
       - uses: actions/setup-node@v4
         with: {node-version: '24'}
-      - name: Install reusable package outside checkout
+      - name: Install package and schema validator outside checkout
         shell: bash
         run: |
           set -euo pipefail
           rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
           cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
           python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
-      - name: Prove installed API remains independently importable
+      - name: Prove P1.9 API is independently importable
         shell: bash
         run: |
           set -euo pipefail
           cd /tmp
           python - <<'PY'
           import uuaap_verifier_presentation as v
-          assert v.DIMENSION_ORDER == ('integrity','identity','provenance','availability','authority','responsibility','truth')
-          for name in (
-              'build_presentation','render','normalize_interactive_input','adapt_evidence',
-              'materialize_candidate_acceptance','materialize_contestability_overlay','bridge_attestations',
-              'federate_candidate_sources',
-          ):
-              assert callable(getattr(v,name))
-          assert v.CAWG_IDENTITY_VERSION == '1.3'
-          assert v.W3C_VCDM_VERSION == '2.0'
+          assert v.DIMENSION_ORDER == (
+              'integrity','identity','provenance','availability','authority','responsibility','truth'
+          )
           assert v.SOURCE_FAMILIES == ('P1.4_ADAPTER','P1.8_ATTESTATION')
-          print('installed P1.1-P1.9 API: PASS')
+          assert v.FEDERATION_INPUT_SCHEMA == 'urn:uu-aap:candidate-source-federation-input:0.1'
+          assert v.FEDERATION_RESULT_SCHEMA == 'urn:uu-aap:federated-candidate-set:0.1'
+          assert callable(v.build_federation_input)
+          assert callable(v.federate_candidate_sources)
+          assert callable(v.validate_federation_input)
+          assert callable(v.validate_federation_result)
+          print('installed reusable P1.9 API: PASS')
           PY
-      - name: Re-run every verifier firewall
+      - name: Validate P1.9 schemas and implementation syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federation.py'),
+              Path('scripts/verifier-candidate-federation/build_candidate_site.py'),
+              Path('scripts/verifier-candidate-federation/localize_candidates.py'),
+              Path('scripts/verifier-candidate-federation/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          node --check scripts/verifier-candidate-federation/app.js
+          node --check scripts/verifier-candidate-federation/test-browser.js
+          python - <<'PY'
+          import json
+          from copy import deepcopy
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          from uuaap_verifier_presentation import (
+              adapt_evidence, bridge_attestations, build_federation_input, federate_candidate_sources
+          )
+          root=Path('.')
+          adapter=json.loads((root/'scripts/verifier-evidence-adapter/fixture.json').read_text(encoding='utf-8'))
+          attest=json.loads((root/'scripts/verifier-scoped-attestations/fixture.json').read_text(encoding='utf-8'))
+          artifact={'id':'urn:uu-aap:artifact:p1.9:schema','description':'P1.9 schema validation reference'}
+          adapter['artifact']=deepcopy(artifact); attest['artifact']=deepcopy(artifact)
+          record=build_federation_input(adapt_evidence(adapter),bridge_attestations(attest))
+          result=federate_candidate_sources(record)
+          input_schema=json.loads((root/'scripts/verifier-candidate-federation/input.schema.json').read_text(encoding='utf-8'))
+          result_schema=json.loads((root/'scripts/verifier-candidate-federation/result.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(input_schema); Draft202012Validator.check_schema(result_schema)
+          Draft202012Validator(input_schema).validate(record); Draft202012Validator(result_schema).validate(result)
+          print('P1.9 schemas: PASS')
+          PY
+      - name: Prove source-bound federation and Python/browser equivalence
+        run: python scripts/verifier-candidate-federation/test.py
+      - name: Re-run P1.1 through P1.8 verifier firewalls
         run: |
           python scripts/verifier-presentation-contract/test.py
           python scripts/verifier-distribution-surface/test.py
@@ -91,8 +117,7 @@ jobs:
           python scripts/verifier-policy-localization/test.py
           python scripts/verifier-contestability/test.py
           python scripts/verifier-scoped-attestations/test.py
-          python scripts/verifier-candidate-federation/test.py
-      - name: Build one validated Pages artifact through P1.9
+      - name: Build full local Pages artifact through P1.9 with localization last
         shell: bash
         run: |
           set -euo pipefail
@@ -106,11 +131,10 @@ jobs:
           python scripts/verifier-scoped-attestations/build_attestation_site.py --site "${RUNNER_TEMP}/uuaap-pages"
           python scripts/verifier-candidate-federation/build_candidate_site.py --site "${RUNNER_TEMP}/uuaap-pages"
           cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
-
-          cp "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json" "${RUNNER_TEMP}/contest.before"
-          cp "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json" "${RUNNER_TEMP}/contest-result.before"
-          cp "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example.json" "${RUNNER_TEMP}/attest.before"
-          cp "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example-result.json" "${RUNNER_TEMP}/attest-result.before"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/app.js"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/example.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/example-result.json"
           cp "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/example.json" "${RUNNER_TEMP}/candidates.before"
           cp "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/example-result.json" "${RUNNER_TEMP}/candidates-result.before"
 
@@ -120,25 +144,20 @@ jobs:
           python scripts/verifier-candidate-federation/localize_candidates.py --site "${RUNNER_TEMP}/uuaap-pages"
 
           cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
-          cmp --silent "${RUNNER_TEMP}/contest.before" "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json"
-          cmp --silent "${RUNNER_TEMP}/contest-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json"
-          cmp --silent "${RUNNER_TEMP}/attest.before" "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example.json"
-          cmp --silent "${RUNNER_TEMP}/attest-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example-result.json"
           cmp --silent "${RUNNER_TEMP}/candidates.before" "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/example.json"
           cmp --silent "${RUNNER_TEMP}/candidates-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/example-result.json"
-
-          for path in interactive adapt accept contest attest candidates policy; do
-            test -s "${RUNNER_TEMP}/uuaap-pages/verifier/${path}/index.html"
-          done
           grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/index.html"
           grep -q 'data-i18n="root.candidates_link"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          grep -q 'data-i18n="candidates.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/index.html"
           grep -q '"candidates.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/assets/messages.json"
+          grep -q '../adapt/app.js' "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/index.html"
+          grep -q '../attest/app.js' "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/index.html"
           if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/candidates/index.html"; then
-            echo 'ERROR: candidate federation page introduced external network target' >&2
+            echo 'ERROR: P1.9 candidates page introduced an external network target' >&2
             exit 1
           fi
           node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
-      - name: Confirm immutable semantic sources remain untouched
+      - name: Confirm Core and historical P1.4/P1.5/P1.8 semantics remain unmodified
         shell: bash
         run: |
           set -euo pipefail
@@ -157,46 +176,25 @@ jobs:
             scripts/verifier-scoped-attestations/
           )
           if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
-            echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical P1.4/P1.5/P1.8 semantics' >&2
+            echo 'ERROR: P1.9 modified Core/SPEC or a historical P1.4/P1.5/P1.8 implementation' >&2
             git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
             exit 1
           fi
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Upload validated Pages artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: ${{ runner.temp }}/uuaap-pages
 
   acceptance:
-    name: P1.2-P1.9 one-source distribution acceptance
+    name: P1.9 candidate-source federation acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
       - run: |
-          echo 'canonical package == legacy P1.1 CLI == immutable reference verifier'
-          echo 'P1.3 explicit input -> seven dimensions only'
-          echo 'P1.4 external observations -> bounded candidates only'
-          echo 'P1.5 historical adapter candidates -> explicit ACCEPT | REJECT | DEFER'
-          echo 'P1.7 correction/dispute/appeal -> preserved history'
-          echo 'P1.8 CAWG/W3C receipts -> bounded identity/role/review attestations only'
-          echo 'P1.9 P1.4 + P1.8 candidates -> provenance-preserving federation only'
-          echo 'localized presentation != localized evidence or machine semantics'
+          echo 'federation != acceptance'
+          echo 'source count != confidence'
+          echo 'source order != priority'
+          echo 'plural same-dimension candidates != consensus'
+          echo 'multiple sources != independent witnesses'
+          echo 'P1.8 roles/reviews -> auxiliary only'
+          echo 'candidate claim -> copied unchanged'
           echo 'aggregate verdict -> FORBIDDEN'
-          echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2-P1.9 verifier distribution stack'
-
-  deploy:
-    name: deploy validated verifier to GitHub Pages
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [validate, acceptance]
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
-      - name: Deploy validated Pages artifact
-        id: deployment
-        uses: actions/deploy-pages@v4
+          echo 'PASS: P1.9 Candidate Source Federation v0.1'
