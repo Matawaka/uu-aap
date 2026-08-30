@@ -1,0 +1,96 @@
+{
+  "schema_version": "kontur-useful-interaction-evidence-admission-v0.1",
+  "issue": 757,
+  "origin_main": "9a7321bd127e2ed01522d4ce98ee5defe29096be",
+  "purpose": "Decide whether current repository evidence is sufficient for a bounded field-usefulness claim without engagement, retention or dependency scoring.",
+  "sources": [
+    {
+      "source_id": "interaction-receipt-cases-v0.2",
+      "path": "pilots/kontur-game-companion/interaction-receipt/interaction-receipt-cases.json",
+      "git_blob_sha1": "6b39625d302f2ddc76f9a4fda3c4fcf730d984f9",
+      "evidence_class": "SYNTHETIC_CANDIDATE_POLICY_EVIDENCE",
+      "field_interaction_semantics_present": false,
+      "supports_field_usefulness_claim": false
+    },
+    {
+      "source_id": "integrated-conversation-trace-v0.1",
+      "path": "pilots/kontur-game-companion/integrated-conversation-trace/integrated-conversation-trace.json",
+      "git_blob_sha1": "33fd0ae2d87097216649c1d7762feb8aaccc9397",
+      "evidence_class": "SYNTHETIC_MULTI_TURN_COMPOSITION_EVIDENCE",
+      "field_interaction_semantics_present": false,
+      "supports_field_usefulness_claim": false
+    },
+    {
+      "source_id": "terminal-state-field-confirmation-001",
+      "path": "pilots/kontur-game-companion/external-observation-session/field-evidence/terminal-state-commit-001/receipt.json",
+      "git_blob_sha1": "f65b988d8baaecf3faa386cec3981ba63874d71c",
+      "evidence_class": "FIELD_OPERATIONAL_EVIDENCE_NO_INTERACTION_SEMANTICS",
+      "field_interaction_semantics_present": false,
+      "supports_field_usefulness_claim": false
+    }
+  ],
+  "current_evidence_capabilities": {
+    "candidate_policy_boundaries": true,
+    "synthetic_multi_turn_agency_baseline": true,
+    "player_correction_as_revision_opportunity_in_synthetic_trace": true,
+    "pause_resume_respect_in_synthetic_trace": true,
+    "explicit_help_depth_scope_in_synthetic_trace": true,
+    "privacy_minimized_operational_field_confirmation": true,
+    "bounded_field_interaction_semantics": false,
+    "real_player_satisfaction_established": false,
+    "real_player_effectiveness_established": false,
+    "field_usefulness_established": false
+  },
+  "future_field_admission_requirements": {
+    "evidence_mode": "CATEGORICAL_PROVENANCE_BEARING_EVENTS",
+    "required_categories": [
+      "PLAYER_REQUEST_OR_HELP_DEPTH_REQUEST",
+      "PLAYER_CORRECTION_OR_CHALLENGE_AND_LOCAL_REPAIR_OUTCOME",
+      "PLAYER_DECLINE_IGNORE_OR_PAUSE_AND_RESPECT_OUTCOME",
+      "ASSISTANCE_OR_CUE_CLASS_ACTUALLY_OFFERED",
+      "DIRECT_ANSWER_BOUND_TO_EXPLICIT_ANSWER_REQUEST_WHEN_APPLICABLE",
+      "PLAYER_SELECTED_FOCUS_PRESERVATION_WHEN_APPLICABLE",
+      "SOURCE_EVENT_COMMITMENT_OR_PROVENANCE"
+    ],
+    "raw_transcript_required": false,
+    "total_game_history_required": false,
+    "durable_player_profile_required": false,
+    "behavioral_profile_required": false,
+    "psychological_profile_required": false,
+    "mood_profile_required": false
+  },
+  "measurement_policy": {
+    "aggregation_mode": "CATEGORICAL_EVIDENCE_VECTOR",
+    "scalar_usefulness_score": false,
+    "engagement_objective": false,
+    "retention_objective": false,
+    "dependency_objective": false,
+    "session_duration_as_reward": false,
+    "message_count_as_reward": false,
+    "return_frequency_as_reward": false,
+    "correction_as_negative_reward": false,
+    "decline_as_negative_reward": false,
+    "pause_as_negative_reward": false,
+    "ignore_as_negative_reward": false
+  },
+  "decision": {
+    "state": "DEFER_FIELD_USEFULNESS_CLAIM",
+    "reason": "Current real field evidence is operational/privacy evidence and contains no bounded interaction semantics. Synthetic policy/composition evidence cannot be upgraded into real-player usefulness evidence.",
+    "usefulness_disproved": false,
+    "new_runtime_component_admitted": false,
+    "new_observation_authorized": false,
+    "field_usefulness_claim_admitted": false
+  },
+  "non_effects": {
+    "engagement_score_created": false,
+    "retention_score_created": false,
+    "dependency_score_created": false,
+    "player_profile_created": false,
+    "response_authority_created": false,
+    "runtime_activation_authorized": false,
+    "action_permit_created": false,
+    "game_control_authorized": false,
+    "stable_core_promotion": false,
+    "external_effect_authority_created": false
+  }
+}
