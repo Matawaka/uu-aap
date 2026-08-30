@@ -49,32 +49,50 @@ node scripts/c2pa-semantic-boundary/evaluate.js \
 
 The evaluator exits non-zero when semantic-boundary findings exist. Its JSON output always states `c2pa_conformance_evaluated: false`.
 
-## Live C2PA fixture
+## Live C2PA composition fixture
 
-CI also runs one networked acceptance check using pinned upstream inputs:
+CI runs a networked acceptance check with the official prebuilt `contentauth/c2pa-rs` toolchain:
 
-- validator: official `contentauth/c2pa-rs` prebuilt `c2patool v0.27.16`;
+- validator/generator: `c2patool v0.27.16`;
 - release archive SHA-256: `62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663`;
-- upstream test repository: `contentauth/c2pa-conformance-tool-cli`;
-- pinned commit: `c09f0340524b088a81475f7b7eaab5ba7042772f`;
-- asset: `testfiles/assets/PXL_20260208_202351558.jpg`;
-- upstream Git blob SHA: `091271d557d1a88afbf0b3f01f6125f78506a6ae`.
+- source asset: deterministic 1x1 PNG created inside the CI job;
+- manifest: fresh C2PA manifest generated in the same job with `--create digitalCapture` and the tool's built-in **FOR TESTING ONLY** development signer;
+- test signer certificate validity: through 2030-08-26; it is not treated as a production or trusted identity credential.
 
-The workflow first lets `c2patool` read/validate the real asset. Only after that succeeds does `check-live-report.js` apply `live-signer-overlay.json`, which deliberately makes the unsafe consumer inference `C2PA signer -> UU-AAP author`. Acceptance succeeds only when the semantic rubric catches that inference.
+The workflow generates the asset, reads it again through `c2patool`, requires a C2PA `Valid` or `Trusted` state under current validation semantics, and only then applies `live-signer-overlay.json`. The overlay deliberately makes the unsafe consumer inference `C2PA signer -> UU-AAP author`. Acceptance succeeds only when the semantic rubric catches that promotion.
 
 This proves composition, not equivalence:
 
 ```text
-real C2PA asset -> C2PA validator -> provenance evidence
-                                      |
-                                      v
-                           consumer semantic claim
-                                      |
-                                      v
-                         UU-AAP boundary rubric
+fresh C2PA asset -> C2PA validator -> provenance evidence
+                                       |
+                                       v
+                            consumer semantic claim
+                                       |
+                                       v
+                          UU-AAP boundary rubric
 ```
 
 A C2PA-valid asset can therefore coexist with a failed semantic-boundary evaluation. That is the intended result.
+
+### Temporal fixture lesson
+
+An earlier live candidate used the pinned upstream `contentauth/c2pa-conformance-tool-cli` asset `PXL_20260208_202351558.jpg`. On 2026-08-30 the current validator reported `signingCredential.expired`, making its validation state `Invalid` even though the asset remains useful as historical provenance material.
+
+The harness deliberately did **not** tolerate that failure. Positive CI acceptance now creates a fresh asset instead of weakening C2PA validity rules to keep a stale fixture green. This is itself an interoperability lesson:
+
+`historically useful provenance fixture != currently Valid C2PA credential state`.
+
+## C2PA validation-state boundary
+
+`check-live-report.js` mirrors only the subset needed to keep this composition gate honest:
+
+- `Valid` requires the active claim signature to validate and be inside its validity interval;
+- `signingCredential.untrusted` is compatible with `Valid` but not `Trusted`;
+- `cawg.x509.*` identity-assertion failures are tolerated at the enclosing-manifest validity layer in the same way as the current SDK logic;
+- expiry, data-hash mismatch, or other non-tolerated failures fail the live gate.
+
+This helper is not a replacement C2PA validator. The authoritative validation is still performed first by the pinned `c2patool` binary.
 
 ## Common-interface direction
 
