@@ -1,0 +1,48 @@
+name: Reusable Component Admission Audit v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/reusable-component-admission-audit/v0.1/**'
+      - '.github/workflows/reusable-component-admission-audit-v0.1.yml'
+      - 'protocols/integration/ambient-observability-non-identification/v0.1/**'
+      - 'protocols/integration/circumstantial-provenance/v0.1/**'
+      - 'protocols/integration/event-hash-minimalism/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - 'pilots/kontur-game-companion/bounded-interaction-evidence-envelope-v0.1/**'
+      - 'pilots/kontur-game-companion/core-admission-assessment-v0.1/**'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/reusable-component-admission-audit/v0.1/**'
+      - '.github/workflows/reusable-component-admission-audit-v0.1.yml'
+      - 'protocols/integration/ambient-observability-non-identification/v0.1/**'
+      - 'protocols/integration/circumstantial-provenance/v0.1/**'
+      - 'protocols/integration/event-hash-minimalism/v0.1/**'
+      - 'protocols/integration/execution-lifecycle/v0.1/**'
+      - 'pilots/kontur-game-companion/bounded-interaction-evidence-envelope-v0.1/**'
+      - 'pilots/kontur-game-companion/core-admission-assessment-v0.1/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python protocols/integration/reusable-component-admission-audit/v0.1/validate.py
+      - run: node protocols/integration/ambient-observability-non-identification/v0.1/validate-ambient-observability.js
+      - run: node protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js
+      - run: node protocols/integration/event-hash-minimalism/v0.1/validate-event-hash-minimalism.js
+      - run: python pilots/kontur-game-companion/bounded-interaction-evidence-envelope-v0.1/validate.py
+      - run: python pilots/kontur-game-companion/core-admission-assessment-v0.1/validate.py
+      - run: test -z "$(git status --porcelain)"
