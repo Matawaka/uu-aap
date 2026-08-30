@@ -14,6 +14,8 @@ on:
       - 'scripts/verifier-scoped-attestations/**'
       - 'scripts/verifier-candidate-federation/**'
       - 'scripts/verifier-federated-disposition/**'
+      - 'scripts/verifier-disposition-integrity/**'
+      - 'scripts/verifier-disposition-integrity-surface/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
       - 'CODE_OF_CONDUCT.md'
@@ -74,14 +76,14 @@ jobs:
           for name in (
               'build_presentation','render','normalize_interactive_input','adapt_evidence',
               'materialize_candidate_acceptance','materialize_contestability_overlay','bridge_attestations',
-              'federate_candidate_sources','materialize_federated_disposition',
+              'federate_candidate_sources','materialize_federated_disposition','verify_disposition_integrity',
           ):
               assert callable(getattr(v,name))
           assert v.CAWG_IDENTITY_VERSION == '1.3'
           assert v.W3C_VCDM_VERSION == '2.0'
           assert v.SOURCE_FAMILIES == ('P1.4_ADAPTER','P1.8_ATTESTATION')
           assert v.FEDERATED_DISPOSITION_SCOPE == 'verifier_federated_candidate_materialization'
-          print('installed P1.1-P1.10 API: PASS')
+          print('installed P1.1-P1.11 API: PASS')
           PY
       - name: Re-run every verifier firewall
         run: |
@@ -95,7 +97,9 @@ jobs:
           python scripts/verifier-scoped-attestations/test.py
           python scripts/verifier-candidate-federation/test.py
           python scripts/verifier-federated-disposition/test.py
-      - name: Build one validated Pages artifact through P1.10
+          python scripts/verifier-disposition-integrity/test.py
+          python scripts/verifier-disposition-integrity-surface/test.py
+      - name: Build one validated Pages artifact through P1.12
         shell: bash
         run: |
           set -euo pipefail
@@ -109,6 +113,7 @@ jobs:
           python scripts/verifier-scoped-attestations/build_attestation_site.py --site "${RUNNER_TEMP}/uuaap-pages"
           python scripts/verifier-candidate-federation/build_candidate_site.py --site "${RUNNER_TEMP}/uuaap-pages"
           python scripts/verifier-federated-disposition/build_disposition_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-disposition-integrity-surface/build_integrity_site.py --site "${RUNNER_TEMP}/uuaap-pages"
           cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
 
           cp "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json" "${RUNNER_TEMP}/contest.before"
@@ -120,12 +125,16 @@ jobs:
           cp "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/example.json" "${RUNNER_TEMP}/disposition.before"
           cp "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/example-result.json" "${RUNNER_TEMP}/disposition-result.before"
           cp "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/materialized-input.json" "${RUNNER_TEMP}/disposition-materialized.before"
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/example.json" "${RUNNER_TEMP}/integrity.before"
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/example-result.json" "${RUNNER_TEMP}/integrity-result.before"
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/core.js" "${RUNNER_TEMP}/integrity-core.before"
 
           python scripts/verifier-policy-localization/build_policy_l10n.py --site "${RUNNER_TEMP}/uuaap-pages"
           python scripts/verifier-contestability/localize_contestability.py --site "${RUNNER_TEMP}/uuaap-pages"
           python scripts/verifier-scoped-attestations/localize_attestation.py --site "${RUNNER_TEMP}/uuaap-pages"
           python scripts/verifier-candidate-federation/localize_candidates.py --site "${RUNNER_TEMP}/uuaap-pages"
           python scripts/verifier-federated-disposition/localize_disposition.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-disposition-integrity-surface/localize_integrity.py --site "${RUNNER_TEMP}/uuaap-pages"
 
           cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
           cmp --silent "${RUNNER_TEMP}/contest.before" "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json"
@@ -137,25 +146,33 @@ jobs:
           cmp --silent "${RUNNER_TEMP}/disposition.before" "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/example.json"
           cmp --silent "${RUNNER_TEMP}/disposition-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/example-result.json"
           cmp --silent "${RUNNER_TEMP}/disposition-materialized.before" "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/materialized-input.json"
+          cmp --silent "${RUNNER_TEMP}/integrity.before" "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/example.json"
+          cmp --silent "${RUNNER_TEMP}/integrity-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/example-result.json"
+          cmp --silent "${RUNNER_TEMP}/integrity-core.before" "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/core.js"
 
-          for path in interactive adapt accept contest attest candidates disposition policy; do
+          for path in interactive adapt accept contest attest candidates disposition integrity policy; do
             test -s "${RUNNER_TEMP}/uuaap-pages/verifier/${path}/index.html"
           done
-          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"
-          grep -q 'data-i18n="root.disposition_link"' "${RUNNER_TEMP}/uuaap-pages/index.html"
-          grep -q '"disposition.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/assets/messages.json"
-          grep -q '../candidates/app.js' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"
-          grep -q '../interactive/app.js' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/index.html"
+          grep -q 'data-i18n="root.integrity_link"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          grep -q '"integrity.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/assets/messages.json"
+          grep -q '../disposition/app.js' "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/index.html"
+          grep -q 'core.js' "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/index.html"
+          grep -q 'ui.js' "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/index.html"
           python - <<'PY'
           import json, os
           from pathlib import Path
-          from uuaap_verifier_presentation import validate_interactive_input
-          path=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/disposition/materialized-input.json'
-          validate_interactive_input(json.loads(path.read_text(encoding='utf-8')))
-          print('P1.10 deployed P1.3 materialization: PASS')
+          from uuaap_verifier_presentation import validate_disposition_integrity_input, validate_disposition_integrity_result, verify_disposition_integrity
+          root=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/integrity'
+          record=json.loads((root/'example.json').read_text(encoding='utf-8'))
+          result=json.loads((root/'example-result.json').read_text(encoding='utf-8'))
+          validate_disposition_integrity_input(record)
+          validate_disposition_integrity_result(result)
+          assert verify_disposition_integrity(record)==result
+          print('P1.12 deployed P1.11 integrity verification: PASS')
           PY
-          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"; then
-            echo 'ERROR: federated disposition page introduced external network target' >&2
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/integrity/index.html"; then
+            echo 'ERROR: integrity page introduced external network target' >&2
             exit 1
           fi
           node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
@@ -174,13 +191,17 @@ jobs:
             packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/acceptance.py
             packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/attestations.py
             packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federation.py
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federated_disposition.py
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/disposition_integrity.py
             scripts/verifier-evidence-adapter/
             scripts/verifier-candidate-acceptance/
             scripts/verifier-scoped-attestations/
             scripts/verifier-candidate-federation/
+            scripts/verifier-federated-disposition/
+            scripts/verifier-disposition-integrity/
           )
           if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
-            echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical P1.4/P1.5/P1.8/P1.9 semantics' >&2
+            echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical verifier semantics' >&2
             git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
             exit 1
           fi
@@ -192,7 +213,7 @@ jobs:
           path: ${{ runner.temp }}/uuaap-pages
 
   acceptance:
-    name: P1.2-P1.10 one-source distribution acceptance
+    name: P1.2-P1.12 one-source distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -205,12 +226,15 @@ jobs:
           echo 'P1.8 CAWG/W3C receipts -> bounded identity/role/review attestations only'
           echo 'P1.9 P1.4 + P1.8 candidates -> provenance-preserving federation only'
           echo 'P1.10 federated candidates -> explicit disposition + seven-dimension materialization only'
+          echo 'P1.11 supplied P1.10 result -> deterministic canonical integrity closure only'
+          echo 'P1.12 integrity closure -> browser-local public distribution only'
+          echo 'integrity surface != publication/action authority'
           echo 'source family/order/count/evaluation != automatic priority'
           echo 'REJECT/DEFER != negative evidence'
           echo 'localized presentation != localized evidence or machine semantics'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2-P1.10 verifier distribution stack'
+          echo 'PASS: P1.2-P1.12 verifier distribution stack'
 
   deploy:
     name: deploy validated verifier to GitHub Pages
