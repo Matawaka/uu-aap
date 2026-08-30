@@ -7,9 +7,11 @@ on:
       - 'scripts/verifier-presentation-contract/**'
       - 'scripts/verifier-distribution-surface/**'
       - 'scripts/verifier-interactive-surface/**'
+      - 'scripts/verifier-evidence-adapter/**'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
       - '.github/workflows/verifier-interactive-surface-v0.1.yml'
+      - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
   push:
     branches: [main]
     paths:
@@ -17,9 +19,11 @@ on:
       - 'scripts/verifier-presentation-contract/**'
       - 'scripts/verifier-distribution-surface/**'
       - 'scripts/verifier-interactive-surface/**'
+      - 'scripts/verifier-evidence-adapter/**'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
       - '.github/workflows/verifier-interactive-surface-v0.1.yml'
+      - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
   workflow_dispatch:
 
 permissions:
@@ -66,6 +70,9 @@ jobs:
           assert callable(verifier.render)
           assert callable(verifier.validate_interactive_input)
           assert callable(verifier.normalize_interactive_input)
+          assert callable(verifier.validate_adapter_input)
+          assert callable(verifier.adapt_evidence)
+          assert callable(verifier.validate_adapter_result)
           print('installed reusable verifier package: PASS')
           PY
       - name: Syntax check distribution implementation
@@ -76,18 +83,23 @@ jobs:
           for path in [
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/core.py'),
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/interactive.py'),
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py'),
               Path('scripts/verifier-presentation-contract/build.py'),
               Path('scripts/verifier-presentation-contract/render.py'),
               Path('scripts/verifier-distribution-surface/build_site.py'),
               Path('scripts/verifier-distribution-surface/test.py'),
               Path('scripts/verifier-interactive-surface/build_interactive_site.py'),
               Path('scripts/verifier-interactive-surface/test.py'),
+              Path('scripts/verifier-evidence-adapter/build_adapter_site.py'),
+              Path('scripts/verifier-evidence-adapter/test.py'),
           ]:
               ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
               print(f'PASS syntax: {path}')
           PY
           node --check scripts/verifier-interactive-surface/app.js
           node --check scripts/verifier-interactive-surface/test-browser.js
+          node --check scripts/verifier-evidence-adapter/app.js
+          node --check scripts/verifier-evidence-adapter/test-browser.js
       - name: Re-run P1.1 semantic firewall unchanged
         run: python scripts/verifier-presentation-contract/test.py
       - name: Prove package, legacy CLI and Pages equivalence
@@ -128,16 +140,40 @@ jobs:
             echo 'ERROR: interactive HTML introduced an external network target' >&2
             exit 1
           fi
+      - name: Prove P1.4 canonical and browser adapter equivalence
+        run: python scripts/verifier-evidence-adapter/test.py
+      - name: Augment validated artifact with local P1.4 evidence adapters
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verifier-evidence-adapter/build_adapter_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/app.js"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/example.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/example-result.json"
+          grep -q 'href="verifier/adapt/"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/adapt/index.html"; then
+            echo 'ERROR: adapter HTML introduced an external network target' >&2
+            exit 1
+          fi
           python - <<'PY'
           import json, os
           from pathlib import Path
-          root=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/interactive'
+          root=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/adapt'
           result=json.loads((root/'example-result.json').read_text(encoding='utf-8'))
-          assert result['dimension_order'] == ['integrity','identity','provenance','availability','authority','responsibility','truth']
-          assert set(result['dimensions']) == set(result['dimension_order'])
+          assert result['candidate_claims']['integrity'] == []
+          assert result['candidate_claims']['identity'] == []
+          assert len(result['candidate_claims']['provenance']) == 1
+          assert len(result['candidate_claims']['availability']) == 1
+          assert len(result['candidate_claims']['authority']) == 1
+          assert len(result['candidate_claims']['responsibility']) == 1
+          assert result['candidate_claims']['truth'] == []
+          assert result['adapter_policy']['candidate_claims_require_explicit_acceptance'] is True
+          assert result['adapter_policy']['auto_acceptance_permitted'] is False
           assert result['aggregate_score_present'] is False
           assert result['aggregate_verdict_present'] is False
-          print('P1.3 deployed result shape: PASS')
+          print('P1.4 deployed result shape: PASS')
           PY
       - name: Confirm Core remains untouched
         shell: bash
@@ -159,18 +195,21 @@ jobs:
           path: ${{ runner.temp }}/uuaap-pages
 
   acceptance:
-    name: P1.2/P1.3 one-source distribution acceptance
+    name: P1.2/P1.3/P1.4 one-source distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
       - run: |
           echo 'canonical package == legacy P1.1 CLI == immutable reference verifier'
           echo 'interactive input -> explicit seven-dimension claims only'
-          echo 'opaque evidence payload != semantic promotion'
+          echo 'external observation -> bounded adapter -> candidate claim only'
+          echo 'candidate claim != accepted verifier claim'
+          echo 'C2PA -> provenance only; PoAI -> availability only'
+          echo 'authority != responsibility; truth remains unpopulated'
           echo 'browser input -> local only'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2 distribution + P1.3 local interaction'
+          echo 'PASS: P1.2 distribution + P1.3 interaction + P1.4 adapters'
 
   deploy:
     name: deploy validated verifier to GitHub Pages

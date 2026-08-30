@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:evidence-adapter-result-schema:0.1",
+  "title": "UU-AAP Evidence Adapter Result v0.1",
+  "type": "object",
+  "required": [
+    "schema",
+    "artifact",
+    "dimension_order",
+    "evidence_items",
+    "candidate_claims",
+    "adapter_receipts",
+    "unmapped_observations",
+    "warnings",
+    "adapter_policy",
+    "aggregate_score_present",
+    "aggregate_verdict_present"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "required": [
+        "value",
+        "evaluation",
+        "source_layer",
+        "evidence_refs",
+        "explanation",
+        "does_not_establish"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "value": {"type": "string", "minLength": 1},
+        "evaluation": {"enum": ["OBSERVED", "SUPPORTED", "NOT_SUPPORTED", "UNKNOWN", "NOT_EVALUATED", "NOT_APPLICABLE"]},
+        "source_layer": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "explanation": {"type": "string", "minLength": 1},
+        "does_not_establish": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "required": ["candidate_id", "adapter_id", "observation_id", "claim"],
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {"type": "string", "minLength": 1},
+        "adapter_id": {"type": "string", "minLength": 1},
+        "observation_id": {"type": "string", "minLength": 1},
+        "claim": {"$ref": "#/$defs/dimension"}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "urn:uu-aap:evidence-adapter-result:0.1"},
+    "artifact": {
+      "type": "object",
+      "required": ["id", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "dimension_order": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "integrity"},
+        {"const": "identity"},
+        {"const": "provenance"},
+        {"const": "availability"},
+        {"const": "authority"},
+        {"const": "responsibility"},
+        {"const": "truth"}
+      ],
+      "items": false,
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "evidence_items": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "source_layer", "summary", "payload"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "source_layer": {"type": "string", "minLength": 1},
+          "summary": {"type": "string", "minLength": 1},
+          "payload": {"type": "object"}
+        }
+      }
+    },
+    "candidate_claims": {
+      "type": "object",
+      "required": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"],
+      "additionalProperties": false,
+      "properties": {
+        "integrity": {"type": "array", "items": {"$ref": "#/$defs/candidate"}},
+        "identity": {"type": "array", "items": {"$ref": "#/$defs/candidate"}},
+        "provenance": {"type": "array", "items": {"$ref": "#/$defs/candidate"}},
+        "availability": {"type": "array", "items": {"$ref": "#/$defs/candidate"}},
+        "authority": {"type": "array", "items": {"$ref": "#/$defs/candidate"}},
+        "responsibility": {"type": "array", "items": {"$ref": "#/$defs/candidate"}},
+        "truth": {"type": "array", "items": {"$ref": "#/$defs/candidate"}}
+      }
+    },
+    "adapter_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["adapter_id", "observation_id", "allowed_dimension", "status", "loss_notes"],
+        "additionalProperties": false,
+        "properties": {
+          "adapter_id": {"type": "string", "minLength": 1},
+          "observation_id": {"type": "string", "minLength": 1},
+          "allowed_dimension": {"type": ["string", "null"]},
+          "status": {"enum": ["CANDIDATE_EMITTED", "NO_CANDIDATE", "UNMAPPED"]},
+          "loss_notes": {"type": "array", "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "unmapped_observations": {"type": "array", "items": {"type": "string", "minLength": 1}},
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "code": {"type": "string", "minLength": 1},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "adapter_policy": {
+      "type": "object",
+      "required": [
+        "candidate_claims_require_explicit_acceptance",
+        "auto_acceptance_permitted",
+        "cross_dimension_promotion_permitted",
+        "truth_promotion_permitted",
+        "aggregate_score_permitted",
+        "aggregate_verdict_permitted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "candidate_claims_require_explicit_acceptance": {"const": true},
+        "auto_acceptance_permitted": {"const": false},
+        "cross_dimension_promotion_permitted": {"const": false},
+        "truth_promotion_permitted": {"const": false},
+        "aggregate_score_permitted": {"const": false},
+        "aggregate_verdict_permitted": {"const": false}
+      }
+    },
+    "aggregate_score_present": {"const": false},
+    "aggregate_verdict_present": {"const": false}
+  }
+}
