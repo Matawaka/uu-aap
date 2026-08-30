@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UU-AAP Layered Verifier Reference</title>
+</head>
+<body>
+  <header>
+    <h1>Layered Verifier Reference</h1>
+    <p>Seven independent evidence dimensions. No aggregate trust or truth verdict is produced.</p>
+    <p>Artifact: <code>urn:uu-aap:verifier-example:p11:001</code></p>
+  </header>
+  <main>
+    <section data-dimension="integrity" aria-labelledby="dimension-integrity">
+      <h2 id="dimension-integrity">Integrity</h2>
+      <dl>
+        <dt>Value</dt><dd>VALID</dd>
+        <dt>Evaluation</dt><dd>SUPPORTED</dd>
+        <dt>Source layer</dt><dd>C2PA/P0.7</dd>
+      </dl>
+      <p>The synthetic reference includes valid integrity evidence.</p>
+      <h3>Evidence references</h3>
+      <ul><li>p0.7:trusted-repository-receipt-verified-true:integrity</li></ul>
+      <h3>Does not establish</h3>
+      <ul><li>identity</li><li>provenance completeness</li><li>historical availability</li><li>authority</li><li>responsibility</li><li>factual truth</li></ul>
+    </section>
+    <section data-dimension="identity" aria-labelledby="dimension-identity">
+      <h2 id="dimension-identity">Identity</h2>
+      <dl>
+        <dt>Value</dt><dd>NOT_EVALUATED</dd>
+        <dt>Evaluation</dt><dd>NOT_EVALUATED</dd>
+        <dt>Source layer</dt><dd>none</dd>
+      </dl>
+      <p>No identity attestation is supplied to this presentation example.</p>
+      <h3>Evidence references</h3>
+      <ul><li>None supplied</li></ul>
+      <h3>Does not establish</h3>
+      <ul><li>anonymity</li><li>untrustworthiness</li><li>authorship</li><li>authority</li><li>responsibility</li></ul>
+    </section>
+    <section data-dimension="provenance" aria-labelledby="dimension-provenance">
+      <h2 id="dimension-provenance">Provenance</h2>
+      <dl>
+        <dt>Value</dt><dd>CREDENTIALS_PRESENT</dd>
+        <dt>Evaluation</dt><dd>SUPPORTED</dd>
+        <dt>Source layer</dt><dd>C2PA/P0.4</dd>
+      </dl>
+      <p>The layered composition models readable C2PA Content Credentials.</p>
+      <h3>Evidence references</h3>
+      <ul><li>p0.4:c2pa_layer:expected_runtime_contract</li></ul>
+      <h3>Does not establish</h3>
+      <ul><li>factual truth</li><li>historical availability</li><li>consideration</li><li>publication authority</li><li>responsibility</li></ul>
+    </section>
+    <section data-dimension="availability" aria-labelledby="dimension-availability">
+      <h2 id="dimension-availability">Availability</h2>
+      <dl>
+        <dt>Value</dt><dd>UNAVAILABLE_BEFORE_CUTOFF</dd>
+        <dt>Evaluation</dt><dd>SUPPORTED</dd>
+        <dt>Source layer</dt><dd>PoAI/P0.8</dd>
+      </dl>
+      <p>Present-day resolution does not backfill pre-cutoff delivery.</p>
+      <h3>Evidence references</h3>
+      <ul><li>p0.8:resolver-pre-cutoff-1</li><li>p0.8:resolver-current-1</li></ul>
+      <h3>Does not establish</h3>
+      <ul><li>consideration</li><li>authority</li><li>responsibility</li><li>truth</li></ul>
+    </section>
+    <section data-dimension="authority" aria-labelledby="dimension-authority">
+      <h2 id="dimension-authority">Authority</h2>
+      <dl>
+        <dt>Value</dt><dd>HUMAN_PUBLICATION_AUTHORITY</dd>
+        <dt>Evaluation</dt><dd>SUPPORTED</dd>
+        <dt>Source layer</dt><dd>UU-AAP/P0.4</dd>
+      </dl>
+      <p>The synthetic editor holds the publication decision scope; the agent may recommend only.</p>
+      <h3>Evidence references</h3>
+      <ul><li>p0.4:uuaap_layer:publication_authority</li></ul>
+      <h3>Does not establish</h3>
+      <ul><li>artifact integrity</li><li>identity proof</li><li>factual truth</li><li>consideration of late evidence</li></ul>
+    </section>
+    <section data-dimension="responsibility" aria-labelledby="dimension-responsibility">
+      <h2 id="dimension-responsibility">Responsibility</h2>
+      <dl>
+        <dt>Value</dt><dd>SCOPED_RESPONSIBILITY_PRESENT</dd>
+        <dt>Evaluation</dt><dd>SUPPORTED</dd>
+        <dt>Source layer</dt><dd>UU-AAP/P0.4</dd>
+      </dl>
+      <p>Responsibility is explicitly scoped to the publication decision.</p>
+      <h3>Evidence references</h3>
+      <ul><li>p0.4:uuaap_layer:scoped_responsibility</li></ul>
+      <h3>Does not establish</h3>
+      <ul><li>factual truth</li><li>authorship of every artifact ingredient</li><li>identity beyond supplied evidence</li></ul>
+    </section>
+    <section data-dimension="truth" aria-labelledby="dimension-truth">
+      <h2 id="dimension-truth">Truth</h2>
+      <dl>
+        <dt>Value</dt><dd>NOT_ESTABLISHED</dd>
+        <dt>Evaluation</dt><dd>SUPPORTED</dd>
+        <dt>Source layer</dt><dd>epistemic/P0.4+P0.7</dd>
+      </dl>
+      <p>Provenance, integrity and governance evidence do not establish factual truth.</p>
+      <h3>Evidence references</h3>
+      <ul><li>p0.4:uuaap_layer:uncertainty:factual_truth</li><li>p0.7:I6_INTEGRITY_NOT_TRUTH</li></ul>
+      <h3>Does not establish</h3>
+      <ul><li>falsehood</li><li>misconduct</li><li>invalid provenance</li><li>lack of authority</li></ul>
+    </section>
+    <section aria-labelledby="related-observations">
+      <h2 id="related-observations">Related observations</h2>
+      <p>Consideration: <strong>NOT_USED</strong></p>
+    </section>
+    <section aria-labelledby="warnings">
+      <h2 id="warnings">Warnings</h2>
+      <ul><li><strong>IDENTITY_NOT_EVALUATED</strong>: No identity attestation was evaluated; do not infer anonymity or untrustworthiness.</li><li><strong>LATE_PROVENANCE_NOT_HISTORICAL_AVAILABILITY</strong>: Current provenance resolution must not be shown as pre-cutoff evidence availability.</li></ul>
+    </section>
+    <section aria-labelledby="disputes">
+      <h2 id="disputes">Disputes</h2>
+      <ul><li>None recorded</li></ul>
+    </section>
+  </main>
+  <footer>
+    <p>Reference presentation only; each dimension retains its own evidence and non-effects.</p>
+  </footer>
+</body>
+</html>
