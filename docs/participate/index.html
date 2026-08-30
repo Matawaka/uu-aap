@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Start participating in UU-AAP and Proof of Available Intelligence in about five minutes: review, discuss, test, or read.">
+  <title>Participate — UU-AAP / PoAI</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #f7f7f5;
+      --card: #ffffff;
+      --text: #1f2328;
+      --muted: #59636e;
+      --line: #d0d7de;
+      --accent: #0969da;
+      --soft: #eef5ff;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --card: #161b22;
+        --text: #f0f6fc;
+        --muted: #9da7b3;
+        --line: #30363d;
+        --accent: #58a6ff;
+        --soft: #111d2f;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    a { color: var(--accent); }
+    a:focus-visible, .action:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    .wrap { width: min(960px, calc(100% - 32px)); margin: 0 auto; }
+    header { padding: 72px 0 36px; }
+    .eyebrow { margin: 0 0 10px; color: var(--muted); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; font-size: .82rem; }
+    h1 { margin: 0; font-size: clamp(2.2rem, 7vw, 4.6rem); line-height: 1.02; letter-spacing: -.035em; }
+    .lede { max-width: 760px; margin: 22px 0 0; font-size: 1.18rem; color: var(--muted); }
+    .boundary { margin: 28px 0 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--soft); }
+    main { padding-bottom: 72px; }
+    h2 { margin: 42px 0 16px; font-size: 1.65rem; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .card { display: flex; flex-direction: column; min-height: 210px; padding: 22px; border: 1px solid var(--line); border-radius: 16px; background: var(--card); }
+    .card h3 { margin: 0 0 8px; font-size: 1.18rem; }
+    .card p { margin: 0 0 18px; color: var(--muted); }
+    .action { margin-top: auto; font-weight: 700; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+    .compact { margin-top: 16px; }
+    .links { display: grid; gap: 10px; padding: 0; list-style: none; }
+    .invariants { display: flex; flex-wrap: wrap; gap: 8px; }
+    code { padding: 3px 7px; border: 1px solid var(--line); border-radius: 999px; background: var(--card); font-size: .9rem; }
+    footer { border-top: 1px solid var(--line); padding: 24px 0 36px; color: var(--muted); font-size: .92rem; }
+    @media (max-width: 680px) { .grid { grid-template-columns: 1fr; } header { padding-top: 48px; } }
+  </style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="eyebrow">UU-AAP / Proof of Available Intelligence</p>
+    <h1>Participate in five minutes.</h1>
+    <p class="lede">You do not need to understand the whole repository. Choose one bounded action: challenge an assumption, test the public tool, join a design discussion, or read the canonical material.</p>
+    <p class="boundary"><strong>This is a non-normative navigation page.</strong> Participation is not endorsement. This page does not define protocol meaning, conformance, authority, canonical state, or release status.</p>
+  </header>
+
+  <main class="wrap">
+    <h2>Choose one action</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>Review without coding</h3>
+        <p>Find one concrete failure case. Privacy risks, unfair responsibility, ambiguous authority, excessive burden, and competing interpretations are useful.</p>
+        <a class="action" href="https://github.com/Matawaka/uu-aap/issues/422">Give one counterexample →</a>
+      </article>
+
+      <article class="card">
+        <h3>Test the public tool</h3>
+        <p>Run one expected-valid and one expected-invalid PoAI vector through the browser verifier and report what you actually observe.</p>
+        <a class="action" href="https://github.com/Matawaka/uu-aap/issues/775">Take the verifier smoke test →</a>
+      </article>
+
+      <article class="card">
+        <h3>Test the newcomer path</h3>
+        <p>Approach the repository without prior study and report the first confusing, dead-end, or unnecessarily expensive step.</p>
+        <a class="action" href="https://github.com/Matawaka/uu-aap/issues/774">Take the 5-minute onboarding test →</a>
+      </article>
+
+      <article class="card">
+        <h3>Build or pick another task</h3>
+        <p>Browse bounded newcomer and help-wanted issues. A useful contribution may be code, testing, documentation, interoperability work, or a reproducible defect.</p>
+        <a class="action" href="https://github.com/Matawaka/uu-aap/issues?q=is%3Aissue+state%3Aopen+label%3A%22good+first+issue%22">Browse good first issues →</a>
+      </article>
+    </div>
+
+    <h2>Discuss instead</h2>
+    <ul class="links">
+      <li><a href="https://github.com/Matawaka/uu-aap/discussions/8">UU-AAP — broad design, countermodels, and authorship governance</a></li>
+      <li><a href="https://github.com/Matawaka/uu-aap/discussions/10">PoAI — Proof of Available Intelligence Genesis discussion</a></li>
+      <li><a href="https://github.com/Matawaka/uu-aap/issues/1">UU-AAP v0.1 public RFC</a></li>
+    </ul>
+
+    <h2>Read first</h2>
+    <ul class="links">
+      <li><a href="https://github.com/Matawaka/uu-aap/blob/main/START-HERE.md">Start Here — repository participation guide</a></li>
+      <li><a href="https://github.com/Matawaka/uu-aap/blob/main/PRINCIPLES.md">UU-AAP principles</a></li>
+      <li><a href="https://github.com/Matawaka/uu-aap/blob/main/SPEC.md">UU-AAP normative public draft</a></li>
+      <li><a href="https://github.com/Matawaka/uu-aap/blob/main/proposals/poai/README.md">PoAI Quick Start</a></li>
+      <li><a href="https://github.com/Matawaka/uu-aap/blob/main/docs/CANONICAL-STATE.md">Canonical repository state and provenance boundaries</a></li>
+      <li><a href="https://matawaka.github.io/uu-aap/poai/">PoAI Level 3.1 Web Verifier &amp; Record Builder</a></li>
+    </ul>
+
+    <h2>Boundaries</h2>
+    <div class="invariants" aria-label="Participation boundaries">
+      <code>participation != endorsement</code>
+      <code>comment != authority</code>
+      <code>issue label != protocol status</code>
+      <code>browser validation != certification</code>
+      <code>Pages != canonical specification</code>
+    </div>
+  </main>
+
+  <footer>
+    <div class="wrap">Canonical project records remain in <a href="https://github.com/Matawaka/uu-aap">Matawaka/uu-aap</a>. This participation surface may change without changing protocol semantics.</div>
+  </footer>
+</body>
+</html>
