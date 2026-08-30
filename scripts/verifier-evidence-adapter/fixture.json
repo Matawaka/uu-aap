@@ -1,0 +1,83 @@
+{
+  "schema": "urn:uu-aap:evidence-adapter-input:0.1",
+  "artifact": {
+    "id": "urn:uu-aap:verifier-example:p14:001",
+    "description": "Synthetic P0.4-derived multi-layer observation set for bounded adapter testing."
+  },
+  "observations": [
+    {
+      "id": "obs-c2pa-1",
+      "adapter_id": "c2pa.provenance.v0.1",
+      "source_layer": "C2PA",
+      "summary": "P0.4-style C2PA MCP observation reports readable Content Credentials and manifest data.",
+      "loss_notes": [],
+      "payload": {
+        "success": true,
+        "hasCredentials": true,
+        "manifestData_present": true,
+        "provider": "contentauth/c2pa-mcp",
+        "pinned_release": "v0.2.2",
+        "verified": true,
+        "trust_score": 0.99,
+        "signer_label": "Example signer"
+      }
+    },
+    {
+      "id": "obs-poai-1",
+      "adapter_id": "poai.availability.v0.1",
+      "source_layer": "PoAI",
+      "summary": "P0.4-style PoAI observation marks the provenance evidence unavailable before the historical cutoff.",
+      "loss_notes": [],
+      "payload": {
+        "overall_status": "unavailable",
+        "reason": "Credential evidence was delivered after the knowledge cutoff and was not decision-time available.",
+        "verified_true": true,
+        "current_reachable": true
+      }
+    },
+    {
+      "id": "obs-authority-1",
+      "adapter_id": "uuaap.authority.v0.1",
+      "source_layer": "UU-AAP",
+      "summary": "P0.4-style UU-AAP authority observation for the synthetic editor.",
+      "loss_notes": [],
+      "payload": {
+        "actor_id": "editor-1",
+        "actor_type": "human",
+        "scopes": [
+          "decide",
+          "approve"
+        ],
+        "status": "accepted",
+        "action_label": "approved",
+        "verified": true
+      }
+    },
+    {
+      "id": "obs-responsibility-1",
+      "adapter_id": "uuaap.responsibility.v0.1",
+      "source_layer": "UU-AAP",
+      "summary": "P0.4-style scoped responsibility observation for the publication decision.",
+      "loss_notes": [],
+      "payload": {
+        "actor_id": "editor-1",
+        "scope": "publication_decision",
+        "status": "accepted",
+        "trust_score": 1.0
+      }
+    },
+    {
+      "id": "obs-unknown-1",
+      "adapter_id": "example.unknown.v9",
+      "source_layer": "External",
+      "summary": "Unknown external observation retained as evidence without semantic promotion.",
+      "loss_notes": [
+        "No registered adapter exists for this input shape."
+      ],
+      "payload": {
+        "verified_true": true,
+        "overall_verdict": "verified"
+      }
+    }
+  ]
+}
