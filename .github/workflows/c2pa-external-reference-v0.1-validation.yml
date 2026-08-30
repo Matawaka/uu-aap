@@ -1,0 +1,105 @@
+name: C2PA External Reference v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-external-reference/**'
+      - 'scripts/c2pa-semantic-boundary/check-live-report.js'
+      - '.github/workflows/c2pa-external-reference-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-external-reference/**'
+      - 'scripts/c2pa-semantic-boundary/check-live-report.js'
+      - '.github/workflows/c2pa-external-reference-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node --check scripts/c2pa-external-reference/build-config.js
+      - run: node --check scripts/c2pa-external-reference/verify-reference.js
+      - name: Build deterministic external-reference manifest definition
+        run: >-
+          node scripts/c2pa-external-reference/build-config.js
+          scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json
+          /tmp/c2pa-external-reference-manifest.json
+      - run: test -s /tmp/c2pa-external-reference-manifest.json
+      - run: test -z "$(git status --porcelain)"
+
+  live-c2pa-external-reference:
+    runs-on: ubuntu-latest
+    env:
+      C2PATOOL_VERSION: '0.27.16'
+      C2PATOOL_ARCHIVE_SHA256: '62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663'
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Fetch pinned c2patool binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v${C2PATOOL_VERSION}/c2patool-v${C2PATOOL_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --silent --show-error "$url" --output /tmp/c2patool.tar.gz
+          echo "${C2PATOOL_ARCHIVE_SHA256}  /tmp/c2patool.tar.gz" | sha256sum --check --strict
+          mkdir -p /tmp/c2patool
+          tar -xzf /tmp/c2patool.tar.gz -C /tmp/c2patool
+          bin="$(find /tmp/c2patool -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+      - name: Create deterministic source asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 --decode > /tmp/source.png
+          test -s /tmp/source.png
+      - name: Build hashed external-reference manifest definition
+        run: >-
+          node scripts/c2pa-external-reference/build-config.js
+          scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json
+          /tmp/manifest.json
+      - name: Sign asset with standard c2pa.external-reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/source.png \
+            --manifest /tmp/manifest.json \
+            --create digitalCapture \
+            --output /tmp/c2pa-external-reference.png \
+            --force \
+            > /tmp/sign-report.json
+          test -s /tmp/c2pa-external-reference.png
+      - name: Re-read and validate bound asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/c2pa-external-reference.png > /tmp/read-report.json
+          test -s /tmp/read-report.json
+      - name: Resolve exact external record and verify digest
+        run: >-
+          node scripts/c2pa-external-reference/verify-reference.js
+          /tmp/read-report.json
+          scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json
+      - name: Tampered external record must fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json /tmp/tampered-record.json
+          printf ' ' >> /tmp/tampered-record.json
+          if node scripts/c2pa-external-reference/verify-reference.js /tmp/read-report.json /tmp/tampered-record.json; then
+            echo 'tampered record unexpectedly matched bound digest' >&2
+            exit 1
+          fi
+          echo 'tampered external record rejected as expected'
+      - run: test -z "$(git status --porcelain)"
