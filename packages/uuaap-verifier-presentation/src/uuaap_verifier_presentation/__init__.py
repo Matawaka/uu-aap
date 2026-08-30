@@ -1,5 +1,14 @@
 """Reusable UU-AAP layered verifier presentation API."""
 
+from .acceptance import (
+    ACCEPTANCE_INPUT_SCHEMA,
+    ACCEPTANCE_RESULT_SCHEMA,
+    ACCEPTANCE_SCOPE,
+    build_acceptance_input,
+    materialize_candidate_acceptance,
+    validate_acceptance_input,
+    validate_acceptance_result,
+)
 from .adapters import (
     ADAPTER_INPUT_SCHEMA,
     ADAPTER_REGISTRY,
@@ -26,6 +35,9 @@ from .interactive import (
 )
 
 __all__ = [
+    "ACCEPTANCE_INPUT_SCHEMA",
+    "ACCEPTANCE_RESULT_SCHEMA",
+    "ACCEPTANCE_SCOPE",
     "ADAPTER_INPUT_SCHEMA",
     "ADAPTER_REGISTRY",
     "ADAPTER_RESULT_SCHEMA",
@@ -34,10 +46,14 @@ __all__ = [
     "INTERACTIVE_INPUT_SCHEMA",
     "INTERACTIVE_RESULT_SCHEMA",
     "adapt_evidence",
+    "build_acceptance_input",
     "build_presentation",
     "load_json",
+    "materialize_candidate_acceptance",
     "normalize_interactive_input",
     "render",
+    "validate_acceptance_input",
+    "validate_acceptance_result",
     "validate_adapter_input",
     "validate_adapter_result",
     "validate_fixture",
