@@ -17,12 +17,14 @@ It is designed around a simple distinction:
 
 ## Start here / participate in 5 minutes
 
-New to the project? Start with [`START-HERE.md`](START-HERE.md).
+New to the project? Start with [`START-HERE.md`](START-HERE.md) or the [web participation landing](https://matawaka.github.io/uu-aap/participate/).
 
 - **Review without coding:** [Issue #422](https://github.com/Matawaka/uu-aap/issues/422) — one concrete counterexample is enough.
+- **Test the newcomer path:** [Issue #774](https://github.com/Matawaka/uu-aap/issues/774).
+- **Smoke-test the public PoAI verifier:** [Issue #775](https://github.com/Matawaka/uu-aap/issues/775).
 - **Discuss UU-AAP:** [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8).
 - **Discuss PoAI:** [Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10).
-- **Build or test:** browse [`good first issue`](https://github.com/Matawaka/uu-aap/issues?q=is%3Aissue+state%3Aopen+label%3A%22good+first+issue%22) and [`help wanted`](https://github.com/Matawaka/uu-aap/issues?q=is%3Aissue+state%3Aopen+label%3A%22help+wanted%22).
+- **Build or test something else:** browse [`good first issue`](https://github.com/Matawaka/uu-aap/issues?q=is%3Aissue+state%3Aopen+label%3A%22good+first+issue%22) and [`help wanted`](https://github.com/Matawaka/uu-aap/issues?q=is%3Aissue+state%3Aopen+label%3A%22help+wanted%22).
 
 Participation is not endorsement. These entry points do not change protocol authority, conformance, canonical state, or release status.
 

@@ -1,6 +1,6 @@
 # GitHub Pages Participation Landing Architecture v0.1
 
-**Status:** non-normative participation-surface architecture  
+**Status:** implemented non-normative participation surface  
 **Scope:** GitHub navigation and onboarding only
 
 ## Purpose
@@ -17,19 +17,32 @@ Create a low-friction path from project discovery to one bounded action without 
 | Pages `/poai/` | existing PoAI verifier | existing role unchanged |
 | Issues / Discussions | review, discussion, implementation entry | no protocol authority |
 
+## Pages source binding
+
+The active Pages deployment path is now repository-verifiable in `.github/workflows/poai-pages.yml`:
+
+- the workflow checks out `main`;
+- `actions/upload-pages-artifact@v4` uploads the full `docs/` directory;
+- `actions/deploy-pages@v4` deploys that artifact;
+- pushes to `main` affecting `docs/**` trigger the deployment.
+
+Therefore the participation route is implemented additively as `docs/participate/index.html`, which maps to `/uu-aap/participate/` while leaving `docs/poai/` and `/uu-aap/poai/` unchanged.
+
 ## Pages landing content
 
-The future `/participate/` landing should contain only:
+The `/participate/` landing contains only:
 
 1. one-sentence project orientation;
 2. **review without coding** → Issue #422;
-3. UU-AAP discussion → Discussion #8;
-4. PoAI discussion → Discussion #10;
-5. `good first issue` / `help wanted` links;
-6. links back to canonical repository records;
-7. an explicit non-normative boundary.
+3. newcomer-path smoke test → Issue #774;
+4. PoAI Web Verifier smoke test → Issue #775;
+5. UU-AAP discussion → Discussion #8;
+6. PoAI discussion → Discussion #10;
+7. `good first issue` links;
+8. links back to canonical repository records;
+9. an explicit non-normative boundary.
 
-It should not duplicate `SPEC.md` or protocol semantics.
+It does not duplicate `SPEC.md` or protocol semantics.
 
 ## Non-interference boundary
 
@@ -63,6 +76,6 @@ Pages may fail, move, or be redesigned without changing:
 
 ## Deployment rule
 
-A live `/participate/` route may be added only as an additive route once the active Pages source is identified with sufficient confidence. It must not replace, rewrite, or alter `/poai/`.
+`/participate/` remains an additive sibling route under the same `docs/` Pages artifact. Changes to it must not replace, rewrite, or alter `/poai/`.
 
-The current v0.1 implementation therefore records the landing architecture but deliberately leaves the existing live Pages deployment unchanged.
+A successful Pages deployment proves only that the static participation surface was published. It does not create external review evidence, protocol approval, release authority, or certification.
