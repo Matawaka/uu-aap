@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:layered-verifier-presentation-schema:0.1",
+  "title": "Layered Verifier Presentation Contract v0.1",
+  "type": "object",
+  "required": [
+    "schema",
+    "issue",
+    "artifact",
+    "dimension_order",
+    "dimensions",
+    "related_observations",
+    "warnings",
+    "disputes",
+    "source_bindings",
+    "presentation_policy",
+    "aggregate_score_present",
+    "aggregate_verdict_present"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "required": [
+        "value",
+        "evaluation",
+        "source_layer",
+        "evidence_refs",
+        "explanation",
+        "does_not_establish"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "value": {"type": "string", "minLength": 1},
+        "evaluation": {
+          "enum": [
+            "OBSERVED",
+            "SUPPORTED",
+            "NOT_SUPPORTED",
+            "UNKNOWN",
+            "NOT_EVALUATED",
+            "NOT_APPLICABLE"
+          ]
+        },
+        "source_layer": {"type": "string", "minLength": 1},
+        "evidence_refs": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "explanation": {"type": "string", "minLength": 1},
+        "does_not_establish": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "urn:uu-aap:layered-verifier-presentation:0.1"},
+    "issue": {"const": 796},
+    "artifact": {
+      "type": "object",
+      "required": ["id", "scenario_kind", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "scenario_kind": {"const": "synthetic_cross_surface_reference"},
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "dimension_order": {
+      "type": "array",
+      "prefixItems": [
+        {"const": "integrity"},
+        {"const": "identity"},
+        {"const": "provenance"},
+        {"const": "availability"},
+        {"const": "authority"},
+        {"const": "responsibility"},
+        {"const": "truth"}
+      ],
+      "items": false,
+      "minItems": 7,
+      "maxItems": 7
+    },
+    "dimensions": {
+      "type": "object",
+      "required": [
+        "integrity",
+        "identity",
+        "provenance",
+        "availability",
+        "authority",
+        "responsibility",
+        "truth"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "integrity": {"$ref": "#/$defs/dimension"},
+        "identity": {"$ref": "#/$defs/dimension"},
+        "provenance": {"$ref": "#/$defs/dimension"},
+        "availability": {"$ref": "#/$defs/dimension"},
+        "authority": {"$ref": "#/$defs/dimension"},
+        "responsibility": {"$ref": "#/$defs/dimension"},
+        "truth": {"$ref": "#/$defs/dimension"}
+      }
+    },
+    "related_observations": {"type": "object"},
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["code", "message"],
+        "additionalProperties": false,
+        "properties": {
+          "code": {"type": "string", "minLength": 1},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "disputes": {"type": "array", "items": {"type": "object"}},
+    "source_bindings": {"type": "object", "minProperties": 1},
+    "presentation_policy": {
+      "type": "object",
+      "required": [
+        "color_only_semantics_permitted",
+        "umbrella_verified_badge_permitted",
+        "cross_dimension_promotion_permitted",
+        "aggregate_score_permitted",
+        "aggregate_verdict_permitted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "color_only_semantics_permitted": {"const": false},
+        "umbrella_verified_badge_permitted": {"const": false},
+        "cross_dimension_promotion_permitted": {"const": false},
+        "aggregate_score_permitted": {"const": false},
+        "aggregate_verdict_permitted": {"const": false}
+      }
+    },
+    "aggregate_score_present": {"const": false},
+    "aggregate_verdict_present": {"const": false}
+  }
+}
