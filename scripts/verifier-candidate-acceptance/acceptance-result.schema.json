@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:candidate-acceptance-result-schema:0.1",
+  "title": "UU-AAP Candidate Acceptance Result v0.1",
+  "type": "object",
+  "required": [
+    "schema",
+    "artifact",
+    "adapter_result",
+    "acceptance_event",
+    "accepted_candidate_ids",
+    "rejected_candidate_ids",
+    "deferred_candidate_ids",
+    "materialized_interactive_input",
+    "acceptance_policy",
+    "aggregate_score_present",
+    "aggregate_verdict_present"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema": {"const": "urn:uu-aap:candidate-acceptance-result:0.1"},
+    "artifact": {
+      "type": "object",
+      "required": ["id", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "adapter_result": {"type": "object"},
+    "acceptance_event": {
+      "type": "object",
+      "required": ["id", "actor_ref", "scope", "dispositions"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "actor_ref": {"type": "string", "minLength": 1},
+        "scope": {"const": "verifier_candidate_materialization"},
+        "dispositions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["candidate_id", "decision", "rationale"],
+            "additionalProperties": false,
+            "properties": {
+              "candidate_id": {"type": "string", "minLength": 1},
+              "decision": {"enum": ["ACCEPT", "REJECT", "DEFER"]},
+              "rationale": {"type": "string", "minLength": 1}
+            }
+          }
+        }
+      }
+    },
+    "accepted_candidate_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "rejected_candidate_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "deferred_candidate_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "materialized_interactive_input": {"type": "object"},
+    "acceptance_policy": {
+      "type": "object",
+      "required": [
+        "all_candidates_require_explicit_disposition",
+        "single_accept_per_dimension_required",
+        "actor_ref_establishes_identity",
+        "actor_ref_establishes_authority",
+        "acceptance_strengthens_claim_semantics",
+        "auto_acceptance_permitted",
+        "cross_dimension_promotion_permitted",
+        "truth_promotion_permitted",
+        "aggregate_score_permitted",
+        "aggregate_verdict_permitted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "all_candidates_require_explicit_disposition": {"const": true},
+        "single_accept_per_dimension_required": {"const": true},
+        "actor_ref_establishes_identity": {"const": false},
+        "actor_ref_establishes_authority": {"const": false},
+        "acceptance_strengthens_claim_semantics": {"const": false},
+        "auto_acceptance_permitted": {"const": false},
+        "cross_dimension_promotion_permitted": {"const": false},
+        "truth_promotion_permitted": {"const": false},
+        "aggregate_score_permitted": {"const": false},
+        "aggregate_verdict_permitted": {"const": false}
+      }
+    },
+    "aggregate_score_present": {"const": false},
+    "aggregate_verdict_present": {"const": false}
+  }
+}

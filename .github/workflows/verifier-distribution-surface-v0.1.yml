@@ -8,10 +8,12 @@ on:
       - 'scripts/verifier-distribution-surface/**'
       - 'scripts/verifier-interactive-surface/**'
       - 'scripts/verifier-evidence-adapter/**'
+      - 'scripts/verifier-candidate-acceptance/**'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
       - '.github/workflows/verifier-interactive-surface-v0.1.yml'
       - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
+      - '.github/workflows/verifier-candidate-acceptance-v0.1.yml'
   push:
     branches: [main]
     paths:
@@ -20,10 +22,12 @@ on:
       - 'scripts/verifier-distribution-surface/**'
       - 'scripts/verifier-interactive-surface/**'
       - 'scripts/verifier-evidence-adapter/**'
+      - 'scripts/verifier-candidate-acceptance/**'
       - '.github/workflows/verifier-presentation-contract-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
       - '.github/workflows/verifier-interactive-surface-v0.1.yml'
       - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
+      - '.github/workflows/verifier-candidate-acceptance-v0.1.yml'
   workflow_dispatch:
 
 permissions:
@@ -73,6 +77,9 @@ jobs:
           assert callable(verifier.validate_adapter_input)
           assert callable(verifier.adapt_evidence)
           assert callable(verifier.validate_adapter_result)
+          assert callable(verifier.build_acceptance_input)
+          assert callable(verifier.materialize_candidate_acceptance)
+          assert callable(verifier.validate_acceptance_result)
           print('installed reusable verifier package: PASS')
           PY
       - name: Syntax check distribution implementation
@@ -84,6 +91,7 @@ jobs:
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/core.py'),
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/interactive.py'),
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py'),
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/acceptance.py'),
               Path('scripts/verifier-presentation-contract/build.py'),
               Path('scripts/verifier-presentation-contract/render.py'),
               Path('scripts/verifier-distribution-surface/build_site.py'),
@@ -92,6 +100,8 @@ jobs:
               Path('scripts/verifier-interactive-surface/test.py'),
               Path('scripts/verifier-evidence-adapter/build_adapter_site.py'),
               Path('scripts/verifier-evidence-adapter/test.py'),
+              Path('scripts/verifier-candidate-acceptance/build_acceptance_site.py'),
+              Path('scripts/verifier-candidate-acceptance/test.py'),
           ]:
               ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
               print(f'PASS syntax: {path}')
@@ -100,6 +110,8 @@ jobs:
           node --check scripts/verifier-interactive-surface/test-browser.js
           node --check scripts/verifier-evidence-adapter/app.js
           node --check scripts/verifier-evidence-adapter/test-browser.js
+          node --check scripts/verifier-candidate-acceptance/app.js
+          node --check scripts/verifier-candidate-acceptance/test-browser.js
       - name: Re-run P1.1 semantic firewall unchanged
         run: python scripts/verifier-presentation-contract/test.py
       - name: Prove package, legacy CLI and Pages equivalence
@@ -157,23 +169,46 @@ jobs:
             echo 'ERROR: adapter HTML introduced an external network target' >&2
             exit 1
           fi
+      - name: Prove P1.5 canonical and browser acceptance equivalence
+        run: python scripts/verifier-candidate-acceptance/test.py
+      - name: Augment validated artifact with local P1.5 candidate acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verifier-candidate-acceptance/build_acceptance_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/accept/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/accept/app.js"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/accept/example.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/accept/example-result.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/accept/materialized-input.json"
+          grep -q 'href="verifier/accept/"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/accept/index.html"; then
+            echo 'ERROR: acceptance HTML introduced an external network target' >&2
+            exit 1
+          fi
           python - <<'PY'
           import json, os
           from pathlib import Path
-          root=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/adapt'
+          from uuaap_verifier_presentation import validate_interactive_input
+          root=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/accept'
           result=json.loads((root/'example-result.json').read_text(encoding='utf-8'))
-          assert result['candidate_claims']['integrity'] == []
-          assert result['candidate_claims']['identity'] == []
-          assert len(result['candidate_claims']['provenance']) == 1
-          assert len(result['candidate_claims']['availability']) == 1
-          assert len(result['candidate_claims']['authority']) == 1
-          assert len(result['candidate_claims']['responsibility']) == 1
-          assert result['candidate_claims']['truth'] == []
-          assert result['adapter_policy']['candidate_claims_require_explicit_acceptance'] is True
-          assert result['adapter_policy']['auto_acceptance_permitted'] is False
+          materialized=json.loads((root/'materialized-input.json').read_text(encoding='utf-8'))
+          assert result['materialized_interactive_input'] == materialized
+          validate_interactive_input(materialized)
+          assert materialized['dimension_claims']['integrity']['value'] == 'NOT_EVALUATED'
+          assert materialized['dimension_claims']['identity']['value'] == 'NOT_EVALUATED'
+          assert materialized['dimension_claims']['provenance']['value'] == 'CREDENTIALS_PRESENT'
+          assert materialized['dimension_claims']['availability']['value'] == 'UNAVAILABLE_BEFORE_CUTOFF'
+          assert materialized['dimension_claims']['authority']['value'] == 'SCOPED_AUTHORITY_ACCEPTED'
+          assert materialized['dimension_claims']['responsibility']['value'] == 'SCOPED_RESPONSIBILITY_PRESENT'
+          assert materialized['dimension_claims']['truth']['value'] == 'NOT_EVALUATED'
+          assert result['acceptance_policy']['actor_ref_establishes_identity'] is False
+          assert result['acceptance_policy']['actor_ref_establishes_authority'] is False
+          assert result['acceptance_policy']['acceptance_strengthens_claim_semantics'] is False
           assert result['aggregate_score_present'] is False
           assert result['aggregate_verdict_present'] is False
-          print('P1.4 deployed result shape: PASS')
+          print('P1.5 deployed result shape: PASS')
           PY
       - name: Confirm Core remains untouched
         shell: bash
@@ -195,7 +230,7 @@ jobs:
           path: ${{ runner.temp }}/uuaap-pages
 
   acceptance:
-    name: P1.2/P1.3/P1.4 one-source distribution acceptance
+    name: P1.2/P1.3/P1.4/P1.5 one-source distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -203,13 +238,13 @@ jobs:
           echo 'canonical package == legacy P1.1 CLI == immutable reference verifier'
           echo 'interactive input -> explicit seven-dimension claims only'
           echo 'external observation -> bounded adapter -> candidate claim only'
-          echo 'candidate claim != accepted verifier claim'
-          echo 'C2PA -> provenance only; PoAI -> availability only'
-          echo 'authority != responsibility; truth remains unpopulated'
+          echo 'candidate claim -> explicit ACCEPT | REJECT | DEFER -> materialized P1.3 input'
+          echo 'candidate claim != accepted claim; actor ref != identity != authority'
+          echo 'acceptance does not strengthen candidate semantics'
           echo 'browser input -> local only'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2 distribution + P1.3 interaction + P1.4 adapters'
+          echo 'PASS: P1.2 distribution + P1.3 interaction + P1.4 adapters + P1.5 acceptance'
 
   deploy:
     name: deploy validated verifier to GitHub Pages

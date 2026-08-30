@@ -1,0 +1,27 @@
+{
+  "id": "acceptance:p15:001",
+  "actor_ref": "local-reviewer-1",
+  "scope": "verifier_candidate_materialization",
+  "dispositions": [
+    {
+      "candidate_id": "candidate:obs-c2pa-1:provenance",
+      "decision": "ACCEPT",
+      "rationale": "Materialize the bounded provenance observation without promoting it into availability, authority, responsibility or truth."
+    },
+    {
+      "candidate_id": "candidate:obs-poai-1:availability",
+      "decision": "ACCEPT",
+      "rationale": "Materialize the explicit historical availability observation as its own dimension."
+    },
+    {
+      "candidate_id": "candidate:obs-authority-1:authority",
+      "decision": "ACCEPT",
+      "rationale": "Materialize the scoped authority candidate without treating this acceptance event as authority proof."
+    },
+    {
+      "candidate_id": "candidate:obs-responsibility-1:responsibility",
+      "decision": "ACCEPT",
+      "rationale": "Materialize the separately scoped responsibility candidate without inferring truth or authorship."
+    }
+  ]
+}
