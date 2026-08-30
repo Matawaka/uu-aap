@@ -7,7 +7,8 @@ Predecessor line:
 - #778 — CAI/C2PA interoperability roadmap and executable P0.1–P0.5 evidence;
 - #777 — superseded semantic-boundary draft;
 - #786 — merged evidence-informed C2PA 2.4 × UU-AAP semantic boundary;
-- canonical predecessor main: `f397ab9b8e46d5b082f62bee4c99615711cb3340`.
+- #788 — merged P0.6 ContentAuth WordPress publishing-governance composition;
+- canonical predecessor main: `175471dfb62643a7bfea333c2bb5d299c128e578`.
 
 This adapter does **not** modify UU-AAP Core and is not C2PA conformance, an OpenAI API implementation, an identity system, a trust score, or a proof of truth.
 
