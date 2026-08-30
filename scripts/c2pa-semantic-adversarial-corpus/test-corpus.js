@@ -31,12 +31,17 @@ expectReject('aggregate trust score injection', () => {
   validateCorpus(c, rubric);
 });
 
-expectReject('unsafe signer claim laundered by unrelated C2PA evidence', () => {
+{
   const c = structuredClone(corpus);
   c.cases[0].unsafe_fixture.evidence.push({ id: 'integrity', kind: 'c2pa.integrity', valid: true });
   c.cases[0].unsafe_fixture.claims[0].evidence_refs.push('integrity');
-  validateCorpus(c, rubric);
-});
+  const r = validateCorpus(c, rubric);
+  const signerCase = r.cases.find((item) => item.case_id === 'signer-display-author');
+  if (!signerCase || signerCase.unsafe_semantic_boundary_passed !== false || !signerCase.violated_rule_ids.includes('I1_SIGNER_NOT_GOVERNANCE')) {
+    throw new Error('unrelated C2PA integrity evidence laundered signer -> author claim');
+  }
+  console.log('PASS: unrelated C2PA evidence does not launder signer -> author claim');
+}
 
 expectReject('unsafe case made semantically safe while still labelled adversarial', () => {
   const c = structuredClone(corpus);
