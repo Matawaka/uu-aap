@@ -1,0 +1,14 @@
+{
+  "case_id": "live-c2pa-signer-not-author",
+  "description": "Consumer-layer overlay applied only after a real C2PA asset has been read and validated by the pinned c2patool workflow.",
+  "evidence": [
+    {"id": "live-signer", "kind": "c2pa.signer"}
+  ],
+  "claims": [
+    {"id": "unsafe-author-inference", "kind": "uu_aap.author", "value": "c2pa-signer", "evidence_refs": ["live-signer"]}
+  ],
+  "expected": {
+    "semantic_boundary_passed": false,
+    "rule_ids": ["I1_SIGNER_NOT_GOVERNANCE"]
+  }
+}

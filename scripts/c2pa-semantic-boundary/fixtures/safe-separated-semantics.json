@@ -1,0 +1,33 @@
+{
+  "case_id": "safe-layered-evidence",
+  "description": "C2PA evidence may remain present, but stronger UU-AAP/PoAI claims also carry explicit independent evidence of the required semantic class.",
+  "evidence": [
+    {"id": "e-signer", "kind": "c2pa.signer"},
+    {"id": "e-action", "kind": "c2pa.action"},
+    {"id": "e-ingredient", "kind": "c2pa.ingredient"},
+    {"id": "e-ai", "kind": "c2pa.ai_disclosure"},
+    {"id": "e-receipt", "kind": "c2pa.repository_receipt"},
+    {"id": "e-integrity", "kind": "c2pa.integrity"},
+    {"id": "e-provenance", "kind": "c2pa.artifact_provenance"},
+    {"id": "u-author", "kind": "uu_aap.authorship_attestation"},
+    {"id": "u-decision", "kind": "uu_aap.decision_trace"},
+    {"id": "u-concept", "kind": "uu_aap.concept_lineage_evidence"},
+    {"id": "u-authority", "kind": "uu_aap.authority_scope"},
+    {"id": "u-review", "kind": "uu_aap.review_attestation"},
+    {"id": "u-factual", "kind": "factual.review"},
+    {"id": "p-availability", "kind": "poai.availability_evidence"}
+  ],
+  "claims": [
+    {"id": "c-author", "kind": "uu_aap.author", "value": "human-1", "evidence_refs": ["e-signer", "u-author"]},
+    {"id": "c-decision", "kind": "uu_aap.decision", "value": "accept", "evidence_refs": ["e-action", "u-decision"]},
+    {"id": "c-concept", "kind": "uu_aap.concept_origin", "value": "co-developed", "evidence_refs": ["e-ingredient", "u-concept"]},
+    {"id": "c-authority", "kind": "uu_aap.authority", "value": "human-1", "evidence_refs": ["e-ai", "u-authority"]},
+    {"id": "c-review", "kind": "uu_aap.review_complete", "value": true, "evidence_refs": ["e-receipt", "u-review"]},
+    {"id": "c-truth", "kind": "epistemic.truth", "value": "reviewed-claim", "evidence_refs": ["e-integrity", "u-factual"]},
+    {"id": "c-availability", "kind": "poai.decision_time_availability", "value": true, "evidence_refs": ["e-provenance", "p-availability"]}
+  ],
+  "expected": {
+    "semantic_boundary_passed": true,
+    "rule_ids": []
+  }
+}

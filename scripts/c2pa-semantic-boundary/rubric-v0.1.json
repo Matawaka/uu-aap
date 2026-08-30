@@ -1,0 +1,80 @@
+{
+  "$schema": "urn:uu-aap:c2pa-semantic-boundary-rubric:0.1",
+  "name": "UU-AAP / C2PA Semantic Boundary Rubric v0.1",
+  "status": "application-semantics-only-not-c2pa-conformance",
+  "c2pa_baseline": "2.4",
+  "rules": [
+    {
+      "id": "I1_SIGNER_NOT_GOVERNANCE",
+      "description": "A C2PA signer must not be promoted into UU-AAP authorship, approval, authority, responsibility, or publication authorization without independent governance evidence.",
+      "prohibited_support_kinds": ["c2pa.signer"],
+      "targets": {
+        "uu_aap.author": ["uu_aap.authorship_attestation", "uu_aap.role_declaration"],
+        "uu_aap.approver": ["uu_aap.editorial_approval", "uu_aap.role_declaration"],
+        "uu_aap.authority": ["uu_aap.authority_scope"],
+        "uu_aap.responsible_actor": ["uu_aap.responsibility_scope"],
+        "uu_aap.publication_authorization": ["uu_aap.publication_authorization"]
+      },
+      "safe_interpretation": "Report signer identity/integrity separately from authorship, authority, responsibility and approval."
+    },
+    {
+      "id": "I2_ACTION_NOT_DECISION",
+      "description": "A C2PA action must not be promoted into a UU-AAP decision without independent decision provenance.",
+      "prohibited_support_kinds": ["c2pa.action"],
+      "targets": {
+        "uu_aap.decision": ["uu_aap.decision_trace", "uu_aap.decision_attestation"]
+      },
+      "safe_interpretation": "Treat the action as operation provenance that may support, but does not replace, a decision trace."
+    },
+    {
+      "id": "I3_INGREDIENT_NOT_CONCEPT_ORIGIN",
+      "description": "A C2PA ingredient must not be promoted into UU-AAP concept origin without intellectual-lineage evidence.",
+      "prohibited_support_kinds": ["c2pa.ingredient"],
+      "targets": {
+        "uu_aap.concept_origin": ["uu_aap.concept_origin", "uu_aap.concept_lineage_evidence"]
+      },
+      "safe_interpretation": "Preserve artifact genealogy and concept genealogy as separate relations."
+    },
+    {
+      "id": "I4_AI_DISCLOSURE_NOT_AUTHORITY",
+      "description": "C2PA AI disclosure or human-oversight metadata must not establish UU-AAP authorship, authority, responsibility, or publication authorization.",
+      "prohibited_support_kinds": ["c2pa.ai_disclosure"],
+      "targets": {
+        "uu_aap.author": ["uu_aap.authorship_attestation", "uu_aap.role_declaration"],
+        "uu_aap.authority": ["uu_aap.authority_scope"],
+        "uu_aap.responsible_actor": ["uu_aap.responsibility_scope"],
+        "uu_aap.publication_authorization": ["uu_aap.publication_authorization"]
+      },
+      "safe_interpretation": "Preserve AI disclosure as process evidence; require separate governance evidence for human authority and responsibility."
+    },
+    {
+      "id": "I5_RECEIPT_NOT_TRUTH_REVIEW_AUTHORIZATION",
+      "description": "A C2PA repository receipt must not establish truth, independent review, or publication authorization.",
+      "prohibited_support_kinds": ["c2pa.repository_receipt"],
+      "targets": {
+        "epistemic.truth": ["epistemic.verification", "factual.review"],
+        "uu_aap.review_complete": ["uu_aap.review_attestation"],
+        "uu_aap.publication_authorization": ["uu_aap.publication_authorization"]
+      },
+      "safe_interpretation": "Report durable repository presence separately from truth, review and authorization."
+    },
+    {
+      "id": "I6_INTEGRITY_NOT_TRUTH",
+      "description": "Cryptographic integrity must not be promoted into epistemic truth.",
+      "prohibited_support_kinds": ["c2pa.integrity"],
+      "targets": {
+        "epistemic.truth": ["epistemic.verification", "factual.review"]
+      },
+      "safe_interpretation": "A valid binding proves integrity of the bound assertion/artifact relation, not factual correctness."
+    },
+    {
+      "id": "I7_PROVENANCE_NOT_DECISION_TIME_AVAILABILITY",
+      "description": "Artifact existence or provenance must not establish PoAI decision-time availability without availability evidence tied to the decision boundary.",
+      "prohibited_support_kinds": ["c2pa.artifact_provenance", "c2pa.asset_existence"],
+      "targets": {
+        "poai.decision_time_availability": ["poai.availability_evidence", "poai.delivery_receipt", "poai.access_record"]
+      },
+      "safe_interpretation": "Evaluate discoverability, reachability, authorization, contextualization and delivery against the historical Decision Boundary / Knowledge Cutoff."
+    }
+  ]
+}
