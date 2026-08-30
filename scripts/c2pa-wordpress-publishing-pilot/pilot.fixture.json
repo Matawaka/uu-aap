@@ -1,0 +1,85 @@
+{
+  "schema": "urn:uu-aap:c2pa-wordpress-publishing-pilot:0.1",
+  "roadmap_issue": 778,
+  "roadmap_surface": "P0.6",
+  "predecessor": {
+    "main_sha": "f397ab9b8e46d5b082f62bee4c99615711cb3340",
+    "surface": "evidence-informed C2PA 2.4 semantic-boundary profile after P0.1-P0.5"
+  },
+  "status": "INTERFACE_ACCEPTANCE",
+  "p0_6_semantic_acceptance_complete": true,
+  "live_certificate_backed_deployment_claimed": false,
+  "c2pa_conformance_claimed_by_this_pilot": false,
+  "upstream": {
+    "repository": "contentauth/wp-plugin",
+    "sha": "4126f1c4b57d56862b1ca4667549e99ddd9de3fe",
+    "version": "0.1.0",
+    "blobs": {
+      "README.md": "1647fa4fbc7ce5296333a4d05a7eb3c917c6d143",
+      "signing-service/src/server.js": "dec734c629fb157f1bfafc591c51c2f30a9cb50b",
+      "signing-service/src/signer.js": "c5b85c1c78a6e17eda3141904ebaca04a3a92859",
+      "signing-service/src/cawg.js": "179c1ce49fec3e042300d9d2dc43afd9e49fee4d",
+      "signing-service/src/reader.js": "bb9b49d477b393a9f94abf54a2429c3737451990"
+    },
+    "observed_interface": {
+      "sign_endpoint": "POST /v1/sign",
+      "read_endpoint": "POST /v1/read",
+      "signature_type": "both",
+      "supports_extra_assertions_parameter": true,
+      "built_in_action": "c2pa.published",
+      "built_in_cawg_assertion": "cawg.identity",
+      "product_signature_supported": true,
+      "cawg_organizational_identity_supported": true
+    }
+  },
+  "c2pa_2_4_assertions": {
+    "ai_disclosure": {
+      "label": "c2pa.ai-disclosure",
+      "modelType": "c2pa.types.model",
+      "humanOversightLevel": "human_validated"
+    },
+    "external_reference": {
+      "label": "c2pa.external-reference",
+      "created": false,
+      "digest_alg": "sha256",
+      "content_type": "application/json",
+      "target": "https://publisher.example/governance/article-image-001.json"
+    }
+  },
+  "publication_composition": {
+    "artifact_mime_type": "image/jpeg",
+    "cms_pipeline_label": "UU-AAP publishing composition pilot",
+    "publisher_org": {
+      "name": "Example Public Interest Press",
+      "url": "https://publisher.example/"
+    },
+    "external_governance_record": "scripts/c2pa-wordpress-publishing-pilot/external-governance-record.json",
+    "private_prompts_required": false,
+    "private_deliberation_required": false
+  },
+  "semantic_invariants": [
+    "Product signature or claim-generator label does not establish authorship.",
+    "CAWG organisational identity does not by itself establish UU-AAP publication authority.",
+    "CAWG organisational identity does not by itself establish UU-AAP scoped responsibility.",
+    "c2pa.ai-disclosure human_validated does not establish authorship, authority or responsibility.",
+    "c2pa.published action does not establish the publication decision or decision authority.",
+    "External-reference digest match establishes binding, not substantive truth.",
+    "UU-AAP publication authority and scoped responsibility require the external governance record.",
+    "No layer is collapsed into an aggregate trust or reputation score."
+  ],
+  "expected_safe_view": {
+    "c2pa_product_surface": "SOFTWARE_PRODUCT_PROVENANCE",
+    "cawg_identity_surface": "PUBLISHER_ORG_IDENTITY",
+    "c2pa_ai_disclosure_surface": "HUMAN_VALIDATED_AI_PARTICIPATION",
+    "c2pa_action_surface": "PUBLISHED_OPERATION_PROVENANCE",
+    "external_governance_binding": "DIGEST_MATCH_REQUIRED",
+    "authorship": "author-1",
+    "publication_authority": "editor-1",
+    "scoped_responsibility": "editor-1:publication_decision",
+    "ai_authority": "RECOMMEND_ONLY",
+    "factual_truth": "NOT_ESTABLISHED",
+    "contestability": "AVAILABLE",
+    "aggregate_trust_score_permitted": false,
+    "semantic_promotion_permitted": false
+  }
+}
