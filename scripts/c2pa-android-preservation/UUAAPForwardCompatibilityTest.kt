@@ -14,15 +14,23 @@ import org.junit.Test
 class UUAAPForwardCompatibilityTest {
     private val extensionKey = "org.example.uu_aap_reference"
 
-    @Test
-    fun externalReferenceIsPreservedWhileUnknownNestedClaimFieldIsDropped() {
-        val claimPath = requireNotNull(System.getenv("UU_AAP_CLAIM_FIXTURE"))
-        val externalReferencePath = requireNotNull(System.getenv("UU_AAP_EXTERNAL_REFERENCE_FIXTURE"))
-        val json = C2PAJson.default
+    private fun fixture(name: String): String = when (name) {
+        "claim" -> File(requireNotNull(System.getenv("UU_AAP_CLAIM_FIXTURE"))).readText()
+        "external" -> File(requireNotNull(System.getenv("UU_AAP_EXTERNAL_REFERENCE_FIXTURE"))).readText()
+        else -> error("unknown fixture: $name")
+    }
 
-        val externalInputText = File(externalReferencePath).readText()
-        val externalInput = json.parseToJsonElement(externalInputText)
-        val assertion = json.decodeFromString<AssertionDefinition>(externalInputText)
+    @Test
+    fun externalReferenceRoundTripsThroughGenericAssertionPath() {
+        val json = C2PAJson.default
+        val inputText = fixture("external")
+        val input = json.parseToJsonElement(inputText)
+
+        val assertion = try {
+            json.decodeFromString<AssertionDefinition>(inputText)
+        } catch (error: Exception) {
+            throw AssertionError("external-reference decode failed: ${error::class.qualifiedName}: ${error.message}", error)
+        }
 
         assertTrue(
             "c2pa.external-reference should remain a generic custom assertion at this Android frontier",
@@ -31,25 +39,42 @@ class UUAAPForwardCompatibilityTest {
         val custom = assertion as AssertionDefinition.Custom
         assertEquals("c2pa.external-reference", custom.label)
 
-        val externalOutputText = json.encodeToString(assertion)
-        val externalOutput = json.parseToJsonElement(externalOutputText)
+        val outputText = try {
+            json.encodeToString(assertion)
+        } catch (error: Exception) {
+            throw AssertionError("external-reference encode failed: ${error::class.qualifiedName}: ${error.message}", error)
+        }
+        val output = json.parseToJsonElement(outputText)
         assertEquals(
             "standard external-reference payload changed across Android decode/encode",
-            externalInput,
-            externalOutput,
+            input,
+            output,
         )
+    }
 
-        val claimInputText = File(claimPath).readText()
-        val claimInput = json.parseToJsonElement(claimInputText).jsonObject
-        assertTrue("fixture must contain the unknown nested extension", claimInput.containsKey(extensionKey))
+    @Test
+    fun modeledClaimToleratesButDoesNotPreserveUnknownNestedField() {
+        val json = C2PAJson.default
+        val inputText = fixture("claim")
+        val input = json.parseToJsonElement(inputText).jsonObject
+        assertTrue("fixture must contain the unknown nested extension", input.containsKey(extensionKey))
 
-        val claim = json.decodeFromString<ClaimGeneratorInfo>(claimInputText)
-        val claimOutputText = json.encodeToString(claim)
-        val claimOutput = json.parseToJsonElement(claimOutputText).jsonObject
+        val claim = try {
+            json.decodeFromString<ClaimGeneratorInfo>(inputText)
+        } catch (error: Exception) {
+            throw AssertionError("ClaimGeneratorInfo tolerant decode failed: ${error::class.qualifiedName}: ${error.message}", error)
+        }
+
+        val outputText = try {
+            json.encodeToString(claim)
+        } catch (error: Exception) {
+            throw AssertionError("ClaimGeneratorInfo encode failed: ${error::class.qualifiedName}: ${error.message}", error)
+        }
+        val output = json.parseToJsonElement(outputText).jsonObject
 
         assertFalse(
             "current Android ClaimGeneratorInfo unexpectedly preserved the unknown nested extension; frontier changed",
-            claimOutput.containsKey(extensionKey),
+            output.containsKey(extensionKey),
         )
 
         val forbiddenPromotions = listOf(
@@ -63,7 +88,7 @@ class UUAAPForwardCompatibilityTest {
         forbiddenPromotions.forEach { key ->
             assertFalse(
                 "dropped extension was unexpectedly promoted into governance/trust key: $key",
-                claimOutput.containsKey(key) && !claimInput.containsKey(key),
+                output.containsKey(key) && !input.containsKey(key),
             )
         }
     }
