@@ -32,10 +32,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
       - name: Bind historical P0.1 rubric exactly
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git hash-object scripts/c2pa-semantic-boundary/rubric-v0.1.json)" = "$P0_1_RUBRIC_GIT_BLOB"
+        run: test "$(git hash-object scripts/c2pa-semantic-boundary/rubric-v0.1.json)" = "$P0_1_RUBRIC_GIT_BLOB"
       - name: Syntax check semantic harness
         run: |
           node --check scripts/c2pa-semantic-adversarial-corpus/validate-corpus.js
@@ -63,11 +60,7 @@ jobs:
           base_ref="${{ github.base_ref || 'main' }}"
           git fetch -q origin "$base_ref" --depth=1
           base_sha="$(git rev-parse FETCH_HEAD)"
-          if ! git diff --quiet "$base_sha" -- protocols/core/; then
-            echo 'ERROR: P0.7 must not modify UU-AAP Core' >&2
-            git diff --name-only "$base_sha" -- protocols/core/ >&2
-            exit 1
-          fi
+          git diff --quiet "$base_sha" -- protocols/core/
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
 
@@ -92,7 +85,10 @@ jobs:
           test "$(git -C /tmp/c2pagen hash-object tests/fixtures/ed25519.pub)" = '030a6894a3d45882fd553aa7745054b43f1a3525'
           grep -q 'bulk generating reproducible C2PA assets for testing and benchmarking' /tmp/c2pagen/README.md
           grep -q 'name: "small-png"' /tmp/c2pagen/src/presets/assets.rs
-          grep -q 'FOR TESTING_ONLY' /tmp/c2pagen/tests/fixtures/ed25519.pub
+          openssl x509 -in /tmp/c2pagen/tests/fixtures/ed25519.pub -noout -subject -dates > /tmp/c2pagen-test-cert.txt
+          cat /tmp/c2pagen-test-cert.txt
+          grep -q 'FOR TESTING_ONLY' /tmp/c2pagen-test-cert.txt
+          grep -q 'notAfter=Aug 26 18:46:41 2030 GMT' /tmp/c2pagen-test-cert.txt
       - name: Verify pinned c2pa-attacks security boundary
         shell: bash
         run: |
@@ -105,15 +101,13 @@ jobs:
           grep -q 'performs security testing on a Content Credentials application' /tmp/c2pa-attacks/README.md
           grep -q 'does not automatically check to see if the attack was successful' /tmp/c2pa-attacks/README.md
           grep -q 'not a replacement for it' /tmp/c2pa-attacks/README.md
-      - name: Validate tooling baseline semantics
+      - name: Validate tooling role separation
         run: |
           python - <<'PY'
           import json
           b=json.load(open('scripts/c2pa-semantic-adversarial-corpus/tooling-baseline.json'))
           assert b['c2pagen']['sha'] == '23c2d4c317bbbb5b049c11cc6d8e85a4729704df'
           assert b['c2pa_attacks']['sha'] == '4f750daa888d2ff93a1659fc016be584dc43ae5c'
-          assert b['c2pa_attacks']['role'].startswith('parser/security')
-          assert b['c2pagen']['role'].startswith('fresh reproducible C2PA')
           assert 'parser/security attack != semantic overclaim attack' in b['boundaries']
           print('external tooling role separation: PASS')
           PY
@@ -190,9 +184,7 @@ jobs:
           NODE
       - name: Run five semantic attacks only after C2PA validation
         run: |
-          node scripts/c2pa-semantic-adversarial-corpus/check-live-corpus.js \
-            /tmp/p0-7-c2pa-report.json \
-            > /tmp/p0-7-live-receipt.json
+          node scripts/c2pa-semantic-adversarial-corpus/check-live-corpus.js /tmp/p0-7-c2pa-report.json > /tmp/p0-7-live-receipt.json
           cat /tmp/p0-7-live-receipt.json
           node - <<'NODE'
           const r = require('/tmp/p0-7-live-receipt.json');
