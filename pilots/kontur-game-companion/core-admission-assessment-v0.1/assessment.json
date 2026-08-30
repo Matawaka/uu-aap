@@ -1,0 +1,86 @@
+{
+  "schema_version": "kontur-core-admission-assessment-v0.1",
+  "issue": 761,
+  "origin_main": "db9633583c937fd2cecdde4ea5b2b5a5b68d381a",
+  "policy": {
+    "pilot_success_creates_core_requirement": false,
+    "green_ci_creates_core_requirement": false,
+    "merged_status_creates_core_requirement": false,
+    "minimum_independent_non_kontur_consumer_evidence": 2,
+    "cross_domain_interface_evidence_required": true,
+    "no_authority_widening_required": true,
+    "external_conformance_required": true,
+    "reversible_migration_path_required": true
+  },
+  "reused_primitives": [
+    {
+      "primitive_id": "DLC-SI-v0.1",
+      "path": "protocols/dlc-si/v0.1/dlc-si.js",
+      "git_blob_sha1": "cb2ac2c8dac0b012e2bf01aeced21b78a6cc77db"
+    },
+    {
+      "primitive_id": "EVENT-HASH-MINIMALISM-v0.1",
+      "path": "protocols/integration/event-hash-minimalism/v0.1/fixture.json",
+      "git_blob_sha1": "8877a9c722db413f53c5b88fe9e557e5dcfa3eb5"
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "KONTUR_NON_BINDING_ATTENTION_v0.1",
+      "path": "pilots/kontur-game-companion/non-binding-attention-v0.1/attention.js",
+      "git_blob_sha1": "7c512209065c37042db21033492cfae5ac7c558e",
+      "classification": "PILOT_POLICY_ONLY_REUSE_DLC_SI",
+      "existing_reusable_primitive_refs": ["DLC-SI-v0.1"],
+      "independent_non_kontur_consumer_evidence_refs": [],
+      "stable_cross_domain_interface_evidence": false,
+      "external_conformance_evidence": false,
+      "authority_widening_required": false,
+      "reversible_pilot_retention": true,
+      "core_admission": "NO_CORE_ADMISSION"
+    },
+    {
+      "candidate_id": "KONTUR_USEFUL_INTERACTION_EVIDENCE_ADMISSION_v0.1",
+      "path": "pilots/kontur-game-companion/useful-interaction-evidence-admission-v0.1/admission.json",
+      "git_blob_sha1": "bb8576453c1695c9b703aa61e5d56c61e9f68e1e",
+      "classification": "PILOT_EVIDENCE_GATE",
+      "existing_reusable_primitive_refs": [],
+      "independent_non_kontur_consumer_evidence_refs": [],
+      "stable_cross_domain_interface_evidence": false,
+      "external_conformance_evidence": false,
+      "authority_widening_required": false,
+      "reversible_pilot_retention": true,
+      "core_admission": "NO_CORE_ADMISSION"
+    },
+    {
+      "candidate_id": "KONTUR_BOUNDED_INTERACTION_EVIDENCE_ENVELOPE_v0.1",
+      "path": "pilots/kontur-game-companion/bounded-interaction-evidence-envelope-v0.1/fixture.json",
+      "git_blob_sha1": "696f41d821d23e021397a61b163ab695bdead6b4",
+      "classification": "PILOT_EVIDENCE_PROFILE_REUSE_EVENT_HASH_MINIMALISM",
+      "existing_reusable_primitive_refs": ["EVENT-HASH-MINIMALISM-v0.1"],
+      "independent_non_kontur_consumer_evidence_refs": [],
+      "stable_cross_domain_interface_evidence": false,
+      "external_conformance_evidence": false,
+      "authority_widening_required": false,
+      "reversible_pilot_retention": true,
+      "core_admission": "NO_CORE_ADMISSION"
+    }
+  ],
+  "decision": {
+    "state": "DEFER_UNTIL_INDEPENDENT_REUSABLE_DEMAND",
+    "new_core_primitive_required": false,
+    "new_interface_registry_entry_required": false,
+    "stable_core_promotion_authorized": false,
+    "pilot_layers_remain_valid": true,
+    "next_internal_architecture_expansion_required": false,
+    "next_genuine_evidence_boundary": "SEPARATELY_AUTHORIZED_FIELD_INTERACTION_SOURCE"
+  },
+  "non_effects": {
+    "core_mutated": false,
+    "interface_registry_mutated": false,
+    "release_state_mutated": false,
+    "kontur_activated": false,
+    "new_observation_authorized": false,
+    "action_permit_created": false,
+    "external_effect_authority_created": false
+  }
+}
