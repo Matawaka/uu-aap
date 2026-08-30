@@ -1,0 +1,30 @@
+name: KONTUR-to-Core Admission Assessment v0.1
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/core-admission-assessment-v0.1/**'
+      - '.github/workflows/kontur-core-admission-assessment-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/kontur-game-companion/core-admission-assessment-v0.1/**'
+      - '.github/workflows/kontur-core-admission-assessment-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: python pilots/kontur-game-companion/core-admission-assessment-v0.1/validate.py
+      - run: node pilots/kontur-game-companion/non-binding-attention-v0.1/test-attention.js
+      - run: python pilots/kontur-game-companion/useful-interaction-evidence-admission-v0.1/validate.py
+      - run: python pilots/kontur-game-companion/bounded-interaction-evidence-envelope-v0.1/validate.py
+      - run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - run: node protocols/integration/event-hash-minimalism/v0.1/validate-event-hash-minimalism.js
+      - run: test -z "$(git status --porcelain)"
