@@ -16,6 +16,8 @@ on:
       - 'scripts/verifier-federated-disposition/**'
       - 'scripts/verifier-disposition-integrity/**'
       - 'scripts/verifier-disposition-integrity-surface/**'
+      - 'scripts/verifier-disposition-integrity-capsule/**'
+      - 'scripts/verifier-integrity-capsule-pages/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
       - 'CODE_OF_CONDUCT.md'
@@ -85,7 +87,7 @@ jobs:
           assert v.FEDERATED_DISPOSITION_SCOPE == 'verifier_federated_candidate_materialization'
           print('installed P1.1-P1.11 API: PASS')
           PY
-      - name: Re-run every verifier firewall
+      - name: Re-run every verifier firewall through P1.14
         run: |
           python scripts/verifier-presentation-contract/test.py
           python scripts/verifier-distribution-surface/test.py
@@ -99,7 +101,9 @@ jobs:
           python scripts/verifier-federated-disposition/test.py
           python scripts/verifier-disposition-integrity/test.py
           python scripts/verifier-disposition-integrity-surface/test.py
-      - name: Build one validated Pages artifact through P1.12
+          python scripts/verifier-disposition-integrity-capsule/test.py
+          python scripts/verifier-integrity-capsule-pages/test.py
+      - name: Build one validated Pages artifact through P1.14
         shell: bash
         run: |
           set -euo pipefail
@@ -176,6 +180,25 @@ jobs:
             exit 1
           fi
           node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
+
+          python scripts/verifier-disposition-integrity-capsule/build_capsule.py --site "${RUNNER_TEMP}/uuaap-pages"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/integrity-capsule/capsule-manifest.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/integrity-capsule/index.html"
+          grep -q 'href="verifier/integrity-capsule/"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          python - <<'PY'
+          import os, sys
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/integrity-capsule'
+          sys.path.insert(0, 'scripts/verifier-disposition-integrity-capsule')
+          from build_capsule import verify_manifest
+          manifest=verify_manifest(root)
+          assert manifest['non_effects']['producer_authenticated'] is False
+          assert manifest['non_effects']['truth_established'] is False
+          assert manifest['non_effects']['authority_established'] is False
+          assert manifest['non_effects']['publication_or_action_authority_established'] is False
+          print('P1.14 deployed P1.13 capsule manifest: PASS')
+          PY
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
       - name: Confirm immutable semantic sources remain untouched
         shell: bash
         run: |
@@ -199,6 +222,8 @@ jobs:
             scripts/verifier-candidate-federation/
             scripts/verifier-federated-disposition/
             scripts/verifier-disposition-integrity/
+            scripts/verifier-disposition-integrity-surface/
+            scripts/verifier-disposition-integrity-capsule/
           )
           if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
             echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical verifier semantics' >&2
@@ -213,7 +238,7 @@ jobs:
           path: ${{ runner.temp }}/uuaap-pages
 
   acceptance:
-    name: P1.2-P1.12 one-source distribution acceptance
+    name: P1.2-P1.14 one-source distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -228,13 +253,15 @@ jobs:
           echo 'P1.10 federated candidates -> explicit disposition + seven-dimension materialization only'
           echo 'P1.11 supplied P1.10 result -> deterministic canonical integrity closure only'
           echo 'P1.12 integrity closure -> browser-local public distribution only'
-          echo 'integrity surface != publication/action authority'
+          echo 'P1.13 P1.12 dependency closure -> portable offline capsule only'
+          echo 'P1.14 portable capsule -> same single validated Pages artifact only'
+          echo 'public capsule != trusted producer or publication/action authority'
           echo 'source family/order/count/evaluation != automatic priority'
           echo 'REJECT/DEFER != negative evidence'
           echo 'localized presentation != localized evidence or machine semantics'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2-P1.12 verifier distribution stack'
+          echo 'PASS: P1.2-P1.14 verifier distribution stack'
 
   deploy:
     name: deploy validated verifier to GitHub Pages
