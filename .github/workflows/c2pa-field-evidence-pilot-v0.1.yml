@@ -1,0 +1,185 @@
+name: C2PA Field-Evidence Public-Interest Pilot v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-field-evidence-pilot/**'
+      - '.github/workflows/c2pa-field-evidence-pilot-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-field-evidence-pilot/**'
+      - '.github/workflows/c2pa-field-evidence-pilot-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  PROOFMODE_SHA: b7588b9d6b5e0df892cc929bf7d76ca03d9f5c07
+  PROOFMODE_README_GIT_BLOB: ab0309c2084e3daf00ec62b729d7e49e9fd2ad3d
+
+jobs:
+  static-contract:
+    name: field-evidence semantic boundary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install PoAI schema validator dependency
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate P0.5 pilot contract
+        run: |
+          python scripts/c2pa-field-evidence-pilot/validate-pilot.py \
+            scripts/c2pa-field-evidence-pilot/pilot.fixture.json
+
+      - name: Validate embedded PoAI record with existing Genesis schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          fixture = json.loads(Path('scripts/c2pa-field-evidence-pilot/pilot.fixture.json').read_text(encoding='utf-8'))
+          Path('/tmp/p0-5.poai.json').write_text(
+              json.dumps(fixture['poai_record'], indent=2, ensure_ascii=False) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            /tmp/p0-5.poai.json
+
+      - name: Prove fail-closed semantic-escalation guards
+        run: |
+          python - <<'PY'
+          import copy
+          import importlib.util
+          import json
+          from pathlib import Path
+
+          fixture_path = Path('scripts/c2pa-field-evidence-pilot/pilot.fixture.json')
+          module_path = Path('scripts/c2pa-field-evidence-pilot/validate-pilot.py')
+          spec = importlib.util.spec_from_file_location('p0_5_validator', module_path)
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          base = json.loads(fixture_path.read_text(encoding='utf-8'))
+
+          cases = []
+
+          late_available = copy.deepcopy(base)
+          for row in late_available['poai_record']['availability']:
+              if row['resource_id'] == 'proofmode-capture-late':
+                  row['overall_status'] = 'available'
+                  row['dimensions']['temporal_fit'] = 'available'
+                  row['dimensions']['delivery'] = 'available'
+          cases.append(('retroactive availability', late_available))
+
+          unused_as_used = copy.deepcopy(base)
+          for row in unused_as_used['poai_record']['consideration']:
+              if row['resource_id'] == 'proofmode-capture-unused':
+                  row['status'] = 'considered'
+          cases.append(('availability promoted to consideration', unused_as_used))
+
+          reporter_authority = copy.deepcopy(base)
+          for row in reporter_authority['poai_record']['authority']:
+              if row['actor_id'] == 'field-reporter-1':
+                  row['scopes'].append('approve')
+          reporter_authority['uuaap_layer']['capture_actor_authority']['scopes'].append('approve')
+          cases.append(('capture signer promoted to publication authority', reporter_authority))
+
+          agent_authority = copy.deepcopy(base)
+          for row in agent_authority['poai_record']['authority']:
+              if row['actor_id'] == 'agent-1':
+                  row['scopes'].append('decide')
+          agent_authority['uuaap_layer']['agent_authority']['scopes'].append('decide')
+          cases.append(('considered agent promoted to decision authority', agent_authority))
+
+          trust_score = copy.deepcopy(base)
+          trust_score['expected_result']['trust_score'] = 0.98
+          cases.append(('aggregate trust score', trust_score))
+
+          c2pa_upgrade = copy.deepcopy(base)
+          c2pa_upgrade['capture_workflow']['c2pa_2_4_conformance_claimed'] = True
+          c2pa_upgrade['capture_workflow']['observed_c2pa_baseline'] = '2.4'
+          cases.append(('unsupported ProofMode C2PA 2.4 promotion', c2pa_upgrade))
+
+          for name, candidate in cases:
+              try:
+                  mod.validate_static(candidate)
+              except AssertionError:
+                  print(f'expected rejection: {name}')
+              else:
+                  raise SystemExit(f'ERROR: unsafe mutation accepted: {name}')
+          PY
+
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
+            echo 'ERROR: P0.5 pilot must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
+            exit 1
+          fi
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain)"
+
+  proofmode-frontier:
+    name: pinned ProofMode workflow anchor
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Verify exact ProofMode repository frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/proofmode-android
+          git clone -q https://github.com/guardianproject/proofmode-android.git /tmp/proofmode-android
+          git -C /tmp/proofmode-android checkout -q "$PROOFMODE_SHA"
+          test "$(git -C /tmp/proofmode-android rev-parse HEAD)" = "$PROOFMODE_SHA"
+          test "$(git -C /tmp/proofmode-android hash-object README.md)" = "$PROOFMODE_README_GIT_BLOB"
+
+      - name: Re-anchor documented capture/provenance properties
+        shell: bash
+        run: |
+          set -euo pipefail
+          readme=/tmp/proofmode-android/README.md
+          grep -Fq 'supporting the 2.3 specification release' "$readme"
+          grep -Fq 'automatic creation of sha256 hashes and PGP signatures' "$readme"
+          grep -Fq 'Do not modify the original media files; all proof metadata storied in separate file' "$readme"
+          grep -Fq 'Do not require a persistent identity or account generation' "$readme"
+          grep -Fq 'Share Proof' "$readme"
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain)"
+
+  acceptance:
+    name: P0.5 layered field-evidence acceptance
+    needs: [static-contract, proofmode-frontier]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record bounded acceptance
+        run: |
+          echo 'capture A -> PROVENANCE_EXISTS_NOT_AVAILABLE'
+          echo 'capture B -> AVAILABLE_NOT_USED'
+          echo 'agent C   -> USED_WITHOUT_DECISION_AUTHORITY'
+          echo 'UU-AAP    -> HUMAN_EDITOR authority/responsibility'
+          echo 'truth     -> NOT_ESTABLISHED'
+          echo 'PASS: existence, availability, consideration, authority and responsibility remain distinct.'
