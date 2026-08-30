@@ -1,0 +1,41 @@
+{
+  "schema": "urn:uu-aap:c2pa-semantic-adversarial-tooling-baseline:0.1",
+  "issue": 792,
+  "repository_predecessor_main": "5e174d9de2b7978e8e612b3f70b49afdaf5ceb3c",
+  "semantic_rubric": {
+    "path": "scripts/c2pa-semantic-boundary/rubric-v0.1.json",
+    "git_blob_sha": "f6eec3dfe3c3973245991210755fbac74e667396",
+    "merged_pr": 779,
+    "merge_sha": "e3972ad78e99f0efa1a1e252805e70e477dc97a2"
+  },
+  "c2pagen": {
+    "repository": "contentauth/c2pagen",
+    "sha": "23c2d4c317bbbb5b049c11cc6d8e85a4729704df",
+    "readme_blob": "17ec970208717ca114d3f4c772ec5a674d4022d2",
+    "cargo_toml_blob": "31c5297f4f434f83897381b8d8dc1165a358a59e",
+    "presets_assets_blob": "5d9820dccd40f7a9de33c74cd1d5e957640768bd",
+    "presets_manifests_blob": "748306557127f58d1f9aab1121bd2384e55a8ffb",
+    "test_certificate_blob": "030a6894a3d45882fd553aa7745054b43f1a3525",
+    "live_preset": "small-png",
+    "role": "fresh reproducible C2PA test-asset generator"
+  },
+  "c2pa_attacks": {
+    "repository": "contentauth/c2pa-attacks",
+    "sha": "4f750daa888d2ff93a1659fc016be584dc43ae5c",
+    "readme_blob": "9a72b84863ebf0bc137e1368eecbde3983a10372",
+    "role": "parser/security injection framework; not semantic verifier"
+  },
+  "c2patool": {
+    "version": "0.27.16",
+    "archive_sha256": "62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663",
+    "role": "authoritative live asset validation before semantic evaluation"
+  },
+  "boundaries": [
+    "C2PA validation result != semantic interpretation result",
+    "parser/security attack != semantic overclaim attack",
+    "valid != trusted",
+    "test signer != production identity",
+    "semantic failure != cryptographic failure",
+    "semantic evaluator != C2PA conformance evaluator"
+  ]
+}
