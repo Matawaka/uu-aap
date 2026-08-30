@@ -1,0 +1,34 @@
+name: Patent Track Family 001 Core Receipt-Chain Inventory v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'docs/legal/patent/technical-family-001-core-receipt-chain-v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - '.github/workflows/patent-track-family-001-core-receipt-chain-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/legal/patent/technical-family-001-core-receipt-chain-v0.1/**'
+      - 'protocols/core/v0.1/**'
+      - '.github/workflows/patent-track-family-001-core-receipt-chain-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python docs/legal/patent/technical-family-001-core-receipt-chain-v0.1/validate.py
+      - run: node protocols/core/v0.1/validate-core.js
+      - run: test -z "$(git status --porcelain)"
