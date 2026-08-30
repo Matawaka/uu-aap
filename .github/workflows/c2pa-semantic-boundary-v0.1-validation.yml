@@ -29,13 +29,11 @@ jobs:
       - run: node scripts/c2pa-semantic-boundary/test.js
       - run: test -z "$(git status --porcelain)"
 
-  live-upstream-c2pa:
+  live-c2pa-composition:
     runs-on: ubuntu-latest
     env:
       C2PATOOL_VERSION: '0.27.16'
       C2PATOOL_ARCHIVE_SHA256: '62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663'
-      UPSTREAM_COMMIT: 'c09f0340524b088a81475f7b7eaab5ba7042772f'
-      UPSTREAM_ASSET_BLOB_SHA: '091271d557d1a88afbf0b3f01f6125f78506a6ae'
     steps:
       - uses: actions/checkout@v4
         with: {persist-credentials: false}
@@ -54,18 +52,23 @@ jobs:
           test -n "$bin"
           chmod +x "$bin"
           echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
-      - name: Fetch pinned upstream C2PA asset
+      - name: Create deterministic source asset
         shell: bash
         run: |
           set -euo pipefail
-          url="https://raw.githubusercontent.com/contentauth/c2pa-conformance-tool-cli/${UPSTREAM_COMMIT}/testfiles/assets/PXL_20260208_202351558.jpg"
-          curl --fail --location --silent --show-error "$url" --output /tmp/c2pa-live.jpg
-          test "$(git hash-object /tmp/c2pa-live.jpg)" = "${UPSTREAM_ASSET_BLOB_SHA}"
-      - name: Validate real C2PA asset
+          printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 --decode > /tmp/source.png
+          test -s /tmp/source.png
+      - name: Generate fresh C2PA asset with official test signer
         shell: bash
         run: |
           set -euo pipefail
-          "$C2PA_BIN" /tmp/c2pa-live.jpg > /tmp/c2pa-report.json
+          "$C2PA_BIN" /tmp/source.png --create digitalCapture --output /tmp/c2pa-live.png --force
+          test -s /tmp/c2pa-live.png
+      - name: Validate freshly generated C2PA asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/c2pa-live.png > /tmp/c2pa-report.json
           test -s /tmp/c2pa-report.json
       - name: Catch unsafe signer to author promotion
         run: >-
