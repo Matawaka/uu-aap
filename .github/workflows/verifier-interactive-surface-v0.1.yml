@@ -1,0 +1,142 @@
+name: P1.3 Interactive Verifier Surface v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-presentation-contract/**'
+      - 'scripts/verifier-distribution-surface/**'
+      - 'scripts/verifier-interactive-surface/**'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/verifier-interactive-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-presentation-contract/**'
+      - 'scripts/verifier-distribution-surface/**'
+      - 'scripts/verifier-interactive-surface/**'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/verifier-interactive-surface-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  interactive-firewall:
+    name: local input + semantic isolation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install package and schema validator outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" 'jsonschema>=4.22,<5'
+      - name: Validate P1.3 JSON Schema and fixture
+        run: |
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+          schema=json.load(open('scripts/verifier-interactive-surface/input.schema.json'))
+          fixture=json.load(open('scripts/verifier-interactive-surface/fixture.json'))
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(fixture)
+          assert set(fixture['dimension_claims']) == {
+              'integrity','identity','provenance','availability','authority','responsibility','truth'
+          }
+          print('P1.3 input schema + fixture: PASS')
+          PY
+      - name: Syntax check P1.3 implementations
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/interactive.py'),
+              Path('scripts/verifier-interactive-surface/build_interactive_site.py'),
+              Path('scripts/verifier-interactive-surface/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          node --check scripts/verifier-interactive-surface/app.js
+          node --check scripts/verifier-interactive-surface/test-browser.js
+      - name: Prove canonical Python and browser normalization equivalence
+        run: python scripts/verifier-interactive-surface/test.py
+      - name: Prove browser implementation is local and text-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          app='scripts/verifier-interactive-surface/app.js'
+          for forbidden in 'fetch(' XMLHttpRequest WebSocket EventSource sendBeacon innerHTML outerHTML insertAdjacentHTML 'eval(' 'Function(' 'http://' 'https://'; do
+            if grep -Fq "$forbidden" "$app"; then
+              echo "ERROR: browser-local boundary violated by $forbidden" >&2
+              exit 1
+            fi
+          done
+          grep -q 'textContent' "$app"
+          grep -q 'FileReader' "$app"
+      - name: Preserve immutable P1.2 reference while adding interactive path
+        shell: bash
+        run: |
+          set -euo pipefail
+          site="${RUNNER_TEMP}/uuaap-pages-p13"
+          rm -rf "$site"
+          python scripts/verifier-distribution-surface/build_site.py --output "$site"
+          cmp --silent "$site/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          before="$(sha256sum "$site/verifier/index.html" | cut -d' ' -f1)"
+          python scripts/verifier-interactive-surface/build_interactive_site.py --site "$site"
+          after="$(sha256sum "$site/verifier/index.html" | cut -d' ' -f1)"
+          test "$before" = "$after"
+          cmp --silent "$site/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "$site/verifier/interactive/index.html"
+          test -s "$site/verifier/interactive/app.js"
+          grep -q 'href="verifier/interactive/"' "$site/index.html"
+          if grep -Eqi 'https?://' "$site/verifier/interactive/index.html"; then
+            echo 'ERROR: interactive page contains external URL' >&2
+            exit 1
+          fi
+      - name: Re-run P1.1 reference firewall unchanged
+        run: python scripts/verifier-presentation-contract/test.py
+      - name: Re-run P1.2 package/reference equivalence unchanged
+        run: python scripts/verifier-distribution-surface/test.py
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
+            echo 'ERROR: P1.3 must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P1.3 explicit interactive input acceptance
+    runs-on: ubuntu-latest
+    needs: [interactive-firewall]
+    steps:
+      - run: |
+          echo 'opaque evidence != semantic claim'
+          echo 'identity != authority != responsibility'
+          echo 'provenance != availability != truth'
+          echo 'browser input -> local only'
+          echo 'P1.1/P1.2 reference -> unchanged'
+          echo 'aggregate verdict -> FORBIDDEN'
+          echo 'PASS: P1.3 interactive verifier surface v0.1'
