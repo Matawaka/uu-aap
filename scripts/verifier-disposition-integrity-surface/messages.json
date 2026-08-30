@@ -1,0 +1,30 @@
+{
+  "en": {
+    "root.integrity_link": "Open the local disposition integrity verifier",
+    "integrity.heading": "UU-AAP Local Disposition Integrity Verifier",
+    "integrity.description": "Verify that a supplied P1.10 disposition result exactly matches deterministic historical rematerialization through P1.11.",
+    "integrity.privacy": "Privacy boundary: selected files and pasted JSON stay in this browser. This page has no server upload, model, analytics or external runtime dependency.",
+    "integrity.semantic": "Semantic boundary: canonical rematerialization equality establishes bounded result integrity only. It does not establish truth, identity, authority, authorship, responsibility or publication/action permission.",
+    "integrity.disposition_link": "Open the P1.10 federated disposition gate",
+    "integrity.reference_link": "Open the immutable seven-dimension reference verifier",
+    "integrity.example_link": "Open the example P1.11 integrity input JSON",
+    "integrity.result_link": "Open the example P1.11 integrity result JSON",
+    "integrity.file_label": "Select a local P1.11 integrity input JSON file:",
+    "integrity.paste_label": "Or paste/edit a P1.11 integrity input JSON:",
+    "integrity.action": "Verify disposition result integrity"
+  },
+  "ru": {
+    "root.integrity_link": "Открыть локальный verifier целостности disposition",
+    "integrity.heading": "Локальный verifier целостности disposition UU-AAP",
+    "integrity.description": "Проверьте, что переданный результат disposition P1.10 в точности совпадает с детерминированной исторической rematerialization через P1.11.",
+    "integrity.privacy": "Граница приватности: выбранные файлы и вставленный JSON остаются в этом браузере. Страница не выполняет загрузку на сервер, вызовы модели, аналитику или внешние runtime-зависимости.",
+    "integrity.semantic": "Семантическая граница: равенство канонической rematerialization устанавливает только ограниченную целостность результата. Оно не устанавливает truth, identity, authority, authorship, responsibility или право publication/action.",
+    "integrity.disposition_link": "Открыть gate федеративного disposition P1.10",
+    "integrity.reference_link": "Открыть неизменяемый эталонный verifier с семью измерениями",
+    "integrity.example_link": "Открыть пример входного JSON целостности P1.11",
+    "integrity.result_link": "Открыть пример JSON результата целостности P1.11",
+    "integrity.file_label": "Выберите локальный JSON-файл входа целостности P1.11:",
+    "integrity.paste_label": "Или вставьте/отредактируйте входной JSON целостности P1.11:",
+    "integrity.action": "Проверить целостность результата disposition"
+  }
+}
