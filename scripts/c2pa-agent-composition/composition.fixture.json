@@ -1,0 +1,253 @@
+{
+  "schema": "urn:uu-aap:c2pa-mcp-poai-uuaap-composition:0.1",
+  "roadmap_issue": 778,
+  "predecessor": {
+    "main_sha": "4387d95046ac16264e05d0c14012501cef466dfd",
+    "surface": "P0.2 standard C2PA external-reference binding plus P0.3 explicit SDK preservation receipts"
+  },
+  "status": "COMPLETE",
+  "p0_4_complete": true,
+  "scenario": {
+    "kind": "synthetic_editorial_decision",
+    "description": "An agent inspects a C2PA-bearing image, but the credential evidence is delivered after the editorial knowledge cutoff. The editor retains publication authority; the agent may only recommend.",
+    "artifact_fixture": {
+      "repository": "contentauth/c2pa-rs",
+      "pinned_sha": "be7f5ea22b385ee1af6c327906ba002747687628",
+      "path": "sdk/tests/fixtures/C_with_CAWG_data.jpg",
+      "git_blob": "dd93c44d7b4429fbc0dcc8713df1bb7f563a3375"
+    }
+  },
+  "c2pa_layer": {
+    "provider": "contentauth/c2pa-mcp",
+    "release": "v0.2.2",
+    "pinned_sha": "22e203f01acf3a66f6bc0f14f40fb2426c3bb3e9",
+    "release_binary_sha256": "1a93baa07e26cda3ae2494641be030c51db614b01d9a17f93f5ecfa74cdc2da6",
+    "tool_surface": "read_credentials_file / one-shot CLI equivalent",
+    "expected_runtime_contract": {
+      "success": true,
+      "hasCredentials": true,
+      "manifestData_required": true
+    },
+    "evidence_delivered_at": "2026-08-30T10:00:00Z",
+    "establishes": [
+      "the selected artifact contains readable C2PA Content Credentials at the pinned tool frontier",
+      "C2PA manifest data is returned by the official MCP implementation"
+    ],
+    "does_not_establish": [
+      "that the evidence was available before the decision boundary",
+      "factual truth of the depicted event",
+      "UU-AAP authorship, publication authority or responsibility",
+      "that the agent considered or relied on the credential before the cutoff"
+    ]
+  },
+  "poai_layer": {
+    "protocol": "PoAI",
+    "protocol_version": "0.0.1",
+    "profile": "D",
+    "record_id": "urn:poai:example:c2pa-mcp-editorial-decision:001",
+    "subject": {
+      "type": "decision",
+      "id": "decision:publish-image-001",
+      "label": "Whether to publish the inspected image",
+      "description": "Synthetic P0.4 composition decision used to separate artifact provenance from decision-time availability and governance."
+    },
+    "decision_boundary": {
+      "opened_at": "2026-08-30T08:50:00Z",
+      "closed_at": "2026-08-30T09:05:00Z",
+      "knowledge_cutoff": "2026-08-30T09:00:00Z",
+      "precision": "minute",
+      "timezone": "UTC",
+      "status": "live_record",
+      "notes": "The C2PA MCP result is intentionally modeled as delivered one hour after the knowledge cutoff."
+    },
+    "actors": [
+      {
+        "actor_id": "editor-1",
+        "actor_type": "human",
+        "name": "Synthetic editor"
+      },
+      {
+        "actor_id": "agent-1",
+        "actor_type": "ai_system",
+        "name": "Synthetic editorial agent"
+      }
+    ],
+    "intelligence_resources": [
+      {
+        "resource_id": "c2pa-mcp-evidence-1",
+        "resource_type": "retrieval_service",
+        "label": "C2PA MCP artifact-provenance result"
+      }
+    ],
+    "availability": [
+      {
+        "availability_id": "availability:c2pa-mcp-evidence-1",
+        "resource_id": "c2pa-mcp-evidence-1",
+        "subject_id": "decision:publish-image-001",
+        "dimensions": {
+          "identity": "available",
+          "discoverability": "available",
+          "reachability": "available",
+          "authorization": "available",
+          "temporal_fit": "unavailable",
+          "context_sufficiency": "partial",
+          "execution_capability": "available",
+          "delivery": "unavailable"
+        },
+        "overall_status": "unavailable",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:c2pa-mcp-runtime-1"
+        ],
+        "reason": "Credential evidence exists and is retrievable, but it is delivered after the knowledge cutoff and therefore was not decision-time available."
+      }
+    ],
+    "consideration": [
+      {
+        "consideration_id": "consideration:c2pa-mcp-evidence-1",
+        "resource_id": "c2pa-mcp-evidence-1",
+        "status": "not_used",
+        "evidence_class": "E2",
+        "evidence_refs": [
+          "evidence:c2pa-mcp-runtime-1"
+        ],
+        "reason": "No retroactive consideration is inferred from post-cutoff retrieval."
+      }
+    ],
+    "alternatives": [
+      {
+        "alternative_id": "defer-publication",
+        "label": "Defer publication until provenance evidence is available and reviewed"
+      },
+      {
+        "alternative_id": "publish-without-late-evidence",
+        "label": "Decide using only evidence available before the cutoff"
+      }
+    ],
+    "authority": [
+      {
+        "actor_id": "editor-1",
+        "scopes": [
+          "decide",
+          "approve",
+          "review"
+        ],
+        "status": "accepted"
+      },
+      {
+        "actor_id": "agent-1",
+        "scopes": [
+          "request_analysis",
+          "recommend"
+        ],
+        "status": "limited"
+      }
+    ],
+    "constraints": [
+      {
+        "constraint_id": "no-retroactive-availability",
+        "rule": "Evidence retrieved after knowledge_cutoff must not be represented as available before the cutoff."
+      },
+      {
+        "constraint_id": "no-agent-publication-authority",
+        "rule": "The agent may recommend but may not approve or publish."
+      }
+    ],
+    "uncertainty": [
+      {
+        "uncertainty_id": "truth-status",
+        "status": "not_verified",
+        "statement": "C2PA provenance does not establish the factual truth of the depicted event."
+      },
+      {
+        "uncertainty_id": "late-evidence-effect",
+        "status": "known",
+        "statement": "The credential result was delivered after the knowledge cutoff."
+      }
+    ],
+    "evidence": [
+      {
+        "evidence_id": "evidence:c2pa-mcp-runtime-1",
+        "class": "E2",
+        "type": "c2pa_mcp_runtime_result",
+        "availability": "observed_after_knowledge_cutoff",
+        "source": "contentauth/c2pa-mcp@v0.2.2#22e203f01acf3a66f6bc0f14f40fb2426c3bb3e9"
+      }
+    ],
+    "artifact_binding": {
+      "status": "content_credential",
+      "sha256": null,
+      "binding_source": "C2PA MCP runtime observation"
+    },
+    "contestability": {
+      "channel_available": true,
+      "appeal_available": true,
+      "notes": "The governance interpretation remains contestable even when C2PA parsing succeeds."
+    },
+    "outcome": {
+      "status": "not_applicable"
+    },
+    "links": {
+      "c2pa_layer": "#c2pa_layer",
+      "uuaap_layer": "#uuaap_layer"
+    },
+    "versioning": {
+      "record_version": 1,
+      "previous_record": null,
+      "successor_record": null,
+      "change_summary": "Initial P0.4 agent-composition fixture."
+    }
+  },
+  "uuaap_layer": {
+    "source_contract": "protocols/core/v0.1",
+    "representation": "composition projection; not a standalone Core receipt",
+    "intent": {
+      "actor_id": "editor-1",
+      "purpose": "make a bounded publication decision",
+      "status": "declared"
+    },
+    "publication_authority": {
+      "actor_id": "editor-1",
+      "scopes": [
+        "decide",
+        "approve"
+      ],
+      "status": "accepted"
+    },
+    "agent_authority": {
+      "actor_id": "agent-1",
+      "scopes": [
+        "request_analysis",
+        "recommend"
+      ],
+      "status": "limited"
+    },
+    "scoped_responsibility": {
+      "actor_id": "editor-1",
+      "scope": "publication_decision",
+      "status": "accepted"
+    },
+    "uncertainty": {
+      "factual_truth": "not_established",
+      "late_provenance_effect_on_historical_decision": "must_not_be_backfilled"
+    },
+    "contestability": {
+      "status": "available",
+      "successor_record_permitted": true
+    },
+    "non_effects": {
+      "c2pa_credentials_grant_publication_authority": false,
+      "c2pa_validation_proves_factual_truth": false,
+      "late_evidence_becomes_pre_cutoff_available": false,
+      "agent_recommendation_equals_decision_authority": false,
+      "artifact_signer_equals_responsible_actor": false
+    }
+  },
+  "expected_agent_view": {
+    "c2pa": "CREDENTIALS_PRESENT",
+    "poai": "UNAVAILABLE_BEFORE_CUTOFF",
+    "uuaap": "HUMAN_PUBLICATION_AUTHORITY",
+    "single_trust_score_permitted": false,
+    "semantic_collapse_permitted": false
+  }
+}
