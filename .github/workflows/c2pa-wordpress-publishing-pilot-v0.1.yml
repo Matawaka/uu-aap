@@ -1,0 +1,221 @@
+name: C2PA WordPress Publishing Pilot v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-wordpress-publishing-pilot/**'
+      - '.github/workflows/c2pa-wordpress-publishing-pilot-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-wordpress-publishing-pilot/**'
+      - '.github/workflows/c2pa-wordpress-publishing-pilot-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  WP_PLUGIN_SHA: 4126f1c4b57d56862b1ca4667549e99ddd9de3fe
+  WP_README_BLOB: 1647fa4fbc7ce5296333a4d05a7eb3c917c6d143
+  WP_SERVER_BLOB: dec734c629fb157f1bfafc591c51c2f30a9cb50b
+  WP_SIGNER_BLOB: c5b85c1c78a6e17eda3141904ebaca04a3a92859
+  WP_CAWG_BLOB: 179c1ce49fec3e042300d9d2dc43afd9e49fee4d
+  WP_READER_BLOB: bb9b49d477b393a9f94abf54a2429c3737451990
+
+jobs:
+  composition-contract:
+    name: publishing semantic separation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Build deterministic ContentAuth signing request projection
+        run: |
+          python scripts/c2pa-wordpress-publishing-pilot/build-request.py \
+            scripts/c2pa-wordpress-publishing-pilot/external-governance-record.json \
+            scripts/c2pa-wordpress-publishing-pilot/pilot.fixture.json \
+            /tmp/p0-6-sign-request.json | tee /tmp/p0-6-build-receipt.json
+
+      - name: Validate publishing composition
+        run: |
+          python scripts/c2pa-wordpress-publishing-pilot/validate-pilot.py \
+            scripts/c2pa-wordpress-publishing-pilot/pilot.fixture.json \
+            scripts/c2pa-wordpress-publishing-pilot/external-governance-record.json \
+            /tmp/p0-6-sign-request.json
+
+      - name: Prove fail-closed semantic-promotion guards
+        run: |
+          python - <<'PY'
+          import copy
+          import importlib.util
+          import json
+          from pathlib import Path
+
+          pilot_path = Path('scripts/c2pa-wordpress-publishing-pilot/pilot.fixture.json')
+          record_path = Path('scripts/c2pa-wordpress-publishing-pilot/external-governance-record.json')
+          request_path = Path('/tmp/p0-6-sign-request.json')
+          module_path = Path('scripts/c2pa-wordpress-publishing-pilot/validate-pilot.py')
+
+          spec = importlib.util.spec_from_file_location('p0_6_validator', module_path)
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+
+          base_pilot = json.loads(pilot_path.read_text(encoding='utf-8'))
+          base_record_bytes = record_path.read_bytes()
+          base_record = json.loads(base_record_bytes)
+          base_request = json.loads(request_path.read_text(encoding='utf-8'))
+
+          cases = []
+
+          org_authority = copy.deepcopy(base_record)
+          org_authority['publication_authority']['actor_id'] = org_authority['publisher_identity']['actor_id']
+          cases.append(('CAWG/publisher identity promoted to publication authority', base_pilot, org_authority, base_request, json.dumps(org_authority, indent=2).encode()))
+
+          org_responsibility = copy.deepcopy(base_record)
+          org_responsibility['scoped_responsibility']['actor_id'] = org_responsibility['publisher_identity']['actor_id']
+          cases.append(('CAWG/publisher identity promoted to scoped responsibility', base_pilot, org_responsibility, base_request, json.dumps(org_responsibility, indent=2).encode()))
+
+          ai_authority = copy.deepcopy(base_record)
+          ai_authority['ai_participation']['authority_scopes'].append('approve_publication')
+          cases.append(('human_validated AI promoted to publication authority', base_pilot, ai_authority, base_request, json.dumps(ai_authority, indent=2).encode()))
+
+          claim_generator_author = copy.deepcopy(base_request)
+          claim_generator_author['creator_name'] = base_record['authorship']['name']
+          cases.append(('claim-generator label promoted to authorship', base_pilot, base_record, claim_generator_author, base_record_bytes))
+
+          truth_promotion = copy.deepcopy(base_record)
+          truth_promotion['factual_truth']['status'] = 'verified'
+          cases.append(('provenance/identity promoted to factual truth', base_pilot, truth_promotion, base_request, json.dumps(truth_promotion, indent=2).encode()))
+
+          action_authority = copy.deepcopy(base_record)
+          action_authority['publication_authority']['not_derived_from_c2pa_published_action'] = False
+          cases.append(('c2pa.published promoted to decision authority', base_pilot, action_authority, base_request, json.dumps(action_authority, indent=2).encode()))
+
+          score = copy.deepcopy(base_pilot)
+          score['expected_safe_view']['trust_score'] = 0.99
+          cases.append(('aggregate trust score', score, base_record, base_request, base_record_bytes))
+
+          tampered_bytes = base_record_bytes + b' '
+          cases.append(('external governance digest mismatch', base_pilot, base_record, base_request, tampered_bytes))
+
+          for name, pilot, record, request, record_bytes in cases:
+              try:
+                  mod.validate(pilot, record, request, record_bytes)
+              except AssertionError:
+                  print(f'expected rejection: {name}')
+              else:
+                  raise SystemExit(f'ERROR: unsafe mutation accepted: {name}')
+          PY
+
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
+            echo 'ERROR: P0.6 pilot must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
+            exit 1
+          fi
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain)"
+
+  upstream-wordpress-interface:
+    name: pinned ContentAuth WordPress interface
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pilot
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Fetch immutable upstream WordPress frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/wp-plugin
+          git clone -q https://github.com/contentauth/wp-plugin.git /tmp/wp-plugin
+          git -C /tmp/wp-plugin checkout -q "$WP_PLUGIN_SHA"
+          test "$(git -C /tmp/wp-plugin rev-parse HEAD)" = "$WP_PLUGIN_SHA"
+
+      - name: Verify exact source blobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C /tmp/wp-plugin hash-object README.md)" = "$WP_README_BLOB"
+          test "$(git -C /tmp/wp-plugin hash-object signing-service/src/server.js)" = "$WP_SERVER_BLOB"
+          test "$(git -C /tmp/wp-plugin hash-object signing-service/src/signer.js)" = "$WP_SIGNER_BLOB"
+          test "$(git -C /tmp/wp-plugin hash-object signing-service/src/cawg.js)" = "$WP_CAWG_BLOB"
+          test "$(git -C /tmp/wp-plugin hash-object signing-service/src/reader.js)" = "$WP_READER_BLOB"
+
+      - name: Re-anchor upstream publishing interface contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          readme=/tmp/wp-plugin/README.md
+          server=/tmp/wp-plugin/signing-service/src/server.js
+          signer=/tmp/wp-plugin/signing-service/src/signer.js
+          cawg=/tmp/wp-plugin/signing-service/src/cawg.js
+          reader=/tmp/wp-plugin/signing-service/src/reader.js
+
+          grep -Fq '| `product` | Content passed through a specific software product' "$readme"
+          grep -Fq '| `cawg_org` | Content is associated with a named organisation' "$readme"
+          grep -Fq '| `both` | Both of the above in a single manifest' "$readme"
+          grep -Fq 'extra_assertions {Array?} Additional C2PA assertion objects' "$server"
+          grep -Fq "signature_type = 'product'" "$server"
+          grep -Fq 'extraAssertions: extra_assertions ?? []' "$server"
+          grep -Fq "action: 'c2pa.published'" "$signer"
+          grep -Fq "['cawg_org', 'both'].includes(signatureType)" "$signer"
+          grep -Fq 'return [...assertions, ...extraAssertions]' "$signer"
+          grep -Fq "label: 'cawg.identity'" "$cawg"
+          grep -Fq 'assertions: serializeAssertions(manifest.assertions ?? [])' "$reader"
+
+      - name: Execute pinned CAWG organisational assertion builder
+        run: |
+          node - <<'JS'
+          const { buildCawgOrgAssertion } = require('/tmp/wp-plugin/signing-service/src/cawg.js');
+          const a = buildCawgOrgAssertion({
+            orgName: 'Example Public Interest Press',
+            orgUrl: 'https://publisher.example/'
+          });
+          if (a.label !== 'cawg.identity') throw new Error('unexpected CAWG label');
+          const identity = a.data.verified_identities?.[0];
+          if (!identity || identity.type !== 'organization') throw new Error('missing organization identity');
+          if (identity.name !== 'Example Public Interest Press') throw new Error('unexpected org name');
+          if (identity.identifier !== 'https://publisher.example/') throw new Error('unexpected org URL');
+          console.log('pinned CAWG organisational assertion builder: PASS');
+          JS
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain)"
+
+  acceptance:
+    name: P0.6 publishing authorization separation
+    needs: [composition-contract, upstream-wordpress-interface]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record bounded P0.6 acceptance
+        run: |
+          echo 'C2PA product   -> SOFTWARE_PRODUCT_PROVENANCE'
+          echo 'CAWG identity  -> PUBLISHER_ORG_IDENTITY'
+          echo 'AI disclosure  -> HUMAN_VALIDATED_AI_PARTICIPATION'
+          echo 'C2PA action     -> PUBLISHED_OPERATION_PROVENANCE'
+          echo 'external record -> DIGEST_MATCH_REQUIRED'
+          echo 'authorship      -> author-1'
+          echo 'authority       -> editor-1'
+          echo 'responsibility  -> editor-1:publication_decision'
+          echo 'truth           -> NOT_ESTABLISHED'
+          echo 'PASS: publication authorization remains separate from signer/product provenance, identity, authorship, AI participation and truth.'

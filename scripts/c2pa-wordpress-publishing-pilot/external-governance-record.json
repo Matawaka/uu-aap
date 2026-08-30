@@ -1,0 +1,74 @@
+{
+  "schema": "urn:uu-aap:publishing-governance-record:0.1",
+  "record_id": "urn:uu-aap:example:publishing-governance:001",
+  "work": {
+    "work_id": "urn:example:work:public-interest-article:001",
+    "edition_id": "2026.1",
+    "publication_artifact": "https://publisher.example/media/article-image-001.jpg"
+  },
+  "publisher_identity": {
+    "actor_id": "publisher-org-1",
+    "actor_type": "organization",
+    "name": "Example Public Interest Press",
+    "canonical_url": "https://publisher.example/",
+    "status": "declared",
+    "does_not_by_itself_establish_publication_authority": true,
+    "does_not_by_itself_establish_scoped_responsibility": true
+  },
+  "authorship": {
+    "actor_id": "author-1",
+    "actor_type": "human",
+    "name": "Synthetic author",
+    "status": "declared",
+    "evidence_basis": "external governance declaration",
+    "not_derived_from_claim_generator": true,
+    "not_derived_from_cawg_identity": true
+  },
+  "publication_authority": {
+    "actor_id": "editor-1",
+    "actor_type": "human",
+    "name": "Synthetic publication editor",
+    "scopes": [
+      "review",
+      "approve_publication"
+    ],
+    "institutional_context": "publisher-org-1",
+    "status": "accepted",
+    "not_derived_from_signer_identity": true,
+    "not_derived_from_cawg_identity": true,
+    "not_derived_from_ai_disclosure": true,
+    "not_derived_from_c2pa_published_action": true
+  },
+  "scoped_responsibility": {
+    "actor_id": "editor-1",
+    "scope": "publication_decision",
+    "status": "accepted",
+    "does_not_establish_factual_truth": true
+  },
+  "ai_participation": {
+    "actor_id": "ai-1",
+    "actor_type": "ai_system",
+    "role": "editorial_assistant",
+    "human_oversight_level": "human_validated",
+    "authority_scopes": [
+      "recommend"
+    ],
+    "does_not_establish_authorship": true,
+    "does_not_establish_publication_authority": true,
+    "does_not_establish_scoped_responsibility": true
+  },
+  "factual_truth": {
+    "status": "not_established",
+    "reason": "Publication provenance, identity, AI disclosure, authorization and responsibility are not factual verification of the article's substantive claims."
+  },
+  "contestability": {
+    "available": true,
+    "successor_record_supported": true,
+    "endpoint": "https://publisher.example/contest/article-image-001"
+  },
+  "privacy": {
+    "private_prompts_embedded": false,
+    "private_deliberation_embedded": false,
+    "minimum_public_binding_only": true
+  }
+}
