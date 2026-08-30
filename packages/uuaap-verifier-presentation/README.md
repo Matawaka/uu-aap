@@ -1,8 +1,8 @@
-# UU-AAP Verifier Presentation Package v0.3
+# UU-AAP Verifier Presentation Package v0.4
 
-This package is the reusable implementation surface for the merged P1.1 Layered Verifier Presentation Contract, the P1.3 explicit interactive input contract and the P1.4 bounded evidence adapter layer.
+This package is the reusable implementation surface for the merged P1.1 Layered Verifier Presentation Contract, P1.3 explicit interactive input, P1.4 bounded evidence adapters and P1.5 explicit candidate acceptance/materialization.
 
-It preserves one seven-dimension semantic boundary for embedded/library use, the immutable GitHub Pages reference presentation, local interactive validation and candidate-claim adaptation.
+It preserves one seven-dimension semantic boundary for embedded/library use, the immutable GitHub Pages reference presentation, local interactive validation, candidate adaptation and explicit materialization.
 
 ```text
 integrity
@@ -49,10 +49,23 @@ from uuaap_verifier_presentation import (
 )
 ```
 
-P1.4 adapters emit **candidate claims**, not accepted P1.3 claims. Each adapter is restricted to one allowlisted verifier dimension. The initial registry contains C2PA provenance, PoAI availability, UU-AAP authority and UU-AAP responsibility adapters; none may emit identity or truth.
+Candidate acceptance/materialization API:
+
+```python
+from uuaap_verifier_presentation import (
+    build_acceptance_input,
+    materialize_candidate_acceptance,
+    validate_acceptance_input,
+    validate_acceptance_result,
+)
+```
+
+P1.4 adapters emit **candidate claims**, not accepted P1.3 claims. P1.5 requires every emitted candidate to receive an explicit `ACCEPT`, `REJECT` or `DEFER` disposition and permits at most one accepted candidate per verifier dimension.
+
+An acceptance event records selection for verifier materialization only. Its `actor_ref` does not establish the actor's identity, authorship, authority, responsibility or legal validity. Accepting a candidate does not strengthen its value, evaluation, source layer, explanation or non-effects; the materializer only binds an explicit acceptance receipt to the copied claim.
 
 Interactive evidence payloads and adapter payload fields outside each documented adapter contract remain data. A field named `verified`, `verified_true`, `trust_score`, signer, ingredient or action label does not gain UU-AAP semantics merely because it appears in an external payload.
 
 The historical `scripts/verifier-presentation-contract/build.py` and `render.py` paths remain compatibility CLIs and delegate to this package. They are not a second implementation.
 
-This repository package is not published to PyPI by P1.2/P1.3/P1.4. External registry publication remains a separate distribution decision.
+This repository package is not published to PyPI by P1.2–P1.5. External registry publication remains a separate distribution decision.
