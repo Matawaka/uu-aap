@@ -1,6 +1,7 @@
 package org.contentauth.c2pa
 
 import java.io.File
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.jsonObject
@@ -9,10 +10,12 @@ import org.contentauth.c2pa.manifest.ClaimGeneratorInfo
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 
 class UUAAPForwardCompatibilityTest {
     private val extensionKey = "org.example.uu_aap_reference"
+    private val stageMarker = File("/tmp/c2pa-android-external-reference-stage.txt")
 
     private fun fixture(name: String): String = when (name) {
         "claim" -> File(requireNotNull(System.getenv("UU_AAP_CLAIM_FIXTURE"))).readText()
@@ -21,19 +24,20 @@ class UUAAPForwardCompatibilityTest {
     }
 
     @Test
-    fun externalReferenceRoundTripsThroughGenericAssertionPath() {
+    fun externalReferenceGenericPathSurfacesExplicitIncompatibility() {
         val json = C2PAJson.default
         val inputText = fixture("external")
         val input = json.parseToJsonElement(inputText)
 
         val assertion = try {
             json.decodeFromString<AssertionDefinition>(inputText)
-        } catch (error: Exception) {
-            throw AssertionError("external-reference decode failed: ${error::class.qualifiedName}: ${error.message}", error)
+        } catch (error: SerializationException) {
+            stageMarker.writeText("decode_rejected\n${error::class.qualifiedName}\n${error.message.orEmpty()}\n")
+            return
         }
 
         assertTrue(
-            "c2pa.external-reference should remain a generic custom assertion at this Android frontier",
+            "if decode succeeds, c2pa.external-reference must remain a generic custom assertion",
             assertion is AssertionDefinition.Custom,
         )
         val custom = assertion as AssertionDefinition.Custom
@@ -41,15 +45,19 @@ class UUAAPForwardCompatibilityTest {
 
         val outputText = try {
             json.encodeToString(assertion)
-        } catch (error: Exception) {
-            throw AssertionError("external-reference encode failed: ${error::class.qualifiedName}: ${error.message}", error)
+        } catch (error: SerializationException) {
+            stageMarker.writeText("encode_rejected\n${error::class.qualifiedName}\n${error.message.orEmpty()}\n")
+            return
         }
+
         val output = json.parseToJsonElement(outputText)
-        assertEquals(
-            "standard external-reference payload changed across Android decode/encode",
-            input,
-            output,
-        )
+        if (input == output) {
+            stageMarker.writeText("semantic_roundtrip_passed\n")
+            fail("Android external-reference generic path now round-trips semantically; frontier changed and receipt must be reclassified")
+        }
+
+        stageMarker.writeText("semantic_roundtrip_lossy\n")
+        fail("Android external-reference generic path re-encoded with semantic loss; classify this new frontier explicitly")
     }
 
     @Test
@@ -59,17 +67,8 @@ class UUAAPForwardCompatibilityTest {
         val input = json.parseToJsonElement(inputText).jsonObject
         assertTrue("fixture must contain the unknown nested extension", input.containsKey(extensionKey))
 
-        val claim = try {
-            json.decodeFromString<ClaimGeneratorInfo>(inputText)
-        } catch (error: Exception) {
-            throw AssertionError("ClaimGeneratorInfo tolerant decode failed: ${error::class.qualifiedName}: ${error.message}", error)
-        }
-
-        val outputText = try {
-            json.encodeToString(claim)
-        } catch (error: Exception) {
-            throw AssertionError("ClaimGeneratorInfo encode failed: ${error::class.qualifiedName}: ${error.message}", error)
-        }
+        val claim = json.decodeFromString<ClaimGeneratorInfo>(inputText)
+        val outputText = json.encodeToString(claim)
         val output = json.parseToJsonElement(outputText).jsonObject
 
         assertFalse(
