@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uuaap-verifier-presentation"
+version = "0.1.0"
+description = "Reusable seven-dimension UU-AAP verifier presentation contract"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "Apache-2.0 OR MIT"}
+authors = [{name = "UU-AAP contributors"}]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
