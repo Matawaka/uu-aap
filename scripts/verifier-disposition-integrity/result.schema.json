@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:federated-disposition-integrity-result:0.1",
+  "title": "UU-AAP P1.11 Federated Disposition Integrity Result v0.1",
+  "type": "object",
+  "required": [
+    "schema", "artifact", "source_result_schema", "source_bindings",
+    "canonical_rematerialization_equal", "p1_3_materialized_input_valid",
+    "does_not_establish", "aggregate_score_present", "aggregate_verdict_present"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:federated-disposition-integrity-result:0.1"},
+    "artifact": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "source_result_schema": {"const": "urn:uu-aap:federated-candidate-disposition-result:0.1"},
+    "source_bindings": {
+      "type": "object",
+      "required": ["predecessor_main", "p1_10_python_blob", "p1_10_browser_blob"],
+      "properties": {
+        "predecessor_main": {"const": "b2cb224e84fb552461deb25de4460c696ebd6830"},
+        "p1_10_python_blob": {"const": "85fab33a16d59796b40675b53f017d365898933c"},
+        "p1_10_browser_blob": {"const": "1cab33e0598fea1833ad25e5af45c0a2c39a4990"}
+      },
+      "additionalProperties": false
+    },
+    "canonical_rematerialization_equal": {"const": true},
+    "p1_3_materialized_input_valid": {"const": true},
+    "does_not_establish": {
+      "const": [
+        "factual truth",
+        "actor identity",
+        "actor authority",
+        "authorship",
+        "responsibility acceptance",
+        "publication authority",
+        "action authority",
+        "source priority",
+        "source independence",
+        "consensus",
+        "negative reputation"
+      ]
+    },
+    "aggregate_score_present": {"const": false},
+    "aggregate_verdict_present": {"const": false}
+  },
+  "additionalProperties": false
+}
