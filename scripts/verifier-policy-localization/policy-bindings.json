@@ -1,0 +1,18 @@
+{
+  "schema": "urn:uu-aap:verifier-policy-source-bindings:0.1",
+  "repository_predecessor_main": "82f2e2a955ad6f1f36a25cc7b0cf3376d2a9fde9",
+  "sources": {
+    "SECURITY.md": {
+      "git_blob_sha": "79375f601f1ccb5f345ad4f877a55ec3847c5497",
+      "scope": "security, privacy and coercion baseline"
+    },
+    "CONTRIBUTING.md": {
+      "git_blob_sha": "d3989112d850f7b7c37bec9298848a5e3eb55f3c",
+      "scope": "accessibility/internationalization feedback and contribution boundary"
+    },
+    "CODE_OF_CONDUCT.md": {
+      "git_blob_sha": "11716970f18b893a103edf69b78ebedcb06ba742",
+      "scope": "community privacy, anti-doxxing and private prompt-history boundary"
+    }
+  }
+}
