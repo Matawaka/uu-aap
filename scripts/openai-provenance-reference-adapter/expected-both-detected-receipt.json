@@ -1,0 +1,80 @@
+{
+  "adapter_id": "urn:uu-aap:interop:openai-content-provenance-reference-adapter:v0.1",
+  "assertions": {
+    "c2pa_openai_generation_signal_detected": true,
+    "independent_corroboration_established": false,
+    "mixed_signal_state": false,
+    "no_supported_signal_detected": false,
+    "openai_supported_signal_detected": true,
+    "plural_detected_signal_channels": true,
+    "plural_signal_channels": true,
+    "synthid_supported_watermark_detected": true
+  },
+  "classification": "MULTIPLE_OPENAI_SIGNAL_CHANNELS_DETECTED",
+  "compatibility": {
+    "known_signal_types": [
+      "c2pa",
+      "synthid"
+    ],
+    "source_bytes_preserved_by_hash": true,
+    "unknown_result_types_semantically_interpreted": false,
+    "unsupported_result_types": []
+  },
+  "fingerprint_profile": "sorted-json-sha256-adapter-local-v0.1-not-jcs",
+  "fingerprint_sha256": "59c0a64355e3a1a94082d170acc118a34ce3a23d58b480af91c33d493e7e87fd",
+  "non_effects": {
+    "accuracy_established": false,
+    "action_permit_created": false,
+    "authority_established": false,
+    "causality_established": false,
+    "complete_history_established": false,
+    "consideration_established": false,
+    "correct_context_established": false,
+    "creator_identity_established": false,
+    "decision_time_availability_established": false,
+    "external_effect_authorized": false,
+    "human_authorship_established": false,
+    "intent_established": false,
+    "legal_ownership_established": false,
+    "liability_established": false,
+    "publication_authority_established": false,
+    "purpose_established": false,
+    "responsibility_established": false,
+    "truth_certified": false,
+    "unedited_content_proven": false
+  },
+  "receipt_type": "OpenAIProvenanceEvidenceReceipt",
+  "receipt_version": "0.1",
+  "signals": [
+    {
+      "admissible_provenance_evidence": true,
+      "generated_at": "2026-08-30T11:00:00Z",
+      "issuer": "OpenAI OpCo, LLC",
+      "model": "gpt-image",
+      "outcome": "detected",
+      "supported_signal_detected": true,
+      "type": "c2pa",
+      "unmapped_fields_semantically_interpreted": false,
+      "unmapped_source_fields": [],
+      "validation_state": "trusted"
+    },
+    {
+      "admissible_provenance_evidence": true,
+      "generated_at": "2026-08-30T11:00:00Z",
+      "model": "gpt-image",
+      "outcome": "detected",
+      "supported_signal_detected": true,
+      "type": "synthid",
+      "unmapped_fields_semantically_interpreted": false,
+      "unmapped_source_fields": []
+    }
+  ],
+  "source": {
+    "check_created_at": 1788092000,
+    "endpoint": "POST /v1/content_provenance_checks",
+    "live_api_observation_established": false,
+    "provider": "openai",
+    "response_object": "content_provenance_check",
+    "source_response_sha256": "0077be014084aa2123186119824a6583d7d1ba53f97615de8037bc2bb03c6fca"
+  }
+}

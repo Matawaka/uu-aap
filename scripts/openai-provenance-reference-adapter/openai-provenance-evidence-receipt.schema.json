@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:schema:openai-provenance-evidence-receipt:v0.1",
+  "title": "OpenAIProvenanceEvidenceReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_type",
+    "receipt_version",
+    "adapter_id",
+    "source",
+    "compatibility",
+    "signals",
+    "classification",
+    "assertions",
+    "non_effects",
+    "fingerprint_profile",
+    "fingerprint_sha256"
+  ],
+  "properties": {
+    "receipt_type": {"const": "OpenAIProvenanceEvidenceReceipt"},
+    "receipt_version": {"const": "0.1"},
+    "adapter_id": {"const": "urn:uu-aap:interop:openai-content-provenance-reference-adapter:v0.1"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "endpoint",
+        "response_object",
+        "check_created_at",
+        "source_response_sha256",
+        "live_api_observation_established"
+      ],
+      "properties": {
+        "provider": {"const": "openai"},
+        "endpoint": {"const": "POST /v1/content_provenance_checks"},
+        "response_object": {"const": "content_provenance_check"},
+        "check_created_at": {"type": "integer", "minimum": 0},
+        "source_response_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "live_api_observation_established": {"const": false}
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "known_signal_types",
+        "unsupported_result_types",
+        "unknown_result_types_semantically_interpreted",
+        "source_bytes_preserved_by_hash"
+      ],
+      "properties": {
+        "known_signal_types": {
+          "type": "array",
+          "prefixItems": [{"const": "c2pa"}, {"const": "synthid"}],
+          "items": false,
+          "minItems": 2,
+          "maxItems": 2
+        },
+        "unsupported_result_types": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "unknown_result_types_semantically_interpreted": {"const": false},
+        "source_bytes_preserved_by_hash": {"const": true}
+      }
+    },
+    "signals": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {"$ref": "#/$defs/c2paSignal"},
+          {"$ref": "#/$defs/synthidSignal"}
+        ]
+      },
+      "maxItems": 2
+    },
+    "classification": {
+      "enum": [
+        "MULTIPLE_OPENAI_SIGNAL_CHANNELS_DETECTED",
+        "OPENAI_C2PA_SIGNAL_DETECTED",
+        "OPENAI_SYNTHID_SIGNAL_DETECTED",
+        "NO_SUPPORTED_OPENAI_SIGNAL_DETECTED"
+      ]
+    },
+    "assertions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "openai_supported_signal_detected",
+        "c2pa_openai_generation_signal_detected",
+        "synthid_supported_watermark_detected",
+        "no_supported_signal_detected",
+        "mixed_signal_state",
+        "plural_signal_channels",
+        "plural_detected_signal_channels",
+        "independent_corroboration_established"
+      ],
+      "properties": {
+        "openai_supported_signal_detected": {"type": "boolean"},
+        "c2pa_openai_generation_signal_detected": {"type": "boolean"},
+        "synthid_supported_watermark_detected": {"type": "boolean"},
+        "no_supported_signal_detected": {"type": "boolean"},
+        "mixed_signal_state": {"type": "boolean"},
+        "plural_signal_channels": {"type": "boolean"},
+        "plural_detected_signal_channels": {"type": "boolean"},
+        "independent_corroboration_established": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "creator_identity_established",
+        "human_authorship_established",
+        "intent_established",
+        "purpose_established",
+        "authority_established",
+        "publication_authority_established",
+        "responsibility_established",
+        "truth_certified",
+        "accuracy_established",
+        "unedited_content_proven",
+        "legal_ownership_established",
+        "correct_context_established",
+        "complete_history_established",
+        "decision_time_availability_established",
+        "consideration_established",
+        "causality_established",
+        "liability_established",
+        "action_permit_created",
+        "external_effect_authorized"
+      ],
+      "properties": {
+        "creator_identity_established": {"const": false},
+        "human_authorship_established": {"const": false},
+        "intent_established": {"const": false},
+        "purpose_established": {"const": false},
+        "authority_established": {"const": false},
+        "publication_authority_established": {"const": false},
+        "responsibility_established": {"const": false},
+        "truth_certified": {"const": false},
+        "accuracy_established": {"const": false},
+        "unedited_content_proven": {"const": false},
+        "legal_ownership_established": {"const": false},
+        "correct_context_established": {"const": false},
+        "complete_history_established": {"const": false},
+        "decision_time_availability_established": {"const": false},
+        "consideration_established": {"const": false},
+        "causality_established": {"const": false},
+        "liability_established": {"const": false},
+        "action_permit_created": {"const": false},
+        "external_effect_authorized": {"const": false}
+      }
+    },
+    "fingerprint_profile": {"const": "sorted-json-sha256-adapter-local-v0.1-not-jcs"},
+    "fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  },
+  "$defs": {
+    "nullableString": {"type": ["string", "null"]},
+    "c2paSignal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "outcome",
+        "validation_state",
+        "issuer",
+        "model",
+        "generated_at",
+        "supported_signal_detected",
+        "admissible_provenance_evidence",
+        "unmapped_source_fields",
+        "unmapped_fields_semantically_interpreted"
+      ],
+      "properties": {
+        "type": {"const": "c2pa"},
+        "outcome": {"enum": ["detected", "not_detected"]},
+        "validation_state": {"enum": ["trusted", "valid", "invalid", "not_present"]},
+        "issuer": {"$ref": "#/$defs/nullableString"},
+        "model": {"$ref": "#/$defs/nullableString"},
+        "generated_at": {"$ref": "#/$defs/nullableString"},
+        "supported_signal_detected": {"type": "boolean"},
+        "admissible_provenance_evidence": {"type": "boolean"},
+        "unmapped_source_fields": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "unmapped_fields_semantically_interpreted": {"const": false}
+      }
+    },
+    "synthidSignal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "outcome",
+        "model",
+        "generated_at",
+        "supported_signal_detected",
+        "admissible_provenance_evidence",
+        "unmapped_source_fields",
+        "unmapped_fields_semantically_interpreted"
+      ],
+      "properties": {
+        "type": {"const": "synthid"},
+        "outcome": {"enum": ["detected", "not_detected"]},
+        "model": {"$ref": "#/$defs/nullableString"},
+        "generated_at": {"$ref": "#/$defs/nullableString"},
+        "supported_signal_detected": {"type": "boolean"},
+        "admissible_provenance_evidence": {"type": "boolean"},
+        "unmapped_source_fields": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "unmapped_fields_semantically_interpreted": {"const": false}
+      }
+    }
+  }
+}
