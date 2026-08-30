@@ -15,9 +15,13 @@
     "cargo_toml_blob": "31c5297f4f434f83897381b8d8dc1165a358a59e",
     "presets_assets_blob": "5d9820dccd40f7a9de33c74cd1d5e957640768bd",
     "presets_manifests_blob": "748306557127f58d1f9aab1121bd2384e55a8ffb",
+    "simple_manifest_blob": "c3eec4c28045e99c322d3ec148c22c34e1081837",
     "test_certificate_blob": "030a6894a3d45882fd553aa7745054b43f1a3525",
+    "sdk_version": "0.85.2",
     "live_preset": "small-png",
-    "role": "fresh reproducible C2PA test-asset generator"
+    "source_fixture_action": "c2pa.opened",
+    "source_fixture_declares_ingredient": false,
+    "role": "fresh reproducible asset generator plus separately audited signed-preset frontier"
   },
   "c2pa_attacks": {
     "repository": "contentauth/c2pa-attacks",
@@ -25,13 +29,24 @@
     "readme_blob": "9a72b84863ebf0bc137e1368eecbde3983a10372",
     "role": "parser/security injection framework; not semantic verifier"
   },
-  "c2patool": {
+  "matched_c2patool": {
+    "version": "0.26.62",
+    "release_commit": "0f71dd0ea913d2cdc3daec66642fdfa9a06362f9",
+    "c2pa_sdk_version": "0.85.2",
+    "archive_sha256": "7d64553911e92dbdeaa9e81e95db23b68705caa29eb5aba43b9b6f9e7fe68c84",
+    "role": "version-matched validator used only to distinguish generator defect from validator drift"
+  },
+  "current_c2patool": {
     "version": "0.27.16",
+    "release_commit": "da39d448f1aa24af2afe43eabf135c77acb43934",
+    "c2pa_sdk_version": "0.90.16",
     "archive_sha256": "62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663",
-    "role": "authoritative live asset validation before semantic evaluation"
+    "role": "current pinned validator and test signer for the accepted semantic base"
   },
   "boundaries": [
     "C2PA validation result != semantic interpretation result",
+    "generator signed preset != accepted semantic base when validation fails",
+    "version-matched failure != validator-version drift",
     "parser/security attack != semantic overclaim attack",
     "valid != trusted",
     "test signer != production identity",
