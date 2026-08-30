@@ -40,9 +40,11 @@ def validate_static(doc: dict[str, Any]) -> None:
     uuaap = doc["uuaap_layer"]
     view = doc["expected_agent_view"]
 
-    # C2PA is an artifact-evidence oracle only.
+    # C2PA is an artifact-evidence oracle only, pinned to the exact release source and binary.
     assert c2pa["provider"] == "contentauth/c2pa-mcp"
-    assert c2pa["pinned_sha"] == "ef521f06dc3900fcc5afdc8ad9fe846011c44f0d"
+    assert c2pa["release"] == "v0.2.2"
+    assert c2pa["pinned_sha"] == "22e203f01acf3a66f6bc0f14f40fb2426c3bb3e9"
+    assert c2pa["release_binary_sha256"] == "1a93baa07e26cda3ae2494641be030c51db614b01d9a17f93f5ecfa74cdc2da6"
     assert c2pa["expected_runtime_contract"] == {
         "success": True,
         "hasCredentials": True,
