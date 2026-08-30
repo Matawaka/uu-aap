@@ -1,0 +1,19 @@
+{
+  "predecessor_main": "6a35732a1f4c9a23a263c0f3fc16dc405467da0a",
+  "p1_13_builder": {
+    "path": "scripts/verifier-disposition-integrity-capsule/build_capsule.py",
+    "blob": "d8aa9e3f60892425774a1514477ae5ef13b82e9d"
+  },
+  "p1_13_test": {
+    "path": "scripts/verifier-disposition-integrity-capsule/test.py",
+    "blob": "ad01aae0c8e7ad8246366070f12c88a8818e3e14"
+  },
+  "p1_13_workflow": {
+    "path": ".github/workflows/verifier-disposition-integrity-capsule-v0.1.yml",
+    "blob": "0ce6b01553709bdb3c39db316b9d762eb74ca85f"
+  },
+  "distribution_owner_predecessor": {
+    "path": ".github/workflows/verifier-distribution-surface-v0.1.yml",
+    "blob": "5b1623beb36017c6b695d7e444a6e168c231b587"
+  }
+}
