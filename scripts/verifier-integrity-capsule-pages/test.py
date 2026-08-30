@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""P1.14 single-owner Pages publication test for the historical P1.13 capsule."""
+"""P1.14 single-verifier-owner Pages publication test for the historical P1.13 capsule."""
 from __future__ import annotations
 
 import json
@@ -67,16 +67,21 @@ def main() -> None:
     assert "python scripts/verifier-disposition-integrity-capsule/build_capsule.py --site" in workflow_text
     assert "verifier/integrity-capsule/capsule-manifest.json" in workflow_text
     assert "P1.2-P1.14 one-source distribution acceptance" in workflow_text
+    assert "actions/deploy-pages@" in workflow_text
 
+    # The repository already has an independent PoAI docs Pages deployer. P1.14 must not
+    # create a second *verifier* deployment owner or alter that unrelated historical owner.
     deployment_owners: list[str] = []
     for pattern in ("*.yml", "*.yaml"):
         for path in sorted((REPO_ROOT / ".github/workflows").glob(pattern)):
             text = path.read_text(encoding="utf-8")
             if "actions/deploy-pages@" in text:
                 deployment_owners.append(path.name)
-    assert deployment_owners == ["verifier-distribution-surface-v0.1.yml"], (
-        f"exactly one Pages deployment owner required: {deployment_owners}"
+    assert deployment_owners == ["poai-pages.yml", "verifier-distribution-surface-v0.1.yml"], (
+        f"unexpected Pages deployment-owner set: {deployment_owners}"
     )
+    p1_14_workflow = (REPO_ROOT / ".github/workflows/verifier-integrity-capsule-pages-v0.1.yml").read_text(encoding="utf-8")
+    assert "actions/deploy-pages@" not in p1_14_workflow, "P1.14 must not create a second verifier deploy owner"
 
     with tempfile.TemporaryDirectory(prefix="uuaap-p1-14-") as tmp:
         site = Path(tmp) / "pages"
@@ -101,7 +106,7 @@ def main() -> None:
         ).read_bytes()
 
     print("P1.14 historical P1.13 bindings: PASS")
-    print("P1.14 single Pages deployment owner: PASS")
+    print("P1.14 single verifier Pages deployment owner: PASS")
     print("P1.14 capsule present in validated Pages artifact: PASS")
     print("P1.14 deployed capsule manifest verification: PASS")
     print("public capsule != producer authentication/truth/authority/action permission: PASS")
