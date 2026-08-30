@@ -1,0 +1,115 @@
+name: P1.14 Portable Integrity Capsule Pages Distribution v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verifier-integrity-capsule-pages/**'
+      - 'scripts/verifier-disposition-integrity-capsule/**'
+      - '.github/workflows/verifier-integrity-capsule-pages-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verifier-integrity-capsule-pages/**'
+      - '.github/workflows/verifier-integrity-capsule-pages-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: single-verifier-owner publication of historical P1.13 capsule
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install reusable verifier package outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+      - name: Bind exact P1.13 and predecessor distribution sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/verifier-disposition-integrity-capsule/build_capsule.py)" = 'd8aa9e3f60892425774a1514477ae5ef13b82e9d'
+          test "$(git hash-object scripts/verifier-disposition-integrity-capsule/test.py)" = 'ad01aae0c8e7ad8246366070f12c88a8818e3e14'
+          test "$(git hash-object .github/workflows/verifier-disposition-integrity-capsule-v0.1.yml)" = '0ce6b01553709bdb3c39db316b9d762eb74ca85f'
+          git fetch -q origin 6a35732a1f4c9a23a263c0f3fc16dc405467da0a --depth=1
+          test "$(git show 6a35732a1f4c9a23a263c0f3fc16dc405467da0a:.github/workflows/verifier-distribution-surface-v0.1.yml | git hash-object --stdin)" = '5b1623beb36017c6b695d7e444a6e168c231b587'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b=json.loads(Path('scripts/verifier-integrity-capsule-pages/source-bindings.json').read_text(encoding='utf-8'))
+          assert b['predecessor_main']=='6a35732a1f4c9a23a263c0f3fc16dc405467da0a'
+          assert b['p1_13_builder']['blob']=='d8aa9e3f60892425774a1514477ae5ef13b82e9d'
+          assert b['p1_13_test']['blob']=='ad01aae0c8e7ad8246366070f12c88a8818e3e14'
+          assert b['p1_13_workflow']['blob']=='0ce6b01553709bdb3c39db316b9d762eb74ca85f'
+          assert b['distribution_owner_predecessor']['blob']=='5b1623beb36017c6b695d7e444a6e168c231b587'
+          print('P1.14 historical source bindings: PASS')
+          PY
+      - name: Validate P1.14 syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          path=Path('scripts/verifier-integrity-capsule-pages/test.py')
+          ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+          print('P1.14 syntax: PASS')
+          PY
+      - name: Prove capsule publication through one verifier Pages owner
+        run: python scripts/verifier-integrity-capsule-pages/test.py
+      - name: Re-run historical P1.13 relocation and tamper gates
+        run: python scripts/verifier-disposition-integrity-capsule/test.py
+      - name: Re-run P1.12 and base distribution firewalls
+        run: |
+          python scripts/verifier-disposition-integrity-surface/test.py
+          python scripts/verifier-distribution-surface/test.py
+      - name: Prove historical semantic and capsule sources remain byte-unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          guarded=(
+            protocols/core/
+            SPEC.md
+            CONTESTABILITY.md
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/disposition_integrity.py
+            scripts/verifier-federated-disposition/
+            scripts/verifier-disposition-integrity/
+            scripts/verifier-disposition-integrity-surface/
+            scripts/verifier-disposition-integrity-capsule/
+          )
+          if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.14 modified historical semantic/capsule sources' >&2
+            git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: bounded P1.14 single-verifier-owner distribution acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'historical P1.13 portable capsule -> one validated verifier Pages artifact'
+          echo 'verifier actions/deploy-pages owner -> P1.2 distribution workflow only'
+          echo 'pre-existing PoAI docs Pages deployment -> separate historical surface, unchanged'
+          echo 'public capsule != trusted producer'
+          echo 'manifest match != truth/identity/authority/responsibility'
+          echo 'Pages deployment != publication/action authority grant'
+          echo 'PASS: P1.14 Portable Integrity Capsule Pages Distribution v0.1'
