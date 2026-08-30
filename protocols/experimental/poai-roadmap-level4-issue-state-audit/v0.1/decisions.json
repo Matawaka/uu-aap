@@ -1,0 +1,71 @@
+{
+  "type": "LegacyPoAIRoadmapLevel4IssueStateAudit",
+  "version": "0.1",
+  "origin_frontier": "0d149b1ce7ede7d3a3b389bc6199f68d20f096e2",
+  "audit_issue": "#769",
+  "evidence_sources": [
+    {
+      "path": "proposals/poai/extensions/COMPOSITIONAL_INTELLIGENCE.md",
+      "blob_sha": "9c24b5786898ab1f79dddfa92e59bfd946cf62e9"
+    },
+    {
+      "path": "docs/poai/review-cues.js",
+      "blob_sha": "d92bbf3fc0fb17d50d4af820cd3987e6a4b8d6e1"
+    },
+    {
+      "path": "proposals/poai/extensions/SIGNATURE_BINDING.md",
+      "blob_sha": "33a0a24341133bb53c3b59b25824be19cb4258fc"
+    },
+    {
+      "path": "protocols/experimental/poai-successor-reconciliation/v0.1/legacy-successor-map.json",
+      "blob_sha": "7a8f27f6d5edd4a5d1bd14c52de586e0e0161947"
+    }
+  ],
+  "decisions": [
+    {
+      "issue": "#22",
+      "decision": "PRESERVE_OPEN",
+      "basis": "Level 3.1 roadmap still contains a field-usability stage whose real evidence is not established by this audit."
+    },
+    {
+      "issue": "#26",
+      "decision": "CLOSE_COMPLETED",
+      "basis": "Current compositional intelligence preserves the frozen human_judgment enum and separates provenance, availability, consideration, authority and responsibility without a machine-level rename."
+    },
+    {
+      "issue": "#28",
+      "decision": "PRESERVE_OPEN",
+      "basis": "Field usability requires actual field cases; semantic implementation or synthetic tests are not substitute field evidence."
+    },
+    {
+      "issue": "#31",
+      "decision": "CLOSE_COMPLETED",
+      "basis": "Current review cues are purpose-relative, non-scalar, non-blocking and interface-local; they expose unknowns without mutating PoAI JSON or inferring facts."
+    },
+    {
+      "issue": "#73",
+      "decision": "CLOSE_COMPLETED",
+      "basis": "The legacy Level 4 architecture discovery family is superseded by current reusable binding/attestation and later identity/authority/materialization successor surfaces while preserving claim separation."
+    },
+    {
+      "issue": "#80",
+      "decision": "CLOSE_COMPLETED",
+      "basis": "The signature-binding RFC is implemented and the successor map classifies its deterministic-binding/signature family as SUPERSEDED_BY current reusable infrastructure without upgrading identity, authority, truth or canonicality."
+    }
+  ],
+  "authorized_post_merge_closures": ["#26", "#31", "#73", "#80"],
+  "preserved_open": ["#22", "#28"],
+  "non_effects": {
+    "historical_artifact_rewritten": false,
+    "field_evidence_fabricated": false,
+    "poai_v_conformance_created": false,
+    "truth_certified": false,
+    "identity_verified": false,
+    "authority_verified": false,
+    "universal_canonicality_created": false,
+    "execution_authority_created": false,
+    "external_effect_authority_created": false,
+    "release_authorized": false,
+    "live_observation_authorized": false
+  }
+}
