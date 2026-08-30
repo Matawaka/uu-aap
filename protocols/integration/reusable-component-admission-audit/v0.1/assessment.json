@@ -1,0 +1,127 @@
+{
+  "profile": "uu-aap.reusable-component-admission-audit.v0.1",
+  "issue": 763,
+  "origin_frontier": "2cf333d309dee79591cf559bf1b494e2bc828be3",
+  "decision_vocabulary": ["ADMIT", "REUSE_EXISTING", "DEFER", "REJECT"],
+  "admission_threshold": {
+    "minimum_independent_consumer_families": 2,
+    "requires_no_adequate_existing_reusable_interface": true,
+    "stable_core_promotion_implied": false,
+    "interface_registry_promotion_implied": false
+  },
+  "predecessor_evidence": {
+    "path": "pilots/kontur-game-companion/core-admission-assessment-v0.1/README.md",
+    "git_blob_sha1": "1aa12da4c5becdb050e3f53ce3841382545f9dac",
+    "meaning": "Pilot success does not establish reusable or Core demand."
+  },
+  "candidates": [
+    {
+      "id": "observation_provenance_profile",
+      "name": "Observation / Provenance Profile",
+      "decision": "REUSE_EXISTING",
+      "independent_consumer_families_proven": 0,
+      "reason": "The requested semantics are already decomposed into reusable bounded-observation, provenance-independence, and evidence-minimization interfaces. A new umbrella profile would duplicate composition without adding a distinct invariant.",
+      "reuse_evidence": [
+        {
+          "path": "protocols/integration/ambient-observability-non-identification/v0.1/README.md",
+          "git_blob_sha1": "8b229487f719e641f48a7cedf60e2b1803b0dbdb"
+        },
+        {
+          "path": "protocols/integration/circumstantial-provenance/v0.1/README.md",
+          "git_blob_sha1": "6937c35599d79a7562a055d834fb27f27f2f8ab7"
+        },
+        {
+          "path": "protocols/integration/event-hash-minimalism/v0.1/README.md",
+          "git_blob_sha1": "0000d831c15d74b8bd8186b5dad2f5b9ce6920b9"
+        }
+      ],
+      "missing_evidence": []
+    },
+    {
+      "id": "bounded_interaction_lifecycle",
+      "name": "Bounded Interaction Lifecycle",
+      "decision": "DEFER",
+      "independent_consumer_families_proven": 1,
+      "consumer_family_evidence": [
+        {
+          "family": "KONTUR game companion",
+          "path": "pilots/kontur-game-companion/bounded-interaction-evidence-envelope-v0.1/README.md",
+          "git_blob_sha1": "83c853054088f9f38b1d7b99b3a7cb4807376c79"
+        }
+      ],
+      "nearby_but_not_equivalent": {
+        "path": "protocols/integration/execution-lifecycle/v0.1/README.md",
+        "git_blob_sha1": "94dff538a0234d97a8e80c0330ed5af3450df7b3",
+        "reason": "Bounded Execution Lifecycle is for externally consequential execution and includes ActionPermit/execute semantics. Reusing it for ordinary interaction would collapse Interaction into Action and widen authority semantics."
+      },
+      "missing_evidence": [
+        "At least one additional independent non-KONTUR interaction consumer family with the same bounded lifecycle need.",
+        "A cross-domain phase vocabulary that does not import ActionPermit or external-actuation semantics into non-actuating interaction."
+      ]
+    },
+    {
+      "id": "generic_provenance_store",
+      "name": "Generic Provenance Store",
+      "decision": "DEFER",
+      "independent_consumer_families_proven": 0,
+      "semantic_evidence": [
+        {
+          "path": "protocols/integration/circumstantial-provenance/v0.1/README.md",
+          "git_blob_sha1": "6937c35599d79a7562a055d834fb27f27f2f8ab7"
+        },
+        {
+          "path": "protocols/integration/event-hash-minimalism/v0.1/README.md",
+          "git_blob_sha1": "0000d831c15d74b8bd8186b5dad2f5b9ce6920b9"
+        }
+      ],
+      "reason": "Current reusable provenance surfaces define evidence semantics and bounded commitments, not a common persistence contract. Storage policy must not be inferred from evidence semantics.",
+      "missing_evidence": [
+        "Two independent consumer families requiring the same persistence operations, retention semantics, and provenance query boundaries.",
+        "Evidence that a shared store reduces duplication without creating cross-context correlation, indefinite retention, or authority expansion."
+      ]
+    },
+    {
+      "id": "generic_receipt_runtime_helper",
+      "name": "Generic Receipt Runtime Helper",
+      "decision": "DEFER",
+      "independent_consumer_families_proven": 0,
+      "implementation_evidence": [
+        {
+          "path": "protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js",
+          "git_blob_sha1": "b922ebefd51589cbffc02eb0e25fb800c1e3cee6"
+        },
+        {
+          "path": "pilots/kontur-game-companion/bounded-interaction-evidence-envelope-v0.1/validate.py",
+          "git_blob_sha1": "3d2971ef1b996a6f8a5263af6428b76e561a7005"
+        },
+        {
+          "path": "protocols/integration/event-hash-minimalism/v0.1/validate-event-hash-minimalism.js",
+          "git_blob_sha1": "478a9fa510ffbc943d586ea41127bfb649cf114b"
+        }
+      ],
+      "reason": "The sampled validators are protocol-specific and even cross runtime/language boundaries. Similar validation mechanics do not yet prove one invariant-preserving runtime abstraction.",
+      "missing_evidence": [
+        "Two independent consumer families with demonstrably duplicated runtime operations after protocol-specific semantic checks are excluded.",
+        "A helper boundary proving that genericization cannot weaken receipt-specific invariants or turn validation into authority."
+      ]
+    }
+  ],
+  "overall": {
+    "result": "NO_ADMISSION",
+    "new_reusable_component_admitted": false,
+    "stable_core_promotion_authorized": false,
+    "interface_registry_entry_authorized": false,
+    "external_effect_authority_created": false,
+    "next_step": "REUSE_EXISTING_AND_WAIT_FOR_INDEPENDENT_DEMAND"
+  },
+  "non_effects": {
+    "external_observation": false,
+    "kontur_activation": false,
+    "transport_send": false,
+    "action_permit_creation": false,
+    "profiling": false,
+    "game_control": false,
+    "field_evidence_fabrication": false,
+    "release_or_tag": false
+  }
+}
