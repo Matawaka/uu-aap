@@ -1,0 +1,20 @@
+{
+  "schema": "urn:uu-aap:interop:external-governance-record:0.1",
+  "work_id": "urn:example:uu-aap:c2pa-interop:p0.2",
+  "edition_id": "fixture-2026.1",
+  "intent_governance": {
+    "actor": "human:fixture-authority",
+    "status": "declared"
+  },
+  "publication_authorization": {
+    "actor": "organization:fixture-publisher",
+    "status": "declared"
+  },
+  "epistemic_status": "provisional",
+  "contestability": {
+    "available": true,
+    "uri": "https://example.org/uu-aap/records/c2pa-external-reference-v0.1/disputes"
+  },
+  "fixture_only": true,
+  "note": "This external record is a synthetic interoperability fixture. Its governance claims are not derived from C2PA signer identity."
+}
