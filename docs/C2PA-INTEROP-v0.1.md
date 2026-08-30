@@ -1,21 +1,25 @@
 # C2PA 2.4 × UU-AAP — Semantic Boundary & Interoperability Profile v0.1
 
-**Status:** Non-normative interoperability draft  
+**Status:** Non-normative, evidence-informed interoperability profile  
 **Repository scope:** Additive documentation only  
 **C2PA baseline:** Technical Specification 2.4  
-**Related UU-AAP issue:** #4 — Review: Map UU-AAP claims to C2PA 2.4  
+**Primary execution roadmap:** #778 — CAI/C2PA common interfaces and public-benefit interoperability  
+**Related mapping review:** #4 — Map UU-AAP claims to C2PA 2.4  
+**Evidence frontier incorporated:** P0.1–P0.5 through `f29c0412aa61d5cb9feb0a0b17eb2aad98bf61e5`
 
-> C2PA can prove artifact provenance and the integrity of signed assertions. UU-AAP describes governance of meaning: intent, decision authority, scoped responsibility, decision trace, uncertainty and contestability. PoAI can additionally describe which intelligence was actually available before a decision. These layers should compose without being collapsed into one another.
+> C2PA artifact provenance, PoAI decision-time availability, and UU-AAP authority/responsibility are complementary evidence layers. They may reference one another, but none is allowed to silently promote the semantics of another.
 
-## 0. Coordination and parallel-work boundary
+## 0. Scope and coordination boundary
 
-This document is intentionally **collision-safe**.
+This document is intentionally **non-normative and collision-safe**.
 
-It does not modify `SPEC.md`, `PRINCIPLES.md`, `REFERENCES.md`, schemas, Core conformance, C2PA assertion registration, cryptographic implementation, or Profile V requirements. It is designed to remain useful if another branch, PR, agent or external contributor is simultaneously implementing C2PA support.
+It does not modify `SPEC.md`, `PRINCIPLES.md`, `REFERENCES.md`, schemas, UU-AAP Core conformance, C2PA conformance, C2PA trust infrastructure, cryptographic implementation, identity infrastructure, or Profile V requirements.
 
-If parallel C2PA work exists, this file SHOULD be treated as a **semantic-boundary proposal**, not as ownership of the implementation path. A later integration pass may reference, replace, split or supersede implementation-specific parts without silently weakening the distinctions recorded here.
+Issue #778 is now the primary executable interoperability workstream. Issue #4 remains useful for broader C2PA mapping review. The evidence summarized here comes from isolated runnable surfaces rather than from a claim that UU-AAP owns or replaces C2PA functionality.
 
-The purpose is to reduce one specific interoperability risk: importing cryptographically valid C2PA facts into UU-AAP with stronger semantics than those facts actually prove.
+The objective is narrow:
+
+> Reuse established provenance interfaces where they already solve the artifact problem, while preventing provenance facts from being inflated into authorship, truth, decision-time availability, authority, responsibility, or historical use without separate evidence.
 
 ## 1. Layering model
 
@@ -25,65 +29,66 @@ Recommended composition:
 Digital asset / released artifact
         │
         ▼
-C2PA 2.4
+C2PA
 artifact provenance • assertions • signatures • bindings
 AI disclosure • ingredients • actions • repository receipts
         │
         ▼
-PoAI (when applicable)
-decision-time availability • knowledge cutoff • alternatives
+PoAI (when decision-time availability matters)
+discoverability • reachability • authorization • temporal fit
+context sufficiency • execution capability • delivery • consideration
         │
         ▼
 UU-AAP
-governance of meaning • authority • responsibility
-concept lineage • decision trace • uncertainty • contestability
+governance of meaning • intent • authority • scoped responsibility
+uncertainty • contestability • successor records
         │
         ▼
-Publication / successor record / reviewed outcome
+Decision / publication / action / reviewed outcome
 ```
 
-The layers are complementary rather than hierarchical claims of truth. A valid lower-layer proof may support a higher-layer claim, but it does not automatically establish that claim.
+The arrows mean **evidence may be referenced across layers**. They do not mean that a lower layer automatically establishes a higher-layer claim.
 
 ## 2. Core semantic invariants
 
+These invariants were proposed before the executable work and remain intact after P0.1–P0.5.
+
 ### I1. C2PA signer ≠ UU-AAP author ≠ approver ≠ authority ≠ responsible actor
 
-A signer proves that a credential/key authorized a C2PA claim under the applicable trust model. That fact MUST NOT, by itself, be interpreted as proof that the signer:
+A signer fact MUST NOT, by itself, be interpreted as proof that the signer:
 
 - originated the work;
-- held `intent_governance` authority;
+- governed intent;
 - selected a concept;
 - approved editorial meaning;
 - authorized publication;
-- accepted factual, legal or other responsibility.
+- accepted factual, legal, editorial, or other responsibility.
 
-UU-AAP responsibility remains explicitly scoped and separately declared or attested.
+UU-AAP responsibility remains explicitly scoped and separately evidenced.
 
 ### I2. C2PA action ≠ UU-AAP decision
 
-A C2PA action can provide evidence that an operation occurred in the provenance of an asset. It does not, by itself, prove:
+A C2PA action may provide evidence that an operation occurred. It does not, by itself, prove:
 
 - why the operation was chosen;
 - which alternatives were considered or rejected;
-- who had decision authority;
-- whether the operation was accepted as meaningful rather than merely generated;
-- which uncertainty remained after the operation.
+- who held decision authority;
+- whether an output was accepted, relied on, or rejected;
+- which uncertainty remained.
 
-A `c2pa.actions` record MAY be evidence referenced by a UU-AAP decision trace. It MUST NOT replace the decision trace when decision provenance is material.
+A `c2pa.actions` record MAY support a decision trace. It MUST NOT replace decision provenance when decision provenance is material.
 
 ### I3. C2PA ingredient ≠ UU-AAP concept origin
 
-A C2PA ingredient describes an asset relationship in provenance. A UU-AAP concept-origin record describes intellectual genealogy.
+An ingredient describes an artifact/provenance relationship. A concept-origin record describes intellectual genealogy.
 
-An ingredient MAY support evidence for `source_derived` or another concept-origin declaration, but artifact lineage MUST NOT be automatically converted into concept lineage.
-
-The absence of a C2PA ingredient also MUST NOT be treated as proof that no external idea, source, conversation or prior concept influenced the work.
+Ingredient evidence MAY support a concept-origin claim, but artifact lineage MUST NOT be automatically converted into concept lineage. The absence of an ingredient also MUST NOT be treated as proof that no external idea or source influenced the work.
 
 ### I4. C2PA AI disclosure ≠ decision authority or responsibility
 
-C2PA `c2pa.ai-disclosure` and its human-oversight information are useful process evidence. They are intentionally coarser than the UU-AAP responsibility model.
+C2PA AI-disclosure and human-oversight information may be useful process evidence. They MUST NOT be lossily promoted into UU-AAP authorship, decision authority, publication authority, or responsibility scopes.
 
-For example, a C2PA-level statement that an output was human validated does not establish which human:
+A statement that an output was human validated does not, by itself, identify who:
 
 - governed intent;
 - selected concepts;
@@ -92,61 +97,196 @@ For example, a C2PA-level statement that an output was human validated does not 
 - authorized publication;
 - accepted a defined responsibility scope.
 
-Therefore C2PA AI-disclosure values SHOULD be preserved as external provenance observations and MUST NOT be lossily promoted into UU-AAP responsibility or authority scopes.
+### I5. Repository receipt ≠ truth, review, or authorization
 
-### I5. Repository receipt ≠ truth, review or authorization
+A repository receipt may support a durable provenance/publication fact. It MUST NOT be interpreted as proof that:
 
-A C2PA repository receipt can support durable evidence that a manifest was accepted by a repository under the relevant receipt mechanism.
-
-That receipt MUST NOT be interpreted as proof that:
-
-- the manifest is factually true;
+- the content is factually true;
 - all declarations are complete;
-- a reviewer independently checked the claims;
+- an independent reviewer checked the claims;
 - publication authority was valid;
-- a dispute does not exist.
+- no dispute exists.
 
-Repository presence is a transparency/provenance fact, not a universal trust verdict.
+Repository presence is not a universal trust verdict.
 
 ### I6. Cryptographic integrity ≠ epistemic truth
 
-C2PA validation and UU-AAP epistemic status remain separate dimensions.
+Cryptographic validation and epistemic status remain separate dimensions.
 
-A signed and correctly bound assertion MAY still correspond to a UU-AAP claim that is `provisional`, `speculative`, `disputed`, `unknown` or `not_verified`.
-
-Interfaces SHOULD report these dimensions separately.
+A correctly bound or signed assertion may still correspond to a claim that is `provisional`, `speculative`, `disputed`, `unknown`, or `not_verified`.
 
 ### I7. Artifact existence/provenance ≠ decision-time availability
 
-When PoAI is used, a C2PA-bound resource MAY establish that a particular artifact existed with a particular provenance. It does not establish that the resource was:
+A C2PA-bound or otherwise provenance-bearing resource may establish artifact existence or provenance. It does not establish that the resource was actually available for a specific historical decision.
 
-`discoverable -> reachable -> authorized -> contextualized -> callable -> delivered`
+When PoAI is used, availability remains multidimensional, including the existing Genesis dimensions:
 
-for a particular decision before its Decision Boundary / Knowledge Cutoff.
+```text
+identity
+ discoverability
+ reachability
+ authorization
+ temporal_fit
+ context_sufficiency
+ execution_capability
+ delivery
+```
 
-PoAI availability evidence remains a separate relation.
+Availability also remains distinct from consideration and reliance.
 
-## 3. Recommended interoperability mapping
+## 3. Executable evidence incorporated into this profile
 
-### 3.1 What C2PA should carry or bind
+The current profile is no longer based only on hypothetical mapping. P0.1–P0.5 produced the following bounded observations.
 
-A future UU-AAP C2PA assertion/profile SHOULD prefer a minimal, public, stable payload. Suitable candidates include:
+### 3.1 P0.1 — semantic-boundary rubric (#779)
 
-- `protocol`: `UU-AAP`;
-- `protocol_version`;
-- declared conformance profile;
-- stable `work_id` and `edition_id`;
-- URI/reference to the canonical or published UU-AAP manifest;
-- digest of the referenced UU-AAP manifest;
-- public verification instructions or verifier URI;
-- optional public AI-system identifiers when already intentionally disclosed;
-- optional pointer to a public contestability endpoint.
+Merged frontier: `e3972ad78e99f0efa1a1e252805e70e477dc97a2`.
 
-The objective is to bind **which UU-AAP record belongs to which released asset**, not to duplicate the entire governance record inside the asset.
+The executable rubric demonstrated that a C2PA-valid asset can still be interpreted unsafely by a consumer. In particular, the consumer-side inference:
 
-### 3.2 What should normally remain external and referenced
+```text
+C2PA signer -> UU-AAP author
+```
 
-The following SHOULD normally remain in a UU-AAP/PoAI record, private evidence store, transparency registry or separately signed attestation rather than be embedded wholesale into the released artifact:
+is rejected even when the C2PA artifact-validation surface succeeds.
+
+This establishes a reusable distinction:
+
+```text
+artifact validation PASS != application semantic interpretation PASS
+```
+
+### 3.2 P0.2 — standard external-reference binding (#780)
+
+Merged frontier: `4387d95046ac16264e05d0c14012501cef466dfd`.
+
+The first executable UU-AAP external-record binding did **not** require a dedicated UU-AAP C2PA assertion namespace.
+
+The tested path used the standard C2PA 2.4 `c2pa.external-reference` hashed variant:
+
+```text
+external UU-AAP record bytes
+        -> SHA-256
+        -> standard C2PA external reference
+        -> signed asset
+        -> re-validation
+        -> digest match
+```
+
+A one-byte mutation of the external record fails the binding check. Signer identity remains separate from UU-AAP governance semantics.
+
+**Current v0.1 recommendation:** prefer the standard external-reference mechanism for the first interoperable binding path. Do not introduce a custom UU-AAP assertion namespace unless a concrete, documented requirement cannot be satisfied by established C2PA mechanisms.
+
+### 3.3 P0.3 — cross-SDK preservation frontier (#783)
+
+Merged frontier: `22c656f39003cbdfff939516e6a3d9acca13d9c4`.
+
+P0.3 deliberately remains **`INCOMPLETE`**. The result is a causal compatibility matrix, not a score.
+
+At the pinned evidence frontiers:
+
+```text
+Swift unknown-field source contract -> PASS
+Swift external consumer round-trip  -> BLOCKED
+Android external-reference re-encode -> INCOMPATIBLE
+Android unknown modeled field        -> LOSSY
+```
+
+The important interoperability rule is:
+
+```text
+ignore unknown != preserve unknown
+```
+
+A consumer or adapter MUST NOT treat tolerant parsing as proof of lossless intermediary behavior.
+
+For the tested JSON fixtures, whitespace and object-key order are non-semantic, while values, JSON types, nesting, array order, and field presence are semantic. This equivalence rule does not redefine C2PA JUMBF/binary canonicalization.
+
+**Adapter rule:** a bounded adapter may bridge representation gaps, but it must expose loss/rejection explicitly and must not manufacture trust, authority, authorship, or responsibility to compensate for incompatibility.
+
+### 3.4 P0.4 — C2PA MCP -> PoAI -> UU-AAP agent composition (#784)
+
+Merged frontier: `9ff804a01c045601e3f5517dd9e3c919ba0b5674`.
+
+The executable composition intentionally returned three different answers:
+
+```text
+C2PA   -> CREDENTIALS_PRESENT
+PoAI   -> UNAVAILABLE_BEFORE_CUTOFF
+UU-AAP -> HUMAN_PUBLICATION_AUTHORITY
+```
+
+The same artifact can therefore have readable Content Credentials now while the corresponding evidence was unavailable before a historical decision cutoff. An agent may retrieve and analyze that evidence without acquiring publication authority.
+
+This demonstrates:
+
+```text
+provenance observation != historical availability
+availability != authority
+agent recommendation != decision authority
+```
+
+No aggregate trust/reputation score is introduced.
+
+### 3.5 P0.5 — field-evidence public-interest timeline (#785)
+
+Merged frontier: `f29c0412aa61d5cb9feb0a0b17eb2aad98bf61e5`.
+
+The pilot pinned a real external capture/provenance workflow frontier:
+
+```text
+guardianproject/proofmode-android
+b7588b9d6b5e0df892cc929bf7d76ca03d9f5c07
+README Git blob ab0309c2084e3daf00ec62b729d7e49e9fd2ad3d
+```
+
+The pinned README states C2PA support against specification release **2.3**. This profile does not promote that external implementation into a C2PA 2.4 conformance claim.
+
+The synthetic public-interest decision timeline produced four separate states:
+
+```text
+capture A -> PROVENANCE_EXISTS_NOT_AVAILABLE
+capture B -> AVAILABLE_NOT_USED
+agent C   -> USED_WITHOUT_DECISION_AUTHORITY
+UU-AAP    -> HUMAN_EDITOR authority/responsibility
+truth     -> NOT_ESTABLISHED
+```
+
+This directly demonstrates:
+
+```text
+existence != availability
+availability != use
+use != authority
+proof != truth
+```
+
+Late evidence may support a successor review, but MUST NOT be backfilled as historical availability or consideration.
+
+## 4. Current v0.1 binding profile
+
+### 4.1 Preferred binding path
+
+For the first interoperable profile, prefer:
+
+```text
+released asset
+   + C2PA manifest
+       + standard c2pa.external-reference
+           -> digest/reference to external UU-AAP/PoAI record
+```
+
+The external record remains independently retrievable/verifiable according to its own publication and privacy policy.
+
+The purpose of the C2PA binding is to answer:
+
+> Which external governance/availability record is cryptographically associated with this released artifact?
+
+It is not to copy the entire governance process into the asset.
+
+### 4.2 What should normally remain external
+
+The following SHOULD normally remain in UU-AAP/PoAI records, private evidence stores, transparency registries, or separately signed attestations rather than be embedded wholesale:
 
 - detailed decision traces;
 - rejected alternatives and private deliberation;
@@ -159,49 +299,59 @@ The following SHOULD normally remain in a UU-AAP/PoAI record, private evidence s
 - detailed authority proofs;
 - internal organizational responsibility records;
 - PoAI availability graphs and contextual access constraints;
-- dispute evidence that could expose protected parties;
+- protected dispute evidence;
 - redacted evidence contents.
 
-A digest, URI, selective-disclosure proof or reviewer attestation MAY bind such evidence without making the protected content public.
+A digest, URI/reference, selective-disclosure proof, or reviewer attestation MAY bind protected evidence without making the protected content public.
 
-### 3.3 C2PA `c2pa.ai-disclosure` bridge
+### 4.3 What may be useful to expose publicly
+
+Subject to the chosen profile and privacy policy, a public external record may expose stable identifiers and verification-oriented metadata such as:
+
+- protocol/version declaration;
+- stable work/edition identifiers;
+- public record URI;
+- digest algorithm and digest;
+- public verification instructions;
+- public contestability/successor-record endpoint;
+- public AI-system identifiers when intentionally disclosed.
+
+These are UU-AAP/PoAI record design choices. They are **not** a new C2PA assertion schema in v0.1.
+
+## 5. AI disclosure, actions, and ingredients bridges
+
+### 5.1 AI disclosure bridge
 
 Recommended rule:
 
-1. Preserve the C2PA AI-disclosure assertion as C2PA evidence.
-2. Reuse compatible public identifiers where practical (provider/model identifiers, if intentionally disclosed).
-3. Do not infer UU-AAP authorship, concept origin, authority or responsibility from the C2PA oversight category.
-4. If UU-AAP provides richer role information, keep that richer structure authoritative for UU-AAP semantics.
-5. If the two records conflict, report the conflict; do not silently normalize one into the other.
+1. Preserve C2PA AI-disclosure information as C2PA evidence.
+2. Reuse compatible public identifiers where useful and intentionally disclosed.
+3. Do not infer UU-AAP authorship, concept origin, authority, or responsibility from a C2PA oversight category.
+4. Keep richer UU-AAP role/authority structures separate.
+5. If records conflict, report the conflict; do not silently normalize one into the other.
 
-Possible relationship:
+Conceptually:
 
 ```text
 C2PA AI disclosure
-  └─ evidence/reference ─> UU-AAP ai_participation[]
-
-UU-AAP ai_participation[]
-  └─ does not automatically derive ─> responsibility[]
+  -> evidence/reference for AI participation
+  -/> automatic authority/responsibility
 ```
 
-### 3.4 C2PA actions bridge
+### 5.2 Actions bridge
 
-A C2PA action MAY be referenced as evidence for a UU-AAP provenance dimension, for example drafting, editing, visuals or publication.
-
-Recommended relationship:
+A C2PA action MAY be referenced as evidence for a provenance dimension and MAY participate in a decision trace.
 
 ```text
 C2PA action
-   └─ proves/attests operation provenance
-        └─ MAY support
-             UU-AAP provenance record
-                 └─ MAY participate in
-                      UU-AAP decision trace
+   -> operation-provenance evidence
+      -> may support UU-AAP provenance
+         -> may participate in a decision trace
 ```
 
 The reverse inference is not automatic: a UU-AAP decision does not prove that a particular technical operation occurred unless corresponding evidence exists.
 
-### 3.5 Ingredient bridge
+### 5.3 Ingredient bridge
 
 A C2PA ingredient MAY be referenced from:
 
@@ -209,51 +359,38 @@ A C2PA ingredient MAY be referenced from:
 - a concept-lineage evidence record;
 - a released-artifact lineage record.
 
-It SHOULD preserve the C2PA identifier/manifest reference rather than re-state provenance in a lossy local form.
+The original C2PA identifier/manifest relationship SHOULD be preserved rather than restated in a lossy local form.
 
-## 4. Repository receipts and UU-AAP/V
+## 6. Repository receipts and durable publication
 
-C2PA 2.4 repository receipts are a strong candidate for one implementation of the durable public record expected by UU-AAP/V.
+C2PA repository receipts remain a promising candidate interface for durable-publication evidence in a future UU-AAP/V integration.
 
-Recommended interpretation:
-
-```text
-UU-AAP manifest digest
-       │
-       ├── bound/referenced by C2PA manifest
-       │
-released asset
-       │
-       ▼
-C2PA repository
-       │
-       ▼
-repository receipt
-```
-
-A verifier can then report separate facts such as:
+A verifier may eventually report separate facts such as:
 
 ```text
 Artifact binding: valid
 C2PA signature: valid
 Repository receipt: present
-UU-AAP manifest digest: matches
-UU-AAP profile: declared V
-Responsibility scopes: present
-Independent review: none / present / disputed
-Epistemic status: mixed
+UU-AAP external record digest: matches
+UU-AAP profile: declared
+Publication authority: actor/scope declared
+Independent review: absent / present / disputed
+Epistemic status: asserted / mixed / disputed
+PoAI availability: not evaluated / evaluated separately
 ```
 
-No single result should be collapsed into a protocol-defined “truth score”.
+No receipt or combined display should be collapsed into a protocol-defined truth or trust score.
 
-## 5. Contestability and successor records
+Repository-receipt requirements are **not made normative by this document**.
+
+## 7. Contestability and successor records
 
 C2PA provenance and UU-AAP contestability should compose without mutating history.
 
 Recommended pattern:
 
 ```text
-Asset A + C2PA Manifest A + UU-AAP Manifest A
+Asset A + C2PA Manifest A + UU-AAP/PoAI Record A
                      │
                  challenge
                      │
@@ -263,16 +400,20 @@ Asset A + C2PA Manifest A + UU-AAP Manifest A
               correction/review
                      │
                      ▼
-Asset/Manifest successor B
+Asset/Manifest/Record successor B
 ```
 
-A correction SHOULD create a successor record rather than silently rewrite the prior UU-AAP record. Where C2PA update/manifest lineage is available, it MAY participate in the successor binding, while the UU-AAP dispute/appeal semantics remain explicit at the governance layer.
+A correction SHOULD create a successor record rather than silently rewrite the prior decision-time state.
 
-## 6. Privacy and proportional disclosure
+P0.5 adds an important temporal rule:
+
+> Evidence arriving after a historical knowledge cutoff may justify a successor review, but it does not become retroactively available or considered in the predecessor decision.
+
+## 8. Privacy and proportional disclosure
 
 Interoperability MUST NOT turn C2PA embedding into a reason to expose more human process data than UU-AAP otherwise requires.
 
-The integration should preserve these UU-AAP principles:
+Preserve:
 
 - selective disclosure;
 - least evidence necessary for the chosen profile;
@@ -282,117 +423,125 @@ The integration should preserve these UU-AAP principles:
 - no biometric typing evidence for ordinary conformance;
 - no inference of misconduct merely because evidence is redacted.
 
-A public C2PA asset should normally carry enough information to locate and verify the relevant UU-AAP record, not a surveillance archive of the creative process.
+A public C2PA asset should normally carry or bind enough information to locate and verify the relevant external record, not a surveillance archive of the creative process.
 
-## 7. Failure cases the interoperability layer must resist
+## 9. Failure cases the interoperability layer must resist
 
 ### F1. Responsibility laundering through signer identity
 
-**Bad inference:** “The publisher's C2PA certificate signed the PDF; therefore the publisher accepts all factual responsibility.”  
-**Required behavior:** report signer identity separately from UU-AAP responsibility scopes.
+**Bad inference:** “The publisher's C2PA certificate signed the artifact; therefore the publisher accepts all factual responsibility.”  
+**Required behavior:** signer identity and UU-AAP responsibility scopes remain separate.
 
 ### F2. Human-validation laundering
 
-**Bad inference:** “C2PA says `human_validated`; therefore this is human-authored under UU-AAP.”  
-**Required behavior:** retain the C2PA oversight declaration but require independent UU-AAP role/authority/responsibility evidence.
+**Bad inference:** “C2PA says human validated; therefore the work is human-authored or human-responsible under UU-AAP.”  
+**Required behavior:** retain the C2PA observation and require separate UU-AAP role/authority/responsibility evidence.
 
 ### F3. Action laundering
 
-**Bad inference:** “The action history says `edited`; therefore a human meaningfully reviewed the claim.”  
-**Required behavior:** action provenance is not decision provenance.
+**Bad inference:** “The provenance history says edited; therefore a human meaningfully reviewed the claim.”  
+**Required behavior:** operation provenance is not decision provenance.
 
 ### F4. Ingredient laundering
 
-**Bad inference:** “Source X is an ingredient, therefore concept Y originated from X.”  
-**Required behavior:** require an explicit concept-origin declaration/evidence relation.
+**Bad inference:** “Source X is an ingredient; therefore concept Y originated from X.”  
+**Required behavior:** require an explicit concept-origin relation/evidence claim.
 
 ### F5. Receipt-as-trust-badge
 
-**Bad inference:** “Repository receipt present; content is trustworthy.”  
-**Required behavior:** expose receipt/integrity separately from factual review, responsibility, epistemic status and disputes.
+**Bad inference:** “Repository receipt present; content is trustworthy/true.”  
+**Required behavior:** expose receipt/integrity separately from factual review, responsibility, epistemic status, and disputes.
 
 ### F6. Hindsight injection into PoAI
 
-**Bad inference:** “The C2PA-bound source existed before the event; therefore it was available to the decision-maker.”  
-**Required behavior:** evaluate PoAI availability against the actual Decision Boundary / Knowledge Cutoff and access constraints.
+**Bad inference:** “The source existed before the event; therefore it was available to the decision-maker.”  
+**Required behavior:** evaluate actual decision-time availability against the Decision Boundary / Knowledge Cutoff and access/delivery conditions.
 
-## 8. Proposed minimal assertion shape (illustrative, non-registered)
+### F7. Availability-as-use
 
-This is **illustrative only**. It is not a registered C2PA assertion namespace and does not define conformance.
+**Bad inference:** “The source was available before the cutoff; therefore it was considered.”  
+**Required behavior:** consideration/reliance requires separate evidence.
 
-```json
-{
-  "protocol": "UU-AAP",
-  "protocol_version": "0.1",
-  "profile": "V",
-  "work_id": "urn:example:work:123",
-  "edition_id": "2026.1",
-  "manifest": {
-    "uri": "https://example.org/uu-aap/manifest.json",
-    "digest_alg": "sha256",
-    "digest": "..."
-  },
-  "contestability": {
-    "uri": "https://example.org/uu-aap/disputes"
-  }
-}
-```
+### F8. Use-as-authority
 
-The payload intentionally avoids embedding detailed responsibility records, private evidence or decision traces by default.
+**Bad inference:** “The AI analysis was considered; therefore the AI had decision authority.”  
+**Required behavior:** authority remains explicitly scoped and independent of use.
 
-## 9. Verification UI boundary
+### F9. SDK-tolerance-as-preservation
 
-A verifier combining C2PA and UU-AAP SHOULD render independent dimensions rather than a single badge:
+**Bad inference:** “The SDK accepted an unknown field; therefore it will preserve that field on re-encode.”  
+**Required behavior:** distinguish accepted, preserved, lossy, blocked, and incompatible surfaces.
+
+### F10. External-version promotion
+
+**Bad inference:** “A capture workflow supports C2PA, therefore it conforms to the C2PA 2.4 baseline used by this profile.”  
+**Required behavior:** preserve the actual pinned implementation/version claim. Do not upgrade it by association.
+
+## 10. Verification UI boundary
+
+A verifier combining the layers SHOULD render independent dimensions rather than one badge.
 
 | Dimension | Example result |
 |---|---|
-| C2PA artifact binding | valid |
-| C2PA claim signature | valid |
-| C2PA repository receipt | present |
-| UU-AAP manifest digest | matches |
-| UU-AAP profile | V (declared) |
+| C2PA artifact/claim validation | valid / invalid / not evaluated |
+| External UU-AAP record binding | matches / mismatch / unresolved |
+| SDK preservation surface | PASS / LOSSY / BLOCKED / INCOMPATIBLE / not evaluated |
+| PoAI decision-time availability | available / partial / unavailable / unknown |
+| Consideration/reliance | not used / considered / relied upon / unknown |
 | Intent governance | actor/scope declared |
 | Publication authorization | actor/scope declared |
-| Independent review | absent / present |
-| Epistemic status | asserted / mixed / disputed |
-| Contestability | available |
-| PoAI availability | not evaluated / evaluated separately |
+| Scoped responsibility | actor/scope declared |
+| Epistemic status | asserted / mixed / disputed / not verified |
+| Contestability | available / unavailable |
+| Successor review | none / available / present |
 
-The UI MUST NOT imply that C2PA validity proves UU-AAP responsibility, that UU-AAP responsibility proves factual truth, or that PoAI availability proves reliance/action.
+The UI MUST NOT imply that C2PA validity proves UU-AAP responsibility, that UU-AAP responsibility proves factual truth, that PoAI availability proves use, or that use proves authority.
 
-## 10. Integration strategy for parallel implementation work
+## 11. Resolved and open questions
 
-To minimize merge conflict with any simultaneous C2PA work:
+### Resolved for the current v0.1 path
 
-1. Keep this semantic document additive and isolated.
-2. Do not modify existing normative files in the same pass.
-3. Allow implementation branches to introduce schemas, examples, C2PA tooling or registered assertion proposals independently.
-4. Before normative adoption, re-audit any implementation against invariants I1–I7.
-5. If an implementation requires weakening an invariant, open an explicit issue with the counterexample and rationale rather than silently changing semantics.
-6. Prefer references to stable C2PA identifiers over copying C2PA semantics into UU-AAP-specific fields.
-7. Treat Issue #4 as the coordination point until a dedicated interoperability workstream is explicitly established.
+1. **Dedicated C2PA namespace now?** No for the first binding path. P0.2 demonstrated a standard `c2pa.external-reference` hashed binding. A custom namespace should require a concrete unmet need.
+2. **Embed the full governance trace?** No by default. Keep detailed UU-AAP/PoAI evidence external and bind it minimally.
+3. **Can artifact existence stand in for PoAI availability?** No. P0.4/P0.5 demonstrate the distinction executably.
+4. **Can availability stand in for consideration?** No. P0.5 demonstrates `AVAILABLE_NOT_USED`.
+5. **Can considered AI output stand in for decision authority?** No. P0.4/P0.5 keep the agent recommendation-only.
+6. **Can tolerant unknown-field parsing be treated as preservation?** No. P0.3 demonstrates explicit LOSSY/INCOMPATIBLE/BLOCKED states.
 
-## 11. Open questions for Issue #4
+### Still open
 
-1. Should UU-AAP register a dedicated C2PA assertion namespace, or should v0.1 use a generic external-manifest reference first?
-2. Which fields are safe and useful to embed directly versus reference externally?
-3. Should `work_id`/`edition_id` be duplicated in the C2PA assertion for offline verification convenience?
-4. Which C2PA action classes should map to UU-AAP provenance dimensions, if any mapping is standardized?
-5. How should conflicting C2PA AI disclosure and UU-AAP AI-participation declarations be displayed?
-6. What receipt requirements, if any, should become normative for a future UU-AAP/V revision?
-7. How should EPUB, PDF, HTML and structured-text packaging differences affect the reference profile?
-8. How should successor manifests preserve both C2PA lineage and UU-AAP dispute/correction lineage?
+1. Should `work_id` / `edition_id` be duplicated in any offline-oriented public binding surface for convenience?
+2. Which C2PA action classes, if any, merit a standardized mapping to UU-AAP provenance dimensions?
+3. How should conflicting C2PA AI-disclosure and UU-AAP AI-participation declarations be displayed?
+4. What repository-receipt requirements, if any, should become normative for a future UU-AAP/V revision?
+5. How should EPUB, PDF, HTML, Markdown, and structured-text packaging differences affect reference resolution?
+6. How should successor manifests preserve both C2PA lineage and UU-AAP dispute/correction lineage?
+7. Which bounded adapters are acceptable while official SDK preservation frontiers remain incomplete?
+8. Which publishing/CMS interface is the best P0.6 reference implementation for publication authorization separate from signer identity, authorship, AI participation, and truth?
 
-## 12. Reference baseline
+## 12. Integration strategy
 
-- C2PA Technical Specification 2.4: https://spec.c2pa.org/specifications/specifications/2.4/specs/C2PA_Specification.html
-- C2PA Content Credentials guidance: https://spec.c2pa.org/specifications/specifications/2.4/specs/ContentCredentials.html
+1. Keep this document non-normative and additive.
+2. Use #778 as the executable interoperability roadmap and #4 as the broader mapping-review surface.
+3. Prefer established C2PA mechanisms over new UU-AAP-specific provenance infrastructure.
+4. Keep private governance evidence external unless embedding is necessary and justified.
+5. Bind external records with minimum necessary public data.
+6. Re-audit new implementations against I1–I7 and F1–F10.
+7. Preserve explicit causal states instead of aggregate compatibility/trust scores.
+8. Treat SDK and external implementation versions as pinned evidence frontiers, not timeless capability claims.
+9. Keep `protocols/core/**` unchanged unless a separate normative process explicitly authorizes a Core change.
+
+## 13. Reference baseline
+
+- C2PA Technical Specification 2.4
+- C2PA Content Credentials guidance
 - UU-AAP `SPEC.md`, especially §§19–23
-- UU-AAP `PRINCIPLES.md`, especially Verification is not truth, proportional transparency, durable history and contestability
-- PoAI Genesis Principles, especially Existence is not availability, Availability is not use, Use is not authority, Proof is not truth
+- UU-AAP `PRINCIPLES.md`, especially verification-is-not-truth, proportional transparency, durable history, and contestability
+- PoAI Genesis schema/principles, especially Existence is not availability, Availability is not use, Use is not authority, Proof is not truth
+- #778 executable evidence surfaces P0.1–P0.5
 
 ---
 
 ### Compact interoperability rule
 
-> **C2PA proves artifact provenance; UU-AAP describes governance of meaning; PoAI describes decision-time availability. Evidence may cross these boundaries, but semantics must not be silently promoted across them.**
+> **C2PA describes/proves bounded artifact provenance facts; PoAI describes bounded decision-time availability and use; UU-AAP describes bounded authority and responsibility. Evidence may cross these boundaries, but semantics must not be silently promoted across them.**
