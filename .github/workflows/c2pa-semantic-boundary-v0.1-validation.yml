@@ -62,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          "$C2PA_BIN" /tmp/source.png --create digitalCapture --output /tmp/c2pa-live.png --force
+          "$C2PA_BIN" /tmp/source.png --config '{}' --create digitalCapture --output /tmp/c2pa-live.png --force
           test -s /tmp/c2pa-live.png
       - name: Validate freshly generated C2PA asset
         shell: bash
