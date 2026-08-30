@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "uuaap-verifier-presentation"
-version = "0.7.0"
-description = "Reusable seven-dimension UU-AAP verifier presentation with bounded evidence, contestability, attestation and candidate federation"
+version = "0.8.0"
+description = "Reusable seven-dimension UU-AAP verifier presentation with bounded evidence, contestability, attestation, federation and explicit federated disposition"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Apache-2.0 OR MIT"}
