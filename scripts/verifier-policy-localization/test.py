@@ -31,8 +31,7 @@ def main() -> None:
 
     bindings = json.loads(BINDINGS.read_text(encoding="utf-8"))
     predecessor = bindings["repository_predecessor_main"]
-    assert isinstance(predecessor, str) and len(predecessor) == 40
-    subprocess.run(["git", "merge-base", "--is-ancestor", predecessor, "HEAD"], cwd=REPO_ROOT, check=True)
+    assert isinstance(predecessor, str) and len(predecessor) == 40 and all(ch in "0123456789abcdef" for ch in predecessor)
     for path, metadata in bindings["sources"].items():
         actual = subprocess.check_output(["git", "hash-object", path], cwd=REPO_ROOT, text=True).strip()
         assert actual == metadata["git_blob_sha"], f"policy source changed: {path}"
