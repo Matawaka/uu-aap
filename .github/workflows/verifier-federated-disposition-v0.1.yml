@@ -1,0 +1,201 @@
+name: P1.10 Federated Candidate Disposition v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-*/**'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
+      - '.github/workflows/verifier-federated-disposition-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-federated-disposition/**'
+      - '.github/workflows/verifier-federated-disposition-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: explicit federated disposition without source weighting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install package and schema validator outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+      - name: Prove P1.10 API is independently importable
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp
+          python - <<'PY'
+          import uuaap_verifier_presentation as v
+          assert v.FEDERATED_DISPOSITION_SCOPE == 'verifier_federated_candidate_materialization'
+          assert v.FEDERATED_DISPOSITION_INPUT_SCHEMA == 'urn:uu-aap:federated-candidate-disposition-input:0.1'
+          assert v.FEDERATED_DISPOSITION_RESULT_SCHEMA == 'urn:uu-aap:federated-candidate-disposition-result:0.1'
+          assert callable(v.build_federated_disposition_input)
+          assert callable(v.materialize_federated_disposition)
+          assert callable(v.validate_federated_disposition_input)
+          assert callable(v.validate_federated_disposition_result)
+          print('installed reusable P1.10 API: PASS')
+          PY
+      - name: Bind exact P1.5 and P1.9 historical implementations
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/acceptance.py)" = 'cfa17d11a01888422dd4f5c4a606142792dee5b9'
+          test "$(git hash-object packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federation.py)" = '1398d303ca3f5786af21754cbe8c39ceaa9a844c'
+      - name: Validate P1.10 schemas and implementation syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federated_disposition.py'),
+              Path('scripts/verifier-federated-disposition/build_disposition_site.py'),
+              Path('scripts/verifier-federated-disposition/localize_disposition.py'),
+              Path('scripts/verifier-federated-disposition/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          node --check scripts/verifier-federated-disposition/app.js
+          node --check scripts/verifier-federated-disposition/test-browser.js
+          python - <<'PY'
+          import json, sys
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root=Path('.')
+          sys.path.insert(0, str(root/'scripts/verifier-federated-disposition'))
+          import build_disposition_site as b
+          from uuaap_verifier_presentation import materialize_federated_disposition
+          record=b.build_example_input()
+          result=materialize_federated_disposition(record)
+          input_schema=json.loads((root/'scripts/verifier-federated-disposition/input.schema.json').read_text(encoding='utf-8'))
+          result_schema=json.loads((root/'scripts/verifier-federated-disposition/result.schema.json').read_text(encoding='utf-8'))
+          Draft202012Validator.check_schema(input_schema); Draft202012Validator.check_schema(result_schema)
+          Draft202012Validator(input_schema).validate(record); Draft202012Validator(result_schema).validate(result)
+          print('P1.10 schemas: PASS')
+          PY
+      - name: Prove explicit disposition and Python/browser equivalence
+        run: python scripts/verifier-federated-disposition/test.py
+      - name: Re-run P1.1 through P1.9 verifier firewalls
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+          python scripts/verifier-policy-localization/test.py
+          python scripts/verifier-contestability/test.py
+          python scripts/verifier-scoped-attestations/test.py
+          python scripts/verifier-candidate-federation/test.py
+      - name: Build full local Pages artifact through P1.10 with localization last
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-distribution-surface/build_site.py --output "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          python scripts/verifier-interactive-surface/build_interactive_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-evidence-adapter/build_adapter_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-acceptance/build_acceptance_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/build_contestability_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-scoped-attestations/build_attestation_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-federation/build_candidate_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-federated-disposition/build_disposition_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          for file in example.json example-result.json materialized-input.json; do
+            test -s "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/${file}"
+            cp "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/${file}" "${RUNNER_TEMP}/disposition-${file}.before"
+          done
+          python scripts/verifier-policy-localization/build_policy_l10n.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/localize_contestability.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-scoped-attestations/localize_attestation.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-federation/localize_candidates.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-federated-disposition/localize_disposition.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          for file in example.json example-result.json materialized-input.json; do
+            cmp --silent "${RUNNER_TEMP}/disposition-${file}.before" "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/${file}"
+          done
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"
+          grep -q 'data-i18n="root.disposition_link"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          grep -q 'data-i18n="disposition.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"
+          grep -q '../candidates/app.js' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"
+          grep -q '../interactive/app.js' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from uuaap_verifier_presentation import validate_interactive_input
+          path=Path(os.environ['RUNNER_TEMP'])/'uuaap-pages/verifier/disposition/materialized-input.json'
+          validate_interactive_input(json.loads(path.read_text(encoding='utf-8')))
+          print('deployed P1.10 materialized P1.3 input: PASS')
+          PY
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/disposition/index.html"; then
+            echo 'ERROR: P1.10 disposition page introduced an external network target' >&2
+            exit 1
+          fi
+          node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
+      - name: Confirm Core and historical P1.4/P1.5/P1.8/P1.9 semantics remain unmodified
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          guarded=(
+            protocols/core/
+            SPEC.md
+            CONTESTABILITY.md
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/acceptance.py
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/attestations.py
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federation.py
+            scripts/verifier-evidence-adapter/
+            scripts/verifier-candidate-acceptance/
+            scripts/verifier-scoped-attestations/
+            scripts/verifier-candidate-federation/
+          )
+          if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.10 modified Core/SPEC or historical verifier implementations' >&2
+            git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P1.10 federated disposition acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'federated candidate != accepted claim'
+          echo 'every candidate -> explicit ACCEPT | REJECT | DEFER'
+          echo 'single ACCEPT per dimension'
+          echo 'source family/order/count != priority'
+          echo 'evaluation state != automatic selection'
+          echo 'REJECT/DEFER != negative evidence'
+          echo 'accepted identity != authority/responsibility'
+          echo 'accepted authority != responsibility'
+          echo 'historical P1.5 remains adapter-only'
+          echo 'aggregate verdict -> FORBIDDEN'
+          echo 'PASS: P1.10 Federated Candidate Disposition v0.1'

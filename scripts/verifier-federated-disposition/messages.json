@@ -1,0 +1,36 @@
+{
+  "en": {
+    "root.disposition_link": "Open the local federated candidate disposition gate",
+    "disposition.heading": "UU-AAP Local Federated Candidate Disposition",
+    "disposition.description": "Apply explicit ACCEPT, REJECT or DEFER decisions to every validated P1.9 federated candidate, with at most one accepted candidate per verifier dimension.",
+    "disposition.privacy": "Privacy boundary: selected files and pasted JSON stay in this browser. This page has no server upload, model, analytics or external runtime dependency.",
+    "disposition.semantic": "Semantic boundary: disposition is explicit selection, not truth, identity, authority or reputation. Source family, source order, source count and evaluation state never select a winner automatically. REJECT and DEFER are not negative evidence.",
+    "disposition.candidates_link": "Open the P1.9 federated candidate set",
+    "disposition.accept_link": "Open the historical P1.5 adapter-only acceptance gate",
+    "disposition.interactive_link": "Open the P1.3 explicit-input verifier",
+    "disposition.reference_link": "Open the immutable seven-dimension reference verifier",
+    "disposition.example_link": "Open the example disposition input JSON",
+    "disposition.result_link": "Open the example disposition result JSON",
+    "disposition.materialized_link": "Open the materialized P1.3 input JSON",
+    "disposition.file_label": "Select a local federated disposition JSON file:",
+    "disposition.paste_label": "Or paste/edit federated candidate set + explicit dispositions:",
+    "disposition.action": "Apply explicit dispositions"
+  },
+  "ru": {
+    "root.disposition_link": "Открыть локальный gate disposition для федеративных кандидатов",
+    "disposition.heading": "Локальный disposition федеративных кандидатов UU-AAP",
+    "disposition.description": "Применить явные решения ACCEPT, REJECT или DEFER ко всем валидированным федеративным кандидатам P1.9, принимая не более одного кандидата на измерение verifier.",
+    "disposition.privacy": "Граница приватности: выбранные файлы и вставленный JSON остаются в этом браузере. Страница не выполняет загрузку на сервер, вызовы модели, аналитику или внешние runtime-зависимости.",
+    "disposition.semantic": "Семантическая граница: disposition — это явный выбор, а не истина, идентичность, полномочие или репутация. Семейство, порядок и число источников, а также evaluation state никогда не выбирают победителя автоматически. REJECT и DEFER не являются отрицательным evidence.",
+    "disposition.candidates_link": "Открыть федеративный набор кандидатов P1.9",
+    "disposition.accept_link": "Открыть исторический adapter-only acceptance gate P1.5",
+    "disposition.interactive_link": "Открыть explicit-input verifier P1.3",
+    "disposition.reference_link": "Открыть неизменяемый эталонный семимерный verifier",
+    "disposition.example_link": "Открыть пример входного JSON disposition",
+    "disposition.result_link": "Открыть пример JSON результата disposition",
+    "disposition.materialized_link": "Открыть материализованный входной JSON P1.3",
+    "disposition.file_label": "Выберите локальный JSON-файл federated disposition:",
+    "disposition.paste_label": "Или вставьте/отредактируйте федеративный набор кандидатов и явные dispositions:",
+    "disposition.action": "Применить явные dispositions"
+  }
+}

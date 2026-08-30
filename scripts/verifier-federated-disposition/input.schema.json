@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:federated-candidate-disposition-input:0.1",
+  "title": "UU-AAP P1.10 Federated Candidate Disposition Input v0.1",
+  "type": "object",
+  "required": ["schema", "federated_candidate_set", "disposition_event"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:federated-candidate-disposition-input:0.1"},
+    "federated_candidate_set": {
+      "type": "object",
+      "required": ["schema", "artifact", "candidate_buckets"],
+      "properties": {
+        "schema": {"const": "urn:uu-aap:federated-candidate-set:0.1"},
+        "artifact": {"$ref": "#/$defs/artifact"},
+        "candidate_buckets": {"type": "object"}
+      }
+    },
+    "disposition_event": {
+      "type": "object",
+      "required": ["id", "actor_ref", "scope", "dispositions"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "actor_ref": {"type": "string", "minLength": 1},
+        "scope": {"const": "verifier_federated_candidate_materialization"},
+        "dispositions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["federated_candidate_id", "decision", "rationale"],
+            "properties": {
+              "federated_candidate_id": {"type": "string", "minLength": 1},
+              "decision": {"enum": ["ACCEPT", "REJECT", "DEFER"]},
+              "rationale": {"type": "string", "minLength": 1}
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

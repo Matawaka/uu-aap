@@ -1,0 +1,13 @@
+{
+  "predecessor_main": "e5902e3d59877376f046ea3f1ea87b86675dc511",
+  "p1_5_acceptance": {
+    "path": "packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/acceptance.py",
+    "blob": "cfa17d11a01888422dd4f5c4a606142792dee5b9",
+    "dispositions": ["ACCEPT", "DEFER", "REJECT"]
+  },
+  "p1_9_federation": {
+    "path": "packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federation.py",
+    "blob": "1398d303ca3f5786af21754cbe8c39ceaa9a844c",
+    "result_schema": "urn:uu-aap:federated-candidate-set:0.1"
+  }
+}

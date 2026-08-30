@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:federated-candidate-disposition-result:0.1",
+  "title": "UU-AAP P1.10 Federated Candidate Disposition Result v0.1",
+  "type": "object",
+  "required": [
+    "schema", "artifact", "federated_candidate_set", "disposition_event",
+    "accepted_candidate_ids", "rejected_candidate_ids", "deferred_candidate_ids",
+    "disposition_receipts", "materialized_interactive_input", "disposition_policy",
+    "aggregate_score_present", "aggregate_verdict_present"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:federated-candidate-disposition-result:0.1"},
+    "artifact": {"$ref": "#/$defs/artifact"},
+    "federated_candidate_set": {
+      "type": "object",
+      "required": ["schema", "artifact"],
+      "properties": {
+        "schema": {"const": "urn:uu-aap:federated-candidate-set:0.1"},
+        "artifact": {"$ref": "#/$defs/artifact"}
+      }
+    },
+    "disposition_event": {"type": "object"},
+    "accepted_candidate_ids": {"$ref": "#/$defs/idArray"},
+    "rejected_candidate_ids": {"$ref": "#/$defs/idArray"},
+    "deferred_candidate_ids": {"$ref": "#/$defs/idArray"},
+    "disposition_receipts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["federated_candidate_id", "source_family", "source_candidate_id", "source_observation_id", "dimension", "decision", "rationale"],
+        "properties": {
+          "federated_candidate_id": {"type": "string", "minLength": 1},
+          "source_family": {"enum": ["P1.4_ADAPTER", "P1.8_ATTESTATION"]},
+          "source_candidate_id": {"type": "string", "minLength": 1},
+          "source_observation_id": {"type": "string", "minLength": 1},
+          "dimension": {"enum": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"]},
+          "decision": {"enum": ["ACCEPT", "REJECT", "DEFER"]},
+          "rationale": {"type": "string", "minLength": 1}
+        },
+        "additionalProperties": false
+      }
+    },
+    "materialized_interactive_input": {
+      "type": "object",
+      "required": ["schema", "artifact", "evidence_items", "dimension_claims", "related_observations", "warnings", "disputes"],
+      "properties": {
+        "schema": {"const": "urn:uu-aap:interactive-verifier-input:0.1"},
+        "artifact": {"$ref": "#/$defs/artifact"},
+        "evidence_items": {"type": "array"},
+        "dimension_claims": {"type": "object"},
+        "related_observations": {"type": "object"},
+        "warnings": {"type": "array"},
+        "disputes": {"type": "array"}
+      },
+      "additionalProperties": false
+    },
+    "disposition_policy": {
+      "type": "object",
+      "required": [
+        "all_candidates_require_explicit_disposition", "single_accept_per_dimension_required", "source_provenance_preserved",
+        "actor_ref_establishes_identity", "actor_ref_establishes_authority", "acceptance_strengthens_claim_semantics",
+        "auto_selection_permitted", "source_family_priority_permitted", "source_order_priority_permitted", "evaluation_ranking_permitted",
+        "reject_is_negative_evidence", "defer_is_negative_evidence", "auxiliary_attestations_dispositionable",
+        "cross_dimension_promotion_permitted", "identity_to_authority_promotion_permitted", "truth_promotion_permitted",
+        "aggregate_score_permitted", "aggregate_verdict_permitted"
+      ],
+      "properties": {
+        "all_candidates_require_explicit_disposition": {"const": true},
+        "single_accept_per_dimension_required": {"const": true},
+        "source_provenance_preserved": {"const": true},
+        "actor_ref_establishes_identity": {"const": false},
+        "actor_ref_establishes_authority": {"const": false},
+        "acceptance_strengthens_claim_semantics": {"const": false},
+        "auto_selection_permitted": {"const": false},
+        "source_family_priority_permitted": {"const": false},
+        "source_order_priority_permitted": {"const": false},
+        "evaluation_ranking_permitted": {"const": false},
+        "reject_is_negative_evidence": {"const": false},
+        "defer_is_negative_evidence": {"const": false},
+        "auxiliary_attestations_dispositionable": {"const": false},
+        "cross_dimension_promotion_permitted": {"const": false},
+        "identity_to_authority_promotion_permitted": {"const": false},
+        "truth_promotion_permitted": {"const": false},
+        "aggregate_score_permitted": {"const": false},
+        "aggregate_verdict_permitted": {"const": false}
+      },
+      "additionalProperties": false
+    },
+    "aggregate_score_present": {"const": false},
+    "aggregate_verdict_present": {"const": false}
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {"id": {"type": "string", "minLength": 1}, "description": {"type": "string", "minLength": 1}},
+      "additionalProperties": false
+    },
+    "idArray": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+  }
+}
