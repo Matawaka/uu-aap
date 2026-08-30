@@ -124,6 +124,7 @@ do {
         "upstream_pr": 161,
         "upstream_head_sha": "b43d93b7c15daca4f04d33284b821fd1330bbf88",
         "upstream_base_sha": "7f337301de08a3d35a07abbf36ccc5f490e8b391",
+        "evaluation_frontier_kind": "pinned-candidate-commit",
         "external_reference_label": "c2pa.external-reference",
         "assertion_payload_semantic_roundtrip": true,
         "claim_generator_unknown_field_inspectable": true,
@@ -131,7 +132,6 @@ do {
         "unknown_field_promoted_to_authority_or_trust": false,
         "byte_equivalence_required": false,
         "semantic_equivalence_required": true,
-        "external_candidate_merged_to_main": false,
         "p0_3_complete": false,
         "conclusion": "Pinned c2pa-swift PR #161 candidate preserves both the generic C2PA external-reference payload and an unknown nested ClaimGeneratorInfo extension without authority/trust promotion."
     ]
