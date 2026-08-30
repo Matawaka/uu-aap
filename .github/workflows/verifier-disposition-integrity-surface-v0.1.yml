@@ -59,7 +59,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -m py_compile scripts/verifier-disposition-integrity-surface/build_integrity_site.py scripts/verifier-disposition-integrity-surface/localize_integrity.py scripts/verifier-disposition-integrity-surface/test.py
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/verifier-disposition-integrity-surface/build_integrity_site.py'),
+              Path('scripts/verifier-disposition-integrity-surface/localize_integrity.py'),
+              Path('scripts/verifier-disposition-integrity-surface/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
           node --check scripts/verifier-disposition-integrity-surface/ui.js
           if grep -REn 'fetch\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|eval\(|innerHTML' scripts/verifier-disposition-integrity-surface/ui.js; then
             echo 'ERROR: P1.12 introduced network/dynamic/raw-HTML primitive' >&2
