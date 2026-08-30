@@ -1,0 +1,203 @@
+name: C2PA MCP PoAI UU-AAP Composition v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-agent-composition/**'
+      - '.github/workflows/c2pa-mcp-poai-uuaap-composition-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-agent-composition/**'
+      - '.github/workflows/c2pa-mcp-poai-uuaap-composition-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  C2PA_MCP_VERSION: v0.2.2
+  C2PA_MCP_RELEASE_SHA: 22e203f01acf3a66f6bc0f14f40fb2426c3bb3e9
+  C2PA_MCP_BINARY_SHA256: 1a93baa07e26cda3ae2494641be030c51db614b01d9a17f93f5ecfa74cdc2da6
+  C2PA_RS_SHA: be7f5ea22b385ee1af6c327906ba002747687628
+  C2PA_FIXTURE_GIT_BLOB: dd93c44d7b4429fbc0dcc8713df1bb7f563a3375
+
+jobs:
+  static-contract:
+    name: static layered contract
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install PoAI schema validator dependency
+        run: python -m pip install 'jsonschema>=4.22,<5'
+
+      - name: Validate layered composition contract
+        run: |
+          python scripts/c2pa-agent-composition/validate-composition.py \
+            scripts/c2pa-agent-composition/composition.fixture.json
+
+      - name: Validate embedded PoAI record with existing schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          doc = json.loads(Path('scripts/c2pa-agent-composition/composition.fixture.json').read_text())
+          Path('/tmp/p0-4.poai.json').write_text(
+              json.dumps(doc['poai_layer'], indent=2, ensure_ascii=False) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          python proposals/poai/tools/validate_poai.py \
+            --schema proposals/poai/schema/poai-record.schema.json \
+            /tmp/p0-4.poai.json
+
+      - name: Prove fail-closed semantic-collapse guards
+        run: |
+          python - <<'PY'
+          import copy
+          import importlib.util
+          import json
+          from pathlib import Path
+
+          fixture_path = Path('scripts/c2pa-agent-composition/composition.fixture.json')
+          module_path = Path('scripts/c2pa-agent-composition/validate-composition.py')
+          spec = importlib.util.spec_from_file_location('composition_validator', module_path)
+          mod = importlib.util.module_from_spec(spec)
+          spec.loader.exec_module(mod)
+          base = json.loads(fixture_path.read_text())
+
+          cases = []
+
+          late_as_available = copy.deepcopy(base)
+          late_as_available['poai_layer']['availability'][0]['dimensions']['temporal_fit'] = 'available'
+          late_as_available['poai_layer']['availability'][0]['dimensions']['delivery'] = 'available'
+          late_as_available['poai_layer']['availability'][0]['overall_status'] = 'available'
+          cases.append(('retroactive availability', late_as_available))
+
+          agent_approve = copy.deepcopy(base)
+          agent_approve['poai_layer']['authority'][1]['scopes'].append('approve')
+          agent_approve['uuaap_layer']['agent_authority']['scopes'].append('approve')
+          cases.append(('agent authority escalation', agent_approve))
+
+          score = copy.deepcopy(base)
+          score['expected_agent_view']['trust_score'] = 0.99
+          cases.append(('aggregate trust score', score))
+
+          collapsed = copy.deepcopy(base)
+          collapsed['expected_agent_view']['poai'] = collapsed['expected_agent_view']['c2pa']
+          cases.append(('semantic result collapse', collapsed))
+
+          for name, candidate in cases:
+              try:
+                  mod.validate_static(candidate)
+              except AssertionError:
+                  print(f'expected rejection: {name}')
+              else:
+                  raise SystemExit(f'ERROR: unsafe mutation accepted: {name}')
+          PY
+
+      - name: Confirm Core remains untouched
+        run: |
+          git diff --quiet origin/${{ github.base_ref || 'main' }} -- protocols/core/ || {
+            echo 'ERROR: P0.4 composition must not modify UU-AAP Core' >&2
+            exit 1
+          }
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain)"
+
+  official-c2pa-mcp-runtime:
+    name: official C2PA MCP runtime
+    needs: static-contract
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Verify exact C2PA MCP release source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-mcp-source
+          git clone -q https://github.com/contentauth/c2pa-mcp.git /tmp/c2pa-mcp-source
+          git -C /tmp/c2pa-mcp-source checkout -q "$C2PA_MCP_RELEASE_SHA"
+          test "$(git -C /tmp/c2pa-mcp-source rev-parse HEAD)" = "$C2PA_MCP_RELEASE_SHA"
+          test "$(git -C /tmp/c2pa-mcp-source rev-parse refs/tags/$C2PA_MCP_VERSION^{commit})" = "$C2PA_MCP_RELEASE_SHA"
+          grep -q 'pub success: bool' /tmp/c2pa-mcp-source/src/types.rs
+          grep -q 'pub has_credentials: bool' /tmp/c2pa-mcp-source/src/types.rs
+          grep -q 'pub manifest_data: Option<serde_json::Value>' /tmp/c2pa-mcp-source/src/types.rs
+          grep -q 'pub error: Option<String>' /tmp/c2pa-mcp-source/src/types.rs
+          grep -q 'CLI mode: single argument is a file path or URL' /tmp/c2pa-mcp-source/src/main.rs
+          grep -q 'version = "0.2.2"' /tmp/c2pa-mcp-source/Cargo.toml
+
+      - name: Download and verify official C2PA MCP release binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/contentauth/c2pa-mcp/releases/download/${C2PA_MCP_VERSION}/c2pa-mcp-x86_64-unknown-linux-gnu"
+          curl -fL --retry 3 --retry-delay 2 "$url" -o /tmp/c2pa-mcp
+          echo "$C2PA_MCP_BINARY_SHA256  /tmp/c2pa-mcp" | sha256sum -c -
+          chmod +x /tmp/c2pa-mcp
+
+      - name: Fetch and bind pinned C2PA-bearing fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://raw.githubusercontent.com/contentauth/c2pa-rs/${C2PA_RS_SHA}/sdk/tests/fixtures/C_with_CAWG_data.jpg"
+          curl -fL --retry 3 --retry-delay 2 "$url" -o /tmp/C_with_CAWG_data.jpg
+          test "$(git hash-object /tmp/C_with_CAWG_data.jpg)" = "$C2PA_FIXTURE_GIT_BLOB"
+
+      - name: Read real Content Credentials with official C2PA MCP binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          RUST_LOG=error /tmp/c2pa-mcp /tmp/C_with_CAWG_data.jpg > /tmp/c2pa-mcp-result.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result = json.loads(Path('/tmp/c2pa-mcp-result.json').read_text())
+          summary = {
+              'success': result.get('success'),
+              'hasCredentials': result.get('hasCredentials'),
+              'manifestDataType': type(result.get('manifestData')).__name__ if result.get('manifestData') is not None else None,
+              'hasError': bool(result.get('error')),
+          }
+          print(json.dumps(summary, sort_keys=True))
+          PY
+
+      - name: Validate runtime result without semantic promotion
+        run: |
+          python scripts/c2pa-agent-composition/validate-composition.py \
+            scripts/c2pa-agent-composition/composition.fixture.json \
+            --c2pa-result /tmp/c2pa-mcp-result.json
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain)"
+
+  acceptance:
+    name: P0.4 distinct-layer acceptance
+    needs: [static-contract, official-c2pa-mcp-runtime]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record bounded acceptance
+        run: |
+          echo 'C2PA   -> CREDENTIALS_PRESENT'
+          echo 'PoAI   -> UNAVAILABLE_BEFORE_CUTOFF'
+          echo 'UU-AAP -> HUMAN_PUBLICATION_AUTHORITY'
+          echo 'PASS: three distinct answers; no trust score; no semantic promotion.'
