@@ -1,113 +1,107 @@
-# C2PA Swift Round-Trip Preservation v0.1
+# C2PA Swift Preservation Frontier v0.1
 
-Status: **candidate interoperability evidence; not C2PA conformance, not UU-AAP Core, and not a normative dependency on an unmerged upstream PR**.
+Status: **reproducible interoperability evidence; not C2PA conformance, not UU-AAP Core, and not a normative dependency on an unmerged upstream PR**.
 
 Roadmap: `#778` P0.3. Predecessor binding fixture: `#780` / `4387d95046ac16264e05d0c14012501cef466dfd`.
 
-Upstream candidate under test:
+Upstream frontier under observation:
 
 - repository: `contentauth/c2pa-swift`;
-- PR: `#161` — `Feat: Preserve unknown fields and accept OS alias`;
+- PR: `#161` — preserve unknown manifest fields / accept OS alias;
 - pinned head: `b43d93b7c15daca4f04d33284b821fd1330bbf88`;
-- stacked base at observation: `fix/cstring-array-alloc-failure` / `7f337301de08a3d35a07abbf36ccc5f490e8b391`.
+- observed stacked base: `7f337301de08a3d35a07abbf36ccc5f490e8b391`.
 
-The exact commit is used so later force-pushes or branch movement cannot rewrite this evidence.
+The exact head SHA is used so later branch movement cannot rewrite this evidence.
 
-## Why this test exists
+## What P0.3 is testing
 
 P0.2 proved that a standard C2PA 2.4 `c2pa.external-reference` hashed assertion can bind an external UU-AAP record without inventing a new assertion namespace.
 
-P0.3 asks a different question:
+P0.3 asks a separate preservation question:
 
-> Can another SDK read, inspect and re-encode relevant C2PA/extension data without silently deleting it or promoting it into stronger semantics?
+> Can an SDK read, inspect and re-encode relevant C2PA or extension data without silently deleting it or promoting it into stronger authorship, authority, responsibility or trust semantics?
 
-PR #161 addresses one concrete Swift gap: `ClaimGeneratorInfo` and `Metadata` previously dropped unmodeled JSON members during a decode/encode cycle; the candidate adds an `additionalFields` surface.
+The pinned Swift candidate contains the intended preservation mechanism for open manifest models: `additionalFields` plus generic Codable helpers for unmodeled JSON members.
 
-## Fixture A — unknown field in an open model
+## Current observed frontier
 
-`fixtures/claim-generator-info.json` adds a nested fixture-only field:
+A direct external SwiftPM consumer of the pinned source does **not** currently reach the round-trip executable.
 
-```text
-org.example.uu_aap_reference
-```
-
-This name is **not** a registered C2PA assertion namespace and does not define protocol semantics. It exists only to behave like a future application extension that the SDK does not know in advance.
-
-Acceptance requires:
-
-1. Swift decodes `ClaimGeneratorInfo`;
-2. the unknown field is inspectable through `additionalFields`;
-3. nested arrays, numbers, booleans and strings remain semantically equal;
-4. re-encoding places the field back at the same object level;
-5. no unknown data is promoted into top-level `author`, `authority`, `responsibility`, `trust`, `trusted` or `publication_authorization` fields.
-
-## Fixture B — standard external-reference payload
-
-`fixtures/external-reference.json` represents the P0.2 interface using:
+The reason is a source↔binary packaging skew at the exact pinned frontier:
 
 ```text
-label = c2pa.external-reference
+pinned source SHA
+  ├─ Reader.swift calls c2pa_reader_crjson(...)
+  └─ Package.swift still downloads C2PAC v0.0.12
+
+external SwiftPM build
+  └─ cannot find 'c2pa_reader_crjson' in scope
 ```
 
-At the pinned Swift candidate frontier this label is not represented by a dedicated enum case. `AssertionDefinition` therefore decodes it through the generic `.custom(label:data:)` + `AnyCodable` path.
+This is not interpreted as a failure of UU-AAP semantics and not as evidence that unknown-field preservation itself is wrong. It means the public source package and its referenced binary artifact are not externally consumable together at this exact frontier.
 
-Acceptance requires the complete assertion JSON to be semantically equal after:
+Upstream's own PR checks for the pinned candidate have passed on its native build path. That does not remove the external SwiftPM packaging gap because upstream CI builds a fresh local C2PAC framework before testing the Swift layer.
+
+## CI meaning
+
+The workflow intentionally has two independent checks.
+
+### 1. `pinned source contract`
+
+It verifies against the exact upstream SHA that:
+
+- `ClaimGeneratorInfo` contains `additionalFields`;
+- the decoder/encoder helpers for unknown fields exist;
+- `Reader.swift` consumes `c2pa_reader_crjson`;
+- public `Package.swift` still references `C2PAC v0.0.12`.
+
+### 2. `reproduce SwiftPM source-binary skew`
+
+It resolves the exact candidate through SwiftPM on macOS 15 / Xcode 16.4 and requires the external consumer build to fail for the **specific known symbol mismatch**.
+
+A green check therefore means:
 
 ```text
-decode -> inspect -> encode
-```
-
-This includes URL, algorithm, byte-array hash, media type, size, description and an unknown future consumer hint.
-
-## Equivalence rule
-
-**Byte equality is not required. Semantic JSON equality is required.**
-
-JSON object key ordering and encoder whitespace are not semantic. The harness canonicalizes JSON objects with sorted keys before comparison. Values, nesting, array order, field presence and types must survive.
-
-This rule is deliberately narrower than C2PA binary/JUMBF canonicalization and does not redefine it.
-
-## Reproducibility
-
-The root fixture package pins:
-
-- `contentauth/c2pa-swift` to the exact PR #161 head SHA;
-- `swift-certificates` to `1.19.4`;
-- `swift-asn1` to `1.7.1`;
-- `swift-crypto` to `4.5.1`.
-
-These are the lower-bound dependency versions declared by that pinned `c2pa-swift` Package manifest. CI copies the test package to `/tmp` before SwiftPM resolution so no generated build state or `Package.resolved` mutates the UU-AAP checkout.
-
-## Run
-
-On macOS 14+ with a compatible Swift/Xcode toolchain:
-
-```bash
-swift run --package-path scripts/c2pa-swift-roundtrip RoundTripFixture \
-  scripts/c2pa-swift-roundtrip/fixtures/claim-generator-info.json \
-  scripts/c2pa-swift-roundtrip/fixtures/external-reference.json
-```
-
-CI runs the same executable on `macos-15` with Xcode 16.4, matching the upstream test family.
-
-## Interpretation
-
-A passing receipt means only:
-
-```text
-pinned Swift candidate preserves tested semantics
+known packaging frontier reproduced exactly
 ```
 
 It does **not** mean:
 
 ```text
+round-trip preservation passed
 candidate PR merged upstream
-all Swift C2PA models preserve unknown fields
-Android parity exists
-cross-SDK equivalence is complete
-preserved field is trusted
-preserved field is authoritative
-P0.3 is complete
+all Swift models preserve unknown fields
+P0.3 complete
 ```
 
-P0.3 remains open until at least a stable Swift upstream frontier and an Android/second-SDK parity surface are both evaluated.
+If the same pinned frontier ever builds successfully, the receipt fails closed instead of silently converting an old observation into a permanent assumption.
+
+## Dormant round-trip harness
+
+The package still contains `RoundTripFixture`. It is intentionally retained for the next compatible Swift frontier.
+
+When source and binary packaging become mutually consumable, the harness tests two surfaces:
+
+1. an unknown nested field inside `ClaimGeneratorInfo` survives decode → inspect → encode through `additionalFields`;
+2. the complete standard `c2pa.external-reference` assertion survives through the generic assertion path with semantic JSON equality.
+
+The fixture also rejects any accidental promotion of preserved extension data into top-level `author`, `authority`, `responsibility`, `trust`, `trusted` or `publication_authorization` keys.
+
+## Equivalence rule
+
+JSON byte identity is not required. Semantic JSON equality is required: values, types, nesting, array order and field presence must survive. Object key ordering and whitespace are not semantic.
+
+This rule is narrower than C2PA binary/JUMBF canonicalization and does not redefine C2PA canonicalization.
+
+## Boundary
+
+This evidence does not:
+
+- modify UU-AAP Core;
+- register a UU-AAP C2PA namespace;
+- treat preserved fields as trusted;
+- infer authority or responsibility from SDK preservation;
+- claim that `contentauth/c2pa-swift#161` is merged;
+- close P0.3.
+
+P0.3 remains open pending a stable/consumable Swift preservation frontier and parity evidence from Android or another independent SDK.
