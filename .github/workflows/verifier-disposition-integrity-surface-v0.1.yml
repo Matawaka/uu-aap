@@ -1,0 +1,121 @@
+name: P1.12 Disposition Integrity Distribution Surface v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verifier-disposition-integrity-surface/**'
+      - 'scripts/verifier-disposition-integrity/**'
+      - 'scripts/verifier-federated-disposition/**'
+      - 'packages/uuaap-verifier-presentation/**'
+      - '.github/workflows/verifier-disposition-integrity-surface-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verifier-disposition-integrity-surface/**'
+      - 'scripts/verifier-disposition-integrity/**'
+      - 'packages/uuaap-verifier-presentation/**'
+      - '.github/workflows/verifier-disposition-integrity-surface-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: publish P1.11 integrity without semantic or authority expansion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install reusable verifier package outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+      - name: Bind exact merged P1.11 sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/disposition_integrity.py)" = '2b5b312486841b4ab3463bc8ef9afc2ef94e200c'
+          test "$(git hash-object scripts/verifier-disposition-integrity/app.js)" = '34bed235823e80c391f3130ea17b4af42a54a364'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b=json.loads(Path('scripts/verifier-disposition-integrity-surface/source-bindings.json').read_text(encoding='utf-8'))
+          assert b['predecessor_main']=='9d9f4f07b1b2c7352cbda8a8851cbc5ff45267f7'
+          assert b['p1_11_python']['blob']=='2b5b312486841b4ab3463bc8ef9afc2ef94e200c'
+          assert b['p1_11_browser']['blob']=='34bed235823e80c391f3130ea17b4af42a54a364'
+          print('P1.12 historical P1.11 bindings: PASS')
+          PY
+      - name: Validate P1.12 syntax and local-only surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/verifier-disposition-integrity-surface/build_integrity_site.py scripts/verifier-disposition-integrity-surface/localize_integrity.py scripts/verifier-disposition-integrity-surface/test.py
+          node --check scripts/verifier-disposition-integrity-surface/ui.js
+          if grep -REn 'fetch\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|eval\(|innerHTML' scripts/verifier-disposition-integrity-surface/ui.js; then
+            echo 'ERROR: P1.12 introduced network/dynamic/raw-HTML primitive' >&2
+            exit 1
+          fi
+      - name: Re-run historical P1.11 closure
+        run: python scripts/verifier-disposition-integrity/test.py
+      - name: Prove P1.12 distribution surface
+        run: python scripts/verifier-disposition-integrity-surface/test.py
+      - name: Re-run full P1.1 through P1.11 verifier stack
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+          python scripts/verifier-policy-localization/test.py
+          python scripts/verifier-contestability/test.py
+          python scripts/verifier-scoped-attestations/test.py
+          python scripts/verifier-candidate-federation/test.py
+          python scripts/verifier-federated-disposition/test.py
+          python scripts/verifier-disposition-integrity/test.py
+      - name: Prove historical semantics remain byte-unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          guarded=(
+            protocols/core/
+            SPEC.md
+            CONTESTABILITY.md
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federated_disposition.py
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/disposition_integrity.py
+            scripts/verifier-federated-disposition/
+            scripts/verifier-disposition-integrity/
+          )
+          if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.12 modified historical semantic sources' >&2
+            git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: bounded P1.12 distribution acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'P1.11 deterministic integrity -> published as local-only surface'
+          echo 'deployed P1.11 browser core -> byte-identical'
+          echo 'localized shell != localized machine semantics'
+          echo 'integrity verification surface != publication/action authority'
+          echo 'canonical rematerialization equality != truth'
+          echo 'aggregate score/verdict -> FORBIDDEN'
+          echo 'PASS: P1.12 Disposition Integrity Distribution Surface v0.1'
