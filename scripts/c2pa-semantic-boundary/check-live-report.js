@@ -47,26 +47,36 @@ function ingredientFailureEntries(report) {
   return failures;
 }
 
-function hasExplicitFailure(report) {
+function untoleratedFailureCodes(report) {
+  const codes = [];
   const explicit = validationState(report);
-  if (typeof explicit === 'string' && explicit.toLowerCase() === 'invalid') return true;
+  if (typeof explicit === 'string' && explicit.toLowerCase() === 'invalid') codes.push('validation_state:Invalid');
 
   const active = activeStatusCodes(report);
   const activeFailures = Array.isArray(active?.failure) ? active.failure : [];
-  if (activeFailures.some((entry) => !isToleratedFailure(entry))) return true;
-  if (ingredientFailureEntries(report).some((entry) => !isToleratedFailure(entry))) return true;
+  for (const entry of activeFailures) {
+    if (!isToleratedFailure(entry)) codes.push(statusCode(entry) || 'activeManifest.failure:unknown');
+  }
+  for (const entry of ingredientFailureEntries(report)) {
+    if (!isToleratedFailure(entry)) codes.push(statusCode(entry) || 'ingredientDelta.failure:unknown');
+  }
 
   const statuses = report?.validation_status || report?.validationStatus;
   if (Array.isArray(statuses) && statuses.length > 0) {
-    return statuses.some((entry) => {
-      if (isToleratedFailure(entry)) return false;
+    for (const entry of statuses) {
+      if (isToleratedFailure(entry)) continue;
       const success = entry?.success;
-      if (success === true) return false;
       const severity = String(entry?.severity || '').toLowerCase();
-      return success === false || severity === 'error' || severity === 'failure' || severity === 'invalid';
-    });
+      if (success === false || severity === 'error' || severity === 'failure' || severity === 'invalid') {
+        codes.push(statusCode(entry) || 'validationStatus:unknown');
+      }
+    }
   }
-  return false;
+  return [...new Set(codes)];
+}
+
+function hasExplicitFailure(report) {
+  return untoleratedFailureCodes(report).length > 0;
 }
 
 function inferredValidationState(report) {
@@ -95,7 +105,8 @@ function inferredValidationState(report) {
 function assertLiveC2paReport(report) {
   const active = activeManifest(report);
   if (!active) throw new Error('live C2PA report has no active manifest');
-  if (hasExplicitFailure(report)) throw new Error('live C2PA report contains non-tolerated validation failure');
+  const failures = untoleratedFailureCodes(report);
+  if (failures.length > 0) throw new Error(`live C2PA report contains non-tolerated validation failure: ${failures.join(', ')}`);
   const state = inferredValidationState(report);
   if (!state || !['valid', 'trusted'].includes(String(state).toLowerCase())) {
     throw new Error(`unexpected C2PA validation state: ${state || 'unknown'}`);
@@ -131,5 +142,6 @@ module.exports = {
   validationState,
   inferredValidationState,
   hasExplicitFailure,
-  isToleratedFailure
+  isToleratedFailure,
+  untoleratedFailureCodes
 };
