@@ -1,0 +1,20 @@
+{
+  "object": "content_provenance_check",
+  "created_at": 1788092000,
+  "results": [
+    {
+      "type": "c2pa",
+      "outcome": "detected",
+      "validation_state": "trusted",
+      "issuer": "OpenAI OpCo, LLC",
+      "model": "gpt-image",
+      "generated_at": "2026-08-30T11:00:00Z"
+    },
+    {
+      "type": "synthid",
+      "outcome": "detected",
+      "model": "gpt-image",
+      "generated_at": "2026-08-30T11:00:00Z"
+    }
+  ]
+}
