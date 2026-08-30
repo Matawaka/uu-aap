@@ -1,0 +1,218 @@
+name: P0.7 Semantic-Adversarial C2PA Corpus v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-semantic-adversarial-corpus/**'
+      - '.github/workflows/c2pa-semantic-adversarial-corpus-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-semantic-adversarial-corpus/**'
+      - '.github/workflows/c2pa-semantic-adversarial-corpus-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  C2PAGEN_SHA: '23c2d4c317bbbb5b049c11cc6d8e85a4729704df'
+  C2PA_ATTACKS_SHA: '4f750daa888d2ff93a1659fc016be584dc43ae5c'
+  C2PATOOL_VERSION: '0.27.16'
+  C2PATOOL_ARCHIVE_SHA256: '62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663'
+  P0_1_RUBRIC_GIT_BLOB: 'f6eec3dfe3c3973245991210755fbac74e667396'
+
+jobs:
+  deterministic-corpus:
+    name: deterministic semantic corpus
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Bind historical P0.1 rubric exactly
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/c2pa-semantic-boundary/rubric-v0.1.json)" = "$P0_1_RUBRIC_GIT_BLOB"
+      - name: Syntax check semantic harness
+        run: |
+          node --check scripts/c2pa-semantic-adversarial-corpus/validate-corpus.js
+          node --check scripts/c2pa-semantic-adversarial-corpus/test-corpus.js
+          node --check scripts/c2pa-semantic-adversarial-corpus/check-live-corpus.js
+      - name: Validate five unsafe/safe corpus pairs
+        run: |
+          node scripts/c2pa-semantic-adversarial-corpus/validate-corpus.js > /tmp/p0-7-corpus-result.json
+          cat /tmp/p0-7-corpus-result.json
+          node - <<'NODE'
+          const r = require('/tmp/p0-7-corpus-result.json');
+          if (r.case_count !== 5) throw new Error('expected five P0.7 cases');
+          if (!r.all_unsafe_cases_rejected || !r.all_safe_cases_accepted) throw new Error('corpus acceptance incomplete');
+          if (r.c2pa_conformance_evaluated_by_semantic_layer !== false) throw new Error('semantic layer overclaimed C2PA conformance');
+          if (r.aggregate_score_present !== false) throw new Error('aggregate score introduced');
+          NODE
+      - name: Prove fail-closed semantic mutations
+        run: node scripts/c2pa-semantic-adversarial-corpus/test-corpus.js
+      - name: Re-run predecessor P0.1 rubric unchanged
+        run: node scripts/c2pa-semantic-boundary/test.js
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
+            echo 'ERROR: P0.7 must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  external-tooling-contract:
+    name: pinned external tooling roles
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Verify pinned c2pagen source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pagen
+          git clone -q https://github.com/contentauth/c2pagen.git /tmp/c2pagen
+          git -C /tmp/c2pagen checkout -q "$C2PAGEN_SHA"
+          test "$(git -C /tmp/c2pagen rev-parse HEAD)" = "$C2PAGEN_SHA"
+          test "$(git -C /tmp/c2pagen hash-object README.md)" = '17ec970208717ca114d3f4c772ec5a674d4022d2'
+          test "$(git -C /tmp/c2pagen hash-object Cargo.toml)" = '31c5297f4f434f83897381b8d8dc1165a358a59e'
+          test "$(git -C /tmp/c2pagen hash-object src/presets/assets.rs)" = '5d9820dccd40f7a9de33c74cd1d5e957640768bd'
+          test "$(git -C /tmp/c2pagen hash-object src/presets/manifests.rs)" = '748306557127f58d1f9aab1121bd2384e55a8ffb'
+          test "$(git -C /tmp/c2pagen hash-object tests/fixtures/ed25519.pub)" = '030a6894a3d45882fd553aa7745054b43f1a3525'
+          grep -q 'bulk generating reproducible C2PA assets for testing and benchmarking' /tmp/c2pagen/README.md
+          grep -q 'name: "small-png"' /tmp/c2pagen/src/presets/assets.rs
+          grep -q 'FOR TESTING_ONLY' /tmp/c2pagen/tests/fixtures/ed25519.pub
+      - name: Verify pinned c2pa-attacks security boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-attacks
+          git clone -q https://github.com/contentauth/c2pa-attacks.git /tmp/c2pa-attacks
+          git -C /tmp/c2pa-attacks checkout -q "$C2PA_ATTACKS_SHA"
+          test "$(git -C /tmp/c2pa-attacks rev-parse HEAD)" = "$C2PA_ATTACKS_SHA"
+          test "$(git -C /tmp/c2pa-attacks hash-object README.md)" = '9a72b84863ebf0bc137e1368eecbde3983a10372'
+          grep -q 'performs security testing on a Content Credentials application' /tmp/c2pa-attacks/README.md
+          grep -q 'does not automatically check to see if the attack was successful' /tmp/c2pa-attacks/README.md
+          grep -q 'not a replacement for it' /tmp/c2pa-attacks/README.md
+      - name: Validate tooling baseline semantics
+        run: |
+          python - <<'PY'
+          import json
+          b=json.load(open('scripts/c2pa-semantic-adversarial-corpus/tooling-baseline.json'))
+          assert b['c2pagen']['sha'] == '23c2d4c317bbbb5b049c11cc6d8e85a4729704df'
+          assert b['c2pa_attacks']['sha'] == '4f750daa888d2ff93a1659fc016be584dc43ae5c'
+          assert b['c2pa_attacks']['role'].startswith('parser/security')
+          assert b['c2pagen']['role'].startswith('fresh reproducible C2PA')
+          assert 'parser/security attack != semantic overclaim attack' in b['boundaries']
+          print('external tooling role separation: PASS')
+          PY
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  live-valid-c2pa-base:
+    name: live c2pagen asset + semantic rejection
+    runs-on: ubuntu-latest
+    needs: [deterministic-corpus, external-tooling-contract]
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install c2pagen native build dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            pkg-config clang libclang-dev ffmpeg \
+            libavcodec-dev libavformat-dev libavutil-dev \
+            libavfilter-dev libavdevice-dev libswresample-dev libswscale-dev
+      - name: Build exact c2pagen frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version
+          cargo --version
+          rm -rf /tmp/c2pagen
+          git clone -q https://github.com/contentauth/c2pagen.git /tmp/c2pagen
+          git -C /tmp/c2pagen checkout -q "$C2PAGEN_SHA"
+          test "$(git -C /tmp/c2pagen rev-parse HEAD)" = "$C2PAGEN_SHA"
+          cargo build --manifest-path /tmp/c2pagen/Cargo.toml --release --locked
+          /tmp/c2pagen/target/release/c2pagen list small-png | tee /tmp/c2pagen-small-png.txt
+          grep -q 'name=small-png' /tmp/c2pagen-small-png.txt
+      - name: Generate fresh bounded C2PA asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/p0-7-assets
+          mkdir -p /tmp/p0-7-assets
+          /tmp/c2pagen/target/release/c2pagen generate small-png --output /tmp/p0-7-assets
+          test -s /tmp/p0-7-assets/small-png.png
+          test -s /tmp/p0-7-assets/small-png-signed.png
+          test "$(find /tmp/p0-7-assets -maxdepth 1 -type f | wc -l)" -eq 2
+      - name: Fetch pinned official c2patool validator
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v${C2PATOOL_VERSION}/c2patool-v${C2PATOOL_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --silent --show-error "$url" --output /tmp/c2patool.tar.gz
+          echo "${C2PATOOL_ARCHIVE_SHA256}  /tmp/c2patool.tar.gz" | sha256sum --check --strict
+          rm -rf /tmp/c2patool
+          mkdir -p /tmp/c2patool
+          tar -xzf /tmp/c2patool.tar.gz -C /tmp/c2patool
+          bin="$(find /tmp/c2patool -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+      - name: Validate fresh c2pagen signed asset before semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/p0-7-assets/small-png-signed.png > /tmp/p0-7-c2pa-report.json
+          test -s /tmp/p0-7-c2pa-report.json
+          node - <<'NODE'
+          const fs = require('fs');
+          const { assertLiveC2paReport } = require('./scripts/c2pa-semantic-boundary/check-live-report');
+          const report = JSON.parse(fs.readFileSync('/tmp/p0-7-c2pa-report.json', 'utf8'));
+          const r = assertLiveC2paReport(report);
+          console.log(JSON.stringify({validation_state:r.validation_state, active_manifest_present:Boolean(r.active_manifest)}));
+          NODE
+      - name: Run five semantic attacks only after C2PA validation
+        run: |
+          node scripts/c2pa-semantic-adversarial-corpus/check-live-corpus.js \
+            /tmp/p0-7-c2pa-report.json \
+            > /tmp/p0-7-live-receipt.json
+          cat /tmp/p0-7-live-receipt.json
+          node - <<'NODE'
+          const r = require('/tmp/p0-7-live-receipt.json');
+          if (!r.live_c2pa_base.validation_accepted_before_semantic_evaluation) throw new Error('C2PA base not accepted first');
+          if (!r.semantic_corpus.all_unsafe_cases_rejected || !r.semantic_corpus.all_safe_cases_accepted) throw new Error('semantic corpus incomplete');
+          if (r.artifact_validation_result_mutated_by_semantic_layer !== false) throw new Error('semantic layer mutated validation result');
+          if (r.parser_security_attack_executed !== false) throw new Error('parser attack boundary collapsed');
+          NODE
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P0.7 distinct-layer acceptance
+    runs-on: ubuntu-latest
+    needs: [deterministic-corpus, external-tooling-contract, live-valid-c2pa-base]
+    steps:
+      - run: |
+          echo 'C2PA fresh test asset -> VALIDATION ACCEPTED'
+          echo '5 unsafe consumer interpretations -> REJECTED'
+          echo '5 safe interpretations -> ACCEPTED'
+          echo 'C2PA validation result -> UNCHANGED BY SEMANTIC LAYER'
+          echo 'parser/security attack != semantic overclaim attack'
+          echo 'PASS: P0.7 semantic-adversarial corpus v0.1'
