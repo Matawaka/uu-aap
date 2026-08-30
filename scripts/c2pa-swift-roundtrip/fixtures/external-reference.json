@@ -1,0 +1,18 @@
+{
+  "label": "c2pa.external-reference",
+  "data": {
+    "location": {
+      "url": "https://example.org/uu-aap/records/c2pa-external-reference-v0.1.json",
+      "alg": "sha256",
+      "hash": [17, 34, 51, 68, 85, 102, 119, 136],
+      "dc:format": "application/json",
+      "size": 642
+    },
+    "description": "Hash-bound external UU-AAP governance record fixture",
+    "future_consumer_hint": {
+      "interpret_as": "reference-only",
+      "authority": false,
+      "preserve_if_unknown": true
+    }
+  }
+}
