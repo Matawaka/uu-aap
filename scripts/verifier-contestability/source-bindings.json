@@ -1,0 +1,14 @@
+{
+  "schema": "urn:uu-aap:verifier-contestability-source-bindings:0.1",
+  "repository_predecessor_main": "26e70107d2edbe04005eb1520198301ea4381ef4",
+  "sources": {
+    "SPEC.md": {
+      "git_blob_sha": "44b91e0e48dee9d928c843bbb304a5c246582da7",
+      "scope": "contestability, verifier dispute status, corrections/disputes/appeals"
+    },
+    "CONTESTABILITY.md": {
+      "git_blob_sha": "6e374cc1cbfd54d7c0aac0765c714438cbab4fd5",
+      "scope": "correction/dispute/appeal separation, no silent erasure, unresolved disagreement, anti-retaliation"
+    }
+  }
+}

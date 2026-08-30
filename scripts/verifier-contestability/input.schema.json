@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:verifier-contestability-input-schema:0.1",
+  "title": "UU-AAP Verifier Contestability Input v0.1",
+  "type": "object",
+  "required": ["schema", "base_interactive_input", "contestability_evidence_items", "records"],
+  "additionalProperties": false,
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "required": ["value", "evaluation", "source_layer", "evidence_refs", "explanation", "does_not_establish"],
+      "additionalProperties": false,
+      "properties": {
+        "value": {"type": "string", "minLength": 1},
+        "evaluation": {"enum": ["OBSERVED", "SUPPORTED", "NOT_SUPPORTED", "UNKNOWN", "NOT_EVALUATED", "NOT_APPLICABLE"]},
+        "source_layer": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "explanation": {"type": "string", "minLength": 1},
+        "does_not_establish": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["id", "kind", "source_layer", "summary", "payload"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "minLength": 1},
+        "source_layer": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "payload": {"type": "object"}
+      }
+    },
+    "interactive_input": {
+      "type": "object",
+      "required": ["schema", "artifact", "evidence_items", "dimension_claims", "related_observations", "warnings", "disputes"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": {"const": "urn:uu-aap:interactive-verifier-input:0.1"},
+        "artifact": {
+          "type": "object",
+          "required": ["id", "description"],
+          "additionalProperties": false,
+          "properties": {
+            "id": {"type": "string", "minLength": 1},
+            "description": {"type": "string", "minLength": 1}
+          }
+        },
+        "evidence_items": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+        "dimension_claims": {
+          "type": "object",
+          "required": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"],
+          "additionalProperties": false,
+          "properties": {
+            "integrity": {"$ref": "#/$defs/dimension"},
+            "identity": {"$ref": "#/$defs/dimension"},
+            "provenance": {"$ref": "#/$defs/dimension"},
+            "availability": {"$ref": "#/$defs/dimension"},
+            "authority": {"$ref": "#/$defs/dimension"},
+            "responsibility": {"$ref": "#/$defs/dimension"},
+            "truth": {"$ref": "#/$defs/dimension"}
+          }
+        },
+        "related_observations": {"type": "object"},
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code", "message"],
+            "additionalProperties": false,
+            "properties": {
+              "code": {"type": "string", "minLength": 1},
+              "message": {"type": "string", "minLength": 1}
+            }
+          }
+        },
+        "disputes": {"type": "array", "items": {"type": "object"}}
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": ["id", "kind", "dimension", "actor_ref", "recorded_at", "statement", "evidence_refs", "status", "response_status", "disposition", "related_record_id", "successor_claim"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["CORRECTION", "DISPUTE", "APPEAL"]},
+        "dimension": {"enum": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"]},
+        "actor_ref": {"type": "string", "minLength": 1},
+        "recorded_at": {"type": "string", "minLength": 1},
+        "statement": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+        "status": {"type": "string", "minLength": 1},
+        "response_status": {"enum": ["NONE", "RESPONSE_PRESENT"]},
+        "disposition": {"type": "string", "minLength": 1},
+        "related_record_id": {"type": ["string", "null"]},
+        "successor_claim": {"anyOf": [{"$ref": "#/$defs/dimension"}, {"type": "null"}]}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "CORRECTION"}}},
+          "then": {
+            "properties": {
+              "status": {"enum": ["PROPOSED", "APPLIED_SUCCESSOR"]},
+              "response_status": {"const": "NONE"},
+              "disposition": {"enum": ["PENDING", "ACCEPTED", "REJECTED"]},
+              "related_record_id": {"type": "null"},
+              "successor_claim": {"$ref": "#/$defs/dimension"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "DISPUTE"}}},
+          "then": {
+            "properties": {
+              "status": {"enum": ["OPEN", "RESPONDED", "RESOLVED", "UNRESOLVED"]},
+              "disposition": {"enum": ["PENDING", "UPHELD", "REJECTED", "UNRESOLVED"]},
+              "related_record_id": {"type": "null"},
+              "successor_claim": {"type": "null"}
+            }
+          }
+        },
+        {
+          "if": {"properties": {"kind": {"const": "APPEAL"}}},
+          "then": {
+            "properties": {
+              "status": {"enum": ["OPEN", "RESOLVED", "UNRESOLVED"]},
+              "disposition": {"enum": ["PENDING", "UPHELD", "REJECTED", "UNRESOLVED"]},
+              "related_record_id": {"type": "string", "minLength": 1},
+              "successor_claim": {"type": "null"}
+            }
+          }
+        }
+      ]
+    }
+  },
+  "properties": {
+    "schema": {"const": "urn:uu-aap:verifier-contestability-input:0.1"},
+    "base_interactive_input": {"$ref": "#/$defs/interactive_input"},
+    "contestability_evidence_items": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+    "records": {"type": "array", "items": {"$ref": "#/$defs/record"}}
+  }
+}

@@ -1,0 +1,154 @@
+name: P1.7 Contestability Overlay v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-presentation-contract/**'
+      - 'scripts/verifier-distribution-surface/**'
+      - 'scripts/verifier-interactive-surface/**'
+      - 'scripts/verifier-evidence-adapter/**'
+      - 'scripts/verifier-candidate-acceptance/**'
+      - 'scripts/verifier-policy-localization/**'
+      - 'scripts/verifier-contestability/**'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
+      - '.github/workflows/verifier-contestability-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-contestability/**'
+      - 'scripts/verifier-policy-localization/**'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
+      - '.github/workflows/verifier-contestability-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: correction/dispute/appeal history isolation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install package and schema validator outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+      - name: Prove installed P1.7 API is independently importable
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp
+          python - <<'PY'
+          import uuaap_verifier_presentation as verifier
+          assert verifier.DIMENSION_ORDER == (
+              'integrity','identity','provenance','availability','authority','responsibility','truth'
+          )
+          assert callable(verifier.build_contestability_input)
+          assert callable(verifier.materialize_contestability_overlay)
+          assert callable(verifier.validate_contestability_input)
+          assert callable(verifier.validate_contestability_result)
+          print('installed reusable contestability API: PASS')
+          PY
+      - name: Syntax check P1.7 implementation
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/contestability.py'),
+              Path('scripts/verifier-contestability/build_contestability_site.py'),
+              Path('scripts/verifier-contestability/localize_contestability.py'),
+              Path('scripts/verifier-contestability/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          node --check scripts/verifier-contestability/app.js
+          node --check scripts/verifier-contestability/test-browser.js
+      - name: Prove source-bound contestability and Python/browser equivalence
+        run: python scripts/verifier-contestability/test.py
+      - name: Re-run P1.1 through P1.6 verifier firewalls
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+          python scripts/verifier-policy-localization/test.py
+      - name: Build full local Pages artifact through P1.7 and localize presentation last
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-distribution-surface/build_site.py --output "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          python scripts/verifier-interactive-surface/build_interactive_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-evidence-adapter/build_adapter_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-acceptance/build_acceptance_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/build_contestability_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/app.js"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json"
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json" "${RUNNER_TEMP}/contest-example.before"
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json" "${RUNNER_TEMP}/contest-result.before"
+          python scripts/verifier-policy-localization/build_policy_l10n.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/localize_contestability.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          cmp --silent "${RUNNER_TEMP}/contest-example.before" "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json"
+          cmp --silent "${RUNNER_TEMP}/contest-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"
+          grep -q 'data-i18n="root.contest_link"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          grep -q 'data-i18n="contest.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"
+          grep -q '"contest.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/assets/messages.json"
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"; then
+            echo 'ERROR: contestability HTML introduced an external network target' >&2
+            exit 1
+          fi
+          node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
+      - name: Confirm Core and normative sources remain unmodified
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md; then
+            echo 'ERROR: P1.7 must not modify Core, SPEC or CONTESTABILITY normative/reference sources' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P1.7 contestability acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'contestability overlay != verifier dimension'
+          echo 'correction != dispute != appeal'
+          echo 'dispute/appeal -> no claim mutation'
+          echo 'applied correction -> explicit successor + preserved history'
+          echo 'unresolved disagreement -> visible / no forced consensus'
+          echo 'actor ref != identity != authority'
+          echo 'contestability event != reputation penalty'
+          echo 'aggregate verdict -> FORBIDDEN'
+          echo 'PASS: P1.7 contestability overlay v0.1'

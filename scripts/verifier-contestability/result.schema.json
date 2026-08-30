@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:verifier-contestability-result-schema:0.1",
+  "title": "UU-AAP Verifier Contestability Result v0.1",
+  "type": "object",
+  "required": [
+    "schema",
+    "artifact",
+    "base_interactive_input",
+    "dimension_order",
+    "current_dimension_claims",
+    "contestability_evidence_items",
+    "contestability_overlay",
+    "history",
+    "contestability_policy",
+    "aggregate_score_present",
+    "aggregate_verdict_present"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "required": ["value", "evaluation", "source_layer", "evidence_refs", "explanation", "does_not_establish"],
+      "additionalProperties": false,
+      "properties": {
+        "value": {"type": "string", "minLength": 1},
+        "evaluation": {"enum": ["OBSERVED", "SUPPORTED", "NOT_SUPPORTED", "UNKNOWN", "NOT_EVALUATED", "NOT_APPLICABLE"]},
+        "source_layer": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "explanation": {"type": "string", "minLength": 1},
+        "does_not_establish": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["id", "kind", "source_layer", "summary", "payload"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "minLength": 1},
+        "source_layer": {"type": "string", "minLength": 1},
+        "summary": {"type": "string", "minLength": 1},
+        "payload": {"type": "object"}
+      }
+    },
+    "record": {
+      "type": "object",
+      "required": ["id", "kind", "dimension", "actor_ref", "recorded_at", "statement", "evidence_refs", "status", "response_status", "disposition", "related_record_id", "successor_claim"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"enum": ["CORRECTION", "DISPUTE", "APPEAL"]},
+        "dimension": {"enum": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"]},
+        "actor_ref": {"type": "string", "minLength": 1},
+        "recorded_at": {"type": "string", "minLength": 1},
+        "statement": {"type": "string", "minLength": 1},
+        "evidence_refs": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "status": {"type": "string", "minLength": 1},
+        "response_status": {"enum": ["NONE", "RESPONSE_PRESENT"]},
+        "disposition": {"type": "string", "minLength": 1},
+        "related_record_id": {"type": ["string", "null"]},
+        "successor_claim": {"anyOf": [{"$ref": "#/$defs/dimension"}, {"type": "null"}]}
+      }
+    },
+    "overlay": {
+      "type": "object",
+      "required": ["correction_status", "dispute_status", "appeal_status", "record_ids", "historical_claims", "successor_claim", "unresolved_dispute_record_ids", "active_appeal_record_ids"],
+      "additionalProperties": false,
+      "properties": {
+        "correction_status": {"enum": ["NONE", "PROPOSED", "APPLIED_SUCCESSOR"]},
+        "dispute_status": {"enum": ["NONE", "OPEN", "RESPONDED", "RESOLVED", "UNRESOLVED"]},
+        "appeal_status": {"enum": ["NONE", "OPEN", "RESOLVED", "UNRESOLVED"]},
+        "record_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "historical_claims": {"type": "array", "items": {"$ref": "#/$defs/dimension"}},
+        "successor_claim": {"anyOf": [{"$ref": "#/$defs/dimension"}, {"type": "null"}]},
+        "unresolved_dispute_record_ids": {"type": "array", "items": {"type": "string", "minLength": 1}},
+        "active_appeal_record_ids": {"type": "array", "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "urn:uu-aap:verifier-contestability-result:0.1"},
+    "artifact": {
+      "type": "object",
+      "required": ["id", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1}
+      }
+    },
+    "base_interactive_input": {"type": "object"},
+    "dimension_order": {
+      "const": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"]
+    },
+    "current_dimension_claims": {
+      "type": "object",
+      "required": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"],
+      "additionalProperties": false,
+      "properties": {
+        "integrity": {"$ref": "#/$defs/dimension"},
+        "identity": {"$ref": "#/$defs/dimension"},
+        "provenance": {"$ref": "#/$defs/dimension"},
+        "availability": {"$ref": "#/$defs/dimension"},
+        "authority": {"$ref": "#/$defs/dimension"},
+        "responsibility": {"$ref": "#/$defs/dimension"},
+        "truth": {"$ref": "#/$defs/dimension"}
+      }
+    },
+    "contestability_evidence_items": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+    "contestability_overlay": {
+      "type": "object",
+      "required": ["integrity", "identity", "provenance", "availability", "authority", "responsibility", "truth"],
+      "additionalProperties": false,
+      "properties": {
+        "integrity": {"$ref": "#/$defs/overlay"},
+        "identity": {"$ref": "#/$defs/overlay"},
+        "provenance": {"$ref": "#/$defs/overlay"},
+        "availability": {"$ref": "#/$defs/overlay"},
+        "authority": {"$ref": "#/$defs/overlay"},
+        "responsibility": {"$ref": "#/$defs/overlay"},
+        "truth": {"$ref": "#/$defs/overlay"}
+      }
+    },
+    "history": {"type": "array", "items": {"$ref": "#/$defs/record"}},
+    "contestability_policy": {
+      "type": "object",
+      "required": [
+        "overlay_is_verifier_dimension",
+        "dispute_mutates_claim",
+        "appeal_mutates_claim",
+        "correction_preserves_history",
+        "actor_ref_establishes_identity",
+        "actor_ref_establishes_authority",
+        "correction_establishes_truth",
+        "unresolved_disagreement_permitted",
+        "forced_consensus_permitted",
+        "reputation_penalty_inference_permitted",
+        "aggregate_score_permitted",
+        "aggregate_verdict_permitted"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "overlay_is_verifier_dimension": {"const": false},
+        "dispute_mutates_claim": {"const": false},
+        "appeal_mutates_claim": {"const": false},
+        "correction_preserves_history": {"const": true},
+        "actor_ref_establishes_identity": {"const": false},
+        "actor_ref_establishes_authority": {"const": false},
+        "correction_establishes_truth": {"const": false},
+        "unresolved_disagreement_permitted": {"const": true},
+        "forced_consensus_permitted": {"const": false},
+        "reputation_penalty_inference_permitted": {"const": false},
+        "aggregate_score_permitted": {"const": false},
+        "aggregate_verdict_permitted": {"const": false}
+      }
+    },
+    "aggregate_score_present": {"const": false},
+    "aggregate_verdict_present": {"const": false}
+  }
+}

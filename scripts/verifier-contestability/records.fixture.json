@@ -1,0 +1,82 @@
+{
+  "contestability_evidence_items": [
+    {
+      "id": "evidence:contest-provenance-challenge",
+      "kind": "third_party_challenge_evidence",
+      "source_layer": "UU-AAP/P1.7",
+      "summary": "Opaque challenger evidence attached to the provenance dispute.",
+      "payload": {
+        "verified": true,
+        "trust_score": 0.99,
+        "note": "Opaque payload fields are evidence data only and do not become verifier semantics."
+      }
+    },
+    {
+      "id": "evidence:contest-availability-correction",
+      "kind": "correction_supporting_evidence",
+      "source_layer": "UU-AAP/P1.7",
+      "summary": "Explicit supporting evidence for a successor availability claim.",
+      "payload": {
+        "delivery_receipt": "synthetic:pre-cutoff-delivery-v0.1",
+        "observed_for_test": true
+      }
+    }
+  ],
+  "records": [
+    {
+      "id": "dispute-provenance-1",
+      "kind": "DISPUTE",
+      "dimension": "provenance",
+      "actor_ref": "challenger:pseudonym-7",
+      "recorded_at": "2026-08-30T12:00:00Z",
+      "statement": "Challenge the interpretation of the provenance observation without negating or rewriting the underlying claim.",
+      "evidence_refs": ["evidence:contest-provenance-challenge"],
+      "status": "UNRESOLVED",
+      "response_status": "RESPONSE_PRESENT",
+      "disposition": "UNRESOLVED",
+      "related_record_id": null,
+      "successor_claim": null
+    },
+    {
+      "id": "correction-availability-1",
+      "kind": "CORRECTION",
+      "dimension": "availability",
+      "actor_ref": "corrector:editor-1",
+      "recorded_at": "2026-08-30T12:05:00Z",
+      "statement": "Publish an explicit successor availability claim while preserving the historical claim.",
+      "evidence_refs": ["evidence:contest-availability-correction"],
+      "status": "APPLIED_SUCCESSOR",
+      "response_status": "NONE",
+      "disposition": "ACCEPTED",
+      "related_record_id": null,
+      "successor_claim": {
+        "value": "AVAILABLE_BEFORE_CUTOFF",
+        "evaluation": "SUPPORTED",
+        "source_layer": "UU-AAP/P1.7-correction",
+        "evidence_refs": ["evidence:contest-availability-correction"],
+        "explanation": "A successor claim records explicit pre-cutoff delivery evidence supplied by the correcting party.",
+        "does_not_establish": [
+          "factual truth",
+          "that the evidence was considered",
+          "decision authority",
+          "responsibility",
+          "identity of the correcting actor"
+        ]
+      }
+    },
+    {
+      "id": "appeal-provenance-1",
+      "kind": "APPEAL",
+      "dimension": "provenance",
+      "actor_ref": "challenger:pseudonym-7",
+      "recorded_at": "2026-08-30T12:10:00Z",
+      "statement": "Appeal the handling or disposition process of the earlier provenance dispute without restating it as a new claim.",
+      "evidence_refs": ["evidence:contest-provenance-challenge"],
+      "status": "OPEN",
+      "response_status": "NONE",
+      "disposition": "PENDING",
+      "related_record_id": "dispute-provenance-1",
+      "successor_claim": null
+    }
+  ]
+}
