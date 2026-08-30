@@ -1,0 +1,95 @@
+{
+  "schema": "urn:uu-aap:c2pa-soft-binding-poai-availability-fixture:0.1",
+  "issue": 794,
+  "repository_predecessor_main": "7353084b9a78b6c3d478cfc81732773d5d0f2441",
+  "predecessor_p0_4": {
+    "path": "scripts/c2pa-agent-composition/composition.fixture.json",
+    "git_blob_sha": "143609c6d58a978e2eb3570aa9d093dccada092a",
+    "decision_boundary": {
+      "opened_at": "2026-08-30T08:50:00Z",
+      "knowledge_cutoff": "2026-08-30T09:00:00Z",
+      "closed_at": "2026-08-30T09:05:00Z"
+    }
+  },
+  "reference_contracts": {
+    "trustmark": {
+      "repository": "adobe/trustmark",
+      "sha": "0ed40cbe8188f664fd9cbbeacd969807de27440a",
+      "readme_blob": "6f02bc07483429190e78df50cd398b8be189373d",
+      "example_blob": "a40b39d5bfda0dd1ed63ddb33db791681a20d591"
+    },
+    "softbinding_registry": {
+      "repository": "c2pa-org/softbinding-algorithm-list",
+      "sha": "a9d9699097785b6ffa8e46cefba21f366308fa06",
+      "algorithm": "com.adobe.trustmark.Q",
+      "identifier": 4,
+      "type": "watermark",
+      "decoded_media_types": ["image"]
+    },
+    "c2pa_specifications": {
+      "repository": "c2pa-org/specifications",
+      "sha": "9c58c8c27044e44e8601f6ab13f1bcac1376eb1f"
+    }
+  },
+  "soft_binding_assertion": {
+    "label": "c2pa.soft-binding",
+    "data": {
+      "alg": "com.adobe.trustmark.Q",
+      "blocks": [
+        {
+          "scope": {},
+          "value": "4*P08-SOFT-BINDING-001"
+        }
+      ]
+    }
+  },
+  "resolver_history": [
+    {
+      "event_id": "resolver-pre-cutoff-1",
+      "event_type": "resolution",
+      "observed_at": "2026-08-30T08:55:00Z",
+      "status": "NOT_FOUND",
+      "manifest_ref": null,
+      "delivered_to_decision": false
+    },
+    {
+      "event_id": "consideration-before-close-1",
+      "event_type": "consideration",
+      "observed_at": "2026-08-30T09:04:00Z",
+      "status": "NOT_USED"
+    },
+    {
+      "event_id": "repository-ingestion-1",
+      "event_type": "repository_ingestion",
+      "observed_at": "2026-08-30T09:30:00Z",
+      "manifest_ref": "urn:c2pa:manifest:p08:001"
+    },
+    {
+      "event_id": "resolver-current-1",
+      "event_type": "resolution",
+      "observed_at": "2026-08-30T10:00:00Z",
+      "status": "RESOLVED",
+      "manifest_ref": "urn:c2pa:manifest:p08:001",
+      "delivered_to_decision": false
+    }
+  ],
+  "expected": {
+    "current_resolution": "SOFT_BINDING_RESOLVES_NOW",
+    "poai_historical_availability": "UNAVAILABLE_BEFORE_CUTOFF",
+    "consideration": "NOT_USED",
+    "truth": "NOT_ESTABLISHED",
+    "authority": "UNCHANGED"
+  },
+  "non_effects": {
+    "identifier_presence_proves_delivery": false,
+    "current_resolution_backfills_historical_availability": false,
+    "repository_ingestion_proves_delivery": false,
+    "repository_ingestion_proves_consideration": false,
+    "current_lookup_proves_historical_reliance": false,
+    "soft_binding_resolution_proves_truth": false,
+    "soft_binding_resolution_proves_authorship": false,
+    "soft_binding_resolution_grants_authority": false,
+    "soft_binding_resolution_assigns_responsibility": false,
+    "aggregate_score_created": false
+  }
+}

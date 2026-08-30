@@ -1,0 +1,193 @@
+name: P0.8 Soft-Binding × PoAI Availability v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-soft-binding-poai-availability/**'
+      - '.github/workflows/c2pa-soft-binding-poai-availability-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-soft-binding-poai-availability/**'
+      - '.github/workflows/c2pa-soft-binding-poai-availability-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  TRUSTMARK_SHA: '0ed40cbe8188f664fd9cbbeacd969807de27440a'
+  SOFTBINDING_REGISTRY_SHA: 'a9d9699097785b6ffa8e46cefba21f366308fa06'
+  C2PA_SPEC_SHA: '9c58c8c27044e44e8601f6ab13f1bcac1376eb1f'
+  P0_4_FIXTURE_GIT_BLOB: '143609c6d58a978e2eb3570aa9d093dccada092a'
+
+jobs:
+  deterministic-composition:
+    name: deterministic temporal composition
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Install schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Syntax check without repository writes
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/c2pa-soft-binding-poai-availability/validate.py'),
+              Path('scripts/c2pa-soft-binding-poai-availability/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+      - name: Build baseline typed receipt
+        run: |
+          python scripts/c2pa-soft-binding-poai-availability/validate.py \
+            scripts/c2pa-soft-binding-poai-availability/fixture.json \
+            --assert-expected \
+            > /tmp/p0-8-receipt.json
+          cat /tmp/p0-8-receipt.json
+      - name: Validate receipt schema
+        run: |
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator, FormatChecker
+          schema=json.load(open('scripts/c2pa-soft-binding-poai-availability/receipt.schema.json'))
+          receipt=json.load(open('/tmp/p0-8-receipt.json'))
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema, format_checker=FormatChecker()).validate(receipt)
+          assert receipt['current_resolution']['status'] == 'SOFT_BINDING_RESOLVES_NOW'
+          assert receipt['historical_availability']['status'] == 'UNAVAILABLE_BEFORE_CUTOFF'
+          assert receipt['consideration']['status'] == 'NOT_USED'
+          assert receipt['semantic_state']['truth'] == 'NOT_ESTABLISHED'
+          assert receipt['semantic_state']['authority'] == 'UNCHANGED'
+          assert receipt['aggregate_score_present'] is False
+          print('P0.8 typed receipt schema: PASS')
+          PY
+      - name: Run temporal counterfactual suite
+        run: python scripts/c2pa-soft-binding-poai-availability/test.py
+      - name: Re-run merged P0.4 validator unchanged
+        run: >-
+          python scripts/c2pa-agent-composition/validate-composition.py
+          scripts/c2pa-agent-composition/composition.fixture.json
+      - name: Bind exact P0.4 Decision Boundary fixture
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/c2pa-agent-composition/composition.fixture.json)" = "$P0_4_FIXTURE_GIT_BLOB"
+          python - <<'PY'
+          import json
+          p04=json.load(open('scripts/c2pa-agent-composition/composition.fixture.json'))
+          p08=json.load(open('scripts/c2pa-soft-binding-poai-availability/fixture.json'))
+          assert p08['predecessor_p0_4']['decision_boundary'] == {
+              'opened_at': p04['poai_layer']['decision_boundary']['opened_at'],
+              'knowledge_cutoff': p04['poai_layer']['decision_boundary']['knowledge_cutoff'],
+              'closed_at': p04['poai_layer']['decision_boundary']['closed_at'],
+          }
+          print('P0.8 reuses exact P0.4 Decision Boundary: PASS')
+          PY
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
+            echo 'ERROR: P0.8 must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  pinned-reference-contracts:
+    name: pinned soft-binding reference contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Inspect pinned Adobe TrustMark C2PA surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/trustmark
+          git clone -q https://github.com/adobe/trustmark.git /tmp/trustmark
+          git -C /tmp/trustmark checkout -q "$TRUSTMARK_SHA"
+          test "$(git -C /tmp/trustmark rev-parse HEAD)" = "$TRUSTMARK_SHA"
+          test "$(git -C /tmp/trustmark hash-object c2pa/README.md)" = '6f02bc07483429190e78df50cd398b8be189373d'
+          test "$(git -C /tmp/trustmark hash-object c2pa/c2pa_watermark_example.py)" = 'a40b39d5bfda0dd1ed63ddb33db791681a20d591'
+          grep -qi 'soft binding' /tmp/trustmark/c2pa/README.md
+          grep -q "'c2pa.soft-binding'" /tmp/trustmark/c2pa/c2pa_watermark_example.py
+          grep -q "'com.adobe.trustmark.Q'" /tmp/trustmark/c2pa/c2pa_watermark_example.py
+      - name: Inspect pinned C2PA soft-binding algorithm registry
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/softbinding-registry
+          git clone -q https://github.com/c2pa-org/softbinding-algorithm-list.git /tmp/softbinding-registry
+          git -C /tmp/softbinding-registry checkout -q "$SOFTBINDING_REGISTRY_SHA"
+          test "$(git -C /tmp/softbinding-registry rev-parse HEAD)" = "$SOFTBINDING_REGISTRY_SHA"
+          python - <<'PY'
+          import json
+          path='/tmp/softbinding-registry/softbinding-algorithm-list.json'
+          entries=json.load(open(path))
+          q=[entry for entry in entries if entry.get('alg') == 'com.adobe.trustmark.Q']
+          assert len(q) == 1, q
+          entry=q[0]
+          assert entry['identifier'] == 4
+          assert entry['type'] == 'watermark'
+          assert entry['decodedMediaTypes'] == ['image']
+          print('registered TrustMark Q soft-binding algorithm: PASS')
+          PY
+      - name: Anchor pinned C2PA specification source frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-specifications
+          git clone -q --filter=blob:none https://github.com/c2pa-org/specifications.git /tmp/c2pa-specifications
+          git -C /tmp/c2pa-specifications checkout -q "$C2PA_SPEC_SHA"
+          test "$(git -C /tmp/c2pa-specifications rev-parse HEAD)" = "$C2PA_SPEC_SHA"
+      - name: Prove no live resolution dependency
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+
+          forbidden_roots = {'requests', 'httpx', 'urllib', 'socket', 'trustmark'}
+          forbidden_calls = {'urlopen'}
+          for path in [
+              Path('scripts/c2pa-soft-binding-poai-availability/validate.py'),
+              Path('scripts/c2pa-soft-binding-poai-availability/test.py'),
+          ]:
+              tree = ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      for alias in node.names:
+                          assert alias.name.split('.')[0] not in forbidden_roots, (path, alias.name)
+                  elif isinstance(node, ast.ImportFrom):
+                      root = (node.module or '').split('.')[0]
+                      assert root not in forbidden_roots, (path, node.module)
+                  elif isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                      assert node.func.id not in forbidden_calls, (path, node.func.id)
+          print('live third-party resolver/model dependency absent from executable P0.8 code: PASS')
+          PY
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P0.8 temporal separation acceptance
+    runs-on: ubuntu-latest
+    needs: [deterministic-composition, pinned-reference-contracts]
+    steps:
+      - run: |
+          echo 'standard c2pa.soft-binding reference -> PRESENT'
+          echo 'current deterministic lookup -> SOFT_BINDING_RESOLVES_NOW'
+          echo 'historical PoAI result -> UNAVAILABLE_BEFORE_CUTOFF'
+          echo 'repository ingestion -> NOT DELIVERY / NOT CONSIDERATION'
+          echo 'resolution -> NOT TRUTH / NOT AUTHORSHIP / NOT AUTHORITY / NOT RESPONSIBILITY'
+          echo 'PASS: P0.8 soft-binding × PoAI decision-time availability v0.1'
