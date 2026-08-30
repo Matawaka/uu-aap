@@ -1,0 +1,32 @@
+{
+  "en": {
+    "root.contest_link": "Open the local contestability overlay",
+    "contest.heading": "UU-AAP Local Contestability Overlay",
+    "contest.description": "Apply explicit correction, dispute and appeal records over a validated seven-dimension verifier input without silently rewriting history.",
+    "contest.privacy": "Privacy boundary: selected files and pasted JSON stay in this browser. This page has no server upload, model call, analytics or external runtime dependency.",
+    "contest.semantic": "Semantic boundary: contestability is an overlay, not an eighth verifier dimension. Disputes and appeals do not mutate claims; applied corrections preserve the historical claim and expose an explicit successor.",
+    "contest.accept_link": "Open the P1.5 candidate acceptance gate",
+    "contest.interactive_link": "Open the P1.3 explicit-input verifier",
+    "contest.reference_link": "Open the immutable seven-dimension reference verifier",
+    "contest.example_link": "Open the example contestability input JSON",
+    "contest.result_link": "Open the example contestability result JSON",
+    "contest.file_label": "Select a local contestability JSON file:",
+    "contest.paste_label": "Or paste/edit contestability input JSON:",
+    "contest.action": "Apply contestability overlay"
+  },
+  "ru": {
+    "root.contest_link": "Открыть локальный слой оспаривания",
+    "contest.heading": "Локальный слой оспаривания UU-AAP",
+    "contest.description": "Примените явные записи correction, dispute и appeal к проверенному входу верификатора с семью измерениями без скрытого переписывания истории.",
+    "contest.privacy": "Граница приватности: выбранные файлы и вставленный JSON остаются в этом браузере. Страница не использует серверную загрузку, вызовы моделей, аналитику или внешние runtime-зависимости.",
+    "contest.semantic": "Семантическая граница: contestability — отдельный слой, а не восьмое измерение верификатора. Dispute и appeal не изменяют claims; применённая correction сохраняет историческое утверждение и показывает явный successor.",
+    "contest.accept_link": "Открыть шлюз принятия кандидатов P1.5",
+    "contest.interactive_link": "Открыть P1.3 верификатор явных входных данных",
+    "contest.reference_link": "Открыть неизменяемый эталон верификатора с семью измерениями",
+    "contest.example_link": "Открыть пример входного JSON оспаривания",
+    "contest.result_link": "Открыть пример результирующего JSON оспаривания",
+    "contest.file_label": "Выберите локальный JSON-файл оспаривания:",
+    "contest.paste_label": "Или вставьте/отредактируйте входной JSON оспаривания:",
+    "contest.action": "Применить слой оспаривания"
+  }
+}

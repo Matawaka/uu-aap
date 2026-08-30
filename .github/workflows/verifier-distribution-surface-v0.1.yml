@@ -10,6 +10,9 @@ on:
       - 'scripts/verifier-evidence-adapter/**'
       - 'scripts/verifier-candidate-acceptance/**'
       - 'scripts/verifier-policy-localization/**'
+      - 'scripts/verifier-contestability/**'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
       - 'CODE_OF_CONDUCT.md'
@@ -19,6 +22,7 @@ on:
       - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
       - '.github/workflows/verifier-candidate-acceptance-v0.1.yml'
       - '.github/workflows/verifier-policy-localization-v0.1.yml'
+      - '.github/workflows/verifier-contestability-v0.1.yml'
   push:
     branches: [main]
     paths:
@@ -29,6 +33,9 @@ on:
       - 'scripts/verifier-evidence-adapter/**'
       - 'scripts/verifier-candidate-acceptance/**'
       - 'scripts/verifier-policy-localization/**'
+      - 'scripts/verifier-contestability/**'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
       - 'CODE_OF_CONDUCT.md'
@@ -38,6 +45,7 @@ on:
       - '.github/workflows/verifier-evidence-adapter-v0.1.yml'
       - '.github/workflows/verifier-candidate-acceptance-v0.1.yml'
       - '.github/workflows/verifier-policy-localization-v0.1.yml'
+      - '.github/workflows/verifier-contestability-v0.1.yml'
   workflow_dispatch:
 
 permissions:
@@ -69,7 +77,7 @@ jobs:
           set -euo pipefail
           rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
           cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
-          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
       - name: Prove installed package is independently importable
         shell: bash
         run: |
@@ -90,6 +98,10 @@ jobs:
           assert callable(verifier.build_acceptance_input)
           assert callable(verifier.materialize_candidate_acceptance)
           assert callable(verifier.validate_acceptance_result)
+          assert callable(verifier.build_contestability_input)
+          assert callable(verifier.materialize_contestability_overlay)
+          assert callable(verifier.validate_contestability_input)
+          assert callable(verifier.validate_contestability_result)
           print('installed reusable verifier package: PASS')
           PY
       - name: Syntax check distribution implementation
@@ -102,6 +114,7 @@ jobs:
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/interactive.py'),
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py'),
               Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/acceptance.py'),
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/contestability.py'),
               Path('scripts/verifier-presentation-contract/build.py'),
               Path('scripts/verifier-presentation-contract/render.py'),
               Path('scripts/verifier-distribution-surface/build_site.py'),
@@ -112,6 +125,9 @@ jobs:
               Path('scripts/verifier-evidence-adapter/test.py'),
               Path('scripts/verifier-candidate-acceptance/build_acceptance_site.py'),
               Path('scripts/verifier-candidate-acceptance/test.py'),
+              Path('scripts/verifier-contestability/build_contestability_site.py'),
+              Path('scripts/verifier-contestability/localize_contestability.py'),
+              Path('scripts/verifier-contestability/test.py'),
               Path('scripts/verifier-policy-localization/build_policy_l10n.py'),
               Path('scripts/verifier-policy-localization/test.py'),
           ]:
@@ -124,6 +140,8 @@ jobs:
           node --check scripts/verifier-evidence-adapter/test-browser.js
           node --check scripts/verifier-candidate-acceptance/app.js
           node --check scripts/verifier-candidate-acceptance/test-browser.js
+          node --check scripts/verifier-contestability/app.js
+          node --check scripts/verifier-contestability/test-browser.js
           node --check scripts/verifier-policy-localization/runtime.js
           node --check scripts/verifier-policy-localization/test-browser.js
       - name: Re-run P1.1 semantic firewall unchanged
@@ -224,6 +242,25 @@ jobs:
           assert result['aggregate_verdict_present'] is False
           print('P1.5 deployed explicit materialization shape: PASS')
           PY
+      - name: Prove P1.7 contestability isolation and browser equivalence
+        run: python scripts/verifier-contestability/test.py
+      - name: Augment validated artifact with P1.7 contestability overlay
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verifier-contestability/build_contestability_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/app.js"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json"
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json"
+          grep -q 'href="verifier/contest/"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"; then
+            echo 'ERROR: contestability HTML introduced an external network target' >&2
+            exit 1
+          fi
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json" "${RUNNER_TEMP}/contest-example.before"
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json" "${RUNNER_TEMP}/contest-result.before"
       - name: Prove P1.6 technical policy and localization isolation
         run: python scripts/verifier-policy-localization/test.py
       - name: Augment validated artifact with P1.6 policy and EN/RU static shell
@@ -245,16 +282,29 @@ jobs:
             exit 1
           fi
           node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
-      - name: Confirm Core and SPEC remain untouched
+      - name: Extend EN/RU shell to P1.7 without translating contestability data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verifier-contestability/localize_contestability.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          cmp --silent "${RUNNER_TEMP}/contest-example.before" "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example.json"
+          cmp --silent "${RUNNER_TEMP}/contest-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/contest/example-result.json"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"
+          grep -q 'data-i18n="root.contest_link"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          grep -q 'data-i18n="contest.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/contest/index.html"
+          grep -q '"contest.heading"' "${RUNNER_TEMP}/uuaap-pages/verifier/assets/messages.json"
+          node scripts/verifier-policy-localization/test-browser.js "${RUNNER_TEMP}/uuaap-pages/verifier/assets/l10n.js"
+      - name: Confirm Core and normative/reference sources remain untouched
         shell: bash
         run: |
           set -euo pipefail
           base_ref="${{ github.base_ref || 'main' }}"
           git fetch -q origin "$base_ref" --depth=1
           base_sha="$(git rev-parse FETCH_HEAD)"
-          if ! git diff --quiet "$base_sha" -- protocols/core/ SPEC.md; then
-            echo 'ERROR: verifier distribution must not modify UU-AAP Core or SPEC' >&2
-            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md >&2
+          if ! git diff --quiet "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md; then
+            echo 'ERROR: verifier distribution must not modify Core, SPEC or CONTESTABILITY reference semantics' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md >&2
             exit 1
           fi
       - name: Working tree remains clean
@@ -265,7 +315,7 @@ jobs:
           path: ${{ runner.temp }}/uuaap-pages
 
   acceptance:
-    name: P1.2/P1.3/P1.4/P1.5/P1.6 one-source distribution acceptance
+    name: P1.2/P1.3/P1.4/P1.5/P1.6/P1.7 one-source distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -274,13 +324,15 @@ jobs:
           echo 'interactive input -> explicit seven-dimension claims only'
           echo 'external observation -> bounded adapter -> candidate claim only'
           echo 'candidate claim -> explicit ACCEPT | REJECT | DEFER -> materialized P1.3 input'
+          echo 'contestability overlay -> correction | dispute | appeal; no eighth dimension'
+          echo 'dispute/appeal -> no claim mutation; correction -> successor + preserved history'
           echo 'localized presentation != localized protocol semantics'
-          echo 'static verifier shell -> EN | RU; user evidence + machine tokens -> canonical'
+          echo 'static verifier shell -> EN | RU; user evidence + contestability data -> canonical'
           echo 'technical policy -> implementation-backed; legal/WCAG certification -> NOT CLAIMED'
           echo 'browser input -> local only'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2-P1.6 verifier distribution stack'
+          echo 'PASS: P1.2-P1.7 verifier distribution stack'
 
   deploy:
     name: deploy validated verifier to GitHub Pages
