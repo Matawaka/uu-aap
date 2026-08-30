@@ -1,0 +1,24 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:uu-aap:scoped-attestation-bridge-result-schema:0.1",
+  "type":"object",
+  "required":["schema","artifact","evidence_items","identity_candidates","role_attestations","review_attestations","bridge_receipts","warnings","bridge_policy","aggregate_score_present","aggregate_verdict_present"],
+  "additionalProperties":false,
+  "$defs":{
+    "dimension":{"type":"object","required":["value","evaluation","source_layer","evidence_refs","explanation","does_not_establish"],"additionalProperties":false,"properties":{"value":{"enum":["CAWG_IDENTITY_TRUSTED","CAWG_IDENTITY_WELL_FORMED","CAWG_IDENTITY_REVOKED"]},"evaluation":{"enum":["SUPPORTED","UNKNOWN","NOT_SUPPORTED"]},"source_layer":{"const":"CAWG/IdentityAssertion/1.3"},"evidence_refs":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}},"explanation":{"type":"string","minLength":1},"does_not_establish":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}}}},
+    "evidence":{"type":"object","required":["id","kind","source_layer","summary","payload"],"additionalProperties":false,"properties":{"id":{"type":"string","minLength":1},"kind":{"type":"string","minLength":1},"source_layer":{"type":"string","minLength":1},"summary":{"type":"string","minLength":1},"payload":{"type":"object"}}}
+  },
+  "properties":{
+    "schema":{"const":"urn:uu-aap:scoped-attestation-bridge-result:0.1"},
+    "artifact":{"type":"object"},
+    "evidence_items":{"type":"array","items":{"$ref":"#/$defs/evidence"}},
+    "identity_candidates":{"type":"array","items":{"type":"object","required":["candidate_id","observation_id","named_actor_ref","claim"],"additionalProperties":false,"properties":{"candidate_id":{"type":"string","minLength":1},"observation_id":{"type":"string","minLength":1},"named_actor_ref":{"type":"string","minLength":1},"claim":{"$ref":"#/$defs/dimension"}}}},
+    "role_attestations":{"type":"array","items":{"type":"object"}},
+    "review_attestations":{"type":"array","items":{"type":"object"}},
+    "bridge_receipts":{"type":"array","items":{"type":"object"}},
+    "warnings":{"type":"array","items":{"type":"object"}},
+    "bridge_policy":{"type":"object"},
+    "aggregate_score_present":{"const":false},
+    "aggregate_verdict_present":{"const":false}
+  }
+}
