@@ -1,0 +1,130 @@
+name: P1.13 Portable Disposition Integrity Capsule v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verifier-disposition-integrity-capsule/**'
+      - 'scripts/verifier-disposition-integrity-surface/**'
+      - 'scripts/verifier-disposition-integrity/**'
+      - 'scripts/verifier-federated-disposition/**'
+      - 'packages/uuaap-verifier-presentation/**'
+      - '.github/workflows/verifier-disposition-integrity-capsule-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verifier-disposition-integrity-capsule/**'
+      - '.github/workflows/verifier-disposition-integrity-capsule-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: relocatable offline integrity verification without authority expansion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install reusable verifier package outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+      - name: Bind exact historical P1.12/P1.11 sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/verifier-disposition-integrity-surface/build_integrity_site.py)" = 'bd00fe4a1b19178d810f94a8b66de06d01219443'
+          test "$(git hash-object scripts/verifier-disposition-integrity-surface/ui.js)" = '0961c51943e6b9ace1f348378d0518d6f0e7376f'
+          test "$(git hash-object scripts/verifier-disposition-integrity-surface/source-bindings.json)" = '9d0eb48da5ab49fac7363fcc11b5367b3291e441'
+          test "$(git hash-object scripts/verifier-disposition-integrity/app.js)" = '34bed235823e80c391f3130ea17b4af42a54a364'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b=json.loads(Path('scripts/verifier-disposition-integrity-capsule/source-bindings.json').read_text(encoding='utf-8'))
+          assert b['predecessor_main']=='4b983c59ac00d86ed774be60feb5beb12768cc06'
+          assert b['p1_12_builder']['blob']=='bd00fe4a1b19178d810f94a8b66de06d01219443'
+          assert b['p1_12_ui']['blob']=='0961c51943e6b9ace1f348378d0518d6f0e7376f'
+          assert b['p1_12_source_bindings']['blob']=='9d0eb48da5ab49fac7363fcc11b5367b3291e441'
+          assert b['p1_11_browser']['blob']=='34bed235823e80c391f3130ea17b4af42a54a364'
+          print('P1.13 historical source bindings: PASS')
+          PY
+      - name: Validate P1.13 syntax and local-only capsule shell
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/verifier-disposition-integrity-capsule/build_capsule.py'),
+              Path('scripts/verifier-disposition-integrity-capsule/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          node --check scripts/verifier-disposition-integrity-capsule/test-browser.js
+      - name: Prove isolated capsule relocation, byte binding and browser equivalence
+        run: python scripts/verifier-disposition-integrity-capsule/test.py
+      - name: Re-run historical P1.11/P1.12 gates
+        run: |
+          python scripts/verifier-disposition-integrity/test.py
+          python scripts/verifier-disposition-integrity-surface/test.py
+      - name: Re-run full P1.1 through P1.12 verifier regression stack
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+          python scripts/verifier-policy-localization/test.py
+          python scripts/verifier-contestability/test.py
+          python scripts/verifier-scoped-attestations/test.py
+          python scripts/verifier-candidate-federation/test.py
+          python scripts/verifier-federated-disposition/test.py
+          python scripts/verifier-disposition-integrity/test.py
+          python scripts/verifier-disposition-integrity-surface/test.py
+      - name: Prove historical semantics remain byte-unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          guarded=(
+            protocols/core/
+            SPEC.md
+            CONTESTABILITY.md
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/disposition_integrity.py
+            scripts/verifier-federated-disposition/
+            scripts/verifier-disposition-integrity/
+            scripts/verifier-disposition-integrity-surface/
+          )
+          if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.13 modified historical semantic/distribution sources' >&2
+            git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: bounded P1.13 portable capsule acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'P1.12 browser dependency closure -> relocatable local directory'
+          echo 'capsule manifest -> exact file-set + SHA-256 + byte length'
+          echo 'relocated browser verification -> canonical P1.11 receipt'
+          echo 'portable capsule != producer authentication'
+          echo 'byte integrity != truth/identity/authority/responsibility'
+          echo 'portable verification != publication/action authority'
+          echo 'PASS: P1.13 Portable Disposition Integrity Capsule v0.1'
