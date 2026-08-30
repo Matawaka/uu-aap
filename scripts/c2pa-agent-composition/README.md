@@ -9,7 +9,7 @@ Related evidence remains independent:
 - #777 — semantic-boundary draft;
 - #781 — Swift preservation frontier;
 - #782 — Android preservation frontier;
-- #783 — P0.3 cross-SDK synthesis.
+- #783 — P0.3 cross-SDK synthesis (`INCOMPLETE`).
 
 ## Purpose
 
@@ -30,22 +30,25 @@ The example deliberately makes the answers different.
 
 ## Runtime artifact layer
 
-The workflow pins the official `contentauth/c2pa-mcp` repository to:
+The executable observation uses the official `contentauth/c2pa-mcp` release and binds both source and binary:
 
 ```text
-ef521f06dc3900fcc5afdc8ad9fe846011c44f0d
+release:       v0.2.2
+release commit 22e203f01acf3a66f6bc0f14f40fb2426c3bb3e9
+Linux binary:  c2pa-mcp-x86_64-unknown-linux-gnu
+binary sha256: 1a93baa07e26cda3ae2494641be030c51db614b01d9a17f93f5ecfa74cdc2da6
 ```
 
-At that frontier the MCP server exposes `read_credentials_file` and `read_credentials_url`; its serialized result contract is:
+At that exact release frontier the MCP server exposes `read_credentials_file` and `read_credentials_url`; its serialized result contract is:
 
 ```text
 success
 hasCredentials
-manifestData? 
+manifestData?
 error?
 ```
 
-The CI uses the one-shot CLI equivalent against a pinned C2PA fixture from `contentauth/c2pa-rs`:
+The CI invokes the same implementation through its documented one-shot CLI mode against a pinned C2PA fixture from `contentauth/c2pa-rs`:
 
 ```text
 repo SHA: be7f5ea22b385ee1af6c327906ba002747687628
@@ -113,8 +116,8 @@ The C2PA signer/credential cannot grant any of these roles.
 The safe consumer must preserve three independent results:
 
 ```text
-C2PA  -> CREDENTIALS_PRESENT
-PoAI  -> UNAVAILABLE_BEFORE_CUTOFF
+C2PA   -> CREDENTIALS_PRESENT
+PoAI   -> UNAVAILABLE_BEFORE_CUTOFF
 UU-AAP -> HUMAN_PUBLICATION_AUTHORITY
 ```
 
@@ -139,7 +142,7 @@ python scripts/c2pa-agent-composition/validate-composition.py \
   --c2pa-result /tmp/c2pa-mcp-result.json
 ```
 
-The GitHub Actions workflow builds the pinned official MCP implementation, verifies the pinned external fixture bytes, obtains the real C2PA result, validates the embedded PoAI record against the existing PoAI schema, and then verifies the cross-layer non-effects.
+The GitHub Actions workflow verifies the exact official release source, hashes the official prebuilt binary, binds the external C2PA fixture by Git blob, obtains a real C2PA result, validates the embedded PoAI record against the existing PoAI schema, and then checks fail-closed semantic-collapse vectors.
 
 ## P0.4 acceptance
 
