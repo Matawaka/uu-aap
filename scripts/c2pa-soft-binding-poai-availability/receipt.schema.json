@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:c2pa-soft-binding-poai-availability-receipt:0.1",
+  "title": "SoftBindingPoAIAvailabilityReceipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "issue",
+    "fixture_sha256",
+    "repository_predecessor_main",
+    "soft_binding",
+    "current_resolution",
+    "decision_boundary",
+    "historical_availability",
+    "consideration",
+    "repository",
+    "semantic_state",
+    "non_effects",
+    "aggregate_score_present"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:c2pa-soft-binding-poai-availability-receipt:0.1"},
+    "issue": {"const": 794},
+    "fixture_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "repository_predecessor_main": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "soft_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label", "algorithm", "value", "identifier_present"],
+      "properties": {
+        "label": {"const": "c2pa.soft-binding"},
+        "algorithm": {"const": "com.adobe.trustmark.Q"},
+        "value": {"type": "string", "minLength": 1},
+        "identifier_present": {"const": true}
+      }
+    },
+    "current_resolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "observed_at", "manifest_ref", "evidence_event_id"],
+      "properties": {
+        "status": {"enum": ["SOFT_BINDING_RESOLVES_NOW", "SOFT_BINDING_NOT_RESOLVED_NOW"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "manifest_ref": {"type": ["string", "null"]},
+        "evidence_event_id": {"type": "string", "minLength": 1}
+      }
+    },
+    "decision_boundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["opened_at", "knowledge_cutoff", "closed_at"],
+      "properties": {
+        "opened_at": {"type": "string", "format": "date-time"},
+        "knowledge_cutoff": {"type": "string", "format": "date-time"},
+        "closed_at": {"type": "string", "format": "date-time"}
+      }
+    },
+    "historical_availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "dimensions",
+        "successful_pre_cutoff_resolution_event_ids",
+        "delivered_pre_cutoff_event_ids",
+        "knowledge_cutoff"
+      ],
+      "properties": {
+        "status": {"enum": ["AVAILABLE_BEFORE_CUTOFF", "UNAVAILABLE_BEFORE_CUTOFF"]},
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["temporal_fit", "delivery"],
+          "properties": {
+            "temporal_fit": {"enum": ["available", "unavailable"]},
+            "delivery": {"enum": ["available", "unavailable"]}
+          }
+        },
+        "successful_pre_cutoff_resolution_event_ids": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "delivered_pre_cutoff_event_ids": {
+          "type": "array",
+          "items": {"type": "string"},
+          "uniqueItems": true
+        },
+        "knowledge_cutoff": {"type": "string", "format": "date-time"}
+      }
+    },
+    "consideration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "observed_at", "evidence_event_id"],
+      "properties": {
+        "status": {"enum": ["USED", "NOT_USED", "NOT_ESTABLISHED"]},
+        "observed_at": {"type": ["string", "null"]},
+        "evidence_event_id": {"type": ["string", "null"]}
+      }
+    },
+    "repository": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ingestion_observed",
+        "first_ingestion_at",
+        "ingestion_before_cutoff",
+        "manifest_ref",
+        "proves_delivery",
+        "proves_consideration"
+      ],
+      "properties": {
+        "ingestion_observed": {"type": "boolean"},
+        "first_ingestion_at": {"type": ["string", "null"]},
+        "ingestion_before_cutoff": {"type": "boolean"},
+        "manifest_ref": {"type": ["string", "null"]},
+        "proves_delivery": {"const": false},
+        "proves_consideration": {"const": false}
+      }
+    },
+    "semantic_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["truth", "authorship", "authority", "responsibility"],
+      "properties": {
+        "truth": {"const": "NOT_ESTABLISHED"},
+        "authorship": {"const": "NOT_ESTABLISHED"},
+        "authority": {"const": "UNCHANGED"},
+        "responsibility": {"const": "UNCHANGED"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "minProperties": 9,
+      "additionalProperties": {"const": false}
+    },
+    "aggregate_score_present": {"const": false}
+  }
+}
