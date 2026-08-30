@@ -3,7 +3,7 @@
 const assert = require('assert');
 const path = require('path');
 const { evaluateFixture, readJson } = require('./evaluate');
-const { assertLiveC2paReport } = require('./check-live-report');
+const { assertLiveC2paReport, inferredValidationState } = require('./check-live-report');
 
 const root = __dirname;
 const rubric = readJson(path.join(root, 'rubric-v0.1.json'));
@@ -27,7 +27,36 @@ assert.deepStrictEqual(
   assertLiveC2paReport({active_manifest: 'urn:test', validation_results: {validation_state: 'Valid'}}),
   {active_manifest: 'urn:test', validation_state: 'Valid'}
 );
+
+const validButUntrusted = {
+  active_manifest: 'urn:test',
+  validation_results: {
+    activeManifest: {
+      success: [
+        {code: 'claimSignature.validated'},
+        {code: 'claimSignature.insideValidity'}
+      ],
+      informational: [],
+      failure: [{code: 'signingCredential.untrusted'}]
+    }
+  }
+};
+assert.strictEqual(inferredValidationState(validButUntrusted), 'Valid');
+assert.deepStrictEqual(
+  assertLiveC2paReport(validButUntrusted),
+  {active_manifest: 'urn:test', validation_state: 'Valid'}
+);
+
 assert.throws(() => assertLiveC2paReport({active_manifest: 'urn:test', validation_results: {validation_state: 'Invalid'}}));
+assert.throws(() => assertLiveC2paReport({
+  active_manifest: 'urn:test',
+  validation_results: {
+    activeManifest: {
+      success: [{code: 'claimSignature.validated'}, {code: 'claimSignature.insideValidity'}],
+      failure: [{code: 'assertion.dataHash.mismatch'}]
+    }
+  }
+}));
 assert.throws(() => assertLiveC2paReport({validation_results: {validation_state: 'Valid'}}));
 
 console.log('C2PA semantic boundary v0.1: fixtures PASS');
