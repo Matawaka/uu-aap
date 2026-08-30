@@ -35,8 +35,13 @@ jobs:
         with: {python-version: '3.13'}
       - uses: actions/setup-node@v4
         with: {node-version: '22'}
-      - name: Install canonical verifier package
-        run: python -m pip install ./packages/uuaap-verifier-presentation
+      - name: Install canonical verifier package without mutating checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package"
       - name: Install JSON Schema validator
         run: python -m pip install 'jsonschema>=4.22,<5'
       - name: Bind exact predecessor semantics
