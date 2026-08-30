@@ -1,0 +1,142 @@
+{
+  "schema": "urn:uu-aap:c2pa-semantic-adversarial-corpus:0.1",
+  "issue": 792,
+  "c2pa_baseline": "2.4",
+  "aggregate_score_permitted": false,
+  "cases": [
+    {
+      "case_id": "signer-display-author",
+      "expected_rule_ids": ["I1_SIGNER_NOT_GOVERNANCE"],
+      "unsafe_fixture": {
+        "case_id": "signer-display-author-unsafe",
+        "evidence": [
+          {"id": "signer", "kind": "c2pa.signer", "display_name": "Author"}
+        ],
+        "claims": [
+          {"id": "author-claim", "kind": "uu_aap.author", "value": "signer", "evidence_refs": ["signer"]}
+        ]
+      },
+      "safe_fixture": {
+        "case_id": "signer-display-author-safe",
+        "evidence": [
+          {"id": "signer", "kind": "c2pa.signer", "display_name": "Author"},
+          {"id": "authorship", "kind": "uu_aap.authorship_attestation", "actor": "author-1"}
+        ],
+        "claims": [
+          {"id": "author-claim", "kind": "uu_aap.author", "value": "author-1", "evidence_refs": ["signer", "authorship"]}
+        ]
+      },
+      "safe_interpretation": "Signer/display metadata is reported separately from authorship; authorship requires independent UU-AAP evidence."
+    },
+    {
+      "case_id": "human-validated-ai-disclosure-responsibility",
+      "expected_rule_ids": ["I4_AI_DISCLOSURE_NOT_AUTHORITY"],
+      "unsafe_fixture": {
+        "case_id": "human-validated-ai-disclosure-responsibility-unsafe",
+        "evidence": [
+          {"id": "ai-disclosure", "kind": "c2pa.ai_disclosure", "human_validated": true}
+        ],
+        "claims": [
+          {"id": "responsibility-claim", "kind": "uu_aap.responsible_actor", "value": "human-validator", "evidence_refs": ["ai-disclosure"]}
+        ]
+      },
+      "safe_fixture": {
+        "case_id": "human-validated-ai-disclosure-responsibility-safe",
+        "evidence": [
+          {"id": "ai-disclosure", "kind": "c2pa.ai_disclosure", "human_validated": true},
+          {"id": "responsibility-scope", "kind": "uu_aap.responsibility_scope", "actor": "editor-1", "scope": "publication_decision"}
+        ],
+        "claims": [
+          {"id": "responsibility-claim", "kind": "uu_aap.responsible_actor", "value": "editor-1", "evidence_refs": ["ai-disclosure", "responsibility-scope"]}
+        ]
+      },
+      "safe_interpretation": "Human-validation disclosure is process evidence, not acceptance of a UU-AAP responsibility scope."
+    },
+    {
+      "case_id": "ingredient-original-concept",
+      "expected_rule_ids": ["I3_INGREDIENT_NOT_CONCEPT_ORIGIN"],
+      "unsafe_fixture": {
+        "case_id": "ingredient-original-concept-unsafe",
+        "evidence": [
+          {"id": "ingredient", "kind": "c2pa.ingredient", "title": "Original Concept"}
+        ],
+        "claims": [
+          {"id": "origin-claim", "kind": "uu_aap.concept_origin", "value": "ingredient", "evidence_refs": ["ingredient"]}
+        ]
+      },
+      "safe_fixture": {
+        "case_id": "ingredient-original-concept-safe",
+        "evidence": [
+          {"id": "ingredient", "kind": "c2pa.ingredient", "title": "Original Concept"},
+          {"id": "lineage", "kind": "uu_aap.concept_lineage_evidence", "concept_id": "concept-1"}
+        ],
+        "claims": [
+          {"id": "origin-claim", "kind": "uu_aap.concept_origin", "value": "concept-1", "evidence_refs": ["ingredient", "lineage"]}
+        ]
+      },
+      "safe_interpretation": "Ingredient title describes artifact provenance and cannot by itself establish intellectual concept origin."
+    },
+    {
+      "case_id": "action-approved-publication-authority",
+      "expected_rule_ids": ["P07_ACTION_NOT_PUBLICATION_AUTHORITY"],
+      "unsafe_fixture": {
+        "case_id": "action-approved-publication-authority-unsafe",
+        "evidence": [
+          {"id": "action", "kind": "c2pa.action", "action": "approved"}
+        ],
+        "claims": [
+          {"id": "publish-auth-claim", "kind": "uu_aap.publication_authorization", "value": true, "evidence_refs": ["action"]}
+        ]
+      },
+      "safe_fixture": {
+        "case_id": "action-approved-publication-authority-safe",
+        "evidence": [
+          {"id": "action", "kind": "c2pa.action", "action": "approved"},
+          {"id": "publication-authorization", "kind": "uu_aap.publication_authorization", "actor": "editor-1", "scope": "release-edition"}
+        ],
+        "claims": [
+          {"id": "publish-auth-claim", "kind": "uu_aap.publication_authorization", "value": true, "evidence_refs": ["action", "publication-authorization"]}
+        ]
+      },
+      "safe_interpretation": "Action text is operation provenance; publication authority requires a separately scoped authorization record."
+    },
+    {
+      "case_id": "trusted-repository-receipt-verified-true",
+      "expected_rule_ids": ["I5_RECEIPT_NOT_TRUTH_REVIEW_AUTHORIZATION", "I6_INTEGRITY_NOT_TRUTH"],
+      "unsafe_fixture": {
+        "case_id": "trusted-repository-receipt-verified-true-unsafe",
+        "evidence": [
+          {"id": "repo-receipt", "kind": "c2pa.repository_receipt", "status": "trusted"},
+          {"id": "integrity", "kind": "c2pa.integrity", "valid": true}
+        ],
+        "claims": [
+          {"id": "truth-badge", "kind": "epistemic.truth", "value": "Verified True", "evidence_refs": ["repo-receipt", "integrity"]}
+        ]
+      },
+      "safe_fixture": {
+        "case_id": "trusted-repository-receipt-verified-true-safe",
+        "evidence": [
+          {"id": "repo-receipt", "kind": "c2pa.repository_receipt", "status": "trusted"},
+          {"id": "integrity", "kind": "c2pa.integrity", "valid": true},
+          {"id": "fact-check", "kind": "epistemic.verification", "scope": "claim-1"}
+        ],
+        "claims": [
+          {"id": "truth-claim", "kind": "epistemic.truth", "value": "reviewed-claim", "evidence_refs": ["repo-receipt", "integrity", "fact-check"]}
+        ]
+      },
+      "safe_interpretation": "Repository presence and integrity are shown separately from factual verification; no generic truth badge is inferred."
+    }
+  ],
+  "non_effects": {
+    "c2pa_conformance_redefined": false,
+    "c2pa_validation_result_mutated": false,
+    "authorship_established_from_c2pa": false,
+    "authority_established_from_c2pa": false,
+    "responsibility_established_from_c2pa": false,
+    "concept_origin_established_from_ingredient": false,
+    "truth_certified_from_integrity": false,
+    "decision_time_availability_established": false,
+    "aggregate_trust_score_created": false,
+    "core_modified": false
+  }
+}

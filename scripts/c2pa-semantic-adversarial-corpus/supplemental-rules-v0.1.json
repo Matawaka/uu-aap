@@ -1,0 +1,17 @@
+{
+  "$schema": "urn:uu-aap:c2pa-semantic-boundary-rubric-supplement:0.1",
+  "name": "UU-AAP / C2PA P0.7 Supplemental Semantic Rules v0.1",
+  "status": "application-semantics-only-not-c2pa-conformance",
+  "c2pa_baseline": "2.4",
+  "rules": [
+    {
+      "id": "P07_ACTION_NOT_PUBLICATION_AUTHORITY",
+      "description": "C2PA action metadata or display text such as approved must not establish UU-AAP publication authorization without independent publication-authority evidence.",
+      "prohibited_support_kinds": ["c2pa.action"],
+      "targets": {
+        "uu_aap.publication_authorization": ["uu_aap.publication_authorization"]
+      },
+      "safe_interpretation": "Report the C2PA action as operation provenance; require separately scoped publication-authorization evidence for authority to release."
+    }
+  ]
+}
