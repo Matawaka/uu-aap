@@ -1,8 +1,17 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Start here — participate in 5 minutes
+    url: https://github.com/Matawaka/uu-aap/blob/main/START-HERE.md
+    about: Choose the lowest-friction path for review, discussion, implementation, or reading.
   - name: Broad design discussion
     url: https://github.com/Matawaka/uu-aap/discussions/8
     about: Use Discussion #8 for philosophy, use cases, countermodels and open-ended design alternatives.
+  - name: PoAI Genesis discussion
+    url: https://github.com/Matawaka/uu-aap/discussions/10
+    about: Use Discussion #10 for the adjacent Proof of Available Intelligence research proposal.
   - name: Public review RFC
     url: https://github.com/Matawaka/uu-aap/issues/1
     about: Start with the v0.1 RFC; use one Issue per concrete failure case or normative change.
+  - name: External review — one counterexample is enough
+    url: https://github.com/Matawaka/uu-aap/issues/422
+    about: Review without coding or full-repository understanding; one concrete failure case is enough.

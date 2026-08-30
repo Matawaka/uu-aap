@@ -15,6 +15,17 @@ It is designed around a simple distinction:
 - humans and organizations can exercise authority, judgment and responsibility in defined scopes;
 - the protocol should make those relationships inspectable without pretending that authorship can be reduced to a “human/AI percentage”.
 
+## Start here / participate in 5 minutes
+
+New to the project? Start with [`START-HERE.md`](START-HERE.md).
+
+- **Review without coding:** [Issue #422](https://github.com/Matawaka/uu-aap/issues/422) — one concrete counterexample is enough.
+- **Discuss UU-AAP:** [Discussion #8](https://github.com/Matawaka/uu-aap/discussions/8).
+- **Discuss PoAI:** [Discussion #10](https://github.com/Matawaka/uu-aap/discussions/10).
+- **Build or test:** browse [`good first issue`](https://github.com/Matawaka/uu-aap/issues?q=is%3Aissue+state%3Aopen+label%3A%22good+first+issue%22) and [`help wanted`](https://github.com/Matawaka/uu-aap/issues?q=is%3Aissue+state%3Aopen+label%3A%22help+wanted%22).
+
+Participation is not endorsement. These entry points do not change protocol authority, conformance, canonical state, or release status.
+
 ## Canonical repository state, provenance and licensing
 
 The canonical repository is `https://github.com/Matawaka/uu-aap`.
