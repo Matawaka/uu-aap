@@ -1,0 +1,50 @@
+{
+  "type": "LegacyPoAI31IssueStateAudit",
+  "version": "0.1",
+  "origin_frontier": "8e1051c12b4b5b01afdb5783230102ac6393e9d7",
+  "tracking_issue": "#767",
+  "source_map": {
+    "path": "protocols/experimental/poai-successor-reconciliation/v0.1/legacy-successor-map.json",
+    "blob_sha": "7a8f27f6d5edd4a5d1bd14c52de586e0e0161947"
+  },
+  "checkpoint": {
+    "path": "proposals/poai/checkpoints/LEVEL3.1-CHECKPOINT.md",
+    "blob_sha": "4c38bf2f87752308f0aefcd7304abcf19e1c41fe",
+    "checkpoint_commit": "12d23071d0684c363aa42403be1bfa1cd1a3d652"
+  },
+  "decisions": [
+    {"issue":"#34","class":"research_rfc","family":"REVIEW_PLURALITY_AND_REVIEW_HORIZON","decision":"CLOSE_COMPLETED"},
+    {"issue":"#37","class":"research_rfc","family":"REVIEW_PLURALITY_AND_REVIEW_HORIZON","decision":"CLOSE_COMPLETED"},
+    {"issue":"#38","class":"research_rfc","family":"REVIEW_PLURALITY_AND_REVIEW_HORIZON","decision":"CLOSE_COMPLETED"},
+    {"issue":"#45","class":"research_rfc","family":"APPEAL_CONTEST_REQUEST","decision":"CLOSE_COMPLETED"},
+    {"issue":"#49","class":"research_rfc","family":"ADJUDICATION_RESOLUTION","decision":"CLOSE_COMPLETED"},
+    {"issue":"#55","class":"research_rfc","family":"EXECUTION_REPORT","decision":"CLOSE_COMPLETED"},
+    {"issue":"#60","class":"research_rfc","family":"EXECUTION_VERIFICATION","decision":"CLOSE_COMPLETED"},
+    {"issue":"#64","class":"research_rfc","family":"OBSERVED_OUTCOME","decision":"CLOSE_COMPLETED"},
+    {"issue":"#69","class":"research_rfc","family":"SUCCESSOR_PROPOSAL","decision":"CLOSE_COMPLETED"},
+    {"issue":"#75","class":"checkpoint_task","family":"LEGACY_LEVEL_31_4_LABELS_AS_MATURITY_HIERARCHY","decision":"CLOSE_COMPLETED"},
+    {"issue":"#43","class":"live_acceptance_boundary","family":"REVIEW_PLURALITY_AND_REVIEW_HORIZON","decision":"PRESERVE_OPEN"},
+    {"issue":"#47","class":"live_acceptance_boundary","family":"APPEAL_CONTEST_REQUEST","decision":"PRESERVE_OPEN"},
+    {"issue":"#51","class":"live_acceptance_boundary","family":"ADJUDICATION_RESOLUTION","decision":"PRESERVE_OPEN"},
+    {"issue":"#57","class":"live_acceptance_boundary","family":"EXECUTION_REPORT","decision":"PRESERVE_OPEN"},
+    {"issue":"#62","class":"live_acceptance_boundary","family":"EXECUTION_VERIFICATION","decision":"PRESERVE_OPEN"},
+    {"issue":"#66","class":"live_acceptance_boundary","family":"OBSERVED_OUTCOME","decision":"PRESERVE_OPEN"}
+  ],
+  "closure_authorization": {
+    "after_green_merge_only": true,
+    "authorized_completed_issues": ["#34","#37","#38","#45","#49","#55","#60","#64","#69","#75"],
+    "must_remain_open_issues": ["#43","#47","#51","#57","#62","#66"]
+  },
+  "non_effects": {
+    "historical_artifact_rewritten": false,
+    "live_acceptance_fabricated": false,
+    "poai_v_conformance_created": false,
+    "truth_certified": false,
+    "identity_or_authority_verified": false,
+    "universal_canonicality_created": false,
+    "execution_authority_created": false,
+    "external_effect_authority_created": false,
+    "release_created": false,
+    "field_observation_created": false
+  }
+}

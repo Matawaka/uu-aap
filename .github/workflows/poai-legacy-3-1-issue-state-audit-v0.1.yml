@@ -1,0 +1,28 @@
+name: PoAI Legacy 3.1 Issue-State Audit v0.1
+on:
+  pull_request:
+    paths:
+      - 'protocols/experimental/poai-issue-state-reconciliation/v0.2/**'
+      - 'protocols/experimental/poai-successor-reconciliation/v0.1/**'
+      - 'proposals/poai/checkpoints/LEVEL3.1-CHECKPOINT.md'
+      - '.github/workflows/poai-legacy-3-1-issue-state-audit-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/experimental/poai-issue-state-reconciliation/v0.2/**'
+      - 'protocols/experimental/poai-successor-reconciliation/v0.1/**'
+      - 'proposals/poai/checkpoints/LEVEL3.1-CHECKPOINT.md'
+      - '.github/workflows/poai-legacy-3-1-issue-state-audit-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python protocols/experimental/poai-issue-state-reconciliation/v0.2/validate.py
+      - run: node protocols/experimental/poai-successor-reconciliation/v0.1/test-map.js
+      - run: test -z "$(git status --porcelain)"
