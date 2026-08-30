@@ -53,6 +53,15 @@ assert.throws(() => assertLiveC2paReport({
   validation_results: {
     activeManifest: {
       success: [{code: 'claimSignature.validated'}, {code: 'claimSignature.insideValidity'}],
+      failure: [{code: 'signingCredential.expired'}]
+    }
+  }
+}));
+assert.throws(() => assertLiveC2paReport({
+  active_manifest: 'urn:test',
+  validation_results: {
+    activeManifest: {
+      success: [{code: 'claimSignature.validated'}, {code: 'claimSignature.insideValidity'}],
       failure: [{code: 'assertion.dataHash.mismatch'}]
     }
   }
