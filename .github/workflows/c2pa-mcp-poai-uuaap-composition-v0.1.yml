@@ -106,11 +106,17 @@ jobs:
           PY
 
       - name: Confirm Core remains untouched
+        shell: bash
         run: |
-          git diff --quiet origin/${{ github.base_ref || 'main' }} -- protocols/core/ || {
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
             echo 'ERROR: P0.4 composition must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
             exit 1
-          }
+          fi
 
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain)"
