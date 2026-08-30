@@ -39,8 +39,13 @@ jobs:
         with: {persist-credentials: false}
       - uses: actions/setup-python@v5
         with: {python-version: '3.13'}
-      - name: Install reusable verifier package
-        run: python -m pip install ./packages/uuaap-verifier-presentation
+      - name: Install reusable verifier package without mutating checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package"
       - name: Prove installed package is independently importable
         shell: bash
         run: |
