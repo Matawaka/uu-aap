@@ -1,0 +1,134 @@
+{
+  "schema": "urn:uu-aap:interactive-verifier-input:0.1",
+  "artifact": {
+    "id": "urn:uu-aap:interactive-example:p13:001",
+    "description": "Synthetic local-browser example for explicit evidence references and claims; not a real-world verification verdict."
+  },
+  "evidence_items": [
+    {
+      "id": "evidence:integrity-credential",
+      "kind": "opaque_external_record",
+      "source_layer": "example/external",
+      "summary": "Opaque external record referenced by an explicit integrity claim.",
+      "payload": {
+        "verified": true,
+        "verified_true": true,
+        "trust_score": 0.99,
+        "note": "Opaque payload keys are preserved as data and are not promoted into verifier semantics."
+      }
+    },
+    {
+      "id": "evidence:provenance-origin",
+      "kind": "provenance_record",
+      "source_layer": "example/provenance",
+      "summary": "Example provenance record.",
+      "payload": {"origin": "synthetic-example"}
+    },
+    {
+      "id": "evidence:availability-window",
+      "kind": "availability_receipt",
+      "source_layer": "example/poai",
+      "summary": "Example evidence about a declared historical availability window.",
+      "payload": {"cutoff": "2030-01-01T00:00:00Z"}
+    },
+    {
+      "id": "evidence:authority-declaration",
+      "kind": "authority_declaration",
+      "source_layer": "example/uu-aap",
+      "summary": "Example scoped publication authority declaration.",
+      "payload": {"scope": "publication-example"}
+    },
+    {
+      "id": "evidence:responsibility-scope",
+      "kind": "responsibility_declaration",
+      "source_layer": "example/uu-aap",
+      "summary": "Example scoped responsibility declaration.",
+      "payload": {"scope": "publication-example"}
+    },
+    {
+      "id": "evidence:epistemic-boundary",
+      "kind": "epistemic_boundary",
+      "source_layer": "example/epistemic",
+      "summary": "Example explicit statement that supplied evidence does not establish factual truth.",
+      "payload": {"claim": "truth-not-established"}
+    },
+    {
+      "id": "evidence:identity-attestation",
+      "kind": "identity_attestation",
+      "source_layer": "example/identity",
+      "summary": "Unused in the baseline; reserved for the identity isolation mutation test.",
+      "payload": {"subject": "synthetic-subject"}
+    }
+  ],
+  "dimension_claims": {
+    "integrity": {
+      "value": "VALID",
+      "evaluation": "SUPPORTED",
+      "source_layer": "declared-input/example",
+      "evidence_refs": ["evidence:integrity-credential"],
+      "explanation": "The input explicitly declares a supported integrity claim and references one evidence item.",
+      "does_not_establish": ["identity", "provenance completeness", "availability", "authority", "responsibility", "factual truth"]
+    },
+    "identity": {
+      "value": "NOT_EVALUATED",
+      "evaluation": "NOT_EVALUATED",
+      "source_layer": "none",
+      "evidence_refs": [],
+      "explanation": "No identity claim is evaluated in the baseline interactive example.",
+      "does_not_establish": ["anonymity", "authorship", "authority", "responsibility", "untrustworthiness"]
+    },
+    "provenance": {
+      "value": "CREDENTIALS_PRESENT",
+      "evaluation": "SUPPORTED",
+      "source_layer": "declared-input/example",
+      "evidence_refs": ["evidence:provenance-origin"],
+      "explanation": "The input explicitly declares that provenance credentials are present.",
+      "does_not_establish": ["identity", "historical availability", "authority", "responsibility", "factual truth"]
+    },
+    "availability": {
+      "value": "AVAILABLE_BEFORE_CUTOFF",
+      "evaluation": "SUPPORTED",
+      "source_layer": "declared-input/example",
+      "evidence_refs": ["evidence:availability-window"],
+      "explanation": "The input explicitly declares pre-cutoff availability; the verifier does not derive it from provenance.",
+      "does_not_establish": ["consideration", "authority", "responsibility", "factual truth"]
+    },
+    "authority": {
+      "value": "SCOPED_PUBLICATION_AUTHORITY",
+      "evaluation": "SUPPORTED",
+      "source_layer": "declared-input/example",
+      "evidence_refs": ["evidence:authority-declaration"],
+      "explanation": "The input explicitly declares a scoped publication authority claim.",
+      "does_not_establish": ["identity beyond supplied evidence", "integrity", "responsibility outside the declared scope", "factual truth"]
+    },
+    "responsibility": {
+      "value": "SCOPED_RESPONSIBILITY_PRESENT",
+      "evaluation": "SUPPORTED",
+      "source_layer": "declared-input/example",
+      "evidence_refs": ["evidence:responsibility-scope"],
+      "explanation": "The input explicitly declares responsibility limited to the stated scope.",
+      "does_not_establish": ["identity beyond supplied evidence", "authorship of every ingredient", "factual truth"]
+    },
+    "truth": {
+      "value": "NOT_ESTABLISHED",
+      "evaluation": "SUPPORTED",
+      "source_layer": "declared-input/example",
+      "evidence_refs": ["evidence:epistemic-boundary"],
+      "explanation": "The input explicitly states that factual truth is not established by the supplied evidence.",
+      "does_not_establish": ["falsehood", "misconduct", "invalid integrity", "lack of provenance", "lack of authority"]
+    }
+  },
+  "related_observations": {
+    "consideration": {
+      "value": "NOT_EVALUATED",
+      "evidence_refs": []
+    }
+  },
+  "warnings": [
+    {
+      "code": "OPAQUE_EVIDENCE_NOT_INFERENCE",
+      "message": "Opaque evidence payload fields are not semantic verifier claims and do not promote any dimension."
+    }
+  ],
+  "disputes": []
+}
