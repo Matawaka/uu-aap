@@ -1,0 +1,28 @@
+name: KONTUR Non-Binding Attention v0.1
+on:
+  pull_request:
+    paths:
+      - 'pilots/kontur-game-companion/non-binding-attention-v0.1/**'
+      - 'pilots/kontur-game-companion/dlc-si-attention-contention/**'
+      - '.github/workflows/kontur-non-binding-attention-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/kontur-game-companion/non-binding-attention-v0.1/**'
+      - 'pilots/kontur-game-companion/dlc-si-attention-contention/**'
+      - '.github/workflows/kontur-non-binding-attention-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - run: node pilots/kontur-game-companion/non-binding-attention-v0.1/test-attention.js
+      - run: node pilots/kontur-game-companion/dlc-si-attention-contention/test-adapter.js
+      - run: node protocols/dlc-si/v0.1/test-dlc-si.js
+      - run: node pilots/kontur-game-companion/successor-acceptance-v0.1/test-checkpoint.js
+      - run: test -z "$(git status --porcelain)"
