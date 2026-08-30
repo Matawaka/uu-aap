@@ -1,0 +1,148 @@
+name: P1.1 Layered Verifier Presentation Contract v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/verifier-presentation-contract/**'
+      - '.github/workflows/verifier-presentation-contract-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/verifier-presentation-contract/**'
+      - '.github/workflows/verifier-presentation-contract-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  SPEC_GIT_BLOB: '44b91e0e48dee9d928c843bbb304a5c246582da7'
+  P0_4_FIXTURE_GIT_BLOB: '143609c6d58a978e2eb3570aa9d093dccada092a'
+  P0_7_CORPUS_GIT_BLOB: '6983cf2fd6e7740127d219a26cc747dd90a95196'
+  P0_8_FIXTURE_GIT_BLOB: '75e5655e4d90d4c1381f968338e567962116fad9'
+
+jobs:
+  deterministic-contract:
+    name: seven-dimension verifier contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Install JSON Schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Bind exact predecessor semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object SPEC.md)" = "$SPEC_GIT_BLOB"
+          test "$(git hash-object scripts/c2pa-agent-composition/composition.fixture.json)" = "$P0_4_FIXTURE_GIT_BLOB"
+          test "$(git hash-object scripts/c2pa-semantic-adversarial-corpus/corpus-v0.1.json)" = "$P0_7_CORPUS_GIT_BLOB"
+          test "$(git hash-object scripts/c2pa-soft-binding-poai-availability/fixture.json)" = "$P0_8_FIXTURE_GIT_BLOB"
+      - name: Syntax check reference implementation
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/verifier-presentation-contract/build.py'),
+              Path('scripts/verifier-presentation-contract/render.py'),
+              Path('scripts/verifier-presentation-contract/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+      - name: Build layered presentation
+        run: python scripts/verifier-presentation-contract/build.py scripts/verifier-presentation-contract/fixture.json --output /tmp/p11-presentation.json
+      - name: Validate presentation schema
+        run: |
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+          schema=json.load(open('scripts/verifier-presentation-contract/presentation.schema.json'))
+          presentation=json.load(open('/tmp/p11-presentation.json'))
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(presentation)
+          expected=['integrity','identity','provenance','availability','authority','responsibility','truth']
+          assert presentation['dimension_order'] == expected
+          assert set(presentation['dimensions']) == set(expected)
+          assert presentation['aggregate_score_present'] is False
+          assert presentation['aggregate_verdict_present'] is False
+          print('P1.1 presentation schema: PASS')
+          PY
+      - name: Snapshot reference HTML
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verifier-presentation-contract/render.py /tmp/p11-presentation.json --output /tmp/p11-reference.html
+          cmp --silent /tmp/p11-reference.html scripts/verifier-presentation-contract/reference.html
+          test "$(grep -o 'data-dimension="' /tmp/p11-reference.html | wc -l)" -eq 7
+          if grep -Eqi 'Verified True|trust score|truth score|overall trust|overall verdict' /tmp/p11-reference.html; then
+            echo 'ERROR: aggregate verifier language rendered' >&2
+            exit 1
+          fi
+          if grep -qi '<script' /tmp/p11-reference.html; then
+            echo 'ERROR: reference semantics must not require JavaScript' >&2
+            exit 1
+          fi
+      - name: Prove adversarial presentation separation
+        run: python scripts/verifier-presentation-contract/test.py
+      - name: Re-run P0.4 layered validator unchanged
+        run: python scripts/c2pa-agent-composition/validate-composition.py scripts/c2pa-agent-composition/composition.fixture.json
+      - name: Re-run P0.7 semantic adversarial tests unchanged
+        run: node scripts/c2pa-semantic-adversarial-corpus/test-corpus.js
+      - name: Re-run P0.8 temporal counterfactuals unchanged
+        run: python scripts/c2pa-soft-binding-poai-availability/test.py
+      - name: Prove renderer has no network or model dependency
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          forbidden={'requests','httpx','urllib','socket','subprocess','trustmark'}
+          for path in [
+              Path('scripts/verifier-presentation-contract/build.py'),
+              Path('scripts/verifier-presentation-contract/render.py'),
+          ]:
+              tree=ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      for alias in node.names:
+                          assert alias.name.split('.')[0] not in forbidden, (path, alias.name)
+                  elif isinstance(node, ast.ImportFrom):
+                      root=(node.module or '').split('.')[0]
+                      assert root not in forbidden, (path, node.module)
+          print('reference contract/renderer network-model independence: PASS')
+          PY
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/; then
+            echo 'ERROR: P1.1 must not modify UU-AAP Core' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P1.1 presentation firewall acceptance
+    runs-on: ubuntu-latest
+    needs: [deterministic-contract]
+    steps:
+      - run: |
+          echo 'integrity != truth'
+          echo 'identity != authority'
+          echo 'provenance != historical availability'
+          echo 'availability != consideration != authority'
+          echo 'warning/dispute != artifact invalidity'
+          echo '7 dimensions -> independently evidenced'
+          echo 'aggregate trust/truth verdict -> FORBIDDEN'
+          echo 'PASS: P1.1 layered verifier presentation contract v0.1'

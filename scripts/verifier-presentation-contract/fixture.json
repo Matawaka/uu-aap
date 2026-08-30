@@ -1,0 +1,172 @@
+{
+  "schema": "urn:uu-aap:layered-verifier-presentation-fixture:0.1",
+  "issue": 796,
+  "repository_predecessor_main": "b09f8047140f7966bcb38ce9339b7cc6bc7404a7",
+  "source_bindings": {
+    "spec": {
+      "path": "SPEC.md",
+      "git_blob_sha": "44b91e0e48dee9d928c843bbb304a5c246582da7",
+      "section": "22"
+    },
+    "p0_4": {
+      "path": "scripts/c2pa-agent-composition/composition.fixture.json",
+      "git_blob_sha": "143609c6d58a978e2eb3570aa9d093dccada092a"
+    },
+    "p0_7": {
+      "path": "scripts/c2pa-semantic-adversarial-corpus/corpus-v0.1.json",
+      "git_blob_sha": "6983cf2fd6e7740127d219a26cc747dd90a95196"
+    },
+    "p0_8": {
+      "path": "scripts/c2pa-soft-binding-poai-availability/fixture.json",
+      "git_blob_sha": "75e5655e4d90d4c1381f968338e567962116fad9"
+    }
+  },
+  "scenario": {
+    "kind": "synthetic_cross_surface_reference",
+    "artifact_id": "urn:uu-aap:verifier-example:p11:001",
+    "description": "Synthetic presentation-only composition of already-tested layer semantics; not a claim about one real-world artifact."
+  },
+  "dimensions": {
+    "integrity": {
+      "value": "VALID",
+      "evaluation": "SUPPORTED",
+      "source_layer": "C2PA/P0.7",
+      "evidence_refs": [
+        "p0.7:trusted-repository-receipt-verified-true:integrity"
+      ],
+      "explanation": "The synthetic reference includes valid integrity evidence.",
+      "does_not_establish": [
+        "identity",
+        "provenance completeness",
+        "historical availability",
+        "authority",
+        "responsibility",
+        "factual truth"
+      ]
+    },
+    "identity": {
+      "value": "NOT_EVALUATED",
+      "evaluation": "NOT_EVALUATED",
+      "source_layer": "none",
+      "evidence_refs": [],
+      "explanation": "No identity attestation is supplied to this presentation example.",
+      "does_not_establish": [
+        "anonymity",
+        "untrustworthiness",
+        "authorship",
+        "authority",
+        "responsibility"
+      ]
+    },
+    "provenance": {
+      "value": "CREDENTIALS_PRESENT",
+      "evaluation": "SUPPORTED",
+      "source_layer": "C2PA/P0.4",
+      "evidence_refs": [
+        "p0.4:c2pa_layer:expected_runtime_contract"
+      ],
+      "explanation": "The layered composition models readable C2PA Content Credentials.",
+      "does_not_establish": [
+        "factual truth",
+        "historical availability",
+        "consideration",
+        "publication authority",
+        "responsibility"
+      ]
+    },
+    "availability": {
+      "value": "UNAVAILABLE_BEFORE_CUTOFF",
+      "evaluation": "SUPPORTED",
+      "source_layer": "PoAI/P0.8",
+      "evidence_refs": [
+        "p0.8:resolver-pre-cutoff-1",
+        "p0.8:resolver-current-1"
+      ],
+      "explanation": "Present-day resolution does not backfill pre-cutoff delivery.",
+      "does_not_establish": [
+        "consideration",
+        "authority",
+        "responsibility",
+        "truth"
+      ]
+    },
+    "authority": {
+      "value": "HUMAN_PUBLICATION_AUTHORITY",
+      "evaluation": "SUPPORTED",
+      "source_layer": "UU-AAP/P0.4",
+      "evidence_refs": [
+        "p0.4:uuaap_layer:publication_authority"
+      ],
+      "explanation": "The synthetic editor holds the publication decision scope; the agent may recommend only.",
+      "does_not_establish": [
+        "artifact integrity",
+        "identity proof",
+        "factual truth",
+        "consideration of late evidence"
+      ]
+    },
+    "responsibility": {
+      "value": "SCOPED_RESPONSIBILITY_PRESENT",
+      "evaluation": "SUPPORTED",
+      "source_layer": "UU-AAP/P0.4",
+      "evidence_refs": [
+        "p0.4:uuaap_layer:scoped_responsibility"
+      ],
+      "explanation": "Responsibility is explicitly scoped to the publication decision.",
+      "does_not_establish": [
+        "factual truth",
+        "authorship of every artifact ingredient",
+        "identity beyond supplied evidence"
+      ]
+    },
+    "truth": {
+      "value": "NOT_ESTABLISHED",
+      "evaluation": "SUPPORTED",
+      "source_layer": "epistemic/P0.4+P0.7",
+      "evidence_refs": [
+        "p0.4:uuaap_layer:uncertainty:factual_truth",
+        "p0.7:I6_INTEGRITY_NOT_TRUTH"
+      ],
+      "explanation": "Provenance, integrity and governance evidence do not establish factual truth.",
+      "does_not_establish": [
+        "falsehood",
+        "misconduct",
+        "invalid provenance",
+        "lack of authority"
+      ]
+    }
+  },
+  "related_observations": {
+    "consideration": {
+      "value": "NOT_USED",
+      "source_layer": "PoAI/P0.4",
+      "evidence_refs": [
+        "p0.4:consideration:c2pa-mcp-evidence-1"
+      ]
+    }
+  },
+  "warnings": [
+    {
+      "code": "IDENTITY_NOT_EVALUATED",
+      "message": "No identity attestation was evaluated; do not infer anonymity or untrustworthiness."
+    },
+    {
+      "code": "LATE_PROVENANCE_NOT_HISTORICAL_AVAILABILITY",
+      "message": "Current provenance resolution must not be shown as pre-cutoff evidence availability."
+    }
+  ],
+  "disputes": [],
+  "non_effects": {
+    "integrity_establishes_truth": false,
+    "identity_grants_authority": false,
+    "provenance_backfills_availability": false,
+    "availability_implies_consideration": false,
+    "availability_grants_authority": false,
+    "responsibility_establishes_truth": false,
+    "warning_invalidates_artifact": false,
+    "aggregate_score_created": false,
+    "aggregate_verdict_created": false
+  },
+  "aggregate_score_present": false,
+  "aggregate_verdict_present": false
+}
