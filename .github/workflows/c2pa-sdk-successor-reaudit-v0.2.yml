@@ -1,0 +1,135 @@
+name: C2PA SDK Preservation Successor Re-audit v0.2
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-sdk-successor-reaudit/**'
+      - '.github/workflows/c2pa-sdk-successor-reaudit-v0.2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-sdk-successor-reaudit/**'
+      - '.github/workflows/c2pa-sdk-successor-reaudit-v0.2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  deterministic-contract:
+    name: deterministic successor contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Install schema validator
+        run: python -m pip install 'jsonschema>=4.22,<5'
+      - name: Syntax check without repository writes
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/c2pa-sdk-successor-reaudit/reaudit.py'),
+              Path('scripts/c2pa-sdk-successor-reaudit/test_reaudit.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+      - name: Run successor mutation suite
+        run: python scripts/c2pa-sdk-successor-reaudit/test_reaudit.py
+      - name: Build deterministic current receipt
+        run: |
+          python scripts/c2pa-sdk-successor-reaudit/reaudit.py \
+            scripts/c2pa-sdk-successor-reaudit/baseline.json \
+            scripts/c2pa-sdk-successor-reaudit/fixtures/current-unchanged.json \
+            > /tmp/c2pa-sdk-reaudit-receipt.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/c2pa-sdk-reaudit-receipt.json'))
+          assert r['swift']['classification'] == 'UNCHANGED'
+          assert r['android']['classification'] == 'UNCHANGED'
+          assert r['overall'] == 'NO_RECLASSIFICATION_REQUIRED'
+          assert r['historical_contract']['status'] == 'INCOMPLETE'
+          print('deterministic successor receipt: PASS')
+          PY
+      - name: Validate receipt schema
+        run: |
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+          schema=json.load(open('scripts/c2pa-sdk-successor-reaudit/reaudit-receipt.schema.json'))
+          receipt=json.load(open('/tmp/c2pa-sdk-reaudit-receipt.json'))
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(receipt)
+          print('reaudit receipt schema: PASS')
+          PY
+      - name: Re-run merged #783 historical contract validator
+        run: >-
+          python scripts/c2pa-cross-sdk-preservation/validate-contract.py
+          scripts/c2pa-cross-sdk-preservation/contract.json
+      - name: Confirm baseline still binds exact historical evidence heads
+        run: |
+          python - <<'PY'
+          import json
+          b=json.load(open('scripts/c2pa-sdk-successor-reaudit/baseline.json'))
+          c=json.load(open('scripts/c2pa-cross-sdk-preservation/contract.json'))
+          assert b['swift']['evidence_head_sha'] == c['shared_fixtures']['external_reference']['swift']['evidence_head_sha']
+          assert b['android']['evidence_head_sha'] == c['shared_fixtures']['external_reference']['android']['evidence_head_sha']
+          assert c['status'] == 'INCOMPLETE' and c['p0_3_complete'] is False
+          print('historical evidence bindings: PASS')
+          PY
+      - name: Confirm Core remains untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          git diff --quiet "$base_sha" -- protocols/core/
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  live-upstream-observation:
+    name: live public upstream frontier
+    runs-on: ubuntu-latest
+    needs: deterministic-contract
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Collect current public upstream observations
+        shell: bash
+        run: |
+          bash scripts/c2pa-sdk-successor-reaudit/collect-live.sh > /tmp/c2pa-sdk-current-observation.json
+          cat /tmp/c2pa-sdk-current-observation.json
+      - name: Classify successor frontier
+        run: |
+          python scripts/c2pa-sdk-successor-reaudit/reaudit.py \
+            scripts/c2pa-sdk-successor-reaudit/baseline.json \
+            /tmp/c2pa-sdk-current-observation.json \
+            > /tmp/c2pa-sdk-live-reaudit-receipt.json
+          cat /tmp/c2pa-sdk-live-reaudit-receipt.json
+      - name: Require current no-reclassification frontier
+        run: |
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/c2pa-sdk-live-reaudit-receipt.json'))
+          if r['overall'] != 'NO_RECLASSIFICATION_REQUIRED':
+              raise SystemExit(
+                  'Upstream frontier changed; targeted executable re-audit is now required: '
+                  + r['overall']
+              )
+          assert r['swift']['classification'] == 'UNCHANGED'
+          assert r['android']['classification'] == 'UNCHANGED'
+          assert r['current_compatibility_established'] is False
+          print('LIVE RESULT: NO_RECLASSIFICATION_REQUIRED')
+          PY
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
