@@ -1,0 +1,194 @@
+name: P1.8 Scoped Attestation Bridge v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-scoped-attestations/**'
+      - 'scripts/verifier-contestability/**'
+      - 'scripts/verifier-policy-localization/**'
+      - '.github/workflows/verifier-scoped-attestations-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-scoped-attestations/**'
+      - '.github/workflows/verifier-scoped-attestations-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  external-contract:
+    name: pinned CAWG 1.3 + W3C VC 2.0 frontier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Check pinned source-binding record
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b=json.loads(Path('scripts/verifier-scoped-attestations/source-bindings.json').read_text())
+          assert b['cawg_identity']['version']=='1.3'
+          assert b['cawg_identity']['commit']=='8851770a46221729b4e0d92cbfcad484b245cc71'
+          assert b['cawg_identity']['entry_blob']=='2c78062c337bbcb185bc95a8c7eaae593f620c67'
+          assert b['cawg_identity']['overview_blob']=='4381870c914d9c81ddd46a804e96452edb1d91b3'
+          assert b['cawg_identity']['trust_scenarios_blob']=='13051e12a130cbe79046f39a3e14b8e263a98319'
+          assert b['w3c_vc']['stable_basis']=='2.0'
+          assert b['w3c_vc']['status']=='W3C Recommendation'
+          assert b['w3c_vc']['recommendation_date']=='2025-05-15'
+          assert b['w3c_vc']['next_version_not_consumed'] is True
+          print('P1.8 source binding shape: PASS')
+          PY
+      - name: Confirm CAWG ratified main has not moved
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual="$(git ls-remote https://github.com/decentralized-identity/cawg-identity-assertion.git refs/heads/main | awk '{print $1}')"
+          test "$actual" = '8851770a46221729b4e0d92cbfcad484b245cc71'
+          echo "CAWG Identity Assertion 1.3 frontier: $actual"
+      - name: Confirm W3C stable recommendation surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          page="$(curl -fsSL --retry 2 https://www.w3.org/TR/vc-data-model-2.0/)"
+          grep -q 'W3C Recommendation' <<<"$page"
+          grep -Eq '15 May 2025|15 May,? 2025' <<<"$page"
+          echo 'W3C VC Data Model 2.0 Recommendation frontier: PASS'
+
+  validate:
+    name: credential/role/review semantic isolation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+      - name: Install package and schema validator outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+      - name: Prove P1.8 API is independently importable
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd /tmp
+          python - <<'PY'
+          import uuaap_verifier_presentation as v
+          assert v.CAWG_IDENTITY_VERSION=='1.3'
+          assert v.W3C_VCDM_VERSION=='2.0'
+          assert callable(v.bridge_attestations)
+          assert callable(v.validate_attestation_input)
+          assert callable(v.validate_attestation_result)
+          print('installed reusable P1.8 API: PASS')
+          PY
+      - name: Validate P1.8 schemas and implementation syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast,json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root=Path('scripts/verifier-scoped-attestations')
+          for name in ('input.schema.json','result.schema.json'):
+            Draft202012Validator.check_schema(json.loads((root/name).read_text()))
+          for name in ('build_attestation_site.py','localize_attestation.py','test.py'):
+            ast.parse((root/name).read_text(),filename=name)
+          print('P1.8 schema + Python syntax: PASS')
+          PY
+          node --check scripts/verifier-scoped-attestations/app.js
+          node --check scripts/verifier-scoped-attestations/test-browser.js
+      - name: Prove CAWG/W3C bounded mapping and Python/browser equivalence
+        run: python scripts/verifier-scoped-attestations/test.py
+      - name: Re-run P1.1 through P1.7 verifier firewalls
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+          python scripts/verifier-policy-localization/test.py
+          python scripts/verifier-contestability/test.py
+      - name: Prove historical P1.4 still forbids identity candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from uuaap_verifier_presentation import adapt_evidence
+          fixture=json.loads(Path('scripts/verifier-evidence-adapter/fixture.json').read_text())
+          result=adapt_evidence(fixture)
+          assert result['candidate_claims']['identity']==[]
+          assert result['candidate_claims']['truth']==[]
+          print('P1.4 historical identity/truth empty buckets: PASS')
+          PY
+      - name: Build full local Pages artifact through P1.8 with localization last
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-distribution-surface/build_site.py --output "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-interactive-surface/build_interactive_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-evidence-adapter/build_adapter_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-acceptance/build_acceptance_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/build_contestability_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-scoped-attestations/build_attestation_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example.json" "${RUNNER_TEMP}/attest.before"
+          cp "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example-result.json" "${RUNNER_TEMP}/attest-result.before"
+          python scripts/verifier-policy-localization/build_policy_l10n.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/localize_contestability.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-scoped-attestations/localize_attestation.py --site "${RUNNER_TEMP}/uuaap-pages"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          cmp --silent "${RUNNER_TEMP}/attest.before" "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example.json"
+          cmp --silent "${RUNNER_TEMP}/attest-result.before" "${RUNNER_TEMP}/uuaap-pages/verifier/attest/example-result.json"
+          grep -q 'data-locale="ru"' "${RUNNER_TEMP}/uuaap-pages/verifier/attest/index.html"
+          grep -q 'data-i18n="root.attest_link"' "${RUNNER_TEMP}/uuaap-pages/index.html"
+          if grep -Eqi 'https?://' "${RUNNER_TEMP}/uuaap-pages/verifier/attest/index.html"; then
+            echo 'ERROR: P1.8 browser page introduced external network target' >&2
+            exit 1
+          fi
+      - name: Confirm Core/SPEC and historical P1.4 implementation remain untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          if ! git diff --quiet "$base_sha" -- protocols/core/ SPEC.md packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py scripts/verifier-evidence-adapter/; then
+            echo 'ERROR: P1.8 modified Core/SPEC or historical P1.4 adapter contract' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py scripts/verifier-evidence-adapter/ >&2
+            exit 1
+          fi
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: P1.8 scoped-attestation acceptance
+    runs-on: ubuntu-latest
+    needs: [external-contract, validate]
+    steps:
+      - run: |
+          echo 'credential validity != claim truth'
+          echo 'CAWG role != UU-AAP authority != responsibility'
+          echo 'named actor != signature authority'
+          echo 'CAWG identity receipt -> bounded identity candidate only'
+          echo 'W3C review VC -> auxiliary review attestation only'
+          echo 'P1.4 historical identity bucket -> unchanged/empty'
+          echo 'VCDM 2.1 draft -> NOT CONSUMED'
+          echo 'aggregate verdict -> FORBIDDEN'
+          echo 'PASS: P1.8 scoped attestation bridge v0.1'

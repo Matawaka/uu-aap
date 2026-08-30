@@ -1,0 +1,51 @@
+{
+  "schema": "urn:uu-aap:scoped-attestation-bridge-input:0.1",
+  "artifact": {
+    "id": "urn:uu-aap:artifact:p1.8:reference",
+    "description": "Synthetic CAWG/W3C scoped-attestation bridge reference"
+  },
+  "evidence_items": [
+    {"id":"evidence:cawg-trusted","kind":"cawg.identity.validation.receipt","source_layer":"CAWG","summary":"Trusted CAWG identity validation receipt","payload":{"verified":true,"trust_score":0.99,"authority":true}},
+    {"id":"evidence:cawg-well-formed","kind":"cawg.identity.validation.receipt","source_layer":"CAWG","summary":"Well-formed CAWG identity validation receipt","payload":{}},
+    {"id":"evidence:cawg-revoked","kind":"cawg.identity.validation.receipt","source_layer":"CAWG","summary":"Revoked CAWG identity validation receipt","payload":{}},
+    {"id":"evidence:cawg-invalid","kind":"cawg.identity.validation.receipt","source_layer":"CAWG","summary":"Invalid CAWG identity validation receipt","payload":{}},
+    {"id":"evidence:cawg-network","kind":"cawg.identity.validation.receipt","source_layer":"CAWG","summary":"CAWG validation requires network access","payload":{}},
+    {"id":"evidence:vc-valid","kind":"w3c.vc.review.validation.receipt","source_layer":"W3C-VC","summary":"Valid scoped review attestation receipt","payload":{"verified":true,"truth_score":1.0}},
+    {"id":"evidence:vc-invalid","kind":"w3c.vc.review.validation.receipt","source_layer":"W3C-VC","summary":"Invalid scoped review attestation receipt","payload":{}},
+    {"id":"evidence:vc-unknown","kind":"w3c.vc.review.validation.receipt","source_layer":"W3C-VC","summary":"Unknown scoped review attestation status","payload":{}}
+  ],
+  "observations": [
+    {
+      "id":"cawg-trusted","kind":"CAWG_IDENTITY_VALIDATION","evidence_refs":["evidence:cawg-trusted"],
+      "payload":{"assertion_version":"1.3","validation_status":"TRUSTED","named_actor_ref":"did:example:alice","named_actor_label":"Alice Example","roles":["cawg.publisher","cawg.creator"],"credential_type":"cawg.identity_claims_aggregation","referenced_assertions":["c2pa.actions","c2pa.hash.data"],"validated_at":"2026-08-30T18:00:00Z","validator_details":{"verified":true,"authority":true,"trust_score":0.99}}
+    },
+    {
+      "id":"cawg-well-formed","kind":"CAWG_IDENTITY_VALIDATION","evidence_refs":["evidence:cawg-well-formed"],
+      "payload":{"assertion_version":"1.3","validation_status":"WELL_FORMED","named_actor_ref":"did:example:bob","named_actor_label":"Bob Example","roles":["cawg.editor"],"credential_type":"cawg.x509.cose","referenced_assertions":["c2pa.actions"],"validated_at":"2026-08-30T18:01:00Z","validator_details":{}}
+    },
+    {
+      "id":"cawg-revoked","kind":"CAWG_IDENTITY_VALIDATION","evidence_refs":["evidence:cawg-revoked"],
+      "payload":{"assertion_version":"1.3","validation_status":"REVOKED","named_actor_ref":"did:example:carol","named_actor_label":"Carol Example","roles":["cawg.contributor"],"credential_type":"cawg.x509.cose","referenced_assertions":["c2pa.actions"],"validated_at":"2026-08-30T18:02:00Z","validator_details":{}}
+    },
+    {
+      "id":"cawg-invalid","kind":"CAWG_IDENTITY_VALIDATION","evidence_refs":["evidence:cawg-invalid"],
+      "payload":{"assertion_version":"1.3","validation_status":"INVALID","named_actor_ref":"did:example:dana","named_actor_label":"Dana Example","roles":["cawg.producer"],"credential_type":"cawg.x509.cose","referenced_assertions":["c2pa.actions"],"validated_at":"2026-08-30T18:03:00Z","validator_details":{}}
+    },
+    {
+      "id":"cawg-network","kind":"CAWG_IDENTITY_VALIDATION","evidence_refs":["evidence:cawg-network"],
+      "payload":{"assertion_version":"1.3","validation_status":"NETWORK_REQUIRED","named_actor_ref":"did:web:example.invalid","named_actor_label":"Network Example","roles":["cawg.translator"],"credential_type":"cawg.identity_claims_aggregation","referenced_assertions":["c2pa.actions"],"validated_at":"","validator_details":{}}
+    },
+    {
+      "id":"vc-valid","kind":"W3C_VC_REVIEW_ATTESTATION","evidence_refs":["evidence:vc-valid"],
+      "payload":{"vcdm_version":"2.0","verification_status":"VALID","issuer_ref":"did:web:review.example","credential_subject_refs":["did:example:reviewer-1"],"review_scope":"factual verification of citations 1-20","limitations":["did not review legal conclusions","did not review image provenance"],"review_date":"2026-08-29","verifier_details":{"verified":true,"truth_score":1.0}}
+    },
+    {
+      "id":"vc-invalid","kind":"W3C_VC_REVIEW_ATTESTATION","evidence_refs":["evidence:vc-invalid"],
+      "payload":{"vcdm_version":"2.0","verification_status":"INVALID","issuer_ref":"did:web:review.example","credential_subject_refs":["did:example:reviewer-2"],"review_scope":"editorial review","limitations":["signature validation failed"],"review_date":"2026-08-29","verifier_details":{}}
+    },
+    {
+      "id":"vc-unknown","kind":"W3C_VC_REVIEW_ATTESTATION","evidence_refs":["evidence:vc-unknown"],
+      "payload":{"vcdm_version":"2.0","verification_status":"UNKNOWN","issuer_ref":"did:web:review.example","credential_subject_refs":["did:example:reviewer-3"],"review_scope":"methodology review","limitations":["credential status unavailable"],"review_date":"2026-08-29","verifier_details":{}}
+    }
+  ]
+}
