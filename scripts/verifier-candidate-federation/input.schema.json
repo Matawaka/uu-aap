@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:candidate-source-federation-input:0.1",
+  "title": "UU-AAP P1.9 Candidate Source Federation Input v0.1",
+  "type": "object",
+  "required": ["schema", "source_order", "adapter_result", "attestation_result"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:candidate-source-federation-input:0.1"},
+    "source_order": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {"enum": ["P1.4_ADAPTER", "P1.8_ATTESTATION"]},
+      "allOf": [
+        {"contains": {"const": "P1.4_ADAPTER"}, "minContains": 1, "maxContains": 1},
+        {"contains": {"const": "P1.8_ATTESTATION"}, "minContains": 1, "maxContains": 1}
+      ]
+    },
+    "adapter_result": {
+      "type": "object",
+      "required": ["schema", "artifact"],
+      "properties": {
+        "schema": {"const": "urn:uu-aap:evidence-adapter-result:0.1"},
+        "artifact": {"$ref": "#/$defs/artifact"}
+      }
+    },
+    "attestation_result": {
+      "type": "object",
+      "required": ["schema", "artifact"],
+      "properties": {
+        "schema": {"const": "urn:uu-aap:scoped-attestation-bridge-result:0.1"},
+        "artifact": {"$ref": "#/$defs/artifact"}
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "required": ["id", "description"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "description": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    }
+  }
+}

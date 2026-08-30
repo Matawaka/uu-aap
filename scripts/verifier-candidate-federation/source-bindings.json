@@ -1,0 +1,15 @@
+{
+  "predecessor_main": "c878ee13f0feaeab523260b4510adda30b61595f",
+  "p1_4": {
+    "result_schema": "urn:uu-aap:evidence-adapter-result:0.1",
+    "implementation_path": "packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/adapters.py",
+    "implementation_blob": "6ed7d20df30c4848425df61ae5f0d0f194453f5e",
+    "validator": "validate_adapter_result"
+  },
+  "p1_8": {
+    "result_schema": "urn:uu-aap:scoped-attestation-bridge-result:0.1",
+    "implementation_path": "packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/attestations.py",
+    "implementation_blob": "9228b595521ffa711103857973f12fb09969ac01",
+    "validator": "validate_attestation_result"
+  }
+}
