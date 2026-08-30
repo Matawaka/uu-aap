@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:federated-disposition-integrity-input:0.1",
+  "title": "UU-AAP P1.11 Federated Disposition Integrity Input v0.1",
+  "type": "object",
+  "required": ["schema", "federated_disposition_result"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:federated-disposition-integrity-input:0.1"},
+    "federated_disposition_result": {
+      "type": "object",
+      "required": ["schema"],
+      "properties": {
+        "schema": {"const": "urn:uu-aap:federated-candidate-disposition-result:0.1"}
+      }
+    }
+  },
+  "additionalProperties": false
+}

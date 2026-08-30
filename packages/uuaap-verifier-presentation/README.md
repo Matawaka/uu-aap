@@ -1,4 +1,4 @@
-# UU-AAP Verifier Presentation Package v0.8
+# UU-AAP Verifier Presentation Package v0.9
 
 This package is the reusable implementation surface for the P1 verifier line:
 
@@ -9,7 +9,8 @@ This package is the reusable implementation surface for the P1 verifier line:
 - P1.7 contestability overlay;
 - P1.8 scoped CAWG/W3C attestation bridge;
 - P1.9 provenance-preserving candidate federation;
-- P1.10 explicit federated candidate disposition/materialization.
+- P1.10 explicit federated candidate disposition/materialization;
+- P1.11 deterministic P1.10 disposition-result integrity closure.
 
 The canonical verifier dimensions remain exactly:
 
@@ -23,7 +24,7 @@ responsibility
 truth
 ```
 
-Contestability, role/review attestations, federation metadata and disposition events are auxiliary/control surfaces, not additional verifier dimensions.
+Contestability, role/review attestations, federation metadata, disposition events and integrity receipts are auxiliary/control surfaces, not additional verifier dimensions.
 
 ## Candidate source federation
 
@@ -61,6 +62,22 @@ An accepted identity candidate does not create authority or responsibility. An a
 
 Historical P1.5 remains adapter-result only and is not expanded in place. P1.10 consumes P1.9 through its own versioned input/result contract.
 
+## Deterministic disposition integrity closure
+
+P1.11 does not rewrite P1.10. It verifies an externally supplied P1.10 result by validating it with the historical P1.10/P1.3 validators and then rematerializing the canonical P1.10 result from the embedded `federated_candidate_set + disposition_event`.
+
+```python
+from uuaap_verifier_presentation import (
+    build_disposition_integrity_input,
+    verify_disposition_integrity,
+    validate_disposition_integrity_result,
+)
+```
+
+The supplied result is accepted only when it is structurally equal to the deterministic historical rematerialization. This jointly binds redundant top-level disposition state, receipt evidence payloads, related observations, warnings and materialized claims without treating those copies as independent evidence.
+
+P1.11 emits only a bounded integrity receipt. Canonical rematerialization equality does not establish factual truth, actor identity, actor authority, authorship, responsibility acceptance, publication/action authority, source priority, source independence, consensus or reputation.
+
 ## Attestation boundary
 
 P1.8 consumes documented external validation receipts only. It does not perform DID resolution, wallet operations, VC/C2PA cryptography, revocation/status-list lookup or trust-registry queries.
@@ -73,4 +90,4 @@ The package does not produce aggregate trust, truth, reputation, reliability, co
 
 Opaque external evidence payload fields remain data. Names such as `verified`, `trust_score`, `authority`, signer, role or issuer do not gain UU-AAP semantics merely because an external payload contains them.
 
-The historical P1.1 CLI paths remain compatibility shims to this reusable package. This repository package is not published to PyPI by P1.10.
+The historical P1.1 CLI paths remain compatibility shims to this reusable package. This repository package is not published to PyPI by P1.11.

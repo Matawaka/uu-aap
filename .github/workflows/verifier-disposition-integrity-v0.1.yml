@@ -1,0 +1,164 @@
+name: P1.11 Federated Disposition Integrity Closure v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-disposition-integrity/**'
+      - 'scripts/verifier-federated-disposition/**'
+      - 'scripts/verifier-candidate-federation/**'
+      - 'scripts/verifier-scoped-attestations/**'
+      - 'scripts/verifier-evidence-adapter/**'
+      - 'scripts/verifier-interactive-surface/**'
+      - '.github/workflows/verifier-disposition-integrity-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-disposition-integrity/**'
+      - '.github/workflows/verifier-disposition-integrity-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: deterministic P1.10 result binding without semantic promotion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Bind exact historical P1.10 implementations
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federated_disposition.py)" = '85fab33a16d59796b40675b53f017d365898933c'
+          test "$(git hash-object scripts/verifier-federated-disposition/app.js)" = '1cab33e0598fea1833ad25e5af45c0a2c39a4990'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          bindings=json.loads(Path('scripts/verifier-disposition-integrity/source-bindings.json').read_text(encoding='utf-8'))
+          assert bindings['predecessor_main'] == 'b2cb224e84fb552461deb25de4460c696ebd6830'
+          assert bindings['p1_10_python']['blob'] == '85fab33a16d59796b40675b53f017d365898933c'
+          assert bindings['p1_10_browser']['blob'] == '1cab33e0598fea1833ad25e5af45c0a2c39a4990'
+          print('P1.11 historical bindings: PASS')
+          PY
+
+      - name: Prove reusable P1.11 package API is independently importable
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+          cd /tmp
+          python - <<'PY'
+          import uuaap_verifier_presentation as v
+          assert v.DISPOSITION_INTEGRITY_INPUT_SCHEMA == 'urn:uu-aap:federated-disposition-integrity-input:0.1'
+          assert v.DISPOSITION_INTEGRITY_RESULT_SCHEMA == 'urn:uu-aap:federated-disposition-integrity-result:0.1'
+          assert v.P1_11_PREDECESSOR_MAIN == 'b2cb224e84fb552461deb25de4460c696ebd6830'
+          assert callable(v.build_disposition_integrity_input)
+          assert callable(v.verify_disposition_integrity)
+          assert callable(v.validate_disposition_integrity_input)
+          assert callable(v.validate_disposition_integrity_result)
+          print('installed reusable P1.11 API: PASS')
+          PY
+
+      - name: Validate schemas and syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast, json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          for path in [
+              Path('packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/disposition_integrity.py'),
+              Path('scripts/verifier-disposition-integrity/test.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          for path in [
+              Path('scripts/verifier-disposition-integrity/input.schema.json'),
+              Path('scripts/verifier-disposition-integrity/result.schema.json'),
+          ]:
+              schema=json.loads(path.read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              print(f'PASS schema: {path}')
+          PY
+          node --check scripts/verifier-disposition-integrity/app.js
+          node --check scripts/verifier-disposition-integrity/test-browser.js
+
+      - name: Prove canonical rematerialization closure and browser parity
+        run: python scripts/verifier-disposition-integrity/test.py
+
+      - name: Re-run historical P1.3 and P1.10 firewalls
+        run: |
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-federated-disposition/test.py
+
+      - name: Re-run full P1.1 through P1.10 verifier regression stack
+        run: |
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+          python scripts/verifier-policy-localization/test.py
+          python scripts/verifier-contestability/test.py
+          python scripts/verifier-scoped-attestations/test.py
+          python scripts/verifier-candidate-federation/test.py
+          python scripts/verifier-federated-disposition/test.py
+
+      - name: Prove historical P1.10 and Core surfaces remain byte-unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='b2cb224e84fb552461deb25de4460c696ebd6830'
+          guarded=(
+            SPEC.md
+            CONTESTABILITY.md
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/federated_disposition.py
+            scripts/verifier-federated-disposition/
+          )
+          if ! git diff --quiet "$base" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.11 modified historical P1.10 or normative Core surfaces' >&2
+            git diff --name-only "$base" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+          echo 'historical P1.10/Core preservation: PASS'
+
+      - name: Prove P1.11 has no runtime network or dynamic-code dependency
+        shell: bash
+        run: |
+          set -euo pipefail
+          if grep -REn '\b(fetch|XMLHttpRequest|WebSocket|EventSource|eval|Function)\b' \
+            scripts/verifier-disposition-integrity/app.js \
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/disposition_integrity.py; then
+            echo 'ERROR: P1.11 introduced network or dynamic-code primitive' >&2
+            exit 1
+          fi
+          echo 'P1.11 runtime dependency boundary: PASS'
+
+  acceptance:
+    name: bounded integrity closure acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'P1.10 generated result -> deterministic P1.11 rematerialization equality'
+          echo 'redundant representation != independent evidence'
+          echo 'integrity equality != truth/identity/authority'
+          echo 'integrity equality != publication/action authority'
+          echo 'aggregate score/verdict -> FORBIDDEN'
+          echo 'PASS: P1.11 Federated Disposition Integrity Closure v0.1'
