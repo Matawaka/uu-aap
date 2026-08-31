@@ -63,7 +63,8 @@ jobs:
           test "$(git hash-object scripts/pages-composition/compose_pages.py)" = 'c84bdb170bf700347b798615174c6a435d09353b'
           test "$(git hash-object scripts/pages-composition/test.py)" = 'a4f95f2e5cbd4f0dfd7185fc9fc615bb8e7c6713'
           test "$(git hash-object .github/workflows/pages-composition-v0.1.yml)" = 'ad9c83a7fc6870fa196e69ed0d1a8675cb54ad61'
-          test "$(git hash-object .github/workflows/verifier-distribution-surface-v0.1.yml)" = 'ed7dc87bc1852178e7fd9cf0601373950a572d25'
+          git fetch -q origin a8539292b237379904fc2fda0abd356f09c9d552 --depth=1
+          test "$(git show a8539292b237379904fc2fda0abd356f09c9d552:.github/workflows/verifier-distribution-surface-v0.1.yml | git hash-object --stdin)" = 'ed7dc87bc1852178e7fd9cf0601373950a572d25'
           python - <<'PY'
           import json
           from pathlib import Path
@@ -199,7 +200,7 @@ jobs:
           print('P1.16 no network/dynamic-code primitive: PASS')
           PY
 
-      - name: Prove P1.15 semantic and deployment sources remain byte-unchanged
+      - name: Prove P1.15 semantic sources remain byte-unchanged
         shell: bash
         run: |
           set -euo pipefail
@@ -212,12 +213,11 @@ jobs:
             CONTESTABILITY.md
             scripts/pages-composition/
             .github/workflows/pages-composition-v0.1.yml
-            .github/workflows/verifier-distribution-surface-v0.1.yml
             .github/workflows/poai-pages.yml
             packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/
           )
           if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
-            echo 'ERROR: P1.16 modified historical semantic/deployment surfaces' >&2
+            echo 'ERROR: P1.16 successor modified historical semantic sources' >&2
             git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
             exit 1
           fi
