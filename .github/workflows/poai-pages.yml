@@ -65,16 +65,15 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           text=Path('.github/workflows/poai-pages.yml').read_text(encoding='utf-8')
-          deploy_action='actions/' + 'deploy-pages@'
-          upload_action='actions/' + 'upload-pages-artifact@'
-          pages_write='pages:' + ' write'
-          token_write='id-token:' + ' write'
-          pages_environment='name:' + ' github-pages'
-          assert deploy_action not in text, 'PoAI validation workflow regained deploy-pages authority'
-          assert upload_action not in text, 'PoAI validation workflow regained Pages artifact ownership'
-          assert pages_write not in text, 'PoAI validation workflow regained pages: write'
-          assert token_write not in text, 'PoAI validation workflow regained id-token: write'
-          assert pages_environment not in text, 'PoAI validation workflow regained github-pages environment'
+          forbidden = {
+              'deploy_action': 'actions/' + 'deploy-pages@',
+              'upload_action': 'actions/' + 'upload-pages-artifact@',
+              'pages_write': 'pages:' + ' write',
+              'token_write': 'id-token:' + ' write',
+              'pages_environment': 'name:' + ' github-pages',
+          }
+          found=[name for name, needle in forbidden.items() if needle in text]
+          assert not found, f'PoAI validation workflow regained forbidden deployment capability markers: {found}'
           print('PoAI validation != physical Pages deployment: PASS')
           PY
 
