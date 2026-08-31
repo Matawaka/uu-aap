@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:rerc:relation-graph:0.1",
+  "title": "RERC Relation Graph v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","graph_kind","graph_id","nodes","edges","source_graph_digest","claims"],
+  "properties": {
+    "artifact_type": {"const": "RERCRelationGraph"},
+    "version": {"const": "0.1"},
+    "graph_kind": {"enum": ["OBSERVED","OPERATIONAL"]},
+    "graph_id": {"type": "string", "minLength": 1},
+    "nodes": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["node_id","kind","evidence_refs"],
+        "properties": {
+          "node_id": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["edge_id","from","to","relation_type","redundancy_class","redundancy_group","evidence_refs","ontological_status"],
+        "properties": {
+          "edge_id": {"type": "string", "minLength": 1},
+          "from": {"type": "string", "minLength": 1},
+          "to": {"type": "string", "minLength": 1},
+          "relation_type": {"type": "string", "minLength": 1},
+          "redundancy_class": {"enum": ["REPRESENTATIONAL","CAUSAL","EVIDENTIARY","COORDINATION","PROTECTIVE"]},
+          "redundancy_group": {"type": "string", "minLength": 1},
+          "evidence_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "ontological_status": {"const": "OBSERVED_RELATION"}
+        }
+      }
+    },
+    "source_graph_digest": {"type": ["string","null"], "pattern": "^[0-9a-f]{64}$"},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["authority_created","facts_created","evidence_deleted","relations_invalidated"],
+      "properties": {
+        "authority_created": {"const": false},
+        "facts_created": {"const": false},
+        "evidence_deleted": {"const": false},
+        "relations_invalidated": {"const": false}
+      }
+    }
+  },
+  "allOf": [
+    {"if": {"properties": {"graph_kind": {"const": "OBSERVED"}}, "required": ["graph_kind"]}, "then": {"properties": {"source_graph_digest": {"type": "null"}}}},
+    {"if": {"properties": {"graph_kind": {"const": "OPERATIONAL"}}, "required": ["graph_kind"]}, "then": {"properties": {"source_graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}}}
+  ]
+}
