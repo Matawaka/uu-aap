@@ -1,0 +1,35 @@
+{
+  "predecessor_main": "eedfdf1a60e39b976b0490b570206aca271b95e2",
+  "p1_19_packager": {
+    "path": "scripts/pages-exact-packaging/package_pages.py",
+    "blob": "317ac7ccc8edd506d23f6589d00326ba552fa442"
+  },
+  "p1_19_contract": {
+    "path": "scripts/pages-exact-packaging/test_contract.py",
+    "blob": "f4bbeebb53233ef4dc2d879ec1e6c1658f99c3b0"
+  },
+  "predecessor_physical_pages_owner": {
+    "path": ".github/workflows/verifier-distribution-surface-v0.1.yml",
+    "blob": "cacf4b81d7a1435415bb5478e8cfcebfba67b674"
+  },
+  "observed_failed_deployment": {
+    "workflow_run_id": "33355250883",
+    "github_pages_artifact_id": "9744916228",
+    "github_pages_artifact_digest": "sha256:6a80b9cff9411517857b4ae4005892c9d1c8fee59082bed0b60203c51fb1e300",
+    "failed_deploy_job_ids": ["99376101734", "99376241967"],
+    "pages_url": "https://matawaka.github.io/uu-aap/",
+    "deployment_status": "deployment_failed",
+    "artifact_tar_member_count": 137,
+    "artifact_tar_nojekyll_present": true,
+    "artifact_tar_link_count": 0,
+    "canonical_tar_uid": 0,
+    "canonical_tar_gid": 0
+  },
+  "pages_compatible_uploader": {
+    "repository": "actions/upload-pages-artifact",
+    "commit": "fc324d3547104276b827a68afc52ff2a11cc49c9",
+    "version": "v5",
+    "hidden_files_input": "include-hidden-files",
+    "hidden_files_value": true
+  }
+}
