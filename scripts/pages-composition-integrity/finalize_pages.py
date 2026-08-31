@@ -55,7 +55,7 @@ def _sha256(path: Path) -> str:
 def _inventory(root: Path, *, include_envelope: bool = False) -> list[dict[str, Any]]:
     assert root.is_dir(), f"Pages root missing: {root}"
     entries: list[dict[str, Any]] = []
-    for path in sorted(root.rglob("*")):
+    for path in root.rglob("*"):
         assert not path.is_symlink(), f"symlink not permitted in Pages integrity set: {path}"
         if not path.is_file():
             continue
@@ -67,6 +67,10 @@ def _inventory(root: Path, *, include_envelope: bool = False) -> list[dict[str, 
             "bytes": path.stat().st_size,
             "sha256": _sha256(path),
         })
+    # Path object ordering is component-based and is not the same as canonical
+    # POSIX relative-path string ordering (for example `verifier/` vs
+    # `verifier-start.html`). Sort the actual manifest key explicitly.
+    entries.sort(key=lambda entry: entry["path"])
     assert [entry["path"] for entry in entries] == sorted(entry["path"] for entry in entries), (
         "payload inventory order must be deterministic"
     )
