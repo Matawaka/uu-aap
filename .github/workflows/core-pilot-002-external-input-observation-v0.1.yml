@@ -20,7 +20,9 @@ permissions:
 
 env:
   ORIGIN_FRONTIER: d83297e526abfb5a0d9148cc0906223fe49f870b
+  OBSERVATION_FRONTIER: 1c134694cc4fcbe852afa68353932c13b6104ee3
   PREDECESSOR_ROADMAP_BLOB: 3e5f371764c8f9557fd1ce57615a2739253d8140
+  ACCEPTED_OBSERVATION_ROADMAP_BLOB: e37272ef14e594fd45e665b13e8523b608a9557c
   PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
@@ -37,8 +39,29 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Validate observation receipt and hostile inferences
-        run: python pilots/core-pilot-002/external-input-observation/v0.1/validate.py
+      - name: Validate accepted observation against its exact historical roadmap
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git fetch -q --depth=1 origin "$OBSERVATION_FRONTIER"
+
+          current_roadmap="$(mktemp)"
+          cp docs/ROADMAP-CURRENT.md "$current_roadmap"
+          restore_roadmap() {
+            cp "$current_roadmap" docs/ROADMAP-CURRENT.md
+            rm -f "$current_roadmap"
+          }
+          trap restore_roadmap EXIT
+
+          git show "$OBSERVATION_FRONTIER:docs/ROADMAP-CURRENT.md" > docs/ROADMAP-CURRENT.md
+          test "$(git hash-object docs/ROADMAP-CURRENT.md)" = "$ACCEPTED_OBSERVATION_ROADMAP_BLOB"
+          python pilots/core-pilot-002/external-input-observation/v0.1/validate.py
+
+          restore_roadmap
+          trap - EXIT
+          test -z "$(git status --porcelain --untracked-files=all)"
+          echo "historical observation validation: PASS $OBSERVATION_FRONTIER"
 
       - name: Parse committed observation JSON and schema
         shell: bash
@@ -61,20 +84,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
           predecessor_roadmap="$(git show "$ORIGIN_FRONTIER:docs/ROADMAP-CURRENT.md" | git hash-object --stdin)"
+          accepted_observation_roadmap="$(git show "$OBSERVATION_FRONTIER:docs/ROADMAP-CURRENT.md" | git hash-object --stdin)"
           test "$predecessor_roadmap" = "$PREDECESSOR_ROADMAP_BLOB"
+          test "$accepted_observation_roadmap" = "$ACCEPTED_OBSERVATION_ROADMAP_BLOB"
           test "$(git hash-object pilots/core-pilot-002/README.md)" = "3112d41334a898aaab1af9db24556d6e746c3499"
           test "$(git hash-object pilots/core-pilot-002/run-admission/README.md)" = "44ab9ac8789380423df26139fcf7314d77ddc9ce"
           test "$(git hash-object tooling/current-frontier-reconciliation/v0.2/reconciliation.json)" = "37a5daed7f57e58177e92679310fa26b3d2ddc24"
           test "$(git hash-object tooling/release-candidate-checkpoint/v0.5/checkpoint.json)" = "172f9c886f26ccdcc9e30a84ccb86df37c41db4e"
           echo "historical/current input bindings: PASS"
 
-      - name: Guard Core, responsibility schema, accepted gates and paused Workbench
+      - name: Guard accepted observation semantic and product boundaries
         shell: bash
         run: |
           set -euo pipefail
-          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+          git diff --quiet "$ORIGIN_FRONTIER" "$OBSERVATION_FRONTIER" -- \
             protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
             schema/uu-aap-manifest.schema.json \
             pilots/core-pilot-002/README.md pilots/core-pilot-002/README.ru.md \
@@ -82,20 +106,20 @@ jobs:
             tooling/current-frontier-reconciliation/v0.2/ \
             tooling/release-candidate-checkpoint/v0.5/ \
             docs/workbench/
-          echo "semantic/accepted-gate/Workbench boundaries: unchanged"
+          echo "accepted observation semantic/accepted-gate/Workbench boundaries: unchanged"
 
-      - name: Require observation-only diff boundary
+      - name: Revalidate accepted observation-only historical diff boundary
         shell: bash
         run: |
           set -euo pipefail
-          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" "$OBSERVATION_FRONTIER" | sort)"
           while IFS= read -r path; do
             case "$path" in
               .github/workflows/core-pilot-002-external-input-observation-v0.1.yml|.github/workflows/current-frontier-reconciliation-v0.2.yml|docs/ROADMAP-CURRENT.md|pilots/core-pilot-002/external-input-observation/v0.1/*) ;;
-              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+              *) echo "unexpected accepted-observation changed path: $path" >&2; exit 1 ;;
             esac
           done <<< "$changed"
-          echo "observation-only diff boundary: PASS"
+          echo "accepted observation-only historical diff boundary: PASS"
 
       - name: Require clean working tree
         run: test -z "$(git status --porcelain --untracked-files=all)"
