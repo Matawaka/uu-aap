@@ -1,0 +1,92 @@
+name: P1.20 Pages-Compatible Hidden-Preserving Upload v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/pages-compatible-upload/**'
+      - 'scripts/pages-exact-packaging/test_contract.py'
+      - '.github/workflows/pages-compatible-upload-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/pages-compatible-upload/**'
+      - 'scripts/pages-exact-packaging/test_contract.py'
+      - '.github/workflows/pages-compatible-upload-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: finalized payload bytes over Pages-compatible transport
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Bind exact P1.19 predecessor and official uploader decision
+        shell: bash
+        run: |
+          set -euo pipefail
+          predecessor='eedfdf1a60e39b976b0490b570206aca271b95e2'
+          git fetch -q origin "$predecessor" --depth=1
+          test "$(git show "$predecessor":scripts/pages-exact-packaging/package_pages.py | git hash-object --stdin)" = '317ac7ccc8edd506d23f6589d00326ba552fa442'
+          test "$(git show "$predecessor":scripts/pages-exact-packaging/test_contract.py | git hash-object --stdin)" = 'f4bbeebb53233ef4dc2d879ec1e6c1658f99c3b0'
+          test "$(git show "$predecessor":.github/workflows/verifier-distribution-surface-v0.1.yml | git hash-object --stdin)" = 'cacf4b81d7a1435415bb5478e8cfcebfba67b674'
+          test "$(git hash-object scripts/pages-exact-packaging/package_pages.py)" = '317ac7ccc8edd506d23f6589d00326ba552fa442'
+      - name: Parse and prove P1.20 contract
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          path=Path('scripts/pages-compatible-upload/test_contract.py')
+          ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+          print(f'PASS syntax: {path}')
+          PY
+          python scripts/pages-compatible-upload/test_contract.py
+      - name: Re-run historical P1.16-P1.19 gates
+        run: |
+          python scripts/pages-composition-integrity/test.py
+          python scripts/pages-finalized-distribution/test.py
+          python scripts/pages-post-deploy-observability/test.py
+          python scripts/pages-post-deploy-observability/test_contract.py
+          python scripts/pages-exact-packaging/test.py
+          python scripts/pages-exact-packaging/test_contract.py
+      - name: Confirm Stable Core SPEC and CONTESTABILITY are untouched
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_sha='${{ github.event.pull_request.base.sha }}'
+          test -n "$base_sha"
+          git fetch -q origin "$base_sha" --depth=1
+          git diff --quiet "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md || {
+            echo 'ERROR: P1.20 modified Stable Core/SPEC/CONTESTABILITY' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md >&2
+            exit 1
+          }
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: Pages-compatible hidden-preserving upload acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'P1.16 finalized file bytes -> unchanged payload authority boundary'
+          echo 'P1.19 canonical artifact.tar -> retained as offline fidelity proof'
+          echo 'P1.20 physical transport -> official Pages uploader with hidden files enabled'
+          echo '.nojekyll -> preserved in physical Pages artifact'
+          echo 'transport container metadata != payload semantics'
+          echo 'transport compatibility != producer/truth/identity/authority/responsibility'
+          echo 'transport compatibility != publication/action authority'
+          echo 'live deployed-byte equality -> deferred to read-only P1.18 observer after successful main deploy'
+          echo 'PASS: P1.20 Pages-Compatible Hidden-Preserving Upload v0.1'
