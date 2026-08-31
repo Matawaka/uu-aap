@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""P1.14 single-verifier-owner Pages publication test for the historical P1.13 capsule."""
+"""P1.14 verifier Pages publication test, compatible with later repository-wide composition."""
 from __future__ import annotations
 
 import json
@@ -66,19 +66,24 @@ def main() -> None:
     assert "python scripts/verifier-disposition-integrity-capsule/test.py" in workflow_text
     assert "python scripts/verifier-disposition-integrity-capsule/build_capsule.py --site" in workflow_text
     assert "verifier/integrity-capsule/capsule-manifest.json" in workflow_text
-    assert "P1.2-P1.14 one-source distribution acceptance" in workflow_text
     assert "actions/deploy-pages@" in workflow_text
 
-    # The repository already has an independent PoAI docs Pages deployer. P1.14 must not
-    # create a second *verifier* deployment owner or alter that unrelated historical owner.
+    # P1.14's semantic invariant is one verifier deployment owner. P1.15 later reconciles
+    # the repository-wide PoAI/docs collision by retaining this owner as the only physical
+    # deploy-pages workflow and making the old PoAI workflow validation-only.
     deployment_owners: list[str] = []
     for pattern in ("*.yml", "*.yaml"):
         for path in sorted((REPO_ROOT / ".github/workflows").glob(pattern)):
             text = path.read_text(encoding="utf-8")
             if "actions/deploy-pages@" in text:
                 deployment_owners.append(path.name)
-    assert deployment_owners == ["poai-pages.yml", "verifier-distribution-surface-v0.1.yml"], (
-        f"unexpected Pages deployment-owner set: {deployment_owners}"
+    assert deployment_owners == ["verifier-distribution-surface-v0.1.yml"], (
+        f"unexpected repository Pages deployment-owner set: {deployment_owners}"
+    )
+    poai_workflow = (REPO_ROOT / ".github/workflows/poai-pages.yml").read_text(encoding="utf-8")
+    assert "actions/deploy-pages@" not in poai_workflow, "PoAI validation workflow must not deploy independently"
+    assert "python scripts/pages-composition/compose_pages.py" in workflow_text, (
+        "physical verifier owner must compose PoAI docs before deployment"
     )
     p1_14_workflow = (REPO_ROOT / ".github/workflows/verifier-integrity-capsule-pages-v0.1.yml").read_text(encoding="utf-8")
     assert "actions/deploy-pages@" not in p1_14_workflow, "P1.14 must not create a second verifier deploy owner"
@@ -100,15 +105,15 @@ def main() -> None:
         assert manifest["non_effects"]["publication_or_action_authority_established"] is False
 
         root = (site / "index.html").read_text(encoding="utf-8")
-        assert 'href="verifier/integrity-capsule/"' in root, "Pages root missing portable capsule link"
+        assert 'href="verifier/integrity-capsule/"' in root, "verifier-only build root missing portable capsule link"
         assert (site / "verifier/index.html").read_bytes() == (
             REPO_ROOT / "scripts/verifier-presentation-contract/reference.html"
         ).read_bytes()
 
     print("P1.14 historical P1.13 bindings: PASS")
-    print("P1.14 single verifier Pages deployment owner: PASS")
-    print("P1.14 capsule present in validated Pages artifact: PASS")
-    print("P1.14 deployed capsule manifest verification: PASS")
+    print("P1.14 verifier artifact still built and validated independently: PASS")
+    print("repository-wide physical Pages deployment owner reconciled to verifier distribution workflow: PASS")
+    print("P1.14 capsule present in validated verifier artifact: PASS")
     print("public capsule != producer authentication/truth/authority/action permission: PASS")
 
 

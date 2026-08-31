@@ -1,31 +1,30 @@
-name: Deploy PoAI Level 3 to GitHub Pages
+name: Validate PoAI Pages source for unified deployment
 
 on:
+  pull_request:
+    paths:
+      - "docs/**"
+      - "scripts/pages-composition/**"
+      - ".github/workflows/poai-pages.yml"
+      - ".github/workflows/verifier-distribution-surface-v0.1.yml"
+      - ".github/workflows/pages-composition-v0.1.yml"
   push:
     branches:
       - main
     paths:
       - "docs/**"
+      - "scripts/pages-composition/**"
       - ".github/workflows/poai-pages.yml"
+      - ".github/workflows/verifier-distribution-surface-v0.1.yml"
+      - ".github/workflows/pages-composition-v0.1.yml"
   workflow_dispatch:
 
-# No workflow-wide repository permissions. The single deploy job below
-# receives only the scopes GitHub Pages requires.
-permissions: {}
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
+permissions:
+  contents: read
 
 jobs:
-  deploy:
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  validate:
+    name: PoAI source remains deployment-ready for composed Pages artifact
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -34,14 +33,49 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v5
+      - name: Validate PoAI public source surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/index.html
+          test -s docs/poai/index.html
+          grep -q 'href="./poai/"' docs/index.html
+          python - <<'PY'
+          from pathlib import Path
+          root=Path('docs')
+          files=[]
+          for path in sorted(root.rglob('*')):
+              assert not path.is_symlink(), f'symlink not permitted in PoAI Pages source: {path}'
+              if path.is_file():
+                  files.append(path.relative_to(root).as_posix())
+          assert 'index.html' in files
+          assert 'poai/index.html' in files
+          assert not any(path == 'verifier' or path.startswith('verifier/') for path in files), (
+              'docs/ may not occupy the verifier URL tree owned by unified composition'
+          )
+          assert 'verifier-start.html' not in files
+          assert 'pages-composition-receipt.json' not in files
+          print(f'PoAI Pages source inventory: PASS ({len(files)} files)')
+          PY
 
-      - name: Upload static site artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: docs
+      - name: Prove this workflow has no deployment authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/poai-pages.yml').read_text(encoding='utf-8')
+          forbidden = {
+              'deploy_action': 'actions/' + 'deploy-pages@',
+              'upload_action': 'actions/' + 'upload-pages-artifact@',
+              'pages_write': 'pages:' + ' write',
+              'token_write': 'id-token:' + ' write',
+              'pages_environment': 'name:' + ' github-pages',
+          }
+          found=[name for name, needle in forbidden.items() if needle in text]
+          assert not found, f'PoAI validation workflow regained forbidden deployment capability markers: {found}'
+          print('PoAI validation != physical Pages deployment: PASS')
+          PY
 
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"

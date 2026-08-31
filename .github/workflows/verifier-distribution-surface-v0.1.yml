@@ -18,23 +18,31 @@ on:
       - 'scripts/verifier-disposition-integrity-surface/**'
       - 'scripts/verifier-disposition-integrity-capsule/**'
       - 'scripts/verifier-integrity-capsule-pages/**'
+      - 'scripts/pages-composition/**'
+      - 'docs/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
       - 'CODE_OF_CONDUCT.md'
       - 'SPEC.md'
       - 'CONTESTABILITY.md'
       - '.github/workflows/verifier-*.yml'
+      - '.github/workflows/poai-pages.yml'
+      - '.github/workflows/pages-composition-v0.1.yml'
   push:
     branches: [main]
     paths:
       - 'packages/uuaap-verifier-presentation/**'
       - 'scripts/verifier-*/**'
+      - 'scripts/pages-composition/**'
+      - 'docs/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
       - 'CODE_OF_CONDUCT.md'
       - 'SPEC.md'
       - 'CONTESTABILITY.md'
       - '.github/workflows/verifier-*.yml'
+      - '.github/workflows/poai-pages.yml'
+      - '.github/workflows/pages-composition-v0.1.yml'
   workflow_dispatch:
 
 permissions:
@@ -51,7 +59,7 @@ env:
 
 jobs:
   validate:
-    name: package + Pages semantic equivalence
+    name: package + composed Pages semantic equivalence
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -87,7 +95,7 @@ jobs:
           assert v.FEDERATED_DISPOSITION_SCOPE == 'verifier_federated_candidate_materialization'
           print('installed P1.1-P1.11 API: PASS')
           PY
-      - name: Re-run every verifier firewall through P1.14
+      - name: Re-run every verifier firewall through P1.15
         run: |
           python scripts/verifier-presentation-contract/test.py
           python scripts/verifier-distribution-surface/test.py
@@ -103,7 +111,8 @@ jobs:
           python scripts/verifier-disposition-integrity-surface/test.py
           python scripts/verifier-disposition-integrity-capsule/test.py
           python scripts/verifier-integrity-capsule-pages/test.py
-      - name: Build one validated Pages artifact through P1.14
+          python scripts/pages-composition/test.py
+      - name: Build validated verifier artifact through P1.14
         shell: bash
         run: |
           set -euo pipefail
@@ -199,6 +208,36 @@ jobs:
           print('P1.14 deployed P1.13 capsule manifest: PASS')
           PY
           cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+      - name: Compose PoAI docs and validated verifier under one physical Pages artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/composed-pages"
+          python scripts/pages-composition/compose_pages.py \
+            --docs docs \
+            --verifier-site "${RUNNER_TEMP}/uuaap-pages" \
+            --output "${RUNNER_TEMP}/composed-pages"
+          python scripts/pages-composition/compose_pages.py \
+            --docs docs \
+            --verifier-site "${RUNNER_TEMP}/uuaap-pages" \
+            --output "${RUNNER_TEMP}/composed-pages" \
+            --verify-only
+          cmp --silent docs/index.html "${RUNNER_TEMP}/composed-pages/index.html"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/index.html" "${RUNNER_TEMP}/composed-pages/verifier-start.html"
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" "${RUNNER_TEMP}/composed-pages/verifier/index.html"
+          test -s "${RUNNER_TEMP}/composed-pages/poai/index.html"
+          test -s "${RUNNER_TEMP}/composed-pages/verifier/integrity-capsule/capsule-manifest.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          path=Path(os.environ['RUNNER_TEMP'])/'composed-pages/pages-composition-receipt.json'
+          receipt=json.loads(path.read_text(encoding='utf-8'))
+          assert receipt['source_collisions']==['index.html']
+          assert receipt['root_owner']=='PoAI docs/index.html'
+          assert receipt['verifier_root_landing_relocated_to']=='verifier-start.html'
+          assert all(value is False for value in receipt['non_effects'].values())
+          print('P1.15 composed PoAI + verifier Pages artifact: PASS')
+          PY
       - name: Confirm immutable semantic sources remain untouched
         shell: bash
         run: |
@@ -232,13 +271,13 @@ jobs:
           fi
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Upload validated Pages artifact
+      - name: Upload validated composed Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ${{ runner.temp }}/uuaap-pages
+          path: ${{ runner.temp }}/composed-pages
 
   acceptance:
-    name: P1.2-P1.14 one-source distribution acceptance
+    name: P1.2-P1.15 one-owner composed distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -254,17 +293,20 @@ jobs:
           echo 'P1.11 supplied P1.10 result -> deterministic canonical integrity closure only'
           echo 'P1.12 integrity closure -> browser-local public distribution only'
           echo 'P1.13 P1.12 dependency closure -> portable offline capsule only'
-          echo 'P1.14 portable capsule -> same single validated Pages artifact only'
-          echo 'public capsule != trusted producer or publication/action authority'
+          echo 'P1.14 portable capsule -> validated verifier Pages artifact only'
+          echo 'P1.15 PoAI docs + verifier -> one physical composed Pages artifact only'
+          echo 'docs root index preserved; verifier tree preserved at /verifier/'
+          echo 'former verifier root landing -> byte-preserved /verifier-start.html'
+          echo 'Pages composition != semantic merge or publication/action authority'
           echo 'source family/order/count/evaluation != automatic priority'
           echo 'REJECT/DEFER != negative evidence'
           echo 'localized presentation != localized evidence or machine semantics'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2-P1.14 verifier distribution stack'
+          echo 'PASS: P1.2-P1.15 composed Pages distribution stack'
 
   deploy:
-    name: deploy validated verifier to GitHub Pages
+    name: deploy composed PoAI + verifier artifact to GitHub Pages
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [validate, acceptance]
     runs-on: ubuntu-latest
@@ -274,6 +316,6 @@ jobs:
     steps:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Deploy validated Pages artifact
+      - name: Deploy validated composed Pages artifact
         id: deployment
         uses: actions/deploy-pages@v4

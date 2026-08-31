@@ -1,0 +1,192 @@
+name: P1.15 Unified Pages Composition v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'scripts/pages-composition/**'
+      - 'scripts/verifier-integrity-capsule-pages/**'
+      - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/poai-pages.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'scripts/pages-composition/**'
+      - 'scripts/verifier-integrity-capsule-pages/**'
+      - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/poai-pages.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: one physical Pages owner without surface loss
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+
+      - name: Install reusable verifier package outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+
+      - name: Bind exact pre-reconciliation Pages sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          predecessor='5c4a1b3ecc3b3a766c7224912e21944c4509a17c'
+          git fetch -q origin "$predecessor" --depth=1
+          test "$(git show "$predecessor":.github/workflows/verifier-distribution-surface-v0.1.yml | git hash-object --stdin)" = 'a4dc13eb03095ad77183cf277d9e606dd364cd19'
+          test "$(git show "$predecessor":.github/workflows/poai-pages.yml | git hash-object --stdin)" = '707e38e392d965f893166fd94ab817edb994918b'
+          test "$(git show "$predecessor":docs/index.html | git hash-object --stdin)" = '0a0d47c17c1c666f6f32f1e569097248c160662d'
+          test "$(git show "$predecessor":docs/poai/index.html | git hash-object --stdin)" = 'a121fa138e1f984f6876e640e5583beb74c7fa3a'
+          test "$(git show "$predecessor":scripts/verifier-distribution-surface/build_site.py | git hash-object --stdin)" = '4a1a8cc9d14859541c5b4a94680ccac2b21a7f63'
+          test "$(git show "$predecessor":scripts/verifier-integrity-capsule-pages/test.py | git hash-object --stdin)" = '123ae831f2097230ce3ba698272dfa89b3a990e6'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          b=json.loads(Path('scripts/pages-composition/source-bindings.json').read_text(encoding='utf-8'))
+          assert b['predecessor_main']=='5c4a1b3ecc3b3a766c7224912e21944c4509a17c'
+          assert b['historical_verifier_pages_workflow']['blob']=='a4dc13eb03095ad77183cf277d9e606dd364cd19'
+          assert b['historical_poai_pages_workflow']['blob']=='707e38e392d965f893166fd94ab817edb994918b'
+          assert b['poai_root_index']['blob']=='0a0d47c17c1c666f6f32f1e569097248c160662d'
+          assert b['poai_level3_index']['blob']=='a121fa138e1f984f6876e640e5583beb74c7fa3a'
+          assert b['verifier_root_builder']['blob']=='4a1a8cc9d14859541c5b4a94680ccac2b21a7f63'
+          assert b['p1_14_distribution_test']['blob']=='123ae831f2097230ce3ba698272dfa89b3a990e6'
+          print('P1.15 historical Pages source bindings: PASS')
+          PY
+
+      - name: Validate composition syntax and adversarial gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for raw in ['scripts/pages-composition/compose_pages.py','scripts/pages-composition/test.py']:
+              path=Path(raw)
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          python scripts/pages-composition/test.py
+
+      - name: Prove exactly one repository-wide deploy owner
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          deploy_marker='actions/' + 'deploy-pages@'
+          upload_marker='actions/' + 'upload-pages-artifact@'
+          pages_write='pages:' + ' write'
+          token_write='id-token:' + ' write'
+          pages_environment='name:' + ' github-pages'
+          owners=[]
+          for pattern in ('*.yml','*.yaml'):
+              for path in sorted(Path('.github/workflows').glob(pattern)):
+                  text=path.read_text(encoding='utf-8')
+                  if deploy_marker in text:
+                      owners.append(path.name)
+          assert owners==['verifier-distribution-surface-v0.1.yml'], owners
+          poai=Path('.github/workflows/poai-pages.yml').read_text(encoding='utf-8')
+          assert deploy_marker not in poai
+          assert upload_marker not in poai
+          assert pages_write not in poai
+          assert token_write not in poai
+          assert pages_environment not in poai
+          unified=Path('.github/workflows/verifier-distribution-surface-v0.1.yml').read_text(encoding='utf-8')
+          assert "- 'docs/**'" in unified
+          assert 'python scripts/pages-composition/compose_pages.py' in unified
+          assert 'composed-pages' in unified
+          assert 'Upload validated composed Pages artifact' in unified
+          assert deploy_marker + 'v4' in unified
+          print('one repository-wide physical Pages deployment owner: PASS')
+          PY
+
+      - name: Re-run P1.14 verifier publication firewall under reconciled ownership
+        run: python scripts/verifier-integrity-capsule-pages/test.py
+
+      - name: Prove PoAI source workflow remains validation-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s docs/index.html
+          test -s docs/poai/index.html
+          grep -q 'href="./poai/"' docs/index.html
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/poai-pages.yml').read_text(encoding='utf-8')
+          forbidden=[
+              'actions/' + 'upload-pages-artifact@',
+              'actions/' + 'deploy-pages@',
+              'pages:' + ' write',
+              'id-token:' + ' write',
+              'name:' + ' github-pages',
+          ]
+          assert not [needle for needle in forbidden if needle in text]
+          print('PoAI source workflow remains validation-only: PASS')
+          PY
+
+      - name: Prove Stable Core and semantic contracts remain unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          guarded=(
+            protocols/core/
+            SPEC.md
+            CONTESTABILITY.md
+            packages/uuaap-verifier-presentation/
+            scripts/verifier-presentation-contract/
+            scripts/verifier-interactive-surface/
+            scripts/verifier-evidence-adapter/
+            scripts/verifier-candidate-acceptance/
+            scripts/verifier-contestability/
+            scripts/verifier-scoped-attestations/
+            scripts/verifier-candidate-federation/
+            scripts/verifier-federated-disposition/
+            scripts/verifier-disposition-integrity/
+            scripts/verifier-disposition-integrity-surface/
+            scripts/verifier-disposition-integrity-capsule/
+          )
+          if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.15 changed historical semantic/Core surfaces' >&2
+            git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: bounded P1.15 unified Pages ownership acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'PoAI docs bytes -> preserved at historical root paths'
+          echo 'validated verifier bytes -> preserved at /verifier/'
+          echo 'root index collision -> explicit PoAI root + byte-preserved verifier-start.html relocation'
+          echo 'docs-only or verifier-only change -> rebuild one composed artifact'
+          echo 'repository Pages deploy owner -> exactly one workflow'
+          echo 'composition receipt != trust/truth/identity/authority/responsibility'
+          echo 'Pages deployment ownership != publication/action authority'
+          echo 'PASS: P1.15 Unified Pages Composition v0.1'
