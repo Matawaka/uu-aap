@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:reusable-interface-registry-delta:0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","base_registry","release_registry_equivalent","additions","effective_entry_count","non_claims"],
+  "properties": {
+    "artifact_type": {"const": "ReusableProtocolInterfaceRegistryDelta"},
+    "version": {"const": "0.2"},
+    "base_registry": {
+      "type": "object", "additionalProperties": false,
+      "required": ["version","path","blob"],
+      "properties": {
+        "version": {"const": "0.1"},
+        "path": {"const": "protocols/interface-registry/v0.1/interface-registry.json"},
+        "blob": {"const": "2aff5e5785eb97796031b19ffe9fe026a3543bf6"}
+      }
+    },
+    "release_registry_equivalent": {"const": false},
+    "additions": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id","version","status","path","inputs","outputs","dependencies","non_effects","next_interfaces","provider_neutral","external_effect_emission","next_interfaces_are_automatic"],
+        "properties": {
+          "id": {"enum": ["EventResponsiveDormancy","RERC","RecoverableStateInfrastructureCandidate"]},
+          "version": {"const": "0.1"},
+          "status": {"const": "experimental"},
+          "path": {"type": "string", "minLength": 1},
+          "inputs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "outputs": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "dependencies": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "non_effects": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "next_interfaces": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "provider_neutral": {"const": true},
+          "external_effect_emission": {"const": false},
+          "next_interfaces_are_automatic": {"const": false}
+        }
+      }
+    },
+    "effective_entry_count": {"const": 17},
+    "non_claims": {
+      "type": "array", "minItems": 8, "maxItems": 8, "uniqueItems": true,
+      "contains": {"const": "exploratory_lane_promoted"},
+      "items": {"type": "string", "minLength": 1}
+    }
+  }
+}

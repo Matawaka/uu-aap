@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:recoverable-state-infrastructure:composition-receipt:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","candidate_status","work_context_ref","component_bindings","erd_state","rerc_exact_restore_verified","composition_state","possible_next_interfaces","automatic_transition","claims"],
+  "properties": {
+    "artifact_type": {"const": "RecoverableStateInfrastructureCompositionReceipt"},
+    "version": {"const": "0.1"},
+    "candidate_status": {"const": "EXPERIMENTAL_REUSABLE_INFRASTRUCTURE_CANDIDATE"},
+    "work_context_ref": {"type": "string", "minLength": 1},
+    "component_bindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_responsive_dormancy","rerc"],
+      "properties": {
+        "event_responsive_dormancy": {
+          "type": "object", "additionalProperties": false,
+          "required": ["merge_frontier","module_blob","wake_receipt_digest"],
+          "properties": {
+            "merge_frontier": {"const": "0039375897f2de683afac62e902335f53a1a7d98"},
+            "module_blob": {"const": "2cadbd2f405391f4f97e100d77245757ce6b5a58"},
+            "wake_receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        },
+        "rerc": {
+          "type": "object", "additionalProperties": false,
+          "required": ["merge_frontier","module_blob","source_graph_digest","operational_graph_digest","suppression_receipt_digest"],
+          "properties": {
+            "merge_frontier": {"const": "ef4c8c6030ef517f2997fb76cff4f584fb25c691"},
+            "module_blob": {"const": "d2aae21a2e2375477c6349eae5f236ea60cd7151"},
+            "source_graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "operational_graph_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+            "suppression_receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+          }
+        }
+      }
+    },
+    "erd_state": {"enum": ["NO_WAKE_SIGNAL_MATCH","WAKE_ATTENTION_ONLY","RETURN_TO_DORMANCY_EVIDENCE_STALE","RETURN_TO_DORMANCY_AUTHORITY_STALE","RETURN_TO_DORMANCY_INTENT_CLOSED","READY_FOR_SEPARATE_ACTION_ADMISSION"]},
+    "rerc_exact_restore_verified": {"const": true},
+    "composition_state": {"enum": ["COMPOSED_NO_ACTION_ADMISSION","COMPOSED_READY_FOR_SEPARATE_ACTION_ADMISSION"]},
+    "possible_next_interfaces": {"type": "array", "uniqueItems": true, "items": {"enum": ["PreActionEvidenceBundle"]}},
+    "automatic_transition": {"const": false},
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["component_semantics_collapsed","shared_world_identity_proven","source_state_destroyed","evidence_deleted","authority_created","action_permit_created","runtime_activated","external_effect_performed","performance_gain_proven","resource_savings_proven"],
+      "properties": {
+        "component_semantics_collapsed": {"const": false},
+        "shared_world_identity_proven": {"const": false},
+        "source_state_destroyed": {"const": false},
+        "evidence_deleted": {"const": false},
+        "authority_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "runtime_activated": {"const": false},
+        "external_effect_performed": {"const": false},
+        "performance_gain_proven": {"const": false},
+        "resource_savings_proven": {"const": false}
+      }
+    }
+  }
+}

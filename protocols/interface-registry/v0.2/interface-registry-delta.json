@@ -1,0 +1,65 @@
+{
+  "artifact_type": "ReusableProtocolInterfaceRegistryDelta",
+  "version": "0.2",
+  "base_registry": {
+    "version": "0.1",
+    "path": "protocols/interface-registry/v0.1/interface-registry.json",
+    "blob": "2aff5e5785eb97796031b19ffe9fe026a3543bf6"
+  },
+  "release_registry_equivalent": false,
+  "additions": [
+    {
+      "id": "EventResponsiveDormancy",
+      "version": "0.1",
+      "status": "experimental",
+      "path": "protocols/integration/event-responsive-dormancy/v0.1",
+      "inputs": ["EventResponsiveDormantCapability", "EventResponsiveWakeSignal", "current evidence/authority/intent checks"],
+      "outputs": ["EventResponsiveDormancyWakeReceipt"],
+      "dependencies": [],
+      "non_effects": ["trigger != authorization", "wake != old authority restoration", "ready != ActionPermit"],
+      "next_interfaces": ["PreActionEvidenceBundle"],
+      "provider_neutral": true,
+      "external_effect_emission": false,
+      "next_interfaces_are_automatic": false
+    },
+    {
+      "id": "RERC",
+      "version": "0.1",
+      "status": "experimental",
+      "path": "protocols/integration/rerc/v0.1",
+      "inputs": ["RERCRelationGraph OBSERVED", "explicit suppression edge ids"],
+      "outputs": ["RERCRelationGraph OPERATIONAL", "RERCSuppressionCompressionReceipt"],
+      "dependencies": [],
+      "non_effects": ["suppression != ontological deletion", "compression != evidence destruction", "simplification != authority"],
+      "next_interfaces": [],
+      "provider_neutral": true,
+      "external_effect_emission": false,
+      "next_interfaces_are_automatic": false
+    },
+    {
+      "id": "RecoverableStateInfrastructureCandidate",
+      "version": "0.1",
+      "status": "experimental",
+      "path": "protocols/reusable-infrastructure/recoverable-state/v0.1",
+      "inputs": ["EventResponsiveDormancy input bundle", "RERC compression input bundle", "work_context_ref"],
+      "outputs": ["EventResponsiveDormancyWakeReceipt", "RERCRelationGraph OPERATIONAL", "RERCSuppressionCompressionReceipt", "RecoverableStateInfrastructureCompositionReceipt"],
+      "dependencies": ["EventResponsiveDormancy", "RERC"],
+      "non_effects": ["formal candidate != Stable Core", "composition != shared world identity proof", "possible next interface != automatic transition", "candidate != performance proof"],
+      "next_interfaces": ["PreActionEvidenceBundle"],
+      "provider_neutral": true,
+      "external_effect_emission": false,
+      "next_interfaces_are_automatic": false
+    }
+  ],
+  "effective_entry_count": 17,
+  "non_claims": [
+    "published_release_status",
+    "stable_core_membership",
+    "automatic_transition_authorized",
+    "external_effect_performed",
+    "authority_created",
+    "performance_gain_proven",
+    "resource_savings_proven",
+    "exploratory_lane_promoted"
+  ]
+}

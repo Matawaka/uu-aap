@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:recoverable-state-infrastructure:candidate-manifest:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","status","origin_frontier","tracking_issue","shared_principle","components","capabilities","non_claims"],
+  "properties": {
+    "artifact_type": {"const": "RecoverableStateInfrastructureCandidateManifest"},
+    "version": {"const": "0.1"},
+    "status": {"const": "EXPERIMENTAL_REUSABLE_INFRASTRUCTURE_CANDIDATE"},
+    "origin_frontier": {"const": "ef4c8c6030ef517f2997fb76cff4f584fb25c691"},
+    "tracking_issue": {"const": 881},
+    "shared_principle": {"const": "Reduced Active Burden != Loss of Recoverable State != Authority Creation"},
+    "components": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id","version","merge_frontier","module_path","module_blob","implementation_receipt_path","implementation_receipt_blob","independently_reusable"],
+        "properties": {
+          "id": {"enum": ["EventResponsiveDormancy","RERC"]},
+          "version": {"const": "0.1"},
+          "merge_frontier": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "module_path": {"type": "string", "minLength": 1},
+          "module_blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "implementation_receipt_path": {"type": "string", "minLength": 1},
+          "implementation_receipt_blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "independently_reusable": {"const": true}
+        }
+      }
+    },
+    "capabilities": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_responsive_dormancy_control","reversible_operational_representation_control","composed_reference_harness","automatic_runtime_coupling"],
+      "properties": {
+        "event_responsive_dormancy_control": {"const": true},
+        "reversible_operational_representation_control": {"const": true},
+        "composed_reference_harness": {"const": true},
+        "automatic_runtime_coupling": {"const": false}
+      }
+    },
+    "non_claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["stable_core_membership","published_release","performance_gain_proven","resource_savings_proven","shared_world_identity_proven","authority_created","action_permit_created","runtime_activation_authorized","external_effect_authorized"],
+      "properties": {
+        "stable_core_membership": {"const": false},
+        "published_release": {"const": false},
+        "performance_gain_proven": {"const": false},
+        "resource_savings_proven": {"const": false},
+        "shared_world_identity_proven": {"const": false},
+        "authority_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "runtime_activation_authorized": {"const": false},
+        "external_effect_authorized": {"const": false}
+      }
+    }
+  }
+}

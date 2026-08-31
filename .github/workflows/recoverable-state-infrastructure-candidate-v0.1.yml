@@ -1,0 +1,113 @@
+name: Recoverable State Infrastructure Candidate v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/reusable-infrastructure/recoverable-state/v0.1/**'
+      - 'protocols/interface-registry/v0.2/**'
+      - '.github/workflows/recoverable-state-infrastructure-candidate-v0.1.yml'
+      - '.github/workflows/reusable-interface-registry-v0.2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/reusable-infrastructure/recoverable-state/v0.1/**'
+      - 'protocols/interface-registry/v0.2/**'
+      - '.github/workflows/recoverable-state-infrastructure-candidate-v0.1.yml'
+      - '.github/workflows/reusable-interface-registry-v0.2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: ef4c8c6030ef517f2997fb76cff4f584fb25c691
+  ERD_MODULE_BLOB: 2cadbd2f405391f4f97e100d77245757ce6b5a58
+  ERD_RECEIPT_BLOB: e127d784a74f0713fe0b157845ec5a2754647034
+  RERC_MODULE_BLOB: d2aae21a2e2375477c6349eae5f236ea60cd7151
+  RERC_RECEIPT_BLOB: 83609468622f4a79783b9b29e73a661497bad849
+  REGISTRY_V01_BLOB: 2aff5e5785eb97796031b19ffe9fe026a3543bf6
+  CANDIDATE_MANIFEST_BLOB: 85a7d51b70c90df7869e775a2529f53fe2c068f0
+  CANDIDATE_MANIFEST_SCHEMA_BLOB: 122b17dd29f499ab2225989d4c2f44c1c082e581
+  COMPOSER_BLOB: 1f114ddc73093809f789ca425b428966ac96f91e
+  COMPOSITION_SCHEMA_BLOB: c318c850481ad384401d91af858ed9e2b87bd8e7
+  REGISTRY_V02_DELTA_BLOB: ad705523bada7f64a04e09e34974407725942976
+  REGISTRY_V02_VALIDATOR_BLOB: 6137544281a34f7d68239388ee1ae9b11085beb1
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Bind exact accepted and candidate bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:protocols/integration/event-responsive-dormancy/v0.1/event-responsive-dormancy.js)" = "$ERD_MODULE_BLOB"
+          test "$(git rev-parse HEAD:protocols/integration/event-responsive-dormancy/v0.1/implementation-receipt.json)" = "$ERD_RECEIPT_BLOB"
+          test "$(git rev-parse HEAD:protocols/integration/rerc/v0.1/rerc.js)" = "$RERC_MODULE_BLOB"
+          test "$(git rev-parse HEAD:protocols/integration/rerc/v0.1/implementation-receipt.json)" = "$RERC_RECEIPT_BLOB"
+          test "$(git rev-parse HEAD:protocols/interface-registry/v0.1/interface-registry.json)" = "$REGISTRY_V01_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/candidate-manifest.json)" = "$CANDIDATE_MANIFEST_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/candidate-manifest.schema.json)" = "$CANDIDATE_MANIFEST_SCHEMA_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/compose.js)" = "$COMPOSER_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/composition-receipt.schema.json)" = "$COMPOSITION_SCHEMA_BLOB"
+          test "$(git rev-parse HEAD:protocols/interface-registry/v0.2/interface-registry-delta.json)" = "$REGISTRY_V02_DELTA_BLOB"
+          test "$(git rev-parse HEAD:protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js)" = "$REGISTRY_V02_VALIDATOR_BLOB"
+      - name: Validate interface-registry successor first
+        run: node protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js /tmp/interface-registry-v0.2-effective.json
+      - name: Run composed reference and hostile vectors
+        run: node protocols/reusable-infrastructure/recoverable-state/v0.1/test-compose.js /tmp/recoverable-state-infrastructure-v0.1
+      - name: Validate candidate, implementation receipt and composed artifacts
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          c=Path('protocols/reusable-infrastructure/recoverable-state/v0.1')
+          out=Path('/tmp/recoverable-state-infrastructure-v0.1')
+          def schema(p):
+            s=json.loads(Path(p).read_text()); Draft202012Validator.check_schema(s); return Draft202012Validator(s)
+          schema(c/'candidate-manifest.schema.json').validate(json.loads((c/'candidate-manifest.json').read_text()))
+          schema(c/'implementation-receipt.schema.json').validate(json.loads((c/'implementation-receipt.json').read_text()))
+          schema(c/'composition-receipt.schema.json').validate(json.loads((out/'composition-receipt.json').read_text()))
+          schema('protocols/integration/event-responsive-dormancy/v0.1/wake-reevaluation-receipt.schema.json').validate(json.loads((out/'wake-receipt.json').read_text()))
+          gv=schema('protocols/integration/rerc/v0.1/relation-graph.schema.json')
+          gv.validate(json.loads((out/'operational-graph.json').read_text())); gv.validate(json.loads((out/'restored-graph.json').read_text()))
+          schema('protocols/integration/rerc/v0.1/suppression-compression-receipt.schema.json').validate(json.loads((out/'suppression-receipt.json').read_text()))
+          print('RECOVERABLE_STATE_INFRASTRUCTURE_SCHEMAS_PASS')
+          PY
+      - name: Reject runtime and scheduling surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=protocols/reusable-infrastructure/recoverable-state/v0.1/compose.js
+          ! grep -Eq 'setInterval|setTimeout|child_process|spawnSync|execSync|require\(.node:(http|https|net)|\bfetch\(' "$src"
+          ! grep -Eq '^[[:space:]]+schedule:' .github/workflows/recoverable-state-infrastructure-candidate-v0.1.yml
+      - name: Guard Core, components, roadmap, backlog and v0.1 registry
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json docs/ROADMAP-CURRENT.md \
+            tooling/backlog-entity-reconciliation/v0.1/ protocols/interface-registry/v0.1/ \
+            protocols/integration/event-responsive-dormancy/v0.1/ protocols/integration/rerc/v0.1/
+      - name: Require candidate/registry-successor-only diff
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r p; do
+            [ -z "$p" ] && continue
+            case "$p" in
+              protocols/reusable-infrastructure/recoverable-state/v0.1/*|protocols/interface-registry/v0.2/*|.github/workflows/recoverable-state-infrastructure-candidate-v0.1.yml|.github/workflows/reusable-interface-registry-v0.2.yml) ;;
+              *) echo "unexpected changed path: $p" >&2; exit 1 ;;
+            esac
+          done < <(git diff --name-only "$ORIGIN_FRONTIER" HEAD)
+      - name: Clean tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
