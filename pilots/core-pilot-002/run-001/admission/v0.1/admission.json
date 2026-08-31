@@ -1,0 +1,73 @@
+{
+  "schema": "urn:uu-aap:core-pilot-002:run-001-admission:0.1",
+  "origin_frontier": "1c134694cc4fcbe852afa68353932c13b6104ee3",
+  "pilot_id": "core-pilot-002",
+  "run_id": "001",
+  "historical_admission_v0_1": {
+    "state": "PRESERVED_HISTORICAL_WAITING_OBSERVATION",
+    "readme_blob": "44ab9ac8789380423df26139fcf7314d77ddc9ce",
+    "schema_blob": "cb88902b785a884134ad774546c8902ca5e5698d",
+    "validator_blob": "87834ff3946296b215bbbec894f5d992935455bb",
+    "waiting_fixture_blob": "4509e2b39fbdd48d73b47238f8d4ab1ff3d17349"
+  },
+  "accepted_observation": {
+    "path": "pilots/core-pilot-002/external-input-observation/v0.1/observation.json",
+    "blob": "3efeaeffbc39a98d2471973f0af483960dd63739",
+    "merge_frontier": "1c134694cc4fcbe852afa68353932c13b6104ee3",
+    "source_comment_id": 5471862585,
+    "source_url": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585",
+    "source_author_account_identifier": "84dnnvbdvp-debug",
+    "source_body_sha256": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8"
+  },
+  "selection_decision": {
+    "decision_kind": "EXPLICIT_HUMAN_SOURCE_SELECTION_OPTION_A",
+    "recording_surface": "github_issue_comment_via_connected_app",
+    "record_url": "https://github.com/Matawaka/uu-aap/issues/718#issuecomment-5474174497",
+    "record_comment_id": 5474174497,
+    "record_author_account_identifier": "Matawaka",
+    "record_author_association": "OWNER",
+    "record_body_sha256": "422315f0694a435cbb17ea1f8d3ac9554bbf859580478546606771290ea4b9dd",
+    "record_performed_via_github_app": "chatgpt-codex-connector",
+    "scope": "core_pilot_002_run_001_input_selection",
+    "selected_exact_observed_source": true
+  },
+  "admission": {
+    "status": "ADMITTED_AS_EXTERNAL_SOURCE_ACCOUNT_SUBMISSION",
+    "eligible_external_input_present": true,
+    "exact_source_bound": true,
+    "human_selection_gate_satisfied": true,
+    "run_001_intake_materialization_available": true,
+    "analysis_scope": "analyze_and_recommend_only"
+  },
+  "qualification_boundaries": {
+    "source_account_label_differs_from_repository_owner": true,
+    "source_app_mediated": true,
+    "human_identity_status": "NOT_ESTABLISHED",
+    "independence_from_project_or_user": "NOT_ESTABLISHED",
+    "reviewer_standing": "UNKNOWN",
+    "reviewer_expertise": "UNKNOWN",
+    "reviewer_authority": "UNKNOWN",
+    "claim_truth": "NOT_ESTABLISHED"
+  },
+  "next_gate": {
+    "pilot_run_materialization_requires_exact_admission_binding": true,
+    "disposition_must_preserve_objection": true,
+    "external_mutation_requires_separate_human_gate": true,
+    "normative_core_or_schema_change_requires_separate_human_decision": true
+  },
+  "non_effects": {
+    "verified_human_reviewer_created": false,
+    "independence_proved": false,
+    "reviewer_authority_created": false,
+    "reviewer_standing_created": false,
+    "claim_accepted_as_truth": false,
+    "disposition_created": false,
+    "normative_change_authorized": false,
+    "core_or_spec_change_authorized": false,
+    "issue_or_comment_mutation_authorized": false,
+    "release_or_tag_authorized": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false
+  }
+}
