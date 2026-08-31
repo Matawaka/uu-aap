@@ -1,0 +1,137 @@
+name: Public Review Discussion Discovery v0.3
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/public-review-discussion-discovery/v0.3/**'
+      - '.github/workflows/public-review-discussion-discovery-v0.3.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/public-review-discussion-discovery/v0.3/**'
+      - '.github/workflows/public-review-discussion-discovery-v0.3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  discussions: read
+
+env:
+  ORIGIN_FRONTIER: bef77bddd4fa6430bb16f14e52f1d5fee1aeb786
+  V0_2_ORIGIN_FRONTIER: 391bc0820e9c17b4b9dde3271640ce52d39149d8
+  V0_2_CORRECTION_ORIGIN: d2e2f3a813dd6ea853a45f2108a32d671a3e41d4
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  discover:
+    name: bounded read-only Discussion review discovery
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Fetch exact accepted origins
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git fetch -q --depth=1 origin "$V0_2_ORIGIN_FRONTIER"
+          git fetch -q --depth=1 origin "$V0_2_CORRECTION_ORIGIN"
+          git cat-file -e "$ORIGIN_FRONTIER^{commit}"
+          git cat-file -e "$V0_2_ORIGIN_FRONTIER^{commit}"
+          git cat-file -e "$V0_2_CORRECTION_ORIGIN^{commit}"
+
+      - name: Parse v0.3 machine-readable contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool tooling/public-review-discussion-discovery/v0.3/policy.json >/dev/null
+          python -m json.tool tooling/public-review-discussion-discovery/v0.3/receipt.schema.json >/dev/null
+          python -m json.tool tooling/public-review-discussion-discovery/v0.3/implementation-receipt.json >/dev/null
+
+      - name: Keep accepted v0.2 issue discovery green
+        run: |
+          python tooling/public-review-repository-discovery/v0.2/test_collector.py
+          python tooling/public-review-repository-discovery/v0.2/validate_implementation.py
+          python tooling/public-review-repository-discovery/v0.2/validate_live_correction.py
+
+      - name: Run v0.3 deterministic and hostile tests
+        run: python tooling/public-review-discussion-discovery/v0.3/test_collector.py
+
+      - name: Validate v0.3 source bindings and scope
+        run: python tooling/public-review-discussion-discovery/v0.3/validate_implementation.py
+
+      - name: Require read-only no-schedule Discussion workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/public-review-discussion-discovery-v0.3.yml
+          ! grep -Eq '^[[:space:]]+schedule:' "$workflow"
+          ! grep -Eq '^[[:space:]]+[A-Za-z_-]+:[[:space:]]*write[[:space:]]*$' "$workflow"
+          grep -F 'contents: read' "$workflow" >/dev/null
+          grep -F 'discussions: read' "$workflow" >/dev/null
+          echo "Discussion discovery read-only/no-schedule boundary: PASS"
+
+      - name: Guard accepted semantic product and predecessor boundaries on PR
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/run-001/ \
+            protocols/responsibility-status-provenance/v0.1/ \
+            protocols/responsibility-assurance/v0.1/ \
+            tooling/public-review-intake-observation/v0.1/ \
+            tooling/public-review-repository-discovery/v0.2/ \
+            .github/workflows/public-review-intake-observation-v0.1.yml \
+            .github/workflows/public-review-repository-discovery-v0.2.yml \
+            PUBLIC_REVIEW.md PUBLIC_REVIEW.ru.md proposals/poai/README.md \
+            docs/ROADMAP-CURRENT.md docs/workbench/ interop/c2pa/
+          echo "Core/SPEC/Run001/B+C/v0.1/v0.2/PublicReview/roadmap/Workbench/C2PA boundaries: unchanged"
+
+      - name: Require v0.3 Discussion-discovery-only PR diff
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              .github/workflows/public-review-discussion-discovery-v0.3.yml|tooling/public-review-discussion-discovery/v0.3/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "v0.3 Discussion-discovery-only diff boundary: PASS"
+
+      - name: Perform live read-only Discussion discovery
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          python tooling/public-review-discussion-discovery/v0.3/collector.py --output "${{ runner.temp }}/public-review-discussion-discovery.json"
+          python tooling/public-review-discussion-discovery/v0.3/collector.py --validate "${{ runner.temp }}/public-review-discussion-discovery.json"
+          cat "${{ runner.temp }}/public-review-discussion-discovery.json"
+
+      - name: Upload live Discussion discovery receipt
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-review-discussion-discovery-v0.3-${{ github.run_id }}
+          path: ${{ runner.temp }}/public-review-discussion-discovery.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
