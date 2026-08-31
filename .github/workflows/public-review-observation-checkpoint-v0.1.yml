@@ -1,0 +1,119 @@
+name: Public Review Observation Checkpoint v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/public-review-observation-checkpoint/v0.1/**'
+      - '.github/workflows/public-review-observation-checkpoint-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/public-review-observation-checkpoint/v0.1/**'
+      - '.github/workflows/public-review-observation-checkpoint-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 88f5896ac60c59e0a3449196466c3ea9dcd9ea87
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: validate durable bounded Public Review observation checkpoint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Fetch exact checkpoint origin
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git cat-file -e "$ORIGIN_FRONTIER^{commit}"
+
+      - name: Parse machine-readable checkpoint files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool tooling/public-review-observation-checkpoint/v0.1/checkpoint.json >/dev/null
+          python -m json.tool tooling/public-review-observation-checkpoint/v0.1/checkpoint.schema.json >/dev/null
+          python -m json.tool tooling/public-review-observation-checkpoint/v0.1/repository-issues-live-receipt.json >/dev/null
+          python -m json.tool tooling/public-review-observation-checkpoint/v0.1/declared-discussions-live-receipt.json >/dev/null
+
+      - name: Keep accepted live observers and corrections green
+        run: |
+          python tooling/public-review-repository-discovery/v0.2/test_collector.py
+          python tooling/public-review-repository-discovery/v0.2/validate_implementation.py
+          python tooling/public-review-repository-discovery/v0.2/validate_live_correction.py
+          python tooling/public-review-discussion-discovery/v0.3/test_collector.py
+          python tooling/public-review-discussion-discovery/v0.3/validate_implementation.py
+          python tooling/public-review-discussion-discovery/v0.3/validate_live_correction.py
+
+      - name: Validate exact retained live receipts and checkpoint
+        run: python tooling/public-review-observation-checkpoint/v0.1/validate_checkpoint.py
+
+      - name: Run hostile checkpoint tests
+        run: python tooling/public-review-observation-checkpoint/v0.1/test_checkpoint.py
+
+      - name: Require repository-local no-schedule read-only checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/public-review-observation-checkpoint-v0.1.yml
+          ! grep -Eq '^[[:space:]]+schedule:' "$workflow"
+          ! grep -Eq '^[[:space:]]+[A-Za-z_-]+:[[:space:]]*write[[:space:]]*$' "$workflow"
+          grep -F 'contents: read' "$workflow" >/dev/null
+          ! grep -F 'GITHUB_TOKEN' "$workflow"
+          ! grep -F 'api.github.com' "$workflow"
+          echo "checkpoint repository-local/read-only/no-schedule boundary: PASS"
+
+      - name: Guard accepted semantic product and observer boundaries on PR
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/run-001/ \
+            protocols/responsibility-status-provenance/v0.1/ \
+            protocols/responsibility-assurance/v0.1/ \
+            tooling/public-review-intake-observation/v0.1/ \
+            tooling/public-review-repository-discovery/v0.2/ \
+            tooling/public-review-discussion-discovery/v0.3/ \
+            .github/workflows/public-review-intake-observation-v0.1.yml \
+            .github/workflows/public-review-repository-discovery-v0.2.yml \
+            .github/workflows/public-review-discussion-discovery-v0.3.yml \
+            PUBLIC_REVIEW.md PUBLIC_REVIEW.ru.md proposals/poai/README.md \
+            docs/ROADMAP-CURRENT.md docs/workbench/ interop/c2pa/
+          echo "Core/SPEC/Run001/B+C/observer/PublicReview/roadmap/Workbench/C2PA boundaries: unchanged"
+
+      - name: Require checkpoint-only PR diff
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              .github/workflows/public-review-observation-checkpoint-v0.1.yml|tooling/public-review-observation-checkpoint/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "checkpoint-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
