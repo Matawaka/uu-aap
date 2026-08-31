@@ -1,0 +1,67 @@
+{
+  "protocol": "UU-AAP",
+  "protocol_version": "0.1",
+  "profile": "D",
+  "work": {
+    "title": "Core Pilot 002 responsibility attribution counterexample",
+    "work_id": "urn:uu-aap:pilot:core-pilot-002:run-001:counterexample",
+    "edition_id": "0.1",
+    "language": "en",
+    "publication_date": "2026-08-31",
+    "identifiers": []
+  },
+  "actors": [
+    {
+      "actor_id": "actor:alice",
+      "actor_type": "human",
+      "name": "Alice",
+      "identifier": null
+    },
+    {
+      "actor_id": "actor:bob",
+      "actor_type": "human",
+      "name": "Bob",
+      "identifier": null
+    }
+  ],
+  "responsibility": [
+    {
+      "actor_id": "actor:alice",
+      "scope": "factual_verification",
+      "status": "accepted",
+      "limitations": null
+    },
+    {
+      "actor_id": "actor:bob",
+      "scope": "publication_authorization",
+      "status": "accepted",
+      "limitations": null
+    }
+  ],
+  "ai_participation": [],
+  "provenance": {},
+  "verification": {
+    "source_verification": "not_verified",
+    "artifact_sha256": null,
+    "signature": null,
+    "c2pa": null,
+    "transparency_record": null,
+    "review": null
+  },
+  "privacy": {
+    "redactions_present": false,
+    "full_prompt_log_public": false,
+    "categories": []
+  },
+  "contestability": {
+    "channel_available": true,
+    "channel": "https://github.com/Matawaka/uu-aap/issues/422",
+    "open_disputes": 1,
+    "appeal_available": false
+  },
+  "versioning": {
+    "manifest_id": "urn:uu-aap:pilot:core-pilot-002:run-001:counterexample:manifest:0.1",
+    "previous_manifest": null,
+    "change_summary": "Synthetic reproduction of the admitted external responsibility-attribution counterexample."
+  }
+}
