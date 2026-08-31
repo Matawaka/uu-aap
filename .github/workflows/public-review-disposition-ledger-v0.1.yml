@@ -1,0 +1,112 @@
+name: Public Review Disposition Ledger v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/public-review-disposition-ledger/v0.1/**'
+      - '.github/workflows/public-review-disposition-ledger-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/public-review-disposition-ledger/v0.1/**'
+      - '.github/workflows/public-review-disposition-ledger-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 1b662c46aecb7c2590905ca1ab5f3150c6e4d1d2
+  RUN001_FRONTIER: 26bdda55acf6368726428184d8eed489dbc2c9ad
+  STAGE_B_FRONTIER: 5201cb686bcef52053e055595c2315c36aa1ec56
+  STAGE_C_FRONTIER: 967e026eac9de58753fc01934d7e6a431b9c973c
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: validate additive Public Review disposition index
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Require exact accepted historical frontiers in checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          for ref in "$ORIGIN_FRONTIER" "$RUN001_FRONTIER" "$STAGE_B_FRONTIER" "$STAGE_C_FRONTIER"; do
+            git cat-file -e "$ref^{commit}"
+          done
+          echo "accepted disposition/source frontiers available: PASS"
+
+      - name: Parse ledger machine artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool tooling/public-review-disposition-ledger/v0.1/ledger.json >/dev/null
+          python -m json.tool tooling/public-review-disposition-ledger/v0.1/ledger.schema.json >/dev/null
+          python -m json.tool tooling/public-review-disposition-ledger/v0.1/implementation-receipt.json >/dev/null
+
+      - name: Validate exact indexed accepted layers
+        run: python tooling/public-review-disposition-ledger/v0.1/validate_ledger.py
+
+      - name: Run hostile reclassification and escalation tests
+        run: python tooling/public-review-disposition-ledger/v0.1/test_ledger.py
+
+      - name: Require read-only no-schedule index workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/public-review-disposition-ledger-v0.1.yml
+          ! grep -Eq '^[[:space:]]+schedule:' "$workflow"
+          ! grep -Eq '^[[:space:]]+[A-Za-z_-]+:[[:space:]]*write[[:space:]]*$' "$workflow"
+          grep -F 'contents: read' "$workflow" >/dev/null
+          ! grep -F 'GITHUB_TOKEN' "$workflow"
+          ! grep -F 'api.github.com' "$workflow"
+          echo "disposition ledger read-only/no-schedule/no-live-API boundary: PASS"
+
+      - name: Guard accepted evidence, semantic and product boundaries on PR
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/run-001/ \
+            protocols/responsibility-status-provenance/v0.1/ \
+            protocols/responsibility-assurance/v0.1/ \
+            tooling/public-review-intake-observation/v0.1/ \
+            tooling/public-review-repository-discovery/v0.2/ \
+            tooling/public-review-discussion-discovery/v0.3/ \
+            tooling/public-review-observation-checkpoint/v0.1/ \
+            PUBLIC_REVIEW.md PUBLIC_REVIEW.ru.md \
+            docs/ROADMAP-CURRENT.md docs/workbench/ interop/c2pa/
+          echo "Run001/B+C/observer/PublicReview/Core/roadmap/Workbench/C2PA boundaries: unchanged"
+
+      - name: Require disposition-ledger-only PR diff
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              .github/workflows/public-review-disposition-ledger-v0.1.yml|tooling/public-review-disposition-ledger/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "disposition-ledger-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
