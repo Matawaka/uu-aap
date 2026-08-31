@@ -1,0 +1,49 @@
+{
+  "schema": "urn:uu-aap:responsibility-assurance-profile-implementation:0.1",
+  "origin_frontier": "5201cb686bcef52053e055595c2315c36aa1ec56",
+  "human_design_gate": {
+    "issue": 852,
+    "decision_comment_id": 5474573197,
+    "decision_comment_body_sha256": "d1137cb69f2445cbd9b5bba0d275898597275daa04fe66ba75be70533c3ff881",
+    "decision": "PHASED_B_PLUS_C",
+    "stage": "C_STRONGER_RESPONSIBILITY_ASSURANCE_PROFILE",
+    "repository_owner_decision_recorded": true,
+    "decision_actor_identity_status": "NOT_ESTABLISHED_BY_REPOSITORY_RECORD"
+  },
+  "accepted_stage_b": {
+    "merge_frontier": "5201cb686bcef52053e055595c2315c36aa1ec56",
+    "readme_blob": "4abf1266cc9d6c0529eb00bb466c8545b7b270ac",
+    "binding_schema_blob": "0fb44e2d91efcdc4f7c5034e01100fd37489b376",
+    "implementation_receipt_blob": "3ecba920eb366c15c1c7555cb54dc8574e05a73b",
+    "validator_blob": "51ecb60bd94a854e4764aec2e4c698cd5d9b88bd"
+  },
+  "historical_bindings": {
+    "run_001_result_blob": "edc9a7e4f26492d16875727e17188c5e2a486ced",
+    "manifest_schema_v0_1_blob": "c0579b34f6c456c462cea1aa80ec67b78fce7582",
+    "spec_blob": "44b91e0e48dee9d928c843bbb304a5c246582da7",
+    "responsibility_policy_blob": "f71dd1920157d4137f1e3a1ab270bcdfc873e61f",
+    "counterexample_manifest_blob": "350ca00629f354bdd7cc01785d448590c6be87b4",
+    "counterexample_manifest_sha256": "d173cf888cfea1e343411162aaf87a890874e0aaf02fee7cd6c1fd0fcc3cf83f"
+  },
+  "stage_c_contract": {
+    "overlay_id": "UU-AAP/RA1",
+    "base_profile_enum_changed": false,
+    "base_manifest_validity_changed": false,
+    "all_accepted_or_shared_entries_require_stage_b_attributable_binding": true,
+    "limited_declined_unknown_require_acceptance_binding": false,
+    "stage_b_reused_without_parallel_identity_authority_path": true,
+    "missing_ra1_is_baseline_manifest_failure": false,
+    "ra1_failure_is_sanction_or_negative_reputation": false
+  },
+  "non_effects": {
+    "verified_identity_created": false,
+    "authority_created": false,
+    "truth_created": false,
+    "legal_liability_created": false,
+    "certification_created": false,
+    "release_or_tag_authorized": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false
+  }
+}

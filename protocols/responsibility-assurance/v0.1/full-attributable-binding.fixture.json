@@ -1,0 +1,49 @@
+{
+  "schema": "urn:uu-aap:responsibility-status-provenance-binding:0.1",
+  "target_manifest": {
+    "path": "pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json",
+    "sha256": "d173cf888cfea1e343411162aaf87a890874e0aaf02fee7cd6c1fd0fcc3cf83f"
+  },
+  "bindings": [
+    {
+      "responsibility_index": 0,
+      "responsibility_entry": {
+        "actor_id": "actor:alice",
+        "scope": "factual_verification",
+        "status": "accepted",
+        "limitations": null
+      },
+      "binding_state": "ATTRIBUTABLE_ACCEPTANCE_EVIDENCE_BOUND",
+      "declarant_reference": "urn:uu-aap:fixture:source:alice-account",
+      "attributable_acceptance_event_reference": "urn:uu-aap:fixture:acceptance-event:alice-factual-verification:001",
+      "acceptance_evidence_refs": [
+        "urn:uu-aap:fixture:evidence:alice-acceptance:001"
+      ]
+    },
+    {
+      "responsibility_index": 1,
+      "responsibility_entry": {
+        "actor_id": "actor:bob",
+        "scope": "publication_authorization",
+        "status": "accepted",
+        "limitations": null
+      },
+      "binding_state": "ATTRIBUTABLE_ACCEPTANCE_EVIDENCE_BOUND",
+      "declarant_reference": "urn:uu-aap:fixture:source:bob-account",
+      "attributable_acceptance_event_reference": "urn:uu-aap:fixture:acceptance-event:bob-publication-authorization:001",
+      "acceptance_evidence_refs": [
+        "urn:uu-aap:fixture:evidence:bob-acceptance:001"
+      ]
+    }
+  ],
+  "non_effects": {
+    "verified_identity_created": false,
+    "authority_created": false,
+    "truth_created": false,
+    "legal_liability_created": false,
+    "responsibility_status_changed": false,
+    "release_or_tag_authorized": false,
+    "publication_authorized": false,
+    "action_permit_created": false
+  }
+}
