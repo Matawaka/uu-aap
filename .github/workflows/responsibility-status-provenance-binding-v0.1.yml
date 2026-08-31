@@ -1,0 +1,96 @@
+name: Responsibility Status Provenance Binding v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/responsibility-status-provenance/v0.1/**'
+      - '.github/workflows/responsibility-status-provenance-binding-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/responsibility-status-provenance/v0.1/**'
+      - '.github/workflows/responsibility-status-provenance-binding-v0.1.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: dbdace4548fb6701675a993276da6854c4324bda
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate-stage-b:
+    name: optional exact responsibility provenance binding
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Validate Stage B schema, fixtures, receipt and hostile mutations
+        run: python protocols/responsibility-status-provenance/v0.1/validate.py
+
+      - name: Re-bind exact human B plus C design decision read-only
+        run: python protocols/responsibility-status-provenance/v0.1/verify_design_decision.py
+
+      - name: Parse Stage B JSON artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in \
+            protocols/responsibility-status-provenance/v0.1/binding.schema.json \
+            protocols/responsibility-status-provenance/v0.1/declaration-only.fixture.json \
+            protocols/responsibility-status-provenance/v0.1/attributable.fixture.json \
+            protocols/responsibility-status-provenance/v0.1/implementation-receipt.json
+          do
+            python -m json.tool "$f" >/dev/null
+          done
+
+      - name: Bind exact Run 001 and v0.1 historical inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object pilots/core-pilot-002/run-001/result/v0.1/result.json)" = "edc9a7e4f26492d16875727e17188c5e2a486ced"
+          test "$(git hash-object pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json)" = "350ca00629f354bdd7cc01785d448590c6be87b4"
+          test "$(git hash-object schema/uu-aap-manifest.schema.json)" = "c0579b34f6c456c462cea1aa80ec67b78fce7582"
+          test "$(git hash-object SPEC.md)" = "44b91e0e48dee9d928c843bbb304a5c246582da7"
+          test "$(git hash-object RESPONSIBILITY.md)" = "f71dd1920157d4137f1e3a1ab270bcdfc873e61f"
+          echo "Stage B historical source bindings: PASS"
+
+      - name: Guard historical semantics and paused product boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/ \
+            tooling/current-frontier-reconciliation/v0.2/ \
+            tooling/release-candidate-checkpoint/v0.5/ \
+            docs/ROADMAP-CURRENT.md docs/workbench/
+          echo "historical/Core/schema/roadmap/Workbench boundaries: unchanged"
+
+      - name: Require Stage B-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/responsibility-status-provenance-binding-v0.1.yml|protocols/responsibility-status-provenance/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "Stage B-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
