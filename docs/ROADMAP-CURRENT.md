@@ -1,18 +1,26 @@
 # UU-AAP Current Roadmap Marker
 
-Status: current-frontier successor after completed Core Pilot 002 Run 001 machine-readable disposition; RC v0.5, CAI/C2PA executable interoperability, verifier P1.1–P1.20, unified/finalized Pages deployment, and live deployed-byte observability remain preserved as bounded predecessors.
+Status: current-frontier successor after accepted phased Responsibility Status Provenance B + C; completed Core Pilot 002 Run 001, RC v0.5, CAI/C2PA executable interoperability, verifier P1.1–P1.20, unified/finalized Pages deployment, and live deployed-byte observability remain preserved as bounded predecessors.
 
 Canonical reconciliation frontier: `53beba76a82916dcd90239e59b1c0e49db55beae`.
 
-Current Core Pilot 002 Run 001 accepted frontier:
+Core Pilot 002 Run 001 accepted frontier:
 
 `26bdda55acf6368726428184d8eed489dbc2c9ad`
 
+Accepted Responsibility Stage B frontier:
+
+`5201cb686bcef52053e055595c2315c36aa1ec56`
+
+Accepted Responsibility Stage C / current semantic successor frontier:
+
+`967e026eac9de58753fc01934d7e6a431b9c973c`
+
 Predecessor current-roadmap blob:
 
-`e37272ef14e594fd45e665b13e8523b608a9557c`
+`98f6d594b7d45013bec5c3155fb2b47c72bca795`
 
-The predecessor marker correctly recorded the state before #846/#849 as an observed source awaiting human admission. This successor advances only the **current** state after exact-source admission and completed Run 001; it does not rewrite the earlier observation, Current Frontier Reconciliation v0.2, Release Candidate Checkpoint v0.5, or any historical Core/SPEC artifact.
+The predecessor marker correctly stopped at `HUMAN_NORMATIVE_DESIGN_DECISION_REQUIRED`. Issue #852 then recorded the human choice of phased B + C; #854 accepted optional machine-native responsibility-status provenance binding, and #856 accepted the optional `UU-AAP/RA1` stronger assurance overlay. This successor advances only the **current** state. It does not rewrite Run 001, historical v0.1 manifests, Current Frontier Reconciliation v0.2, Release Candidate Checkpoint v0.5, or any historical Core/SPEC artifact.
 
 `ROADMAP.md` remains historical architectural evidence for the reusable-tooling convergence line. Its T1–T5 sections are not rewritten by this marker.
 
@@ -39,9 +47,11 @@ The predecessor marker correctly recorded the state before #846/#849 as an obser
 - Verifier presentation/distribution P1.1–P1.20 — `ACCEPTED_BOUNDED`. The chain keeps integrity, identity, provenance, availability, authority, responsibility and truth separate; candidate federation/disposition/integrity remain distinct from authority.
 - Pages post-deployment observability — `OBSERVED_MATCH_BOUNDED`: P1.18 succeeded after the P1.20 deployment for the exact triggering artifact envelope and observed public payload bytes. This is not producer authentication, trusted time, truth or future availability.
 - KONTUR successor #722 — `PARALLEL_NON_CORE`; field/product evidence does not create a Stable Core dependency.
-- Public Review #1–#7 — `WAITING_EXTERNAL`; one admitted Pilot 002 source does not by itself complete broader Public Review or establish external validation.
-- Core Pilot 002 #718/#422 — `COMPLETED_ACCEPT_FOR_FOLLOWUP`. #845 byte-bound the public source, #846 admitted the exact source under repository-owner selection, and #849 completed Run 001. Machine result: `pilots/core-pilot-002/run-001/result/v0.1/result.json`; result class `REPRESENTATION_PROVENANCE_GAP_CONFIRMED_WITH_EXISTING_DISPLAY_MITIGATION`; next gate `HUMAN_NORMATIVE_DESIGN_DECISION_REQUIRED`. Reviewer human identity and independence remain unestablished; standing/expertise/authority remain unknown; the submission is not promoted to truth.
-- Responsibility-attribution successor — `HUMAN_NORMATIVE_DESIGN_DECISION_REQUIRED`. The run confirmed a machine representation gap around provenance of responsibility status while preserving SPEC §22 declaration/attestation mitigation. No repair class has been selected and no Core/SPEC/RESPONSIBILITY/schema change is authorized by the run.
+- Public Review #1–#7 — `WAITING_EXTERNAL`; one completed Pilot 002 run does not by itself complete broader Public Review or establish external validation.
+- Core Pilot 002 #718/#422 — `COMPLETED_ACCEPT_FOR_FOLLOWUP`. #845 byte-bound the public source, #846 admitted the exact source under repository-owner selection, and #849 completed Run 001. Machine result: `pilots/core-pilot-002/run-001/result/v0.1/result.json`; result class `REPRESENTATION_PROVENANCE_GAP_CONFIRMED_WITH_EXISTING_DISPLAY_MITIGATION`. Reviewer human identity and independence remain unestablished; standing/expertise/authority remain unknown; the submission is not promoted to truth.
+- Responsibility Status Provenance Binding v0.1 / Stage B — `ACCEPTED_OPTIONAL_BINDING` via #854. `protocols/responsibility-status-provenance/v0.1/` adds a separately versioned sidecar that binds an exact manifest SHA-256 plus exact responsibility index and copied entry. It supports `DECLARATION_ONLY` and `ATTRIBUTABLE_ACCEPTANCE_EVIDENCE_BOUND` without modifying the historical v0.1 manifest schema.
+- Responsibility Assurance `UU-AAP/RA1` v0.1 / Stage C — `ACCEPTED_OPTIONAL_ASSURANCE_OVERLAY` via #856. `protocols/responsibility-assurance/v0.1/` consumes accepted Stage B and requires attributable acceptance evidence coverage for every `accepted/shared` responsibility entry only when the stronger RA1 claim is asserted. D/T/V/R remain unchanged.
+- Human responsibility design gate #852 — `COMPLETED`; phased B + C was selected and separately accepted. The Run 001 representation gap now has an additive machine-native successor and optional stronger assurance path without silent reinterpretation of historical v0.1 declarations.
 - Workbench — `PAUSED_EXTERNAL_PRODUCT` by explicit human decision. Historical Workbench evidence remains provenance; Workbench development is not in the current UU-AAP critical path.
 - IP/software-registration/patent tracks #486/#492 — `HUMAN_OR_EXTERNAL_DECISION`; they remain separate from Core architecture completion.
 
@@ -55,7 +65,8 @@ C2PA P0.3 = INCOMPLETE
 verifier P1.1-P1.20 = ACCEPTED_BOUNDED
 public review #1-#7 = WAITING_EXTERNAL
 core pilot 002 run 001 = COMPLETED_ACCEPT_FOR_FOLLOWUP
-responsibility normative successor = HUMAN_NORMATIVE_DESIGN_DECISION_REQUIRED
+responsibility Stage B = ACCEPTED_OPTIONAL_BINDING
+responsibility Stage C / UU-AAP/RA1 = ACCEPTED_OPTIONAL_ASSURANCE_OVERLAY
 Workbench = PAUSED_EXTERNAL_PRODUCT
 release candidate v0.5 = EXTERNAL_EVIDENCE_PENDING (historical exact-frontier decision)
 ```
@@ -66,7 +77,11 @@ release candidate v0.5 = EXTERNAL_EVIDENCE_PENDING (historical exact-frontier de
 
 `One External Pilot Input != External Validation`
 
-`Run 001 Completed != Normative Repair Selected`
+`Run 001 Completed != Universal Validation`
+
+`Stage B Binding != Verified Identity or Authority`
+
+`RA1 Satisfied != Truth, Liability, Certification or Release Authority`
 
 `External Evidence Pending != Failure`
 
@@ -76,10 +91,10 @@ No current roadmap marker creates release/tag/publication authority, certificati
 
 ## Current actionable lanes
 
-1. **Human normative decision:** choose how, or whether, a successor should close the confirmed responsibility-status declaration-provenance gap. The accepted Run 001 preserves three candidate classes without selecting one: verifier-only declaration clarification; optional declarant / acceptance-event / evidence binding; or attributable acceptance evidence required for a stronger profile/claim.
-2. Continue genuine external participation through Public Review #1–#7 and low-friction surfaces #774/#775. The completed Pilot 002 run is one bounded external-source interaction, not general external validation or certification.
-3. If a responsibility successor is selected, implement it additively with explicit compatibility/migration behavior; do not rewrite the accepted Run 001 evidence or silently reinterpret v0.1 historical manifests.
-4. Keep C2PA P0.3 on successor-watch. Re-audit Swift/Android only when the upstream interfaces move enough to require a targeted executable successor; do not rewrite #781/#782/#783.
+1. Continue genuine external participation through Public Review #1–#7 and low-friction surfaces #774/#775. The completed Pilot 002 run plus accepted B+C successor is one bounded external-source feedback cycle, not general external validation or certification.
+2. Treat the responsibility B+C line as `ACCEPTED_BOUNDED` unless field/interoperability evidence reveals a concrete remaining gap. Do not create another responsibility semantic layer merely to extend the version sequence.
+3. When a verifier or downstream integration needs responsibility assurance, reuse Stage B declaration/evidence separation and present RA1 as a separate optional overlay; do not collapse it into D/T/V/R or a universal verified-responsibility badge.
+4. Keep C2PA P0.3 on successor-watch. Re-audit Swift/Android only when upstream interfaces move enough to require a targeted executable successor; do not rewrite #781/#782/#783.
 5. Keep KONTUR as a parallel bounded product/pilot lane; no automatic Stable Core promotion or live-runtime mandate.
 6. Keep Workbench paused until a separate human decision resumes that product line.
 7. Keep IP/legal/private filing work separate from the architecture critical path and ask for human decisions where applicant, privacy, payment, jurisdiction or filing strategy is material.
@@ -93,10 +108,11 @@ No P1.21 or unrelated new Stable Core layer is the default next step.
 - `CURRENT` — actionable repository work supported by current evidence.
 - `ACCEPTED_BOUNDED` — accepted implementation evidence for a named scope, without authority/truth escalation.
 - `COMPLETED_ACCEPT_FOR_FOLLOWUP` — a bounded pilot/run completed with a preserved concern and follow-up disposition; this is not truth certification or repair authority.
+- `ACCEPTED_OPTIONAL_BINDING` — an additive optional machine representation is accepted while historical baseline records remain valid without it.
+- `ACCEPTED_OPTIONAL_ASSURANCE_OVERLAY` — an optional stronger claim/profile is accepted and consumes a bounded predecessor without changing baseline validity.
 - `PARALLEL_NON_CORE` — active or available product/pilot evolution that does not create a Core dependency.
 - `PAUSED_EXTERNAL_PRODUCT` — intentionally paused product line outside the current repository critical path.
 - `INTENTIONALLY_UNMERGED_EVIDENCE_ANCHORS` — open PR refs retained as immutable evidence inputs, not ordinary merge backlog.
-- `HUMAN_NORMATIVE_DESIGN_DECISION_REQUIRED` — machine evidence has narrowed a semantic design gap, but choosing the successor semantics/compatibility policy requires an explicit human normative decision.
 - `SUCCESSOR_NEEDED` — concern remains relevant but the old issue should not be treated as the current implementation frontier.
 - `WAITING_EXTERNAL` — blocked on external participant/operator/legal/field evidence.
 - `TARGET_SURFACE` — intentionally open interaction/experiment target, not implementation backlog.
@@ -120,7 +136,7 @@ Targeted Re-audit Request != Historical Rewrite
 
 They should not be merged or closed merely to make the open-PR count zero.
 
-## Core Pilot 002 Run 001 rule
+## Core Pilot 002 -> Responsibility B+C rule
 
 The first #422 submission moved through separate, preserved stages:
 
@@ -130,10 +146,12 @@ public source observed
   -> counterexample reproduced against exact current schema
   -> interpretation kept separate from source
   -> disposition = accept_for_followup
-  -> STOP at human normative design gate
+  -> explicit human B+C decision
+  -> Stage B optional exact status-provenance binding
+  -> Stage C optional RA1 stronger assurance overlay
 ```
 
-The accepted machine result confirms only a representation-provenance gap: current v0.1 responsibility entries can carry `actor_id + scope + status` without a responsibility-local declarant, attributable acceptance event or acceptance-evidence reference. Current SPEC §22 simultaneously mitigates overclaiming by describing responsibility as scoped declarations and claims as self-declared unless individually attested.
+The accepted Run 001 result remains the evidence that motivated the successor. B and C do not rewrite that result or the original responsibility entry. Stage B binds provenance outside the historical entry; Stage C makes a stronger coverage claim only when the accepted Stage B evidence exists for all `accepted/shared` entries.
 
 ```text
 Different Account Label != Verified Human Identity
@@ -142,11 +160,15 @@ App-Mediated Submission != Synthetic By Definition
 Admitted External Source != Accepted Truth
 Counterexample Reproduced != Reviewer Authority
 accept_for_followup != Normative Change
-Representation Gap Confirmed != Repair Selected
-Disposition != Release Authority
+Stage B Declarant Reference != Verified Identity
+Stage B Acceptance Evidence != Authority Proof
+Stage B Attributable Acceptance != Factual Truth
+RA1_NOT_SATISFIED != Baseline Manifest Invalidity
+RA1 Satisfied != Legal Liability or Certification
+RA1 Satisfied != Release/Publication/Action Authority
 ```
 
-No later successor may erase the source objection or rewrite the Run 001 result merely because a different repair is chosen.
+No later successor may erase the source objection, rewrite the Run 001 result, or silently reinterpret historical v0.1 manifests merely because B+C now exists.
 
 ## Reconciliation correction rule
 
@@ -192,7 +214,15 @@ When later evidence is found, a new additive reconciliation/observation/result r
 
 `Run Disposition != Normative Change`
 
-`Representation Gap Confirmed != Repair Selected`
+`Stage B Binding != Responsibility Status Rewrite`
+
+`Evidence Bound != Evidence Trusted`
+
+`Attributable Acceptance != Authority`
+
+`RA1 != D/T/V/R Rewrite`
+
+`RA1 != Certification`
 
 `Internal Governance PASS != External Validation`
 
