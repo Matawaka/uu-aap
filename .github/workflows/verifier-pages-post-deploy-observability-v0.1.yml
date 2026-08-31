@@ -1,0 +1,178 @@
+name: P1.18 Post-Deployment Byte Observability v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/pages-post-deploy-observability/**'
+      - '.github/workflows/verifier-pages-post-deploy-observability-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - 'scripts/pages-composition-integrity/**'
+      - 'scripts/pages-finalized-distribution/**'
+  workflow_run:
+    workflows: ['P1.2 Verifier Distribution Surface v0.1']
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: offline adversarial + observer authority-boundary validation
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Parse observer implementation without mutating checkout
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/pages-post-deploy-observability/verify_deployed.py'),
+              Path('scripts/pages-post-deploy-observability/test.py'),
+              Path('scripts/pages-post-deploy-observability/test_contract.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+      - name: Prove byte observer adversarial behavior offline
+        run: python scripts/pages-post-deploy-observability/test.py
+      - name: Prove historical bindings and read-only workflow boundary
+        run: python scripts/pages-post-deploy-observability/test_contract.py
+      - name: Re-run P1.16 and P1.17 historical gates
+        run: |
+          python scripts/pages-composition-integrity/test.py
+          python scripts/pages-finalized-distribution/test.py
+      - name: Confirm historical predecessor implementation bytes are untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/pages-composition-integrity/finalize_pages.py)" = '6ab2bd541e76e17ae9573d7ccbb42cd20af485ee'
+          test "$(git hash-object scripts/pages-finalized-distribution/test.py)" = '60a6c2463d0e7d1b04d6c6fe88d462075cce5ff6'
+          test "$(git hash-object .github/workflows/pages-finalized-distribution-v0.1.yml)" = 'a12e26e11eff4a00309853263a6cd54ed5009587'
+          test "$(git hash-object .github/workflows/verifier-distribution-surface-v0.1.yml)" = 'a6bc0fe12094a7dc54ee46f9779632cb68832fe8'
+      - name: Confirm Stable Core SPEC and CONTESTABILITY are untouched by this PR
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_sha='${{ github.event.pull_request.base.sha }}'
+          test -n "$base_sha"
+          git fetch -q origin "$base_sha" --depth=1
+          git diff --quiet "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md || {
+            echo 'ERROR: P1.18 modified Stable Core/SPEC/CONTESTABILITY' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md >&2
+            exit 1
+          }
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  observe:
+    name: compare public Pages bytes with exact triggering github-pages artifact
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out exact triggering main SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Resolve exact github-pages artifact metadata from triggering run
+        id: artifact
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const run_id = context.payload.workflow_run.id;
+            const {data} = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id,
+              per_page: 100,
+            });
+            const matches = data.artifacts.filter(a => a.name === 'github-pages' && !a.expired);
+            if (matches.length !== 1) {
+              core.setFailed(`expected exactly one non-expired github-pages artifact, got ${matches.length}`);
+              return;
+            }
+            core.setOutput('id', String(matches[0].id));
+            core.setOutput('digest', matches[0].digest || '');
+      - name: Download exact triggering github-pages artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/p1-18-artifact-download
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+      - name: Extract and validate exact P1.16-finalized expected tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "${RUNNER_TEMP}/p1-18-artifact-download/artifact.tar"
+          rm -rf "${RUNNER_TEMP}/p1-18-expected"
+          mkdir -p "${RUNNER_TEMP}/p1-18-expected"
+          python - <<'PY'
+          import os, tarfile
+          from pathlib import Path
+          source=Path(os.environ['RUNNER_TEMP'])/'p1-18-artifact-download/artifact.tar'
+          target=Path(os.environ['RUNNER_TEMP'])/'p1-18-expected'
+          with tarfile.open(source, 'r:*') as archive:
+              archive.extractall(target, filter='data')
+          print(f'extracted exact triggering artifact into {target}')
+          PY
+          python scripts/pages-composition-integrity/finalize_pages.py \
+            --verify-only "${RUNNER_TEMP}/p1-18-expected"
+      - name: Observe public Pages bytes against exact artifact envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/pages-post-deploy-observability/verify_deployed.py \
+            --expected-root "${RUNNER_TEMP}/p1-18-expected" \
+            --base-url 'https://matawaka.github.io/uu-aap/' \
+            --triggering-run-id '${{ github.event.workflow_run.id }}' \
+            --head-sha '${{ github.event.workflow_run.head_sha }}' \
+            --artifact-id '${{ steps.artifact.outputs.id }}' \
+            --artifact-digest '${{ steps.artifact.outputs.digest }}' \
+            --receipt "${RUNNER_TEMP}/p1-18-receipt/deployed-byte-observation.json" \
+            --max-attempts 12 \
+            --retry-seconds 5 \
+            --timeout 20
+      - name: Summarize bounded observation
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json, os
+          from pathlib import Path
+          path=Path(os.environ['RUNNER_TEMP'])/'p1-18-receipt/deployed-byte-observation.json'
+          receipt=json.loads(path.read_text(encoding='utf-8'))
+          print('## P1.18 post-deployment byte observation')
+          print(f"- status: `{receipt['status']}`")
+          print(f"- triggering SHA: `{receipt['triggering_head_sha']}`")
+          print(f"- workflow run: `{receipt['triggering_workflow_run_id']}`")
+          print(f"- artifact id: `{receipt['expected_artifact']['artifact_id']}`")
+          print(f"- envelope SHA-256: `{receipt['expected_artifact']['envelope_sha256']}`")
+          print(f"- payload files matched: `{len(receipt['observed_payloads'])}`")
+          print(f"- attempts used: `{receipt['attempts_used']}`")
+          print('- observation time is not a trusted timestamp; byte match does not establish producer/truth/identity/authority/responsibility/publication authority.')
+          PY
+      - name: Upload bounded observation receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: p1-18-deployed-byte-observation-${{ github.event.workflow_run.id }}
+          path: ${{ runner.temp }}/p1-18-receipt/deployed-byte-observation.json
+          if-no-files-found: error
+          retention-days: 30
