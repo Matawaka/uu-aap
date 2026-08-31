@@ -1,0 +1,99 @@
+name: Core Pilot 002 Run 001 Admission v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/core-pilot-002/run-001/admission/v0.1/**'
+      - '.github/workflows/core-pilot-002-run-001-admission-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/core-pilot-002/run-001/admission/v0.1/**'
+      - '.github/workflows/core-pilot-002-run-001-admission-v0.1.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 1c134694cc4fcbe852afa68353932c13b6104ee3
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  admit:
+    name: exact-source bounded admission
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Validate admission receipt and hostile mutations
+        run: python pilots/core-pilot-002/run-001/admission/v0.1/validate.py
+
+      - name: Parse closed JSON surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool pilots/core-pilot-002/run-001/admission/v0.1/admission.json >/dev/null
+          python -m json.tool pilots/core-pilot-002/run-001/admission/v0.1/admission.schema.json >/dev/null
+
+      - name: Revalidate accepted external-input observation
+        shell: bash
+        run: |
+          set -euo pipefail
+          python pilots/core-pilot-002/external-input-observation/v0.1/validate.py
+          python pilots/core-pilot-002/external-input-observation/v0.1/verify_live_source.py
+
+      - name: Re-bind repository-owner selection record read-only
+        run: python pilots/core-pilot-002/run-001/admission/v0.1/verify_selection_record.py
+
+      - name: Preserve historical admission and accepted observation bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object pilots/core-pilot-002/run-admission/README.md)" = "44ab9ac8789380423df26139fcf7314d77ddc9ce"
+          test "$(git hash-object pilots/core-pilot-002/run-admission/admission.schema.json)" = "cb88902b785a884134ad774546c8902ca5e5698d"
+          test "$(git hash-object pilots/core-pilot-002/run-admission/validate.py)" = "87834ff3946296b215bbbec894f5d992935455bb"
+          test "$(git hash-object pilots/core-pilot-002/run-admission/waiting.fixture.json)" = "4509e2b39fbdd48d73b47238f8d4ab1ff3d17349"
+          test "$(git hash-object pilots/core-pilot-002/external-input-observation/v0.1/observation.json)" = "3efeaeffbc39a98d2471973f0af483960dd63739"
+          echo "historical admission + accepted observation guards: PASS"
+
+      - name: Re-run Pilot 002 base contract
+        run: python pilots/core-pilot-002/validate.py
+
+      - name: Guard normative and product boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/README.md pilots/core-pilot-002/README.ru.md \
+            pilots/core-pilot-002/review-case.schema.json pilots/core-pilot-002/review-case.fixture.json \
+            pilots/core-pilot-002/run-admission/ \
+            pilots/core-pilot-002/external-input-observation/v0.1/ \
+            tooling/current-frontier-reconciliation/v0.2/ \
+            tooling/release-candidate-checkpoint/v0.5/ \
+            docs/workbench/
+          echo "normative/historical/product boundaries: unchanged"
+
+      - name: Require admission-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/core-pilot-002-run-001-admission-v0.1.yml|pilots/core-pilot-002/run-001/admission/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "admission-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
