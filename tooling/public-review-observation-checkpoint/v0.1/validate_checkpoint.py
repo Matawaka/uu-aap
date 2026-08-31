@@ -34,6 +34,54 @@ SOURCE_PATHS = {
     "discussion_policy_blob": "tooling/public-review-discussion-discovery/v0.3/policy.json",
 }
 
+EXPECTED_ISSUE_META = {
+    "path": "tooling/public-review-observation-checkpoint/v0.1/repository-issues-live-receipt.json",
+    "sha256": EXPECTED["issue_receipt_sha256"],
+    "observer_schema": "urn:uu-aap:public-review-repository-discovery:0.2",
+    "source_run_id": 33370805576,
+    "source_run_head_sha": "bef77bddd4fa6430bb16f14e52f1d5fee1aeb786",
+    "source_artifact_id": 9749967593,
+    "source_artifact_zip_sha256": EXPECTED["issue_artifact_zip_sha256"],
+    "source_artifact_expires_at": "2026-09-30T07:59:51Z",
+    "observed_at_utc": "2026-08-31T07:59:50Z",
+    "status": "NO_NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED",
+    "known_historical_external_sources": 1,
+    "new_external_account_sources": 0,
+}
+
+EXPECTED_DISCUSSION_META = {
+    "path": "tooling/public-review-observation-checkpoint/v0.1/declared-discussions-live-receipt.json",
+    "sha256": EXPECTED["discussion_receipt_sha256"],
+    "observer_schema": "urn:uu-aap:public-review-discussion-discovery:0.3",
+    "source_run_id": 33373077522,
+    "source_run_head_sha": ORIGIN,
+    "source_artifact_id": 9750806770,
+    "source_artifact_zip_sha256": EXPECTED["discussion_artifact_zip_sha256"],
+    "source_artifact_expires_at": "2026-09-30T08:28:47Z",
+    "observed_at_utc": "2026-08-31T08:28:46Z",
+    "status": "NO_EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED",
+    "discussion_numbers": [8, 10],
+    "external_account_sources": 0,
+}
+
+EXPECTED_COVERED_SURFACES = {
+    "github_issues": {
+        "repository_wide": True,
+        "open_and_closed": True,
+        "issue_bodies": True,
+        "issue_comments": True,
+        "pull_requests": False,
+        "pull_request_comments": False,
+    },
+    "github_discussions": {
+        "discussion_numbers": [8, 10],
+        "discussion_bodies": True,
+        "top_level_comments": True,
+        "replies": True,
+        "all_repository_discussions": False,
+    },
+}
+
 
 def load_json_bytes(data: bytes):
     return json.loads(data.decode("utf-8"))
@@ -65,19 +113,22 @@ def validate_data(checkpoint: dict, issue_bytes: bytes, discussion_bytes: bytes,
     if errors:
         raise ValueError("checkpoint schema validation failed: " + errors[0].message)
 
+    if checkpoint["checkpoint_origin_frontier"] != ORIGIN:
+        raise ValueError("checkpoint origin frontier drift")
+
     issue_meta = checkpoint["retained_receipts"]["repository_issue_discovery"]
     discussion_meta = checkpoint["retained_receipts"]["declared_discussion_discovery"]
+    if issue_meta != EXPECTED_ISSUE_META:
+        raise ValueError("repository-issue retained source metadata drift")
+    if discussion_meta != EXPECTED_DISCUSSION_META:
+        raise ValueError("Discussion retained source metadata drift")
 
     issue_digest = sha256_bytes(issue_bytes)
     discussion_digest = sha256_bytes(discussion_bytes)
-    if issue_digest != EXPECTED["issue_receipt_sha256"] or issue_meta["sha256"] != issue_digest:
+    if issue_digest != EXPECTED["issue_receipt_sha256"]:
         raise ValueError("retained repository-issue receipt digest drift")
-    if discussion_digest != EXPECTED["discussion_receipt_sha256"] or discussion_meta["sha256"] != discussion_digest:
+    if discussion_digest != EXPECTED["discussion_receipt_sha256"]:
         raise ValueError("retained Discussion receipt digest drift")
-    if issue_meta["source_artifact_zip_sha256"] != EXPECTED["issue_artifact_zip_sha256"]:
-        raise ValueError("repository-issue source artifact digest drift")
-    if discussion_meta["source_artifact_zip_sha256"] != EXPECTED["discussion_artifact_zip_sha256"]:
-        raise ValueError("Discussion source artifact digest drift")
 
     issue_receipt = load_json_bytes(issue_bytes)
     discussion_receipt = load_json_bytes(discussion_bytes)
@@ -93,35 +144,77 @@ def validate_data(checkpoint: dict, issue_bytes: bytes, discussion_bytes: bytes,
     issue_validator.validate_receipt(issue_receipt)
     discussion_validator.validate_receipt(discussion_receipt)
 
+    if issue_receipt["observed_at_utc"] != EXPECTED_ISSUE_META["observed_at_utc"]:
+        raise ValueError("repository issue observation time drift")
     if issue_receipt["status"] != "NO_NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED":
         raise ValueError("repository issue observation status drift")
     counts = issue_receipt["counts"]
-    if counts["known_historical_external_sources"] != 1 or counts["new_external_account_sources"] != 0:
-        raise ValueError("repository issue external-source frontier drift")
+    if counts != {
+        "issue_objects": 363,
+        "pull_request_objects_excluded": 0,
+        "issue_comments": 208,
+        "project_account_sources": 570,
+        "automation_sources": 0,
+        "unattributed_sources": 0,
+        "external_account_sources": 1,
+        "known_historical_external_sources": 1,
+        "new_external_account_sources": 0,
+    }:
+        raise ValueError("repository issue observation count drift")
     if len(issue_receipt["known_historical_external_sources"]) != 1:
         raise ValueError("historical external issue-source count drift")
     historical = issue_receipt["known_historical_external_sources"][0]
     if (
         historical["issue_number"] != 422
         or historical["source_id"] != 5471862585
+        or historical["url"] != "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585"
+        or historical["author_account_identifier"] != "84dnnvbdvp-debug"
         or historical["body_sha256"] != "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8"
         or historical["classification"] != "KNOWN_HISTORICAL_EXTERNAL_SOURCE"
     ):
         raise ValueError("historical #422 binding drift")
 
+    if discussion_receipt["observed_at_utc"] != EXPECTED_DISCUSSION_META["observed_at_utc"]:
+        raise ValueError("Discussion observation time drift")
     if discussion_receipt["status"] != "NO_EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED":
         raise ValueError("Discussion observation status drift")
     if discussion_receipt["target_discussion_numbers"] != [8, 10]:
         raise ValueError("Discussion target scope drift")
     if discussion_receipt["external_account_sources"]:
         raise ValueError("Discussion checkpoint unexpectedly contains external source")
-    if [x["discussion_number"] for x in discussion_receipt["discussion_observations"]] != [8, 10]:
-        raise ValueError("Discussion observation set drift")
-    if any(x["external_account_source_count"] != 0 for x in discussion_receipt["discussion_observations"]):
-        raise ValueError("Discussion external-source count drift")
+    expected_discussion_observations = [
+        {
+            "discussion_number": 8,
+            "url": "https://github.com/Matawaka/uu-aap/discussions/8",
+            "closed": False,
+            "is_answered": None,
+            "top_level_comment_count": 0,
+            "reply_count": 0,
+            "project_account_source_count": 1,
+            "automation_source_count": 0,
+            "unattributed_source_count": 0,
+            "external_account_source_count": 0,
+        },
+        {
+            "discussion_number": 10,
+            "url": "https://github.com/Matawaka/uu-aap/discussions/10",
+            "closed": False,
+            "is_answered": None,
+            "top_level_comment_count": 0,
+            "reply_count": 0,
+            "project_account_source_count": 1,
+            "automation_source_count": 0,
+            "unattributed_source_count": 0,
+            "external_account_source_count": 0,
+        },
+    ]
+    if discussion_receipt["discussion_observations"] != expected_discussion_observations:
+        raise ValueError("Discussion observation metadata/count drift")
 
     if checkpoint["status"] != "NO_NEW_EXTERNAL_REVIEW_SOURCE_OBSERVED_ON_DECLARED_GITHUB_SURFACES":
         raise ValueError("combined checkpoint status drift")
+    if checkpoint["covered_surfaces"] != EXPECTED_COVERED_SURFACES:
+        raise ValueError("checkpoint covered-surface scope drift")
     if any(checkpoint["scope_limitations"].values()):
         raise ValueError("checkpoint overclaimed observation scope")
     for key, value in checkpoint["boundaries"].items():
@@ -133,11 +226,13 @@ def validate_data(checkpoint: dict, issue_bytes: bytes, discussion_bytes: bytes,
     if any(checkpoint["non_effects"].values()):
         raise ValueError("checkpoint claimed an external effect")
 
-    if verify_git:
-        for key, path in SOURCE_PATHS.items():
-            expected = EXPECTED[key]
-            if checkpoint["accepted_validator_bindings"][key] != expected:
-                raise ValueError(f"checkpoint source binding drift: {key}")
+    if set(checkpoint["accepted_validator_bindings"]) != set(SOURCE_PATHS):
+        raise ValueError("accepted validator binding key drift")
+    for key, path in SOURCE_PATHS.items():
+        expected = EXPECTED[key]
+        if checkpoint["accepted_validator_bindings"][key] != expected:
+            raise ValueError(f"checkpoint source binding drift: {key}")
+        if verify_git:
             origin_blob = blob_at(ORIGIN, path)
             if origin_blob != expected:
                 raise ValueError(f"accepted origin source drift: {path}: {origin_blob}")
