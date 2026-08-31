@@ -34,13 +34,28 @@ def main() -> None:
     assert '--finalized-root "${RUNNER_TEMP}/finalized-pages"' in owner
     assert '--artifact-tar "${RUNNER_TEMP}/artifact.tar"' in owner
     assert '--verify-only' in owner
-    assert "actions/upload-pages-artifact@" not in owner, "dotfile-dropping upload-pages-artifact packaging must be removed"
-    assert "uses: actions/upload-artifact@v4" in owner
-    assert "name: github-pages" in owner
-    assert "path: ${{ runner.temp }}/artifact.tar" in owner
-    assert "include-hidden-files: false" in owner, "only non-hidden artifact.tar is uploaded; hidden payload is inside tar"
     assert "if: github.event_name == 'push' && github.ref == 'refs/heads/main'" in owner
     assert "P1.19" in owner
+
+    # Historical P1.19 used its canonical tar as the physical Pages artifact.
+    # A later explicit P1.20 transport-only successor may preserve that exact
+    # canonical archive as audit evidence while using the official Pages
+    # uploader over the same P1.16-finalized file tree. P1.20 owns that new
+    # transport contract; this gate keeps P1.19's historical evidence intact.
+    if "P1.20" in owner:
+        assert "scripts/pages-compatible-upload/**" in owner
+        assert "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9" in owner
+        assert "path: ${{ runner.temp }}/finalized-pages" in owner
+        assert "include-hidden-files: true" in owner
+        assert "path: ${{ runner.temp }}/artifact.tar" not in owner, (
+            "P1.20 must not use canonical root-owned P1.19 tar as physical Pages transport"
+        )
+    else:
+        assert "actions/upload-pages-artifact@" not in owner, "dotfile-dropping upload-pages-artifact packaging must be removed"
+        assert "uses: actions/upload-artifact@v4" in owner
+        assert "name: github-pages" in owner
+        assert "path: ${{ runner.temp }}/artifact.tar" in owner
+        assert "include-hidden-files: false" in owner, "only non-hidden artifact.tar is uploaded; hidden payload is inside tar"
 
     deploy_owners = []
     for path in sorted((ROOT / ".github/workflows").glob("*.yml")):
@@ -56,7 +71,11 @@ def main() -> None:
     assert "publication_or_action_authority_established: true" not in lowered
 
     print("P1.19 predecessor packaging gap evidence bound: PASS")
-    print("P1.19 physical owner packages artifact.tar explicitly and preserves .nojekyll: PASS")
+    print("P1.19 canonical artifact.tar proof remains present and preserves .nojekyll: PASS")
+    if "P1.20" in owner:
+        print("P1.19 historical physical transport boundary preserved across explicit P1.20 successor: PASS")
+    else:
+        print("P1.19 physical owner packages artifact.tar explicitly and preserves .nojekyll: PASS")
     print("P1.19 one deploy-pages owner and main-only deployment: PASS")
 
 
