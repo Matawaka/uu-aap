@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/pages-exact-packaging/**'
       - 'scripts/pages-post-deploy-observability/test_contract.py'
+      - '.github/workflows/verifier-pages-post-deploy-observability-v0.1.yml'
       - '.github/workflows/pages-exact-packaging-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
       - 'scripts/pages-composition-integrity/**'
@@ -14,6 +15,7 @@ on:
     paths:
       - 'scripts/pages-exact-packaging/**'
       - 'scripts/pages-post-deploy-observability/test_contract.py'
+      - '.github/workflows/verifier-pages-post-deploy-observability-v0.1.yml'
       - '.github/workflows/pages-exact-packaging-v0.1.yml'
       - '.github/workflows/verifier-distribution-surface-v0.1.yml'
   workflow_dispatch:
@@ -63,7 +65,7 @@ jobs:
           test "$(git hash-object scripts/pages-composition-integrity/finalize_pages.py)" = '6ab2bd541e76e17ae9573d7ccbb42cd20af485ee'
           test "$(git hash-object scripts/pages-finalized-distribution/test.py)" = '60a6c2463d0e7d1b04d6c6fe88d462075cce5ff6'
           test "$(git hash-object scripts/pages-post-deploy-observability/verify_deployed.py)" = '42a63e15d276b1666719cc91c943c39401050140'
-          test "$(git hash-object .github/workflows/verifier-pages-post-deploy-observability-v0.1.yml)" = '14dc4faf7a755e0047fd4d3e3ade18d41ca9a205'
+          test "$(git hash-object .github/workflows/verifier-pages-post-deploy-observability-v0.1.yml)" = 'd21499d9a9fd754bfafab86097602b5474783da7'
       - name: Confirm Stable Core SPEC and CONTESTABILITY are untouched
         if: github.event_name == 'pull_request'
         shell: bash
