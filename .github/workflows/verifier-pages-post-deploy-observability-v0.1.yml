@@ -51,7 +51,7 @@ jobs:
         run: |
           python scripts/pages-composition-integrity/test.py
           python scripts/pages-finalized-distribution/test.py
-      - name: Confirm semantic and deploy-owner predecessor bytes are untouched
+      - name: Confirm historical predecessor implementation bytes are untouched
         shell: bash
         run: |
           set -euo pipefail
@@ -59,8 +59,17 @@ jobs:
           test "$(git hash-object scripts/pages-finalized-distribution/test.py)" = '60a6c2463d0e7d1b04d6c6fe88d462075cce5ff6'
           test "$(git hash-object .github/workflows/pages-finalized-distribution-v0.1.yml)" = 'a12e26e11eff4a00309853263a6cd54ed5009587'
           test "$(git hash-object .github/workflows/verifier-distribution-surface-v0.1.yml)" = 'a6bc0fe12094a7dc54ee46f9779632cb68832fe8'
-          git diff --quiet "${{ github.event.pull_request.base.sha || github.sha }}" -- protocols/core/ SPEC.md CONTESTABILITY.md || {
+      - name: Confirm Stable Core SPEC and CONTESTABILITY are untouched by this PR
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_sha='${{ github.event.pull_request.base.sha }}'
+          test -n "$base_sha"
+          git fetch -q origin "$base_sha" --depth=1
+          git diff --quiet "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md || {
             echo 'ERROR: P1.18 modified Stable Core/SPEC/CONTESTABILITY' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md >&2
             exit 1
           }
       - name: Working tree remains clean
