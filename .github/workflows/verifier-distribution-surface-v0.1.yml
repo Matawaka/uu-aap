@@ -19,6 +19,8 @@ on:
       - 'scripts/verifier-disposition-integrity-capsule/**'
       - 'scripts/verifier-integrity-capsule-pages/**'
       - 'scripts/pages-composition/**'
+      - 'scripts/pages-composition-integrity/**'
+      - 'scripts/pages-finalized-distribution/**'
       - 'docs/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
@@ -28,12 +30,16 @@ on:
       - '.github/workflows/verifier-*.yml'
       - '.github/workflows/poai-pages.yml'
       - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/pages-integrity-envelope-v0.1.yml'
+      - '.github/workflows/pages-finalized-distribution-v0.1.yml'
   push:
     branches: [main]
     paths:
       - 'packages/uuaap-verifier-presentation/**'
       - 'scripts/verifier-*/**'
       - 'scripts/pages-composition/**'
+      - 'scripts/pages-composition-integrity/**'
+      - 'scripts/pages-finalized-distribution/**'
       - 'docs/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
@@ -43,6 +49,8 @@ on:
       - '.github/workflows/verifier-*.yml'
       - '.github/workflows/poai-pages.yml'
       - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/pages-integrity-envelope-v0.1.yml'
+      - '.github/workflows/pages-finalized-distribution-v0.1.yml'
   workflow_dispatch:
 
 permissions:
@@ -59,7 +67,7 @@ env:
 
 jobs:
   validate:
-    name: package + composed Pages semantic equivalence
+    name: package + finalized Pages semantic equivalence
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +103,7 @@ jobs:
           assert v.FEDERATED_DISPOSITION_SCOPE == 'verifier_federated_candidate_materialization'
           print('installed P1.1-P1.11 API: PASS')
           PY
-      - name: Re-run every verifier firewall through P1.15
+      - name: Re-run every verifier firewall through P1.17
         run: |
           python scripts/verifier-presentation-contract/test.py
           python scripts/verifier-distribution-surface/test.py
@@ -112,6 +120,8 @@ jobs:
           python scripts/verifier-disposition-integrity-capsule/test.py
           python scripts/verifier-integrity-capsule-pages/test.py
           python scripts/pages-composition/test.py
+          python scripts/pages-composition-integrity/test.py
+          python scripts/pages-finalized-distribution/test.py
       - name: Build validated verifier artifact through P1.14
         shell: bash
         run: |
@@ -238,6 +248,30 @@ jobs:
           assert all(value is False for value in receipt['non_effects'].values())
           print('P1.15 composed PoAI + verifier Pages artifact: PASS')
           PY
+      - name: Finalize the exact Pages upload with the accepted P1.16 integrity envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/finalized-pages"
+          python scripts/pages-composition-integrity/finalize_pages.py \
+            --p1-15-root "${RUNNER_TEMP}/composed-pages" \
+            --output "${RUNNER_TEMP}/finalized-pages"
+          python scripts/pages-composition-integrity/finalize_pages.py \
+            --verify-only "${RUNNER_TEMP}/finalized-pages"
+          test -s "${RUNNER_TEMP}/finalized-pages/pages-integrity-envelope.json"
+          test -s "${RUNNER_TEMP}/finalized-pages/pages-composition-receipt.json"
+          test -s "${RUNNER_TEMP}/finalized-pages/poai/index.html"
+          test -s "${RUNNER_TEMP}/finalized-pages/verifier/index.html"
+          test -s "${RUNNER_TEMP}/finalized-pages/verifier/integrity-capsule/capsule-manifest.json"
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'finalized-pages'
+          envelope=json.loads((root/'pages-integrity-envelope.json').read_text(encoding='utf-8'))
+          assert envelope['verification_scope']=='relocated_byte_consistency_against_this_envelope'
+          assert all(value is False for value in envelope['non_effects'].values())
+          print('P1.17 exact upload root is P1.16-finalized and self-verifying: PASS')
+          PY
       - name: Confirm immutable semantic sources remain untouched
         shell: bash
         run: |
@@ -263,21 +297,25 @@ jobs:
             scripts/verifier-disposition-integrity/
             scripts/verifier-disposition-integrity-surface/
             scripts/verifier-disposition-integrity-capsule/
+            scripts/pages-composition/
+            scripts/pages-composition-integrity/
+            .github/workflows/pages-composition-v0.1.yml
+            .github/workflows/poai-pages.yml
           )
           if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
-            echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical verifier semantics' >&2
+            echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical verifier/integrity implementations' >&2
             git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
             exit 1
           fi
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Upload validated composed Pages artifact
+      - name: Upload validated composed Pages artifact (P1.16-finalized exact tree)
         uses: actions/upload-pages-artifact@v4
         with:
-          path: ${{ runner.temp }}/composed-pages
+          path: ${{ runner.temp }}/finalized-pages
 
   acceptance:
-    name: P1.2-P1.15 one-owner composed distribution acceptance
+    name: P1.2-P1.17 one-owner finalized distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -295,18 +333,22 @@ jobs:
           echo 'P1.13 P1.12 dependency closure -> portable offline capsule only'
           echo 'P1.14 portable capsule -> validated verifier Pages artifact only'
           echo 'P1.15 PoAI docs + verifier -> one physical composed Pages artifact only'
+          echo 'P1.16 composed artifact -> relocatable byte-integrity envelope only'
+          echo 'P1.17 exact P1.16-finalized tree -> sole Pages upload/deploy artifact'
           echo 'docs root index preserved; verifier tree preserved at /verifier/'
           echo 'former verifier root landing -> byte-preserved /verifier-start.html'
-          echo 'Pages composition != semantic merge or publication/action authority'
+          echo 'Pages integrity/deployment != producer authentication or timestamp'
+          echo 'Pages integrity/deployment != truth/identity/authority/responsibility'
+          echo 'Pages deployment mechanics != new publication/action authority'
           echo 'source family/order/count/evaluation != automatic priority'
           echo 'REJECT/DEFER != negative evidence'
           echo 'localized presentation != localized evidence or machine semantics'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2-P1.15 composed Pages distribution stack'
+          echo 'PASS: P1.2-P1.17 finalized Pages distribution stack'
 
   deploy:
-    name: deploy composed PoAI + verifier artifact to GitHub Pages
+    name: deploy finalized integrity-bound PoAI + verifier artifact to GitHub Pages
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [validate, acceptance]
     runs-on: ubuntu-latest
@@ -316,6 +358,6 @@ jobs:
     steps:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
-      - name: Deploy validated composed Pages artifact
+      - name: Deploy validated finalized Pages artifact
         id: deployment
         uses: actions/deploy-pages@v4
