@@ -21,6 +21,7 @@ EXPECTED = {
     "counterexample_manifest_blob": ("pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json", "350ca00629f354bdd7cc01785d448590c6be87b4"),
 }
 EXPECTED_TARGET_SHA256 = "d173cf888cfea1e343411162aaf87a890874e0aaf02fee7cd6c1fd0fcc3cf83f"
+EXPECTED_DECISION_BODY_SHA256 = "d1137cb69f2445cbd9b5bba0d275898597275daa04fe66ba75be70533c3ff881"
 
 
 def load(path: Path):
@@ -127,6 +128,7 @@ def validate_receipt():
     if gate != {
         "issue": 852,
         "decision_comment_id": 5474573197,
+        "decision_comment_body_sha256": EXPECTED_DECISION_BODY_SHA256,
         "decision": "PHASED_B_PLUS_C",
         "stage": "B_OPTIONAL_MACHINE_NATIVE_PROVENANCE_BINDING",
         "repository_owner_decision_recorded": True,
