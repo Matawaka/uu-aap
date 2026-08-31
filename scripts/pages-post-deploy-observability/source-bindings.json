@@ -1,0 +1,25 @@
+{
+  "predecessor_main": "eb269e088a9e0080160c157e0983188dc745067a",
+  "p1_16_finalizer": {
+    "path": "scripts/pages-composition-integrity/finalize_pages.py",
+    "blob": "6ab2bd541e76e17ae9573d7ccbb42cd20af485ee"
+  },
+  "p1_17_distribution_test": {
+    "path": "scripts/pages-finalized-distribution/test.py",
+    "blob": "60a6c2463d0e7d1b04d6c6fe88d462075cce5ff6"
+  },
+  "p1_17_distribution_workflow": {
+    "path": ".github/workflows/pages-finalized-distribution-v0.1.yml",
+    "blob": "a12e26e11eff4a00309853263a6cd54ed5009587"
+  },
+  "p1_17_physical_pages_owner": {
+    "path": ".github/workflows/verifier-distribution-surface-v0.1.yml",
+    "blob": "a6bc0fe12094a7dc54ee46f9779632cb68832fe8"
+  },
+  "observed_predecessor_deployment": {
+    "workflow_run_id": "33351714167",
+    "artifact_id": "9743838315",
+    "artifact_digest": "sha256:fe1d534396ff29c03af2f406eb551cf6e3da76080f2720fa9396cd48cc7c466d",
+    "pages_url": "https://matawaka.github.io/uu-aap/"
+  }
+}
