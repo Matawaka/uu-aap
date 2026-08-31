@@ -1,0 +1,59 @@
+{
+  "artifact_type": "RecoverableStateInfrastructureCandidateImplementationReceipt",
+  "version": "0.1",
+  "origin_frontier": "ef4c8c6030ef517f2997fb76cff4f584fb25c691",
+  "tracking_issue": 881,
+  "candidate_status": "EXPERIMENTAL_REUSABLE_INFRASTRUCTURE_CANDIDATE",
+  "profile_path": "protocols/reusable-infrastructure/recoverable-state/v0.1",
+  "accepted_component_bindings": {
+    "event_responsive_dormancy": {
+      "merge_frontier": "0039375897f2de683afac62e902335f53a1a7d98",
+      "module_blob": "2cadbd2f405391f4f97e100d77245757ce6b5a58",
+      "implementation_receipt_blob": "e127d784a74f0713fe0b157845ec5a2754647034"
+    },
+    "rerc": {
+      "merge_frontier": "ef4c8c6030ef517f2997fb76cff4f584fb25c691",
+      "module_blob": "d2aae21a2e2375477c6349eae5f236ea60cd7151",
+      "implementation_receipt_blob": "83609468622f4a79783b9b29e73a661497bad849"
+    }
+  },
+  "candidate_artifact_bindings": {
+    "candidate_manifest_blob": "85a7d51b70c90df7869e775a2529f53fe2c068f0",
+    "candidate_manifest_schema_blob": "122b17dd29f499ab2225989d4c2f44c1c082e581",
+    "composer_blob": "1f114ddc73093809f789ca425b428966ac96f91e",
+    "composition_receipt_schema_blob": "c318c850481ad384401d91af858ed9e2b87bd8e7"
+  },
+  "interface_registry_successor": {
+    "base_v0_1_blob": "2aff5e5785eb97796031b19ffe9fe026a3543bf6",
+    "delta_v0_2_blob": "ad705523bada7f64a04e09e34974407725942976",
+    "validator_v0_2_blob": "6137544281a34f7d68239388ee1ae9b11085beb1",
+    "historical_v0_1_rewritten": false
+  },
+  "contract": {
+    "components_independently_reusable": true,
+    "component_semantics_collapsed": false,
+    "exact_rerc_restoration_required": true,
+    "erd_ready_is_action_permit": false,
+    "possible_next_interface_is_automatic": false,
+    "performance_gain_proven": false,
+    "resource_savings_proven": false,
+    "exploratory_lane_dependency_created": false
+  },
+  "non_effects": {
+    "stable_core_changed": false,
+    "spec_changed": false,
+    "roadmap_changed": false,
+    "release_or_tag_created": false,
+    "authority_created": false,
+    "action_permit_created": false,
+    "runtime_activated": false,
+    "scheduler_installed": false,
+    "network_monitoring_started": false,
+    "evidence_deleted": false,
+    "external_graph_mutated": false,
+    "external_effect_performed": false,
+    "workbench_reactivated": false,
+    "exploratory_lane_promoted": false
+  },
+  "merge_acceptance_claimed": false
+}
