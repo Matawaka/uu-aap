@@ -1,0 +1,111 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-002:run-001-admission:0.1",
+  "title": "Core Pilot 002 Run 001 Exact-Source Admission",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","origin_frontier","pilot_id","run_id","historical_admission_v0_1","accepted_observation","selection_decision","admission","qualification_boundaries","next_gate","non_effects"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:core-pilot-002:run-001-admission:0.1"},
+    "origin_frontier": {"const": "1c134694cc4fcbe852afa68353932c13b6104ee3"},
+    "pilot_id": {"const": "core-pilot-002"},
+    "run_id": {"const": "001"},
+    "historical_admission_v0_1": {
+      "type": "object", "additionalProperties": false,
+      "required": ["state","readme_blob","schema_blob","validator_blob","waiting_fixture_blob"],
+      "properties": {
+        "state": {"const": "PRESERVED_HISTORICAL_WAITING_OBSERVATION"},
+        "readme_blob": {"const": "44ab9ac8789380423df26139fcf7314d77ddc9ce"},
+        "schema_blob": {"const": "cb88902b785a884134ad774546c8902ca5e5698d"},
+        "validator_blob": {"const": "87834ff3946296b215bbbec894f5d992935455bb"},
+        "waiting_fixture_blob": {"const": "4509e2b39fbdd48d73b47238f8d4ab1ff3d17349"}
+      }
+    },
+    "accepted_observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["path","blob","merge_frontier","source_comment_id","source_url","source_author_account_identifier","source_body_sha256"],
+      "properties": {
+        "path": {"const": "pilots/core-pilot-002/external-input-observation/v0.1/observation.json"},
+        "blob": {"const": "3efeaeffbc39a98d2471973f0af483960dd63739"},
+        "merge_frontier": {"const": "1c134694cc4fcbe852afa68353932c13b6104ee3"},
+        "source_comment_id": {"const": 5471862585},
+        "source_url": {"const": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585"},
+        "source_author_account_identifier": {"const": "84dnnvbdvp-debug"},
+        "source_body_sha256": {"const": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8"}
+      }
+    },
+    "selection_decision": {
+      "type": "object", "additionalProperties": false,
+      "required": ["decision_kind","recording_surface","record_url","record_comment_id","record_author_account_identifier","record_author_association","record_body_sha256","record_performed_via_github_app","decision_actor_identity_status","scope","selected_exact_observed_source"],
+      "properties": {
+        "decision_kind": {"const": "EXPLICIT_REPOSITORY_OWNER_SOURCE_SELECTION_OPTION_A"},
+        "recording_surface": {"const": "github_issue_comment_via_connected_app"},
+        "record_url": {"const": "https://github.com/Matawaka/uu-aap/issues/718#issuecomment-5474174497"},
+        "record_comment_id": {"const": 5474174497},
+        "record_author_account_identifier": {"const": "Matawaka"},
+        "record_author_association": {"const": "OWNER"},
+        "record_body_sha256": {"const": "422315f0694a435cbb17ea1f8d3ac9554bbf859580478546606771290ea4b9dd"},
+        "record_performed_via_github_app": {"const": "chatgpt-codex-connector"},
+        "decision_actor_identity_status": {"const": "NOT_ESTABLISHED_BY_REPOSITORY_RECORD"},
+        "scope": {"const": "core_pilot_002_run_001_input_selection"},
+        "selected_exact_observed_source": {"const": true}
+      }
+    },
+    "admission": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status","eligible_external_input_present","exact_source_bound","repository_selection_gate_satisfied","run_001_intake_materialization_available","analysis_scope"],
+      "properties": {
+        "status": {"const": "ADMITTED_AS_EXTERNAL_SOURCE_ACCOUNT_SUBMISSION"},
+        "eligible_external_input_present": {"const": true},
+        "exact_source_bound": {"const": true},
+        "repository_selection_gate_satisfied": {"const": true},
+        "run_001_intake_materialization_available": {"const": true},
+        "analysis_scope": {"const": "analyze_and_recommend_only"}
+      }
+    },
+    "qualification_boundaries": {
+      "type": "object", "additionalProperties": false,
+      "required": ["source_account_label_differs_from_repository_owner","source_app_mediated","human_identity_status","independence_from_project_or_user","reviewer_standing","reviewer_expertise","reviewer_authority","claim_truth"],
+      "properties": {
+        "source_account_label_differs_from_repository_owner": {"const": true},
+        "source_app_mediated": {"const": true},
+        "human_identity_status": {"const": "NOT_ESTABLISHED"},
+        "independence_from_project_or_user": {"const": "NOT_ESTABLISHED"},
+        "reviewer_standing": {"const": "UNKNOWN"},
+        "reviewer_expertise": {"const": "UNKNOWN"},
+        "reviewer_authority": {"const": "UNKNOWN"},
+        "claim_truth": {"const": "NOT_ESTABLISHED"}
+      }
+    },
+    "next_gate": {
+      "type": "object", "additionalProperties": false,
+      "required": ["pilot_run_materialization_requires_exact_admission_binding","disposition_must_preserve_objection","external_mutation_requires_separate_human_gate","normative_core_or_schema_change_requires_separate_human_decision"],
+      "properties": {
+        "pilot_run_materialization_requires_exact_admission_binding": {"const": true},
+        "disposition_must_preserve_objection": {"const": true},
+        "external_mutation_requires_separate_human_gate": {"const": true},
+        "normative_core_or_schema_change_requires_separate_human_decision": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verified_human_reviewer_created","verified_human_decision_actor_created","independence_proved","reviewer_authority_created","reviewer_standing_created","claim_accepted_as_truth","disposition_created","normative_change_authorized","core_or_spec_change_authorized","issue_or_comment_mutation_authorized","release_or_tag_authorized","publication_authorized","action_permit_created","workbench_reactivated"],
+      "properties": {
+        "verified_human_reviewer_created": {"const": false},
+        "verified_human_decision_actor_created": {"const": false},
+        "independence_proved": {"const": false},
+        "reviewer_authority_created": {"const": false},
+        "reviewer_standing_created": {"const": false},
+        "claim_accepted_as_truth": {"const": false},
+        "disposition_created": {"const": false},
+        "normative_change_authorized": {"const": false},
+        "core_or_spec_change_authorized": {"const": false},
+        "issue_or_comment_mutation_authorized": {"const": false},
+        "release_or_tag_authorized": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false},
+        "workbench_reactivated": {"const": false}
+      }
+    }
+  }
+}
