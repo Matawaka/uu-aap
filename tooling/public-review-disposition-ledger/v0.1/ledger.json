@@ -1,0 +1,78 @@
+{
+  "schema": "urn:uu-aap:public-review-disposition-ledger:0.1",
+  "origin_frontier": "1b662c46aecb7c2590905ca1ab5f3150c6e4d1d2",
+  "public_review_binding": {
+    "path": "PUBLIC_REVIEW.md",
+    "blob": "83cf9f1dacffcde3f030764f5fb0e6afe0fdb190"
+  },
+  "entries": [
+    {
+      "ledger_id": "core-pilot-002-run-001-issue-422-comment-5471862585",
+      "source": {
+        "issue_number": 422,
+        "comment_id": 5471862585,
+        "url": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585",
+        "body_sha256": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8"
+      },
+      "machine_result": {
+        "accepted_frontier": "26bdda55acf6368726428184d8eed489dbc2c9ad",
+        "path": "pilots/core-pilot-002/run-001/result/v0.1/result.json",
+        "blob": "edc9a7e4f26492d16875727e17188c5e2a486ced",
+        "result_class": "REPRESENTATION_PROVENANCE_GAP_CONFIRMED_WITH_EXISTING_DISPLAY_MITIGATION"
+      },
+      "disposition": {
+        "source_disposition_state": "accept_for_followup",
+        "editorial_bucket": null,
+        "objection_preserved": true,
+        "normative_change_authorized": false
+      },
+      "normative_resolution": {
+        "decision_gate_issue": 852,
+        "decision_comment_id": 5474573197,
+        "decision_comment_body_sha256": "d1137cb69f2445cbd9b5bba0d275898597275daa04fe66ba75be70533c3ff881",
+        "selected_sequence": "PHASED_B_PLUS_C",
+        "implementation_status": "FOLLOWUP_IMPLEMENTED_PHASED_B_PLUS_C",
+        "stage_b": {
+          "accepted_frontier": "5201cb686bcef52053e055595c2315c36aa1ec56",
+          "path": "protocols/responsibility-status-provenance/v0.1/implementation-receipt.json",
+          "implementation_receipt_blob": "3ecba920eb366c15c1c7555cb54dc8574e05a73b"
+        },
+        "stage_c": {
+          "accepted_frontier": "967e026eac9de58753fc01934d7e6a431b9c973c",
+          "path": "protocols/responsibility-assurance/v0.1/implementation-receipt.json",
+          "implementation_receipt_blob": "d5316c2281f5927c76783235b1fa33c7a94d86f1"
+        }
+      }
+    }
+  ],
+  "summary": {
+    "entry_count": 1,
+    "machine_disposition_count": 1,
+    "accept_for_followup_count": 1,
+    "broader_public_review_complete": false
+  },
+  "boundaries": {
+    "reviewer_identity_verified": false,
+    "reviewer_independence_verified": false,
+    "reviewer_standing_established": false,
+    "reviewer_expertise_established": false,
+    "reviewer_authority_established": false,
+    "claim_truth_established": false,
+    "certification_established": false,
+    "release_authority_established": false
+  },
+  "non_effects": {
+    "source_objection_mutated": false,
+    "new_disposition_created": false,
+    "new_normative_decision_created": false,
+    "core_changed": false,
+    "spec_changed": false,
+    "responsibility_policy_changed": false,
+    "base_manifest_schema_changed": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "c2pa_reclassified": false,
+    "workbench_reactivated": false
+  }
+}
