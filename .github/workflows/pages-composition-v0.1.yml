@@ -86,29 +86,35 @@ jobs:
           PY
           python scripts/pages-composition/test.py
 
-      - name: Prove exactly one repository-wide deploy-pages owner
+      - name: Prove exactly one repository-wide deploy owner
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
           from pathlib import Path
+          deploy_marker='actions/' + 'deploy-pages@'
+          upload_marker='actions/' + 'upload-pages-artifact@'
+          pages_write='pages:' + ' write'
+          token_write='id-token:' + ' write'
+          pages_environment='name:' + ' github-pages'
           owners=[]
           for pattern in ('*.yml','*.yaml'):
               for path in sorted(Path('.github/workflows').glob(pattern)):
                   text=path.read_text(encoding='utf-8')
-                  if 'actions/deploy-pages@' in text:
+                  if deploy_marker in text:
                       owners.append(path.name)
           assert owners==['verifier-distribution-surface-v0.1.yml'], owners
           poai=Path('.github/workflows/poai-pages.yml').read_text(encoding='utf-8')
-          assert 'actions/deploy-pages@' not in poai
-          assert 'pages: write' not in poai
-          assert 'id-token: write' not in poai
-          assert 'name: github-pages' not in poai
+          assert deploy_marker not in poai
+          assert upload_marker not in poai
+          assert pages_write not in poai
+          assert token_write not in poai
+          assert pages_environment not in poai
           unified=Path('.github/workflows/verifier-distribution-surface-v0.1.yml').read_text(encoding='utf-8')
           assert "- 'docs/**'" in unified
           assert 'python scripts/pages-composition/compose_pages.py' in unified
           assert 'path: ${{ runner.temp }}/composed-pages' in unified
-          assert 'actions/deploy-pages@v4' in unified
+          assert deploy_marker + 'v4' in unified
           print('one repository-wide physical Pages deployment owner: PASS')
           PY
 
@@ -122,10 +128,19 @@ jobs:
           test -s docs/index.html
           test -s docs/poai/index.html
           grep -q 'href="./poai/"' docs/index.html
-          if grep -Eq 'actions/(upload-pages-artifact|deploy-pages)@' .github/workflows/poai-pages.yml; then
-            echo 'ERROR: PoAI source workflow regained independent Pages artifact/deploy ownership' >&2
-            exit 1
-          fi
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/poai-pages.yml').read_text(encoding='utf-8')
+          forbidden=[
+              'actions/' + 'upload-pages-artifact@',
+              'actions/' + 'deploy-pages@',
+              'pages:' + ' write',
+              'id-token:' + ' write',
+              'name:' + ' github-pages',
+          ]
+          assert not [needle for needle in forbidden if needle in text]
+          print('PoAI source workflow remains validation-only: PASS')
+          PY
 
       - name: Prove Stable Core and semantic contracts remain unchanged
         shell: bash
@@ -170,7 +185,7 @@ jobs:
           echo 'validated verifier bytes -> preserved at /verifier/'
           echo 'root index collision -> explicit PoAI root + byte-preserved verifier-start.html relocation'
           echo 'docs-only or verifier-only change -> rebuild one composed artifact'
-          echo 'repository actions/deploy-pages owner -> exactly one workflow'
+          echo 'repository Pages deploy owner -> exactly one workflow'
           echo 'composition receipt != trust/truth/identity/authority/responsibility'
           echo 'Pages deployment ownership != publication/action authority'
           echo 'PASS: P1.15 Unified Pages Composition v0.1'
