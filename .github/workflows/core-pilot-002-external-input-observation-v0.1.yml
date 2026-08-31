@@ -6,12 +6,14 @@ on:
       - 'pilots/core-pilot-002/external-input-observation/v0.1/**'
       - 'docs/ROADMAP-CURRENT.md'
       - '.github/workflows/core-pilot-002-external-input-observation-v0.1.yml'
+      - '.github/workflows/current-frontier-reconciliation-v0.2.yml'
   push:
     branches: [main]
     paths:
       - 'pilots/core-pilot-002/external-input-observation/v0.1/**'
       - 'docs/ROADMAP-CURRENT.md'
       - '.github/workflows/core-pilot-002-external-input-observation-v0.1.yml'
+      - '.github/workflows/current-frontier-reconciliation-v0.2.yml'
 
 permissions:
   contents: read
@@ -89,7 +91,7 @@ jobs:
           changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
           while IFS= read -r path; do
             case "$path" in
-              .github/workflows/core-pilot-002-external-input-observation-v0.1.yml|docs/ROADMAP-CURRENT.md|pilots/core-pilot-002/external-input-observation/v0.1/*) ;;
+              .github/workflows/core-pilot-002-external-input-observation-v0.1.yml|.github/workflows/current-frontier-reconciliation-v0.2.yml|docs/ROADMAP-CURRENT.md|pilots/core-pilot-002/external-input-observation/v0.1/*) ;;
               *) echo "unexpected changed path: $path" >&2; exit 1 ;;
             esac
           done <<< "$changed"
