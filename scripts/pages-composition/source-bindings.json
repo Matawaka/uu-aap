@@ -1,0 +1,27 @@
+{
+  "predecessor_main": "5c4a1b3ecc3b3a766c7224912e21944c4509a17c",
+  "historical_verifier_pages_workflow": {
+    "path": ".github/workflows/verifier-distribution-surface-v0.1.yml",
+    "blob": "a4dc13eb03095ad77183cf277d9e606dd364cd19"
+  },
+  "historical_poai_pages_workflow": {
+    "path": ".github/workflows/poai-pages.yml",
+    "blob": "707e38e392d965f893166fd94ab817edb994918b"
+  },
+  "poai_root_index": {
+    "path": "docs/index.html",
+    "blob": "0a0d47c17c1c666f6f32f1e569097248c160662d"
+  },
+  "poai_level3_index": {
+    "path": "docs/poai/index.html",
+    "blob": "a121fa138e1f984f6876e640e5583beb74c7fa3a"
+  },
+  "verifier_root_builder": {
+    "path": "scripts/verifier-distribution-surface/build_site.py",
+    "blob": "4a1a8cc9d14859541c5b4a94680ccac2b21a7f63"
+  },
+  "p1_14_distribution_test": {
+    "path": "scripts/verifier-integrity-capsule-pages/test.py",
+    "blob": "123ae831f2097230ce3ba698272dfa89b3a990e6"
+  }
+}
