@@ -1,0 +1,19 @@
+{
+  "predecessor_main": "a8539292b237379904fc2fda0abd356f09c9d552",
+  "p1_15_compose_pages": {
+    "path": "scripts/pages-composition/compose_pages.py",
+    "blob": "c84bdb170bf700347b798615174c6a435d09353b"
+  },
+  "p1_15_adversarial_test": {
+    "path": "scripts/pages-composition/test.py",
+    "blob": "a4f95f2e5cbd4f0dfd7185fc9fc615bb8e7c6713"
+  },
+  "p1_15_workflow": {
+    "path": ".github/workflows/pages-composition-v0.1.yml",
+    "blob": "ad9c83a7fc6870fa196e69ed0d1a8675cb54ad61"
+  },
+  "p1_15_physical_pages_owner": {
+    "path": ".github/workflows/verifier-distribution-surface-v0.1.yml",
+    "blob": "ed7dc87bc1852178e7fd9cf0601373950a572d25"
+  }
+}
