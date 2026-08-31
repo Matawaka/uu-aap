@@ -1,0 +1,95 @@
+name: P1.19 Exact Finalized Pages Packaging v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/pages-exact-packaging/**'
+      - 'scripts/pages-post-deploy-observability/test_contract.py'
+      - '.github/workflows/verifier-pages-post-deploy-observability-v0.1.yml'
+      - '.github/workflows/pages-exact-packaging-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - 'scripts/pages-composition-integrity/**'
+      - 'scripts/pages-finalized-distribution/**'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/pages-exact-packaging/**'
+      - 'scripts/pages-post-deploy-observability/test_contract.py'
+      - '.github/workflows/verifier-pages-post-deploy-observability-v0.1.yml'
+      - '.github/workflows/pages-exact-packaging-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: exact P1.16 tree packaging without semantic promotion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Parse P1.19 implementation without mutating checkout
+        run: |
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for path in [
+              Path('scripts/pages-exact-packaging/package_pages.py'),
+              Path('scripts/pages-exact-packaging/test.py'),
+              Path('scripts/pages-exact-packaging/test_contract.py'),
+          ]:
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+      - name: Prove exact P1.16 archive round-trip and adversarial rejection
+        run: python scripts/pages-exact-packaging/test.py
+      - name: Prove physical packaging contract and historical bindings
+        run: python scripts/pages-exact-packaging/test_contract.py
+      - name: Re-run historical P1.16 P1.17 and P1.18 offline gates
+        run: |
+          python scripts/pages-composition-integrity/test.py
+          python scripts/pages-finalized-distribution/test.py
+          python scripts/pages-post-deploy-observability/test.py
+          python scripts/pages-post-deploy-observability/test_contract.py
+      - name: Prove historical semantic implementations remain byte-bound
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/pages-composition-integrity/finalize_pages.py)" = '6ab2bd541e76e17ae9573d7ccbb42cd20af485ee'
+          test "$(git hash-object scripts/pages-finalized-distribution/test.py)" = '60a6c2463d0e7d1b04d6c6fe88d462075cce5ff6'
+          test "$(git hash-object scripts/pages-post-deploy-observability/verify_deployed.py)" = '42a63e15d276b1666719cc91c943c39401050140'
+          test "$(git hash-object .github/workflows/verifier-pages-post-deploy-observability-v0.1.yml)" = 'd21499d9a9fd754bfafab86097602b5474783da7'
+      - name: Confirm Stable Core SPEC and CONTESTABILITY are untouched
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_sha='${{ github.event.pull_request.base.sha }}'
+          git fetch -q origin "$base_sha" --depth=1
+          git diff --quiet "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md || {
+            echo 'ERROR: P1.19 modified Stable Core/SPEC/CONTESTABILITY' >&2
+            git diff --name-only "$base_sha" -- protocols/core/ SPEC.md CONTESTABILITY.md >&2
+            exit 1
+          }
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: exact finalized Pages packaging acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'P1.16 finalized tree -> exact artifact.tar including .nojekyll'
+          echo 'artifact.tar extraction -> historical P1.16 verify-only'
+          echo 'exact packaging != producer authentication/trusted timestamp'
+          echo 'exact packaging != truth/identity/authority/responsibility'
+          echo 'exact packaging != new publication/action authority'
+          echo 'PASS: P1.19 Exact Finalized Pages Packaging v0.1'

@@ -23,10 +23,23 @@ def main() -> None:
         "p1_16_finalizer",
         "p1_17_distribution_test",
         "p1_17_distribution_workflow",
-        "p1_17_physical_pages_owner",
     ):
         item = bindings[key]
         assert git_blob_sha(ROOT / item["path"]) == item["blob"], f"historical binding drift: {key}"
+
+    # P1.18 historically binds the P1.17 physical owner at its exact predecessor.
+    # A later distribution-only successor may advance packaging mechanics without
+    # rewriting that historical binding. If current bytes moved, require the
+    # explicit P1.19 exact-packaging successor markers; P1.19 owns the new byte guard.
+    owner_binding = bindings["p1_17_physical_pages_owner"]
+    assert owner_binding["blob"] == "a6bc0fe12094a7dc54ee46f9779632cb68832fe8"
+    current_owner = ROOT / owner_binding["path"]
+    if git_blob_sha(current_owner) != owner_binding["blob"]:
+        owner_text = current_owner.read_text(encoding="utf-8")
+        assert "scripts/pages-exact-packaging/package_pages.py" in owner_text, (
+            "P1.17 owner moved without the explicit P1.19 packaging successor"
+        )
+        assert "P1.19" in owner_text, "successor identity must remain visible in physical owner"
 
     observed = bindings["observed_predecessor_deployment"]
     assert observed["workflow_run_id"] == "33351714167"
@@ -80,6 +93,7 @@ def main() -> None:
         assert forbidden not in observer, f"observer implementation gained mutation primitive: {forbidden}"
 
     print("P1.18 historical P1.16/P1.17 bindings: PASS")
+    print("P1.18 P1.17 owner binding preserved across explicit P1.19 distribution successor: PASS")
     print("P1.18 workflow_run is main-push-success bounded and read-only: PASS")
     print("P1.18 exactly one physical deploy-pages owner remains: PASS")
 

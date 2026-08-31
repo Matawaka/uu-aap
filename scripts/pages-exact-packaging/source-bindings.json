@@ -1,0 +1,32 @@
+{
+  "predecessor_main": "383a0809a1328c1f12da810216b45e6d5d91fa4d",
+  "p1_16_finalizer": {
+    "path": "scripts/pages-composition-integrity/finalize_pages.py",
+    "blob": "6ab2bd541e76e17ae9573d7ccbb42cd20af485ee"
+  },
+  "p1_17_distribution_test": {
+    "path": "scripts/pages-finalized-distribution/test.py",
+    "blob": "60a6c2463d0e7d1b04d6c6fe88d462075cce5ff6"
+  },
+  "p1_18_observer": {
+    "path": "scripts/pages-post-deploy-observability/verify_deployed.py",
+    "blob": "42a63e15d276b1666719cc91c943c39401050140"
+  },
+  "p1_18_workflow": {
+    "path": ".github/workflows/verifier-pages-post-deploy-observability-v0.1.yml",
+    "blob": "d21499d9a9fd754bfafab86097602b5474783da7",
+    "maintenance": "historical P1.17 physical-owner binding resolved at exact predecessor rather than requiring current successor bytes"
+  },
+  "predecessor_physical_pages_owner": {
+    "path": ".github/workflows/verifier-distribution-surface-v0.1.yml",
+    "blob": "a6bc0fe12094a7dc54ee46f9779632cb68832fe8"
+  },
+  "observed_failed_packaging": {
+    "triggering_workflow_run_id": "33353193544",
+    "github_pages_artifact_id": "9744284326",
+    "github_pages_artifact_digest": "sha256:d308c124d9929b7f986b2d1bb28ee549772874338da8846299ec1fdb637d1770",
+    "p1_18_observer_run_id": "33353246293",
+    "missing_p1_16_path": ".nojekyll",
+    "upload_pages_artifact_action_sha": "7b1f4a764d45c48632c6b24a0339c27f5614fb0b"
+  }
+}

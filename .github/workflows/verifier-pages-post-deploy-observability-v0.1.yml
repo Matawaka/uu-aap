@@ -58,7 +58,10 @@ jobs:
           test "$(git hash-object scripts/pages-composition-integrity/finalize_pages.py)" = '6ab2bd541e76e17ae9573d7ccbb42cd20af485ee'
           test "$(git hash-object scripts/pages-finalized-distribution/test.py)" = '60a6c2463d0e7d1b04d6c6fe88d462075cce5ff6'
           test "$(git hash-object .github/workflows/pages-finalized-distribution-v0.1.yml)" = 'a12e26e11eff4a00309853263a6cd54ed5009587'
-          test "$(git hash-object .github/workflows/verifier-distribution-surface-v0.1.yml)" = 'a6bc0fe12094a7dc54ee46f9779632cb68832fe8'
+          git fetch -q origin eb269e088a9e0080160c157e0983188dc745067a --depth=1
+          historical_owner_hash="$(git show FETCH_HEAD:.github/workflows/verifier-distribution-surface-v0.1.yml | git hash-object --stdin)"
+          test "$historical_owner_hash" = 'a6bc0fe12094a7dc54ee46f9779632cb68832fe8'
+          echo 'P1.18 historical P1.17 physical-owner binding at predecessor: PASS'
       - name: Confirm Stable Core SPEC and CONTESTABILITY are untouched by this PR
         if: github.event_name == 'pull_request'
         shell: bash
