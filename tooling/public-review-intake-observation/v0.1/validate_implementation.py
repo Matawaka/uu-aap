@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 import hashlib
 import json
+import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-REPO_ROOT = HERE.parents[2]
+ORIGIN_FRONTIER = "8100a4c59590afe503c438b659e20326e11ef8ee"
 
 EXPECTED_BLOBS = {
     "public_review_blob": ("PUBLIC_REVIEW.md", "83cf9f1dacffcde3f030764f5fb0e6afe0fdb190"),
@@ -19,9 +20,15 @@ def load(path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def git_blob_sha1(path: Path) -> str:
-    data = path.read_bytes()
+def git_blob_sha1_bytes(data: bytes) -> str:
     return hashlib.sha1(f"blob {len(data)}\0".encode("ascii") + data).hexdigest()
+
+
+def historical_bytes(relative: str) -> bytes:
+    try:
+        return subprocess.check_output(["git", "show", f"{ORIGIN_FRONTIER}:{relative}"])
+    except subprocess.CalledProcessError as exc:
+        raise ValueError(f"origin frontier file unavailable: {relative}") from exc
 
 
 def main():
@@ -30,13 +37,13 @@ def main():
 
     if receipt["schema"] != "urn:uu-aap:public-review-intake-observation-implementation:0.1":
         raise ValueError("implementation receipt schema drift")
-    if receipt["origin_frontier"] != "8100a4c59590afe503c438b659e20326e11ef8ee":
+    if receipt["origin_frontier"] != ORIGIN_FRONTIER:
         raise ValueError("origin frontier drift")
 
     for key, (relative, expected) in EXPECTED_BLOBS.items():
-        observed = git_blob_sha1(REPO_ROOT / relative)
+        observed = git_blob_sha1_bytes(historical_bytes(relative))
         if observed != expected:
-            raise ValueError(f"historical/source blob changed: {relative}: {observed}")
+            raise ValueError(f"historical/source blob mismatch at origin: {relative}: {observed}")
         if receipt["source_bindings"].get(key) != expected:
             raise ValueError(f"receipt source binding drift: {key}")
 
