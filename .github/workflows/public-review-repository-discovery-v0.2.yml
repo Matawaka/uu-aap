@@ -19,6 +19,7 @@ permissions:
 env:
   ORIGIN_FRONTIER: 391bc0820e9c17b4b9dde3271640ce52d39149d8
   V0_1_ORIGIN_FRONTIER: 8100a4c59590afe503c438b659e20326e11ef8ee
+  LIVE_CORRECTION_ORIGIN: d2e2f3a813dd6ea853a45f2108a32d671a3e41d4
   PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
@@ -38,22 +39,25 @@ jobs:
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
 
-      - name: Fetch exact accepted origins
+      - name: Fetch exact accepted and correction origins
         shell: bash
         run: |
           set -euo pipefail
           git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
           git fetch -q --depth=1 origin "$V0_1_ORIGIN_FRONTIER"
+          git fetch -q --depth=1 origin "$LIVE_CORRECTION_ORIGIN"
           git cat-file -e "$ORIGIN_FRONTIER^{commit}"
           git cat-file -e "$V0_1_ORIGIN_FRONTIER^{commit}"
+          git cat-file -e "$LIVE_CORRECTION_ORIGIN^{commit}"
 
-      - name: Parse v0.2 machine-readable contracts
+      - name: Parse v0.2 machine-readable contracts and correction receipt
         shell: bash
         run: |
           set -euo pipefail
           python -m json.tool tooling/public-review-repository-discovery/v0.2/policy.json >/dev/null
           python -m json.tool tooling/public-review-repository-discovery/v0.2/receipt.schema.json >/dev/null
           python -m json.tool tooling/public-review-repository-discovery/v0.2/implementation-receipt.json >/dev/null
+          python -m json.tool tooling/public-review-repository-discovery/v0.2/live-correction-receipt.json >/dev/null
 
       - name: Keep accepted v0.1 observer green
         run: |
@@ -65,6 +69,9 @@ jobs:
 
       - name: Validate historical source bindings and v0.2 scope
         run: python tooling/public-review-repository-discovery/v0.2/validate_implementation.py
+
+      - name: Validate exact failed-live correction binding
+        run: python tooling/public-review-repository-discovery/v0.2/validate_live_correction.py
 
       - name: Require no recurring schedule or write permission
         shell: bash
