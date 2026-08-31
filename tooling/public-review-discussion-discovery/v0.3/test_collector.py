@@ -40,7 +40,7 @@ def comment(number, suffix, login, body="comment", typename="User", replies=None
     }
 
 
-def discussion(number, comments=None, body_login="Matawaka"):
+def discussion(number, comments=None, body_login="Matawaka", is_answered=False):
     return {
         "id": f"D_{number}",
         "number": number,
@@ -50,7 +50,7 @@ def discussion(number, comments=None, body_login="Matawaka"):
         "createdAt": "2026-08-30T01:00:00Z",
         "updatedAt": "2026-08-30T01:00:00Z",
         "closed": False,
-        "isAnswered": False,
+        "isAnswered": is_answered,
         "author": author(body_login),
         "authorAssociation": "OWNER" if body_login == "Matawaka" else "NONE",
         "comments": list(comments or []),
@@ -83,7 +83,7 @@ class PaginatedFake:
                     "nodes": [reply(8, "811", "Matawaka", "project reply")],
                     "pageInfo": {"hasNextPage": True, "endCursor": "reply-page-1"},
                 }
-                d = discussion(8)
+                d = discussion(8, is_answered=None)
                 d["comments"] = {
                     "nodes": [c1],
                     "pageInfo": {"hasNextPage": True, "endCursor": "comment-page-1"},
@@ -95,7 +95,7 @@ class PaginatedFake:
                     "nodes": [],
                     "pageInfo": {"hasNextPage": False, "endCursor": None},
                 }
-                d = discussion(8)
+                d = discussion(8, is_answered=None)
                 d["comments"] = {
                     "nodes": [c2],
                     "pageInfo": {"hasNextPage": False, "endCursor": None},
@@ -158,6 +158,7 @@ def main():
     assert len(fetched["comments"]) == 2
     assert len(fetched["comments"][0]["replies"]) == 2
     assert fetched["comments"][0]["replies"][1]["author"]["login"] == "bob"
+    assert fetched["isAnswered"] is None
 
     d8 = discussion(
         8,
@@ -167,11 +168,13 @@ def main():
             comment(8, "1004", "helper-bot", "automation", typename="Bot"),
             comment(8, "1005", None, "deleted author"),
         ],
+        is_answered=None,
     )
     d10 = discussion(10, [comment(10, "2001", "Matawaka", "project PoAI comment")])
     receipt = mod.build_receipt(p, {8: d8, 10: d10}, "2026-08-31T00:00:00Z")
     assert receipt["status"] == "EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED"
     assert len(receipt["external_account_sources"]) == 2
+    assert receipt["discussion_observations"][0]["is_answered"] is None
     assert {(x["source_kind"], x["author_account_identifier"]) for x in receipt["external_account_sources"]} == {
         ("DISCUSSION_COMMENT", "alice"),
         ("DISCUSSION_REPLY", "bob"),
@@ -186,11 +189,12 @@ def main():
 
     no_external = mod.build_receipt(
         p,
-        {8: discussion(8, [comment(8, "3001", "Matawaka")]), 10: discussion(10)},
+        {8: discussion(8, [comment(8, "3001", "Matawaka")], is_answered=None), 10: discussion(10)},
         "2026-08-31T00:00:00Z",
     )
     assert no_external["status"] == "NO_EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED"
     assert no_external["external_account_sources"] == []
+    assert no_external["discussion_observations"][0]["is_answered"] is None
 
     must_reject("reply pagination cursor loop", lambda: mod.fetch_discussion(8, "x", ReplyCursorLoopFake()))
     must_reject("comment pagination cursor loop", lambda: mod.fetch_discussion(8, "x", CommentCursorLoopFake()))
@@ -238,7 +242,7 @@ def main():
     for label, hostile in hostiles:
         must_reject(label, lambda h=hostile: mod.validate_receipt(h, p))
 
-    print(f"PUBLIC_REVIEW_DISCUSSION_DISCOVERY_V0_3_TESTS_PASS hostile={len(hostiles) + 9}")
+    print(f"PUBLIC_REVIEW_DISCUSSION_DISCOVERY_V0_3_TESTS_PASS hostile={len(hostiles) + 9} nullable_answer=PASS")
 
 
 if __name__ == "__main__":
