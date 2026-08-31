@@ -1,0 +1,82 @@
+name: Current Frontier Reconciliation v0.2
+
+on:
+  pull_request:
+    paths:
+      - 'docs/ROADMAP-CURRENT.md'
+      - 'tooling/current-frontier-reconciliation/v0.2/**'
+      - '.github/workflows/current-frontier-reconciliation-v0.2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/ROADMAP-CURRENT.md'
+      - 'tooling/current-frontier-reconciliation/v0.2/**'
+      - '.github/workflows/current-frontier-reconciliation-v0.2.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 53beba76a82916dcd90239e59b1c0e49db55beae
+  PREDECESSOR_ROADMAP_BLOB: 8ac748575c6c9f2e1da180d849106b9bab6faead
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  reconcile:
+    name: bounded roadmap reconciliation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Validate reconciliation receipt and hostile mutations
+        run: python tooling/current-frontier-reconciliation/v0.2/validate.py
+
+      - name: Bind exact predecessor roadmap bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          actual="$(git show "$ORIGIN_FRONTIER:docs/ROADMAP-CURRENT.md" | git hash-object --stdin)"
+          test "$actual" = "$PREDECESSOR_ROADMAP_BLOB"
+          echo "predecessor roadmap blob: PASS $actual"
+
+      - name: Preserve historical RC v0.4 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object tooling/release-candidate-checkpoint/v0.4/README.md)" = "bf160a7acbb9170f2fe861ec6983c1424a82d48e"
+          test "$(git hash-object tooling/release-candidate-checkpoint/v0.4/checkpoint.json)" = "ddb7905b84a552321b0d7b0e3125b44e0960b8ab"
+          test "$(git hash-object tooling/release-candidate-checkpoint/v0.4/validate.js)" = "ce6d72d74a58414f448f50f547720a9ba87daafc"
+          echo "historical RC v0.4 byte guard: PASS"
+
+      - name: Re-run historical C2PA P0.3 contract
+        run: >-
+          python scripts/c2pa-cross-sdk-preservation/validate-contract.py
+          scripts/c2pa-cross-sdk-preservation/contract.json
+
+      - name: Re-run C2PA successor deterministic re-audit tests
+        run: python scripts/c2pa-sdk-successor-reaudit/test_reaudit.py
+
+      - name: Guard Stable Core and normative boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md
+          echo "Stable Core/normative boundary: unchanged"
+
+      - name: Guard paused Workbench evidence surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- docs/workbench/
+          echo "Workbench evidence surface: unchanged"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
