@@ -1,0 +1,28 @@
+{
+  "schema": "urn:uu-aap:public-review-intake-surfaces:0.1",
+  "repository": "Matawaka/uu-aap",
+  "project_account_identifier": "Matawaka",
+  "target_issue_numbers": [1, 2, 3, 4, 5, 6, 7],
+  "excluded_channels": [
+    "issue:422",
+    "arbitrary_new_issues",
+    "discussions",
+    "pull_requests",
+    "email",
+    "social_media"
+  ],
+  "classification": {
+    "project_account_comment": "PROJECT_ACCOUNT_COMMENT",
+    "bot_comment": "AUTOMATION_COMMENT",
+    "other_account_comment": "EXTERNAL_ACCOUNT_SUBMISSION_OBSERVED"
+  },
+  "invariants": {
+    "observation_is_admission": false,
+    "observation_is_disposition": false,
+    "account_identifier_is_verified_identity": false,
+    "author_association_is_independence_proof": false,
+    "app_mediation_is_human_identity_proof": false,
+    "submission_is_truth": false,
+    "submission_is_authority": false
+  }
+}

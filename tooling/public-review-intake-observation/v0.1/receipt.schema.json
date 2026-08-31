@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:public-review-intake-observation:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "repository",
+    "surface_set_version",
+    "observed_at_utc",
+    "observed_at_is_trusted_time",
+    "status",
+    "issue_observations",
+    "external_account_submissions",
+    "boundaries",
+    "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:public-review-intake-observation:0.1"},
+    "repository": {"const": "Matawaka/uu-aap"},
+    "surface_set_version": {"const": "0.1"},
+    "observed_at_utc": {"type": "string", "minLength": 1},
+    "observed_at_is_trusted_time": {"const": false},
+    "status": {
+      "enum": [
+        "NO_EXTERNAL_ACCOUNT_SUBMISSION_OBSERVED",
+        "EXTERNAL_ACCOUNT_SUBMISSION_OBSERVED"
+      ]
+    },
+    "issue_observations": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issue_number",
+          "url",
+          "state",
+          "comment_count",
+          "project_account_comment_count",
+          "automation_comment_count",
+          "external_account_submission_count"
+        ],
+        "properties": {
+          "issue_number": {"type": "integer", "minimum": 1, "maximum": 7},
+          "url": {"type": "string", "minLength": 1},
+          "state": {"enum": ["open", "closed"]},
+          "comment_count": {"type": "integer", "minimum": 0},
+          "project_account_comment_count": {"type": "integer", "minimum": 0},
+          "automation_comment_count": {"type": "integer", "minimum": 0},
+          "external_account_submission_count": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "external_account_submissions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "issue_number",
+          "comment_id",
+          "url",
+          "author_account_identifier",
+          "author_type",
+          "author_association",
+          "performed_via_github_app_slug",
+          "created_at",
+          "updated_at",
+          "body_sha256"
+        ],
+        "properties": {
+          "issue_number": {"type": "integer", "minimum": 1, "maximum": 7},
+          "comment_id": {"type": "integer", "minimum": 1},
+          "url": {"type": "string", "minLength": 1},
+          "author_account_identifier": {"type": "string", "minLength": 1},
+          "author_type": {"type": "string", "minLength": 1},
+          "author_association": {"type": ["string", "null"]},
+          "performed_via_github_app_slug": {"type": ["string", "null"]},
+          "created_at": {"type": ["string", "null"]},
+          "updated_at": {"type": ["string", "null"]},
+          "body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified_human_identity",
+        "independence_established",
+        "standing_established",
+        "expertise_established",
+        "authority_established",
+        "claim_truth_established",
+        "admission_decision",
+        "disposition_decision"
+      ],
+      "properties": {
+        "verified_human_identity": {"const": false},
+        "independence_established": {"const": false},
+        "standing_established": {"const": false},
+        "expertise_established": {"const": false},
+        "authority_established": {"const": false},
+        "claim_truth_established": {"const": false},
+        "admission_decision": {"const": "NOT_MADE"},
+        "disposition_decision": {"const": "NOT_MADE"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issues_mutated",
+        "reviewers_contacted",
+        "identity_profiles_built",
+        "reputation_scores_created",
+        "normative_change_made",
+        "release_or_tag_created",
+        "publication_authorized",
+        "action_permit_created",
+        "recurring_schedule_created",
+        "workbench_reactivated"
+      ],
+      "properties": {
+        "issues_mutated": {"const": false},
+        "reviewers_contacted": {"const": false},
+        "identity_profiles_built": {"const": false},
+        "reputation_scores_created": {"const": false},
+        "normative_change_made": {"const": false},
+        "release_or_tag_created": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false},
+        "recurring_schedule_created": {"const": false},
+        "workbench_reactivated": {"const": false}
+      }
+    }
+  }
+}
