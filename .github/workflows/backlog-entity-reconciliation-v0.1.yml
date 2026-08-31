@@ -1,0 +1,101 @@
+name: Backlog Entity Reconciliation v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/backlog-entity-reconciliation/v0.1/**'
+      - '.github/workflows/backlog-entity-reconciliation-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/backlog-entity-reconciliation/v0.1/**'
+      - '.github/workflows/backlog-entity-reconciliation-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 1a5232fc3d3af8b6bc41de78a510e1ac9129c50a
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: validate bounded backlog entity registry
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Require exact origin frontier in checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$ORIGIN_FRONTIER^{commit}"
+          echo "backlog entity reconciliation origin available: PASS"
+
+      - name: Parse machine artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool tooling/backlog-entity-reconciliation/v0.1/registry.json >/dev/null
+          python -m json.tool tooling/backlog-entity-reconciliation/v0.1/registry.schema.json >/dev/null
+          python -m json.tool tooling/backlog-entity-reconciliation/v0.1/implementation-receipt.json >/dev/null
+
+      - name: Validate fixed classifications and source bindings
+        run: python tooling/backlog-entity-reconciliation/v0.1/validate_registry.py
+
+      - name: Run hostile classification and authority tests
+        run: python tooling/backlog-entity-reconciliation/v0.1/test_registry.py
+
+      - name: Require read-only no-schedule workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/backlog-entity-reconciliation-v0.1.yml
+          ! grep -Eq '^[[:space:]]+schedule:' "$workflow"
+          ! grep -Eq '^[[:space:]]+[A-Za-z_-]+:[[:space:]]*write[[:space:]]*$' "$workflow"
+          grep -F 'contents: read' "$workflow" >/dev/null
+          ! grep -F 'GITHUB_TOKEN' "$workflow"
+          ! grep -F 'api.github.com' "$workflow"
+          echo "backlog entity reconciliation read-only/no-schedule/no-live-API boundary: PASS"
+
+      - name: Guard Core, historical reconciliation, review, roadmap and Workbench boundaries
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            docs/ROADMAP-CURRENT.md docs/workbench/ \
+            pilots/core-pilot-002/ tooling/public-review-disposition-ledger/v0.1/ \
+            pilots/kontur-game-companion/non-binding-attention-v0.1/
+          echo "Core/#422 lineage/roadmap/Workbench/bound implementation bytes: unchanged"
+
+      - name: Require registry-only PR diff
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              .github/workflows/backlog-entity-reconciliation-v0.1.yml|tooling/backlog-entity-reconciliation/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "backlog-entity-registry-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
