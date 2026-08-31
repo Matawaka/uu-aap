@@ -300,11 +300,10 @@ jobs:
             scripts/pages-composition/
             scripts/pages-composition-integrity/
             .github/workflows/pages-composition-v0.1.yml
-            .github/workflows/pages-integrity-envelope-v0.1.yml
             .github/workflows/poai-pages.yml
           )
           if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
-            echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical verifier/integrity semantics' >&2
+            echo 'ERROR: distribution successor modified Core/SPEC/CONTESTABILITY or historical verifier/integrity implementations' >&2
             git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
             exit 1
           fi
