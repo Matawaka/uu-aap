@@ -310,7 +310,7 @@ jobs:
           fi
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Upload exact P1.16-finalized Pages artifact
+      - name: Upload validated composed Pages artifact (P1.16-finalized exact tree)
         uses: actions/upload-pages-artifact@v4
         with:
           path: ${{ runner.temp }}/finalized-pages
