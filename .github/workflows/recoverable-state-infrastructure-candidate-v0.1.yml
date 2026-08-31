@@ -26,6 +26,12 @@ env:
   RERC_MODULE_BLOB: d2aae21a2e2375477c6349eae5f236ea60cd7151
   RERC_RECEIPT_BLOB: 83609468622f4a79783b9b29e73a661497bad849
   REGISTRY_V01_BLOB: 2aff5e5785eb97796031b19ffe9fe026a3543bf6
+  CANDIDATE_MANIFEST_BLOB: 85a7d51b70c90df7869e775a2529f53fe2c068f0
+  CANDIDATE_MANIFEST_SCHEMA_BLOB: 122b17dd29f499ab2225989d4c2f44c1c082e581
+  COMPOSER_BLOB: 1f114ddc73093809f789ca425b428966ac96f91e
+  COMPOSITION_SCHEMA_BLOB: c318c850481ad384401d91af858ed9e2b87bd8e7
+  REGISTRY_V02_DELTA_BLOB: ad705523bada7f64a04e09e34974407725942976
+  REGISTRY_V02_VALIDATOR_BLOB: 6137544281a34f7d68239388ee1ae9b11085beb1
 
 jobs:
   validate:
@@ -36,7 +42,7 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.13'}
       - run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
-      - name: Bind exact accepted component bytes
+      - name: Bind exact accepted and candidate bytes
         shell: bash
         run: |
           set -euo pipefail
@@ -45,11 +51,17 @@ jobs:
           test "$(git rev-parse HEAD:protocols/integration/rerc/v0.1/rerc.js)" = "$RERC_MODULE_BLOB"
           test "$(git rev-parse HEAD:protocols/integration/rerc/v0.1/implementation-receipt.json)" = "$RERC_RECEIPT_BLOB"
           test "$(git rev-parse HEAD:protocols/interface-registry/v0.1/interface-registry.json)" = "$REGISTRY_V01_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/candidate-manifest.json)" = "$CANDIDATE_MANIFEST_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/candidate-manifest.schema.json)" = "$CANDIDATE_MANIFEST_SCHEMA_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/compose.js)" = "$COMPOSER_BLOB"
+          test "$(git rev-parse HEAD:protocols/reusable-infrastructure/recoverable-state/v0.1/composition-receipt.schema.json)" = "$COMPOSITION_SCHEMA_BLOB"
+          test "$(git rev-parse HEAD:protocols/interface-registry/v0.2/interface-registry-delta.json)" = "$REGISTRY_V02_DELTA_BLOB"
+          test "$(git rev-parse HEAD:protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js)" = "$REGISTRY_V02_VALIDATOR_BLOB"
       - name: Validate interface-registry successor first
         run: node protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js /tmp/interface-registry-v0.2-effective.json
       - name: Run composed reference and hostile vectors
         run: node protocols/reusable-infrastructure/recoverable-state/v0.1/test-compose.js /tmp/recoverable-state-infrastructure-v0.1
-      - name: Validate candidate and composed artifacts against schemas
+      - name: Validate candidate, implementation receipt and composed artifacts
         run: |
           python - <<'PY'
           import json
@@ -60,6 +72,7 @@ jobs:
           def schema(p):
             s=json.loads(Path(p).read_text()); Draft202012Validator.check_schema(s); return Draft202012Validator(s)
           schema(c/'candidate-manifest.schema.json').validate(json.loads((c/'candidate-manifest.json').read_text()))
+          schema(c/'implementation-receipt.schema.json').validate(json.loads((c/'implementation-receipt.json').read_text()))
           schema(c/'composition-receipt.schema.json').validate(json.loads((out/'composition-receipt.json').read_text()))
           schema('protocols/integration/event-responsive-dormancy/v0.1/wake-reevaluation-receipt.schema.json').validate(json.loads((out/'wake-receipt.json').read_text()))
           gv=schema('protocols/integration/rerc/v0.1/relation-graph.schema.json')
