@@ -1,0 +1,101 @@
+name: Core Pilot 002 External Input Observation v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/core-pilot-002/external-input-observation/v0.1/**'
+      - 'docs/ROADMAP-CURRENT.md'
+      - '.github/workflows/core-pilot-002-external-input-observation-v0.1.yml'
+      - '.github/workflows/current-frontier-reconciliation-v0.2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/core-pilot-002/external-input-observation/v0.1/**'
+      - 'docs/ROADMAP-CURRENT.md'
+      - '.github/workflows/core-pilot-002-external-input-observation-v0.1.yml'
+      - '.github/workflows/current-frontier-reconciliation-v0.2.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: d83297e526abfb5a0d9148cc0906223fe49f870b
+  PREDECESSOR_ROADMAP_BLOB: 3e5f371764c8f9557fd1ce57615a2739253d8140
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  observe:
+    name: bounded external-input observation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Validate observation receipt and hostile inferences
+        run: python pilots/core-pilot-002/external-input-observation/v0.1/validate.py
+
+      - name: Parse committed observation JSON and schema
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m json.tool pilots/core-pilot-002/external-input-observation/v0.1/observation.json >/dev/null
+          python -m json.tool pilots/core-pilot-002/external-input-observation/v0.1/observation.schema.json >/dev/null
+
+      - name: Re-bind exact live public source read-only
+        run: python pilots/core-pilot-002/external-input-observation/v0.1/verify_live_source.py
+
+      - name: Re-run historical Pilot 002 admission and pilot validators
+        shell: bash
+        run: |
+          set -euo pipefail
+          python pilots/core-pilot-002/run-admission/validate.py
+          python pilots/core-pilot-002/validate.py
+
+      - name: Bind exact predecessor roadmap and accepted inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          predecessor_roadmap="$(git show "$ORIGIN_FRONTIER:docs/ROADMAP-CURRENT.md" | git hash-object --stdin)"
+          test "$predecessor_roadmap" = "$PREDECESSOR_ROADMAP_BLOB"
+          test "$(git hash-object pilots/core-pilot-002/README.md)" = "3112d41334a898aaab1af9db24556d6e746c3499"
+          test "$(git hash-object pilots/core-pilot-002/run-admission/README.md)" = "44ab9ac8789380423df26139fcf7314d77ddc9ce"
+          test "$(git hash-object tooling/current-frontier-reconciliation/v0.2/reconciliation.json)" = "37a5daed7f57e58177e92679310fa26b3d2ddc24"
+          test "$(git hash-object tooling/release-candidate-checkpoint/v0.5/checkpoint.json)" = "172f9c886f26ccdcc9e30a84ccb86df37c41db4e"
+          echo "historical/current input bindings: PASS"
+
+      - name: Guard Core, responsibility schema, accepted gates and paused Workbench
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/README.md pilots/core-pilot-002/README.ru.md \
+            pilots/core-pilot-002/run-admission/ \
+            tooling/current-frontier-reconciliation/v0.2/ \
+            tooling/release-candidate-checkpoint/v0.5/ \
+            docs/workbench/
+          echo "semantic/accepted-gate/Workbench boundaries: unchanged"
+
+      - name: Require observation-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/core-pilot-002-external-input-observation-v0.1.yml|.github/workflows/current-frontier-reconciliation-v0.2.yml|docs/ROADMAP-CURRENT.md|pilots/core-pilot-002/external-input-observation/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "observation-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"

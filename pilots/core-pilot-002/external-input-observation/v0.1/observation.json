@@ -1,0 +1,66 @@
+{
+  "schema": "urn:uu-aap:core-pilot-002:external-input-observation:0.1",
+  "origin_frontier": "d83297e526abfb5a0d9148cc0906223fe49f870b",
+  "historical_inputs": {
+    "core_pilot_002_readme_blob": "3112d41334a898aaab1af9db24556d6e746c3499",
+    "run_admission_readme_blob": "44ab9ac8789380423df26139fcf7314d77ddc9ce",
+    "current_frontier_reconciliation_blob": "37a5daed7f57e58177e92679310fa26b3d2ddc24",
+    "release_candidate_checkpoint_v0_5_blob": "172f9c886f26ccdcc9e30a84ccb86df37c41db4e",
+    "predecessor_roadmap_blob": "3e5f371764c8f9557fd1ce57615a2739253d8140"
+  },
+  "source": {
+    "system": "github",
+    "repository": "Matawaka/uu-aap",
+    "issue_number": 422,
+    "comment_id": 5471862585,
+    "url": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585",
+    "api_url": "https://api.github.com/repos/Matawaka/uu-aap/issues/comments/5471862585",
+    "author_account_identifier": "84dnnvbdvp-debug",
+    "author_account_numeric_id": 319250061,
+    "author_association": "NONE",
+    "created_at": "2026-08-30T23:14:24Z",
+    "updated_at": "2026-08-30T23:14:24Z",
+    "body_sha256": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8",
+    "performed_via_github_app": {
+      "slug": "chatgpt-codex-connector",
+      "id": 1144995
+    }
+  },
+  "observation": {
+    "public_submission_observed": true,
+    "source_account_label_differs_from_repository_owner": true,
+    "repository_owner_account_identifier": "Matawaka",
+    "source_app_mediated": true,
+    "full_submission_text_duplicated_in_receipt": false,
+    "status": "EXTERNAL_ACCOUNT_SUBMISSION_OBSERVED_AWAITING_HUMAN_ADMISSION_DECISION"
+  },
+  "inference_boundaries": {
+    "verified_human_identity": false,
+    "independence_from_project_or_user": false,
+    "reviewer_standing": false,
+    "reviewer_expertise": false,
+    "reviewer_authority": false,
+    "claim_truth": false,
+    "responsibility_or_liability": false,
+    "core_change_required": false
+  },
+  "human_gate": {
+    "required": true,
+    "reason": "Core Pilot 002 first-live-vector selection is a separate human-gated run-materialization step.",
+    "run_001_source_selected": false,
+    "admission_decision": "NOT_MADE",
+    "disposition_decision": "NOT_MADE"
+  },
+  "effects": {
+    "pilot_run_materialized": false,
+    "admission_created": false,
+    "disposition_created": false,
+    "issue_or_comment_mutation_authorized": false,
+    "normative_change_authorized": false,
+    "core_or_spec_change_authorized": false,
+    "release_or_tag_authorized": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false
+  }
+}
