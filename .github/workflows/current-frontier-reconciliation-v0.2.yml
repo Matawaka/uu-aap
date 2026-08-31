@@ -19,6 +19,8 @@ permissions:
 env:
   ORIGIN_FRONTIER: 53beba76a82916dcd90239e59b1c0e49db55beae
   PREDECESSOR_ROADMAP_BLOB: 8ac748575c6c9f2e1da180d849106b9bab6faead
+  ACCEPTED_RECONCILIATION_FRONTIER: 9bce100a63ca981f28f24ce73d0f81f67f4289d3
+  ACCEPTED_ROADMAP_BLOB: 3e5f371764c8f9557fd1ce57615a2739253d8140
   PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
@@ -35,8 +37,21 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Validate reconciliation receipt and hostile mutations
-        run: python tooling/current-frontier-reconciliation/v0.2/validate.py
+      - name: Validate accepted reconciliation receipt against its exact accepted roadmap
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ACCEPTED_RECONCILIATION_FRONTIER"
+          snapshot="$RUNNER_TEMP/current-roadmap-successor.md"
+          cp docs/ROADMAP-CURRENT.md "$snapshot"
+          restore() { cp "$snapshot" docs/ROADMAP-CURRENT.md; }
+          trap restore EXIT
+          git show "$ACCEPTED_RECONCILIATION_FRONTIER:docs/ROADMAP-CURRENT.md" > docs/ROADMAP-CURRENT.md
+          test "$(git hash-object docs/ROADMAP-CURRENT.md)" = "$ACCEPTED_ROADMAP_BLOB"
+          python tooling/current-frontier-reconciliation/v0.2/validate.py
+          restore
+          trap - EXIT
+          test -z "$(git status --porcelain --untracked-files=all)"
 
       - name: Bind exact predecessor roadmap bytes
         shell: bash
