@@ -1,0 +1,44 @@
+{
+  "schema": "urn:uu-aap:public-review-discussion-discovery-policy:0.3",
+  "repository": "Matawaka/uu-aap",
+  "project_account_identifier": "Matawaka",
+  "target_discussion_numbers": [8, 10],
+  "included_source_kinds": [
+    "DISCUSSION_BODY",
+    "DISCUSSION_COMMENT",
+    "DISCUSSION_REPLY"
+  ],
+  "excluded_channels": [
+    "other_discussions",
+    "issues",
+    "pull_requests",
+    "commit_comments",
+    "email",
+    "social_media"
+  ],
+  "classification": {
+    "project_account": "PROJECT_ACCOUNT_SOURCE",
+    "bot_account": "AUTOMATION_SOURCE",
+    "missing_account": "UNATTRIBUTED_SOURCE",
+    "other_account": "EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED"
+  },
+  "invariants": {
+    "discussion_observation_is_admission": false,
+    "discussion_observation_is_disposition": false,
+    "external_account_is_verified_human_identity": false,
+    "different_account_is_independence_proof": false,
+    "author_association_is_standing_or_authority": false,
+    "discussion_presence_is_relevance_or_truth": false,
+    "github_answer_state_is_protocol_disposition": false,
+    "observed_source_is_normative_change": false
+  },
+  "runtime": {
+    "read_only": true,
+    "scheduled_polling": false,
+    "automatic_admission": false,
+    "automatic_disposition": false,
+    "accepted_push_live_discovery": true,
+    "manual_live_discovery": true,
+    "graphql_endpoint": "https://api.github.com/graphql"
+  }
+}
