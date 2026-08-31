@@ -1,0 +1,126 @@
+{
+  "schema": "urn:uu-aap:current-frontier-reconciliation:0.2",
+  "reconciliation_version": "0.2",
+  "origin_frontier": "53beba76a82916dcd90239e59b1c0e49db55beae",
+  "predecessor_roadmap": {
+    "path": "docs/ROADMAP-CURRENT.md",
+    "blob": "8ac748575c6c9f2e1da180d849106b9bab6faead",
+    "declared_origin_frontier": "b3e1fb858ffc30366293c490baed7cbecfcfa26a"
+  },
+  "historical_checkpoint": {
+    "path": "tooling/release-candidate-checkpoint/v0.4/checkpoint.json",
+    "state": "PRESERVED_HISTORICAL",
+    "decision": "RELEASE_CANDIDATE_EXTERNAL_EVIDENCE_PENDING"
+  },
+  "evidence": [
+    {
+      "id": "stable-core-and-internal-engineering",
+      "state": "PASS_BOUNDED",
+      "refs": ["#646", "#672", "#721", "#734"],
+      "claim": "Previously accepted Stable Core, reusable tooling, governance and provenance evidence remains preserved; this reconciliation adds no Core semantics."
+    },
+    {
+      "id": "c2pa-priority-roadmap",
+      "state": "COMPLETED_WITH_EXPLICIT_GAP",
+      "refs": ["#778", "#779", "#780", "#783", "#784", "#785", "#786", "#788", "#791", "#793", "#795"],
+      "claim": "The CAI/C2PA execution roadmap produced runnable interoperability surfaces while retaining P0.3 cross-SDK preservation as incomplete."
+    },
+    {
+      "id": "c2pa-p0-3-preservation",
+      "state": "INCOMPLETE",
+      "refs": ["#781", "#782", "#783", "#791"],
+      "claim": "Swift remains historically BLOCKED before executable round-trip and Android remains historically INCOMPATIBLE/LOSSY on the tested surfaces; successor re-audit found no reclassification requirement."
+    },
+    {
+      "id": "c2pa-evidence-anchor-prs",
+      "state": "INTENTIONALLY_UNMERGED_EVIDENCE_ANCHORS",
+      "refs": ["#781", "#782"],
+      "claim": "The two open PRs are immutable evidence-frontier inputs consumed by merged #783/#791, not ordinary pending merge candidates."
+    },
+    {
+      "id": "verifier-p1-chain",
+      "state": "ACCEPTED_BOUNDED",
+      "refs": ["#797", "#799", "#801", "#803", "#806", "#809", "#812", "#815", "#817", "#819", "#821", "#823", "#825", "#827", "#829", "#831", "#833", "#835", "#837", "#839"],
+      "claim": "Verifier presentation/distribution P1.1-P1.20 is accepted through the origin frontier with evidence, candidate, disposition, integrity and authority boundaries kept separate."
+    },
+    {
+      "id": "pages-live-byte-observability",
+      "state": "OBSERVED_MATCH_BOUNDED",
+      "refs": ["#835", "#837", "#839"],
+      "claim": "The read-only P1.18 observer succeeded after P1.20 deployment and established deployed-byte equality only for the exact triggering artifact envelope at observation time."
+    },
+    {
+      "id": "external-public-review",
+      "state": "WAITING_EXTERNAL",
+      "refs": ["#1", "#2", "#3", "#4", "#5", "#6", "#7", "#774", "#775"],
+      "claim": "External review remains genuinely external; project-authored material does not satisfy the gate."
+    },
+    {
+      "id": "core-pilot-002",
+      "state": "WAITING_EXTERNAL",
+      "refs": ["#718", "#422"],
+      "claim": "Run 001 remains inadmissible until eligible independently authored external review input exists."
+    },
+    {
+      "id": "kontur-successor",
+      "state": "PARALLEL_NON_CORE",
+      "refs": ["#722"],
+      "claim": "KONTUR remains a parallel bounded field/product lane and creates no Stable Core dependency."
+    },
+    {
+      "id": "workbench",
+      "state": "PAUSED_EXTERNAL_PRODUCT",
+      "refs": ["#804"],
+      "claim": "Workbench development is paused by explicit human decision and is not an active UU-AAP implementation-critical lane; retained repository evidence remains provenance only."
+    },
+    {
+      "id": "ip-legal-private",
+      "state": "HUMAN_OR_EXTERNAL_DECISION",
+      "refs": ["#486", "#492"],
+      "claim": "Software-registration, patent and private filing decisions remain separate from architecture completion."
+    },
+    {
+      "id": "legacy-poai-level-3-4",
+      "state": "SUCCESSOR_NEEDED_WHEN_CONCRETE",
+      "refs": ["#22", "#28", "#43", "#47", "#51", "#57", "#62", "#66"],
+      "claim": "Historical open issues are not current priorities solely because they remain open."
+    }
+  ],
+  "current_posture": {
+    "engineering": "PASS_BOUNDED",
+    "internal_governance": "PASS_BOUNDED",
+    "security": "EVIDENCE_CLOSED_BOUNDED",
+    "c2pa_p0_3": "INCOMPLETE",
+    "verifier_p1_1_to_p1_20": "ACCEPTED_BOUNDED",
+    "public_review": "WAITING_EXTERNAL",
+    "core_pilot_002": "WAITING_EXTERNAL",
+    "workbench": "PAUSED_EXTERNAL_PRODUCT",
+    "release_candidate": "EXTERNAL_EVIDENCE_PENDING"
+  },
+  "next_priority": [
+    "GENUINE_EXTERNAL_PARTICIPATION",
+    "ELIGIBLE_PUBLIC_REVIEW_EVIDENCE",
+    "CORE_PILOT_002_AFTER_ADMISSION",
+    "C2PA_P0_3_TARGETED_REAUDIT_ONLY_WHEN_UPSTREAM_CHANGES"
+  ],
+  "not_default_next": [
+    "NEW_STABLE_CORE_LAYER_WITHOUT_NEW_NEED",
+    "P1_21_FOR_NUMBERING_ONLY",
+    "WORKBENCH_DEVELOPMENT_WHILE_PAUSED",
+    "MERGE_OR_CLOSE_781_782_AS_IF_ORDINARY_FEATURE_PRS"
+  ],
+  "non_effects": {
+    "historical_rewrite": false,
+    "release_authorized": false,
+    "tag_authorized": false,
+    "publication_authorized": false,
+    "runtime_activation_authorized": false,
+    "action_permit_created": false,
+    "external_review_fabricated": false,
+    "c2pa_p0_3_promoted_to_pass": false,
+    "workbench_reactivated": false,
+    "stable_core_changed": false,
+    "certification_created": false,
+    "legal_status_created": false
+  }
+}
