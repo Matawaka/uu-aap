@@ -1,0 +1,47 @@
+{
+  "artifact_type": "RecoverableStateInfrastructureCandidateManifest",
+  "version": "0.1",
+  "status": "EXPERIMENTAL_REUSABLE_INFRASTRUCTURE_CANDIDATE",
+  "origin_frontier": "ef4c8c6030ef517f2997fb76cff4f584fb25c691",
+  "tracking_issue": 881,
+  "shared_principle": "Reduced Active Burden != Loss of Recoverable State != Authority Creation",
+  "components": [
+    {
+      "id": "EventResponsiveDormancy",
+      "version": "0.1",
+      "merge_frontier": "0039375897f2de683afac62e902335f53a1a7d98",
+      "module_path": "protocols/integration/event-responsive-dormancy/v0.1/event-responsive-dormancy.js",
+      "module_blob": "2cadbd2f405391f4f97e100d77245757ce6b5a58",
+      "implementation_receipt_path": "protocols/integration/event-responsive-dormancy/v0.1/implementation-receipt.json",
+      "implementation_receipt_blob": "e127d784a74f0713fe0b157845ec5a2754647034",
+      "independently_reusable": true
+    },
+    {
+      "id": "RERC",
+      "version": "0.1",
+      "merge_frontier": "ef4c8c6030ef517f2997fb76cff4f584fb25c691",
+      "module_path": "protocols/integration/rerc/v0.1/rerc.js",
+      "module_blob": "d2aae21a2e2375477c6349eae5f236ea60cd7151",
+      "implementation_receipt_path": "protocols/integration/rerc/v0.1/implementation-receipt.json",
+      "implementation_receipt_blob": "83609468622f4a79783b9b29e73a661497bad849",
+      "independently_reusable": true
+    }
+  ],
+  "capabilities": {
+    "event_responsive_dormancy_control": true,
+    "reversible_operational_representation_control": true,
+    "composed_reference_harness": true,
+    "automatic_runtime_coupling": false
+  },
+  "non_claims": {
+    "stable_core_membership": false,
+    "published_release": false,
+    "performance_gain_proven": false,
+    "resource_savings_proven": false,
+    "shared_world_identity_proven": false,
+    "authority_created": false,
+    "action_permit_created": false,
+    "runtime_activation_authorized": false,
+    "external_effect_authorized": false
+  }
+}
