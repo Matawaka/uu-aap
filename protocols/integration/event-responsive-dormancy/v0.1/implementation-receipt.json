@@ -1,0 +1,37 @@
+{
+  "artifact_type": "EventResponsiveDormancyImplementationReceipt",
+  "version": "0.1",
+  "origin_frontier": "3a8c836bb3a1a619b6d292ac3b830e7a963fc1d5",
+  "tracking_issue": 877,
+  "profile_path": "protocols/integration/event-responsive-dormancy/v0.1",
+  "source_bindings": {
+    "backlog_entity_registry": {"path": "tooling/backlog-entity-reconciliation/v0.1/registry.json", "blob": "c324bc1700affeb66d801dc38cf5c23db2b3e1d9"},
+    "reusable_interface_registry": {"path": "protocols/interface-registry/v0.1/interface-registry.json", "blob": "2aff5e5785eb97796031b19ffe9fe026a3543bf6"},
+    "ccrp_c4_issue": 144,
+    "kontur_pcl_policy_issue": 736,
+    "kontur_pcl_adapter_pr": 737
+  },
+  "contract": {
+    "trigger_is_authority": false,
+    "wake_restores_old_authority": false,
+    "wake_restores_old_intent": false,
+    "wake_restores_old_action_permit": false,
+    "polling_required": false,
+    "background_activity_created": false,
+    "ready_state_is_action_permit": false,
+    "next_interface_is_automatic": false
+  },
+  "non_effects": {
+    "stable_core_changed": false,
+    "spec_changed": false,
+    "roadmap_changed": false,
+    "scheduler_installed": false,
+    "network_monitoring_started": false,
+    "runtime_activated": false,
+    "action_permit_created": false,
+    "authority_created": false,
+    "external_effect_performed": false,
+    "release_or_tag_created": false,
+    "workbench_reactivated": false
+  }
+}

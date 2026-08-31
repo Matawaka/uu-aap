@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:event-responsive-dormancy:wake-reevaluation-receipt:0.1",
+  "title": "Event Responsive Dormancy Wake Re-evaluation Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","capability_id","dormant_capability_digest","wake_signal_digest","signal_id","signal_matches_contract","wake_attention_created","state","checks","preserved","claims","next_admissible_interface","automatic_transition"],
+  "properties": {
+    "artifact_type": {"const": "EventResponsiveDormancyWakeReceipt"},
+    "version": {"const": "0.1"},
+    "capability_id": {"type": "string", "minLength": 1},
+    "dormant_capability_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "wake_signal_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "signal_id": {"type": "string", "minLength": 1},
+    "signal_matches_contract": {"type": "boolean"},
+    "wake_attention_created": {"type": "boolean"},
+    "state": {"enum": ["NO_WAKE_SIGNAL_MATCH","WAKE_ATTENTION_ONLY","RETURN_TO_DORMANCY_EVIDENCE_STALE","RETURN_TO_DORMANCY_AUTHORITY_STALE","RETURN_TO_DORMANCY_INTENT_CLOSED","READY_FOR_SEPARATE_ACTION_ADMISSION"]},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["current_evidence","current_authority","intent_corridor"],
+      "properties": {
+        "current_evidence": {"type": ["boolean","null"]},
+        "current_authority": {"type": ["boolean","null"]},
+        "intent_corridor": {"type": ["boolean","null"]}
+      }
+    },
+    "preserved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkpoint_refs","provenance_refs","predecessor_run_id","predecessor_epoch"],
+      "properties": {
+        "checkpoint_refs": {"type": "array", "items": {"type": "string"}},
+        "provenance_refs": {"type": "array", "items": {"type": "string"}},
+        "predecessor_run_id": {"type": "string"},
+        "predecessor_epoch": {"type": "integer", "minimum": 1}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["trigger_authorizes_action","old_authority_restored","old_intent_restored","old_action_permit_restored","background_polling_performed","background_activity_authorized","active_process_created","action_permit_created","authority_created","external_effect_authority_created","responsive_action_performed"],
+      "properties": {
+        "trigger_authorizes_action": {"const": false},
+        "old_authority_restored": {"const": false},
+        "old_intent_restored": {"const": false},
+        "old_action_permit_restored": {"const": false},
+        "background_polling_performed": {"const": false},
+        "background_activity_authorized": {"const": false},
+        "active_process_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "authority_created": {"const": false},
+        "external_effect_authority_created": {"const": false},
+        "responsive_action_performed": {"const": false}
+      }
+    },
+    "next_admissible_interface": {"enum": [null,"PreActionEvidenceBundle"]},
+    "automatic_transition": {"const": false}
+  }
+}

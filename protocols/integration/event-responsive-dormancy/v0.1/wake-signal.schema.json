@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:event-responsive-dormancy:wake-signal:0.1",
+  "title": "Event Responsive Wake Signal v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","signal_id","kind","context_ref","scope_ref","evidence_ref","source_assurance"],
+  "properties": {
+    "artifact_type": {"const": "EventResponsiveWakeSignal"},
+    "version": {"const": "0.1"},
+    "signal_id": {"type": "string", "minLength": 1},
+    "kind": {"type": "string", "minLength": 1},
+    "context_ref": {"type": "string", "minLength": 1},
+    "scope_ref": {"type": "string", "minLength": 1},
+    "evidence_ref": {"type": "string", "minLength": 1},
+    "source_assurance": {"enum": ["UNESTABLISHED","EVIDENCE_BOUND"]}
+  }
+}

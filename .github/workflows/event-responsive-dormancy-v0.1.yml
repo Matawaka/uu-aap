@@ -1,0 +1,86 @@
+name: Event-Responsive Dormancy v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/event-responsive-dormancy/v0.1/**'
+      - '.github/workflows/event-responsive-dormancy-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/event-responsive-dormancy/v0.1/**'
+      - '.github/workflows/event-responsive-dormancy-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 3a8c836bb3a1a619b6d292ac3b830e7a963fc1d5
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Run semantic and hostile vectors
+        run: node protocols/integration/event-responsive-dormancy/v0.1/test-event-responsive-dormancy.js /tmp/event-responsive-dormancy-v0.1
+      - name: Validate generated artifacts against closed schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root=Path('protocols/integration/event-responsive-dormancy/v0.1')
+          out=Path('/tmp/event-responsive-dormancy-v0.1')
+          pairs=[
+            ('dormant-capability.schema.json','dormant-capability.json'),
+            ('wake-signal.schema.json','wake-signal.json'),
+            ('wake-reevaluation-receipt.schema.json','wake-receipt.json'),
+          ]
+          for s,a in pairs:
+            schema=json.loads((root/s).read_text())
+            Draft202012Validator.check_schema(schema)
+            Draft202012Validator(schema).validate(json.loads((out/a).read_text()))
+          print('EVENT_RESPONSIVE_DORMANCY_SCHEMAS_PASS')
+          PY
+      - name: Reject active waiting/runtime surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=protocols/integration/event-responsive-dormancy/v0.1/event-responsive-dormancy.js
+          ! grep -Eq 'setInterval|setTimeout|child_process|spawnSync|execSync|require\(.node:(http|https|net)|\bfetch\(' "$src"
+          ! grep -Eq '^[[:space:]]+schedule:' .github/workflows/event-responsive-dormancy-v0.1.yml
+          echo 'no polling/timer/network/process/schedule surface: PASS'
+      - name: Guard predecessor and Core boundaries
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json docs/ROADMAP-CURRENT.md \
+            tooling/backlog-entity-reconciliation/v0.1/ protocols/interface-registry/v0.1/ \
+            pilots/kontur-game-companion/ runtime/
+      - name: Require ERD-only diff
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              .github/workflows/event-responsive-dormancy-v0.1.yml|protocols/integration/event-responsive-dormancy/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done < <(git diff --name-only "$ORIGIN_FRONTIER" HEAD)
+      - name: Clean tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
