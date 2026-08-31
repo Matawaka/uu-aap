@@ -62,15 +62,21 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if grep -q 'actions/deploy-pages@' .github/workflows/poai-pages.yml; then
-            echo 'ERROR: PoAI source-validation workflow regained deploy-pages authority' >&2
-            exit 1
-          fi
-          if grep -Eq 'pages:[[:space:]]*write|id-token:[[:space:]]*write|name:[[:space:]]*github-pages' .github/workflows/poai-pages.yml; then
-            echo 'ERROR: PoAI source-validation workflow regained Pages deployment permissions/environment' >&2
-            exit 1
-          fi
-          echo 'PoAI validation != physical Pages deployment: PASS'
+          python - <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/poai-pages.yml').read_text(encoding='utf-8')
+          deploy_action='actions/' + 'deploy-pages@'
+          upload_action='actions/' + 'upload-pages-artifact@'
+          pages_write='pages:' + ' write'
+          token_write='id-token:' + ' write'
+          pages_environment='name:' + ' github-pages'
+          assert deploy_action not in text, 'PoAI validation workflow regained deploy-pages authority'
+          assert upload_action not in text, 'PoAI validation workflow regained Pages artifact ownership'
+          assert pages_write not in text, 'PoAI validation workflow regained pages: write'
+          assert token_write not in text, 'PoAI validation workflow regained id-token: write'
+          assert pages_environment not in text, 'PoAI validation workflow regained github-pages environment'
+          print('PoAI validation != physical Pages deployment: PASS')
+          PY
 
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
