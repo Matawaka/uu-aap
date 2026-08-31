@@ -1,0 +1,40 @@
+{
+  "schema": "urn:uu-aap:backlog-entity-reconciliation-implementation:0.1",
+  "origin_frontier": "1a5232fc3d3af8b6bc41de78a510e1ac9129c50a",
+  "tracking_issue": 875,
+  "branch": "feat/backlog-entity-reconciliation-v0.1",
+  "registry_path": "tooling/backlog-entity-reconciliation/v0.1/registry.json",
+  "source_bindings": {
+    "non_binding_attention_readme": {"path": "pilots/kontur-game-companion/non-binding-attention-v0.1/README.md", "blob": "c1fa727f87a54ac6810d9d4e9f11474aea88e1b8"},
+    "current_roadmap": {"path": "docs/ROADMAP-CURRENT.md", "blob": "6063ce07c479c6a59c78091e4212fc5d09c27a04"},
+    "pause_resume_issue": 144,
+    "non_binding_attention_issue": 755,
+    "non_binding_attention_pr": 756,
+    "no_silent_reinterpretation_issue": 852,
+    "historical_backlog_reconciliation_issue": 697,
+    "external_review_issue": 422
+  },
+  "registry_contract": {
+    "fixed_classification_set": true,
+    "bounded_exact_search_only": true,
+    "bounded_absence_statement": "exact materialization not found in bounded current audit",
+    "absence_claim_created": false,
+    "roadmap_priority_created": false,
+    "implementation_authority_created": false
+  },
+  "non_effects": {
+    "stable_core_changed": false,
+    "spec_changed": false,
+    "principles_changed": false,
+    "contestability_changed": false,
+    "base_manifest_schema_changed": false,
+    "roadmap_changed": false,
+    "roadmap_priority_created": false,
+    "implementation_authority_created": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "runtime_activation_authorized": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false
+  }
+}

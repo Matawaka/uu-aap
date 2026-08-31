@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:backlog-entity-reconciliation:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "origin_frontier", "audit_scope", "historical_boundaries", "entities", "summary", "non_effects"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:backlog-entity-reconciliation:0.1"},
+    "origin_frontier": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "audit_scope": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repository", "bounded_current_audit", "code_search_completeness_claimed", "absence_inference_allowed", "bounded_exact_materialization_statement"],
+      "properties": {
+        "repository": {"const": "Matawaka/uu-aap"},
+        "bounded_current_audit": {"const": true},
+        "code_search_completeness_claimed": {"const": false},
+        "absence_inference_allowed": {"const": false},
+        "bounded_exact_materialization_statement": {"const": "exact materialization not found in bounded current audit"}
+      }
+    },
+    "historical_boundaries": {
+      "type": "object", "additionalProperties": false,
+      "required": ["backlog_reconciliation_issue", "backlog_reconciliation_rewritten", "backlog_reconciliation_semantic_authority", "external_review_issue", "external_review_reinterpreted", "new_external_review_disposition_created"],
+      "properties": {
+        "backlog_reconciliation_issue": {"const": 697},
+        "backlog_reconciliation_rewritten": {"const": false},
+        "backlog_reconciliation_semantic_authority": {"const": false},
+        "external_review_issue": {"const": 422},
+        "external_review_reinterpreted": {"const": false},
+        "new_external_review_disposition_created": {"const": false}
+      }
+    },
+    "entities": {"type": "array", "minItems": 10, "maxItems": 10, "items": {"$ref": "#/$defs/entity"}},
+    "summary": {
+      "type": "object", "additionalProperties": false,
+      "required": ["entity_count", "IMPLEMENTED", "INVARIANT", "PARTIALLY_COVERED", "NEW_CANDIDATE", "EXPLORATORY", "PAUSED"],
+      "properties": {
+        "entity_count": {"const": 10}, "IMPLEMENTED": {"const": 1}, "INVARIANT": {"const": 1}, "PARTIALLY_COVERED": {"const": 1}, "NEW_CANDIDATE": {"const": 2}, "EXPLORATORY": {"const": 4}, "PAUSED": {"const": 1}
+      }
+    },
+    "non_effects": {"$ref": "#/$defs/nonEffects"}
+  },
+  "$defs": {
+    "authorityEffects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["roadmap_priority_created", "implementation_authority_created", "stable_core_promotion_created", "release_authority_created", "action_permit_created"],
+      "properties": {
+        "roadmap_priority_created": {"const": false}, "implementation_authority_created": {"const": false}, "stable_core_promotion_created": {"const": false}, "release_authority_created": {"const": false}, "action_permit_created": {"const": false}
+      }
+    },
+    "sourceBinding": {
+      "oneOf": [
+        {"type": "object", "additionalProperties": false, "required": ["kind", "role", "issue_number"], "properties": {"kind": {"const": "ISSUE"}, "role": {"type": "string", "minLength": 1}, "issue_number": {"type": "integer", "minimum": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["kind", "role", "pr_number"], "properties": {"kind": {"const": "PR"}, "role": {"type": "string", "minLength": 1}, "pr_number": {"type": "integer", "minimum": 1}}},
+        {"type": "object", "additionalProperties": false, "required": ["kind", "role", "path", "blob"], "properties": {"kind": {"const": "FILE_BLOB"}, "role": {"type": "string", "minLength": 1}, "path": {"type": "string", "minLength": 1}, "blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"}}}
+      ]
+    },
+    "entity": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "name", "classification", "materialization_status", "source_bindings", "authority_effects"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9-]+$"},
+        "name": {"type": "string", "minLength": 1},
+        "classification": {"enum": ["IMPLEMENTED", "INVARIANT", "PARTIALLY_COVERED", "NEW_CANDIDATE", "EXPLORATORY", "PAUSED"]},
+        "materialization_status": {"enum": ["IMPLEMENTATION_BOUND", "SEMANTIC_INVARIANT_BOUND", "PARTIAL_IMPLEMENTATION_BOUND", "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT", "PAUSE_STATE_BOUND"]},
+        "exact_term_audit": {"const": "exact materialization not found in bounded current audit"},
+        "source_bindings": {"type": "array", "items": {"$ref": "#/$defs/sourceBinding"}},
+        "covered_scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "uncovered_scope": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "authority_effects": {"$ref": "#/$defs/authorityEffects"}
+      },
+      "allOf": [
+        {"if": {"properties": {"classification": {"const": "IMPLEMENTED"}}, "required": ["classification"]}, "then": {"properties": {"materialization_status": {"const": "IMPLEMENTATION_BOUND"}, "source_bindings": {"minItems": 1}}}},
+        {"if": {"properties": {"classification": {"const": "INVARIANT"}}, "required": ["classification"]}, "then": {"required": ["exact_term_audit"], "properties": {"materialization_status": {"const": "SEMANTIC_INVARIANT_BOUND"}, "source_bindings": {"minItems": 1}}}},
+        {"if": {"properties": {"classification": {"const": "PARTIALLY_COVERED"}}, "required": ["classification"]}, "then": {"required": ["covered_scope", "uncovered_scope"], "properties": {"materialization_status": {"const": "PARTIAL_IMPLEMENTATION_BOUND"}, "source_bindings": {"minItems": 1}}}},
+        {"if": {"properties": {"classification": {"enum": ["NEW_CANDIDATE", "EXPLORATORY"]}}, "required": ["classification"]}, "then": {"required": ["exact_term_audit"], "properties": {"materialization_status": {"const": "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT"}, "source_bindings": {"maxItems": 0}}}},
+        {"if": {"properties": {"classification": {"const": "PAUSED"}}, "required": ["classification"]}, "then": {"properties": {"materialization_status": {"const": "PAUSE_STATE_BOUND"}, "source_bindings": {"minItems": 1}}}}
+      ]
+    },
+    "nonEffects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["stable_core_changed", "spec_changed", "principles_changed", "contestability_changed", "base_manifest_schema_changed", "roadmap_changed", "roadmap_priority_created", "implementation_authority_created", "release_or_tag_created", "publication_authorized", "runtime_activation_authorized", "action_permit_created", "workbench_reactivated"],
+      "properties": {
+        "stable_core_changed": {"const": false}, "spec_changed": {"const": false}, "principles_changed": {"const": false}, "contestability_changed": {"const": false}, "base_manifest_schema_changed": {"const": false}, "roadmap_changed": {"const": false}, "roadmap_priority_created": {"const": false}, "implementation_authority_created": {"const": false}, "release_or_tag_created": {"const": false}, "publication_authorized": {"const": false}, "runtime_activation_authorized": {"const": false}, "action_permit_created": {"const": false}, "workbench_reactivated": {"const": false}
+      }
+    }
+  }
+}

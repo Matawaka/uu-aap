@@ -1,0 +1,139 @@
+{
+  "schema": "urn:uu-aap:backlog-entity-reconciliation:0.1",
+  "origin_frontier": "1a5232fc3d3af8b6bc41de78a510e1ac9129c50a",
+  "audit_scope": {
+    "repository": "Matawaka/uu-aap",
+    "bounded_current_audit": true,
+    "code_search_completeness_claimed": false,
+    "absence_inference_allowed": false,
+    "bounded_exact_materialization_statement": "exact materialization not found in bounded current audit"
+  },
+  "historical_boundaries": {
+    "backlog_reconciliation_issue": 697,
+    "backlog_reconciliation_rewritten": false,
+    "backlog_reconciliation_semantic_authority": false,
+    "external_review_issue": 422,
+    "external_review_reinterpreted": false,
+    "new_external_review_disposition_created": false
+  },
+  "entities": [
+    {
+      "id": "non-binding-attention",
+      "name": "Non-Binding Attention",
+      "classification": "IMPLEMENTED",
+      "materialization_status": "IMPLEMENTATION_BOUND",
+      "source_bindings": [
+        {"kind": "ISSUE", "role": "bounded implementation requirement", "issue_number": 755},
+        {"kind": "PR", "role": "merged implementation", "pr_number": 756},
+        {"kind": "FILE_BLOB", "role": "current implementation README", "path": "pilots/kontur-game-companion/non-binding-attention-v0.1/README.md", "blob": "c1fa727f87a54ac6810d9d4e9f11474aea88e1b8"}
+      ],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "no-silent-reinterpretation",
+      "name": "No Silent Reinterpretation",
+      "classification": "INVARIANT",
+      "materialization_status": "SEMANTIC_INVARIANT_BOUND",
+      "exact_term_audit": "exact materialization not found in bounded current audit",
+      "source_bindings": [
+        {"kind": "ISSUE", "role": "explicit historical-manifest non-reinterpretation invariant", "issue_number": 852},
+        {"kind": "FILE_BLOB", "role": "current roadmap invariant evidence", "path": "docs/ROADMAP-CURRENT.md", "blob": "6063ce07c479c6a59c78091e4212fc5d09c27a04"}
+      ],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "pause-freeze-resume",
+      "name": "Pause/Freeze/Resume",
+      "classification": "PARTIALLY_COVERED",
+      "materialization_status": "PARTIAL_IMPLEMENTATION_BOUND",
+      "source_bindings": [
+        {"kind": "ISSUE", "role": "CCRP/C4 explicit pause/resume/handoff machine semantics", "issue_number": 144}
+      ],
+      "covered_scope": ["explicit pause barrier", "explicit resume with predecessor binding", "successor epoch and fencing token", "handoff/context admission"],
+      "uncovered_scope": ["the broader composite term Freeze is not silently equated with CCRP/C4 pause semantics"],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "rerc",
+      "name": "RERC / Reversible Epistemic Redundancy Control",
+      "classification": "NEW_CANDIDATE",
+      "materialization_status": "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT",
+      "exact_term_audit": "exact materialization not found in bounded current audit",
+      "source_bindings": [],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "event-responsive-dormancy",
+      "name": "Event-Responsive Dormancy",
+      "classification": "NEW_CANDIDATE",
+      "materialization_status": "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT",
+      "exact_term_audit": "exact materialization not found in bounded current audit",
+      "source_bindings": [],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "scaf",
+      "name": "SCAF / Spatiotemporal Causal Affordance Fabric",
+      "classification": "EXPLORATORY",
+      "materialization_status": "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT",
+      "exact_term_audit": "exact materialization not found in bounded current audit",
+      "source_bindings": [],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "cpot",
+      "name": "CPOT / Continuity-Preserving Ordinal Transition",
+      "classification": "EXPLORATORY",
+      "materialization_status": "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT",
+      "exact_term_audit": "exact materialization not found in bounded current audit",
+      "source_bindings": [],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "immune-tremor",
+      "name": "Immune Tremor",
+      "classification": "EXPLORATORY",
+      "materialization_status": "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT",
+      "exact_term_audit": "exact materialization not found in bounded current audit",
+      "source_bindings": [],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "conscious-ai",
+      "name": "Conscious AI",
+      "classification": "EXPLORATORY",
+      "materialization_status": "NOT_FOUND_IN_BOUNDED_CURRENT_AUDIT",
+      "exact_term_audit": "exact materialization not found in bounded current audit",
+      "source_bindings": [],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    },
+    {
+      "id": "workbench",
+      "name": "Workbench",
+      "classification": "PAUSED",
+      "materialization_status": "PAUSE_STATE_BOUND",
+      "source_bindings": [
+        {"kind": "FILE_BLOB", "role": "current pause source of truth", "path": "docs/ROADMAP-CURRENT.md", "blob": "6063ce07c479c6a59c78091e4212fc5d09c27a04"},
+        {"kind": "ISSUE", "role": "current-frontier reconciliation evidence", "issue_number": 840},
+        {"kind": "ISSUE", "role": "historical continuity provenance only", "issue_number": 804}
+      ],
+      "authority_effects": {"roadmap_priority_created": false, "implementation_authority_created": false, "stable_core_promotion_created": false, "release_authority_created": false, "action_permit_created": false}
+    }
+  ],
+  "summary": {"entity_count": 10, "IMPLEMENTED": 1, "INVARIANT": 1, "PARTIALLY_COVERED": 1, "NEW_CANDIDATE": 2, "EXPLORATORY": 4, "PAUSED": 1},
+  "non_effects": {
+    "stable_core_changed": false,
+    "spec_changed": false,
+    "principles_changed": false,
+    "contestability_changed": false,
+    "base_manifest_schema_changed": false,
+    "roadmap_changed": false,
+    "roadmap_priority_created": false,
+    "implementation_authority_created": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "runtime_activation_authorized": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false
+  }
+}
