@@ -1,0 +1,72 @@
+{
+  "schema": "urn:uu-aap:public-review-repository-discovery-implementation:0.2",
+  "origin_frontier": "391bc0820e9c17b4b9dde3271640ce52d39149d8",
+  "source_bindings": {
+    "v0_1_collector_blob": "91ce1cc830384c2c7757b047dc7cec951201cb41",
+    "v0_1_receipt_schema_blob": "d8e06c6d6cdd17c7e82fca14d6238319843f735e",
+    "v0_1_surfaces_blob": "3b7109b7760b38f2c62288c0517579dad3cdd06b",
+    "v0_1_implementation_receipt_blob": "c4b1a9855fcfda5899f36d23bd757376376338fd",
+    "v0_1_workflow_blob": "4b2ab0649c966dcadc247638b2f6d65df3834498",
+    "run_001_result_blob": "edc9a7e4f26492d16875727e17188c5e2a486ced"
+  },
+  "historical_external_source_binding": {
+    "issue_number": 422,
+    "comment_id": 5471862585,
+    "source_account_identifier": "84dnnvbdvp-debug",
+    "body_sha256": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8",
+    "accepted_lineage": ["#845", "#846", "#849"],
+    "classification": "KNOWN_HISTORICAL_EXTERNAL_SOURCE"
+  },
+  "scope": {
+    "repository_wide_issues": true,
+    "open_issues": true,
+    "closed_issues": true,
+    "issue_bodies": true,
+    "issue_comments": true,
+    "pull_requests": false,
+    "pull_request_comments": false,
+    "discussions": false,
+    "commit_comments": false,
+    "email": false,
+    "social_media": false,
+    "read_only": true,
+    "automatic_admission": false,
+    "automatic_disposition": false,
+    "scheduled_polling": false,
+    "accepted_push_live_discovery": true,
+    "manual_live_discovery": true
+  },
+  "classification_boundaries": {
+    "project_account_is_external_source": false,
+    "bot_account_is_external_source": false,
+    "missing_account_is_external_account_source": false,
+    "different_account_is_external_account_source_candidate": true,
+    "different_account_proves_human_identity": false,
+    "different_account_proves_independence": false,
+    "author_association_proves_standing_or_authority": false,
+    "source_presence_proves_relevance": false,
+    "source_presence_proves_truth": false,
+    "known_historical_source_is_new_source": false
+  },
+  "non_effects": {
+    "core_changed": false,
+    "spec_changed": false,
+    "responsibility_policy_changed": false,
+    "base_manifest_schema_changed": false,
+    "run_001_changed": false,
+    "stage_b_changed": false,
+    "stage_c_changed": false,
+    "public_review_changed": false,
+    "roadmap_changed": false,
+    "issues_or_comments_mutated": false,
+    "reviewers_contacted": false,
+    "identity_profiles_built": false,
+    "reputation_scores_created": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "recurring_schedule_created": false,
+    "c2pa_reclassified": false,
+    "workbench_reactivated": false
+  }
+}
