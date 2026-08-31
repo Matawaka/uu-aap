@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-002:run-001-result:0.1",
+  "title": "Core Pilot 002 Run 001 Machine-Readable Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "origin_frontier",
+    "pilot_id",
+    "run_id",
+    "admission_binding",
+    "source_binding",
+    "reproduction",
+    "current_contract_observation",
+    "existing_mitigation",
+    "interpretation",
+    "disposition",
+    "next_gate",
+    "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:core-pilot-002:run-001-result:0.1"},
+    "origin_frontier": {"const": "b7178fe9f36e7be0954e97564e82361215e68220"},
+    "pilot_id": {"const": "core-pilot-002"},
+    "run_id": {"const": "001"},
+    "admission_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path","blob","status"],
+      "properties": {
+        "path": {"const": "pilots/core-pilot-002/run-001/admission/v0.1/admission.json"},
+        "blob": {"const": "256bab21ffdafcfc7c5caa402d1c08a3c5355b9f"},
+        "status": {"const": "ADMITTED_AS_EXTERNAL_SOURCE_ACCOUNT_SUBMISSION"}
+      }
+    },
+    "source_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url","comment_id","author_account_identifier","body_sha256"],
+      "properties": {
+        "url": {"const": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585"},
+        "comment_id": {"const": 5471862585},
+        "author_account_identifier": {"const": "84dnnvbdvp-debug"},
+        "body_sha256": {"const": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8"}
+      }
+    },
+    "reproduction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["fixture_path","fixture_blob","schema_path","schema_blob","schema_valid"],
+      "properties": {
+        "fixture_path": {"const": "pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json"},
+        "fixture_blob": {"const": "350ca00629f354bdd7cc01785d448590c6be87b4"},
+        "schema_path": {"const": "schema/uu-aap-manifest.schema.json"},
+        "schema_blob": {"const": "c0579b34f6c456c462cea1aa80ec67b78fce7582"},
+        "schema_valid": {"const": true}
+      }
+    },
+    "current_contract_observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "responsibility_required_fields",
+        "responsibility_optional_fields",
+        "declarant_field_present",
+        "acceptance_event_field_present",
+        "acceptance_evidence_reference_field_present",
+        "responsibility_policy_requires_attributable_action",
+        "representation_gap_confirmed"
+      ],
+      "properties": {
+        "responsibility_required_fields": {"const": ["actor_id","scope","status"]},
+        "responsibility_optional_fields": {"const": ["limitations"]},
+        "declarant_field_present": {"const": false},
+        "acceptance_event_field_present": {"const": false},
+        "acceptance_evidence_reference_field_present": {"const": false},
+        "responsibility_policy_requires_attributable_action": {"const": true},
+        "representation_gap_confirmed": {"const": true}
+      }
+    },
+    "existing_mitigation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["spec_path","spec_blob","responsibility_path","responsibility_blob","scoped_declarations_display_present","self_declared_unless_attested_display_present","mitigation_eliminates_machine_provenance_gap"],
+      "properties": {
+        "spec_path": {"const": "SPEC.md"},
+        "spec_blob": {"const": "44b91e0e48dee9d928c843bbb304a5c246582da7"},
+        "responsibility_path": {"const": "RESPONSIBILITY.md"},
+        "responsibility_blob": {"const": "f71dd1920157d4137f1e3a1ab270bcdfc873e61f"},
+        "scoped_declarations_display_present": {"const": true},
+        "self_declared_unless_attested_display_present": {"const": true},
+        "mitigation_eliminates_machine_provenance_gap": {"const": false}
+      }
+    },
+    "interpretation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["result_class","gap_class","strong_claim_rejected","accepted_as_truth","reviewer_identity_verified","reviewer_independence_verified","reviewer_authority_verified","reviewer_expertise_verified"],
+      "properties": {
+        "result_class": {"const": "REPRESENTATION_PROVENANCE_GAP_CONFIRMED_WITH_EXISTING_DISPLAY_MITIGATION"},
+        "gap_class": {"const": "RESPONSIBILITY_STATUS_DECLARATION_PROVENANCE"},
+        "strong_claim_rejected": {"const": "ACCEPTED_STATUS_IS_NOT_SHOWN_TO_BE_INDEPENDENTLY_ATTESTED_CONSENT"},
+        "accepted_as_truth": {"const": false},
+        "reviewer_identity_verified": {"const": false},
+        "reviewer_independence_verified": {"const": false},
+        "reviewer_authority_verified": {"const": false},
+        "reviewer_expertise_verified": {"const": false}
+      }
+    },
+    "disposition": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state","rationale","objection_preserved","normative_change_authorized"],
+      "properties": {
+        "state": {"const": "accept_for_followup"},
+        "rationale": {"const": "Current v0.1 machine responsibility entries preserve actor/scope/status but not provenance of who declared the status or an attributable acceptance event/evidence reference. SPEC section 22 already mitigates the strongest UI interpretation by describing responsibility as scoped declarations and claims as self-declared unless individually attested, but that display guidance does not remove the machine-representation gap."},
+        "objection_preserved": {"const": true},
+        "normative_change_authorized": {"const": false}
+      }
+    },
+    "next_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status","candidate_repair_classes","human_normative_decision_required"],
+      "properties": {
+        "status": {"const": "HUMAN_NORMATIVE_DESIGN_DECISION_REQUIRED"},
+        "candidate_repair_classes": {
+          "const": [
+            "VERIFIER_ONLY_DECLARATION_CLARIFICATION",
+            "OPTIONAL_DECLARANT_OR_ACCEPTANCE_EVIDENCE_BINDING",
+            "STRONGER_PROFILE_REQUIRES_ATTRIBUTABLE_ACCEPTANCE_EVIDENCE"
+          ]
+        },
+        "human_normative_decision_required": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_comment_mutated","reviewer_contacted","identity_profile_built","reputation_score_created","core_changed","spec_changed","responsibility_policy_changed","manifest_schema_changed","liability_assigned","release_or_tag_created","publication_authorized","action_permit_created","workbench_reactivated"],
+      "properties": {
+        "source_comment_mutated": {"const": false},
+        "reviewer_contacted": {"const": false},
+        "identity_profile_built": {"const": false},
+        "reputation_score_created": {"const": false},
+        "core_changed": {"const": false},
+        "spec_changed": {"const": false},
+        "responsibility_policy_changed": {"const": false},
+        "manifest_schema_changed": {"const": false},
+        "liability_assigned": {"const": false},
+        "release_or_tag_created": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false},
+        "workbench_reactivated": {"const": false}
+      }
+    }
+  }
+}
