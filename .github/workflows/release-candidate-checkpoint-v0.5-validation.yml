@@ -1,0 +1,73 @@
+name: Release Candidate Checkpoint v0.5 validation
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/release-candidate-checkpoint/v0.5/**'
+      - '.github/workflows/release-candidate-checkpoint-v0.5-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/release-candidate-checkpoint/v0.5/**'
+      - '.github/workflows/release-candidate-checkpoint-v0.5-validation.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 9bce100a63ca981f28f24ce73d0f81f67f4289d3
+  RECONCILIATION_BLOB: 37a5daed7f57e58177e92679310fa26b3d2ddc24
+  ROADMAP_BLOB: 3e5f371764c8f9557fd1ce57615a2739253d8140
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: bounded RC v0.5 derivation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Validate RC v0.5 and hostile mutations
+        run: python tooling/release-candidate-checkpoint/v0.5/validate.py
+
+      - name: Re-run accepted Current Frontier Reconciliation v0.2
+        run: python tooling/current-frontier-reconciliation/v0.2/validate.py
+
+      - name: Bind exact accepted reconciliation inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object tooling/current-frontier-reconciliation/v0.2/reconciliation.json)" = "$RECONCILIATION_BLOB"
+          test "$(git hash-object docs/ROADMAP-CURRENT.md)" = "$ROADMAP_BLOB"
+          echo "current reconciliation/roadmap bindings: PASS"
+
+      - name: Preserve historical RC v0.4 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object tooling/release-candidate-checkpoint/v0.4/README.md)" = "bf160a7acbb9170f2fe861ec6983c1424a82d48e"
+          test "$(git hash-object tooling/release-candidate-checkpoint/v0.4/checkpoint.json)" = "ddb7905b84a552321b0d7b0e3125b44e0960b8ab"
+          test "$(git hash-object tooling/release-candidate-checkpoint/v0.4/validate.js)" = "ce6d72d74a58414f448f50f547720a9ba87daafc"
+          echo "historical RC v0.4 byte guard: PASS"
+
+      - name: Guard accepted inputs and semantic boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md \
+            docs/ROADMAP-CURRENT.md \
+            tooling/current-frontier-reconciliation/v0.2/ \
+            tooling/release-candidate-checkpoint/v0.4/
+          echo "accepted inputs/Core/normative boundaries: unchanged"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
