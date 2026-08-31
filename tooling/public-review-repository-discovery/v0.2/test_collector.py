@@ -32,14 +32,16 @@ def issue(number, login="Matawaka", body="project issue", state="open", pr=False
         "body": body,
     }
     if pr:
+        obj["html_url"] = f"https://github.com/Matawaka/uu-aap/pull/{number}"
         obj["pull_request"] = {"url": f"https://api.github.com/repos/Matawaka/uu-aap/pulls/{number}"}
     return obj
 
 
-def comment(issue_number, comment_id, login, body, user_type="User", app_slug=None):
+def comment(issue_number, comment_id, login, body, user_type="User", app_slug=None, pr=False):
+    surface = "pull" if pr else "issues"
     return {
         "id": comment_id,
-        "html_url": f"https://github.com/Matawaka/uu-aap/issues/{issue_number}#issuecomment-{comment_id}",
+        "html_url": f"https://github.com/Matawaka/uu-aap/{surface}/{issue_number}#issuecomment-{comment_id}",
         "issue_url": f"https://api.github.com/repos/Matawaka/uu-aap/issues/{issue_number}",
         "user": user(login, user_type) if login is not None else None,
         "author_association": "OWNER" if login == "Matawaka" else "NONE",
@@ -76,7 +78,8 @@ def fixture(include_new=True):
     ]
     comments = [
         comment(1, 1001, "Matawaka", "project comment"),
-        comment(3, 1002, "external-pr-commenter", "PR comment must be excluded"),
+        comment(3, 1002, "external-pr-commenter", "known PR comment must be excluded", pr=True),
+        comment(9, 1009, "external-pr-commenter", "PR comment with no PR object in issue snapshot must be excluded", pr=True),
         comment(4, 1003, "helper-bot[bot]", "bot comment", user_type="Bot"),
         comment(5, 1004, None, "deleted comment author"),
         comment(422, 9001, "known-reviewer", "known historical", app_slug="chatgpt-codex-connector"),
@@ -111,7 +114,7 @@ def main():
         ("ISSUE_BODY", 2),
         ("ISSUE_COMMENT", 2),
     }
-    assert all(x["issue_number"] != 3 for x in receipt["new_external_account_sources"])
+    assert all(x["issue_number"] not in {3, 9} for x in receipt["new_external_account_sources"])
     mod.validate_receipt(receipt, p)
 
     no_new_items, no_new_comments = fixture(False)
@@ -119,6 +122,7 @@ def main():
     assert no_new["status"] == "NO_NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED"
     assert no_new["counts"]["new_external_account_sources"] == 0
     assert no_new["counts"]["known_historical_external_sources"] == 1
+    assert no_new["counts"]["issue_comments"] == 4
 
     drifted = copy.deepcopy(no_new_comments)
     for item in drifted:
@@ -132,8 +136,13 @@ def main():
     duplicate_items = no_new_items + [copy.deepcopy(no_new_items[0])]
     must_reject("duplicate pagination issue", lambda: mod.build_receipt(p, duplicate_items, no_new_comments, "x"))
 
-    orphan_comments = no_new_comments + [comment(999, 9999, "bob", "orphan")]
+    orphan_comments = no_new_comments + [comment(999, 9999, "bob", "orphan real issue comment")]
     must_reject("comment for unobserved issue", lambda: mod.build_receipt(p, no_new_items, orphan_comments, "x"))
+
+    malformed_surface = copy.deepcopy(no_new_comments)
+    malformed_surface.append(comment(999, 9998, "bob", "bad surface"))
+    malformed_surface[-1]["html_url"] = "https://example.com/not-a-repository-comment"
+    must_reject("unexpected comment html URL", lambda: mod.build_receipt(p, no_new_items, malformed_surface, "x"))
 
     hostiles = []
     x = copy.deepcopy(receipt); x["trust_score"] = 1; hostiles.append(("scalar score", x))
@@ -154,7 +163,7 @@ def main():
     for label, hostile in hostiles:
         must_reject(label, lambda h=hostile: mod.validate_receipt(h, p))
 
-    print(f"PUBLIC_REVIEW_REPOSITORY_DISCOVERY_V0_2_TESTS_PASS hostile={len(hostiles) + 4}")
+    print(f"PUBLIC_REVIEW_REPOSITORY_DISCOVERY_V0_2_TESTS_PASS hostile={len(hostiles) + 5}")
 
 
 if __name__ == "__main__":
