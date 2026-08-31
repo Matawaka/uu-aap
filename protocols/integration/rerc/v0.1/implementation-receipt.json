@@ -1,0 +1,39 @@
+{
+  "artifact_type": "RERCImplementationReceipt",
+  "version": "0.1",
+  "origin_frontier": "0039375897f2de683afac62e902335f53a1a7d98",
+  "tracking_issue": 879,
+  "profile_path": "protocols/integration/rerc/v0.1",
+  "source_bindings": {
+    "backlog_entity_registry": {
+      "path": "tooling/backlog-entity-reconciliation/v0.1/registry.json",
+      "blob": "c324bc1700affeb66d801dc38cf5c23db2b3e1d9"
+    },
+    "event_responsive_dormancy_predecessor": {
+      "path": "protocols/integration/event-responsive-dormancy/v0.1/implementation-receipt.json",
+      "blob": "e127d784a74f0713fe0b157845ec5a2754647034"
+    }
+  },
+  "contract": {
+    "observed_graph_preserved": true,
+    "operational_graph_distinct": true,
+    "protective_suppressible": false,
+    "exact_restoration_required": true,
+    "scalar_redundancy_score_used": false,
+    "redundancy_group_is_equivalence_proof": false
+  },
+  "non_effects": {
+    "stable_core_changed": false,
+    "spec_changed": false,
+    "roadmap_changed": false,
+    "interface_registry_changed": false,
+    "evidence_deleted": false,
+    "authority_created": false,
+    "action_permit_created": false,
+    "external_graph_mutated": false,
+    "runtime_activated": false,
+    "external_effect_performed": false,
+    "release_or_tag_created": false,
+    "workbench_reactivated": false
+  }
+}
