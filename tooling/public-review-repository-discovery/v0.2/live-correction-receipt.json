@@ -1,0 +1,48 @@
+{
+  "schema": "urn:uu-aap:public-review-repository-discovery-live-correction:0.2",
+  "correction_origin_frontier": "d2e2f3a813dd6ea853a45f2108a32d671a3e41d4",
+  "failed_post_merge_run": {
+    "run_id": 33370105262,
+    "job_id": 99419020061,
+    "workflow": "Public Review Repository Discovery v0.2",
+    "failure_stage": "Perform live read-only repository discovery",
+    "failure_class": "EXCLUDED_PR_CONVERSATION_COMMENT_RESOLVED_AS_ISSUE_REFERENCE",
+    "exception": "ValueError: issue comment references unobserved issue 9"
+  },
+  "failing_implementation_bindings": {
+    "collector_blob": "69d1cbc5fbf45b7c2355b66a03f973b21e2900a3",
+    "test_collector_blob": "9f2e1582cde0fa73a671b25de19546a661e4b4da",
+    "workflow_blob": "0aa20d5f28fa11aaa647c6996deb534276099a0a"
+  },
+  "observed_source_shape": {
+    "comment_id": 5379236889,
+    "issue_number_field": 9,
+    "comment_html_url": "https://github.com/Matawaka/uu-aap/pull/9#issuecomment-5379236889",
+    "issue_9_html_url": "https://github.com/Matawaka/uu-aap/pull/9",
+    "issue_9_object_class": "PULL_REQUEST",
+    "classification": "EXCLUDED_PULL_REQUEST_COMMENT"
+  },
+  "correction_rule": {
+    "pull_comment_html_prefix": "https://github.com/Matawaka/uu-aap/pull/",
+    "pull_request_comment_excluded_before_issue_resolution": true,
+    "issue_comment_html_prefix": "https://github.com/Matawaka/uu-aap/issues/",
+    "unknown_real_issue_comment_still_fails_closed": true,
+    "unexpected_comment_html_url_fails_closed": true,
+    "source_scope_expanded": false
+  },
+  "non_effects": {
+    "historical_422_binding_changed": false,
+    "pull_requests_included_as_review_sources": false,
+    "pull_request_comments_included_as_review_sources": false,
+    "issue_comments_hidden": false,
+    "admission_policy_changed": false,
+    "disposition_policy_changed": false,
+    "identity_or_standing_inferred": false,
+    "authority_or_truth_inferred": false,
+    "core_or_spec_changed": false,
+    "public_review_changed": false,
+    "roadmap_changed": false,
+    "c2pa_reclassified": false,
+    "workbench_reactivated": false
+  }
+}

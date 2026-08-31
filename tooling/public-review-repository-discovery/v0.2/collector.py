@@ -70,6 +70,19 @@ def issue_number_from_url(issue_url: str) -> int:
     return number
 
 
+def comment_surface_kind(comment: dict, repository: str) -> str:
+    html_url = comment.get("html_url")
+    if not isinstance(html_url, str):
+        raise ValueError("comment html_url missing")
+    pr_prefix = f"https://github.com/{repository}/pull/"
+    issue_prefix = f"https://github.com/{repository}/issues/"
+    if html_url.startswith(pr_prefix) and "#issuecomment-" in html_url:
+        return "PULL_REQUEST_COMMENT"
+    if html_url.startswith(issue_prefix) and "#issuecomment-" in html_url:
+        return "ISSUE_COMMENT"
+    raise ValueError(f"unexpected repository issue-comment html_url: {html_url!r}")
+
+
 def account_classification(obj: dict, project_account: str) -> str:
     user = obj.get("user")
     if not user:
@@ -135,6 +148,7 @@ def build_receipt(policy: dict, raw_items: list[dict], raw_comments: list[dict],
     if policy["issue_states"] != ["open", "closed"]:
         raise ValueError("issue-state scope drift")
 
+    repository = policy["repository"]
     project_account = policy["project_account_identifier"]
     known = historical_index(policy)
 
@@ -149,7 +163,7 @@ def build_receipt(policy: dict, raw_items: list[dict], raw_comments: list[dict],
             continue
         if item.get("state") not in {"open", "closed"}:
             raise ValueError(f"unexpected issue state: {number}")
-        if item.get("html_url") != f"https://github.com/{policy['repository']}/issues/{number}":
+        if item.get("html_url") != f"https://github.com/{repository}/issues/{number}":
             raise ValueError(f"issue URL mismatch: {number}")
         issue_map[number] = item
 
@@ -179,6 +193,9 @@ def build_receipt(policy: dict, raw_items: list[dict], raw_comments: list[dict],
 
     issue_comment_count = 0
     for comment in raw_comments:
+        surface_kind = comment_surface_kind(comment, repository)
+        if surface_kind == "PULL_REQUEST_COMMENT":
+            continue
         number = issue_number_from_url(comment.get("issue_url"))
         if number in pr_numbers:
             continue
@@ -205,7 +222,7 @@ def build_receipt(policy: dict, raw_items: list[dict], raw_comments: list[dict],
     status = "NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED" if new_observed else "NO_NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED"
     receipt = {
         "schema": "urn:uu-aap:public-review-repository-discovery:0.2",
-        "repository": policy["repository"],
+        "repository": repository,
         "observed_at_utc": observed_at,
         "observed_at_is_trusted_time": False,
         "status": status,
