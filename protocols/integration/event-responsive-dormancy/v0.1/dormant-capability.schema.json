@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:event-responsive-dormancy:dormant-capability:0.1",
+  "title": "Event Responsive Dormant Capability v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","capability_id","context_ref","scope_ref","wake_signal_kinds","state","checkpoint_refs","provenance_refs","predecessor","polling_enabled","background_activity_authorized","active_process","authority_inherited","intent_inherited","action_permit_inherited","external_effect_authority"],
+  "properties": {
+    "artifact_type": {"const": "EventResponsiveDormantCapability"},
+    "version": {"const": "0.1"},
+    "capability_id": {"type": "string", "minLength": 1},
+    "context_ref": {"type": "string", "minLength": 1},
+    "scope_ref": {"type": "string", "minLength": 1},
+    "wake_signal_kinds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "state": {"const": "DORMANT"},
+    "checkpoint_refs": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "provenance_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["run_id","epoch","lease_ref","intent_ref","action_permit_ref"],
+      "properties": {
+        "run_id": {"type": "string", "minLength": 1},
+        "epoch": {"type": "integer", "minimum": 1},
+        "lease_ref": {"type": ["string","null"]},
+        "intent_ref": {"type": ["string","null"]},
+        "action_permit_ref": {"type": ["string","null"]}
+      }
+    },
+    "polling_enabled": {"const": false},
+    "background_activity_authorized": {"const": false},
+    "active_process": {"const": false},
+    "authority_inherited": {"const": false},
+    "intent_inherited": {"const": false},
+    "action_permit_inherited": {"const": false},
+    "external_effect_authority": {"const": false}
+  }
+}
