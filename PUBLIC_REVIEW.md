@@ -51,7 +51,19 @@ Core Pilot 002 tests whether the reusable core can process one real external rev
 - [Run Admission Gate](pilots/core-pilot-002/run-admission/README.md)
 - [External Review Entry — Issue #422](https://github.com/Matawaka/uu-aap/issues/422)
 
-The first real run remains in `waiting_for_external_input` until an eligible external submission exists. The project will not manufacture a reviewer or promote a synthetic fixture to real evidence merely to make the pilot run.
+Core Pilot 002 **Run 001 is completed**. A public #422 submission was first preserved as an observation, then admitted through a separate project selection gate, reproduced against the exact current manifest schema, and dispositioned `accept_for_followup`. The machine-readable result is preserved under `pilots/core-pilot-002/run-001/result/v0.1/`.
+
+The run confirmed a narrow responsibility-status declaration-provenance gap while preserving the existing declaration/attestation mitigation. The follow-up was implemented additively as optional **Responsibility Status Provenance Binding v0.1** (Stage B) and optional **UU-AAP/RA1** responsibility-assurance overlay (Stage C). Historical v0.1 manifests were not silently reinterpreted.
+
+The source account was not promoted by the run into verified human identity, independence, expertise, standing or authority, and the submitted claim was not accepted as truth merely because it was admitted or reproduced.
+
+`one completed external-source run != external validation or certification`
+
+`accept_for_followup != normative truth`
+
+`RA1 != identity != authority != liability`
+
+The project will not manufacture a reviewer or promote a synthetic fixture to real external evidence merely to make later review gates pass. Additional external participation remains welcome, and the broader Public Review #1–#7 remains open.
 
 If a submission is admitted, the source evidence remains distinct from the project's interpretation and disposition. A disposition does not erase an objection and does not itself edit the protocol, close an issue, publish a release, or establish truth, fault or liability.
 
