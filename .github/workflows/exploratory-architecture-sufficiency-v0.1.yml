@@ -1,0 +1,151 @@
+name: Exploratory Architecture Sufficiency v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/exploratory-architecture-sufficiency/v0.1/**'
+      - '.github/workflows/exploratory-architecture-sufficiency-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/exploratory-architecture-sufficiency/v0.1/**'
+      - '.github/workflows/exploratory-architecture-sufficiency-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 25faf51c5b10c06f752fcb8815fd09f8a7a3e611
+  AUDIT_DIR: tooling/exploratory-architecture-sufficiency/v0.1
+
+jobs:
+  validate:
+    name: bounded sufficiency audit without exploratory promotion
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Require exact origin exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          git cat-file -e "$ORIGIN_FRONTIER^{commit}"
+      - name: Syntax and closed-schema validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check "$AUDIT_DIR/validate_audit.js"
+          node --check "$AUDIT_DIR/test_audit.js"
+          python - <<'PY'
+          import json, os
+          from jsonschema import Draft202012Validator
+          d=os.environ['AUDIT_DIR']
+          pairs=[('audit.schema.json','audit.json'),('implementation-receipt.schema.json','implementation-receipt.json')]
+          for sname,xname in pairs:
+              s=json.load(open(f'{d}/{sname}',encoding='utf-8'))
+              x=json.load(open(f'{d}/{xname}',encoding='utf-8'))
+              Draft202012Validator.check_schema(s)
+              Draft202012Validator(s).validate(x)
+              print(f'PASS schema {sname} -> {xname}')
+          PY
+      - name: Run exact source and semantic audit
+        run: node "$AUDIT_DIR/validate_audit.js"
+      - name: Run hostile mutation suite
+        run: node "$AUDIT_DIR/test_audit.js"
+      - name: Re-run key predecessor conformance
+        shell: bash
+        run: |
+          set -euo pipefail
+          python tooling/backlog-entity-reconciliation/v0.1/validate_registry.py
+          node protocols/core/v0.1/validate-core.js
+          node protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js
+          node protocols/integration/capability-selection/v0.1/validate-capability-selection.js
+          node protocols/integration/execution-capability-availability/v0.1/validate-execution-capability-availability.js
+          node protocols/fcl/v0.1/test-fcl.js
+          node protocols/integration/event-responsive-dormancy/v0.1/test-event-responsive-dormancy.js
+          node protocols/experimental/future-optionality-non-commitment/v0.1/validate.js
+          node pilots/kontur-game-companion/non-binding-attention-v0.1/test-attention.js
+      - name: Bind exact audit implementation artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD:$AUDIT_DIR/README.md)" = bfd7a0e208ed658467b38d48727826ecc5b02bb7
+          test "$(git rev-parse HEAD:$AUDIT_DIR/audit.json)" = bdc949366ff5f8c563cdbcce962ff234657dbb9f
+          test "$(git rev-parse HEAD:$AUDIT_DIR/audit.schema.json)" = 92ca29bb12a466d5337e01e5d8920cf20554d3e5
+          test "$(git rev-parse HEAD:$AUDIT_DIR/validate_audit.js)" = bea38e1a219c43f90d39154a167168ee27bffeb6
+          test "$(git rev-parse HEAD:$AUDIT_DIR/test_audit.js)" = e5803e2a127920d45038b304705fb7dc4eefcb1d
+      - name: Verify receipt/result non-promotion boundary
+        run: |
+          python - <<'PY'
+          import json, os
+          d=os.environ['AUDIT_DIR']
+          a=json.load(open(f'{d}/audit.json',encoding='utf-8'))
+          r=json.load(open(f'{d}/implementation-receipt.json',encoding='utf-8'))
+          assert a['overall']['result']=='EXPLORATORY_SUFFICIENCY_NO_NEW_COMPONENT_CURRENTLY_JUSTIFIED'
+          assert a['overall']['new_component_candidates']==0
+          assert a['overall']['exploratory_entities_promoted']==0
+          assert a['overall']['implementation_authorized'] is False
+          assert r['research_result']==a['overall']['result']
+          assert r['source_binding_count']==13
+          assert r['merge_acceptance_claimed'] is False
+          assert r['contract']['implementation_requires_separate_successor_decision'] is True
+          assert r['non_effects']['phenomenal_consciousness_claim_created'] is False
+          print('research/non-promotion receipt: PASS')
+          PY
+      - name: Guard all source and normative surfaces immutable
+        shell: bash
+        run: |
+          set -euo pipefail
+          guarded=(
+            protocols/core/v0.1/
+            protocols/interface-registry/v0.1/
+            protocols/interface-registry/v0.2/
+            protocols/integration/capability-selection/v0.1/
+            protocols/integration/execution-capability-availability/v0.1/
+            protocols/integration/v0.1/COUNTERFACTUAL_INTERVENTION.md
+            protocols/integration/v0.1/RESPONSIBILITY_EVENT_CHAIN.md
+            protocols/fcl/v0.1/
+            protocols/integration/event-responsive-dormancy/v0.1/
+            pilots/kontur-game-companion/non-binding-attention-v0.1/
+            protocols/experimental/future-optionality-non-commitment/v0.1/
+            tooling/backlog-entity-reconciliation/v0.1/
+            docs/ROADMAP-CURRENT.md
+            SPEC.md PRINCIPLES.md CONTESTABILITY.md schema/uu-aap-manifest.schema.json
+          )
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- "${guarded[@]}"
+          echo 'all evidence/normative predecessors unchanged: PASS'
+      - name: Require audit-only diff boundary
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r p; do
+            [ -z "$p" ] && continue
+            case "$p" in
+              tooling/exploratory-architecture-sufficiency/v0.1/*|.github/workflows/exploratory-architecture-sufficiency-v0.1.yml) ;;
+              *) echo "unexpected changed path: $p" >&2; exit 1 ;;
+            esac
+          done < <(git diff --name-only "$ORIGIN_FRONTIER" HEAD)
+          echo 'audit-only diff boundary: PASS'
+      - name: Require read-only no-schedule workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          w=.github/workflows/exploratory-architecture-sufficiency-v0.1.yml
+          ! grep -Eq '^[[:space:]]+schedule:' "$w"
+          ! grep -Eq '^[[:space:]]+[A-Za-z_-]+:[[:space:]]*write[[:space:]]*$' "$w"
+          grep -F 'contents: read' "$w" >/dev/null
+          echo 'read-only/no-schedule boundary: PASS'
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
