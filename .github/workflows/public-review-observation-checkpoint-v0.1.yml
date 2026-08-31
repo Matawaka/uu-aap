@@ -17,6 +17,10 @@ permissions:
 
 env:
   ORIGIN_FRONTIER: 88f5896ac60c59e0a3449196466c3ea9dcd9ea87
+  V0_2_IMPLEMENTATION_ORIGIN: 391bc0820e9c17b4b9dde3271640ce52d39149d8
+  V0_2_CORRECTION_ORIGIN: d2e2f3a813dd6ea853a45f2108a32d671a3e41d4
+  V0_3_IMPLEMENTATION_ORIGIN: bef77bddd4fa6430bb16f14e52f1d5fee1aeb786
+  V0_3_CORRECTION_ORIGIN: abc32846b0287d7997f63535aa11749a697313ea
   PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
@@ -36,12 +40,21 @@ jobs:
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
 
-      - name: Fetch exact checkpoint origin
+      - name: Fetch exact accepted observer origins
         shell: bash
         run: |
           set -euo pipefail
-          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
-          git cat-file -e "$ORIGIN_FRONTIER^{commit}"
+          for ref in \
+            "$ORIGIN_FRONTIER" \
+            "$V0_2_IMPLEMENTATION_ORIGIN" \
+            "$V0_2_CORRECTION_ORIGIN" \
+            "$V0_3_IMPLEMENTATION_ORIGIN" \
+            "$V0_3_CORRECTION_ORIGIN"
+          do
+            git fetch -q --depth=1 origin "$ref"
+            git cat-file -e "$ref^{commit}"
+          done
+          echo "exact historical observer origins available: PASS"
 
       - name: Parse machine-readable checkpoint files
         shell: bash
