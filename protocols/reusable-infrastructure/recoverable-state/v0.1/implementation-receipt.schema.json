@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:recoverable-state-infrastructure:implementation-receipt:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","origin_frontier","tracking_issue","candidate_status","profile_path","accepted_component_bindings","candidate_artifact_bindings","interface_registry_successor","contract","non_effects","merge_acceptance_claimed"],
+  "properties": {
+    "artifact_type": {"const": "RecoverableStateInfrastructureCandidateImplementationReceipt"},
+    "version": {"const": "0.1"},
+    "origin_frontier": {"const": "ef4c8c6030ef517f2997fb76cff4f584fb25c691"},
+    "tracking_issue": {"const": 881},
+    "candidate_status": {"const": "EXPERIMENTAL_REUSABLE_INFRASTRUCTURE_CANDIDATE"},
+    "profile_path": {"const": "protocols/reusable-infrastructure/recoverable-state/v0.1"},
+    "accepted_component_bindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["event_responsive_dormancy","rerc"],
+      "properties": {
+        "event_responsive_dormancy": {
+          "type": "object", "additionalProperties": false,
+          "required": ["merge_frontier","module_blob","implementation_receipt_blob"],
+          "properties": {
+            "merge_frontier": {"const": "0039375897f2de683afac62e902335f53a1a7d98"},
+            "module_blob": {"const": "2cadbd2f405391f4f97e100d77245757ce6b5a58"},
+            "implementation_receipt_blob": {"const": "e127d784a74f0713fe0b157845ec5a2754647034"}
+          }
+        },
+        "rerc": {
+          "type": "object", "additionalProperties": false,
+          "required": ["merge_frontier","module_blob","implementation_receipt_blob"],
+          "properties": {
+            "merge_frontier": {"const": "ef4c8c6030ef517f2997fb76cff4f584fb25c691"},
+            "module_blob": {"const": "d2aae21a2e2375477c6349eae5f236ea60cd7151"},
+            "implementation_receipt_blob": {"const": "83609468622f4a79783b9b29e73a661497bad849"}
+          }
+        }
+      }
+    },
+    "candidate_artifact_bindings": {
+      "type": "object", "additionalProperties": false,
+      "required": ["candidate_manifest_blob","candidate_manifest_schema_blob","composer_blob","composition_receipt_schema_blob"],
+      "properties": {
+        "candidate_manifest_blob": {"const": "85a7d51b70c90df7869e775a2529f53fe2c068f0"},
+        "candidate_manifest_schema_blob": {"const": "122b17dd29f499ab2225989d4c2f44c1c082e581"},
+        "composer_blob": {"const": "1f114ddc73093809f789ca425b428966ac96f91e"},
+        "composition_receipt_schema_blob": {"const": "c318c850481ad384401d91af858ed9e2b87bd8e7"}
+      }
+    },
+    "interface_registry_successor": {
+      "type": "object", "additionalProperties": false,
+      "required": ["base_v0_1_blob","delta_v0_2_blob","validator_v0_2_blob","historical_v0_1_rewritten"],
+      "properties": {
+        "base_v0_1_blob": {"const": "2aff5e5785eb97796031b19ffe9fe026a3543bf6"},
+        "delta_v0_2_blob": {"const": "ad705523bada7f64a04e09e34974407725942976"},
+        "validator_v0_2_blob": {"const": "6137544281a34f7d68239388ee1ae9b11085beb1"},
+        "historical_v0_1_rewritten": {"const": false}
+      }
+    },
+    "contract": {
+      "type": "object", "additionalProperties": false,
+      "required": ["components_independently_reusable","component_semantics_collapsed","exact_rerc_restoration_required","erd_ready_is_action_permit","possible_next_interface_is_automatic","performance_gain_proven","resource_savings_proven","exploratory_lane_dependency_created"],
+      "properties": {
+        "components_independently_reusable": {"const": true},
+        "component_semantics_collapsed": {"const": false},
+        "exact_rerc_restoration_required": {"const": true},
+        "erd_ready_is_action_permit": {"const": false},
+        "possible_next_interface_is_automatic": {"const": false},
+        "performance_gain_proven": {"const": false},
+        "resource_savings_proven": {"const": false},
+        "exploratory_lane_dependency_created": {"const": false}
+      }
+    },
+    "non_effects": {
+      "type": "object", "additionalProperties": false,
+      "required": ["stable_core_changed","spec_changed","roadmap_changed","release_or_tag_created","authority_created","action_permit_created","runtime_activated","scheduler_installed","network_monitoring_started","evidence_deleted","external_graph_mutated","external_effect_performed","workbench_reactivated","exploratory_lane_promoted"],
+      "properties": {
+        "stable_core_changed": {"const": false}, "spec_changed": {"const": false}, "roadmap_changed": {"const": false},
+        "release_or_tag_created": {"const": false}, "authority_created": {"const": false}, "action_permit_created": {"const": false},
+        "runtime_activated": {"const": false}, "scheduler_installed": {"const": false}, "network_monitoring_started": {"const": false},
+        "evidence_deleted": {"const": false}, "external_graph_mutated": {"const": false}, "external_effect_performed": {"const": false},
+        "workbench_reactivated": {"const": false}, "exploratory_lane_promoted": {"const": false}
+      }
+    },
+    "merge_acceptance_claimed": {"const": false}
+  }
+}
