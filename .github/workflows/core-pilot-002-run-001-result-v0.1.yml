@@ -1,0 +1,109 @@
+name: Core Pilot 002 Run 001 Result v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/core-pilot-002/run-001/result/v0.1/**'
+      - '.github/workflows/core-pilot-002-run-001-result-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/core-pilot-002/run-001/result/v0.1/**'
+      - '.github/workflows/core-pilot-002-run-001-result-v0.1.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: b7178fe9f36e7be0954e97564e82361215e68220
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  run-001-result:
+    name: reproduce and disposition exact admitted counterexample
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Validate machine-readable result and reproduce counterexample
+        run: python pilots/core-pilot-002/run-001/result/v0.1/validate.py
+
+      - name: Parse all new JSON artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in \
+            pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json \
+            pilots/core-pilot-002/run-001/result/v0.1/review-case.json \
+            pilots/core-pilot-002/run-001/result/v0.1/result.json \
+            pilots/core-pilot-002/run-001/result/v0.1/result.schema.json
+          do
+            python -m json.tool "$f" >/dev/null
+          done
+
+      - name: Revalidate exact admitted source and admission predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python pilots/core-pilot-002/external-input-observation/v0.1/validate.py
+          python pilots/core-pilot-002/external-input-observation/v0.1/verify_live_source.py
+          python pilots/core-pilot-002/run-001/admission/v0.1/validate.py
+          python pilots/core-pilot-002/run-001/admission/v0.1/verify_selection_record.py
+          python pilots/core-pilot-002/validate.py
+
+      - name: Bind exact normative and admission inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object schema/uu-aap-manifest.schema.json)" = "c0579b34f6c456c462cea1aa80ec67b78fce7582"
+          test "$(git hash-object SPEC.md)" = "44b91e0e48dee9d928c843bbb304a5c246582da7"
+          test "$(git hash-object RESPONSIBILITY.md)" = "f71dd1920157d4137f1e3a1ab270bcdfc873e61f"
+          test "$(git hash-object pilots/core-pilot-002/review-case.schema.json)" = "eed5f1736029d646191a5213d4980216f7004dfd"
+          test "$(git hash-object pilots/core-pilot-002/external-input-observation/v0.1/observation.json)" = "3efeaeffbc39a98d2471973f0af483960dd63739"
+          test "$(git hash-object pilots/core-pilot-002/run-001/admission/v0.1/admission.json)" = "256bab21ffdafcfc7c5caa402d1c08a3c5355b9f"
+          test "$(git hash-object pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json)" = "350ca00629f354bdd7cc01785d448590c6be87b4"
+          echo "Run 001 exact source/normative/reproduction bindings: PASS"
+
+      - name: Guard immutable semantic and product boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/README.md pilots/core-pilot-002/README.ru.md \
+            pilots/core-pilot-002/review-case.schema.json \
+            pilots/core-pilot-002/run-admission/ \
+            pilots/core-pilot-002/external-input-observation/ \
+            pilots/core-pilot-002/run-001/admission/ \
+            tooling/current-frontier-reconciliation/v0.2/ \
+            tooling/release-candidate-checkpoint/v0.5/ \
+            docs/workbench/
+          echo "Core/SPEC/schema/admission/Workbench boundaries: unchanged"
+
+      - name: Require Run 001 result-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/core-pilot-002-run-001-result-v0.1.yml|pilots/core-pilot-002/run-001/result/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "Run 001 result-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
