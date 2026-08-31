@@ -1,0 +1,82 @@
+{
+  "schema": "urn:uu-aap:core-pilot-002:run-001-result:0.1",
+  "origin_frontier": "b7178fe9f36e7be0954e97564e82361215e68220",
+  "pilot_id": "core-pilot-002",
+  "run_id": "001",
+  "admission_binding": {
+    "path": "pilots/core-pilot-002/run-001/admission/v0.1/admission.json",
+    "blob": "256bab21ffdafcfc7c5caa402d1c08a3c5355b9f",
+    "status": "ADMITTED_AS_EXTERNAL_SOURCE_ACCOUNT_SUBMISSION"
+  },
+  "source_binding": {
+    "url": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585",
+    "comment_id": 5471862585,
+    "author_account_identifier": "84dnnvbdvp-debug",
+    "body_sha256": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8"
+  },
+  "reproduction": {
+    "fixture_path": "pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json",
+    "fixture_blob": "350ca00629f354bdd7cc01785d448590c6be87b4",
+    "schema_path": "schema/uu-aap-manifest.schema.json",
+    "schema_blob": "c0579b34f6c456c462cea1aa80ec67b78fce7582",
+    "schema_valid": true
+  },
+  "current_contract_observation": {
+    "responsibility_required_fields": ["actor_id", "scope", "status"],
+    "responsibility_optional_fields": ["limitations"],
+    "declarant_field_present": false,
+    "acceptance_event_field_present": false,
+    "acceptance_evidence_reference_field_present": false,
+    "responsibility_policy_requires_attributable_action": true,
+    "representation_gap_confirmed": true
+  },
+  "existing_mitigation": {
+    "spec_path": "SPEC.md",
+    "spec_blob": "44b91e0e48dee9d928c843bbb304a5c246582da7",
+    "responsibility_path": "RESPONSIBILITY.md",
+    "responsibility_blob": "f71dd1920157d4137f1e3a1ab270bcdfc873e61f",
+    "scoped_declarations_display_present": true,
+    "self_declared_unless_attested_display_present": true,
+    "mitigation_eliminates_machine_provenance_gap": false
+  },
+  "interpretation": {
+    "result_class": "REPRESENTATION_PROVENANCE_GAP_CONFIRMED_WITH_EXISTING_DISPLAY_MITIGATION",
+    "gap_class": "RESPONSIBILITY_STATUS_DECLARATION_PROVENANCE",
+    "strong_claim_rejected": "ACCEPTED_STATUS_IS_NOT_SHOWN_TO_BE_INDEPENDENTLY_ATTESTED_CONSENT",
+    "accepted_as_truth": false,
+    "reviewer_identity_verified": false,
+    "reviewer_independence_verified": false,
+    "reviewer_authority_verified": false,
+    "reviewer_expertise_verified": false
+  },
+  "disposition": {
+    "state": "accept_for_followup",
+    "rationale": "Current v0.1 machine responsibility entries preserve actor/scope/status but not provenance of who declared the status or an attributable acceptance event/evidence reference. SPEC section 22 already mitigates the strongest UI interpretation by describing responsibility as scoped declarations and claims as self-declared unless individually attested, but that display guidance does not remove the machine-representation gap.",
+    "objection_preserved": true,
+    "normative_change_authorized": false
+  },
+  "next_gate": {
+    "status": "HUMAN_NORMATIVE_DESIGN_DECISION_REQUIRED",
+    "candidate_repair_classes": [
+      "VERIFIER_ONLY_DECLARATION_CLARIFICATION",
+      "OPTIONAL_DECLARANT_OR_ACCEPTANCE_EVIDENCE_BINDING",
+      "STRONGER_PROFILE_REQUIRES_ATTRIBUTABLE_ACCEPTANCE_EVIDENCE"
+    ],
+    "human_normative_decision_required": true
+  },
+  "non_effects": {
+    "source_comment_mutated": false,
+    "reviewer_contacted": false,
+    "identity_profile_built": false,
+    "reputation_score_created": false,
+    "core_changed": false,
+    "spec_changed": false,
+    "responsibility_policy_changed": false,
+    "manifest_schema_changed": false,
+    "liability_assigned": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false
+  }
+}
