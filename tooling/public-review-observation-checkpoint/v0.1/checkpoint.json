@@ -1,0 +1,100 @@
+{
+  "schema": "urn:uu-aap:public-review-observation-checkpoint:0.1",
+  "repository": "Matawaka/uu-aap",
+  "checkpoint_origin_frontier": "88f5896ac60c59e0a3449196466c3ea9dcd9ea87",
+  "status": "NO_NEW_EXTERNAL_REVIEW_SOURCE_OBSERVED_ON_DECLARED_GITHUB_SURFACES",
+  "retained_receipts": {
+    "repository_issue_discovery": {
+      "path": "tooling/public-review-observation-checkpoint/v0.1/repository-issues-live-receipt.json",
+      "sha256": "9958c1601b129aeeff144ca8ee27f06cf013eb4fd4cc91ad17e9d8569835d307",
+      "observer_schema": "urn:uu-aap:public-review-repository-discovery:0.2",
+      "source_run_id": 33370805576,
+      "source_run_head_sha": "bef77bddd4fa6430bb16f14e52f1d5fee1aeb786",
+      "source_artifact_id": 9749967593,
+      "source_artifact_zip_sha256": "e738af95fca1a83ed07b739e206b1aafaea4adb4ebd816ec11dde6a6d28cbad6",
+      "source_artifact_expires_at": "2026-09-30T07:59:51Z",
+      "observed_at_utc": "2026-08-31T07:59:50Z",
+      "status": "NO_NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED",
+      "known_historical_external_sources": 1,
+      "new_external_account_sources": 0
+    },
+    "declared_discussion_discovery": {
+      "path": "tooling/public-review-observation-checkpoint/v0.1/declared-discussions-live-receipt.json",
+      "sha256": "d9973d1bad2f0aecbee8f20bddd2149de2bbb5101b5d9b6d04918482d6ef47f4",
+      "observer_schema": "urn:uu-aap:public-review-discussion-discovery:0.3",
+      "source_run_id": 33373077522,
+      "source_run_head_sha": "88f5896ac60c59e0a3449196466c3ea9dcd9ea87",
+      "source_artifact_id": 9750806770,
+      "source_artifact_zip_sha256": "f3c96d249f87b8f538719702856ee635b1f9a3a3621f1f01eefb502ed39a2b2b",
+      "source_artifact_expires_at": "2026-09-30T08:28:47Z",
+      "observed_at_utc": "2026-08-31T08:28:46Z",
+      "status": "NO_EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED",
+      "discussion_numbers": [
+        8,
+        10
+      ],
+      "external_account_sources": 0
+    }
+  },
+  "accepted_validator_bindings": {
+    "repository_issue_collector_blob": "7dd45aca4dc01cd5302e8c4baabaf69e5560c784",
+    "repository_issue_policy_blob": "c901cffec32b1e6929f13896689379154a7809ee",
+    "discussion_collector_blob": "25386331004af2c398749ce80bd4e4d96a810c0a",
+    "discussion_policy_blob": "6f22c55d8fc6e9e3bdbd1f7abc1b393e4ba5ed98"
+  },
+  "covered_surfaces": {
+    "github_issues": {
+      "repository_wide": true,
+      "open_and_closed": true,
+      "issue_bodies": true,
+      "issue_comments": true,
+      "pull_requests": false,
+      "pull_request_comments": false
+    },
+    "github_discussions": {
+      "discussion_numbers": [
+        8,
+        10
+      ],
+      "discussion_bodies": true,
+      "top_level_comments": true,
+      "replies": true,
+      "all_repository_discussions": false
+    }
+  },
+  "scope_limitations": {
+    "global_external_review_absence_proven": false,
+    "future_external_review_absence_proven": false,
+    "non_github_channels_observed": false,
+    "all_possible_github_surfaces_observed": false,
+    "actions_artifact_is_producer_authentication": false,
+    "actions_artifact_is_trusted_timestamp": false,
+    "retained_copy_extends_original_observation_window": false
+  },
+  "boundaries": {
+    "verified_human_identity": false,
+    "independence_established": false,
+    "standing_established": false,
+    "expertise_established": false,
+    "authority_established": false,
+    "claim_relevance_established": false,
+    "claim_truth_established": false,
+    "external_validation_established": false,
+    "certification_established": false,
+    "admission_decision": "NOT_MADE",
+    "disposition_decision": "NOT_MADE"
+  },
+  "non_effects": {
+    "issues_or_discussions_mutated": false,
+    "reviewers_contacted": false,
+    "identity_profiles_built": false,
+    "reputation_scores_created": false,
+    "normative_change_made": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "recurring_schedule_created": false,
+    "c2pa_reclassified": false,
+    "workbench_reactivated": false
+  }
+}

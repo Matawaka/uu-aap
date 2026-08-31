@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:public-review-observation-checkpoint:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "repository",
+    "checkpoint_origin_frontier",
+    "status",
+    "retained_receipts",
+    "accepted_validator_bindings",
+    "covered_surfaces",
+    "scope_limitations",
+    "boundaries",
+    "non_effects"
+  ],
+  "properties": {
+    "schema": {
+      "const": "urn:uu-aap:public-review-observation-checkpoint:0.1"
+    },
+    "repository": {
+      "const": "Matawaka/uu-aap"
+    },
+    "checkpoint_origin_frontier": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "status": {
+      "const": "NO_NEW_EXTERNAL_REVIEW_SOURCE_OBSERVED_ON_DECLARED_GITHUB_SURFACES"
+    },
+    "retained_receipts": {
+      "type": "object",
+      "required": [
+        "repository_issue_discovery",
+        "declared_discussion_discovery"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "repository_issue_discovery": {
+          "$ref": "#/$defs/receipt"
+        },
+        "declared_discussion_discovery": {
+          "$ref": "#/$defs/receipt"
+        }
+      }
+    },
+    "accepted_validator_bindings": {
+      "type": "object",
+      "minProperties": 4,
+      "maxProperties": 4,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{40}$"
+      }
+    },
+    "covered_surfaces": {
+      "type": "object"
+    },
+    "scope_limitations": {
+      "$ref": "#/$defs/falseMap"
+    },
+    "boundaries": {
+      "type": "object",
+      "required": [
+        "admission_decision",
+        "disposition_decision"
+      ],
+      "properties": {
+        "admission_decision": {
+          "const": "NOT_MADE"
+        },
+        "disposition_decision": {
+          "const": "NOT_MADE"
+        }
+      },
+      "additionalProperties": {
+        "type": "boolean"
+      }
+    },
+    "non_effects": {
+      "$ref": "#/$defs/falseMap"
+    }
+  },
+  "$defs": {
+    "receipt": {
+      "type": "object",
+      "required": [
+        "path",
+        "sha256",
+        "observer_schema",
+        "source_run_id",
+        "source_run_head_sha",
+        "source_artifact_id",
+        "source_artifact_zip_sha256",
+        "source_artifact_expires_at",
+        "observed_at_utc",
+        "status"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "observer_schema": {
+          "type": "string"
+        },
+        "source_run_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_run_head_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "source_artifact_id": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "source_artifact_zip_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "source_artifact_expires_at": {
+          "type": "string"
+        },
+        "observed_at_utc": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": true
+    },
+    "falseMap": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "const": false
+      }
+    }
+  }
+}

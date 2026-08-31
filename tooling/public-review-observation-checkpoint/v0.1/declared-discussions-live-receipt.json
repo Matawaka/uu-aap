@@ -1,0 +1,63 @@
+{
+  "schema": "urn:uu-aap:public-review-discussion-discovery:0.3",
+  "repository": "Matawaka/uu-aap",
+  "target_discussion_numbers": [
+    8,
+    10
+  ],
+  "observed_at_utc": "2026-08-31T08:28:46Z",
+  "observed_at_is_trusted_time": false,
+  "status": "NO_EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED",
+  "discussion_observations": [
+    {
+      "discussion_number": 8,
+      "url": "https://github.com/Matawaka/uu-aap/discussions/8",
+      "closed": false,
+      "is_answered": null,
+      "top_level_comment_count": 0,
+      "reply_count": 0,
+      "project_account_source_count": 1,
+      "automation_source_count": 0,
+      "unattributed_source_count": 0,
+      "external_account_source_count": 0
+    },
+    {
+      "discussion_number": 10,
+      "url": "https://github.com/Matawaka/uu-aap/discussions/10",
+      "closed": false,
+      "is_answered": null,
+      "top_level_comment_count": 0,
+      "reply_count": 0,
+      "project_account_source_count": 1,
+      "automation_source_count": 0,
+      "unattributed_source_count": 0,
+      "external_account_source_count": 0
+    }
+  ],
+  "external_account_sources": [],
+  "boundaries": {
+    "verified_human_identity": false,
+    "independence_established": false,
+    "standing_established": false,
+    "expertise_established": false,
+    "authority_established": false,
+    "claim_relevance_established": false,
+    "claim_truth_established": false,
+    "github_answer_state_is_protocol_disposition": false,
+    "admission_decision": "NOT_MADE",
+    "disposition_decision": "NOT_MADE"
+  },
+  "non_effects": {
+    "discussions_or_comments_mutated": false,
+    "reviewers_contacted": false,
+    "identity_profiles_built": false,
+    "reputation_scores_created": false,
+    "normative_change_made": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "recurring_schedule_created": false,
+    "c2pa_reclassified": false,
+    "workbench_reactivated": false
+  }
+}
