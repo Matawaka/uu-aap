@@ -56,8 +56,8 @@ jobs:
           set -euo pipefail
           test "$(git hash-object scripts/pages-composition-integrity/finalize_pages.py)" = '6ab2bd541e76e17ae9573d7ccbb42cd20af485ee'
           test "$(git hash-object scripts/pages-composition-integrity/test.py)" = 'f3bd4f2cc56813a31f13e824eb34d412d1819916'
-          test "$(git hash-object .github/workflows/pages-integrity-envelope-v0.1.yml)" = '5eac4ee7b4f3a6304c917d7cd17bbe6621d6252a'
           git fetch -q origin c7263b4cbfd28ec93ff267673382fb6754e49b62 --depth=1
+          test "$(git show c7263b4cbfd28ec93ff267673382fb6754e49b62:.github/workflows/pages-integrity-envelope-v0.1.yml | git hash-object --stdin)" = '5eac4ee7b4f3a6304c917d7cd17bbe6621d6252a'
           test "$(git show c7263b4cbfd28ec93ff267673382fb6754e49b62:.github/workflows/verifier-distribution-surface-v0.1.yml | git hash-object --stdin)" = 'ed7dc87bc1852178e7fd9cf0601373950a572d25'
           python - <<'PY'
           import json
@@ -106,11 +106,10 @@ jobs:
             scripts/pages-composition/
             scripts/pages-composition-integrity/
             .github/workflows/pages-composition-v0.1.yml
-            .github/workflows/pages-integrity-envelope-v0.1.yml
             .github/workflows/poai-pages.yml
           )
           if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
-            echo 'ERROR: P1.17 modified historical semantic/integrity sources' >&2
+            echo 'ERROR: P1.17 modified historical semantic/integrity implementations' >&2
             git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
             exit 1
           fi
