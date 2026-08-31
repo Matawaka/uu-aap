@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:core-pilot-002:external-input-observation:0.1",
+  "title": "Core Pilot 002 External Input Observation v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","origin_frontier","historical_inputs","source","observation","inference_boundaries","human_gate","effects"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:core-pilot-002:external-input-observation:0.1"},
+    "origin_frontier": {"const": "d83297e526abfb5a0d9148cc0906223fe49f870b"},
+    "historical_inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core_pilot_002_readme_blob","run_admission_readme_blob","current_frontier_reconciliation_blob","release_candidate_checkpoint_v0_5_blob","predecessor_roadmap_blob"],
+      "properties": {
+        "core_pilot_002_readme_blob": {"pattern": "^[0-9a-f]{40}$"},
+        "run_admission_readme_blob": {"pattern": "^[0-9a-f]{40}$"},
+        "current_frontier_reconciliation_blob": {"pattern": "^[0-9a-f]{40}$"},
+        "release_candidate_checkpoint_v0_5_blob": {"pattern": "^[0-9a-f]{40}$"},
+        "predecessor_roadmap_blob": {"pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["system","repository","issue_number","comment_id","url","api_url","author_account_identifier","author_account_numeric_id","author_association","created_at","updated_at","body_sha256","performed_via_github_app"],
+      "properties": {
+        "system": {"const": "github"},
+        "repository": {"const": "Matawaka/uu-aap"},
+        "issue_number": {"const": 422},
+        "comment_id": {"const": 5471862585},
+        "url": {"const": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585"},
+        "api_url": {"const": "https://api.github.com/repos/Matawaka/uu-aap/issues/comments/5471862585"},
+        "author_account_identifier": {"minLength": 1},
+        "author_account_numeric_id": {"type": "integer", "minimum": 1},
+        "author_association": {"type": "string", "minLength": 1},
+        "created_at": {"type": "string", "format": "date-time"},
+        "updated_at": {"type": "string", "format": "date-time"},
+        "body_sha256": {"pattern": "^[0-9a-f]{64}$"},
+        "performed_via_github_app": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["slug","id"],
+          "properties": {
+            "slug": {"type": "string", "minLength": 1},
+            "id": {"type": "integer", "minimum": 1}
+          }
+        }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public_submission_observed","source_account_label_differs_from_repository_owner","repository_owner_account_identifier","source_app_mediated","full_submission_text_duplicated_in_receipt","status"],
+      "properties": {
+        "public_submission_observed": {"const": true},
+        "source_account_label_differs_from_repository_owner": {"const": true},
+        "repository_owner_account_identifier": {"const": "Matawaka"},
+        "source_app_mediated": {"const": true},
+        "full_submission_text_duplicated_in_receipt": {"const": false},
+        "status": {"const": "EXTERNAL_ACCOUNT_SUBMISSION_OBSERVED_AWAITING_HUMAN_ADMISSION_DECISION"}
+      }
+    },
+    "inference_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verified_human_identity","independence_from_project_or_user","reviewer_standing","reviewer_expertise","reviewer_authority","claim_truth","responsibility_or_liability","core_change_required"],
+      "properties": {
+        "verified_human_identity": {"const": false},
+        "independence_from_project_or_user": {"const": false},
+        "reviewer_standing": {"const": false},
+        "reviewer_expertise": {"const": false},
+        "reviewer_authority": {"const": false},
+        "claim_truth": {"const": false},
+        "responsibility_or_liability": {"const": false},
+        "core_change_required": {"const": false}
+      }
+    },
+    "human_gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required","reason","run_001_source_selected","admission_decision","disposition_decision"],
+      "properties": {
+        "required": {"const": true},
+        "reason": {"type": "string", "minLength": 1},
+        "run_001_source_selected": {"const": false},
+        "admission_decision": {"const": "NOT_MADE"},
+        "disposition_decision": {"const": "NOT_MADE"}
+      }
+    },
+    "effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pilot_run_materialized","admission_created","disposition_created","issue_or_comment_mutation_authorized","normative_change_authorized","core_or_spec_change_authorized","release_or_tag_authorized","publication_authorized","action_permit_created","workbench_reactivated"],
+      "properties": {
+        "pilot_run_materialized": {"const": false},
+        "admission_created": {"const": false},
+        "disposition_created": {"const": false},
+        "issue_or_comment_mutation_authorized": {"const": false},
+        "normative_change_authorized": {"const": false},
+        "core_or_spec_change_authorized": {"const": false},
+        "release_or_tag_authorized": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false},
+        "workbench_reactivated": {"const": false}
+      }
+    }
+  }
+}
