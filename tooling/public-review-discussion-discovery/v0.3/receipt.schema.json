@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:public-review-discussion-discovery:0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "repository",
+    "target_discussion_numbers",
+    "observed_at_utc",
+    "observed_at_is_trusted_time",
+    "status",
+    "discussion_observations",
+    "external_account_sources",
+    "boundaries",
+    "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:public-review-discussion-discovery:0.3"},
+    "repository": {"const": "Matawaka/uu-aap"},
+    "target_discussion_numbers": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 1}
+    },
+    "observed_at_utc": {"type": "string", "minLength": 1},
+    "observed_at_is_trusted_time": {"const": false},
+    "status": {
+      "enum": [
+        "NO_EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED",
+        "EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED"
+      ]
+    },
+    "discussion_observations": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "discussion_number",
+          "url",
+          "closed",
+          "is_answered",
+          "top_level_comment_count",
+          "reply_count",
+          "project_account_source_count",
+          "automation_source_count",
+          "unattributed_source_count",
+          "external_account_source_count"
+        ],
+        "properties": {
+          "discussion_number": {"type": "integer", "minimum": 1},
+          "url": {"type": "string", "minLength": 1},
+          "closed": {"type": "boolean"},
+          "is_answered": {"type": "boolean"},
+          "top_level_comment_count": {"type": "integer", "minimum": 0},
+          "reply_count": {"type": "integer", "minimum": 0},
+          "project_account_source_count": {"type": "integer", "minimum": 0},
+          "automation_source_count": {"type": "integer", "minimum": 0},
+          "unattributed_source_count": {"type": "integer", "minimum": 0},
+          "external_account_source_count": {"type": "integer", "minimum": 0}
+        }
+      }
+    },
+    "external_account_sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "discussion_number",
+          "source_kind",
+          "node_id",
+          "url",
+          "author_account_identifier",
+          "author_type",
+          "author_association",
+          "created_at",
+          "updated_at",
+          "body_sha256",
+          "classification"
+        ],
+        "properties": {
+          "discussion_number": {"type": "integer", "minimum": 1},
+          "source_kind": {
+            "enum": ["DISCUSSION_BODY", "DISCUSSION_COMMENT", "DISCUSSION_REPLY"]
+          },
+          "node_id": {"type": "string", "minLength": 1},
+          "url": {"type": "string", "minLength": 1},
+          "author_account_identifier": {"type": "string", "minLength": 1},
+          "author_type": {"type": "string", "minLength": 1},
+          "author_association": {"type": ["string", "null"]},
+          "created_at": {"type": ["string", "null"]},
+          "updated_at": {"type": ["string", "null"]},
+          "body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "classification": {"const": "EXTERNAL_ACCOUNT_DISCUSSION_SOURCE_OBSERVED"}
+        }
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified_human_identity",
+        "independence_established",
+        "standing_established",
+        "expertise_established",
+        "authority_established",
+        "claim_relevance_established",
+        "claim_truth_established",
+        "github_answer_state_is_protocol_disposition",
+        "admission_decision",
+        "disposition_decision"
+      ],
+      "properties": {
+        "verified_human_identity": {"const": false},
+        "independence_established": {"const": false},
+        "standing_established": {"const": false},
+        "expertise_established": {"const": false},
+        "authority_established": {"const": false},
+        "claim_relevance_established": {"const": false},
+        "claim_truth_established": {"const": false},
+        "github_answer_state_is_protocol_disposition": {"const": false},
+        "admission_decision": {"const": "NOT_MADE"},
+        "disposition_decision": {"const": "NOT_MADE"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "discussions_or_comments_mutated",
+        "reviewers_contacted",
+        "identity_profiles_built",
+        "reputation_scores_created",
+        "normative_change_made",
+        "release_or_tag_created",
+        "publication_authorized",
+        "action_permit_created",
+        "recurring_schedule_created",
+        "c2pa_reclassified",
+        "workbench_reactivated"
+      ],
+      "properties": {
+        "discussions_or_comments_mutated": {"const": false},
+        "reviewers_contacted": {"const": false},
+        "identity_profiles_built": {"const": false},
+        "reputation_scores_created": {"const": false},
+        "normative_change_made": {"const": false},
+        "release_or_tag_created": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false},
+        "recurring_schedule_created": {"const": false},
+        "c2pa_reclassified": {"const": false},
+        "workbench_reactivated": {"const": false}
+      }
+    }
+  }
+}
