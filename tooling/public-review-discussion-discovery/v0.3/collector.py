@@ -280,7 +280,8 @@ def build_receipt(policy: dict, discussions: dict[int, dict], observed_at: str):
             raise ValueError(f"Discussion number mismatch for #{number}")
         if not isinstance(discussion.get("closed"), bool):
             raise ValueError(f"Discussion #{number} closed state invalid")
-        if not isinstance(discussion.get("isAnswered"), bool):
+        answer_state = discussion.get("isAnswered")
+        if answer_state is not None and not isinstance(answer_state, bool):
             raise ValueError(f"Discussion #{number} answered state invalid")
         validate_source_url(repository, number, "DISCUSSION_BODY", discussion.get("url"))
         comments = discussion.get("comments")
@@ -332,7 +333,7 @@ def build_receipt(policy: dict, discussions: dict[int, dict], observed_at: str):
                 "discussion_number": number,
                 "url": discussion["url"],
                 "closed": discussion["closed"],
-                "is_answered": discussion["isAnswered"],
+                "is_answered": answer_state,
                 "top_level_comment_count": len(comments),
                 "reply_count": reply_count,
                 "project_account_source_count": project_count,
