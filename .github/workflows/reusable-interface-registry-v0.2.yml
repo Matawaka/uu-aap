@@ -1,0 +1,54 @@
+name: Reusable Protocol Interface Registry v0.2 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/interface-registry/v0.2/**'
+      - 'protocols/reusable-infrastructure/recoverable-state/v0.1/**'
+      - '.github/workflows/reusable-interface-registry-v0.2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/interface-registry/v0.2/**'
+      - 'protocols/reusable-infrastructure/recoverable-state/v0.1/**'
+      - '.github/workflows/reusable-interface-registry-v0.2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Validate delta schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root=Path('protocols/interface-registry/v0.2')
+          s=json.loads((root/'interface-registry-delta.schema.json').read_text()); Draft202012Validator.check_schema(s)
+          Draft202012Validator(s).validate(json.loads((root/'interface-registry-delta.json').read_text()))
+          print('REUSABLE_INTERFACE_REGISTRY_V0_2_DELTA_SCHEMA_PASS')
+          PY
+      - name: Validate v0.1 predecessor and effective v0.2 view
+        run: node protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js /tmp/interface-registry-v0.2-effective.json
+      - name: Run hostile registry-delta mutations
+        run: node protocols/interface-registry/v0.2/test-interface-registry-v0.2.js
+      - name: Preserve read-only no-schedule boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -Eq '^[[:space:]]+schedule:' .github/workflows/reusable-interface-registry-v0.2.yml
+          grep -F 'contents: read' .github/workflows/reusable-interface-registry-v0.2.yml >/dev/null
+      - name: Preserve v0.1 registry bytes on PR
+        if: github.event_name == 'pull_request'
+        run: git diff --quiet ef4c8c6030ef517f2997fb76cff4f584fb25c691 HEAD -- protocols/interface-registry/v0.1/
+      - name: Clean tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
