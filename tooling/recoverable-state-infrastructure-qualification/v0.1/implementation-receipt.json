@@ -1,0 +1,47 @@
+{
+  "artifact_type": "RecoverableStateInfrastructureQualificationImplementationReceipt",
+  "version": "0.1",
+  "origin_frontier": "e87ee38b5a92fc849195d4602c34cd93adc18804",
+  "tracking_issue": 883,
+  "profile_path": "tooling/recoverable-state-infrastructure-qualification/v0.1",
+  "artifact_bindings": {
+    "qualification_blob": "e68360a90e9963cb5a66f8f4a2f26a088f47b439",
+    "qualification_schema_blob": "7ac0b806bb00b0d0181d014aa477ab5d2f9797f9",
+    "validator_blob": "badea70f31b1ccfc33054c20fdcbd26fd51e5eb4",
+    "hostile_test_blob": "a31617241163facb9f13d77aaec7fe2e00329d06"
+  },
+  "evidence_counts": {
+    "positive_independent_demand_cases": 2,
+    "negative_control_cases": 3,
+    "qualifying_composition_consumers": 0
+  },
+  "contract": {
+    "erd_independent_demand_established": true,
+    "rerc_independent_demand_established": true,
+    "composition_independent_demand_established": false,
+    "adapter_fit_is_existing_adapter": false,
+    "adapter_fit_is_implementation_requirement": false,
+    "composition_capability_is_composition_demand": false,
+    "negative_result_is_valid_qualification": true
+  },
+  "non_effects": {
+    "erd_changed": false,
+    "rerc_changed": false,
+    "rsic_changed": false,
+    "consumer_changed": false,
+    "adapter_created": false,
+    "interface_registry_changed": false,
+    "stable_core_changed": false,
+    "spec_changed": false,
+    "roadmap_changed": false,
+    "release_or_tag_created": false,
+    "authority_created": false,
+    "action_permit_created": false,
+    "runtime_activated": false,
+    "performance_gain_proven": false,
+    "resource_savings_proven": false,
+    "workbench_reactivated": false,
+    "exploratory_lane_promoted": false
+  },
+  "merge_acceptance_claimed": false
+}

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:recoverable-state-infrastructure-qualification:implementation-receipt:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","origin_frontier","tracking_issue","profile_path","artifact_bindings","evidence_counts","contract","non_effects","merge_acceptance_claimed"],
+  "properties": {
+    "artifact_type": {"const": "RecoverableStateInfrastructureQualificationImplementationReceipt"},
+    "version": {"const": "0.1"},
+    "origin_frontier": {"const": "e87ee38b5a92fc849195d4602c34cd93adc18804"},
+    "tracking_issue": {"const": 883},
+    "profile_path": {"const": "tooling/recoverable-state-infrastructure-qualification/v0.1"},
+    "artifact_bindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["qualification_blob","qualification_schema_blob","validator_blob","hostile_test_blob"],
+      "properties": {
+        "qualification_blob": {"const": "e68360a90e9963cb5a66f8f4a2f26a088f47b439"},
+        "qualification_schema_blob": {"const": "7ac0b806bb00b0d0181d014aa477ab5d2f9797f9"},
+        "validator_blob": {"const": "badea70f31b1ccfc33054c20fdcbd26fd51e5eb4"},
+        "hostile_test_blob": {"const": "a31617241163facb9f13d77aaec7fe2e00329d06"}
+      }
+    },
+    "evidence_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["positive_independent_demand_cases","negative_control_cases","qualifying_composition_consumers"],
+      "properties": {
+        "positive_independent_demand_cases": {"const": 2},
+        "negative_control_cases": {"const": 3},
+        "qualifying_composition_consumers": {"const": 0}
+      }
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["erd_independent_demand_established","rerc_independent_demand_established","composition_independent_demand_established","adapter_fit_is_existing_adapter","adapter_fit_is_implementation_requirement","composition_capability_is_composition_demand","negative_result_is_valid_qualification"],
+      "properties": {
+        "erd_independent_demand_established": {"const": true},
+        "rerc_independent_demand_established": {"const": true},
+        "composition_independent_demand_established": {"const": false},
+        "adapter_fit_is_existing_adapter": {"const": false},
+        "adapter_fit_is_implementation_requirement": {"const": false},
+        "composition_capability_is_composition_demand": {"const": false},
+        "negative_result_is_valid_qualification": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["erd_changed","rerc_changed","rsic_changed","consumer_changed","adapter_created","interface_registry_changed","stable_core_changed","spec_changed","roadmap_changed","release_or_tag_created","authority_created","action_permit_created","runtime_activated","performance_gain_proven","resource_savings_proven","workbench_reactivated","exploratory_lane_promoted"],
+      "properties": {
+        "erd_changed": {"const": false},
+        "rerc_changed": {"const": false},
+        "rsic_changed": {"const": false},
+        "consumer_changed": {"const": false},
+        "adapter_created": {"const": false},
+        "interface_registry_changed": {"const": false},
+        "stable_core_changed": {"const": false},
+        "spec_changed": {"const": false},
+        "roadmap_changed": {"const": false},
+        "release_or_tag_created": {"const": false},
+        "authority_created": {"const": false},
+        "action_permit_created": {"const": false},
+        "runtime_activated": {"const": false},
+        "performance_gain_proven": {"const": false},
+        "resource_savings_proven": {"const": false},
+        "workbench_reactivated": {"const": false},
+        "exploratory_lane_promoted": {"const": false}
+      }
+    },
+    "merge_acceptance_claimed": {"const": false}
+  }
+}

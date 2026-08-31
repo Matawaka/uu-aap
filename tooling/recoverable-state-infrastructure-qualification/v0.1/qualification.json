@@ -1,0 +1,145 @@
+{
+  "artifact_type": "RecoverableStateInfrastructureQualification",
+  "version": "0.1",
+  "origin_frontier": "e87ee38b5a92fc849195d4602c34cd93adc18804",
+  "tracking_issue": 883,
+  "scope": "independent reuse demand audit over accepted ERD, RERC and RSIC",
+  "component_bindings": {
+    "event_responsive_dormancy": {
+      "merge_frontier": "0039375897f2de683afac62e902335f53a1a7d98",
+      "module_path": "protocols/integration/event-responsive-dormancy/v0.1/event-responsive-dormancy.js",
+      "module_blob": "2cadbd2f405391f4f97e100d77245757ce6b5a58",
+      "implementation_receipt_path": "protocols/integration/event-responsive-dormancy/v0.1/implementation-receipt.json",
+      "implementation_receipt_blob": "e127d784a74f0713fe0b157845ec5a2754647034"
+    },
+    "rerc": {
+      "merge_frontier": "ef4c8c6030ef517f2997fb76cff4f584fb25c691",
+      "module_path": "protocols/integration/rerc/v0.1/rerc.js",
+      "module_blob": "d2aae21a2e2375477c6349eae5f236ea60cd7151",
+      "implementation_receipt_path": "protocols/integration/rerc/v0.1/implementation-receipt.json",
+      "implementation_receipt_blob": "83609468622f4a79783b9b29e73a661497bad849"
+    },
+    "recoverable_state_infrastructure_candidate": {
+      "merge_frontier": "e87ee38b5a92fc849195d4602c34cd93adc18804",
+      "implementation_receipt_path": "protocols/reusable-infrastructure/recoverable-state/v0.1/implementation-receipt.json",
+      "implementation_receipt_blob": "5d7be899687900fe6757063bed7cb67cb5c71fa9"
+    }
+  },
+  "cases": [
+    {
+      "id": "Q1_C2PA_SDK_SUCCESSOR",
+      "role": "POSITIVE_INDEPENDENT_DEMAND",
+      "consumer_family": "C2PA_SDK_PRESERVATION",
+      "independent_from_component_origin": true,
+      "source": {
+        "path": "scripts/c2pa-sdk-successor-reaudit/README.md",
+        "blob": "bb2681c1882e6788432da58a2d3d7cceebe3129c",
+        "merged_pr": 791
+      },
+      "evidence_summary": "Upstream frontier changes request a separately reviewed executable successor audit; Swift change rules rerun a dormant external SwiftPM round-trip harness without inferring PASS or rewriting history.",
+      "erd_fit": "ADAPTER_FIT",
+      "rerc_fit": "NOT_NEEDED",
+      "composition_fit": "NOT_NEEDED",
+      "recommended_dependency": "ERD_ONLY",
+      "adapter_exists": false,
+      "adapter_required": false,
+      "consumer_mutation_authorized": false
+    },
+    {
+      "id": "Q2_CIRCUMSTANTIAL_PROVENANCE",
+      "role": "POSITIVE_INDEPENDENT_DEMAND",
+      "consumer_family": "CIRCUMSTANTIAL_PROVENANCE",
+      "independent_from_component_origin": true,
+      "source": {
+        "path": "protocols/integration/circumstantial-provenance/v0.1/README.md",
+        "blob": "6937c35599d79a7562a055d834fb27f27f2f8ab7",
+        "merged_pr": 721
+      },
+      "evidence_summary": "Categorical independence groups distinguish derived copies from independent support while contradictions and lineage gaps remain visible; a bounded RERC adapter could reduce only declared derived/representational copies while preserving exact source evidence.",
+      "erd_fit": "NOT_NEEDED",
+      "rerc_fit": "ADAPTER_FIT",
+      "composition_fit": "NOT_NEEDED",
+      "recommended_dependency": "RERC_ONLY",
+      "adapter_exists": false,
+      "adapter_required": false,
+      "consumer_mutation_authorized": false
+    },
+    {
+      "id": "Q3_P1_11_INTEGRITY_REDUNDANCY",
+      "role": "NEGATIVE_CONTROL",
+      "consumer_family": "VERIFIER_DISPOSITION_INTEGRITY",
+      "independent_from_component_origin": true,
+      "source": {
+        "path": "scripts/verifier-disposition-integrity/source-bindings.json",
+        "blob": "8c8e2059eafda6767a983c3bd11c5824e74529ce",
+        "merged_pr": 821
+      },
+      "evidence_summary": "Redundant receipt representations are jointly bound by canonical rematerialization to close an integrity gap; qualification maps this redundancy to protective/non-suppressible use.",
+      "erd_fit": "NOT_NEEDED",
+      "rerc_fit": "NOT_APPLICABLE_PROTECTIVE",
+      "composition_fit": "NOT_NEEDED",
+      "recommended_dependency": "NONE",
+      "adapter_exists": false,
+      "adapter_required": false,
+      "consumer_mutation_authorized": false
+    },
+    {
+      "id": "Q4_P1_9_PLURAL_CANDIDATES",
+      "role": "NEGATIVE_CONTROL",
+      "consumer_family": "VERIFIER_CANDIDATE_FEDERATION",
+      "independent_from_component_origin": true,
+      "source": {
+        "path": "scripts/verifier-candidate-federation/app.js",
+        "blob": "b4ea0cfc6e78c88457101130e806349492e6ce8a",
+        "merged_pr": 817
+      },
+      "evidence_summary": "Same-dimension plurality is preserved without acceptance, ranking, merging, scoring or consensus; competing candidates are not equivalent redundancy.",
+      "erd_fit": "NOT_NEEDED",
+      "rerc_fit": "NOT_APPLICABLE_NON_EQUIVALENT",
+      "composition_fit": "NOT_NEEDED",
+      "recommended_dependency": "NONE",
+      "adapter_exists": false,
+      "adapter_required": false,
+      "consumer_mutation_authorized": false
+    },
+    {
+      "id": "Q5_PUBLIC_REVIEW_EVENT_SUFFICIENCY",
+      "role": "NEGATIVE_CONTROL",
+      "consumer_family": "PUBLIC_REVIEW_REPOSITORY_DISCOVERY",
+      "independent_from_component_origin": true,
+      "source": {
+        "path": "tooling/public-review-repository-discovery/v0.2/README.md",
+        "blob": "f2f37a0336369ee18e3ac0a59e4101663a5dae09",
+        "merged_pr": 864
+      },
+      "evidence_summary": "Accepted-main push plus optional manual dispatch already provides a bounded event-triggered read-only observation surface with deliberately no cron/schedule.",
+      "erd_fit": "EXISTING_MECHANISM_SUFFICIENT",
+      "rerc_fit": "NOT_NEEDED",
+      "composition_fit": "NOT_NEEDED",
+      "recommended_dependency": "EXISTING_MECHANISM_ONLY",
+      "adapter_exists": false,
+      "adapter_required": false,
+      "consumer_mutation_authorized": false
+    }
+  ],
+  "composition_evidence": {
+    "qualification_rule": "Positive composition demand requires an independent exact source that materially needs both ERD wake/re-evaluation and RERC reversible operational suppression; requirements must not be manufactured for fit.",
+    "qualifying_independent_consumers": [],
+    "independent_demand_established": false
+  },
+  "overall": {
+    "result": "COMPONENT_REUSE_QUALIFIED_COMPOSITION_DEMAND_NOT_ESTABLISHED",
+    "erd_independent_demand_established": true,
+    "rerc_independent_demand_established": true,
+    "composition_independent_demand_established": false,
+    "rsic_candidate_invalidated": false,
+    "rsic_promotion_authorized": false,
+    "stable_core_admission": false,
+    "interface_registry_successor_required": false,
+    "adapter_implementation_authorized": false,
+    "published_release": false,
+    "performance_gain_proven": false,
+    "resource_savings_proven": false,
+    "exploratory_lane_promoted": false
+  }
+}
