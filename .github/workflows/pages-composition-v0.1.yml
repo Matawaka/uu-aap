@@ -114,9 +114,17 @@ jobs:
           assert "- 'docs/**'" in unified
           assert 'python scripts/pages-composition/compose_pages.py' in unified
           assert 'composed-pages' in unified
-          assert 'Upload validated composed Pages artifact' in unified
+          historical_upload = 'Upload validated composed Pages artifact' in unified
+          p1_19_upload = (
+              'P1.19' in unified
+              and 'scripts/pages-exact-packaging/package_pages.py' in unified
+              and 'uses: actions/upload-artifact@v4' in unified
+              and 'name: github-pages' in unified
+          )
+          assert historical_upload or p1_19_upload, 'physical owner moved without an explicit accepted distribution successor marker'
           assert deploy_marker + 'v4' in unified
           print('one repository-wide physical Pages deployment owner: PASS')
+          print('P1.15 composition preserved across explicit P1.19 packaging successor: PASS')
           PY
 
       - name: Re-run P1.14 verifier publication firewall under reconciled ownership
