@@ -1,0 +1,134 @@
+name: P1.17 Finalized Pages Deployment v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-*/**'
+      - 'scripts/pages-composition/**'
+      - 'scripts/pages-composition-integrity/**'
+      - 'scripts/pages-finalized-distribution/**'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/pages-integrity-envelope-v0.1.yml'
+      - '.github/workflows/pages-finalized-distribution-v0.1.yml'
+      - '.github/workflows/poai-pages.yml'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-*/**'
+      - 'scripts/pages-composition/**'
+      - 'scripts/pages-composition-integrity/**'
+      - 'scripts/pages-finalized-distribution/**'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/pages-integrity-envelope-v0.1.yml'
+      - '.github/workflows/pages-finalized-distribution-v0.1.yml'
+      - '.github/workflows/poai-pages.yml'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate:
+    name: exact P1.16-finalized tree is the sole Pages upload
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+
+      - name: Bind exact accepted P1.16 frontier and predecessor owner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/pages-composition-integrity/finalize_pages.py)" = '6ab2bd541e76e17ae9573d7ccbb42cd20af485ee'
+          test "$(git hash-object scripts/pages-composition-integrity/test.py)" = 'f3bd4f2cc56813a31f13e824eb34d412d1819916'
+          test "$(git hash-object .github/workflows/pages-integrity-envelope-v0.1.yml)" = '5eac4ee7b4f3a6304c917d7cd17bbe6621d6252a'
+          git fetch -q origin c7263b4cbfd28ec93ff267673382fb6754e49b62 --depth=1
+          test "$(git show c7263b4cbfd28ec93ff267673382fb6754e49b62:.github/workflows/verifier-distribution-surface-v0.1.yml | git hash-object --stdin)" = 'ed7dc87bc1852178e7fd9cf0601373950a572d25'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value=json.loads(Path('scripts/pages-finalized-distribution/source-bindings.json').read_text(encoding='utf-8'))
+          assert value['predecessor_main']=='c7263b4cbfd28ec93ff267673382fb6754e49b62'
+          assert value['p1_16_finalizer']['blob']=='6ab2bd541e76e17ae9573d7ccbb42cd20af485ee'
+          assert value['p1_16_adversarial_test']['blob']=='f3bd4f2cc56813a31f13e824eb34d412d1819916'
+          assert value['p1_16_workflow']['blob']=='5eac4ee7b4f3a6304c917d7cd17bbe6621d6252a'
+          assert value['historical_physical_pages_owner']['blob']=='ed7dc87bc1852178e7fd9cf0601373950a572d25'
+          print('P1.17 historical source bindings: PASS')
+          PY
+
+      - name: Validate P1.17 syntax and exact upload integration
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          path=Path('scripts/pages-finalized-distribution/test.py')
+          ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+          print('P1.17 syntax: PASS')
+          PY
+          python scripts/pages-finalized-distribution/test.py
+
+      - name: Re-run P1.15 and P1.16 adversarial firewalls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/pages-composition/test.py
+          python scripts/pages-composition-integrity/test.py
+
+      - name: Prove accepted semantic and integrity implementations remain unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          guarded=(
+            protocols/core/
+            SPEC.md
+            CONTESTABILITY.md
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/
+            scripts/pages-composition/
+            scripts/pages-composition-integrity/
+            .github/workflows/pages-composition-v0.1.yml
+            .github/workflows/pages-integrity-envelope-v0.1.yml
+            .github/workflows/poai-pages.yml
+          )
+          if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.17 modified historical semantic/integrity sources' >&2
+            git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: bounded finalized Pages deployment acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'P1.15 composed tree -> historical P1.16 finalizer -> exact uploaded tree'
+          echo 'raw P1.15 composed-pages -> NOT uploaded'
+          echo 'P1.16 verify-only -> exact finalized-pages upload root'
+          echo 'deploy owner count -> exactly one'
+          echo 'integrity-bound deployment != producer authentication or timestamp'
+          echo 'integrity-bound deployment != truth/identity/authority/responsibility'
+          echo 'deployment mechanics != new publication/action authority'
+          echo 'PASS: P1.17 Finalized Pages Deployment v0.1'
