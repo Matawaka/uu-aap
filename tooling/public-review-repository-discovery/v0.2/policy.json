@@ -1,0 +1,54 @@
+{
+  "schema": "urn:uu-aap:public-review-repository-discovery-policy:0.2",
+  "repository": "Matawaka/uu-aap",
+  "project_account_identifier": "Matawaka",
+  "included_channels": [
+    "issue_bodies",
+    "issue_comments"
+  ],
+  "excluded_channels": [
+    "pull_requests",
+    "pull_request_comments",
+    "discussions",
+    "commit_comments",
+    "email",
+    "social_media"
+  ],
+  "issue_states": ["open", "closed"],
+  "known_historical_external_sources": [
+    {
+      "source_kind": "ISSUE_COMMENT",
+      "issue_number": 422,
+      "source_id": 5471862585,
+      "url": "https://github.com/Matawaka/uu-aap/issues/422#issuecomment-5471862585",
+      "author_account_identifier": "84dnnvbdvp-debug",
+      "body_sha256": "23eaf897b361349acfef70809917f17f15cf2b8344e98c2c361ee099cfaa1ba8",
+      "accepted_lineage": ["#845", "#846", "#849"]
+    }
+  ],
+  "classification": {
+    "project_account": "PROJECT_ACCOUNT_SOURCE",
+    "bot_account": "AUTOMATION_SOURCE",
+    "missing_account": "UNATTRIBUTED_SOURCE",
+    "known_external_account": "KNOWN_HISTORICAL_EXTERNAL_SOURCE",
+    "other_external_account": "NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED"
+  },
+  "invariants": {
+    "repository_wide_observation_is_admission": false,
+    "repository_wide_observation_is_disposition": false,
+    "external_account_is_verified_human_identity": false,
+    "different_account_is_independence_proof": false,
+    "author_association_is_standing_or_authority": false,
+    "issue_or_comment_presence_is_relevance_or_truth": false,
+    "historical_source_is_new_source": false,
+    "new_source_observed_is_normative_change": false
+  },
+  "runtime": {
+    "read_only": true,
+    "scheduled_polling": false,
+    "automatic_admission": false,
+    "automatic_disposition": false,
+    "accepted_push_live_discovery": true,
+    "manual_live_discovery": true
+  }
+}
