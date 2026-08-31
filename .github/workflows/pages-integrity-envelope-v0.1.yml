@@ -1,0 +1,240 @@
+name: P1.16 Relocatable Unified Pages Integrity Envelope v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'docs/**'
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-*/**'
+      - 'scripts/pages-composition/**'
+      - 'scripts/pages-composition-integrity/**'
+      - '.github/workflows/pages-integrity-envelope-v0.1.yml'
+      - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/poai-pages.yml'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'packages/uuaap-verifier-presentation/**'
+      - 'scripts/verifier-*/**'
+      - 'scripts/pages-composition/**'
+      - 'scripts/pages-composition-integrity/**'
+      - '.github/workflows/pages-integrity-envelope-v0.1.yml'
+      - '.github/workflows/pages-composition-v0.1.yml'
+      - '.github/workflows/verifier-distribution-surface-v0.1.yml'
+      - '.github/workflows/poai-pages.yml'
+      - 'SPEC.md'
+      - 'CONTESTABILITY.md'
+  workflow_dispatch:
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: relocated final Pages bytes without source roots
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-node@v4
+        with: {node-version: '24'}
+
+      - name: Install reusable verifier package outside checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-verifier-package"
+          cp -a packages/uuaap-verifier-presentation "${RUNNER_TEMP}/uuaap-verifier-package"
+          python -m pip install "${RUNNER_TEMP}/uuaap-verifier-package" jsonschema
+
+      - name: Bind exact historical P1.15 implementation frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object scripts/pages-composition/compose_pages.py)" = 'c84bdb170bf700347b798615174c6a435d09353b'
+          test "$(git hash-object scripts/pages-composition/test.py)" = 'a4f95f2e5cbd4f0dfd7185fc9fc615bb8e7c6713'
+          test "$(git hash-object .github/workflows/pages-composition-v0.1.yml)" = 'ad9c83a7fc6870fa196e69ed0d1a8675cb54ad61'
+          test "$(git hash-object .github/workflows/verifier-distribution-surface-v0.1.yml)" = 'ed7dc87bc1852178e7fd9cf0601373950a572d25'
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          value=json.loads(Path('scripts/pages-composition-integrity/source-bindings.json').read_text(encoding='utf-8'))
+          assert value['predecessor_main']=='a8539292b237379904fc2fda0abd356f09c9d552'
+          assert value['p1_15_compose_pages']['blob']=='c84bdb170bf700347b798615174c6a435d09353b'
+          assert value['p1_15_adversarial_test']['blob']=='a4f95f2e5cbd4f0dfd7185fc9fc615bb8e7c6713'
+          assert value['p1_15_workflow']['blob']=='ad9c83a7fc6870fa196e69ed0d1a8675cb54ad61'
+          assert value['p1_15_physical_pages_owner']['blob']=='ed7dc87bc1852178e7fd9cf0601373950a572d25'
+          print('P1.16 historical source bindings: PASS')
+          PY
+
+      - name: Validate P1.16 syntax and adversarial relocation gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          for raw in ['scripts/pages-composition-integrity/finalize_pages.py','scripts/pages-composition-integrity/test.py']:
+              path=Path(raw)
+              ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              print(f'PASS syntax: {path}')
+          PY
+          python scripts/pages-composition-integrity/test.py
+
+      - name: Re-run historical verifier and Pages firewalls through P1.15
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/verifier-presentation-contract/test.py
+          python scripts/verifier-distribution-surface/test.py
+          python scripts/verifier-interactive-surface/test.py
+          python scripts/verifier-evidence-adapter/test.py
+          python scripts/verifier-candidate-acceptance/test.py
+          python scripts/verifier-policy-localization/test.py
+          python scripts/verifier-contestability/test.py
+          python scripts/verifier-scoped-attestations/test.py
+          python scripts/verifier-candidate-federation/test.py
+          python scripts/verifier-federated-disposition/test.py
+          python scripts/verifier-disposition-integrity/test.py
+          python scripts/verifier-disposition-integrity-surface/test.py
+          python scripts/verifier-disposition-integrity-capsule/test.py
+          python scripts/verifier-integrity-capsule-pages/test.py
+          python scripts/pages-composition/test.py
+
+      - name: Build real P1.15 artifact then prove P1.16 isolated relocation
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf "${RUNNER_TEMP}/uuaap-pages" "${RUNNER_TEMP}/p1-15-pages" "${RUNNER_TEMP}/p1-16-final" "${RUNNER_TEMP}/p1-16-relocated"
+
+          python scripts/verifier-distribution-surface/build_site.py --output "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-interactive-surface/build_interactive_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-evidence-adapter/build_adapter_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-acceptance/build_acceptance_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/build_contestability_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-scoped-attestations/build_attestation_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-federation/build_candidate_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-federated-disposition/build_disposition_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-disposition-integrity-surface/build_integrity_site.py --site "${RUNNER_TEMP}/uuaap-pages"
+
+          python scripts/verifier-policy-localization/build_policy_l10n.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-contestability/localize_contestability.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-scoped-attestations/localize_attestation.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-candidate-federation/localize_candidates.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-federated-disposition/localize_disposition.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-disposition-integrity-surface/localize_integrity.py --site "${RUNNER_TEMP}/uuaap-pages"
+          python scripts/verifier-disposition-integrity-capsule/build_capsule.py --site "${RUNNER_TEMP}/uuaap-pages"
+
+          cmp --silent "${RUNNER_TEMP}/uuaap-pages/verifier/index.html" scripts/verifier-presentation-contract/reference.html
+          test -s "${RUNNER_TEMP}/uuaap-pages/verifier/integrity-capsule/capsule-manifest.json"
+
+          python scripts/pages-composition/compose_pages.py \
+            --docs docs \
+            --verifier-site "${RUNNER_TEMP}/uuaap-pages" \
+            --output "${RUNNER_TEMP}/p1-15-pages"
+          python scripts/pages-composition/compose_pages.py \
+            --docs docs \
+            --verifier-site "${RUNNER_TEMP}/uuaap-pages" \
+            --output "${RUNNER_TEMP}/p1-15-pages" \
+            --verify-only
+
+          python scripts/pages-composition-integrity/finalize_pages.py \
+            --p1-15-root "${RUNNER_TEMP}/p1-15-pages" \
+            --output "${RUNNER_TEMP}/p1-16-final"
+          python scripts/pages-composition-integrity/finalize_pages.py \
+            --verify-only "${RUNNER_TEMP}/p1-16-final"
+
+          cp -a "${RUNNER_TEMP}/p1-16-final" "${RUNNER_TEMP}/p1-16-relocated"
+          cp scripts/pages-composition-integrity/finalize_pages.py "${RUNNER_TEMP}/p1-16-verify.py"
+          rm -rf "${RUNNER_TEMP}/uuaap-pages" "${RUNNER_TEMP}/p1-15-pages" "${RUNNER_TEMP}/p1-16-final"
+
+          cd /tmp
+          python "${RUNNER_TEMP}/p1-16-verify.py" --verify-only "${RUNNER_TEMP}/p1-16-relocated"
+          test -s "${RUNNER_TEMP}/p1-16-relocated/pages-integrity-envelope.json"
+          test -s "${RUNNER_TEMP}/p1-16-relocated/pages-composition-receipt.json"
+          test -s "${RUNNER_TEMP}/p1-16-relocated/poai/index.html"
+          test -s "${RUNNER_TEMP}/p1-16-relocated/verifier/index.html"
+          test -s "${RUNNER_TEMP}/p1-16-relocated/verifier/integrity-capsule/capsule-manifest.json"
+
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'p1-16-relocated'
+          envelope=json.loads((root/'pages-integrity-envelope.json').read_text(encoding='utf-8'))
+          assert envelope['predecessor_main']=='a8539292b237379904fc2fda0abd356f09c9d552'
+          assert envelope['payload_file_count']==len(envelope['files'])
+          assert envelope['p1_15_composition_receipt']['path']=='pages-composition-receipt.json'
+          assert all(value is False for value in envelope['non_effects'].values())
+          print('P1.16 real composed artifact relocated and verified source-independently: PASS')
+          PY
+
+      - name: Prove P1.16 contains no network or dynamic-code primitive
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import ast
+          from pathlib import Path
+          forbidden_import_roots={'requests','urllib','http','socket','ftplib','webbrowser'}
+          forbidden_calls={'eval','exec','compile','__import__'}
+          for path in [Path('scripts/pages-composition-integrity/finalize_pages.py'), Path('scripts/pages-composition-integrity/test.py')]:
+              tree=ast.parse(path.read_text(encoding='utf-8'), filename=str(path))
+              for node in ast.walk(tree):
+                  if isinstance(node, ast.Import):
+                      for alias in node.names:
+                          assert alias.name.split('.')[0] not in forbidden_import_roots, f'network import in {path}: {alias.name}'
+                  if isinstance(node, ast.ImportFrom) and node.module:
+                      assert node.module.split('.')[0] not in forbidden_import_roots, f'network import in {path}: {node.module}'
+                  if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+                      assert node.func.id not in forbidden_calls, f'dynamic-code call in {path}: {node.func.id}'
+          print('P1.16 no network/dynamic-code primitive: PASS')
+          PY
+
+      - name: Prove P1.15 semantic and deployment sources remain byte-unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base_ref="${{ github.base_ref || 'main' }}"
+          git fetch -q origin "$base_ref" --depth=1
+          base_sha="$(git rev-parse FETCH_HEAD)"
+          guarded=(
+            protocols/core/
+            SPEC.md
+            CONTESTABILITY.md
+            scripts/pages-composition/
+            .github/workflows/pages-composition-v0.1.yml
+            .github/workflows/verifier-distribution-surface-v0.1.yml
+            .github/workflows/poai-pages.yml
+            packages/uuaap-verifier-presentation/src/uuaap_verifier_presentation/
+          )
+          if ! git diff --quiet "$base_sha" -- "${guarded[@]}"; then
+            echo 'ERROR: P1.16 modified historical semantic/deployment surfaces' >&2
+            git diff --name-only "$base_sha" -- "${guarded[@]}" >&2
+            exit 1
+          fi
+
+      - name: Working tree remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+  acceptance:
+    name: bounded relocatable byte-integrity acceptance
+    runs-on: ubuntu-latest
+    needs: [validate]
+    steps:
+      - run: |
+          echo 'P1.15 source-root verification != relocated artifact verification'
+          echo 'P1.16 envelope -> exact path/byte/SHA inventory of P1.15 payload'
+          echo 'verify-only -> final artifact root only'
+          echo 'manifest match != producer authentication'
+          echo 'manifest match != truth/identity/authority/responsibility'
+          echo 'public reachability != publication/action authority'
+          echo 'PASS: P1.16 Relocatable Unified Pages Integrity Envelope v0.1'
