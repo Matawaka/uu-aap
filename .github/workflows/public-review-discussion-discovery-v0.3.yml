@@ -20,6 +20,7 @@ env:
   ORIGIN_FRONTIER: bef77bddd4fa6430bb16f14e52f1d5fee1aeb786
   V0_2_ORIGIN_FRONTIER: 391bc0820e9c17b4b9dde3271640ce52d39149d8
   V0_2_CORRECTION_ORIGIN: d2e2f3a813dd6ea853a45f2108a32d671a3e41d4
+  LIVE_CORRECTION_ORIGIN: abc32846b0287d7997f63535aa11749a697313ea
   PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
@@ -39,24 +40,27 @@ jobs:
       - name: Install pinned JSON Schema validator
         run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
 
-      - name: Fetch exact accepted origins
+      - name: Fetch exact accepted and correction origins
         shell: bash
         run: |
           set -euo pipefail
           git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
           git fetch -q --depth=1 origin "$V0_2_ORIGIN_FRONTIER"
           git fetch -q --depth=1 origin "$V0_2_CORRECTION_ORIGIN"
+          git fetch -q --depth=1 origin "$LIVE_CORRECTION_ORIGIN"
           git cat-file -e "$ORIGIN_FRONTIER^{commit}"
           git cat-file -e "$V0_2_ORIGIN_FRONTIER^{commit}"
           git cat-file -e "$V0_2_CORRECTION_ORIGIN^{commit}"
+          git cat-file -e "$LIVE_CORRECTION_ORIGIN^{commit}"
 
-      - name: Parse v0.3 machine-readable contracts
+      - name: Parse v0.3 machine-readable contracts and correction receipt
         shell: bash
         run: |
           set -euo pipefail
           python -m json.tool tooling/public-review-discussion-discovery/v0.3/policy.json >/dev/null
           python -m json.tool tooling/public-review-discussion-discovery/v0.3/receipt.schema.json >/dev/null
           python -m json.tool tooling/public-review-discussion-discovery/v0.3/implementation-receipt.json >/dev/null
+          python -m json.tool tooling/public-review-discussion-discovery/v0.3/live-correction-receipt.json >/dev/null
 
       - name: Keep accepted v0.2 issue discovery green
         run: |
@@ -69,6 +73,9 @@ jobs:
 
       - name: Validate v0.3 source bindings and scope
         run: python tooling/public-review-discussion-discovery/v0.3/validate_implementation.py
+
+      - name: Validate exact nullable-answer live correction binding
+        run: python tooling/public-review-discussion-discovery/v0.3/validate_live_correction.py
 
       - name: Require read-only no-schedule Discussion workflow
         shell: bash
