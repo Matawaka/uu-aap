@@ -34,9 +34,17 @@ No other Discussion number is observed by this version. Issues remain covered se
 
 The receipt records per Discussion:
 
-- observed closed/answered metadata;
+- observed `closed` metadata;
+- observed GitHub `isAnswered` metadata as `true`, `false`, or `null` exactly as supplied by GraphQL;
 - top-level comment and reply counts;
 - project-account, bot, unattributed and external-account source counts.
+
+`isAnswered = null` is preserved as null. It is not coerced to `false`, because null may mean the answer state is unavailable or not applicable for that Discussion/category.
+
+```text
+GitHub isAnswered = null != false
+GitHub answer metadata != protocol disposition
+```
 
 For every different-account source it preserves:
 
@@ -71,6 +79,8 @@ The implementation origin is exact `main`:
 `bef77bddd4fa6430bb16f14e52f1d5fee1aeb786`
 
 The implementation receipt binds the exact accepted source documents declaring Discussions #8/#10 and the exact accepted v0.2 issue-discovery layer. v0.3 is additive; v0.2 continues to exclude Discussions under its original semantics.
+
+The first accepted v0.3 live run at `abc32846b0287d7997f63535aa11749a697313ea` exposed a metadata-shape mismatch: Discussion #8 returned nullable `isAnswered`. The additive live-correction receipt preserves that failure and the corrected contract without changing the Discussion scope or any review/admission semantics.
 
 ## Non-claims
 
