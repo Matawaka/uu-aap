@@ -1,0 +1,59 @@
+{
+  "schema": "urn:uu-aap:public-review-discussion-discovery-live-correction:0.3",
+  "correction_origin_frontier": "abc32846b0287d7997f63535aa11749a697313ea",
+  "failed_post_merge_run": {
+    "run_id": 33372285062,
+    "job_id": 99425877682,
+    "workflow": "Public Review Discussion Discovery v0.3",
+    "failure_stage": "Perform live read-only Discussion discovery",
+    "failure_class": "NULLABLE_GITHUB_IS_ANSWERED_REJECTED_AS_INVALID",
+    "exception": "ValueError: Discussion #8 answered state invalid"
+  },
+  "failing_implementation_bindings": {
+    "collector_blob": "da8bdf5dc9bbd8befcfa304e36bb6110ef7e1cd8",
+    "receipt_schema_blob": "4db52a548292de3694a7d90656a4468f94121215",
+    "test_collector_blob": "eb6a24775e02845b01e8a9556464f8f4f08112be",
+    "workflow_blob": "6f5e42493c3661299e0bd91b2120a1c4118c5e9f"
+  },
+  "observed_live_shape": {
+    "discussion_number": 8,
+    "graphql_field": "isAnswered",
+    "observed_value": null,
+    "observed_value_class": "NULLABLE_GITHUB_METADATA",
+    "classification": "GITHUB_METADATA_NULL_NOT_PROTOCOL_DISPOSITION"
+  },
+  "correction_rule": {
+    "null_is_preserved_as_null": true,
+    "boolean_true_is_preserved": true,
+    "boolean_false_is_preserved": true,
+    "string_or_numeric_answer_state_is_rejected": true,
+    "null_is_coerced_to_false": false,
+    "github_answer_state_is_protocol_disposition": false,
+    "discussion_scope_expanded": false
+  },
+  "non_effects": {
+    "target_discussions_changed": false,
+    "automatic_admission_added": false,
+    "automatic_disposition_added": false,
+    "identity_inference_added": false,
+    "independence_inference_added": false,
+    "standing_or_expertise_inference_added": false,
+    "authority_inference_added": false,
+    "relevance_or_truth_inference_added": false,
+    "core_changed": false,
+    "spec_changed": false,
+    "responsibility_policy_changed": false,
+    "base_manifest_schema_changed": false,
+    "run_001_changed": false,
+    "stage_b_changed": false,
+    "stage_c_changed": false,
+    "public_review_changed": false,
+    "roadmap_changed": false,
+    "c2pa_reclassified": false,
+    "workbench_reactivated": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "recurring_schedule_created": false
+  }
+}
