@@ -1,0 +1,81 @@
+{
+  "artifact_type": "ExploratoryArchitectureSufficiencyAudit",
+  "version": "0.1",
+  "origin_frontier": "25faf51c5b10c06f752fcb8815fd09f8a7a3e611",
+  "tracking_issue": 885,
+  "audit_scope": {
+    "repository": "Matawaka/uu-aap",
+    "bounded_current_audit": true,
+    "absence_inference_allowed": false,
+    "exact_materialization_statement": "exact materialization not found in bounded current audit",
+    "implementation_authority_created": false
+  },
+  "allowed_outcomes": [
+    "REUSE_EXISTING",
+    "COMPOSE_EXISTING",
+    "ADAPTER_ONLY",
+    "PROFILE_ONLY",
+    "NEW_COMPONENT_CANDIDATE",
+    "INSUFFICIENT_EVIDENCE",
+    "NO_NEW_COMPONENT_NEEDED"
+  ],
+  "source_bindings": [
+    {"id":"backlog_registry","path":"tooling/backlog-entity-reconciliation/v0.1/registry.json","blob":"c324bc1700affeb66d801dc38cf5c23db2b3e1d9"},
+    {"id":"core","path":"protocols/core/v0.1/README.md","blob":"290483f9704704160337d5c06800f3e66d32e05a"},
+    {"id":"interface_registry_v0_1","path":"protocols/interface-registry/v0.1/interface-registry.json","blob":"2aff5e5785eb97796031b19ffe9fe026a3543bf6"},
+    {"id":"interface_registry_v0_2","path":"protocols/interface-registry/v0.2/interface-registry-delta.json","blob":"ad705523bada7f64a04e09e34974407725942976"},
+    {"id":"capability_selection","path":"protocols/integration/capability-selection/v0.1/README.md","blob":"91139c921b0615a5f839a967ea0cb41b143162e8"},
+    {"id":"capability_availability","path":"protocols/integration/execution-capability-availability/v0.1/README.md","blob":"236c8a0324c2e90e1dfd916cb92c67f3479e2bce"},
+    {"id":"counterfactual_intervention","path":"protocols/integration/v0.1/COUNTERFACTUAL_INTERVENTION.md","blob":"93f346b386c7af19c4da4bf80c22ca4e0c68fea0"},
+    {"id":"responsibility_event_chain","path":"protocols/integration/v0.1/RESPONSIBILITY_EVENT_CHAIN.md","blob":"d08fc78063f7e04a9e51d330ec6094703a6b7ea7"},
+    {"id":"fcl","path":"protocols/fcl/v0.1/README.md","blob":"475ec09a3b7eb212afff92562ec25ee82481b646"},
+    {"id":"event_responsive_dormancy","path":"protocols/integration/event-responsive-dormancy/v0.1/README.md","blob":"6319373bacc690d8354c123a3600d13a198053ca"},
+    {"id":"non_binding_attention","path":"pilots/kontur-game-companion/non-binding-attention-v0.1/README.md","blob":"c1fa727f87a54ac6810d9d4e9f11474aea88e1b8"},
+    {"id":"future_optionality","path":"protocols/experimental/future-optionality-non-commitment/v0.1/README.md","blob":"550b04f02f27526cabe4bd8539a2ce30d393dd0c"},
+    {"id":"roadmap","path":"docs/ROADMAP-CURRENT.md","blob":"6063ce07c479c6a59c78091e4212fc5d09c27a04"}
+  ],
+  "entities": [
+    {
+      "id":"scaf","name":"SCAF / Spatiotemporal Causal Affordance Fabric","backlog_classification":"EXPLORATORY",
+      "target_question":"Does Object/World Properties x Environment x Agent Constraints x Desired Future State require a new reusable primitive for affordance/possibility without collapsing possibility into intent or authority?",
+      "evidence_refs":["backlog_registry","core","capability_selection","capability_availability","counterfactual_intervention","interface_registry_v0_1"],
+      "observed_coverage":["Core already owns State/Evidence -> Possibility/Availability -> Intent separation","Capability selection and fresh execution capability availability already have reusable pre-authorization interfaces","Counterfactual intervention already provides bounded model-relative intervention semantics"],
+      "observed_gap":"No current provider-neutral physical/world causal-property evidence interface is established; the current counterfactual model is explicitly bounded to an exact local Git transition and is not a physical-world model.",
+      "outcome":"ADAPTER_ONLY","architecture_interpretation":"If future world/physical evidence is integrated, project it into existing State/Availability/Capability interfaces rather than create a second Possibility/Availability primitive.",
+      "new_component_currently_justified":false,"implementation_authorized":false,"adapter_implementation_required":false,"new_core_possibility_primitive_required":false,"physical_world_model_present":false,"current_counterfactual_is_physical_world_model":false
+    },
+    {
+      "id":"cpot","name":"CPOT / Continuity-Preserving Ordinal Transition","backlog_classification":"EXPLORATORY",
+      "target_question":"Does a rule/model transition need a new primitive to preserve predecessor evidence, historical statuses/expectations, uncertainty and an event-specific successor?",
+      "evidence_refs":["backlog_registry","core","responsibility_event_chain","future_optionality","roadmap"],
+      "observed_coverage":["Core already has exact predecessor/successor frontier semantics","ResponsibilityEventChain makes non-retroactive historical assurance machine-verifiable","Future Optionality preserves superseded/abandoned predecessor provenance without making a successor mandatory","Current roadmap preserves No Silent Reinterpretation as an invariant"],
+      "observed_gap":"A reusable transition policy could name dual evaluation, translation and continuity gates across rule/model regimes, but current evidence does not show a missing state/successor primitive.",
+      "outcome":"PROFILE_ONLY","architecture_interpretation":"Treat CPOT as a transition policy/profile over existing provenance, successor and non-reinterpretation machinery unless an independent transition domain proves a missing primitive.",
+      "new_component_currently_justified":false,"implementation_authorized":false,"predecessor_rewrite_authorized":false,"historical_assurance_retroactive_upgrade_authorized":false,"profile_implementation_required":false
+    },
+    {
+      "id":"immune-tremor","name":"Immune Tremor","backlog_classification":"EXPLORATORY",
+      "target_question":"Does a minimal bounded reversible diagnostic perturbation for a causally ambiguous or suspected-stalled process require a distinct reusable primitive?",
+      "evidence_refs":["backlog_registry","fcl","event_responsive_dormancy","interface_registry_v0_1","interface_registry_v0_2"],
+      "observed_coverage":["FCL already distinguishes RUNNING, SUSPECTED_STALL and terminal closure","Event-Responsive Dormancy already provides wake attention and current evidence/authority/intent re-evaluation without authority restoration","Existing bounded action interfaces separately govern any action and post-action observation"],
+      "observed_gap":"A future policy may constrain diagnostic perturbation minimality/reversibility, but no evidence requires a self-authorizing wake/probe primitive.",
+      "outcome":"COMPOSE_EXISTING","architecture_interpretation":"Compose FCL stall evidence with separately admitted bounded diagnostic action and successor observation; do not let the perturbation authorize itself or become polling.",
+      "new_component_currently_justified":false,"implementation_authorized":false,"suspected_stall_is_failure_proof":false,"diagnostic_perturbation_self_authorized":false,"polling_or_loop_required":false,"stale_authority_reuse_allowed":false,"diagnostic_perturbation_is_action_permit":false,"diagnostic_result_is_causal_proof":false
+    },
+    {
+      "id":"conscious-ai","name":"Conscious AI (operational conscious agency only)","backlog_classification":"EXPLORATORY",
+      "target_question":"Does bounded situational modelling, role/limit awareness, alternative successor representation, question/attention/re-entry candidates, admissible action selection, bounded explanation and outcome update require a new primitive?",
+      "evidence_refs":["backlog_registry","core","capability_selection","capability_availability","counterfactual_intervention","fcl","non_binding_attention","interface_registry_v0_1"],
+      "observed_coverage":["Core already separates state, possibility, intent, authority, action and successor","Capability selection/availability provide bounded option handling before authorization","Counterfactual intervention represents alternative scenarios without causal overclaim","FCL preserves ongoing causal continuity and successor continuation","Non-Binding Attention demonstrates a bounded attention policy in one pilot without Core promotion"],
+      "observed_gap":"A generic self-generated question/attention/re-entry interface is not established by current reusable evidence; the existing attention implementation is pilot-specific.",
+      "outcome":"PROFILE_ONLY","architecture_interpretation":"Use Conscious AI only as an operational conformance/assessment profile over existing primitives; keep generic self-generated re-entry as an explicit unresolved sub-gap pending independent reusable demand.",
+      "new_component_currently_justified":false,"implementation_authorized":false,"generic_self_generated_reentry_interface_established":false,"pilot_attention_promoted_to_core":false,"phenomenal_consciousness_proven":false,"qualia_proven":false,"sentience_proven":false,"selfhood_proven":false,"personhood_proven":false,"moral_status_proven":false,"autonomous_authority_created":false,"profile_implementation_required":false
+    }
+  ],
+  "overall": {
+    "result":"EXPLORATORY_SUFFICIENCY_NO_NEW_COMPONENT_CURRENTLY_JUSTIFIED",
+    "outcome_counts":{"REUSE_EXISTING":0,"COMPOSE_EXISTING":1,"ADAPTER_ONLY":1,"PROFILE_ONLY":2,"NEW_COMPONENT_CANDIDATE":0,"INSUFFICIENT_EVIDENCE":0,"NO_NEW_COMPONENT_NEEDED":0},
+    "new_component_candidates":0,"exploratory_entities_promoted":0,"implementation_authorized":false,"stable_core_change_required":false,"interface_registry_successor_required":false,"roadmap_priority_change_required":false,"future_successor_audit_allowed":true
+  },
+  "non_effects": {"stable_core_changed":false,"spec_changed":false,"principles_changed":false,"contestability_changed":false,"base_manifest_schema_changed":false,"interface_registry_changed":false,"backlog_registry_rewritten":false,"roadmap_changed":false,"workbench_reactivated":false,"c2pa_reclassified":false,"kontur_runtime_activated":false,"authority_created":false,"action_permit_created":false,"external_effect_performed":false,"release_or_tag_created":false}
+}
