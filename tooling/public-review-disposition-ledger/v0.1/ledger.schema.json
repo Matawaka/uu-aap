@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:public-review-disposition-ledger:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "origin_frontier", "public_review_binding", "entries", "summary", "boundaries", "non_effects"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:public-review-disposition-ledger:0.1"},
+    "origin_frontier": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "public_review_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "blob"],
+      "properties": {
+        "path": {"const": "PUBLIC_REVIEW.md"},
+        "blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["ledger_id", "source", "machine_result", "disposition", "normative_resolution"],
+        "properties": {
+          "ledger_id": {"type": "string", "minLength": 1},
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["issue_number", "comment_id", "url", "body_sha256"],
+            "properties": {
+              "issue_number": {"type": "integer", "minimum": 1},
+              "comment_id": {"type": "integer", "minimum": 1},
+              "url": {"type": "string", "minLength": 1},
+              "body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+            }
+          },
+          "machine_result": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["accepted_frontier", "path", "blob", "result_class"],
+            "properties": {
+              "accepted_frontier": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+              "path": {"type": "string", "minLength": 1},
+              "blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+              "result_class": {"type": "string", "minLength": 1}
+            }
+          },
+          "disposition": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["source_disposition_state", "editorial_bucket", "objection_preserved", "normative_change_authorized"],
+            "properties": {
+              "source_disposition_state": {"type": "string", "minLength": 1},
+              "editorial_bucket": {"type": "null"},
+              "objection_preserved": {"type": "boolean"},
+              "normative_change_authorized": {"type": "boolean"}
+            }
+          },
+          "normative_resolution": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["decision_gate_issue", "decision_comment_id", "decision_comment_body_sha256", "selected_sequence", "implementation_status", "stage_b", "stage_c"],
+            "properties": {
+              "decision_gate_issue": {"type": "integer", "minimum": 1},
+              "decision_comment_id": {"type": "integer", "minimum": 1},
+              "decision_comment_body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              "selected_sequence": {"type": "string", "minLength": 1},
+              "implementation_status": {"type": "string", "minLength": 1},
+              "stage_b": {"$ref": "#/$defs/stage"},
+              "stage_c": {"$ref": "#/$defs/stage"}
+            }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entry_count", "machine_disposition_count", "accept_for_followup_count", "broader_public_review_complete"],
+      "properties": {
+        "entry_count": {"type": "integer", "minimum": 0},
+        "machine_disposition_count": {"type": "integer", "minimum": 0},
+        "accept_for_followup_count": {"type": "integer", "minimum": 0},
+        "broader_public_review_complete": {"type": "boolean"}
+      }
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reviewer_identity_verified", "reviewer_independence_verified", "reviewer_standing_established", "reviewer_expertise_established", "reviewer_authority_established", "claim_truth_established", "certification_established", "release_authority_established"],
+      "properties": {
+        "reviewer_identity_verified": {"type": "boolean"},
+        "reviewer_independence_verified": {"type": "boolean"},
+        "reviewer_standing_established": {"type": "boolean"},
+        "reviewer_expertise_established": {"type": "boolean"},
+        "reviewer_authority_established": {"type": "boolean"},
+        "claim_truth_established": {"type": "boolean"},
+        "certification_established": {"type": "boolean"},
+        "release_authority_established": {"type": "boolean"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_objection_mutated", "new_disposition_created", "new_normative_decision_created", "core_changed", "spec_changed", "responsibility_policy_changed", "base_manifest_schema_changed", "release_or_tag_created", "publication_authorized", "action_permit_created", "c2pa_reclassified", "workbench_reactivated"],
+      "properties": {
+        "source_objection_mutated": {"type": "boolean"},
+        "new_disposition_created": {"type": "boolean"},
+        "new_normative_decision_created": {"type": "boolean"},
+        "core_changed": {"type": "boolean"},
+        "spec_changed": {"type": "boolean"},
+        "responsibility_policy_changed": {"type": "boolean"},
+        "base_manifest_schema_changed": {"type": "boolean"},
+        "release_or_tag_created": {"type": "boolean"},
+        "publication_authorized": {"type": "boolean"},
+        "action_permit_created": {"type": "boolean"},
+        "c2pa_reclassified": {"type": "boolean"},
+        "workbench_reactivated": {"type": "boolean"}
+      }
+    }
+  },
+  "$defs": {
+    "stage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accepted_frontier", "path", "implementation_receipt_blob"],
+      "properties": {
+        "accepted_frontier": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "path": {"type": "string", "minLength": 1},
+        "implementation_receipt_blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+      }
+    }
+  }
+}
