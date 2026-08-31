@@ -1,0 +1,161 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:public-review-repository-discovery:0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "repository",
+    "observed_at_utc",
+    "observed_at_is_trusted_time",
+    "status",
+    "counts",
+    "known_historical_external_sources",
+    "new_external_account_sources",
+    "boundaries",
+    "non_effects"
+  ],
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "issue_number",
+        "issue_state",
+        "source_id",
+        "url",
+        "author_account_identifier",
+        "author_type",
+        "author_association",
+        "performed_via_github_app_slug",
+        "created_at",
+        "updated_at",
+        "body_sha256",
+        "classification"
+      ],
+      "properties": {
+        "source_kind": {"enum": ["ISSUE_BODY", "ISSUE_COMMENT"]},
+        "issue_number": {"type": "integer", "minimum": 1},
+        "issue_state": {"enum": ["open", "closed"]},
+        "source_id": {"type": "integer", "minimum": 1},
+        "url": {"type": "string", "minLength": 1},
+        "author_account_identifier": {"type": "string", "minLength": 1},
+        "author_type": {"type": "string", "minLength": 1},
+        "author_association": {"type": ["string", "null"]},
+        "performed_via_github_app_slug": {"type": ["string", "null"]},
+        "created_at": {"type": ["string", "null"]},
+        "updated_at": {"type": ["string", "null"]},
+        "body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "classification": {
+          "enum": [
+            "KNOWN_HISTORICAL_EXTERNAL_SOURCE",
+            "NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED"
+          ]
+        }
+      }
+    }
+  },
+  "properties": {
+    "schema": {"const": "urn:uu-aap:public-review-repository-discovery:0.2"},
+    "repository": {"const": "Matawaka/uu-aap"},
+    "observed_at_utc": {"type": "string", "minLength": 1},
+    "observed_at_is_trusted_time": {"const": false},
+    "status": {
+      "enum": [
+        "NO_NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED",
+        "NEW_EXTERNAL_ACCOUNT_SOURCE_OBSERVED"
+      ]
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issue_objects",
+        "pull_request_objects_excluded",
+        "issue_comments",
+        "project_account_sources",
+        "automation_sources",
+        "unattributed_sources",
+        "external_account_sources",
+        "known_historical_external_sources",
+        "new_external_account_sources"
+      ],
+      "properties": {
+        "issue_objects": {"type": "integer", "minimum": 0},
+        "pull_request_objects_excluded": {"type": "integer", "minimum": 0},
+        "issue_comments": {"type": "integer", "minimum": 0},
+        "project_account_sources": {"type": "integer", "minimum": 0},
+        "automation_sources": {"type": "integer", "minimum": 0},
+        "unattributed_sources": {"type": "integer", "minimum": 0},
+        "external_account_sources": {"type": "integer", "minimum": 0},
+        "known_historical_external_sources": {"type": "integer", "minimum": 0},
+        "new_external_account_sources": {"type": "integer", "minimum": 0}
+      }
+    },
+    "known_historical_external_sources": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source"}
+    },
+    "new_external_account_sources": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/source"}
+    },
+    "boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified_human_identity",
+        "independence_established",
+        "standing_established",
+        "expertise_established",
+        "authority_established",
+        "claim_relevance_established",
+        "claim_truth_established",
+        "admission_decision",
+        "disposition_decision"
+      ],
+      "properties": {
+        "verified_human_identity": {"const": false},
+        "independence_established": {"const": false},
+        "standing_established": {"const": false},
+        "expertise_established": {"const": false},
+        "authority_established": {"const": false},
+        "claim_relevance_established": {"const": false},
+        "claim_truth_established": {"const": false},
+        "admission_decision": {"const": "NOT_MADE"},
+        "disposition_decision": {"const": "NOT_MADE"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "issues_or_comments_mutated",
+        "reviewers_contacted",
+        "identity_profiles_built",
+        "reputation_scores_created",
+        "normative_change_made",
+        "release_or_tag_created",
+        "publication_authorized",
+        "action_permit_created",
+        "recurring_schedule_created",
+        "c2pa_reclassified",
+        "workbench_reactivated"
+      ],
+      "properties": {
+        "issues_or_comments_mutated": {"const": false},
+        "reviewers_contacted": {"const": false},
+        "identity_profiles_built": {"const": false},
+        "reputation_scores_created": {"const": false},
+        "normative_change_made": {"const": false},
+        "release_or_tag_created": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false},
+        "recurring_schedule_created": {"const": false},
+        "c2pa_reclassified": {"const": false},
+        "workbench_reactivated": {"const": false}
+      }
+    }
+  }
+}
