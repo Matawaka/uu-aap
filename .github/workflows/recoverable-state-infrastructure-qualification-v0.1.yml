@@ -1,0 +1,115 @@
+name: Recoverable State Infrastructure Qualification v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/recoverable-state-infrastructure-qualification/v0.1/**'
+      - '.github/workflows/recoverable-state-infrastructure-qualification-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/recoverable-state-infrastructure-qualification/v0.1/**'
+      - '.github/workflows/recoverable-state-infrastructure-qualification-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: e87ee38b5a92fc849195d4602c34cd93adc18804
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Validate evidence-bound qualification and exact live source blobs
+        run: node tooling/recoverable-state-infrastructure-qualification/v0.1/validate_qualification.js
+      - name: Run hostile qualification mutations
+        run: node tooling/recoverable-state-infrastructure-qualification/v0.1/test_qualification.js
+      - name: Validate qualification and implementation receipt schemas
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root=Path('tooling/recoverable-state-infrastructure-qualification/v0.1')
+          pairs=[
+            ('qualification.schema.json','qualification.json'),
+            ('implementation-receipt.schema.json','implementation-receipt.json'),
+          ]
+          for schema_name, artifact_name in pairs:
+            schema=json.loads((root/schema_name).read_text())
+            artifact=json.loads((root/artifact_name).read_text())
+            Draft202012Validator.check_schema(schema)
+            Draft202012Validator(schema).validate(artifact)
+          print('RSIC_QUALIFICATION_SCHEMAS_PASS')
+          PY
+      - name: Bind qualification implementation receipt to actual Git objects
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=tooling/recoverable-state-infrastructure-qualification/v0.1
+          test "$(git rev-parse HEAD:$root/qualification.json)" = 'e68360a90e9963cb5a66f8f4a2f26a088f47b439'
+          test "$(git rev-parse HEAD:$root/qualification.schema.json)" = '7ac0b806bb00b0d0181d014aa477ab5d2f9797f9'
+          test "$(git rev-parse HEAD:$root/validate_qualification.js)" = 'badea70f31b1ccfc33054c20fdcbd26fd51e5eb4'
+          test "$(git rev-parse HEAD:$root/test_qualification.js)" = 'a31617241163facb9f13d77aaec7fe2e00329d06'
+          echo 'qualification artifact byte bindings: PASS'
+      - name: Re-run accepted ERD RERC and RSIC contracts
+        run: |
+          node protocols/integration/event-responsive-dormancy/v0.1/test-event-responsive-dormancy.js /tmp/erd-qualification
+          node protocols/integration/rerc/v0.1/test-rerc.js /tmp/rerc-qualification
+          node protocols/reusable-infrastructure/recoverable-state/v0.1/test-compose.js /tmp/rsic-qualification
+          node protocols/interface-registry/v0.2/test-interface-registry-v0.2.js
+      - name: Guard components consumers registry Core roadmap and exploratory boundaries
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json docs/ROADMAP-CURRENT.md \
+            protocols/integration/event-responsive-dormancy/v0.1/ \
+            protocols/integration/rerc/v0.1/ \
+            protocols/reusable-infrastructure/recoverable-state/v0.1/ \
+            protocols/interface-registry/v0.1/ protocols/interface-registry/v0.2/ \
+            scripts/c2pa-sdk-successor-reaudit/ \
+            protocols/integration/circumstantial-provenance/v0.1/ \
+            scripts/verifier-disposition-integrity/ \
+            scripts/verifier-candidate-federation/ \
+            tooling/public-review-repository-discovery/v0.2/ \
+            pilots/kontur-game-companion/
+          echo 'accepted components/consumers/Core/registry/roadmap/KONTUR: unchanged'
+      - name: Require qualification-only diff
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r p; do
+            [ -z "$p" ] && continue
+            case "$p" in
+              .github/workflows/recoverable-state-infrastructure-qualification-v0.1.yml|tooling/recoverable-state-infrastructure-qualification/v0.1/*) ;;
+              *) echo "unexpected changed path: $p" >&2; exit 1 ;;
+            esac
+          done < <(git diff --name-only "$ORIGIN_FRONTIER" HEAD)
+      - name: Require read-only no-schedule workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          workflow=.github/workflows/recoverable-state-infrastructure-qualification-v0.1.yml
+          ! grep -Eq '^[[:space:]]+schedule:' "$workflow"
+          ! grep -Eq '^[[:space:]]+[A-Za-z_-]+:[[:space:]]*write[[:space:]]*$' "$workflow"
+          grep -F 'contents: read' "$workflow" >/dev/null
+      - name: Clean tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
