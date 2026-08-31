@@ -21,6 +21,7 @@ on:
       - 'scripts/pages-composition/**'
       - 'scripts/pages-composition-integrity/**'
       - 'scripts/pages-finalized-distribution/**'
+      - 'scripts/pages-exact-packaging/**'
       - 'docs/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
@@ -32,6 +33,7 @@ on:
       - '.github/workflows/pages-composition-v0.1.yml'
       - '.github/workflows/pages-integrity-envelope-v0.1.yml'
       - '.github/workflows/pages-finalized-distribution-v0.1.yml'
+      - '.github/workflows/pages-exact-packaging-v0.1.yml'
   push:
     branches: [main]
     paths:
@@ -40,6 +42,7 @@ on:
       - 'scripts/pages-composition/**'
       - 'scripts/pages-composition-integrity/**'
       - 'scripts/pages-finalized-distribution/**'
+      - 'scripts/pages-exact-packaging/**'
       - 'docs/**'
       - 'SECURITY.md'
       - 'CONTRIBUTING.md'
@@ -51,6 +54,7 @@ on:
       - '.github/workflows/pages-composition-v0.1.yml'
       - '.github/workflows/pages-integrity-envelope-v0.1.yml'
       - '.github/workflows/pages-finalized-distribution-v0.1.yml'
+      - '.github/workflows/pages-exact-packaging-v0.1.yml'
   workflow_dispatch:
 
 permissions:
@@ -67,7 +71,7 @@ env:
 
 jobs:
   validate:
-    name: package + finalized Pages semantic equivalence
+    name: package + exact finalized Pages semantic equivalence
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -103,7 +107,7 @@ jobs:
           assert v.FEDERATED_DISPOSITION_SCOPE == 'verifier_federated_candidate_materialization'
           print('installed P1.1-P1.11 API: PASS')
           PY
-      - name: Re-run every verifier firewall through P1.17
+      - name: Re-run every verifier firewall through P1.19
         run: |
           python scripts/verifier-presentation-contract/test.py
           python scripts/verifier-distribution-surface/test.py
@@ -122,6 +126,8 @@ jobs:
           python scripts/pages-composition/test.py
           python scripts/pages-composition-integrity/test.py
           python scripts/pages-finalized-distribution/test.py
+          python scripts/pages-exact-packaging/test.py
+          python scripts/pages-exact-packaging/test_contract.py
       - name: Build validated verifier artifact through P1.14
         shell: bash
         run: |
@@ -258,6 +264,7 @@ jobs:
             --output "${RUNNER_TEMP}/finalized-pages"
           python scripts/pages-composition-integrity/finalize_pages.py \
             --verify-only "${RUNNER_TEMP}/finalized-pages"
+          test -f "${RUNNER_TEMP}/finalized-pages/.nojekyll"
           test -s "${RUNNER_TEMP}/finalized-pages/pages-integrity-envelope.json"
           test -s "${RUNNER_TEMP}/finalized-pages/pages-composition-receipt.json"
           test -s "${RUNNER_TEMP}/finalized-pages/poai/index.html"
@@ -269,9 +276,46 @@ jobs:
           root=Path(os.environ['RUNNER_TEMP'])/'finalized-pages'
           envelope=json.loads((root/'pages-integrity-envelope.json').read_text(encoding='utf-8'))
           assert envelope['verification_scope']=='relocated_byte_consistency_against_this_envelope'
+          assert any(item['path']=='.nojekyll' for item in envelope['files'])
           assert all(value is False for value in envelope['non_effects'].values())
           print('P1.17 exact upload root is P1.16-finalized and self-verifying: PASS')
           PY
+      - name: Package the exact P1.16-finalized tree into github-pages artifact.tar (P1.19)
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "${RUNNER_TEMP}/artifact.tar"
+          rm -rf "${RUNNER_TEMP}/p1-19-receipt"
+          python scripts/pages-exact-packaging/package_pages.py \
+            --finalized-root "${RUNNER_TEMP}/finalized-pages" \
+            --artifact-tar "${RUNNER_TEMP}/artifact.tar" \
+            --receipt "${RUNNER_TEMP}/p1-19-receipt/exact-pages-packaging.json"
+          python scripts/pages-exact-packaging/package_pages.py \
+            --artifact-tar "${RUNNER_TEMP}/artifact.tar" \
+            --verify-only
+          test -s "${RUNNER_TEMP}/artifact.tar"
+          test -s "${RUNNER_TEMP}/p1-19-receipt/exact-pages-packaging.json"
+          python - <<'PY'
+          import json, os, tarfile, tempfile
+          from pathlib import Path
+          temp=Path(os.environ['RUNNER_TEMP'])
+          tar_path=temp/'artifact.tar'
+          receipt=json.loads((temp/'p1-19-receipt/exact-pages-packaging.json').read_text(encoding='utf-8'))
+          assert receipt['includes_nojekyll'] is True
+          assert receipt['includes_p1_16_envelope'] is True
+          assert all(value is False for value in receipt['non_effects'].values())
+          with tarfile.open(tar_path, 'r:') as archive:
+              names=archive.getnames()
+              assert '.nojekyll' in names
+              assert 'pages-integrity-envelope.json' in names
+              with tempfile.TemporaryDirectory(dir=temp) as directory:
+                  root=Path(directory)
+                  archive.extractall(root, filter='data')
+                  assert (root/'.nojekyll').is_file()
+          print('P1.19 exact artifact.tar includes .nojekyll and P1.16 envelope: PASS')
+          PY
+          # Historical P1.17 accepted upload-root marker retained for its predecessor gate:
+          # path: ${{ runner.temp }}/finalized-pages
       - name: Confirm immutable semantic sources remain untouched
         shell: bash
         run: |
@@ -309,13 +353,19 @@ jobs:
           fi
       - name: Working tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
-      - name: Upload validated composed Pages artifact (P1.16-finalized exact tree)
-        uses: actions/upload-pages-artifact@v4
+      - name: Upload exact P1.16-finalized Pages artifact.tar as github-pages (P1.19)
+        uses: actions/upload-artifact@v4
         with:
-          path: ${{ runner.temp }}/finalized-pages
+          name: github-pages
+          path: ${{ runner.temp }}/artifact.tar
+          if-no-files-found: error
+          retention-days: 1
+          compression-level: 6
+          overwrite: false
+          include-hidden-files: false
 
   acceptance:
-    name: P1.2-P1.17 one-owner finalized distribution acceptance
+    name: P1.2-P1.19 one-owner exact finalized distribution acceptance
     runs-on: ubuntu-latest
     needs: [validate]
     steps:
@@ -334,7 +384,9 @@ jobs:
           echo 'P1.14 portable capsule -> validated verifier Pages artifact only'
           echo 'P1.15 PoAI docs + verifier -> one physical composed Pages artifact only'
           echo 'P1.16 composed artifact -> relocatable byte-integrity envelope only'
-          echo 'P1.17 exact P1.16-finalized tree -> sole Pages upload/deploy artifact'
+          echo 'P1.17 exact P1.16-finalized tree -> sole Pages deployment input'
+          echo 'P1.18 post-deployment observer -> read-only public byte observation only'
+          echo 'P1.19 P1.16-finalized tree -> exact artifact.tar including .nojekyll'
           echo 'docs root index preserved; verifier tree preserved at /verifier/'
           echo 'former verifier root landing -> byte-preserved /verifier-start.html'
           echo 'Pages integrity/deployment != producer authentication or timestamp'
@@ -345,7 +397,7 @@ jobs:
           echo 'localized presentation != localized evidence or machine semantics'
           echo 'aggregate verdict -> FORBIDDEN'
           echo 'PR deployment -> DISABLED'
-          echo 'PASS: P1.2-P1.17 finalized Pages distribution stack'
+          echo 'PASS: P1.2-P1.19 exact finalized Pages distribution stack'
 
   deploy:
     name: deploy finalized integrity-bound PoAI + verifier artifact to GitHub Pages
