@@ -1,0 +1,47 @@
+{
+  "schema": "urn:uu-aap:responsibility-status-provenance-binding-implementation:0.1",
+  "origin_frontier": "dbdace4548fb6701675a993276da6854c4324bda",
+  "human_design_gate": {
+    "issue": 852,
+    "decision_comment_id": 5474573197,
+    "decision": "PHASED_B_PLUS_C",
+    "stage": "B_OPTIONAL_MACHINE_NATIVE_PROVENANCE_BINDING",
+    "repository_owner_decision_recorded": true,
+    "decision_actor_identity_status": "NOT_ESTABLISHED_BY_REPOSITORY_RECORD"
+  },
+  "historical_bindings": {
+    "run_001_result_blob": "edc9a7e4f26492d16875727e17188c5e2a486ced",
+    "manifest_schema_v0_1_blob": "c0579b34f6c456c462cea1aa80ec67b78fce7582",
+    "spec_blob": "44b91e0e48dee9d928c843bbb304a5c246582da7",
+    "responsibility_policy_blob": "f71dd1920157d4137f1e3a1ab270bcdfc873e61f",
+    "counterexample_manifest_blob": "350ca00629f354bdd7cc01785d448590c6be87b4",
+    "counterexample_manifest_sha256": "d173cf888cfea1e343411162aaf87a890874e0aaf02fee7cd6c1fd0fcc3cf83f"
+  },
+  "stage_b_contract": {
+    "base_manifest_schema_changed": false,
+    "historical_manifest_semantics_reinterpreted": false,
+    "sidecar_optional": true,
+    "exact_manifest_sha256_required": true,
+    "exact_responsibility_index_required": true,
+    "exact_responsibility_entry_copy_required": true,
+    "declaration_only_supported": true,
+    "attributable_acceptance_evidence_binding_supported": true,
+    "missing_stronger_evidence_is_failure": false
+  },
+  "next_gate": {
+    "stage_c_may_consume_attributable_binding": true,
+    "stage_c_implemented_here": false,
+    "stage_c_requires_separate_successor": true
+  },
+  "non_effects": {
+    "verified_identity_created": false,
+    "authority_created": false,
+    "truth_created": false,
+    "legal_liability_created": false,
+    "responsibility_status_changed": false,
+    "release_or_tag_authorized": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false
+  }
+}
