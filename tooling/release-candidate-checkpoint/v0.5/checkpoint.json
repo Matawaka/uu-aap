@@ -1,0 +1,70 @@
+{
+  "schema_version": "0.5",
+  "checkpoint_type": "ReleaseCandidateCheckpoint",
+  "origin_frontier": "9bce100a63ca981f28f24ce73d0f81f67f4289d3",
+  "predecessor": {
+    "path": "tooling/release-candidate-checkpoint/v0.4/checkpoint.json",
+    "state": "PRESERVED_HISTORICAL",
+    "blob": "ddb7905b84a552321b0d7b0e3125b44e0960b8ab"
+  },
+  "current_frontier_reconciliation": {
+    "path": "tooling/current-frontier-reconciliation/v0.2/reconciliation.json",
+    "blob": "37a5daed7f57e58177e92679310fa26b3d2ddc24",
+    "state": "ACCEPTED_INPUT"
+  },
+  "current_roadmap": {
+    "path": "docs/ROADMAP-CURRENT.md",
+    "blob": "3e5f371764c8f9557fd1ce57615a2739253d8140",
+    "state": "ACCEPTED_INPUT"
+  },
+  "engineering_convergence": "PASS_BOUNDED",
+  "security_evidence": "EVIDENCE_CLOSED_BOUNDED",
+  "internal_governance": "PASS_BOUNDED",
+  "interop": {
+    "c2pa_p0_3": "INCOMPLETE",
+    "evidence_anchor_prs": "INTENTIONALLY_UNMERGED_EVIDENCE_ANCHORS"
+  },
+  "verifier": {
+    "p1_1_to_p1_20": "ACCEPTED_BOUNDED",
+    "deployed_byte_observability": "OBSERVED_MATCH_BOUNDED",
+    "producer_authentication_proven": false,
+    "truth_proven": false,
+    "authority_proven": false,
+    "trusted_timestamp_proven": false,
+    "future_availability_proven": false
+  },
+  "external_gates": {
+    "public_review": "WAITING_EXTERNAL",
+    "pilot_002": "WAITING_EXTERNAL"
+  },
+  "parallel_lanes": {
+    "kontur_successor": "PARALLEL_NON_CORE",
+    "workbench": "PAUSED_EXTERNAL_PRODUCT",
+    "ip_legal_private": "HUMAN_OR_EXTERNAL_DECISION"
+  },
+  "decision": "RELEASE_CANDIDATE_EXTERNAL_EVIDENCE_PENDING",
+  "next_priority": "GENUINE_EXTERNAL_PARTICIPATION",
+  "limitations": [
+    "Internal engineering and governance outcomes are bounded repository evidence, not external validation.",
+    "C2PA P0.3 cross-SDK preservation remains INCOMPLETE and its historical evidence anchors remain intentionally unmerged.",
+    "Verifier and deployed-byte integrity evidence do not prove producer authentication, truth, authority, trusted time or future availability.",
+    "Public Review and Core Pilot 002 remain unresolved external gates and cannot be satisfied by project-authored substitute evidence.",
+    "Workbench is paused as an external product lane and is not reactivated by this checkpoint.",
+    "No release, tag, publication, certification, legal status, runtime activation or ActionPermit is implied."
+  ],
+  "non_effects": {
+    "historical_rewrite": false,
+    "release_authorized": false,
+    "publication_authorized": false,
+    "tag_authorized": false,
+    "certification_created": false,
+    "legal_status_created": false,
+    "runtime_activation_authorized": false,
+    "action_permit_created": false,
+    "external_validation_claimed": false,
+    "external_evidence_fabricated": false,
+    "c2pa_p0_3_promoted_to_pass": false,
+    "workbench_reactivated": false,
+    "stable_core_changed": false
+  }
+}
