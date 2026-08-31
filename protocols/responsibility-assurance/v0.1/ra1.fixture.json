@@ -1,0 +1,31 @@
+{
+  "schema": "urn:uu-aap:responsibility-assurance-profile:0.1",
+  "profile": {
+    "id": "UU-AAP/RA1",
+    "version": "0.1",
+    "kind": "responsibility_assurance_overlay"
+  },
+  "target_manifest": {
+    "path": "pilots/core-pilot-002/run-001/result/v0.1/counterexample.manifest.json",
+    "sha256": "d173cf888cfea1e343411162aaf87a890874e0aaf02fee7cd6c1fd0fcc3cf83f"
+  },
+  "stage_b_binding": {
+    "path": "protocols/responsibility-assurance/v0.1/full-attributable-binding.fixture.json",
+    "sha256": "828e6dfec882fdfd7bd327047eb4521a13082b2428206d09d13d1dca82a192aa"
+  },
+  "coverage": {
+    "mode": "ALL_ACCEPTED_OR_SHARED_RESPONSIBILITIES"
+  },
+  "result_claim": "ATTRIBUTABLE_ACCEPTANCE_EVIDENCE_PRESENT_FOR_ALL_ACCEPTED_OR_SHARED_RESPONSIBILITY_ENTRIES",
+  "non_effects": {
+    "base_manifest_validity_changed": false,
+    "verified_identity_created": false,
+    "authority_created": false,
+    "truth_created": false,
+    "legal_liability_created": false,
+    "certification_created": false,
+    "release_or_tag_authorized": false,
+    "publication_authorized": false,
+    "action_permit_created": false
+  }
+}
