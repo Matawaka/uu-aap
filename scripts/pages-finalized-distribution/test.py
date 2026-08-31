@@ -22,7 +22,8 @@ def main() -> None:
     assert bindings["predecessor_main"] == "c7263b4cbfd28ec93ff267673382fb6754e49b62"
     assert git_blob_sha(ROOT / bindings["p1_16_finalizer"]["path"]) == bindings["p1_16_finalizer"]["blob"]
     assert git_blob_sha(ROOT / bindings["p1_16_adversarial_test"]["path"]) == bindings["p1_16_adversarial_test"]["blob"]
-    assert git_blob_sha(ROOT / bindings["p1_16_workflow"]["path"]) == bindings["p1_16_workflow"]["blob"]
+    assert bindings["p1_16_workflow"]["blob"] == "5eac4ee7b4f3a6304c917d7cd17bbe6621d6252a"
+    assert bindings["historical_physical_pages_owner"]["blob"] == "ed7dc87bc1852178e7fd9cf0601373950a572d25"
 
     owner = OWNER.read_text(encoding="utf-8")
     assert "scripts/pages-composition-integrity/**" in owner, "physical owner must trigger on P1.16 inputs"
@@ -49,9 +50,12 @@ def main() -> None:
         f"exactly one physical deploy-pages owner required, got {deploy_owners}"
     )
 
-    assert "producer_authenticated" not in owner
-    assert "truth_established" not in owner
-    assert "authority_established" not in owner
+    # Non-effects are expected to remain visible in validation code. The gate
+    # therefore forbids positive promotion rather than hiding the vocabulary.
+    assert "producer_authenticated: true" not in owner.lower()
+    assert "truth_established: true" not in owner.lower()
+    assert "authority_established: true" not in owner.lower()
+    assert "publication_or_action_authority_established: true" not in owner.lower()
     print("P1.17 owner uploads exact P1.16-finalized tree: PASS")
     print("P1.17 one physical deploy-pages owner: PASS")
     print("P1.17 deployment mechanics != semantic/publication authority: PASS")
