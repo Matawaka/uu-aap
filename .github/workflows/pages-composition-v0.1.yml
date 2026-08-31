@@ -113,7 +113,8 @@ jobs:
           unified=Path('.github/workflows/verifier-distribution-surface-v0.1.yml').read_text(encoding='utf-8')
           assert "- 'docs/**'" in unified
           assert 'python scripts/pages-composition/compose_pages.py' in unified
-          assert 'path: ${{ runner.temp }}/composed-pages' in unified
+          assert 'composed-pages' in unified
+          assert 'Upload validated composed Pages artifact' in unified
           assert deploy_marker + 'v4' in unified
           print('one repository-wide physical Pages deployment owner: PASS')
           PY
