@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:responsibility-status-provenance-binding:0.1",
+  "title": "UU-AAP Responsibility Status Provenance Binding v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "target_manifest", "bindings", "non_effects"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:responsibility-status-provenance-binding:0.1"},
+    "target_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "bindings": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "responsibility_index",
+          "responsibility_entry",
+          "binding_state",
+          "declarant_reference",
+          "attributable_acceptance_event_reference",
+          "acceptance_evidence_refs"
+        ],
+        "properties": {
+          "responsibility_index": {"type": "integer", "minimum": 0},
+          "responsibility_entry": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["actor_id", "scope", "status"],
+            "properties": {
+              "actor_id": {"type": "string", "minLength": 1},
+              "scope": {
+                "enum": [
+                  "intent_governance",
+                  "concept_selection",
+                  "structure_approval",
+                  "source_selection",
+                  "factual_verification",
+                  "editorial_approval",
+                  "publication_authorization",
+                  "legal_compliance",
+                  "technical_binding",
+                  "review_attestation",
+                  "other"
+                ]
+              },
+              "status": {"enum": ["accepted", "shared", "limited", "declined", "unknown"]},
+              "limitations": {"type": ["string", "null"]}
+            }
+          },
+          "binding_state": {
+            "enum": ["DECLARATION_ONLY", "ATTRIBUTABLE_ACCEPTANCE_EVIDENCE_BOUND"]
+          },
+          "declarant_reference": {"type": ["string", "null"], "minLength": 1},
+          "attributable_acceptance_event_reference": {"type": ["string", "null"], "minLength": 1},
+          "acceptance_evidence_refs": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1},
+            "uniqueItems": true
+          }
+        },
+        "allOf": [
+          {
+            "if": {"properties": {"binding_state": {"const": "DECLARATION_ONLY"}}},
+            "then": {
+              "properties": {
+                "attributable_acceptance_event_reference": {"type": "null"},
+                "acceptance_evidence_refs": {"maxItems": 0}
+              }
+            }
+          },
+          {
+            "if": {"properties": {"binding_state": {"const": "ATTRIBUTABLE_ACCEPTANCE_EVIDENCE_BOUND"}}},
+            "then": {
+              "properties": {
+                "responsibility_entry": {
+                  "properties": {"status": {"enum": ["accepted", "shared"]}}
+                },
+                "attributable_acceptance_event_reference": {"type": "string", "minLength": 1},
+                "acceptance_evidence_refs": {"minItems": 1}
+              }
+            }
+          }
+        ]
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verified_identity_created",
+        "authority_created",
+        "truth_created",
+        "legal_liability_created",
+        "responsibility_status_changed",
+        "release_or_tag_authorized",
+        "publication_authorized",
+        "action_permit_created"
+      ],
+      "properties": {
+        "verified_identity_created": {"const": false},
+        "authority_created": {"const": false},
+        "truth_created": {"const": false},
+        "legal_liability_created": {"const": false},
+        "responsibility_status_changed": {"const": false},
+        "release_or_tag_authorized": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false}
+      }
+    }
+  }
+}
