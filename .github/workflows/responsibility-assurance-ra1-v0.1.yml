@@ -1,0 +1,100 @@
+name: Responsibility Assurance RA1 v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/responsibility-assurance/v0.1/**'
+      - '.github/workflows/responsibility-assurance-ra1-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/responsibility-assurance/v0.1/**'
+      - '.github/workflows/responsibility-assurance-ra1-v0.1.yml'
+
+permissions:
+  contents: read
+
+env:
+  ORIGIN_FRONTIER: 5201cb686bcef52053e055595c2315c36aa1ec56
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  validate-ra1:
+    name: stronger responsibility assurance consumes accepted Stage B
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Validate RA1 composition and hostile mutations
+        run: python protocols/responsibility-assurance/v0.1/validate.py
+
+      - name: Re-bind exact human phased B plus C decision read-only
+        run: python protocols/responsibility-status-provenance/v0.1/verify_design_decision.py
+
+      - name: Parse Stage C JSON artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          for f in \
+            protocols/responsibility-assurance/v0.1/profile.schema.json \
+            protocols/responsibility-assurance/v0.1/full-attributable-binding.fixture.json \
+            protocols/responsibility-assurance/v0.1/ra1.fixture.json \
+            protocols/responsibility-assurance/v0.1/implementation-receipt.json
+          do
+            python -m json.tool "$f" >/dev/null
+          done
+
+      - name: Bind exact accepted Stage B and historical v0.1 inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object protocols/responsibility-status-provenance/v0.1/README.md)" = "4abf1266cc9d6c0529eb00bb466c8545b7b270ac"
+          test "$(git hash-object protocols/responsibility-status-provenance/v0.1/binding.schema.json)" = "0fb44e2d91efcdc4f7c5034e01100fd37489b376"
+          test "$(git hash-object protocols/responsibility-status-provenance/v0.1/implementation-receipt.json)" = "3ecba920eb366c15c1c7555cb54dc8574e05a73b"
+          test "$(git hash-object protocols/responsibility-status-provenance/v0.1/validate.py)" = "51ecb60bd94a854e4764aec2e4c698cd5d9b88bd"
+          test "$(git hash-object pilots/core-pilot-002/run-001/result/v0.1/result.json)" = "edc9a7e4f26492d16875727e17188c5e2a486ced"
+          test "$(git hash-object schema/uu-aap-manifest.schema.json)" = "c0579b34f6c456c462cea1aa80ec67b78fce7582"
+          test "$(git hash-object SPEC.md)" = "44b91e0e48dee9d928c843bbb304a5c246582da7"
+          test "$(git hash-object RESPONSIBILITY.md)" = "f71dd1920157d4137f1e3a1ab270bcdfc873e61f"
+          echo "RA1 accepted Stage B + historical bindings: PASS"
+
+      - name: Guard Stage B, base profiles, Core, roadmap and Workbench
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+            protocols/responsibility-status-provenance/v0.1/ \
+            protocols/core/ SPEC.md PRINCIPLES.md CONTESTABILITY.md SECURITY.md RESPONSIBILITY.md \
+            schema/uu-aap-manifest.schema.json \
+            pilots/core-pilot-002/ \
+            docs/ROADMAP-CURRENT.md docs/workbench/ \
+            tooling/current-frontier-reconciliation/v0.2/ \
+            tooling/release-candidate-checkpoint/v0.5/
+          echo "Stage B/base profiles/Core/roadmap/Workbench boundaries: unchanged"
+
+      - name: Require Stage C-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          changed="$(git diff --name-only "$ORIGIN_FRONTIER" HEAD | sort)"
+          while IFS= read -r path; do
+            case "$path" in
+              .github/workflows/responsibility-assurance-ra1-v0.1.yml|protocols/responsibility-assurance/v0.1/*) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          echo "Stage C-only diff boundary: PASS"
+
+      - name: Require clean working tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"
