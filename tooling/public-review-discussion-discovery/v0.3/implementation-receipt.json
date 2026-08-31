@@ -1,0 +1,71 @@
+{
+  "schema": "urn:uu-aap:public-review-discussion-discovery-implementation:0.3",
+  "origin_frontier": "bef77bddd4fa6430bb16f14e52f1d5fee1aeb786",
+  "source_bindings": {
+    "public_review_blob": "83cf9f1dacffcde3f030764f5fb0e6afe0fdb190",
+    "poai_readme_blob": "6a4e69f48870eb17f5b06fea70fa365fc15c9b28",
+    "v0_2_policy_blob": "c901cffec32b1e6929f13896689379154a7809ee",
+    "v0_2_collector_blob": "7dd45aca4dc01cd5302e8c4baabaf69e5560c784",
+    "v0_2_implementation_receipt_blob": "0ca1fad7b9b96edb65c0824b7c23f0b0db35736e",
+    "v0_2_live_correction_receipt_blob": "c3e353f2696c8e37c5467e31ce02e18cccde0462",
+    "v0_2_workflow_blob": "5514889d09e4bb4305218c7fe0862ccb0d14e2e2"
+  },
+  "declared_review_surfaces": {
+    "uu_aap_broad_design_discussion": 8,
+    "poai_primary_rfc_discussion": 10
+  },
+  "scope": {
+    "target_discussion_numbers": [8, 10],
+    "discussion_body": true,
+    "top_level_comments": true,
+    "comment_replies": true,
+    "other_discussions": false,
+    "issues": false,
+    "pull_requests": false,
+    "commit_comments": false,
+    "email": false,
+    "social_media": false,
+    "read_only": true,
+    "graphql_read": true,
+    "automatic_admission": false,
+    "automatic_disposition": false,
+    "scheduled_polling": false,
+    "accepted_push_live_discovery": true,
+    "manual_live_discovery": true
+  },
+  "classification_boundaries": {
+    "project_account_is_external_source": false,
+    "bot_account_is_external_source": false,
+    "missing_account_is_external_account_source": false,
+    "different_account_is_external_account_source_candidate": true,
+    "different_account_proves_human_identity": false,
+    "different_account_proves_independence": false,
+    "author_association_proves_standing_or_authority": false,
+    "source_presence_proves_relevance": false,
+    "source_presence_proves_truth": false,
+    "github_answer_state_is_protocol_disposition": false
+  },
+  "non_effects": {
+    "v0_1_changed": false,
+    "v0_2_changed": false,
+    "core_changed": false,
+    "spec_changed": false,
+    "responsibility_policy_changed": false,
+    "base_manifest_schema_changed": false,
+    "run_001_changed": false,
+    "stage_b_changed": false,
+    "stage_c_changed": false,
+    "public_review_changed": false,
+    "roadmap_changed": false,
+    "discussions_or_comments_mutated": false,
+    "reviewers_contacted": false,
+    "identity_profiles_built": false,
+    "reputation_scores_created": false,
+    "release_or_tag_created": false,
+    "publication_authorized": false,
+    "action_permit_created": false,
+    "recurring_schedule_created": false,
+    "c2pa_reclassified": false,
+    "workbench_reactivated": false
+  }
+}
