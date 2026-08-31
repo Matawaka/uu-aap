@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:responsibility-assurance-profile:0.1",
+  "title": "UU-AAP Responsibility Assurance Profile RA1 v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "profile", "target_manifest", "stage_b_binding", "coverage", "result_claim", "non_effects"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:responsibility-assurance-profile:0.1"},
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version", "kind"],
+      "properties": {
+        "id": {"const": "UU-AAP/RA1"},
+        "version": {"const": "0.1"},
+        "kind": {"const": "responsibility_assurance_overlay"}
+      }
+    },
+    "target_manifest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "stage_b_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode"],
+      "properties": {
+        "mode": {"const": "ALL_ACCEPTED_OR_SHARED_RESPONSIBILITIES"}
+      }
+    },
+    "result_claim": {"const": "ATTRIBUTABLE_ACCEPTANCE_EVIDENCE_PRESENT_FOR_ALL_ACCEPTED_OR_SHARED_RESPONSIBILITY_ENTRIES"},
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_manifest_validity_changed",
+        "verified_identity_created",
+        "authority_created",
+        "truth_created",
+        "legal_liability_created",
+        "certification_created",
+        "release_or_tag_authorized",
+        "publication_authorized",
+        "action_permit_created"
+      ],
+      "properties": {
+        "base_manifest_validity_changed": {"const": false},
+        "verified_identity_created": {"const": false},
+        "authority_created": {"const": false},
+        "truth_created": {"const": false},
+        "legal_liability_created": {"const": false},
+        "certification_created": {"const": false},
+        "release_or_tag_authorized": {"const": false},
+        "publication_authorized": {"const": false},
+        "action_permit_created": {"const": false}
+      }
+    }
+  }
+}
