@@ -1,0 +1,19 @@
+{
+  "predecessor_main": "c7263b4cbfd28ec93ff267673382fb6754e49b62",
+  "p1_16_finalizer": {
+    "path": "scripts/pages-composition-integrity/finalize_pages.py",
+    "blob": "6ab2bd541e76e17ae9573d7ccbb42cd20af485ee"
+  },
+  "p1_16_adversarial_test": {
+    "path": "scripts/pages-composition-integrity/test.py",
+    "blob": "f3bd4f2cc56813a31f13e824eb34d412d1819916"
+  },
+  "p1_16_workflow": {
+    "path": ".github/workflows/pages-integrity-envelope-v0.1.yml",
+    "blob": "5eac4ee7b4f3a6304c917d7cd17bbe6621d6252a"
+  },
+  "historical_physical_pages_owner": {
+    "path": ".github/workflows/verifier-distribution-surface-v0.1.yml",
+    "blob": "ed7dc87bc1852178e7fd9cf0601373950a572d25"
+  }
+}
