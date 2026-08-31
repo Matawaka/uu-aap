@@ -66,6 +66,14 @@ jobs:
       - name: Re-run Pilot 002 base contract
         run: python pilots/core-pilot-002/validate.py
 
+      - name: Fetch exact admission predecessor for diff guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch -q --depth=1 origin "$ORIGIN_FRONTIER"
+          git cat-file -e "$ORIGIN_FRONTIER^{commit}"
+          echo "admission predecessor available: $ORIGIN_FRONTIER"
+
       - name: Guard normative and product boundaries
         shell: bash
         run: |
