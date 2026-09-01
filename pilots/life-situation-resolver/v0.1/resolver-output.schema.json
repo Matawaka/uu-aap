@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:pilot:life-situation-resolver:assessment:0.1",
+  "title": "LSR Family Resilience Assessment v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "version", "as_of", "base_currency", "liquidity", "cashflow",
+    "reserve_corridors", "runway", "attention", "assumptions", "non_effects"
+  ],
+  "properties": {
+    "artifact_type": {"const": "LSRFamilyResilienceAssessment"},
+    "version": {"const": "0.1"},
+    "as_of": {"type": "string", "format": "date"},
+    "base_currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "liquidity": {"type": "object"},
+    "cashflow": {"type": "object"},
+    "reserve_corridors": {"type": "object"},
+    "runway": {"type": "object"},
+    "attention": {"type": "array", "items": {"type": "object"}},
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "non_effects": {"type": "array", "items": {"type": "string"}}
+  }
+}

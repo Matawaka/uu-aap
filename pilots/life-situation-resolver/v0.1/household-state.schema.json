@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:pilot:life-situation-resolver:household-state:0.1",
+  "title": "LSR Household State v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "version",
+    "as_of",
+    "base_currency",
+    "primary_employment_assumed",
+    "evidence_sources",
+    "liquid_resources",
+    "recurring_income",
+    "recurring_expenses",
+    "resilience_policy"
+  ],
+  "properties": {
+    "artifact_type": {"const": "LSRHouseholdState"},
+    "version": {"const": "0.1"},
+    "as_of": {"type": "string", "format": "date"},
+    "base_currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+    "primary_employment_assumed": {"type": "boolean"},
+    "evidence_sources": {"type": "array", "items": {"$ref": "#/$defs/evidenceSource"}},
+    "liquid_resources": {"type": "array", "items": {"$ref": "#/$defs/liquidResource"}},
+    "recurring_income": {"type": "array", "items": {"$ref": "#/$defs/income"}},
+    "recurring_expenses": {"type": "array", "items": {"$ref": "#/$defs/expense"}},
+    "resilience_policy": {"$ref": "#/$defs/resiliencePolicy"}
+  },
+  "$defs": {
+    "epistemicStatus": {"type": "string", "enum": ["observed", "user_asserted", "inferred", "unknown"]},
+    "confidence": {"type": "string", "enum": ["verified", "high", "medium", "low", "unknown"]},
+    "evidenceRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_ref", "status", "confidence"],
+      "properties": {
+        "source_ref": {"type": "string", "minLength": 1},
+        "status": {"$ref": "#/$defs/epistemicStatus"},
+        "confidence": {"$ref": "#/$defs/confidence"}
+      }
+    },
+    "evidenceSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "observed_at", "local_ref", "contains_private_data"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "enum": ["bank_api", "bank_export", "statement", "receipt", "manual", "other"]},
+        "observed_at": {"type": "string", "format": "date-time"},
+        "local_ref": {"type": "string", "pattern": "^local://"},
+        "contains_private_data": {"type": "boolean"}
+      }
+    },
+    "liquidResource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "provider_ref", "kind", "amount", "currency", "access", "interest", "evidence"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "provider_ref": {"type": "string", "minLength": 1},
+        "kind": {"type": "string", "enum": ["cash", "current_account", "savings", "deposit", "money_market", "other"]},
+        "amount": {"type": "number", "minimum": 0},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "access": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "early_withdrawal"],
+          "properties": {
+            "mode": {"type": "string", "enum": ["immediate", "notice", "maturity", "restricted", "unknown"]},
+            "maturity_date": {"type": ["string", "null"], "format": "date"},
+            "notice_days": {"type": ["integer", "null"], "minimum": 0},
+            "early_withdrawal": {"type": "string", "enum": ["full", "partial", "forfeit_interest", "not_allowed", "unknown"]}
+          },
+          "allOf": [
+            {
+              "if": {"properties": {"mode": {"const": "maturity"}}},
+              "then": {"required": ["maturity_date"], "properties": {"maturity_date": {"type": "string", "format": "date"}}}
+            },
+            {
+              "if": {"properties": {"mode": {"const": "notice"}}},
+              "then": {"required": ["notice_days"], "properties": {"notice_days": {"type": "integer", "minimum": 0}}}
+            }
+          ]
+        },
+        "interest": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["annual_rate_percent", "rate_type", "payout"],
+          "properties": {
+            "annual_rate_percent": {"type": ["number", "null"], "minimum": 0},
+            "rate_type": {"type": "string", "enum": ["fixed", "variable", "none", "unknown"]},
+            "payout": {"type": "string", "enum": ["monthly", "maturity", "capitalized", "other", "none", "unknown"]}
+          }
+        },
+        "evidence": {"$ref": "#/$defs/evidenceRef"}
+      }
+    },
+    "cadence": {"type": "string", "enum": ["weekly", "monthly", "quarterly", "annual", "one_time"]},
+    "income": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "source_type", "amount", "currency", "cadence", "active", "reliability", "evidence"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "source_type": {"type": "string", "enum": ["employment", "business", "rental", "interest", "pension", "benefit", "support", "other"]},
+        "amount": {"type": "number", "minimum": 0},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "cadence": {"$ref": "#/$defs/cadence"},
+        "active": {"type": "boolean"},
+        "reliability": {"type": "string", "enum": ["contractual", "stable_observed", "variable", "uncertain"]},
+        "evidence": {"$ref": "#/$defs/evidenceRef"}
+      }
+    },
+    "expense": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "category", "amount", "currency", "cadence", "active", "need_class", "classification_status", "evidence"],
+      "properties": {
+        "id": {"type": "string", "minLength": 1},
+        "category": {"type": "string", "minLength": 1},
+        "amount": {"type": "number", "minimum": 0},
+        "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+        "cadence": {"$ref": "#/$defs/cadence"},
+        "active": {"type": "boolean"},
+        "need_class": {"type": "string", "enum": ["essential", "committed", "deferrable", "discretionary", "unknown"]},
+        "classification_status": {"$ref": "#/$defs/epistemicStatus"},
+        "evidence": {"$ref": "#/$defs/evidenceRef"}
+      }
+    },
+    "resiliencePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reserve_months", "max_single_provider_share_percent"],
+      "properties": {
+        "reserve_months": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["minimum", "preferred", "strong"],
+          "properties": {
+            "minimum": {"type": "number", "minimum": 0},
+            "preferred": {"type": "number", "minimum": 0},
+            "strong": {"type": "number", "minimum": 0}
+          }
+        },
+        "max_single_provider_share_percent": {"type": "number", "exclusiveMinimum": 0, "maximum": 100}
+      }
+    }
+  }
+}
