@@ -30,25 +30,34 @@ INVALID
 UNVERIFIED
 ```
 
-The gate does not parse C2PA manifests, validate COSE signatures, validate certificates, resolve trust lists, contact TSAs, or establish signer identity. It answers a narrower question:
+The trust-root input must likewise arrive from an earlier verification boundary with:
 
-> Given normalized cryptographic observations and an exact signed trust-root version, which distinct signers are eligible to count toward that root's quorum?
+```text
+verification_status = VALID
+document_sha256 = exact lowercase SHA-256 of the verified root document
+```
+
+Anything else fails closed before admission or quorum calculation. The gate does not itself parse C2PA manifests, validate COSE signatures, validate certificates, resolve trust lists, contact TSAs, verify the root's signature, or establish signer identity. It answers a narrower question:
+
+> Given normalized cryptographic observations and one exact, already-verified trust-root document, which distinct signers are eligible to count toward that root's quorum?
 
 Evaluation order:
 
 ```text
-normalized cryptographic observations
+verified root digest + normalized cryptographic observations
         -> exact signed trust-root version
         -> signed-root admission
         -> distinct eligible signer set
         -> quorum calculation
-        -> explicit receipt
+        -> explicit receipt bound to the same root digest
 ```
 
 ## Invariants
 
 ```text
 Operational configuration != signed-root admission
+Root label/version != verified root bytes
+Unverified root != admission authority
 Cryptographically valid signature != quorum-eligible signature
 Participation != quorum authority
 Duplicate signature != additional quorum vote
@@ -62,13 +71,7 @@ A `VALID` signature from a signer absent from the supplied signed root is preser
 CRYPTOGRAPHICALLY_VALID_BUT_UNADMITTED
 ```
 
-but is explicitly:
-
-```text
-INELIGIBLE_FOR_QUORUM
-```
-
-The current receipt represents that with `quorum_eligible: false` and exclusion reason `VALID_BUT_NOT_ADMITTED_BY_SIGNED_ROOT`.
+but is explicitly ineligible for quorum. The current receipt represents that with `quorum_eligible: false` and exclusion reason `VALID_BUT_NOT_ADMITTED_BY_SIGNED_ROOT`.
 
 ## Configuration drift is diagnostic, not authority
 
@@ -96,7 +99,7 @@ Models the essential external failure shape without copying external identities 
 
 ```text
 configured signers = 8
-signed-root signers = 7
+verified signed-root v2 signers = 7
 quorum required = 4
 valid observations = witnesses 1, 2, 3, 8
 ```
@@ -118,17 +121,19 @@ Four distinct valid admitted signers satisfy quorum. An additional valid-but-una
 
 ### `successor-v2.json` / `successor-v3.json`
 
-The same synthetic signer is unadmitted under v2 and admitted under v3.
+The same synthetic signer is unadmitted under v2 and admitted under v3. The fixtures bind v2 and v3 to different synthetic root-document SHA-256 values.
 
 The caller must supply the exact root it intends to evaluate. The gate performs no latest-root lookup or substitution. Therefore v3 can establish eligibility for v3 without rewriting the historical v2 receipt.
 
 ## Additional fail-closed controls
 
-`test_gate.py` also verifies:
+`test_gate.py` verifies 13 positive/hostile/negative cases, including:
 
 - duplicate observations from one signer count once;
 - conflicting crypto observations for one signer exclude that signer;
 - an admitted but cryptographically invalid signer is not eligible;
+- an unverified root is rejected before quorum evaluation;
+- a malformed root digest is rejected before quorum evaluation;
 - duplicate keys in a signed root are rejected;
 - a quorum larger than the admitted signer set is rejected;
 - unknown crypto states are rejected instead of being normalized into validity;
@@ -139,6 +144,7 @@ The caller must supply the exact root it intends to evaluate. The gate performs 
 The deterministic JSON receipt exposes, separately:
 
 - exact root id/version;
+- exact verified root-document SHA-256 and verification status;
 - admitted signer count and quorum requirement;
 - configured signer count and drift sets;
 - observation count and distinct signer count;
@@ -146,7 +152,7 @@ The deterministic JSON receipt exposes, separately:
 - eligible distinct signer count;
 - per-signer admission/eligibility/exclusion state;
 - quorum result;
-- explicit semantic guards against authority promotion and historical backfill.
+- explicit semantic guards against unverified-root promotion, authority promotion, and historical backfill.
 
 Example:
 
