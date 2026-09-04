@@ -34,6 +34,14 @@ def _unique_string_list(value: Any, name: str, *, allow_empty: bool = True) -> l
     return value
 
 
+def _sha256(value: Any, name: str) -> str:
+    if not isinstance(value, str):
+        _fail(f"{name} must be a lowercase SHA-256 hex string")
+    if len(value) != 64 or any(ch not in "0123456789abcdef" for ch in value):
+        _fail(f"{name} must be a lowercase SHA-256 hex string")
+    return value
+
+
 def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(data, dict):
         _fail("input must be a JSON object")
@@ -51,6 +59,13 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     root_version = trust_root.get("version")
     if type(root_version) is not int or root_version < 1:
         _fail("trust_root.version must be a positive integer")
+
+    root_digest = _sha256(
+        trust_root.get("document_sha256"),
+        "trust_root.document_sha256",
+    )
+    if trust_root.get("verification_status") != "VALID":
+        _fail("trust_root.verification_status must be VALID before admission evaluation")
 
     admitted_list = _unique_string_list(
         trust_root.get("admitted_signers"),
@@ -155,6 +170,8 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
         "trust_root": {
             "id": root_id,
             "version": root_version,
+            "document_sha256": root_digest,
+            "verification_status": "VALID",
             "admitted_signer_count": len(admitted),
             "quorum_required": quorum,
         },
@@ -175,6 +192,7 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
         "semantic_guards": {
             "configuration_mints_quorum_eligibility": False,
             "signature_validity_mints_quorum_eligibility": False,
+            "unverified_root_mints_quorum_eligibility": False,
             "successor_root_backfills_historical_eligibility": False,
             "quorum_eligibility_mints_broader_authority_or_truth": False,
         },
