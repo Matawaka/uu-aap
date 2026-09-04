@@ -10,6 +10,9 @@ sys.path.insert(0, str(HERE))
 
 from gate import GateInputError, evaluate  # noqa: E402
 
+V2_DIGEST = "c33edf9e7a63444799cb1d35e10cc33e5c1aed5a932fbc2e5ba5bfd1a95cfdd8"
+V3_DIGEST = "6270e35cd7a7b8bae7e06d8f32ebaf8fb8b9c1dc1781e9c319bd821390d84c4a"
+
 
 def load_fixture(name):
     return json.loads((HERE / "fixtures" / name).read_text(encoding="utf-8"))
@@ -25,6 +28,8 @@ def by_signer(receipt, signer):
 class AuthorityAdmissionGateTests(unittest.TestCase):
     def test_hostile_configured_extra_signature_cannot_satisfy_quorum(self):
         receipt = evaluate(load_fixture("hostile-drift.json"))
+        self.assertEqual(receipt["trust_root"]["document_sha256"], V2_DIGEST)
+        self.assertEqual(receipt["trust_root"]["verification_status"], "VALID")
         self.assertEqual(
             receipt["configuration"]["authority_admission_status"],
             "CONFIGURED_UNADMITTED_PRESENT",
@@ -93,6 +98,12 @@ class AuthorityAdmissionGateTests(unittest.TestCase):
         v3 = evaluate(load_fixture("successor-v3.json"))
         self.assertEqual(v2["trust_root"]["version"], 2)
         self.assertEqual(v3["trust_root"]["version"], 3)
+        self.assertEqual(v2["trust_root"]["document_sha256"], V2_DIGEST)
+        self.assertEqual(v3["trust_root"]["document_sha256"], V3_DIGEST)
+        self.assertNotEqual(
+            v2["trust_root"]["document_sha256"],
+            v3["trust_root"]["document_sha256"],
+        )
         self.assertFalse(by_signer(v2, "fixture-witness-8")["quorum_eligible"])
         self.assertTrue(by_signer(v3, "fixture-witness-8")["quorum_eligible"])
         self.assertEqual(v2["quorum_result"], "QUORUM_NOT_MET")
@@ -115,6 +126,18 @@ class AuthorityAdmissionGateTests(unittest.TestCase):
         )
         self.assertTrue(by_signer(receipt, "fixture-witness-4")["quorum_eligible"])
         self.assertEqual(receipt["quorum_result"], "QUORUM_MET")
+
+    def test_unverified_root_is_rejected_before_quorum(self):
+        data = load_fixture("hostile-drift.json")
+        data["trust_root"]["verification_status"] = "UNVERIFIED"
+        with self.assertRaises(GateInputError):
+            evaluate(data)
+
+    def test_malformed_root_digest_is_rejected_before_quorum(self):
+        data = load_fixture("hostile-drift.json")
+        data["trust_root"]["document_sha256"] = "not-a-sha256"
+        with self.assertRaises(GateInputError):
+            evaluate(data)
 
     def test_duplicate_admitted_keys_are_rejected(self):
         data = load_fixture("hostile-drift.json")
