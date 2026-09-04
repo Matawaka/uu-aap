@@ -1,0 +1,94 @@
+name: C2PA Authority-Admission Consistency Gate v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-authority-admission/**'
+      - '.github/workflows/c2pa-authority-admission-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-authority-admission/**'
+      - '.github/workflows/c2pa-authority-admission-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  authority-admission:
+    name: fail-closed quorum eligibility
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Run hostile and successor unit tests
+        run: >-
+          python -m unittest discover
+          -s scripts/c2pa-authority-admission
+          -p 'test_*.py'
+          -v
+
+      - name: Emit deterministic fixture receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=scripts/c2pa-authority-admission
+          python "$root/gate.py" "$root/fixtures/hostile-drift.json" > /tmp/hostile.json
+          python "$root/gate.py" "$root/fixtures/positive.json" > /tmp/positive.json
+          python "$root/gate.py" "$root/fixtures/successor-v2.json" > /tmp/successor-v2.json
+          python "$root/gate.py" "$root/fixtures/successor-v3.json" > /tmp/successor-v3.json
+
+      - name: Assert exact hostile, positive, and no-backfill outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def load(name):
+              return json.loads(Path(name).read_text())
+
+          def signer(receipt, signer_id):
+              return next(
+                  x for x in receipt['signatures']['evaluations']
+                  if x['signer'] == signer_id
+              )
+
+          hostile = load('/tmp/hostile.json')
+          positive = load('/tmp/positive.json')
+          v2 = load('/tmp/successor-v2.json')
+          v3 = load('/tmp/successor-v3.json')
+
+          assert hostile['configuration']['authority_admission_status'] == 'CONFIGURED_UNADMITTED_PRESENT'
+          assert hostile['configuration']['configured_but_unadmitted'] == ['fixture-witness-8']
+          assert hostile['signatures']['cryptographically_valid_distinct_signer_count'] == 4
+          assert hostile['signatures']['eligible_distinct_signer_count'] == 3
+          assert hostile['quorum_result'] == 'QUORUM_NOT_MET'
+          assert signer(hostile, 'fixture-witness-8')['state'] == 'CRYPTOGRAPHICALLY_VALID_BUT_UNADMITTED'
+          assert signer(hostile, 'fixture-witness-8')['quorum_eligible'] is False
+
+          assert positive['signatures']['eligible_distinct_signer_count'] == 4
+          assert positive['quorum_result'] == 'QUORUM_MET'
+          assert signer(positive, 'fixture-witness-8')['quorum_eligible'] is False
+
+          assert v2['trust_root']['version'] == 2
+          assert v3['trust_root']['version'] == 3
+          assert signer(v2, 'fixture-witness-8')['quorum_eligible'] is False
+          assert signer(v3, 'fixture-witness-8')['quorum_eligible'] is True
+          assert v2['quorum_result'] == 'QUORUM_NOT_MET'
+          assert v3['quorum_result'] == 'QUORUM_MET'
+          assert v2['semantic_guards']['successor_root_backfills_historical_eligibility'] is False
+
+          print('authority-admission exact acceptance surface: PASS')
+          PY
+
+      - name: Prove validation is repository-read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
