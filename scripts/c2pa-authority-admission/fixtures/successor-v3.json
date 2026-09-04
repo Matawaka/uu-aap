@@ -1,0 +1,34 @@
+{
+  "schema": "urn:uu-aap:c2pa-authority-admission-input:0.1",
+  "trust_root": {
+    "id": "fixture-trust-root",
+    "version": 3,
+    "admitted_signers": [
+      "fixture-witness-1",
+      "fixture-witness-2",
+      "fixture-witness-3",
+      "fixture-witness-4",
+      "fixture-witness-5",
+      "fixture-witness-6",
+      "fixture-witness-7",
+      "fixture-witness-8"
+    ],
+    "quorum_required": 4
+  },
+  "configured_signers": [
+    "fixture-witness-1",
+    "fixture-witness-2",
+    "fixture-witness-3",
+    "fixture-witness-4",
+    "fixture-witness-5",
+    "fixture-witness-6",
+    "fixture-witness-7",
+    "fixture-witness-8"
+  ],
+  "signatures": [
+    {"signer": "fixture-witness-1", "crypto_status": "VALID"},
+    {"signer": "fixture-witness-2", "crypto_status": "VALID"},
+    {"signer": "fixture-witness-3", "crypto_status": "VALID"},
+    {"signer": "fixture-witness-8", "crypto_status": "VALID"}
+  ]
+}
