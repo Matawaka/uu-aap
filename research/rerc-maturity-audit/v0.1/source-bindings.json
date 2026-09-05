@@ -1,0 +1,49 @@
+{
+  "artifact_type": "RERCMaturityAuditSourceBindings",
+  "version": "0.1",
+  "repository_predecessor_main": "2d904872b78573f2b106a01ef748ad778a610957",
+  "bindings": [
+    {
+      "id": "rerc_module",
+      "path": "protocols/integration/rerc/v0.1/rerc.js",
+      "blob": "d2aae21a2e2375477c6349eae5f236ea60cd7151",
+      "role": "ACCEPTED_COMPONENT"
+    },
+    {
+      "id": "rerc_implementation_receipt",
+      "path": "protocols/integration/rerc/v0.1/implementation-receipt.json",
+      "blob": "83609468622f4a79783b9b29e73a661497bad849",
+      "role": "ACCEPTED_COMPONENT_EVIDENCE"
+    },
+    {
+      "id": "circumstantial_provenance_rerc_adapter",
+      "path": "protocols/integration/circumstantial-provenance-rerc-adapter/v0.1/adapter.js",
+      "blob": "24746c1903033a56513bcdea764973111c72e0e6",
+      "role": "INDEPENDENT_DOMAIN_CONSUMER"
+    },
+    {
+      "id": "circumstantial_provenance_rerc_adapter_receipt",
+      "path": "protocols/integration/circumstantial-provenance-rerc-adapter/v0.1/implementation-receipt.json",
+      "blob": "b9798ffb4ef9603b3caa60cc91c74463fc7564ac",
+      "role": "INDEPENDENT_DOMAIN_CONSUMER_EVIDENCE"
+    },
+    {
+      "id": "interface_registry_v0_2",
+      "path": "protocols/interface-registry/v0.2/interface-registry-delta.json",
+      "blob": "ad705523bada7f64a04e09e34974407725942976",
+      "role": "EXPERIMENTAL_REGISTRATION_EVIDENCE"
+    },
+    {
+      "id": "interface_registry_v0_3",
+      "path": "protocols/interface-registry/v0.3/interface-registry-delta.json",
+      "blob": "36a338f148a2fbf59f810180dc91246ba0052462",
+      "role": "REGISTRY_SUCCESSOR_CONTINUITY"
+    },
+    {
+      "id": "rsic_composition",
+      "path": "protocols/reusable-infrastructure/recoverable-state/v0.1/compose.js",
+      "blob": "1f114ddc73093809f789ca425b428966ac96f91e",
+      "role": "EXCLUDED_COMPOSITION_CONSUMER"
+    }
+  ]
+}
