@@ -1,0 +1,75 @@
+name: RERC Maturity Audit v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'research/rerc-maturity-audit/v0.1/**'
+      - '.github/workflows/rerc-maturity-audit-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/rerc-maturity-audit/v0.1/**'
+      - '.github/workflows/rerc-maturity-audit-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  remain-experimental-without-synthetic-consumer-inflation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Preserve accepted RERC semantics
+        run: node protocols/integration/rerc/v0.1/test-rerc.js
+
+      - name: Preserve independent Circumstantial Provenance reuse
+        run: node protocols/integration/circumstantial-provenance-rerc-adapter/v0.1/test-adapter.js
+
+      - name: Preserve RSIC composition while excluding it from independent-domain count
+        run: node protocols/reusable-infrastructure/recoverable-state/v0.1/test-compose.js
+
+      - name: Preserve Interface Registry v0.2 and v0.3
+        shell: bash
+        run: |
+          set -euo pipefail
+          node protocols/interface-registry/v0.2/test-interface-registry-v0.2.js
+          node protocols/interface-registry/v0.3/test-interface-registry-v0.3.js
+
+      - name: Run hostile maturity-promotion mutations
+        run: python research/rerc-maturity-audit/v0.1/test_validate.py
+
+      - name: Validate exact byte-bound maturity result
+        run: python research/rerc-maturity-audit/v0.1/validate.py
+
+      - name: Assert audit-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin main
+          changed="$(git diff --name-only origin/main...HEAD)"
+          test -n "$changed"
+          while IFS= read -r path; do
+            case "$path" in
+              research/rerc-maturity-audit/v0.1/*|.github/workflows/rerc-maturity-audit-v0.1-validation.yml) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^protocols/integration/rerc/' <<< "$changed"
+          ! grep -q '^protocols/interface-registry/' <<< "$changed"
+          ! grep -q '^protocols/reusable-infrastructure/recoverable-state/' <<< "$changed"
+          ! grep -q '^Core/' <<< "$changed"
+
+      - name: Prove validation is repository-read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
