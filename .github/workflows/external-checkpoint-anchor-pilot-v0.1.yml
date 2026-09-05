@@ -48,6 +48,17 @@ jobs:
       - name: Validate exact predecessor and external source bindings
         run: python scripts/external-checkpoint-anchor-pilot/v0.1/validate_sources.py
 
+      - name: Validate implementation receipt when materialized
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=scripts/external-checkpoint-anchor-pilot/v0.1/implementation-receipt.json
+          if [ -f "$receipt" ]; then
+            python scripts/external-checkpoint-anchor-pilot/v0.1/validate_implementation.py
+          else
+            echo 'implementation receipt not materialized on this intermediate head'
+          fi
+
       - name: Fetch exact public external proof corpus read-only
         shell: bash
         run: |
@@ -142,22 +153,19 @@ jobs:
           print('receipt fingerprint:', r['receipt_fingerprint_sha256'])
           PY
 
-      - name: Require runtime parity once frozen receipt exists
+      - name: Require exact runtime parity with frozen receipt
         shell: bash
         run: |
           set -euo pipefail
-          frozen=scripts/external-checkpoint-anchor-pilot/v0.1/current-receipt.json
-          if [ -f "$frozen" ]; then
-            python - <<'PY'
+          python - <<'PY'
           import json
           live=json.load(open('/tmp/external-checkpoint-anchor-receipt.json'))
           frozen=json.load(open('scripts/external-checkpoint-anchor-pilot/v0.1/current-receipt.json'))
           assert live == frozen, (live, frozen)
+          assert frozen['receipt_fingerprint_sha256'] == '60c91b97b7c5308cf6832803b1f399682b579ecb18680a4829a09920d64c71ef'
+          assert frozen['verdict'] == 'OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_NOT_ESTABLISHED'
           print('runtime == frozen external checkpoint anchor receipt')
           PY
-          else
-            echo 'first qualification run: frozen receipt not materialized yet'
-          fi
 
       - name: Upload bounded executable evidence
         uses: actions/upload-artifact@v4
