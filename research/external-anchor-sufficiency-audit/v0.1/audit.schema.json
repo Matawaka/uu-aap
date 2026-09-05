@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:external-anchor-sufficiency-audit:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["artifact_type","version","tracking_issue","source_observation_path","evidence_layers","future_receipt_requirements","current_result","next_gate"],
+  "properties": {
+    "artifact_type": {"const": "ExternalAnchorSufficiencyAudit"},
+    "version": {"const": "0.1"},
+    "tracking_issue": {"const": 927},
+    "source_observation_path": {"const": "research/external-anchor-sufficiency-audit/v0.1/source-observation.json"},
+    "evidence_layers": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id","meaning","current_state","actual_executable_evidence_supplied"],
+        "properties": {
+          "id": {"enum": ["SIGNED_CLAIM","CLAIM_COMMITMENT","LOG_INCLUSION","LOG_APPEND_ONLY_CONSISTENCY","CHECKPOINT_NON_EQUIVOCATION","EXISTENCE_TIME_EVIDENCE"]},
+          "meaning": {"type": "string", "minLength": 1},
+          "current_state": {"enum": ["SOURCE_DESCRIBED","PROPOSED_REQUIREMENT","REQUIREMENT_IDENTIFIED","PROPERTY_DESCRIBED_NOT_VERIFIED"]},
+          "actual_executable_evidence_supplied": {"const": false}
+        }
+      }
+    },
+    "future_receipt_requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_or_subject_binding_required","producer_or_signing_key_binding_required","claim_profile_and_version_binding_required","canonical_claim_digest_required","checkpoint_and_log_identity_required","collision_relation_must_be_explicit","inclusion_proof_required","append_only_consistency_evidence_required","checkpoint_non_equivocation_evidence_required","selective_submission_or_coverage_limit_must_remain_explicit","time_evidence_semantics_must_be_explicit"],
+      "properties": {
+        "asset_or_subject_binding_required": {"const": true},
+        "producer_or_signing_key_binding_required": {"const": true},
+        "claim_profile_and_version_binding_required": {"const": true},
+        "canonical_claim_digest_required": {"const": true},
+        "checkpoint_and_log_identity_required": {"const": true},
+        "collision_relation_must_be_explicit": {"const": true},
+        "inclusion_proof_required": {"const": true},
+        "append_only_consistency_evidence_required": {"const": true},
+        "checkpoint_non_equivocation_evidence_required": {"const": true},
+        "selective_submission_or_coverage_limit_must_remain_explicit": {"const": true},
+        "time_evidence_semantics_must_be_explicit": {"const": true}
+      }
+    },
+    "current_result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["verdict","claim_commitment_concept_identified","inclusion_proof_concept_identified","log_level_non_equivocation_requirement_identified","existence_time_property_separated","actual_c2pa_spec_adoption_established","external_anchor_receipt_admitted","global_non_equivocation_proven","complete_history_proven","all_manifests_submitted_proven","selective_submission_absent_proven","trusted_time_proven","canonical_branch_selected","malicious_behavior_proven","authority_created","truth_certified","automatic_remediation_authorized","stable_core_admission","interface_registry_mutated"],
+      "properties": {
+        "verdict": {"const": "DESIGN_REQUIREMENTS_CLARIFIED_EXECUTABLE_EXTERNAL_ANCHOR_EVIDENCE_NOT_ADMITTED"},
+        "claim_commitment_concept_identified": {"const": true},
+        "inclusion_proof_concept_identified": {"const": true},
+        "log_level_non_equivocation_requirement_identified": {"const": true},
+        "existence_time_property_separated": {"const": true},
+        "actual_c2pa_spec_adoption_established": {"const": false},
+        "external_anchor_receipt_admitted": {"const": false},
+        "global_non_equivocation_proven": {"const": false},
+        "complete_history_proven": {"const": false},
+        "all_manifests_submitted_proven": {"const": false},
+        "selective_submission_absent_proven": {"const": false},
+        "trusted_time_proven": {"const": false},
+        "canonical_branch_selected": {"const": false},
+        "malicious_behavior_proven": {"const": false},
+        "authority_created": {"const": false},
+        "truth_certified": {"const": false},
+        "automatic_remediation_authorized": {"const": false},
+        "stable_core_admission": {"const": false},
+        "interface_registry_mutated": {"const": false}
+      }
+    },
+    "next_gate": {"const": "EXECUTABLE_EXTERNAL_ANCHOR_PILOT_WITH_REAL_INCLUSION_AND_CHECKPOINT_ANTI_EQUIVOCATION_EVIDENCE"}
+  }
+}
