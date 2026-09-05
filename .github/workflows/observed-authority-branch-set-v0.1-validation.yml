@@ -53,6 +53,9 @@ jobs:
       - name: Run branch-set hostile and positive tests
         run: python scripts/observed-authority-branch-set/test_receipt.py
 
+      - name: Run #896-aligned alias and signer-order regression tests
+        run: python scripts/observed-authority-branch-set/test_alias_semantics.py
+
       - name: Emit deterministic branch-set receipts
         run: |
           mkdir -p /tmp/authority-branch-set-receipts
