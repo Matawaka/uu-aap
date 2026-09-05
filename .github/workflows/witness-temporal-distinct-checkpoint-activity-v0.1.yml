@@ -1,0 +1,141 @@
+name: Witness Temporal Distinct Checkpoint Activity v0.1
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/witness-temporal-distinct-checkpoint-activity-v0.1.yml"
+      - "scripts/witness-temporal-distinct-checkpoint-activity/v0.1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify-temporal-distinct-activity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install cryptographic verifier dependency
+        run: python -m pip install --disable-pip-version-check 'cryptography>=42,<47'
+
+      - name: Verify exact merged predecessor and immutable crypto bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_MAIN='f5e08ebcb2e767250fac5584a848bcc9e2b8dfd9'
+          EXPECTED_TREE='4cc64bb081319b6aee5a3bd332574ef05ac559c0'
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            test "${{ github.event.pull_request.base.sha }}" = "$EXPECTED_MAIN"
+          fi
+          test "$(git rev-parse "$EXPECTED_MAIN^{tree}")" = "$EXPECTED_TREE"
+          git merge-base --is-ancestor "$EXPECTED_MAIN" HEAD
+          test "$(git hash-object scripts/witness-current-checkpoint-activity/v0.1/profile.json)" = '0fa00ac9c3bec86debe7c3ffe96f581f38e3c9e8'
+          test "$(git hash-object scripts/witness-current-checkpoint-activity/v0.1/qualification-receipt.json)" = 'bb0adafd4c5eb7a6a0d43df059d4296d73e6d7c0'
+          test "$(git hash-object scripts/anchored-witnessed-consistency-pilot/v0.1/pilot.py)" = '518bc61f4db936031b911e392eb6fe053dc03437'
+
+      - name: Replay accepted anchored/witnessed crypto hostile suite
+        run: python scripts/anchored-witnessed-consistency-pilot/v0.1/test_pilot.py
+
+      - name: Replay accepted current-checkpoint activity hostile suite
+        run: python scripts/witness-current-checkpoint-activity/v0.1/test_activity.py
+
+      - name: Run temporal distinct-checkpoint hostile suite
+        run: python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/test_temporal.py
+
+      - name: Fetch bounded current checkpoint
+        id: checkpoint
+        shell: bash
+        run: |
+          set +e
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 \
+            'https://log.markovianprotocol.com/checkpoint' \
+            --output /tmp/current-checkpoint.txt 2>/tmp/checkpoint-curl.err
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            printf 'checkpoint fetch failed rc=%s: ' "$rc" > /tmp/external-error.txt
+            cat /tmp/checkpoint-curl.err >> /tmp/external-error.txt
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          size="$(sed -n '2p' /tmp/current-checkpoint.txt | tr -d '\r')"
+          case "$size" in
+            ''|*[!0-9]*)
+              echo 'current checkpoint tree size is not an unsigned integer' > /tmp/external-error.txt
+              echo 'available=false' >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+          echo "tree_size=$size" >> "$GITHUB_OUTPUT"
+          echo 'available=true' >> "$GITHUB_OUTPUT"
+
+      - name: Fetch bounded consistency proof only for an advanced state
+        id: consistency
+        if: steps.checkpoint.outputs.available == 'true'
+        shell: bash
+        run: |
+          set +e
+          size='${{ steps.checkpoint.outputs.tree_size }}'
+          : > /tmp/consistency.txt
+          if [ "$size" -le 7838 ]; then
+            echo 'available=not-required' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 \
+            "https://log.markovianprotocol.com/log/proof?from=7838&to=${size}" \
+            --output /tmp/consistency.txt 2>/tmp/consistency-curl.err
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            printf 'consistency proof fetch failed rc=%s: ' "$rc" > /tmp/external-error.txt
+            cat /tmp/consistency-curl.err >> /tmp/external-error.txt
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo 'available=true' >> "$GITHUB_OUTPUT"
+
+      - name: Qualify distinct temporal activity fail-closed
+        shell: bash
+        run: |
+          set -u
+          common=(
+            --profile scripts/witness-temporal-distinct-checkpoint-activity/v0.1/profile.json
+            --predecessor-receipt scripts/witness-current-checkpoint-activity/v0.1/qualification-receipt.json
+            --repo-root .
+            --output /tmp/temporal-distinct-qualification.json
+          )
+          if [ '${{ steps.checkpoint.outputs.available }}' != 'true' ]; then
+            python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py "${common[@]}" \
+              --external-error "$(cat /tmp/external-error.txt 2>/dev/null || echo checkpoint evidence unavailable)"
+            exit $?
+          fi
+          if [ '${{ steps.checkpoint.outputs.tree_size }}' -gt 7838 ] && [ '${{ steps.consistency.outputs.available }}' != 'true' ]; then
+            python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py "${common[@]}" \
+              --external-error "$(cat /tmp/external-error.txt 2>/dev/null || echo consistency evidence unavailable)"
+            exit $?
+          fi
+          python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py "${common[@]}" \
+            --checkpoint /tmp/current-checkpoint.txt \
+            --consistency /tmp/consistency.txt
+
+      - name: Upload temporal evidence even on fail-closed result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: witness-temporal-distinct-checkpoint-activity-v0.1
+          path: |
+            /tmp/temporal-distinct-qualification.json
+            /tmp/current-checkpoint.txt
+            /tmp/consistency.txt
+            /tmp/external-error.txt
+          if-no-files-found: ignore
+          retention-days: 30
