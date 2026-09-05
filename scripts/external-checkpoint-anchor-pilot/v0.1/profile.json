@@ -1,0 +1,64 @@
+{
+  "schema": "urn:uu-aap:external-checkpoint-anchor-pilot-profile:0.1",
+  "tracking_issue": 929,
+  "repository_predecessor_main": "f7d5149254892803b84bb31bdc127751c418b544",
+  "predecessor_audit": {
+    "path": "research/external-anchor-sufficiency-audit/v0.1/implementation-receipt.json",
+    "blob": "1133edd106e2499541a278e88ae36a2862f9b972"
+  },
+  "external_source": {
+    "repository": "MarkovianProtocol/tlog-bitcoin-anchor",
+    "commit": "b75d339e9ed5cce5ef4c2cee1cfa78c3e1e1abf1",
+    "log_base_url": "https://log.markovianprotocol.com",
+    "files": {
+      "rootcommit_json": {
+        "path": "rootcommit/mkv_rootcommit.json",
+        "blob": "f6083550fa9dbbc1ba5bf5ec07e3b292665932cc"
+      },
+      "anchored_checkpoint": {
+        "path": "rootcommit/mkv_checkpoint.rootcommit.txt",
+        "blob": "1fefd6d579b33e532cd7158954635446c4226234"
+      },
+      "ots_proof": {
+        "path": "rootcommit/rootcommit_preimage.bin.ots",
+        "blob": "7b3d48c7573b7481ec45011b76f695c130d5c1a2"
+      },
+      "vector_manifest": {
+        "path": "rootcommit/vectors/manifest.json",
+        "blob": "cbf876a66479d77dedb976cc19664d461bb03864"
+      }
+    }
+  },
+  "opaque_leaf": {
+    "index": 0,
+    "semantic_claim_profile": null,
+    "collision_semantics_established": false
+  },
+  "checkpoint": {
+    "origin": "markovianprotocol.com/log",
+    "tree_size": 1387,
+    "root_b64": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA="
+  },
+  "rootcommit": {
+    "identifier": "markovianprotocol.com/bitcoin-anchor/rootcommit/v1",
+    "wallet": "0xdaE76a3C848CafD453dB5EBF8cEb0DbBA7610273",
+    "commitment_sha256": "4d1cc236c3872701bb27f9e27fad315e153eeb43a767a2cae958a3bb4014e771",
+    "ots_magic_hex": "004f70656e54696d657374616d7073000050726f6f6600bf89e2e884e89294",
+    "bitcoin_attestation_tag_hex": "0588960d73d71901"
+  },
+  "always_false_claims": [
+    "c2pa_manifest_inclusion_proven",
+    "producer_non_equivocation_proven",
+    "global_non_equivocation_proven",
+    "complete_history_proven",
+    "all_manifests_submitted_proven",
+    "selective_submission_absent_proven",
+    "collision_semantics_established",
+    "trusted_time_proven",
+    "truth_certified",
+    "authority_created",
+    "canonical_branch_selected",
+    "malicious_behavior_proven",
+    "remediation_triggered"
+  ]
+}

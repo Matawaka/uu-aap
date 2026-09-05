@@ -1,0 +1,59 @@
+{
+  "automatic_action": false,
+  "checkpoint_anchor": {
+    "bitcoin_attestation_tag_present": true,
+    "bitcoin_chain_confirmation": "NOT_ESTABLISHED",
+    "commitment_matches_profile": true,
+    "origin": "markovianprotocol.com/log",
+    "ots_binding_verified": true,
+    "ots_committed_digest_sha256": "4d1cc236c3872701bb27f9e27fad315e153eeb43a767a2cae958a3bb4014e771",
+    "ots_proof_sha256": "676b61280ba00b4fb6ef364f7e42558c2d6d2b35719cecc5d5c677ab17291cb6",
+    "preimage_sha256": "4d1cc236c3872701bb27f9e27fad315e153eeb43a767a2cae958a3bb4014e771",
+    "root_b64": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA=",
+    "rootcommit_identifier": "markovianprotocol.com/bitcoin-anchor/rootcommit/v1",
+    "wallet": "0xdaE76a3C848CafD453dB5EBF8cEb0DbBA7610273"
+  },
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "authority_created": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "collision_semantics_established": false,
+    "complete_history_proven": false,
+    "global_non_equivocation_proven": false,
+    "malicious_behavior_proven": false,
+    "producer_non_equivocation_proven": false,
+    "remediation_triggered": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false
+  },
+  "evidence_layers": {
+    "checkpoint_non_equivocation": "EXTERNAL_ANCHOR_BINDING_VERIFIED",
+    "claim_commitment": "OPAQUE_LEAF_BYTES_HASHED_ONLY",
+    "existence_time_evidence": "OTS_BITCOIN_ATTESTATION_PRESENT_CHAIN_CONFIRMATION_NOT_ESTABLISHED",
+    "log_append_only_consistency": "NOT_VERIFIED_SINGLE_CHECKPOINT_ONLY",
+    "log_inclusion": "VERIFIED",
+    "signed_claim": "NOT_IN_SCOPE_OPAQUE_LEAF"
+  },
+  "external_mutation_performed": false,
+  "external_source_commit": "b75d339e9ed5cce5ef4c2cee1cfa78c3e1e1abf1",
+  "inclusion": {
+    "computed_root_b64": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA=",
+    "expected_root_b64": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA=",
+    "proof_node_count": 11,
+    "proof_text_sha256": "cc4ed9f45b36f0ac9cb51c71ef3fbd861715baedbd231ddaccc8bbb6db172220",
+    "tree_size": 1387,
+    "verified": true
+  },
+  "opaque_leaf": {
+    "index": 0,
+    "raw_bytes": 132,
+    "raw_sha256": "c65767dfaf98f6b3fb439feab33932ebc14fc5a2434f04f4cb65dfdeb2bfaeee",
+    "semantic_claim_profile": null
+  },
+  "receipt_fingerprint_sha256": "60c91b97b7c5308cf6832803b1f399682b579ecb18680a4829a09920d64c71ef",
+  "schema": "urn:uu-aap:external-checkpoint-anchor-pilot-receipt:0.1",
+  "tracking_issue": 929,
+  "verdict": "OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_NOT_ESTABLISHED"
+}

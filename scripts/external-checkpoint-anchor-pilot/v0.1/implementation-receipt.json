@@ -1,0 +1,72 @@
+{
+  "artifact_type": "ExternalCheckpointAnchorPilotImplementationReceipt",
+  "version": "0.1",
+  "tracking_issue": 929,
+  "repository_predecessor_main": "f7d5149254892803b84bb31bdc127751c418b544",
+  "implementation_files": {
+    "scripts/external-checkpoint-anchor-pilot/v0.1/README.md": "e196f747723d5d35444ac9938bc1a503f415050e",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/current-receipt.json": "f639364ea04cc074c9ba18470c9b1f8fa2167092",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/pilot.py": "ede3cb7e97bd7167dd60d98cec6e6fb8fc627ccb",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/profile.json": "a229d42b8cb382d14229a31b74b5997a4fcd1a11",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/receipt.schema.json": "daef7c0307468b536b68d46711199148b93cdc15",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/receipt_validator.py": "1817d379a400f9848608e3901fd4fa60ac2c75ce",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/test_pilot.py": "d3b678cf3bb499f9400071e14a4a2d73c51b2cab",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/validate_implementation.py": "6a90877a00bc27e92a2ceec98441bd67a0170e10",
+    "scripts/external-checkpoint-anchor-pilot/v0.1/validate_sources.py": "b06b5c9d7477f1e8ce0beb805c5d8c72f508241d"
+  },
+  "workflow": {
+    "path": ".github/workflows/external-checkpoint-anchor-pilot-v0.1.yml",
+    "blob": "2bf40c52282f15ceefe765ab081434288d28bf4e"
+  },
+  "external_source": {
+    "repository": "MarkovianProtocol/tlog-bitcoin-anchor",
+    "commit": "b75d339e9ed5cce5ef4c2cee1cfa78c3e1e1abf1",
+    "checkpoint_tree_size": 1387,
+    "checkpoint_root_b64": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA=",
+    "rootcommit_sha256": "4d1cc236c3872701bb27f9e27fad315e153eeb43a767a2cae958a3bb4014e771"
+  },
+  "qualified_runtime": {
+    "workflow_run_id": 33957485515,
+    "job_id": 101283330453,
+    "artifact_id": 9966830130,
+    "artifact_zip_sha256": "15fb51bc5585530a7eb8fa12a1f1af262df955a531ce91b4ce0b3cf8aac69bdd",
+    "verdict": "OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_NOT_ESTABLISHED",
+    "receipt_fingerprint_sha256": "60c91b97b7c5308cf6832803b1f399682b579ecb18680a4829a09920d64c71ef",
+    "bitcoin_chain_confirmation": "NOT_ESTABLISHED"
+  },
+  "proof": {
+    "real_public_opaque_leaf_fetched": true,
+    "rfc9162_inclusion_verified": true,
+    "same_checkpoint_root_matched": true,
+    "rootcommit_preimage_reproduced": true,
+    "ots_committed_digest_binding_verified": true,
+    "bitcoin_attestation_structure_observed": true,
+    "bitcoin_chain_confirmation_established": false,
+    "log_append_only_consistency_verified": false,
+    "runtime_receipt_frozen": true,
+    "runtime_frozen_parity_required": true
+  },
+  "non_effects": {
+    "c2pa_manifest_inclusion_proven": false,
+    "producer_non_equivocation_proven": false,
+    "global_non_equivocation_proven": false,
+    "complete_history_proven": false,
+    "all_manifests_submitted_proven": false,
+    "selective_submission_absent_proven": false,
+    "collision_semantics_established": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "authority_created": false,
+    "canonical_branch_selected": false,
+    "malicious_behavior_proven": false,
+    "remediation_triggered": false,
+    "external_log_append_performed": false,
+    "ots_submission_performed": false,
+    "bitcoin_transaction_created": false,
+    "external_comment_posted": false,
+    "registry_modified": false,
+    "stable_core_modified": false,
+    "spec_modified": false,
+    "release_published": false
+  }
+}
