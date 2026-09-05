@@ -62,6 +62,26 @@ jobs:
       - name: Run new targeted classifier hostile coverage
         run: python scripts/c2pa-swift-upstream-merge-reaudit/test_classify.py
 
+      - name: Validate frozen current execution evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/c2pa-swift-upstream-merge-reaudit/classify.py \
+            scripts/c2pa-swift-upstream-merge-reaudit/current-observation.json \
+            > /tmp/frozen-recomputed-receipt.json
+          python - <<'PY'
+          import json
+          expected = json.load(open('scripts/c2pa-swift-upstream-merge-reaudit/current-receipt.json'))
+          actual = json.load(open('/tmp/frozen-recomputed-receipt.json'))
+          assert actual == expected, (actual, expected)
+          assert expected['external_swiftpm_consumer']['classification'] == 'BLOCKED_SOURCE_BINARY_SKEW'
+          assert expected['source_contract']['classification'] == 'CURRENT_MAIN_SOURCE_PASS'
+          assert expected['current_swift_lossless_preservation_established'] is False
+          assert expected['current_cross_sdk_compatibility_established'] is False
+          assert expected['cross_sdk_p0_3_complete'] is False
+          print('frozen Swift successor evidence: BLOCKED_SOURCE_BINARY_SKEW')
+          PY
+
       - name: Prove successor is additive and does not rewrite historical evidence
         shell: bash
         run: |
@@ -127,7 +147,7 @@ jobs:
           resolved="$(git -C /tmp/c2pa-swift-upstream-merge-reaudit/.build/checkouts/c2pa-swift rev-parse HEAD)"
           test "$resolved" = "$SWIFT_MAIN_SHA"
 
-      - name: Build, execute if possible, and emit current observation
+      - name: Build, classify, and require parity with frozen successor evidence
         shell: bash
         run: |
           set -euo pipefail
@@ -194,14 +214,19 @@ jobs:
 
           python - <<'PY'
           import json
-          r = json.load(open('/tmp/current-receipt.json'))
-          state = r['external_swiftpm_consumer']['classification']
-          assert state in {'ROUNDTRIP_PASS', 'BLOCKED_SOURCE_BINARY_SKEW'}, r
-          assert r['source_contract']['classification'] == 'CURRENT_MAIN_SOURCE_PASS'
-          assert r['android']['classification'] == 'UNCHANGED_NO_RETEST_REQUIRED'
-          assert r['current_cross_sdk_compatibility_established'] is False
-          assert r['cross_sdk_p0_3_complete'] is False
-          print('qualified current Swift state:', state)
+          live_observation = json.load(open('/tmp/current-observation.json'))
+          frozen_observation = json.load(open('scripts/c2pa-swift-upstream-merge-reaudit/current-observation.json'))
+          live_receipt = json.load(open('/tmp/current-receipt.json'))
+          frozen_receipt = json.load(open('scripts/c2pa-swift-upstream-merge-reaudit/current-receipt.json'))
+          assert live_observation == frozen_observation, (live_observation, frozen_observation)
+          assert live_receipt == frozen_receipt, (live_receipt, frozen_receipt)
+          assert live_receipt['external_swiftpm_consumer']['classification'] == 'BLOCKED_SOURCE_BINARY_SKEW'
+          assert live_receipt['source_contract']['classification'] == 'CURRENT_MAIN_SOURCE_PASS'
+          assert live_receipt['android']['classification'] == 'UNCHANGED_NO_RETEST_REQUIRED'
+          assert live_receipt['current_swift_lossless_preservation_established'] is False
+          assert live_receipt['current_cross_sdk_compatibility_established'] is False
+          assert live_receipt['cross_sdk_p0_3_complete'] is False
+          print('qualified current Swift state: BLOCKED_SOURCE_BINARY_SKEW (runtime == frozen evidence)')
           PY
 
       - name: Upload targeted re-audit evidence
