@@ -50,6 +50,13 @@ def fake_rootcommit():
     }
 
 
+def bind_receipt(r):
+    material = dict(r)
+    material.pop("receipt_fingerprint_sha256", None)
+    r["receipt_fingerprint_sha256"] = pilot.sha256_hex(pilot.canonical_bytes(material))
+    return r
+
+
 def valid_receipt():
     claims = {x: False for x in PROFILE["always_false_claims"]}
     r = {
@@ -91,8 +98,7 @@ def valid_receipt():
         "automatic_action": False,
         "external_mutation_performed": False,
     }
-    r["receipt_fingerprint_sha256"] = "4" * 64
-    return r
+    return bind_receipt(r)
 
 
 test("accepted profile validates", lambda: pilot.validate_profile(PROFILE))
@@ -169,38 +175,43 @@ test("opaque leaf cannot be promoted to C2PA claim", t_claim_promotion)
 test("baseline receipt semantic boundary validates", lambda: validate_receipt(valid_receipt(), PROFILE))
 
 def t_false_claim():
-    r = valid_receipt(); r["claims"]["global_non_equivocation_proven"] = True
+    r = valid_receipt(); r["claims"]["global_non_equivocation_proven"] = True; bind_receipt(r)
     expect_fail(lambda: validate_receipt(r, PROFILE))
 test("global non-equivocation promotion rejected", t_false_claim)
 
 def t_complete():
-    r = valid_receipt(); r["claims"]["complete_history_proven"] = True
+    r = valid_receipt(); r["claims"]["complete_history_proven"] = True; bind_receipt(r)
     expect_fail(lambda: validate_receipt(r, PROFILE))
 test("complete-history promotion rejected", t_complete)
 
 def t_append_only():
-    r = valid_receipt(); r["evidence_layers"]["log_append_only_consistency"] = "VERIFIED"
+    r = valid_receipt(); r["evidence_layers"]["log_append_only_consistency"] = "VERIFIED"; bind_receipt(r)
     expect_fail(lambda: validate_receipt(r, PROFILE))
 test("single checkpoint cannot become append-only consistency proof", t_append_only)
 
 def t_strong_without_ref():
-    r = valid_receipt(); r["verdict"] = "OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_VERIFIED"
+    r = valid_receipt(); r["verdict"] = "OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_VERIFIED"; bind_receipt(r)
     expect_fail(lambda: validate_receipt(r, PROFILE))
 test("Bitcoin attestation tag alone cannot promote chain confirmation", t_strong_without_ref)
 
 def t_auto():
-    r = valid_receipt(); r["automatic_action"] = True
+    r = valid_receipt(); r["automatic_action"] = True; bind_receipt(r)
     expect_fail(lambda: validate_receipt(r, PROFILE))
 test("automatic action promotion rejected", t_auto)
 
 def t_mutation():
-    r = valid_receipt(); r["external_mutation_performed"] = True
+    r = valid_receipt(); r["external_mutation_performed"] = True; bind_receipt(r)
     expect_fail(lambda: validate_receipt(r, PROFILE))
 test("external mutation claim rejected", t_mutation)
 
 def t_score():
-    r = valid_receipt(); r["trust_score"] = 1
+    r = valid_receipt(); r["trust_score"] = 1; bind_receipt(r)
     expect_fail(lambda: validate_receipt(r, PROFILE))
 test("scalar trust score surface rejected", t_score)
+
+def t_fingerprint():
+    r = valid_receipt(); r["opaque_leaf"]["raw_bytes"] += 1
+    expect_fail(lambda: validate_receipt(r, PROFILE))
+test("receipt fingerprint detects mutation", t_fingerprint)
 
 print(f"EXTERNAL_CHECKPOINT_ANCHOR_PILOT_HOSTILE: {passed}/{passed} PASS")
