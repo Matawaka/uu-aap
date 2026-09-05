@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:witness-key-provenance-all-seven-receipt-schema:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "tracking_issue",
+    "predecessor",
+    "predecessor_observed_witness_key_count",
+    "new_source_records",
+    "new_exact_witness_key_count",
+    "new_exact_source_url_count",
+    "composed_exact_pinned_witness_key_count",
+    "composed_witness_vkeys",
+    "all_seven_operator_source_observations_composed",
+    "key_provenance_assurance",
+    "claims",
+    "automatic_action",
+    "external_mutation_performed",
+    "verdict",
+    "receipt_fingerprint_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:witness-key-provenance-all-seven-receipt:0.1"},
+    "tracking_issue": {"const": 937},
+    "predecessor": {"type": "object"},
+    "predecessor_observed_witness_key_count": {"const": 5},
+    "new_source_records": {"type": "array", "minItems": 2, "maxItems": 2},
+    "new_exact_witness_key_count": {"type": "integer", "minimum": 0, "maximum": 2},
+    "new_exact_source_url_count": {"type": "integer", "minimum": 0, "maximum": 2},
+    "composed_exact_pinned_witness_key_count": {"type": "integer", "minimum": 5, "maximum": 7},
+    "composed_witness_vkeys": {"type": "array", "minItems": 5, "maxItems": 7, "uniqueItems": true},
+    "all_seven_operator_source_observations_composed": {"type": "boolean"},
+    "key_provenance_assurance": {"type": "string"},
+    "claims": {"type": "object"},
+    "automatic_action": {"const": false},
+    "external_mutation_performed": {"const": false},
+    "verdict": {"type": "string"},
+    "receipt_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
