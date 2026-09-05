@@ -1,0 +1,98 @@
+name: Observed Authority Branch Divergence Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/observed-authority-branch-divergence/**'
+      - '.github/workflows/observed-authority-branch-divergence-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/observed-authority-branch-divergence/**'
+      - '.github/workflows/observed-authority-branch-divergence-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  observed-divergence-without-global-equivocation:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run merged #890 authority-admission tests unchanged
+        run: python scripts/c2pa-authority-admission/test_gate.py
+
+      - name: Re-run merged #892 observable consistency tests unchanged
+        run: python scripts/observable-authority-consistency/test_receipt.py
+
+      - name: Re-run merged #894 triangulation tests unchanged
+        run: python scripts/authority-surface-triangulation/test_receipt.py
+
+      - name: Re-run merged #894 predecessor cross-check unchanged
+        run: python scripts/authority-surface-triangulation/cross_check.py
+
+      - name: Re-run merged #896 transition tests unchanged
+        run: python scripts/authority-surface-transition/test_receipt.py
+
+      - name: Re-run merged #898 continuity-chain tests unchanged
+        run: python scripts/authority-surface-continuity-chain/test_receipt.py
+
+      - name: Run branch-divergence hostile and positive tests
+        run: python scripts/observed-authority-branch-divergence/test_receipt.py
+
+      - name: Emit deterministic divergence receipts
+        run: |
+          mkdir -p /tmp/authority-divergence-receipts
+          for fixture in parallel-root-variants reconvergent; do
+            python scripts/observed-authority-branch-divergence/receipt.py \
+              scripts/observed-authority-branch-divergence/fixtures/${fixture}.json \
+              > /tmp/authority-divergence-receipts/${fixture}.json
+          done
+
+      - name: Assert exact divergence and non-equivocation outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('/tmp/authority-divergence-receipts')
+          parallel = json.loads((root / 'parallel-root-variants.json').read_text())
+          reconvergent = json.loads((root / 'reconvergent.json').read_text())
+
+          assert parallel['relation'] == 'DIVERGENT_OBSERVED_PATHS'
+          assert parallel['common_observed_prefix_length'] == 1
+          assert parallel['divergence']['parallel_same_version_root_variants_observed'] is True
+          assert parallel['divergence']['left_signed_root']['version'] == 3
+          assert parallel['divergence']['right_signed_root']['version'] == 3
+          assert parallel['divergence']['left_signed_root']['document_sha256'] != parallel['divergence']['right_signed_root']['document_sha256']
+          assert parallel['semantic_guards']['global_equivocation_proven'] is False
+          assert parallel['semantic_guards']['malicious_behavior_proven'] is False
+          assert parallel['semantic_guards']['canonical_branch_selected'] is False
+
+          assert reconvergent['relation'] == 'DIVERGENT_OBSERVED_PATHS'
+          assert reconvergent['divergence']['signed_root_exact_equal'] is True
+          assert reconvergent['reconvergence']['observed_reconvergence_present'] is True
+          assert reconvergent['reconvergence']['left_index'] == 2
+          assert reconvergent['reconvergence']['right_index'] == 2
+          assert reconvergent['semantic_guards']['complete_history_proven'] is False
+          assert reconvergent['semantic_guards']['no_omitted_states_proven'] is False
+          assert reconvergent['semantic_guards']['immediate_causal_fork_point_proven'] is False
+          PY
+
+      - name: Prove validation is repository-read-only
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'validation mutated the repository' >&2
+            git status --short >&2
+            exit 1
+          fi
