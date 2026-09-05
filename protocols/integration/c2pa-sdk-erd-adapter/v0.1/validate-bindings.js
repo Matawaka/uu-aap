@@ -8,6 +8,10 @@ function fail(message) { throw new Error(message); }
 const repo = path.resolve(__dirname, '../../../..');
 const bindings = require('./source-bindings.json');
 
+function gitBlob(rel) {
+  return cp.execFileSync('git', ['hash-object', rel], { cwd: repo, encoding: 'utf8' }).trim();
+}
+
 if (bindings.artifact_type !== 'C2PASDKEventResponsiveDormancyAdapterSourceBindings' || bindings.version !== '0.1') fail('binding identity');
 if (bindings.repository_predecessor_main !== '783a053ff41a94e369aad3155431ded78ed8e98e') fail('predecessor main');
 if (bindings.tracking_issue !== 924) fail('tracking issue');
@@ -16,7 +20,7 @@ for (const [name, binding] of Object.entries(bindings.bindings)) {
   if (!binding.path || !/^[0-9a-f]{40}$/.test(binding.blob || '')) fail(`invalid binding ${name}`);
   const absolute = path.join(repo, binding.path);
   if (!fs.existsSync(absolute)) fail(`missing source ${name}`);
-  const actual = cp.execFileSync('git', ['hash-object', binding.path], { cwd: repo, encoding: 'utf8' }).trim();
+  const actual = gitBlob(binding.path);
   if (actual !== binding.blob) fail(`blob drift ${name}: ${actual} != ${binding.blob}`);
 }
 
@@ -41,6 +45,16 @@ if (adapterText.includes("require('../../rerc/")) fail('unexpected RERC dependen
 if (adapterText.includes('recoverable-state/v0.1')) fail('unexpected RSIC dependency');
 if (!adapterText.includes('checks: null')) fail('attention-only checks binding missing');
 
+const implementation = JSON.parse(fs.readFileSync(path.join(__dirname, 'implementation-receipt.json'), 'utf8'));
+if (implementation.artifact_type !== 'C2PASDKEventResponsiveDormancyAdapterImplementationReceipt' || implementation.version !== '0.1' || implementation.tracking_issue !== 924) fail('implementation receipt identity');
+if (implementation.repository_predecessor_main !== bindings.repository_predecessor_main) fail('implementation predecessor drift');
+for (const [rel, expected] of Object.entries(implementation.implementation_files)) {
+  const fullRel = `protocols/integration/c2pa-sdk-erd-adapter/v0.1/${rel}`;
+  if (gitBlob(fullRel) !== expected) fail(`implementation blob drift ${rel}`);
+}
+if (implementation.proof.hostile_positive_test_count !== 25 || implementation.proof.direct_erd_module_reuse !== true || implementation.proof.attention_only_boundary !== true || implementation.proof.caller_checks_forbidden !== true || implementation.proof.evidence_bound_signal_required !== true) fail('implementation proof drift');
+if (Object.values(implementation.non_effects).some(v => v !== false)) fail('implementation non-effect escalation');
+
 console.log(JSON.stringify({
   validation: 'PASS',
   source_binding_count: Object.keys(bindings.bindings).length,
@@ -48,4 +62,6 @@ console.log(JSON.stringify({
   dependency: q1.recommended_dependency,
   accepted_swift_state: receipt.external_swiftpm_consumer.classification,
   current_cross_sdk_compatibility_established: false,
+  implementation_file_count: Object.keys(implementation.implementation_files).length,
+  hostile_positive_test_count: implementation.proof.hostile_positive_test_count
 }, null, 2));
