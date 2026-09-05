@@ -1,0 +1,76 @@
+{
+  "automatic_action": false,
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_views_non_equivocating_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "collision_semantics_established": false,
+    "complete_history_proven": false,
+    "global_non_equivocation_proven": false,
+    "malicious_behavior_proven": false,
+    "producer_non_equivocation_proven": false,
+    "second_bitcoin_anchor_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false
+  },
+  "consistency": {
+    "new_size": 7837,
+    "old_size": 1387,
+    "proof_node_count": 14,
+    "proof_text_sha256": "bce3db419bce94c7917fbadaf37253f346733845c4bcbd1fd56d93833af18648",
+    "verified": true
+  },
+  "evidence_layers": {
+    "checkpoint_non_equivocation": "COSIGNATURES_VERIFIED_WITH_OPERATOR_CURATED_KEY_PINS",
+    "global_view_consistency": "NOT_PROVEN",
+    "later_checkpoint_authentication": "LOG_SIGNATURE_AND_WITNESS_QUORUM_CRYPTOGRAPHICALLY_VERIFIED",
+    "log_append_only_consistency": "VERIFIED_OBSERVED_PAIR",
+    "old_checkpoint_external_anchor": "BINDING_VERIFIED_BITCOIN_CHAIN_CONFIRMATION_NOT_ESTABLISHED",
+    "semantic_claim_binding": "NOT_IN_SCOPE",
+    "witness_key_provenance": "OPERATOR_CURATED_PINS_NOT_INDEPENDENTLY_REPROVEN"
+  },
+  "external_mutation_performed": false,
+  "later_checkpoint": {
+    "authentication_verified": true,
+    "checkpoint_sha256": "10fc3eed711589dcfe19dfc2fc59442bb63892f1b5b53fd4759ab4689c75a1c4",
+    "invalid_pinned_witness_signatures": [],
+    "key_provenance_assurance": "OPERATOR_CURATED_PINS_NOT_INDEPENDENTLY_REPROVEN",
+    "log_signature_verified": true,
+    "newest_verified_cosignature_timestamp": 1788600908,
+    "origin": "markovianprotocol.com/log",
+    "quorum_min": 4,
+    "root_b64": "gBvopQDR9776+co7srd53NcA6x67KVAYk9PpsMoyi8I=",
+    "signed_body_sha256": "e0b48a67288b88b0a17784dc8e8efb878ac9a6b59810cbb9262e59f59670db70",
+    "skipped_non_ed25519_cosignature_blobs": 2,
+    "tree_size": 7837,
+    "unknown_cosigner_names": [
+      "gblin.digital/witness"
+    ],
+    "verified_witness_count": 7,
+    "verified_witnesses": [
+      "remora.n621.de",
+      "rgdd.se/poc-witness",
+      "staging.witness.transparency.goog/ring-any-bells",
+      "transparency.dev/DEV:witness-little-garden",
+      "witness.navigli.sunlight.geomys.org",
+      "witness.stagemole.eu",
+      "witness1.smartit.nu/witness1"
+    ]
+  },
+  "old_checkpoint": {
+    "accepted_receipt_fingerprint_sha256": "60c91b97b7c5308cf6832803b1f399682b579ecb18680a4829a09920d64c71ef",
+    "bitcoin_chain_confirmation": "NOT_ESTABLISHED",
+    "external_anchor_binding": "VERIFIED",
+    "origin": "markovianprotocol.com/log",
+    "root_b64": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA=",
+    "tree_size": 1387
+  },
+  "receipt_fingerprint_sha256": "770530d3c8463483cfc0cc0374c6535ab5e9f5e76c48dbe118de83db6c30ec2c",
+  "schema": "urn:uu-aap:anchored-witnessed-consistency-pilot-receipt:0.1",
+  "tracking_issue": 933,
+  "verdict": "OBSERVED_APPEND_ONLY_EXTENSION_VERIFIED_LATER_CHECKPOINT_KEY_PROVENANCE_NOT_INDEPENDENTLY_ESTABLISHED"
+}
