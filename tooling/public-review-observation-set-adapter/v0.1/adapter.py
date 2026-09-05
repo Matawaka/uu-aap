@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any
 
 HERE = Path(__file__).resolve().parent
-REPO_ROOT = HERE.parents[3]
+REPO_ROOT = HERE.parents[2]
 PROFILE_PATH = (
     REPO_ROOT
     / "protocols/integration/observation-set-calculus-candidate/v0.1/profile.py"
