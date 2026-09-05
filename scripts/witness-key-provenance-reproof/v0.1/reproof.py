@@ -8,7 +8,10 @@ from urllib.parse import urlparse
 
 PROFILE_SCHEMA = "urn:uu-aap:witness-key-provenance-reproof-profile:0.1"
 RECEIPT_SCHEMA = "urn:uu-aap:witness-key-provenance-reproof-receipt:0.1"
-SOURCE_CLASS = "OPERATOR_PUBLISHED_WITNESS_PAGE"
+SOURCE_CLASSES = frozenset({
+    "OPERATOR_PUBLISHED_WITNESS_PAGE",
+    "OPERATOR_OWNED_REPOSITORY_SOURCE",
+})
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 
 
@@ -83,7 +86,7 @@ def validate_profile(profile, predecessor_profile, predecessor_receipt):
         u = urlparse(s["source_url"])
         if u.scheme != "https" or not u.hostname:
             raise ValueError("source must be explicit HTTPS URL")
-        if s["source_classification"] != SOURCE_CLASS:
+        if s["source_classification"] not in SOURCE_CLASSES:
             raise ValueError("non-operator source classification rejected")
         if s["witness_vkey"] not in pinned:
             raise ValueError("source witness key is not pinned by predecessor")
