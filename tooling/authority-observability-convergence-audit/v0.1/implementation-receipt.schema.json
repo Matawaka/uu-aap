@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:authority-observability-convergence-audit-implementation-receipt-schema:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "origin_main",
+    "tracking_issue",
+    "package_bindings",
+    "source_binding_count",
+    "result",
+    "admission",
+    "next_safe_action",
+    "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:authority-observability-convergence-audit-implementation-receipt:0.1"},
+    "origin_main": {"const": "928249c2e356d4cfaa9255a9701d30b82bb19cd9"},
+    "tracking_issue": {"const": 907},
+    "package_bindings": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "blob_sha1"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+        }
+      }
+    },
+    "source_binding_count": {"const": 18},
+    "result": {"const": "PROFILE_EXTRACTION_CANDIDATE_NO_CORE_ADMISSION"},
+    "admission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["semantic_reusable_demand", "strong_second_domain_match_count", "direct_generic_api_reuse_proven", "stable_core_admission", "interface_registry_admission"],
+      "properties": {
+        "semantic_reusable_demand": {"const": "CONFIRMED"},
+        "strong_second_domain_match_count": {"const": 2},
+        "direct_generic_api_reuse_proven": {"const": false},
+        "stable_core_admission": {"const": "NO_CORE_ADMISSION"},
+        "interface_registry_admission": {"const": "DEFER"}
+      }
+    },
+    "next_safe_action": {"const": "PROVE_TWO_DOMAIN_ADAPTERS_TO_CANDIDATE_NEUTRAL_PROFILE"},
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["core_or_spec_changed", "interface_registry_changed", "generic_runtime_created", "workbench_reactivated", "action_authority_created", "external_effect_performed"],
+      "properties": {
+        "core_or_spec_changed": {"const": false},
+        "interface_registry_changed": {"const": false},
+        "generic_runtime_created": {"const": false},
+        "workbench_reactivated": {"const": false},
+        "action_authority_created": {"const": false},
+        "external_effect_performed": {"const": false}
+      }
+    }
+  }
+}

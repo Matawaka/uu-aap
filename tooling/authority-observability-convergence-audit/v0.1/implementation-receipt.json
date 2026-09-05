@@ -1,0 +1,49 @@
+{
+  "schema": "urn:uu-aap:authority-observability-convergence-audit-implementation-receipt:0.1",
+  "origin_main": "928249c2e356d4cfaa9255a9701d30b82bb19cd9",
+  "tracking_issue": 907,
+  "package_bindings": [
+    {
+      "path": "tooling/authority-observability-convergence-audit/v0.1/README.md",
+      "blob_sha1": "879c2cfaa9694ed24225b8525001611dac8fbdbd"
+    },
+    {
+      "path": "tooling/authority-observability-convergence-audit/v0.1/audit.json",
+      "blob_sha1": "fbdec25d7968b549429f211cb99503d188c8c58f"
+    },
+    {
+      "path": "tooling/authority-observability-convergence-audit/v0.1/audit.schema.json",
+      "blob_sha1": "b061dec930561f4b0ffbc921a83a9dfad1ce288c"
+    },
+    {
+      "path": "tooling/authority-observability-convergence-audit/v0.1/implementation-receipt.schema.json",
+      "blob_sha1": "ad9803e23275535394be118665d90043d3454347"
+    },
+    {
+      "path": "tooling/authority-observability-convergence-audit/v0.1/test_audit.py",
+      "blob_sha1": "d0730a306041c387536cd1f60e9364addde1aa0b"
+    },
+    {
+      "path": "tooling/authority-observability-convergence-audit/v0.1/validate_audit.py",
+      "blob_sha1": "f2c8b3c5677c847142393ace632c7bd49e275e9a"
+    }
+  ],
+  "source_binding_count": 18,
+  "result": "PROFILE_EXTRACTION_CANDIDATE_NO_CORE_ADMISSION",
+  "admission": {
+    "semantic_reusable_demand": "CONFIRMED",
+    "strong_second_domain_match_count": 2,
+    "direct_generic_api_reuse_proven": false,
+    "stable_core_admission": "NO_CORE_ADMISSION",
+    "interface_registry_admission": "DEFER"
+  },
+  "next_safe_action": "PROVE_TWO_DOMAIN_ADAPTERS_TO_CANDIDATE_NEUTRAL_PROFILE",
+  "non_effects": {
+    "core_or_spec_changed": false,
+    "interface_registry_changed": false,
+    "generic_runtime_created": false,
+    "workbench_reactivated": false,
+    "action_authority_created": false,
+    "external_effect_performed": false
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:authority-observability-convergence-audit-schema:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "version",
+    "origin_main",
+    "tracking_issue",
+    "admission_predecessor",
+    "source_bindings",
+    "domains",
+    "components",
+    "findings",
+    "decision",
+    "semantic_guards",
+    "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:authority-observability-convergence-audit:0.1"},
+    "version": {"const": "0.1"},
+    "origin_main": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "tracking_issue": {"const": 907},
+    "admission_predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "blob_sha1", "rule"],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "rule": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_bindings": {
+      "type": "array",
+      "minItems": 18,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "blob_sha1", "role"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "role": {"enum": ["primary_domain", "independent_domain", "independent_domain_partial", "existing_downstream", "existing_reusable", "governance_boundary"]}
+        }
+      }
+    },
+    "domains": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "independent", "match", "direct_consumer", "notes"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "independent": {"type": "boolean"},
+          "match": {"enum": ["DOMAIN_IMPLEMENTED", "SECOND_DOMAIN_SEMANTIC_MATCH", "REUSE_EXISTING", "DEFER"]},
+          "strength": {"enum": ["STRONG", "PARTIAL"]},
+          "direct_consumer": {"type": "boolean"},
+          "excluded_from_demand_count": {"type": "boolean"},
+          "notes": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+        }
+      }
+    },
+    "components": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "primary_sources", "second_domain_matches", "direct_reuse_proven", "decision", "reason"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "primary_sources": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+          "second_domain_matches": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "partial_matches": {"type": "array", "items": {"type": "string", "minLength": 1}},
+          "direct_reuse_proven": {"type": "boolean"},
+          "decision": {"enum": ["DOMAIN_IMPLEMENTED", "PROFILE_EXTRACTION_CANDIDATE", "REUSE_EXISTING", "DEFER", "NO_CORE_ADMISSION"]},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "findings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "semantic_reusable_demand",
+        "strong_independent_second_domain_match_count",
+        "strong_independent_second_domain_matches",
+        "partial_independent_matches",
+        "direct_generic_api_reuse_proven",
+        "existing_reusable_observation_provenance_composition_available",
+        "profile_extraction_candidate",
+        "generic_runtime_helper_justified",
+        "new_action_lifecycle_justified",
+        "workbench_reactivation_justified"
+      ],
+      "properties": {
+        "semantic_reusable_demand": {"const": "CONFIRMED"},
+        "strong_independent_second_domain_match_count": {"type": "integer", "minimum": 0},
+        "strong_independent_second_domain_matches": {"type": "array", "items": {"type": "string"}},
+        "partial_independent_matches": {"type": "array", "items": {"type": "string"}},
+        "direct_generic_api_reuse_proven": {"type": "boolean"},
+        "existing_reusable_observation_provenance_composition_available": {"type": "boolean"},
+        "profile_extraction_candidate": {"type": "boolean"},
+        "generic_runtime_helper_justified": {"type": "boolean"},
+        "new_action_lifecycle_justified": {"type": "boolean"},
+        "workbench_reactivation_justified": {"type": "boolean"}
+      }
+    },
+    "decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["overall", "stable_core_admission", "interface_registry_admission", "generic_runtime_implementation", "next_safe_action", "recommended_first_adapter_domain", "required_reference_adapter_domain", "kontur_role", "lsr_role", "workbench_role"],
+      "properties": {
+        "overall": {"const": "PROFILE_EXTRACTION_CANDIDATE_NO_CORE_ADMISSION"},
+        "stable_core_admission": {"const": "NO_CORE_ADMISSION"},
+        "interface_registry_admission": {"const": "DEFER"},
+        "generic_runtime_implementation": {"const": "DEFER"},
+        "next_safe_action": {"const": "PROVE_TWO_DOMAIN_ADAPTERS_TO_CANDIDATE_NEUTRAL_PROFILE"},
+        "recommended_first_adapter_domain": {"const": "public_review"},
+        "required_reference_adapter_domain": {"const": "c2pa_authority_observability"},
+        "kontur_role": {"const": "SEMANTIC_CROSS_CHECK_NOT_FIRST_ADAPTER"},
+        "lsr_role": {"const": "PARTIAL_EPISTEMIC_CROSS_CHECK_ONLY"},
+        "workbench_role": {"const": "EXCLUDED_WHILE_PAUSED"}
+      }
+    },
+    "semantic_guards": {"type": "object", "additionalProperties": {"const": false}, "minProperties": 8},
+    "non_effects": {"type": "object", "additionalProperties": {"const": false}, "minProperties": 10}
+  }
+}

@@ -1,0 +1,150 @@
+name: Authority Observability Convergence Audit v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/authority-observability-convergence-audit/v0.1/**'
+      - '.github/workflows/authority-observability-convergence-audit-v0.1.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'tooling/authority-observability-convergence-audit/v0.1/**'
+      - '.github/workflows/authority-observability-convergence-audit-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-first-reusable-admission-without-promotion:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned JSON Schema validator used by accepted Public Review evidence
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Parse closed audit package JSON
+        run: |
+          python -m json.tool tooling/authority-observability-convergence-audit/v0.1/audit.json >/dev/null
+          python -m json.tool tooling/authority-observability-convergence-audit/v0.1/audit.schema.json >/dev/null
+          python -m json.tool tooling/authority-observability-convergence-audit/v0.1/implementation-receipt.json >/dev/null
+          python -m json.tool tooling/authority-observability-convergence-audit/v0.1/implementation-receipt.schema.json >/dev/null
+
+      - name: Validate byte-bound convergence audit
+        run: python tooling/authority-observability-convergence-audit/v0.1/validate_audit.py
+
+      - name: Run hostile promotion and genericization coverage
+        run: python tooling/authority-observability-convergence-audit/v0.1/test_audit.py
+
+      - name: Re-run existing reusable observation and provenance substrate
+        run: |
+          node protocols/integration/ambient-observability-non-identification/v0.1/validate-ambient-observability.js
+          node protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js
+          node protocols/integration/event-hash-minimalism/v0.1/validate-event-hash-minimalism.js
+
+      - name: Re-run independent Public Review evidence boundaries
+        run: |
+          python tooling/public-review-observation-checkpoint/v0.1/validate_checkpoint.py
+          python tooling/public-review-disposition-ledger/v0.1/validate_ledger.py
+
+      - name: Re-run KONTUR semantic cross-check
+        run: node server/kontur/v0.1/test-responsibility-kernel.js
+
+      - name: Re-run Life Situation Resolver partial epistemic cross-check
+        run: node pilots/life-situation-resolver/v0.1/test-resolver.js
+
+      - name: Re-run existing provider-neutral Bounded Action lifecycle
+        run: node protocols/integration/bounded-action-e2e/v0.1/validate-bounded-action-e2e.js
+
+      - name: Re-run accepted authority-observability top-level chain
+        run: python scripts/observed-authority-branch-set-transition-chain/test_receipt.py
+
+      - name: Validate implementation receipt exact package bindings
+        run: |
+          python - <<'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+
+          root = Path('tooling/authority-observability-convergence-audit/v0.1')
+          receipt = json.loads((root / 'implementation-receipt.json').read_text())
+          expected_keys = {
+              'schema', 'origin_main', 'tracking_issue', 'package_bindings',
+              'source_binding_count', 'result', 'admission', 'next_safe_action',
+              'non_effects'
+          }
+          assert set(receipt) == expected_keys
+          assert receipt['schema'] == 'urn:uu-aap:authority-observability-convergence-audit-implementation-receipt:0.1'
+          assert receipt['origin_main'] == '928249c2e356d4cfaa9255a9701d30b82bb19cd9'
+          assert receipt['tracking_issue'] == 907
+          assert receipt['source_binding_count'] == 18
+          assert receipt['result'] == 'PROFILE_EXTRACTION_CANDIDATE_NO_CORE_ADMISSION'
+          assert receipt['next_safe_action'] == 'PROVE_TWO_DOMAIN_ADAPTERS_TO_CANDIDATE_NEUTRAL_PROFILE'
+
+          expected_paths = {
+              'tooling/authority-observability-convergence-audit/v0.1/README.md',
+              'tooling/authority-observability-convergence-audit/v0.1/audit.json',
+              'tooling/authority-observability-convergence-audit/v0.1/audit.schema.json',
+              'tooling/authority-observability-convergence-audit/v0.1/implementation-receipt.schema.json',
+              'tooling/authority-observability-convergence-audit/v0.1/test_audit.py',
+              'tooling/authority-observability-convergence-audit/v0.1/validate_audit.py',
+          }
+          bindings = receipt['package_bindings']
+          assert len(bindings) == 6
+          assert {item['path'] for item in bindings} == expected_paths
+          for item in bindings:
+              actual = subprocess.check_output(['git', 'hash-object', item['path']], text=True).strip()
+              assert actual == item['blob_sha1'], (item['path'], actual, item['blob_sha1'])
+
+          admission = receipt['admission']
+          assert admission == {
+              'semantic_reusable_demand': 'CONFIRMED',
+              'strong_second_domain_match_count': 2,
+              'direct_generic_api_reuse_proven': False,
+              'stable_core_admission': 'NO_CORE_ADMISSION',
+              'interface_registry_admission': 'DEFER',
+          }
+          assert all(value is False for value in receipt['non_effects'].values())
+          PY
+
+      - name: Prove audit-only pull-request diff boundary
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git diff --name-only "$BASE_SHA"...HEAD > /tmp/audit-changed-files.txt
+          cat /tmp/audit-changed-files.txt
+          python - <<'PY'
+          from pathlib import Path
+
+          changed = [line.strip() for line in Path('/tmp/audit-changed-files.txt').read_text().splitlines() if line.strip()]
+          allowed_workflow = '.github/workflows/authority-observability-convergence-audit-v0.1.yml'
+          allowed_prefix = 'tooling/authority-observability-convergence-audit/v0.1/'
+          forbidden = [path for path in changed if path != allowed_workflow and not path.startswith(allowed_prefix)]
+          assert not forbidden, f'non-audit files changed: {forbidden}'
+          assert allowed_workflow in changed
+          assert any(path.startswith(allowed_prefix) for path in changed)
+          PY
+
+      - name: Prove validation is repository-read-only
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'validation mutated the repository' >&2
+            git status --short >&2
+            exit 1
+          fi
