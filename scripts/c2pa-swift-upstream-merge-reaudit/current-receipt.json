@@ -1,0 +1,56 @@
+{
+  "android": {
+    "classification": "UNCHANGED_NO_RETEST_REQUIRED",
+    "main_sha": "077035cda5bf6849abf270829b98af789cc31e4f",
+    "retest_performed": false
+  },
+  "cross_sdk_p0_3_complete": false,
+  "current_cross_sdk_compatibility_established": false,
+  "current_swift_lossless_preservation_established": false,
+  "external_swiftpm_consumer": {
+    "build_exit_code": 1,
+    "classification": "BLOCKED_SOURCE_BINARY_SKEW",
+    "roundtrip_executed": false,
+    "roundtrip_exit_code": null,
+    "roundtrip_receipt_valid": false,
+    "source_binary_skew_marker": true
+  },
+  "historical_evidence": {
+    "pr_781_historical_blocked_result_rewritten": false,
+    "pr_782_historical_results_rewritten": false,
+    "pr_783_contract_rewritten": false
+  },
+  "invariants": [
+    "source preservation != consumer round-trip",
+    "upstream merge != packaging compatibility",
+    "packaging compatibility != semantic preservation",
+    "semantic preservation != trust or authority",
+    "successor result != historical rewrite"
+  ],
+  "non_effects": {
+    "authority_established": false,
+    "authorship_established": false,
+    "c2pa_conformance_established": false,
+    "c2pa_namespace_registered": false,
+    "core_modified": false,
+    "responsibility_established": false,
+    "trust_score_created": false,
+    "truth_certified": false,
+    "upstream_modified": false
+  },
+  "observation_sha256": "0d71fe53f7adacb68a671e7d71d146a08036676ea095b83e7a791942ca531dea",
+  "receipt_fingerprint_sha256": "a7ae8037e188e552c07106f546db16169757bb620250cfd8df17e05e2df77b53",
+  "schema": "urn:uu-aap:c2pa-swift-targeted-reaudit-receipt:0.3",
+  "source_contract": {
+    "claim_generator_additional_fields_present": true,
+    "classification": "CURRENT_MAIN_SOURCE_PASS",
+    "reader_crjson_present": true
+  },
+  "tracking_issue": 916,
+  "upstream": {
+    "main_sha": "6fa8a78c16abac3b3f7eb4832c2cc943c9c19f0f",
+    "pr_161_merged": true,
+    "public_binary_release": "v0.0.12",
+    "repository": "contentauth/c2pa-swift"
+  }
+}
