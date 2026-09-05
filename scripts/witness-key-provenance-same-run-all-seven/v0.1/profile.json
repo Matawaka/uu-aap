@@ -1,0 +1,90 @@
+{
+  "schema": "urn:uu-aap:witness-key-provenance-same-run-all-seven-profile:0.1",
+  "tracking_issue": 939,
+  "repository_predecessor_main": "0f064ffc60c15ce98125b657f2f32eba09e0d933",
+  "predecessor_profile_path": "scripts/witness-key-provenance-all-seven/v0.1/profile.json",
+  "predecessor_profile_git_blob": "c2fc9dae0db399e9d2c14c4010d0f2b7d93d9bb0",
+  "predecessor_receipt_path": "scripts/witness-key-provenance-all-seven/v0.1/qualification-receipt.json",
+  "predecessor_receipt_git_blob": "3d02d7c5b95be3fd813faa4f1118da0ecb6dabe7",
+  "required_predecessor_receipt_fingerprint_sha256": "0e46babcd7db57080b282d5216f50f4b9e4955eeed0cf53a14e8c77294ca142a",
+  "required_predecessor_verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_OPERATOR_SOURCE_OBSERVED_ACROSS_BOUND_PREDECESSOR_AND_SUCCESSOR_EVIDENCE_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "required_predecessor_composed_witness_key_count": 7,
+  "pin_set_profile_path": "scripts/anchored-witnessed-consistency-pilot/v0.1/profile.json",
+  "pin_set_profile_git_blob": "4f1c10b9551661b6236febe3d744e4255065ce52",
+  "required_distinct_source_url_count": 6,
+  "sources": [
+    {
+      "id": "mullvad-stagemole",
+      "source_url": "https://witness.stagemole.eu/about",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv",
+      "expected_git_blob": null
+    },
+    {
+      "id": "trustfabric-little-garden",
+      "source_url": "https://transparency.dev/witnesses",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM",
+      "expected_git_blob": null
+    },
+    {
+      "id": "trustfabric-ring-any-bells",
+      "source_url": "https://transparency.dev/witnesses",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL",
+      "expected_git_blob": null
+    },
+    {
+      "id": "remora",
+      "source_url": "https://remora.n621.de/",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2",
+      "expected_git_blob": null
+    },
+    {
+      "id": "geomys-navigli",
+      "source_url": "https://raw.githubusercontent.com/geomys/magnolia/0545421c001b16c0fb328cd9254010c46fa424a6/cmd/hetrix/geomys.go",
+      "source_classification": "OPERATOR_OWNED_REPOSITORY_SOURCE",
+      "witness_vkey": "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G",
+      "expected_git_blob": "95a3e95134487229343bb6197f6fa1723cfa20d7"
+    },
+    {
+      "id": "rgdd-poc-witness",
+      "source_url": "https://www.rgdd.se/poc-witness/about",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG",
+      "expected_git_blob": null
+    },
+    {
+      "id": "smartit-witness1",
+      "source_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO",
+      "expected_git_blob": null
+    }
+  ],
+  "strong_verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_SOURCE_MATERIAL_REOBSERVED_IN_ONE_BOUNDED_RUN_IDENTITY_INDEPENDENCE_AND_CURRENT_ACTIVITY_NOT_ESTABLISHED",
+  "insufficient_verdict": "INCOMPLETE_SAME_RUN_ALL_SEVEN_PINNED_WITNESS_KEY_SOURCE_MATERIAL_OBSERVATION",
+  "always_false_claims": [
+    "witness_identity_proven",
+    "operator_independence_proven",
+    "all_witnesses_independent_proven",
+    "all_seven_currently_active_proven",
+    "legal_operator_identity_proven",
+    "second_bitcoin_anchor_proven",
+    "complete_history_proven",
+    "all_views_non_equivocating_proven",
+    "producer_non_equivocation_proven",
+    "global_non_equivocation_proven",
+    "all_manifests_submitted_proven",
+    "selective_submission_absent_proven",
+    "c2pa_manifest_inclusion_proven",
+    "collision_semantics_established",
+    "trusted_time_proven",
+    "truth_certified",
+    "authority_created",
+    "canonical_branch_selected",
+    "malicious_behavior_proven",
+    "automatic_remediation_triggered"
+  ]
+}
