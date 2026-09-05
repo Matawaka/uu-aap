@@ -1,0 +1,20 @@
+{
+  "schema": "urn:uu-aap:authority-surface-triangulation-input:0.1",
+  "runtime_surface": {
+    "id": "fixture-runtime-independent",
+    "document_sha256": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "configured_signers": ["fixture-witness-1", "fixture-witness-2", "fixture-witness-8"]
+  },
+  "export_surface": {
+    "id": "fixture-export-independent",
+    "document_sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+    "signers": ["fixture-witness-1", "fixture-witness-3", "fixture-witness-9"]
+  },
+  "signed_root": {
+    "id": "fixture-root-independent",
+    "version": 2,
+    "document_sha256": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+    "verification_status": "VALID",
+    "admitted_signers": ["fixture-witness-1", "fixture-witness-4", "fixture-witness-10"]
+  }
+}
