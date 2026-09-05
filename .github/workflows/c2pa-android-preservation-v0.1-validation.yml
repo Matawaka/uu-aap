@@ -1,0 +1,120 @@
+name: C2PA Android Preservation Frontier v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-android-preservation/**'
+      - '.github/workflows/c2pa-android-preservation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-android-preservation/**'
+      - '.github/workflows/c2pa-android-preservation-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  C2PA_ANDROID_SHA: 077035cda5bf6849abf270829b98af789cc31e4f
+
+jobs:
+  android-preservation-frontier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Ensure Android 36 compile platform is available
+        shell: bash
+        run: |
+          set -euo pipefail
+          sdkmanager 'platforms;android-36' 'build-tools;36.0.0' >/dev/null
+
+      - name: Checkout exact upstream Android frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/contentauth/c2pa-android.git /tmp/c2pa-android
+          git -C /tmp/c2pa-android checkout --quiet "$C2PA_ANDROID_SHA"
+          test "$(git -C /tmp/c2pa-android rev-parse HEAD)" = "$C2PA_ANDROID_SHA"
+
+          grep -q 'ignoreUnknownKeys = true' /tmp/c2pa-android/library/src/main/kotlin/org/contentauth/c2pa/C2PAJson.kt
+          grep -q 'data class Custom' /tmp/c2pa-android/library/src/main/kotlin/org/contentauth/c2pa/manifest/AssertionDefinition.kt
+          if grep -q 'additionalFields' /tmp/c2pa-android/library/src/main/kotlin/org/contentauth/c2pa/manifest/ClaimGeneratorInfo.kt; then
+            echo 'Pinned Android ClaimGeneratorInfo unexpectedly exposes additionalFields; frontier changed.' >&2
+            exit 1
+          fi
+
+      - name: Inject UU-AAP interoperability test into isolated checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test_dir=/tmp/c2pa-android/library/src/test/kotlin/org/contentauth/c2pa
+          mkdir -p "$test_dir"
+          cp scripts/c2pa-android-preservation/UUAAPForwardCompatibilityTest.kt \
+            "$test_dir/UUAAPForwardCompatibilityTest.kt"
+
+      - name: Execute Android preservation and incompatibility probes
+        shell: bash
+        env:
+          UU_AAP_CLAIM_FIXTURE: ${{ github.workspace }}/scripts/c2pa-android-preservation/fixtures/claim-generator-info.json
+          UU_AAP_EXTERNAL_REFERENCE_FIXTURE: ${{ github.workspace }}/scripts/c2pa-android-preservation/fixtures/external-reference.json
+        run: |
+          set -euo pipefail
+          rm -f /tmp/c2pa-android-external-reference-stage.txt
+          cd /tmp/c2pa-android
+          ./gradlew :library:testDebugUnitTest \
+            --tests org.contentauth.c2pa.UUAAPForwardCompatibilityTest \
+            --no-daemon \
+            --stacktrace
+
+      - name: Emit preservation frontier receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          marker=/tmp/c2pa-android-external-reference-stage.txt
+          test -s "$marker"
+          stage="$(head -n 1 "$marker")"
+          case "$stage" in
+            decode_rejected|encode_rejected) ;;
+            *)
+              echo "Unexpected external-reference frontier: $stage" >&2
+              cat "$marker" >&2
+              exit 1
+              ;;
+          esac
+
+          cat > /tmp/c2pa-android-preservation-receipt.json <<JSON
+          {
+            "schema": "urn:uu-aap:c2pa-android-preservation-receipt:0.1",
+            "upstream_repository": "contentauth/c2pa-android",
+            "upstream_head_sha": "077035cda5bf6849abf270829b98af789cc31e4f",
+            "external_reference_generic_path": "INCOMPATIBLE",
+            "external_reference_failure_stage": "$stage",
+            "external_reference_semantic_roundtrip": false,
+            "claim_generator_unknown_field_preserved": false,
+            "claim_generator_unknown_field_tolerated_on_decode": true,
+            "unknown_field_promoted_to_authority_or_trust": false,
+            "interpretation": "explicit incompatibility plus tolerant-but-lossy modeled-object decoding",
+            "p0_3_complete": false
+          }
+          JSON
+
+          grep -q '"external_reference_generic_path": "INCOMPATIBLE"' /tmp/c2pa-android-preservation-receipt.json
+          grep -Eq '"external_reference_failure_stage": "(decode_rejected|encode_rejected)"' /tmp/c2pa-android-preservation-receipt.json
+          grep -q '"claim_generator_unknown_field_preserved": false' /tmp/c2pa-android-preservation-receipt.json
+          grep -q '"unknown_field_promoted_to_authority_or_trust": false' /tmp/c2pa-android-preservation-receipt.json
+          grep -q '"p0_3_complete": false' /tmp/c2pa-android-preservation-receipt.json
+          cat /tmp/c2pa-android-preservation-receipt.json
+          echo '--- external-reference exception marker ---'
+          cat "$marker"
+
+      - run: test -z "$(git status --porcelain)"
