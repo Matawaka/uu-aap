@@ -1,0 +1,72 @@
+{
+  "all_seven_operator_source_observations_composed": true,
+  "automatic_action": false,
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_seven_currently_reobserved_in_one_run": false,
+    "all_views_non_equivocating_proven": false,
+    "all_witnesses_independent_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "collision_semantics_established": false,
+    "complete_history_proven": false,
+    "global_non_equivocation_proven": false,
+    "malicious_behavior_proven": false,
+    "operator_independence_proven": false,
+    "producer_non_equivocation_proven": false,
+    "second_bitcoin_anchor_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "witness_identity_proven": false
+  },
+  "composed_exact_pinned_witness_key_count": 7,
+  "composed_witness_vkeys": [
+    "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2",
+    "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG",
+    "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL",
+    "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM",
+    "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G",
+    "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv",
+    "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
+  ],
+  "external_mutation_performed": false,
+  "key_provenance_assurance": "ALL_SEVEN_PINNED_WITNESS_KEYS_HAVE_BOUND_OPERATOR_SOURCE_OBSERVATIONS_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "new_exact_source_url_count": 2,
+  "new_exact_witness_key_count": 2,
+  "new_source_records": [
+    {
+      "exact_vkey_observed": true,
+      "id": "rgdd-poc-witness",
+      "retrieved_body_sha256": "a10b46a0376dd93e8c98268f0402eec9a4aa7a751c4f16425d6686e8882c20b1",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "www.rgdd.se",
+      "source_url": "https://www.rgdd.se/poc-witness/about",
+      "witness_vkey": "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "smartit-witness1",
+      "retrieved_body_sha256": "e7ffc052384c5dd8983f7886007eaf9a5ffd2c1c8872cb793dfef10fe02a46c1",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "witness1.smartit.nu",
+      "source_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "witness_vkey": "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
+    }
+  ],
+  "predecessor": {
+    "main_sha": "becaff7af61d76ee4bdae09e2aa60aae559da417",
+    "matched_witness_key_count": 5,
+    "profile_git_blob": "23184a0049c069deb7c07d0572c4b45dcd1b9e99",
+    "qualification_receipt_git_blob": "8f0c7f0b08e77dfc7ebcd6a615a8bb3b9223fee3",
+    "receipt_fingerprint_sha256": "2a533ce2b03ba170bfb8c6e33cced5994acc61f18fed6b94ee42931307f615d8",
+    "verdict": "QUORUM_MANY_PINNED_WITNESS_KEYS_REOBSERVED_FROM_OPERATOR_PUBLISHED_SOURCES_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED"
+  },
+  "predecessor_observed_witness_key_count": 5,
+  "receipt_fingerprint_sha256": "0e46babcd7db57080b282d5216f50f4b9e4955eeed0cf53a14e8c77294ca142a",
+  "schema": "urn:uu-aap:witness-key-provenance-all-seven-receipt:0.1",
+  "tracking_issue": 937,
+  "verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_OPERATOR_SOURCE_OBSERVED_ACROSS_BOUND_PREDECESSOR_AND_SUCCESSOR_EVIDENCE_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED"
+}

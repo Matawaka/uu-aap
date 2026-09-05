@@ -1,0 +1,53 @@
+{
+  "schema": "urn:uu-aap:witness-key-provenance-all-seven-profile:0.1",
+  "tracking_issue": 937,
+  "repository_predecessor_main": "becaff7af61d76ee4bdae09e2aa60aae559da417",
+  "predecessor_profile_path": "scripts/witness-key-provenance-reproof/v0.1/profile.json",
+  "predecessor_profile_git_blob": "23184a0049c069deb7c07d0572c4b45dcd1b9e99",
+  "predecessor_receipt_path": "scripts/witness-key-provenance-reproof/v0.1/qualification-receipt.json",
+  "predecessor_receipt_git_blob": "8f0c7f0b08e77dfc7ebcd6a615a8bb3b9223fee3",
+  "required_predecessor_receipt_fingerprint_sha256": "2a533ce2b03ba170bfb8c6e33cced5994acc61f18fed6b94ee42931307f615d8",
+  "required_predecessor_verdict": "QUORUM_MANY_PINNED_WITNESS_KEYS_REOBSERVED_FROM_OPERATOR_PUBLISHED_SOURCES_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "required_predecessor_matched_witness_key_count": 5,
+  "required_predecessor_source_url_count": 4,
+  "required_predecessor_source_host_count": 4,
+  "pin_set_profile_path": "scripts/anchored-witnessed-consistency-pilot/v0.1/profile.json",
+  "pin_set_profile_git_blob": "4f1c10b9551661b6236febe3d744e4255065ce52",
+  "new_sources": [
+    {
+      "id": "rgdd-poc-witness",
+      "source_url": "https://www.rgdd.se/poc-witness/about",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG"
+    },
+    {
+      "id": "smartit-witness1",
+      "source_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
+    }
+  ],
+  "strong_verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_OPERATOR_SOURCE_OBSERVED_ACROSS_BOUND_PREDECESSOR_AND_SUCCESSOR_EVIDENCE_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "insufficient_verdict": "INCOMPLETE_ALL_SEVEN_OPERATOR_SOURCE_PROVENANCE_OBSERVATIONS",
+  "always_false_claims": [
+    "witness_identity_proven",
+    "operator_independence_proven",
+    "all_witnesses_independent_proven",
+    "all_seven_currently_reobserved_in_one_run",
+    "second_bitcoin_anchor_proven",
+    "complete_history_proven",
+    "all_views_non_equivocating_proven",
+    "producer_non_equivocation_proven",
+    "global_non_equivocation_proven",
+    "all_manifests_submitted_proven",
+    "selective_submission_absent_proven",
+    "c2pa_manifest_inclusion_proven",
+    "collision_semantics_established",
+    "trusted_time_proven",
+    "truth_certified",
+    "authority_created",
+    "canonical_branch_selected",
+    "malicious_behavior_proven",
+    "automatic_remediation_triggered"
+  ]
+}
