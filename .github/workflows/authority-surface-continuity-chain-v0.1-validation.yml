@@ -1,0 +1,104 @@
+name: Authority Surface Continuity Chain Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/authority-surface-continuity-chain/**'
+      - '.github/workflows/authority-surface-continuity-chain-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/authority-surface-continuity-chain/**'
+      - '.github/workflows/authority-surface-continuity-chain-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  local-observed-continuity-without-completeness:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run merged #890 authority-admission tests unchanged
+        run: python scripts/c2pa-authority-admission/test_gate.py
+
+      - name: Re-run merged #892 observable consistency tests unchanged
+        run: python scripts/observable-authority-consistency/test_receipt.py
+
+      - name: Re-run merged #894 triangulation tests unchanged
+        run: python scripts/authority-surface-triangulation/test_receipt.py
+
+      - name: Re-run merged #894 predecessor cross-check unchanged
+        run: python scripts/authority-surface-triangulation/cross_check.py
+
+      - name: Re-run merged #896 transition tests unchanged
+        run: python scripts/authority-surface-transition/test_receipt.py
+
+      - name: Run continuity-chain hostile and positive tests
+        run: python scripts/authority-surface-continuity-chain/test_receipt.py
+
+      - name: Emit deterministic continuity-chain receipts
+        run: |
+          mkdir -p /tmp/authority-chain-receipts
+          for fixture in three-snapshot all-same-root no-op-interior two-snapshot; do
+            python scripts/authority-surface-continuity-chain/receipt.py \
+              scripts/authority-surface-continuity-chain/fixtures/${fixture}.json \
+              > /tmp/authority-chain-receipts/${fixture}.json
+          done
+
+      - name: Assert exact continuity and incompleteness outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('/tmp/authority-chain-receipts')
+          mixed = json.loads((root / 'three-snapshot.json').read_text())
+          same = json.loads((root / 'all-same-root.json').read_text())
+          noop = json.loads((root / 'no-op-interior.json').read_text())
+          minimum = json.loads((root / 'two-snapshot.json').read_text())
+
+          assert mixed['snapshot_count'] == 3
+          assert mixed['edge_count'] == 2
+          assert mixed['root_relation_sequence'] == ['SAME_ROOT', 'SUCCESSOR_ROOT']
+          assert mixed['local_adjacency_continuous'] is True
+          assert mixed['edges'][0]['after_snapshot_fingerprint_sha256'] == mixed['snapshots'][1]['snapshot_fingerprint_sha256']
+          assert mixed['edges'][1]['before_snapshot_fingerprint_sha256'] == mixed['snapshots'][1]['snapshot_fingerprint_sha256']
+
+          assert same['root_relation_sequence'] == ['SAME_ROOT', 'SAME_ROOT']
+          assert same['root_relation_counts'] == {'same_root': 2, 'successor_root': 0}
+
+          assert noop['edges'][0]['before_snapshot_fingerprint_sha256'] == noop['edges'][0]['after_snapshot_fingerprint_sha256']
+          assert noop['edges'][0]['any_membership_change'] is False
+          assert noop['edges'][0]['any_delta_lifecycle_change'] is False
+
+          assert minimum['snapshot_count'] == 2
+          assert minimum['edge_count'] == 1
+
+          for receipt in [mixed, same, noop, minimum]:
+            guards = receipt['semantic_guards']
+            assert guards['history_complete'] is False
+            assert guards['no_omitted_states_proven'] is False
+            assert guards['global_non_equivocation_proven'] is False
+            assert guards['no_parallel_fork_proven'] is False
+            assert guards['append_only_log_proven'] is False
+            assert guards['trusted_time_proven'] is False
+          PY
+
+      - name: Prove validation is repository-read-only
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'validation mutated the repository' >&2
+            git status --short >&2
+            exit 1
+          fi
