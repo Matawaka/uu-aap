@@ -1,0 +1,77 @@
+{
+  "schema": "urn:uu-aap:witness-key-provenance-reproof-profile:0.1",
+  "tracking_issue": 935,
+  "repository_predecessor_main": "529522f6a47cd202918175ea81f024d12246faaf",
+  "predecessor_profile_path": "scripts/anchored-witnessed-consistency-pilot/v0.1/profile.json",
+  "predecessor_profile_git_blob": "4f1c10b9551661b6236febe3d744e4255065ce52",
+  "predecessor_receipt_path": "scripts/anchored-witnessed-consistency-pilot/v0.1/current-receipt.json",
+  "predecessor_receipt_git_blob": "8d0030fa071466db89eb2ffa8ea7dc40f815f118",
+  "predecessor_checkpoint_path": "scripts/witness-key-provenance-reproof/v0.1/predecessor-934-checkpoint.txt",
+  "predecessor_checkpoint_sha256": "10fc3eed711589dcfe19dfc2fc59442bb63892f1b5b53fd4759ab4689c75a1c4",
+  "predecessor_consistency_sha256": "bce3db419bce94c7917fbadaf37253f346733845c4bcbd1fd56d93833af18648",
+  "required_predecessor_receipt_fingerprint_sha256": "770530d3c8463483cfc0cc0374c6535ab5e9f5e76c48dbe118de83db6c30ec2c",
+  "predecessor_qualification_artifact": {
+    "workflow_run_id": 33958949408,
+    "artifact_id": 9967291562,
+    "artifact_digest_sha256": "55d880331a56d7d511d92977a95b106ab5c8ccd1f82990c408792f817977573d",
+    "qualified_head_sha": "f0df1a4103b2b47db608757469077d9465332418"
+  },
+  "required_predecessor_verdict": "OBSERVED_APPEND_ONLY_EXTENSION_VERIFIED_LATER_CHECKPOINT_KEY_PROVENANCE_NOT_INDEPENDENTLY_ESTABLISHED",
+  "required_predecessor_key_provenance_assurance": "OPERATOR_CURATED_PINS_NOT_INDEPENDENTLY_REPROVEN",
+  "quorum_min": 4,
+  "operator_sources": [
+    {
+      "id": "mullvad-stagemole",
+      "source_url": "https://witness.stagemole.eu/about",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv"
+    },
+    {
+      "id": "trustfabric-little-garden",
+      "source_url": "https://transparency.dev/witnesses",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM"
+    },
+    {
+      "id": "trustfabric-ring-any-bells",
+      "source_url": "https://transparency.dev/witnesses",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL"
+    },
+    {
+      "id": "remora",
+      "source_url": "https://remora.n621.de/",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2"
+    },
+    {
+      "id": "geomys-navigli",
+      "source_url": "https://navigli.sunlight.geomys.org/",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkey": "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G"
+    }
+  ],
+  "strong_verdict": "QUORUM_MANY_PINNED_WITNESS_KEYS_REOBSERVED_FROM_OPERATOR_PUBLISHED_SOURCES_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "insufficient_verdict": "INSUFFICIENT_OPERATOR_SOURCE_KEY_MATCHES_FOR_QUORUM_MANY_REPROOF",
+  "always_false_claims": [
+    "witness_identity_proven",
+    "operator_independence_proven",
+    "all_witnesses_independent_proven",
+    "all_seven_key_provenance_reproven",
+    "second_bitcoin_anchor_proven",
+    "complete_history_proven",
+    "all_views_non_equivocating_proven",
+    "producer_non_equivocation_proven",
+    "global_non_equivocation_proven",
+    "all_manifests_submitted_proven",
+    "selective_submission_absent_proven",
+    "c2pa_manifest_inclusion_proven",
+    "collision_semantics_established",
+    "trusted_time_proven",
+    "truth_certified",
+    "authority_created",
+    "canonical_branch_selected",
+    "malicious_behavior_proven",
+    "automatic_remediation_triggered"
+  ]
+}

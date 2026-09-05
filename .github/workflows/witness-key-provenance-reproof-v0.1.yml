@@ -1,0 +1,206 @@
+name: Witness Key Provenance Reproof v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/witness-key-provenance-reproof/v0.1/**'
+      - '.github/workflows/witness-key-provenance-reproof-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/witness-key-provenance-reproof/v0.1/**'
+      - '.github/workflows/witness-key-provenance-reproof-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  witness-key-provenance-reproof:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pinned schema validator
+        run: python -m pip install --disable-pip-version-check 'cryptography==45.0.6' 'jsonschema==4.25.1'
+
+      - name: Preserve merged PR 934 frozen predecessor unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=scripts/anchored-witnessed-consistency-pilot/v0.1
+          newdir=scripts/witness-key-provenance-reproof/v0.1
+          python "$dir/test_pilot.py"
+          python "$dir/pilot.py" \
+            --profile "$dir/profile.json" \
+            --checkpoint "$newdir/predecessor-934-checkpoint.txt" \
+            --consistency "$dir/current-consistency.txt" \
+            > /tmp/predecessor-934-receipt.json
+          python "$dir/receipt_validator.py" "$dir/profile.json" /tmp/predecessor-934-receipt.json
+          python - <<'PY'
+          import json
+          live=json.load(open('/tmp/predecessor-934-receipt.json'))
+          frozen=json.load(open('scripts/anchored-witnessed-consistency-pilot/v0.1/current-receipt.json'))
+          assert live==frozen,(live,frozen)
+          assert live['verdict']=='OBSERVED_APPEND_ONLY_EXTENSION_VERIFIED_LATER_CHECKPOINT_KEY_PROVENANCE_NOT_INDEPENDENTLY_ESTABLISHED'
+          assert live['later_checkpoint']['key_provenance_assurance']=='OPERATOR_CURATED_PINS_NOT_INDEPENDENTLY_REPROVEN'
+          print('merged #934 frozen predecessor parity PASS')
+          PY
+
+      - name: Validate exact predecessor bindings and hostile suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          git merge-base --is-ancestor 529522f6a47cd202918175ea81f024d12246faaf HEAD
+          python scripts/witness-key-provenance-reproof/v0.1/validate_sources.py
+          python scripts/witness-key-provenance-reproof/v0.1/test_reproof.py
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+          p='scripts/witness-key-provenance-reproof/v0.1/receipt.schema.json'
+          s=json.load(open(p,encoding='utf-8')); Draft202012Validator.check_schema(s)
+          print('VALID schema:',p)
+          PY
+
+      - name: Fetch exact allowlisted operator pages read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            https://witness.stagemole.eu/about -o /tmp/stagemole-about.txt
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            https://transparency.dev/witnesses -o /tmp/trustfabric-witnesses.html
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            https://remora.n621.de/ -o /tmp/remora.html
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            https://navigli.sunlight.geomys.org/ -o /tmp/navigli.html
+          test -s /tmp/stagemole-about.txt
+          test -s /tmp/trustfabric-witnesses.html
+          test -s /tmp/remora.html
+          test -s /tmp/navigli.html
+          cat > /tmp/source-map.json <<'JSON'
+          {
+            "https://witness.stagemole.eu/about": "/tmp/stagemole-about.txt",
+            "https://transparency.dev/witnesses": "/tmp/trustfabric-witnesses.html",
+            "https://remora.n621.de/": "/tmp/remora.html",
+            "https://navigli.sunlight.geomys.org/": "/tmp/navigli.html"
+          }
+          JSON
+
+      - name: Re-prove exact pinned key provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=scripts/witness-key-provenance-reproof/v0.1
+          python "$dir/reproof.py" --profile "$dir/profile.json" --source-map /tmp/source-map.json > /tmp/witness-key-provenance-reproof.json
+          python "$dir/receipt_validator.py" "$dir/profile.json" /tmp/witness-key-provenance-reproof.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/witness-key-provenance-reproof.json'))
+          assert r['verdict']=='QUORUM_MANY_PINNED_WITNESS_KEYS_REOBSERVED_FROM_OPERATOR_PUBLISHED_SOURCES_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED',r
+          assert r['matched_witness_key_count']>=4,r
+          assert r['quorum_many_distinct_source_urls_reobserved'] is True,r
+          assert r['unique_source_url_count']>=4,r
+          assert r['unique_source_host_count']>=4,r
+          assert r['claims']['witness_identity_proven'] is False
+          assert r['claims']['operator_independence_proven'] is False
+          assert r['claims']['all_witnesses_independent_proven'] is False
+          assert r['claims']['all_seven_key_provenance_reproven'] is False
+          assert all(v is False for v in r['claims'].values())
+          assert r['automatic_action'] is False
+          assert r['external_mutation_performed'] is False
+          print(r['verdict'])
+          print('matched keys / urls / hosts:',r['matched_witness_key_count'],r['unique_source_url_count'],r['unique_source_host_count'])
+          print('receipt fingerprint:',r['receipt_fingerprint_sha256'])
+          PY
+
+      - name: Validate frozen qualification evidence when materialized
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen=scripts/witness-key-provenance-reproof/v0.1/qualification-receipt.json
+          if [ -f "$frozen" ]; then
+            python scripts/witness-key-provenance-reproof/v0.1/receipt_validator.py \
+              scripts/witness-key-provenance-reproof/v0.1/profile.json "$frozen"
+            python - <<'PY'
+          import json
+          live=json.load(open('/tmp/witness-key-provenance-reproof.json'))
+          old=json.load(open('scripts/witness-key-provenance-reproof/v0.1/qualification-receipt.json'))
+          def stable(r):
+              return {
+                  'verdict':r['verdict'],
+                  'quorum_min':r['quorum_min'],
+                  'source_contract':[(x['id'],x['witness_vkey'],x['source_url'],x['source_classification'],x['exact_vkey_observed']) for x in r['source_records']],
+                  'matched_witness_key_count':r['matched_witness_key_count'],
+                  'unique_source_url_count':r['unique_source_url_count'],
+                  'unique_source_host_count':r['unique_source_host_count'],
+                  'quorum_many_exact_vkeys_reobserved':r['quorum_many_exact_vkeys_reobserved'],
+                  'quorum_many_distinct_source_urls_reobserved':r['quorum_many_distinct_source_urls_reobserved'],
+                  'key_provenance_assurance':r['key_provenance_assurance'],
+                  'claims':r['claims'],
+              }
+          assert stable(live)==stable(old),(stable(live),stable(old))
+          print('current semantic source contract == frozen qualification; body digests retained independently')
+          PY
+          else
+            echo 'first qualification run: frozen qualification receipt not materialized yet'
+          fi
+
+      - name: Upload bounded provenance evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: witness-key-provenance-reproof-${{ github.sha }}
+          path: |
+            /tmp/witness-key-provenance-reproof.json
+            /tmp/stagemole-about.txt
+            /tmp/trustfabric-witnesses.html
+            /tmp/remora.html
+            /tmp/navigli.html
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assert additive successor-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              git fetch --quiet origin "${GITHUB_BASE_REF}"
+              changed="$(git diff --name-only "origin/${GITHUB_BASE_REF}"...HEAD)"
+              ;;
+            push|workflow_dispatch)
+              changed="$(git diff --name-only HEAD^..HEAD)"
+              ;;
+            *) echo "unsupported event ${GITHUB_EVENT_NAME}" >&2; exit 1 ;;
+          esac
+          test -n "$changed"
+          while IFS= read -r file; do
+            case "$file" in
+              scripts/witness-key-provenance-reproof/v0.1/*|.github/workflows/witness-key-provenance-reproof-v0.1.yml) ;;
+              *) echo "unexpected changed path: $file" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^scripts/anchored-witnessed-consistency-pilot/' <<< "$changed"
+          ! grep -q '^scripts/external-checkpoint-anchor-pilot/' <<< "$changed"
+          ! grep -q '^scripts/observed-authority-branch-divergence/' <<< "$changed"
+          ! grep -q '^protocols/core/' <<< "$changed"
+          ! grep -q '^protocols/interface-registry/' <<< "$changed"
+          ! grep -q '^SPEC.md$' <<< "$changed"
+          ! grep -q '^PRINCIPLES.md$' <<< "$changed"
+
+      - name: Prove repository-read-only execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
