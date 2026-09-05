@@ -1,0 +1,18 @@
+{
+  "name": "UU-AAP interoperability fixture",
+  "version": "0.1",
+  "operating_system": "macOS fixture",
+  "org.example.uu_aap_reference": {
+    "protocol": "UU-AAP",
+    "profile": "external-record-reference-fixture",
+    "record_uri": "https://example.org/uu-aap/records/c2pa-external-reference-v0.1.json",
+    "digest_alg": "sha256",
+    "digest": "fixture-only",
+    "authority": "none-implied",
+    "nested": {
+      "preserve": true,
+      "sequence": [1, 2, 3],
+      "note": "unknown field preservation is not authority"
+    }
+  }
+}
