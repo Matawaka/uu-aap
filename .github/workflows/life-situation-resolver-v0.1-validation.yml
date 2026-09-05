@@ -1,0 +1,95 @@
+name: Life Situation Resolver v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'pilots/life-situation-resolver/v0.1/**'
+      - '.github/workflows/life-situation-resolver-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'pilots/life-situation-resolver/v0.1/**'
+      - '.github/workflows/life-situation-resolver-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PILOT_DIR: pilots/life-situation-resolver/v0.1
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Syntax and deterministic hostile tests
+        run: |
+          node --check "$PILOT_DIR/resolver.js"
+          node --check "$PILOT_DIR/test-resolver.js"
+          node "$PILOT_DIR/test-resolver.js"
+      - name: Validate input and output schemas
+        shell: bash
+        run: |
+          set -euo pipefail
+          node "$PILOT_DIR/resolver.js" "$PILOT_DIR/examples/synthetic-household.json" > /tmp/lsr-assessment.json
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          from jsonschema import Draft202012Validator, FormatChecker
+          d=Path(os.environ['PILOT_DIR'])
+          pairs=[
+              (d/'household-state.schema.json', d/'examples/synthetic-household.json'),
+              (d/'resolver-output.schema.json', Path('/tmp/lsr-assessment.json')),
+          ]
+          for schema_path, instance_path in pairs:
+              schema=json.loads(schema_path.read_text(encoding='utf-8'))
+              instance=json.loads(instance_path.read_text(encoding='utf-8'))
+              Draft202012Validator.check_schema(schema)
+              Draft202012Validator(schema, format_checker=FormatChecker()).validate(instance)
+              print(f'PASS {schema_path.name} -> {instance_path.name}')
+          PY
+      - name: Privacy and non-actuation guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          ! grep -RIE --exclude='README.md' --exclude='*.schema.json' '(https?://|fetch\(|axios|node:(http|https|net)|child_process|execSync|spawnSync|setInterval|setTimeout)' "$PILOT_DIR"
+          ! grep -RIE '(account[_ -]?number|card[_ -]?number|api[_ -]?token|password|cookie|session[_ -]?token)' "$PILOT_DIR/examples"
+          grep -F 'assessment != financial advice' "$PILOT_DIR/resolver.js" >/dev/null
+          grep -F 'resolver output != ActionPermit' "$PILOT_DIR/resolver.js" >/dev/null
+      - name: Preserve protocol and normative predecessors
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="$(git rev-parse HEAD^1)"
+          git diff --quiet "$BASE_SHA" HEAD -- \
+            protocols/core/ protocols/interface-registry/ protocols/integration/ protocols/fcl/ \
+            tooling/backlog-entity-reconciliation/ docs/ROADMAP-CURRENT.md \
+            SPEC.md PRINCIPLES.md CONTESTABILITY.md RESPONSIBILITY.md schema/uu-aap-manifest.schema.json
+      - name: Require pilot-only diff boundary
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE_SHA="$(git rev-parse HEAD^1)"
+          while IFS= read -r p; do
+            [ -z "$p" ] && continue
+            case "$p" in
+              pilots/life-situation-resolver/v0.1/*|.github/workflows/life-situation-resolver-v0.1-validation.yml) ;;
+              *) echo "unexpected changed path: $p" >&2; exit 1 ;;
+            esac
+          done < <(git diff --name-only "$BASE_SHA" HEAD)
+      - name: Clean tree
+        run: test -z "$(git status --porcelain --untracked-files=all)"

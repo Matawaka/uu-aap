@@ -1,0 +1,138 @@
+{
+  "artifact_type": "LSRHouseholdState",
+  "version": "0.1",
+  "as_of": "2026-09-01",
+  "base_currency": "RUB",
+  "primary_employment_assumed": false,
+  "evidence_sources": [
+    {
+      "id": "synthetic-export",
+      "kind": "bank_export",
+      "observed_at": "2026-09-01T08:00:00Z",
+      "local_ref": "local://synthetic-bank-export",
+      "contains_private_data": false
+    },
+    {
+      "id": "manual-plan",
+      "kind": "manual",
+      "observed_at": "2026-09-01T08:05:00Z",
+      "local_ref": "local://synthetic-manual-plan",
+      "contains_private_data": false
+    }
+  ],
+  "liquid_resources": [
+    {
+      "id": "current-a",
+      "provider_ref": "provider-a",
+      "kind": "current_account",
+      "amount": 600000,
+      "currency": "RUB",
+      "access": {"mode": "immediate", "maturity_date": null, "notice_days": null, "early_withdrawal": "full"},
+      "interest": {"annual_rate_percent": 0, "rate_type": "none", "payout": "none"},
+      "evidence": {"source_ref": "synthetic-export", "status": "observed", "confidence": "verified"}
+    },
+    {
+      "id": "deposit-a",
+      "provider_ref": "provider-a",
+      "kind": "deposit",
+      "amount": 900000,
+      "currency": "RUB",
+      "access": {"mode": "maturity", "maturity_date": "2027-08-15", "notice_days": null, "early_withdrawal": "forfeit_interest"},
+      "interest": {"annual_rate_percent": 15.5, "rate_type": "fixed", "payout": "maturity"},
+      "evidence": {"source_ref": "synthetic-export", "status": "observed", "confidence": "verified"}
+    },
+    {
+      "id": "deposit-b",
+      "provider_ref": "provider-b",
+      "kind": "deposit",
+      "amount": 300000,
+      "currency": "RUB",
+      "access": {"mode": "maturity", "maturity_date": "2026-12-15", "notice_days": null, "early_withdrawal": "partial"},
+      "interest": {"annual_rate_percent": 14, "rate_type": "fixed", "payout": "monthly"},
+      "evidence": {"source_ref": "synthetic-export", "status": "observed", "confidence": "verified"}
+    }
+  ],
+  "recurring_income": [
+    {
+      "id": "employment-paused",
+      "source_type": "employment",
+      "amount": 250000,
+      "currency": "RUB",
+      "cadence": "monthly",
+      "active": false,
+      "reliability": "uncertain",
+      "evidence": {"source_ref": "manual-plan", "status": "user_asserted", "confidence": "high"}
+    },
+    {
+      "id": "rental-income",
+      "source_type": "rental",
+      "amount": 30000,
+      "currency": "RUB",
+      "cadence": "monthly",
+      "active": true,
+      "reliability": "stable_observed",
+      "evidence": {"source_ref": "synthetic-export", "status": "observed", "confidence": "high"}
+    }
+  ],
+  "recurring_expenses": [
+    {
+      "id": "housing",
+      "category": "housing-and-utilities",
+      "amount": 45000,
+      "currency": "RUB",
+      "cadence": "monthly",
+      "active": true,
+      "need_class": "essential",
+      "classification_status": "user_asserted",
+      "evidence": {"source_ref": "manual-plan", "status": "user_asserted", "confidence": "high"}
+    },
+    {
+      "id": "food",
+      "category": "food",
+      "amount": 50000,
+      "currency": "RUB",
+      "cadence": "monthly",
+      "active": true,
+      "need_class": "essential",
+      "classification_status": "inferred",
+      "evidence": {"source_ref": "synthetic-export", "status": "observed", "confidence": "medium"}
+    },
+    {
+      "id": "education",
+      "category": "education",
+      "amount": 30000,
+      "currency": "RUB",
+      "cadence": "monthly",
+      "active": true,
+      "need_class": "committed",
+      "classification_status": "user_asserted",
+      "evidence": {"source_ref": "manual-plan", "status": "user_asserted", "confidence": "high"}
+    },
+    {
+      "id": "travel-fund",
+      "category": "travel",
+      "amount": 25000,
+      "currency": "RUB",
+      "cadence": "monthly",
+      "active": true,
+      "need_class": "deferrable",
+      "classification_status": "user_asserted",
+      "evidence": {"source_ref": "manual-plan", "status": "user_asserted", "confidence": "high"}
+    },
+    {
+      "id": "leisure",
+      "category": "leisure",
+      "amount": 15000,
+      "currency": "RUB",
+      "cadence": "monthly",
+      "active": true,
+      "need_class": "discretionary",
+      "classification_status": "user_asserted",
+      "evidence": {"source_ref": "manual-plan", "status": "user_asserted", "confidence": "high"}
+    }
+  ],
+  "resilience_policy": {
+    "reserve_months": {"minimum": 6, "preferred": 12, "strong": 18},
+    "max_single_provider_share_percent": 60
+  }
+}
