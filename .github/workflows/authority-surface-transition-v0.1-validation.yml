@@ -1,0 +1,119 @@
+name: Authority Surface Transition Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/authority-surface-transition/**'
+      - '.github/workflows/authority-surface-transition-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/authority-surface-transition/**'
+      - '.github/workflows/authority-surface-transition-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  transition:
+    name: historical transition without backfill
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Re-run merged #890 authority-admission tests unchanged
+        run: >-
+          python -m unittest discover
+          -s scripts/c2pa-authority-admission
+          -p 'test_*.py'
+          -v
+
+      - name: Re-run merged #892 observable consistency tests unchanged
+        run: >-
+          python -m unittest discover
+          -s scripts/observable-authority-consistency
+          -p 'test_*.py'
+          -v
+
+      - name: Re-run merged #894 triangulation tests unchanged
+        run: >-
+          python -m unittest discover
+          -s scripts/authority-surface-triangulation
+          -p 'test_*.py'
+          -v
+
+      - name: Re-run merged #894 predecessor cross-check unchanged
+        run: python scripts/authority-surface-triangulation/cross_check.py
+
+      - name: Run transition hostile and positive tests
+        run: >-
+          python -m unittest discover
+          -s scripts/authority-surface-transition
+          -p 'test_*.py'
+          -v
+
+      - name: Emit deterministic transition receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=scripts/authority-surface-transition
+          python "$root/receipt.py" "$root/fixtures/root-successor.json" > /tmp/root-successor.json
+          python "$root/receipt.py" "$root/fixtures/same-root-export-correction.json" > /tmp/export-correction.json
+          python "$root/receipt.py" "$root/fixtures/same-root-runtime-update.json" > /tmp/runtime-update.json
+          python "$root/receipt.py" "$root/fixtures/no-op.json" > /tmp/no-op.json
+
+      - name: Assert exact temporal and non-backfill outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def load(path):
+              return json.loads(Path(path).read_text())
+
+          successor = load('/tmp/root-successor.json')
+          export_fix = load('/tmp/export-correction.json')
+          runtime_fix = load('/tmp/runtime-update.json')
+          noop = load('/tmp/no-op.json')
+
+          assert successor['root_relation'] == 'SUCCESSOR_ROOT'
+          assert successor['surface_transitions']['runtime']['added'] == []
+          assert successor['surface_transitions']['export']['added'] == []
+          assert successor['surface_transitions']['root_admission']['added'] == ['fixture-witness-8']
+          assert successor['directional_delta_lifecycle']['exported_but_unadmitted']['resolved'] == ['fixture-witness-8']
+          assert successor['directional_delta_lifecycle']['admitted_but_unconfigured']['introduced'] == ['fixture-witness-8']
+          assert successor['directional_delta_lifecycle']['exported_but_unconfigured']['persisted'] == ['fixture-witness-8']
+          assert successor['semantic_guards']['successor_state_backfills_historical_snapshot'] is False
+          assert successor['semantic_guards']['before_after_roles_prove_trusted_time'] is False
+
+          assert export_fix['root_relation'] == 'SAME_ROOT'
+          assert export_fix['surface_transitions']['export']['removed'] == ['fixture-witness-8']
+          assert export_fix['surface_transitions']['root_admission']['added'] == []
+          assert export_fix['directional_delta_lifecycle']['exported_but_unadmitted']['resolved'] == ['fixture-witness-8']
+
+          assert runtime_fix['root_relation'] == 'SAME_ROOT'
+          assert runtime_fix['surface_transitions']['runtime']['added'] == ['fixture-witness-8']
+          assert runtime_fix['surface_transitions']['root_admission']['added'] == []
+          assert runtime_fix['directional_delta_lifecycle']['configured_but_unadmitted']['introduced'] == ['fixture-witness-8']
+
+          assert noop['root_relation'] == 'SAME_ROOT'
+          assert noop['any_membership_change'] is False
+          assert noop['any_delta_lifecycle_change'] is False
+
+          print('authority surface transition exact acceptance: PASS')
+          PY
+
+      - name: Prove validation is repository-read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
