@@ -1,0 +1,123 @@
+name: Reusable Protocol Interface Registry v0.3 validation
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/interface-registry/v0.3/**'
+      - '.github/workflows/reusable-interface-registry-v0.3-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/interface-registry/v0.3/**'
+      - '.github/workflows/reusable-interface-registry-v0.3-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  observation-set-only-experimental-admission:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install pinned JSON Schema dependency
+        run: python -m pip install 'jsonschema==4.25.1'
+
+      - name: Preserve Interface Registry v0.1
+        run: node protocols/interface-registry/v0.1/validate-interface-registry.js
+
+      - name: Preserve Interface Registry v0.2 unchanged
+        run: |
+          node protocols/interface-registry/v0.2/test-interface-registry-v0.2.js
+          node protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js /tmp/registry-v0.2-effective.json
+          test "$(git rev-parse HEAD:protocols/interface-registry/v0.2/interface-registry-delta.json)" = 'ad705523bada7f64a04e09e34974407725942976'
+
+      - name: Preserve merged two-domain direct reuse proof
+        run: |
+          python protocols/integration/observation-set-calculus-candidate/v0.1/test_profile.py
+          python interop/c2pa/observation-set-calculus-adapter/v0.1/test_adapter.py
+          python tooling/public-review-observation-set-adapter/v0.1/test_adapter.py
+          python tooling/observation-set-calculus-two-domain-proof/v0.1/test_proof.py
+
+      - name: Preserve merged set-only admission audit
+        run: |
+          python tooling/observation-set-admission-audit/v0.2/validate.py
+          python tooling/observation-set-admission-audit/v0.2/test_audit.py
+          test "$(git rev-parse HEAD:tooling/observation-set-admission-audit/v0.2/assessment.json)" = '8404a4d35fa1b6966e418d1c133f4c798e69d8a4'
+
+      - name: Validate v0.3 JSON Schema and delta
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root = Path('protocols/interface-registry/v0.3')
+          schema = json.loads((root / 'interface-registry-delta.schema.json').read_text())
+          delta = json.loads((root / 'interface-registry-delta.json').read_text())
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(delta)
+          print('Registry v0.3 schema/delta: VALID')
+          PY
+
+      - name: Run set-only registry hostile tests
+        run: node protocols/interface-registry/v0.3/test-interface-registry-v0.3.js
+
+      - name: Emit v0.3 effective registry view
+        run: node protocols/interface-registry/v0.3/validate-interface-registry-v0.3.js /tmp/registry-v0.3-effective.json
+
+      - name: Assert exact set-only effective admission
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          view = json.loads(Path('/tmp/registry-v0.3-effective.json').read_text())
+          ids = [entry['id'] for entry in view['entries']]
+          assert view['version'] == '0.3'
+          assert len(ids) == 18
+          assert ids.count('ObservationSet') == 1
+          assert 'ObservationSetTransition' not in ids
+          assert 'LocalObservationSetChain' not in ids
+          assert 'ObservationSetCalculusCandidate' not in ids
+          scope = view['admission_scope']
+          assert scope['admitted_interface_id'] == 'ObservationSet'
+          assert scope['admitted_api'] == 'evaluate_set'
+          assert set(scope['deferred_apis']) == {'evaluate_transition', 'evaluate_chain'}
+          assert scope['monolithic_candidate_admitted'] is False
+          assert scope['stable_core_admitted'] is False
+          assert view['release_registry_equivalent'] is False
+          print('ObservationSet-only experimental registry admission: VERIFIED')
+          PY
+
+      - name: Prove v0.3 diff boundary
+        if: github.event_name == 'pull_request'
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          mapfile -t changed < <(git diff --name-only "origin/${{ github.base_ref }}...HEAD")
+          test "${#changed[@]}" -eq 6
+          for file in "${changed[@]}"; do
+            case "$file" in
+              protocols/interface-registry/v0.3/*|.github/workflows/reusable-interface-registry-v0.3-validation.yml) ;;
+              *) echo "unexpected changed file: $file" >&2; exit 1 ;;
+            esac
+          done
+
+      - name: Prove validation is repository-read-only
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
