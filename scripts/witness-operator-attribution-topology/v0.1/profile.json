@@ -1,0 +1,80 @@
+{
+  "schema": "urn:uu-aap:witness-operator-attribution-topology-profile:0.1",
+  "tracking_issue": 941,
+  "repository_predecessor_main": "97c0c6ca4cc45ca4e7469d9d0b91d9f2445227d2",
+  "predecessor_profile_path": "scripts/witness-key-provenance-same-run-all-seven/v0.1/profile.json",
+  "predecessor_profile_git_blob": "a66d176fb7032f6db0b7961b83d7d92329d8ca63",
+  "predecessor_receipt_path": "scripts/witness-key-provenance-same-run-all-seven/v0.1/qualification-receipt.json",
+  "predecessor_receipt_git_blob": "9edd35a373bc865df8e75c750343f6176ba9725e",
+  "required_predecessor_receipt_fingerprint_sha256": "85e032ce247bb65bdcf1c4032b23b997b0e74ad013c0726107f87b8780795971",
+  "required_predecessor_verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_SOURCE_MATERIAL_REOBSERVED_IN_ONE_BOUNDED_RUN_IDENTITY_INDEPENDENCE_AND_CURRENT_ACTIVITY_NOT_ESTABLISHED",
+  "required_predecessor_matched_witness_key_count": 7,
+  "required_predecessor_source_url_count": 6,
+  "pin_set_profile_path": "scripts/anchored-witnessed-consistency-pilot/v0.1/profile.json",
+  "pin_set_profile_git_blob": "4f1c10b9551661b6236febe3d744e4255065ce52",
+  "registry": {
+    "source_url": "https://witness-network.org/witness-tables/",
+    "source_classification": "NETWORK_CURATED_OPERATOR_TABLE"
+  },
+  "operators": [
+    {
+      "operator_label": "Mullvad VPN AB",
+      "attribution_url": "https://witness.stagemole.eu/about",
+      "key_material_url": "https://witness.stagemole.eu/about",
+      "key_material_relation": "SAME_SURFACE",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkeys": ["witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv"]
+    },
+    {
+      "operator_label": "TrustFabric",
+      "attribution_url": "https://transparency.dev/witnesses",
+      "key_material_url": "https://transparency.dev/witnesses",
+      "key_material_relation": "SAME_SURFACE",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkeys": [
+        "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM",
+        "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL"
+      ]
+    },
+    {
+      "operator_label": "Florian Larysch",
+      "attribution_url": "https://remora.n621.de/",
+      "key_material_url": "https://remora.n621.de/",
+      "key_material_relation": "SAME_SURFACE",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkeys": ["remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2"]
+    },
+    {
+      "operator_label": "Geomys",
+      "attribution_url": "https://geomys.org/witness/navigli",
+      "key_material_url": "https://navigli.sunlight.geomys.org/",
+      "key_material_relation": "OPERATOR_PAGE_LINK",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkeys": ["witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G"]
+    },
+    {
+      "operator_label": "rgdd",
+      "attribution_url": "https://www.rgdd.se/poc-witness/about",
+      "key_material_url": "https://www.rgdd.se/poc-witness/about",
+      "key_material_relation": "SAME_SURFACE",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkeys": ["rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG"]
+    },
+    {
+      "operator_label": "Elias Rudberg",
+      "attribution_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "key_material_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "key_material_relation": "SAME_SURFACE",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "witness_vkeys": ["witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"]
+    }
+  ],
+  "required_operator_label_count": 6,
+  "required_attribution_surface_count": 6,
+  "required_key_material_surface_count": 6,
+  "strong_verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "insufficient_verdict": "INCOMPLETE_PUBLIC_OPERATOR_ATTRIBUTION_TOPOLOGY_FOR_ALL_SEVEN_PINNED_WITNESS_KEYS",
+  "always_false_claims": [
+    "witness_identity_proven","legal_operator_identity_proven","cryptographic_operator_identity_binding_proven","operator_control_proven","operator_independence_proven","all_witnesses_independent_proven","all_seven_currently_active_proven","all_views_non_equivocating_proven","producer_non_equivocation_proven","global_non_equivocation_proven","complete_history_proven","all_manifests_submitted_proven","selective_submission_absent_proven","c2pa_manifest_inclusion_proven","trusted_time_proven","truth_certified","authority_created","canonical_branch_selected","malicious_behavior_proven","automatic_remediation_triggered"
+  ]
+}
