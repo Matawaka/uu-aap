@@ -93,6 +93,22 @@ class AuthorityAdmissionGateTests(unittest.TestCase):
             "CRYPTOGRAPHICALLY_INVALID",
         )
 
+    def test_unverified_unadmitted_signature_is_not_eligible(self):
+        data = load_fixture("hostile-drift.json")
+        for item in data["signatures"]:
+            if item["signer"] == "fixture-witness-8":
+                item["crypto_status"] = "UNVERIFIED"
+        receipt = evaluate(data)
+        self.assertEqual(
+            receipt["signatures"]["cryptographically_valid_distinct_signer_count"], 3
+        )
+        self.assertEqual(receipt["signatures"]["eligible_distinct_signer_count"], 3)
+        self.assertEqual(receipt["quorum_result"], "QUORUM_NOT_MET")
+        w8 = by_signer(receipt, "fixture-witness-8")
+        self.assertEqual(w8["state"], "CRYPTOGRAPHICALLY_UNVERIFIED")
+        self.assertEqual(w8["excluded_reason"], "CRYPTOGRAPHICALLY_UNVERIFIED")
+        self.assertFalse(w8["quorum_eligible"])
+
     def test_successor_root_does_not_backfill_v2(self):
         v2 = evaluate(load_fixture("successor-v2.json"))
         v3 = evaluate(load_fixture("successor-v3.json"))
