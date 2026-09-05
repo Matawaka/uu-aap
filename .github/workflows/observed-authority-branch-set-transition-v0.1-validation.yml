@@ -1,0 +1,163 @@
+name: Observed Authority Branch-Set Transition Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/observed-authority-branch-set-transition/**'
+      - '.github/workflows/observed-authority-branch-set-transition-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/observed-authority-branch-set-transition/**'
+      - '.github/workflows/observed-authority-branch-set-transition-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  observed-set-transition-without-existence-claims:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run merged #890 authority-admission tests unchanged
+        run: python scripts/c2pa-authority-admission/test_gate.py
+
+      - name: Re-run merged #892 observable consistency tests unchanged
+        run: python scripts/observable-authority-consistency/test_receipt.py
+
+      - name: Re-run merged #894 triangulation tests unchanged
+        run: python scripts/authority-surface-triangulation/test_receipt.py
+
+      - name: Re-run merged #894 predecessor cross-check unchanged
+        run: python scripts/authority-surface-triangulation/cross_check.py
+
+      - name: Re-run merged #896 transition tests unchanged
+        run: python scripts/authority-surface-transition/test_receipt.py
+
+      - name: Re-run merged #898 continuity-chain tests unchanged
+        run: python scripts/authority-surface-continuity-chain/test_receipt.py
+
+      - name: Re-run merged #900 divergence tests unchanged
+        run: python scripts/observed-authority-branch-divergence/test_receipt.py
+
+      - name: Re-run merged #902 branch-set tests unchanged
+        run: python scripts/observed-authority-branch-set/test_receipt.py
+
+      - name: Re-run merged #902 alias/order regressions unchanged
+        run: python scripts/observed-authority-branch-set/test_alias_semantics.py
+
+      - name: Run branch-set transition hostile and positive tests
+        run: python scripts/observed-authority-branch-set-transition/test_receipt.py
+
+      - name: Emit deterministic branch-set transition receipts
+        run: |
+          mkdir -p /tmp/authority-branch-set-transition-receipts
+          python - <<'PY'
+          import copy
+          import importlib.util
+          import json
+          from pathlib import Path
+
+          root = Path('.')
+
+          def load_module(name, path):
+              spec = importlib.util.spec_from_file_location(name, path)
+              module = importlib.util.module_from_spec(spec)
+              spec.loader.exec_module(module)
+              return module
+
+          transition = load_module(
+              'branch_set_transition',
+              root / 'scripts/observed-authority-branch-set-transition/receipt.py',
+          )
+          branch_set = load_module(
+              'branch_set_predecessor_for_ci',
+              root / 'scripts/observed-authority-branch-set/receipt.py',
+          )
+          three = json.loads(
+              (root / 'scripts/observed-authority-branch-set/fixtures/three-branches.json').read_text()
+          )['branches']
+          a, b, c = [copy.deepcopy(item) for item in three]
+
+          def make(before, after):
+              return {
+                  'schema': transition.INPUT_SCHEMA,
+                  'before_set': {'schema': branch_set.INPUT_SCHEMA, 'branches': copy.deepcopy(before)},
+                  'after_set': {'schema': branch_set.INPUT_SCHEMA, 'branches': copy.deepcopy(after)},
+              }
+
+          cases = {
+              'identical': make([a, b, c], [c, a, b]),
+              'multiplicity': make([a, c], [a, c, c]),
+              'membership': make([a, c], [a, b, c]),
+              'combined': make([a, b], [a, a, c]),
+          }
+          out = Path('/tmp/authority-branch-set-transition-receipts')
+          for name, data in cases.items():
+              receipt = transition.evaluate(data)
+              (out / f'{name}.json').write_text(
+                  json.dumps(receipt, indent=2, sort_keys=True), encoding='utf-8'
+              )
+          PY
+
+      - name: Assert exact observation-only lifecycle outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('/tmp/authority-branch-set-transition-receipts')
+          identical = json.loads((root / 'identical.json').read_text())
+          multiplicity = json.loads((root / 'multiplicity.json').read_text())
+          membership = json.loads((root / 'membership.json').read_text())
+          combined = json.loads((root / 'combined.json').read_text())
+
+          assert identical['relation'] == 'IDENTICAL_OBSERVED_SET'
+          assert identical['branch_membership_changed'] is False
+          assert identical['any_observation_count_change'] is False
+
+          assert multiplicity['relation'] == 'OBSERVATION_MULTIPLICITY_ONLY_CHANGED'
+          assert multiplicity['branch_membership_changed'] is False
+          assert multiplicity['persisted_branch_multiplicity_changed'] is True
+
+          assert membership['relation'] == 'OBSERVED_BRANCH_MEMBERSHIP_CHANGED'
+          life = membership['distinct_branch_observation_lifecycle']
+          assert len(life['newly_observed_branch_fingerprints']) == 1
+          assert life['not_observed_in_after_branch_fingerprints'] == []
+          pairs = membership['pairwise_observation_lifecycle']
+          assert len(pairs['newly_observed_pairs']) == 2
+          assert len(pairs['observed_in_both_pairs']) == 1
+
+          v3 = next(
+              item for item in membership['observed_root_variant_lifecycle']
+              if item['root_id'] == 'fixture-root' and item['root_version'] == 3
+          )
+          assert v3['newly_observed_digests'] == ['b' * 64]
+          assert v3['observed_in_both_digests'] == ['a' * 64]
+
+          assert combined['relation'] == 'OBSERVED_BRANCH_AND_MULTIPLICITY_CHANGED'
+          assert combined['branch_membership_changed'] is True
+          assert combined['persisted_branch_multiplicity_changed'] is True
+
+          for receipt in (identical, multiplicity, membership, combined):
+              guards = receipt['semantic_guards']
+              assert all(value is False for value in guards.values())
+          PY
+
+      - name: Prove validation is repository-read-only
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'validation mutated the repository' >&2
+            git status --short >&2
+            exit 1
+          fi
