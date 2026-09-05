@@ -1,0 +1,59 @@
+{
+  "artifact_type": "C2PASDKEventResponsiveDormancyAdapterSourceBindings",
+  "version": "0.1",
+  "repository_predecessor_main": "783a053ff41a94e369aad3155431ded78ed8e98e",
+  "tracking_issue": 924,
+  "bindings": {
+    "event_responsive_dormancy_module": {
+      "path": "protocols/integration/event-responsive-dormancy/v0.1/event-responsive-dormancy.js",
+      "blob": "2cadbd2f405391f4f97e100d77245757ce6b5a58"
+    },
+    "event_responsive_dormancy_receipt": {
+      "path": "protocols/integration/event-responsive-dormancy/v0.1/implementation-receipt.json",
+      "blob": "e127d784a74f0713fe0b157845ec5a2754647034"
+    },
+    "recoverable_state_qualification": {
+      "path": "tooling/recoverable-state-infrastructure-qualification/v0.1/qualification.json",
+      "blob": "e68360a90e9963cb5a66f8f4a2f26a088f47b439",
+      "case_id": "Q1_C2PA_SDK_SUCCESSOR",
+      "expected_erd_fit": "ADAPTER_FIT",
+      "expected_dependency": "ERD_ONLY"
+    },
+    "c2pa_sdk_successor_readme": {
+      "path": "scripts/c2pa-sdk-successor-reaudit/README.md",
+      "blob": "bb2681c1882e6788432da58a2d3d7cceebe3129c"
+    },
+    "c2pa_sdk_successor_classifier": {
+      "path": "scripts/c2pa-sdk-successor-reaudit/reaudit.py",
+      "blob": "f95a5a086da9d02c803395040d931332410d8b18"
+    },
+    "swift_targeted_observation": {
+      "path": "scripts/c2pa-swift-upstream-merge-reaudit/current-observation.json",
+      "blob": "c59a26b0bd3a7595814172a2b94b086f628c7674"
+    },
+    "swift_targeted_classifier": {
+      "path": "scripts/c2pa-swift-upstream-merge-reaudit/classify.py",
+      "blob": "2212112644073edf068f9902683a199632773c1e"
+    },
+    "swift_targeted_receipt": {
+      "path": "scripts/c2pa-swift-upstream-merge-reaudit/current-receipt.json",
+      "blob": "357a92b96847251f4d4f974c432cc3fa9b3af40b",
+      "receipt_fingerprint_sha256": "a7ae8037e188e552c07106f546db16169757bb620250cfd8df17e05e2df77b53"
+    }
+  },
+  "expected_frontier": {
+    "swift_main": "6fa8a78c16abac3b3f7eb4832c2cc943c9c19f0f",
+    "swift_public_binary": "v0.0.12",
+    "swift_consumer_classification": "BLOCKED_SOURCE_BINARY_SKEW",
+    "android_main": "077035cda5bf6849abf270829b98af789cc31e4f",
+    "android_classification": "UNCHANGED_NO_RETEST_REQUIRED"
+  },
+  "non_effects": {
+    "rerc_dependency": false,
+    "rsic_dependency": false,
+    "registry_mutation": false,
+    "stable_core_admission": false,
+    "targeted_reaudit_executed": false,
+    "external_effect": false
+  }
+}
