@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:anchored-witnessed-consistency-pilot-receipt:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","tracking_issue","verdict","old_checkpoint","later_checkpoint","consistency","evidence_layers","claims","automatic_action","external_mutation_performed","receipt_fingerprint_sha256"],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:anchored-witnessed-consistency-pilot-receipt:0.1"},
+    "tracking_issue": {"const": 933},
+    "verdict": {"enum": ["OBSERVED_APPEND_ONLY_EXTENSION_VERIFIED_LATER_CHECKPOINT_KEY_PROVENANCE_NOT_INDEPENDENTLY_ESTABLISHED","CONSISTENCY_PROOF_FAILED","LATER_CHECKPOINT_AUTHENTICATION_FAILED","EXTERNAL_EVIDENCE_UNAVAILABLE"]},
+    "old_checkpoint": {"type":"object"},
+    "later_checkpoint": {"type":"object"},
+    "consistency": {"type":"object"},
+    "evidence_layers": {"type":"object"},
+    "claims": {"type":"object"},
+    "automatic_action": {"const": false},
+    "external_mutation_performed": {"const": false},
+    "receipt_fingerprint_sha256": {"type":"string","pattern":"^[0-9a-f]{64}$"}
+  }
+}
