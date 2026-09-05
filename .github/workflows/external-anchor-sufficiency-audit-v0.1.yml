@@ -1,0 +1,110 @@
+name: External Anchor Sufficiency Audit v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'research/external-anchor-sufficiency-audit/v0.1/**'
+      - '.github/workflows/external-anchor-sufficiency-audit-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'research/external-anchor-sufficiency-audit/v0.1/**'
+      - '.github/workflows/external-anchor-sufficiency-audit-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  requirements-without-false-non-equivocation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Preserve accepted observed-branch divergence boundary
+        run: python scripts/observed-authority-branch-divergence/test_receipt.py
+
+      - name: Run hostile external-anchor sufficiency mutations
+        run: python research/external-anchor-sufficiency-audit/v0.1/test_validate.py
+
+      - name: Validate frozen source metadata and audit verdict
+        run: python research/external-anchor-sufficiency-audit/v0.1/validate.py
+
+      - name: Assert exact no-admission verdict
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          a=json.load(open('research/external-anchor-sufficiency-audit/v0.1/audit.json'))
+          r=a['current_result']
+          assert r['verdict']=='DESIGN_REQUIREMENTS_CLARIFIED_EXECUTABLE_EXTERNAL_ANCHOR_EVIDENCE_NOT_ADMITTED'
+          assert r['external_anchor_receipt_admitted'] is False
+          assert r['global_non_equivocation_proven'] is False
+          assert r['complete_history_proven'] is False
+          assert r['all_manifests_submitted_proven'] is False
+          assert r['selective_submission_absent_proven'] is False
+          assert r['trusted_time_proven'] is False
+          assert r['canonical_branch_selected'] is False
+          assert r['malicious_behavior_proven'] is False
+          assert r['authority_created'] is False
+          assert r['truth_certified'] is False
+          assert a['next_gate']=='EXECUTABLE_EXTERNAL_ANCHOR_PILOT_WITH_REAL_INCLUSION_AND_CHECKPOINT_ANTI_EQUIVOCATION_EVIDENCE'
+          print('external-anchor verdict: requirements clarified; executable evidence not admitted')
+          PY
+
+      - name: Assert external source bodies are not copied
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          s=json.load(open('research/external-anchor-sufficiency-audit/v0.1/source-observation.json'))
+          forbidden={'body','comment_body','issue_body','raw_body','full_text'}
+          assert not (forbidden & set(s))
+          assert s['c2pa_issue']['body_sha256']=='4396801c27cc7814c34775e12407ac3c0ed8b682a0074cf39badd47f9416e9ad'
+          assert s['new_comment']['body_sha256']=='129f1678134512eb64811582abec9d60cc38588a95e3c529be26ebb0ea5f320d'
+          assert s['c2pa_issue']['proposal_observations']['c2pa_spec_adoption_established'] is False
+          assert s['new_comment']['observed_requirements']['c2pa_maintainer_endorsement_established'] is False
+          print('external source capture: metadata + hashes only')
+          PY
+
+      - name: Assert audit-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              git fetch --quiet origin "${GITHUB_BASE_REF}"
+              changed="$(git diff --name-only "origin/${GITHUB_BASE_REF}"...HEAD)"
+              ;;
+            push|workflow_dispatch)
+              changed="$(git diff --name-only HEAD^..HEAD)"
+              ;;
+            *) echo "unsupported event ${GITHUB_EVENT_NAME}" >&2; exit 1 ;;
+          esac
+          test -n "$changed"
+          while IFS= read -r file; do
+            case "$file" in
+              research/external-anchor-sufficiency-audit/v0.1/*|.github/workflows/external-anchor-sufficiency-audit-v0.1.yml) ;;
+              *) echo "unexpected changed path: $file" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^scripts/observed-authority-branch-divergence/' <<< "$changed"
+          ! grep -q '^protocols/core/' <<< "$changed"
+          ! grep -q '^protocols/interface-registry/' <<< "$changed"
+          ! grep -q '^SPEC.md$' <<< "$changed"
+          ! grep -q '^PRINCIPLES.md$' <<< "$changed"
+
+      - name: Prove repository-read-only validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

@@ -1,0 +1,79 @@
+{
+  "artifact_type": "ExternalAnchorSufficiencyAudit",
+  "version": "0.1",
+  "tracking_issue": 927,
+  "source_observation_path": "research/external-anchor-sufficiency-audit/v0.1/source-observation.json",
+  "evidence_layers": [
+    {
+      "id": "SIGNED_CLAIM",
+      "meaning": "signed point assertion and optional TSA context",
+      "current_state": "SOURCE_DESCRIBED",
+      "actual_executable_evidence_supplied": false
+    },
+    {
+      "id": "CLAIM_COMMITMENT",
+      "meaning": "exact canonical claim digest plus semantic collision binding",
+      "current_state": "PROPOSED_REQUIREMENT",
+      "actual_executable_evidence_supplied": false
+    },
+    {
+      "id": "LOG_INCLUSION",
+      "meaning": "inclusion proof under an exact log checkpoint or root",
+      "current_state": "PROPOSED_REQUIREMENT",
+      "actual_executable_evidence_supplied": false
+    },
+    {
+      "id": "LOG_APPEND_ONLY_CONSISTENCY",
+      "meaning": "evidence that checkpoint succession does not rewrite or roll back prior committed history",
+      "current_state": "REQUIREMENT_IDENTIFIED",
+      "actual_executable_evidence_supplied": false
+    },
+    {
+      "id": "CHECKPOINT_NON_EQUIVOCATION",
+      "meaning": "evidence against silent split-view or checkpoint fork presentation by the log operator",
+      "current_state": "REQUIREMENT_IDENTIFIED",
+      "actual_executable_evidence_supplied": false
+    },
+    {
+      "id": "EXISTENCE_TIME_EVIDENCE",
+      "meaning": "bounded external evidence that a commitment existed by or around an external time frontier",
+      "current_state": "PROPERTY_DESCRIBED_NOT_VERIFIED",
+      "actual_executable_evidence_supplied": false
+    }
+  ],
+  "future_receipt_requirements": {
+    "asset_or_subject_binding_required": true,
+    "producer_or_signing_key_binding_required": true,
+    "claim_profile_and_version_binding_required": true,
+    "canonical_claim_digest_required": true,
+    "checkpoint_and_log_identity_required": true,
+    "collision_relation_must_be_explicit": true,
+    "inclusion_proof_required": true,
+    "append_only_consistency_evidence_required": true,
+    "checkpoint_non_equivocation_evidence_required": true,
+    "selective_submission_or_coverage_limit_must_remain_explicit": true,
+    "time_evidence_semantics_must_be_explicit": true
+  },
+  "current_result": {
+    "verdict": "DESIGN_REQUIREMENTS_CLARIFIED_EXECUTABLE_EXTERNAL_ANCHOR_EVIDENCE_NOT_ADMITTED",
+    "claim_commitment_concept_identified": true,
+    "inclusion_proof_concept_identified": true,
+    "log_level_non_equivocation_requirement_identified": true,
+    "existence_time_property_separated": true,
+    "actual_c2pa_spec_adoption_established": false,
+    "external_anchor_receipt_admitted": false,
+    "global_non_equivocation_proven": false,
+    "complete_history_proven": false,
+    "all_manifests_submitted_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "canonical_branch_selected": false,
+    "malicious_behavior_proven": false,
+    "authority_created": false,
+    "truth_certified": false,
+    "automatic_remediation_authorized": false,
+    "stable_core_admission": false,
+    "interface_registry_mutated": false
+  },
+  "next_gate": "EXECUTABLE_EXTERNAL_ANCHOR_PILOT_WITH_REAL_INCLUSION_AND_CHECKPOINT_ANTI_EQUIVOCATION_EVIDENCE"
+}
