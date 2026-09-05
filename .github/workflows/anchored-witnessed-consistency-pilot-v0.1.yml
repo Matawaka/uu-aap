@@ -1,0 +1,235 @@
+name: Anchored Witnessed Consistency Pilot v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/anchored-witnessed-consistency-pilot/v0.1/**'
+      - '.github/workflows/anchored-witnessed-consistency-pilot-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/anchored-witnessed-consistency-pilot/v0.1/**'
+      - '.github/workflows/anchored-witnessed-consistency-pilot-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  EXTERNAL_MONITOR_COMMIT: 6cbde9d44da084770c2bb09c6b66bf0e3245e5f6
+
+jobs:
+  anchored-to-witnessed-consistency:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install pinned verifier dependencies
+        run: python -m pip install --disable-pip-version-check 'cryptography==45.0.6' 'jsonschema==4.25.1'
+
+      - name: Preserve merged #900 divergence non-claim
+        run: python scripts/observed-authority-branch-divergence/test_receipt.py
+
+      - name: Preserve merged #932 external checkpoint anchor pilot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/external-checkpoint-anchor-pilot/v0.1/test_pilot.py
+          python scripts/external-checkpoint-anchor-pilot/v0.1/receipt_validator.py \
+            scripts/external-checkpoint-anchor-pilot/v0.1/profile.json \
+            scripts/external-checkpoint-anchor-pilot/v0.1/current-receipt.json
+          python scripts/external-checkpoint-anchor-pilot/v0.1/validate_implementation.py
+
+      - name: Validate new schema and hostile suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from jsonschema import Draft202012Validator
+          p='scripts/anchored-witnessed-consistency-pilot/v0.1/receipt.schema.json'
+          schema=json.load(open(p,encoding='utf-8'))
+          Draft202012Validator.check_schema(schema)
+          print('VALID schema:',p)
+          PY
+          python scripts/anchored-witnessed-consistency-pilot/v0.1/test_pilot.py
+
+      - name: Fetch exact external monitor reference read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/log-monitor
+          git clone --quiet --no-tags https://github.com/MarkovianProtocol/log-monitor.git /tmp/log-monitor
+          git -C /tmp/log-monitor checkout --quiet "$EXTERNAL_MONITOR_COMMIT"
+          test "$(git -C /tmp/log-monitor rev-parse HEAD)" = "$EXTERNAL_MONITOR_COMMIT"
+          test "$(git -C /tmp/log-monitor hash-object config.example.json)" = '9880c48c5ac46b0d4a56be3720d9897cf9f2ef29'
+          test "$(git -C /tmp/log-monitor hash-object monitor.py)" = 'a16f4db90e4e7f50fae8522c8c3289f784add4f3'
+
+      - name: Validate exact predecessor and key-pin source bindings
+        run: |
+          python scripts/anchored-witnessed-consistency-pilot/v0.1/validate_sources.py \
+            --external-config /tmp/log-monitor/config.example.json
+
+      - name: Select live or frozen later checkpoint pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          dir=scripts/anchored-witnessed-consistency-pilot/v0.1
+          if [ -f "$dir/current-checkpoint.txt" ] && [ -f "$dir/current-consistency.txt" ]; then
+            cp "$dir/current-checkpoint.txt" /tmp/later-checkpoint.txt
+            cp "$dir/current-consistency.txt" /tmp/consistency.txt
+            echo 'PAIR_SOURCE=FROZEN' >> "$GITHUB_ENV"
+          else
+            curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+              https://log.markovianprotocol.com/checkpoint -o /tmp/later-checkpoint.txt
+            later_size="$(python - <<'PY'
+          raw=open('/tmp/later-checkpoint.txt','rb').read()
+          body=raw.split(b'\n\n',1)[0].decode().splitlines()
+          print(int(body[1]))
+          PY
+          )"
+            test "$later_size" -gt 1387
+            curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+              "https://log.markovianprotocol.com/consistency?old=1387&new=${later_size}" -o /tmp/consistency.txt
+            echo 'PAIR_SOURCE=LIVE_FIRST_RUN' >> "$GITHUB_ENV"
+          fi
+          test -s /tmp/later-checkpoint.txt
+          test -s /tmp/consistency.txt
+
+      - name: Re-fetch fixed historical consistency proof when frozen
+        if: env.PAIR_SOURCE == 'FROZEN'
+        shell: bash
+        run: |
+          set -euo pipefail
+          later_size="$(python - <<'PY'
+          raw=open('/tmp/later-checkpoint.txt','rb').read()
+          body=raw.split(b'\n\n',1)[0].decode().splitlines()
+          print(int(body[1]))
+          PY
+          )"
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            "https://log.markovianprotocol.com/consistency?old=1387&new=${later_size}" -o /tmp/consistency-refetch.txt
+          cmp /tmp/consistency.txt /tmp/consistency-refetch.txt
+          echo "historical consistency proof re-observed exactly for 1387 -> ${later_size}"
+
+      - name: Independently verify checkpoint signatures and RFC consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/anchored-witnessed-consistency-pilot/v0.1/pilot.py \
+            --profile scripts/anchored-witnessed-consistency-pilot/v0.1/profile.json \
+            --checkpoint /tmp/later-checkpoint.txt \
+            --consistency /tmp/consistency.txt \
+            > /tmp/anchored-witnessed-consistency-receipt.json
+          python scripts/anchored-witnessed-consistency-pilot/v0.1/receipt_validator.py \
+            scripts/anchored-witnessed-consistency-pilot/v0.1/profile.json \
+            /tmp/anchored-witnessed-consistency-receipt.json
+
+      - name: Require bounded append-only success without global promotion
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/anchored-witnessed-consistency-receipt.json'))
+          assert r['verdict']=='OBSERVED_APPEND_ONLY_EXTENSION_VERIFIED_LATER_CHECKPOINT_KEY_PROVENANCE_NOT_INDEPENDENTLY_ESTABLISHED',r
+          assert r['old_checkpoint']['tree_size']==1387
+          assert r['later_checkpoint']['tree_size']>1387
+          assert r['later_checkpoint']['log_signature_verified'] is True
+          assert r['later_checkpoint']['authentication_verified'] is True
+          assert r['later_checkpoint']['verified_witness_count']>=4
+          assert not r['later_checkpoint']['invalid_pinned_witness_signatures']
+          assert r['later_checkpoint']['key_provenance_assurance']=='OPERATOR_CURATED_PINS_NOT_INDEPENDENTLY_REPROVEN'
+          assert r['consistency']['verified'] is True
+          assert r['evidence_layers']['log_append_only_consistency']=='VERIFIED_OBSERVED_PAIR'
+          assert r['evidence_layers']['global_view_consistency']=='NOT_PROVEN'
+          assert all(v is False for v in r['claims'].values())
+          assert r['automatic_action'] is False
+          assert r['external_mutation_performed'] is False
+          print(r['verdict'])
+          print('later size:',r['later_checkpoint']['tree_size'])
+          print('verified witnesses:',r['later_checkpoint']['verified_witness_count'])
+          print('receipt fingerprint:',r['receipt_fingerprint_sha256'])
+          PY
+
+      - name: Require frozen receipt parity when materialized
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen=scripts/anchored-witnessed-consistency-pilot/v0.1/current-receipt.json
+          if [ -f "$frozen" ]; then
+            python - <<'PY'
+          import json
+          live=json.load(open('/tmp/anchored-witnessed-consistency-receipt.json'))
+          frozen=json.load(open('scripts/anchored-witnessed-consistency-pilot/v0.1/current-receipt.json'))
+          assert live==frozen,(live,frozen)
+          print('runtime == frozen anchored witnessed consistency receipt')
+          PY
+          else
+            echo 'first qualification run: frozen receipt not materialized yet'
+          fi
+
+      - name: Validate implementation receipt when materialized
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=scripts/anchored-witnessed-consistency-pilot/v0.1/implementation-receipt.json
+          if [ -f "$receipt" ]; then
+            python scripts/anchored-witnessed-consistency-pilot/v0.1/validate_implementation.py
+          else
+            echo 'implementation receipt not materialized on this intermediate head'
+          fi
+
+      - name: Upload bounded consistency evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: anchored-witnessed-consistency-${{ github.sha }}
+          path: |
+            /tmp/later-checkpoint.txt
+            /tmp/consistency.txt
+            /tmp/anchored-witnessed-consistency-receipt.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assert pilot-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              git fetch --quiet origin "${GITHUB_BASE_REF}"
+              changed="$(git diff --name-only "origin/${GITHUB_BASE_REF}"...HEAD)"
+              ;;
+            push|workflow_dispatch)
+              changed="$(git diff --name-only HEAD^..HEAD)"
+              ;;
+            *) echo "unsupported event ${GITHUB_EVENT_NAME}" >&2; exit 1 ;;
+          esac
+          test -n "$changed"
+          while IFS= read -r file; do
+            case "$file" in
+              scripts/anchored-witnessed-consistency-pilot/v0.1/*|.github/workflows/anchored-witnessed-consistency-pilot-v0.1.yml) ;;
+              *) echo "unexpected changed path: $file" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^scripts/external-checkpoint-anchor-pilot/' <<< "$changed"
+          ! grep -q '^scripts/observed-authority-branch-divergence/' <<< "$changed"
+          ! grep -q '^protocols/core/' <<< "$changed"
+          ! grep -q '^protocols/interface-registry/' <<< "$changed"
+          ! grep -q '^SPEC.md$' <<< "$changed"
+          ! grep -q '^PRINCIPLES.md$' <<< "$changed"
+
+      - name: Prove repository-read-only execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
