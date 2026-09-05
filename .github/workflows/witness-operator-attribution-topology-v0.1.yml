@@ -72,7 +72,7 @@ jobs:
           print('VALID schema:',p)
           PY
 
-      - name: Fetch current registry and six direct about surfaces read-only
+      - name: Fetch registry attribution and operator key-material surfaces read-only
         shell: bash
         run: |
           set -euo pipefail
@@ -82,6 +82,7 @@ jobs:
           fetch https://transparency.dev/witnesses /tmp/trustfabric-witnesses.html
           fetch https://remora.n621.de/ /tmp/remora.html
           fetch https://geomys.org/witness/navigli /tmp/geomys-navigli.html
+          fetch https://navigli.sunlight.geomys.org/ /tmp/geomys-navigli-key-material.html
           fetch https://www.rgdd.se/poc-witness/about /tmp/rgdd-about.txt
           fetch https://witness1.smartit.nu/witness1/about.txt /tmp/smartit-about.txt
           cat > /tmp/operator-source-map.json <<'JSON'
@@ -90,12 +91,13 @@ jobs:
             "https://transparency.dev/witnesses": "/tmp/trustfabric-witnesses.html",
             "https://remora.n621.de/": "/tmp/remora.html",
             "https://geomys.org/witness/navigli": "/tmp/geomys-navigli.html",
+            "https://navigli.sunlight.geomys.org/": "/tmp/geomys-navigli-key-material.html",
             "https://www.rgdd.se/poc-witness/about": "/tmp/rgdd-about.txt",
             "https://witness1.smartit.nu/witness1/about.txt": "/tmp/smartit-about.txt"
           }
           JSON
 
-      - name: Bind exact seven pins to public operator-attribution topology
+      - name: Bind exact seven pins through public attribution and key-material topology
         shell: bash
         run: |
           set -euo pipefail
@@ -108,15 +110,17 @@ jobs:
           assert r['verdict']=='ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED',r
           assert r['matched_witness_key_count']==7,r
           assert r['public_operator_label_count']==6,r
-          assert r['bound_about_surface_count']==6,r
+          assert r['bound_attribution_surface_count']==6,r
+          assert r['bound_key_material_surface_count']==6,r
           assert r['registry_relation_count']==6,r
+          assert r['operator_key_material_relation_count']==6,r
           assert r['trustfabric_pinned_key_count']==2,r
           assert r['all_seven_public_operator_attributions_bound'] is True,r
           assert all(v is False for v in r['claims'].values())
           assert r['automatic_action'] is False
           assert r['external_mutation_performed'] is False
           print(r['verdict'])
-          print('keys / labels / abouts / registry relations:',r['matched_witness_key_count'],r['public_operator_label_count'],r['bound_about_surface_count'],r['registry_relation_count'])
+          print('keys / labels / attribution surfaces / key surfaces / registry relations / key relations:',r['matched_witness_key_count'],r['public_operator_label_count'],r['bound_attribution_surface_count'],r['bound_key_material_surface_count'],r['registry_relation_count'],r['operator_key_material_relation_count'])
           print('receipt fingerprint:',r['receipt_fingerprint_sha256'])
           PY
 
@@ -137,11 +141,13 @@ jobs:
                   'verdict':r['verdict'],
                   'predecessor':r['predecessor'],
                   'registry_contract':(r['registry']['source_url'],r['registry']['source_classification']),
-                  'operator_contract':[(x['operator_label'],x['about_url'],x['source_classification'],x['expected_witness_key_count'],tuple(x['witness_vkeys']),tuple(x['observed_witness_vkeys']),x['all_expected_vkeys_observed'],x['registry_relation_observed']) for x in r['operator_records']],
+                  'operator_contract':[(x['operator_label'],x['attribution_url'],x['key_material_url'],x['key_material_relation'],x['source_classification'],x['expected_witness_key_count'],tuple(x['witness_vkeys']),tuple(x['observed_witness_vkeys']),x['all_expected_vkeys_observed'],x['registry_relation_observed'],x['operator_key_material_relation_observed']) for x in r['operator_records']],
                   'matched_witness_key_count':r['matched_witness_key_count'],
                   'public_operator_label_count':r['public_operator_label_count'],
-                  'bound_about_surface_count':r['bound_about_surface_count'],
+                  'bound_attribution_surface_count':r['bound_attribution_surface_count'],
+                  'bound_key_material_surface_count':r['bound_key_material_surface_count'],
                   'registry_relation_count':r['registry_relation_count'],
+                  'operator_key_material_relation_count':r['operator_key_material_relation_count'],
                   'observed_operator_labels':r['observed_operator_labels'],
                   'observed_witness_vkeys':r['observed_witness_vkeys'],
                   'trustfabric_pinned_key_count':r['trustfabric_pinned_key_count'],
@@ -153,7 +159,7 @@ jobs:
           print('current semantic operator-attribution topology == frozen qualification; body digests remain historical evidence')
           PY
           else
-            echo 'first qualification run: frozen operator-attribution receipt not materialized yet'
+            echo 'first v2 qualification run: frozen operator-attribution receipt not materialized yet'
           fi
 
       - name: Upload bounded operator-attribution evidence
@@ -167,6 +173,7 @@ jobs:
             /tmp/trustfabric-witnesses.html
             /tmp/remora.html
             /tmp/geomys-navigli.html
+            /tmp/geomys-navigli-key-material.html
             /tmp/rgdd-about.txt
             /tmp/smartit-about.txt
           if-no-files-found: error

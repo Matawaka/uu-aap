@@ -5,119 +5,111 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "schema",
-    "tracking_issue",
-    "predecessor",
-    "registry",
-    "operator_records",
-    "matched_witness_key_count",
-    "public_operator_label_count",
-    "bound_about_surface_count",
-    "registry_relation_count",
-    "observed_operator_labels",
-    "observed_witness_vkeys",
-    "trustfabric_pinned_key_count",
-    "all_seven_public_operator_attributions_bound",
-    "operator_attribution_assurance",
-    "claims",
-    "automatic_action",
-    "external_mutation_performed",
-    "verdict",
-    "receipt_fingerprint_sha256"
+    "schema","tracking_issue","predecessor","registry","operator_records",
+    "matched_witness_key_count","public_operator_label_count",
+    "bound_attribution_surface_count","bound_key_material_surface_count",
+    "registry_relation_count","operator_key_material_relation_count",
+    "observed_operator_labels","observed_witness_vkeys","trustfabric_pinned_key_count",
+    "all_seven_public_operator_attributions_bound","operator_attribution_assurance",
+    "claims","automatic_action","external_mutation_performed","verdict","receipt_fingerprint_sha256"
   ],
   "properties": {
     "schema": {"const": "urn:uu-aap:witness-operator-attribution-topology-receipt:0.1"},
     "tracking_issue": {"const": 941},
     "predecessor": {
-      "type": "object",
-      "additionalProperties": false,
+      "type": "object", "additionalProperties": false,
       "required": ["main_sha","profile_git_blob","qualification_receipt_git_blob","receipt_fingerprint_sha256","verdict","matched_witness_key_count","unique_source_url_count"],
       "properties": {
-        "main_sha": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "profile_git_blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "qualification_receipt_git_blob": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
-        "receipt_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-        "verdict": {"type": "string", "minLength": 1},
-        "matched_witness_key_count": {"type": "integer", "minimum": 0, "maximum": 7},
-        "unique_source_url_count": {"type": "integer", "minimum": 0, "maximum": 6}
+        "main_sha": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "profile_git_blob": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "qualification_receipt_git_blob": {"type":"string","pattern":"^[0-9a-f]{40}$"},
+        "receipt_fingerprint_sha256": {"type":"string","pattern":"^[0-9a-f]{64}$"},
+        "verdict": {"type":"string","minLength":1},
+        "matched_witness_key_count": {"const":7},
+        "unique_source_url_count": {"const":6}
       }
     },
     "registry": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["source_url","source_classification","retrieved_body_sha256"],
+      "type":"object", "additionalProperties":false,
+      "required":["source_url","source_classification","retrieved_body_sha256"],
       "properties": {
-        "source_url": {"type": "string", "format": "uri"},
-        "source_classification": {"const": "NETWORK_CURATED_OPERATOR_TABLE"},
-        "retrieved_body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        "source_url":{"const":"https://witness-network.org/witness-tables/"},
+        "source_classification":{"const":"NETWORK_CURATED_OPERATOR_TABLE"},
+        "retrieved_body_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}
       }
     },
     "operator_records": {
-      "type": "array",
-      "minItems": 6,
-      "maxItems": 6,
+      "type":"array","minItems":6,"maxItems":6,
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "required": ["operator_label","about_url","about_host","source_classification","retrieved_body_sha256","expected_witness_key_count","witness_vkeys","observed_witness_vkeys","all_expected_vkeys_observed","registry_relation_observed"],
+        "type":"object","additionalProperties":false,
+        "required":[
+          "operator_label","attribution_url","attribution_host","key_material_url","key_material_host",
+          "key_material_relation","source_classification","attribution_body_sha256","key_material_body_sha256",
+          "expected_witness_key_count","witness_vkeys","observed_witness_vkeys","all_expected_vkeys_observed",
+          "registry_relation_observed","operator_key_material_relation_observed"
+        ],
         "properties": {
-          "operator_label": {"type": "string", "minLength": 1},
-          "about_url": {"type": "string", "format": "uri"},
-          "about_host": {"type": "string", "minLength": 1},
-          "source_classification": {"const": "OPERATOR_PUBLISHED_WITNESS_PAGE"},
-          "retrieved_body_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
-          "expected_witness_key_count": {"type": "integer", "minimum": 1, "maximum": 2},
-          "witness_vkeys": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-          "observed_witness_vkeys": {"type": "array", "minItems": 0, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-          "all_expected_vkeys_observed": {"type": "boolean"},
-          "registry_relation_observed": {"type": "boolean"}
+          "operator_label":{"type":"string","minLength":1},
+          "attribution_url":{"type":"string","format":"uri"},
+          "attribution_host":{"type":"string","minLength":1},
+          "key_material_url":{"type":"string","format":"uri"},
+          "key_material_host":{"type":"string","minLength":1},
+          "key_material_relation":{"enum":["SAME_SURFACE","OPERATOR_PAGE_LINK"]},
+          "source_classification":{"const":"OPERATOR_PUBLISHED_WITNESS_PAGE"},
+          "attribution_body_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+          "key_material_body_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+          "expected_witness_key_count":{"type":"integer","minimum":1,"maximum":2},
+          "witness_vkeys":{"type":"array","minItems":1,"maxItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+          "observed_witness_vkeys":{"type":"array","minItems":0,"maxItems":2,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+          "all_expected_vkeys_observed":{"type":"boolean"},
+          "registry_relation_observed":{"type":"boolean"},
+          "operator_key_material_relation_observed":{"type":"boolean"}
         }
       }
     },
-    "matched_witness_key_count": {"type": "integer", "minimum": 0, "maximum": 7},
-    "public_operator_label_count": {"type": "integer", "minimum": 0, "maximum": 6},
-    "bound_about_surface_count": {"type": "integer", "minimum": 0, "maximum": 6},
-    "registry_relation_count": {"type": "integer", "minimum": 0, "maximum": 6},
-    "observed_operator_labels": {"type": "array", "minItems": 0, "maxItems": 6, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "observed_witness_vkeys": {"type": "array", "minItems": 0, "maxItems": 7, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
-    "trustfabric_pinned_key_count": {"type": "integer", "minimum": 0, "maximum": 2},
-    "all_seven_public_operator_attributions_bound": {"type": "boolean"},
-    "operator_attribution_assurance": {
-      "enum": [
-        "ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_FROM_CURRENT_DIRECT_SURFACES_AND_NETWORK_CURATED_TABLE_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED",
-        "INCOMPLETE_PUBLIC_OPERATOR_ATTRIBUTION_TOPOLOGY_FOR_ALL_SEVEN_PINNED_WITNESS_KEYS"
-      ]
-    },
+    "matched_witness_key_count":{"type":"integer","minimum":0,"maximum":7},
+    "public_operator_label_count":{"type":"integer","minimum":0,"maximum":6},
+    "bound_attribution_surface_count":{"type":"integer","minimum":0,"maximum":6},
+    "bound_key_material_surface_count":{"type":"integer","minimum":0,"maximum":6},
+    "registry_relation_count":{"type":"integer","minimum":0,"maximum":6},
+    "operator_key_material_relation_count":{"type":"integer","minimum":0,"maximum":6},
+    "observed_operator_labels":{"type":"array","minItems":0,"maxItems":6,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "observed_witness_vkeys":{"type":"array","minItems":0,"maxItems":7,"uniqueItems":true,"items":{"type":"string","minLength":1}},
+    "trustfabric_pinned_key_count":{"type":"integer","minimum":0,"maximum":2},
+    "all_seven_public_operator_attributions_bound":{"type":"boolean"},
+    "operator_attribution_assurance":{"enum":[
+      "ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_THROUGH_CURRENT_REGISTRY_ATTRIBUTIONS_AND_OPERATOR_KEY_MATERIAL_SURFACES_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED",
+      "INCOMPLETE_PUBLIC_OPERATOR_ATTRIBUTION_TOPOLOGY_FOR_ALL_SEVEN_PINNED_WITNESS_KEYS"
+    ]},
     "claims": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": ["witness_identity_proven","legal_operator_identity_proven","cryptographic_operator_identity_binding_proven","operator_control_proven","operator_independence_proven","all_witnesses_independent_proven","all_seven_currently_active_proven","all_views_non_equivocating_proven","producer_non_equivocation_proven","global_non_equivocation_proven","complete_history_proven","all_manifests_submitted_proven","selective_submission_absent_proven","c2pa_manifest_inclusion_proven","trusted_time_proven","truth_certified","authority_created","canonical_branch_selected","malicious_behavior_proven","automatic_remediation_triggered"],
+      "type":"object","additionalProperties":false,
+      "required":[
+        "witness_identity_proven","legal_operator_identity_proven","cryptographic_operator_identity_binding_proven",
+        "operator_control_proven","operator_independence_proven","all_witnesses_independent_proven",
+        "all_seven_currently_active_proven","all_views_non_equivocating_proven","producer_non_equivocation_proven",
+        "global_non_equivocation_proven","complete_history_proven","all_manifests_submitted_proven",
+        "selective_submission_absent_proven","c2pa_manifest_inclusion_proven","trusted_time_proven","truth_certified",
+        "authority_created","canonical_branch_selected","malicious_behavior_proven","automatic_remediation_triggered"
+      ],
       "properties": {
-        "witness_identity_proven": {"const": false},
-        "legal_operator_identity_proven": {"const": false},
-        "cryptographic_operator_identity_binding_proven": {"const": false},
-        "operator_control_proven": {"const": false},
-        "operator_independence_proven": {"const": false},
-        "all_witnesses_independent_proven": {"const": false},
-        "all_seven_currently_active_proven": {"const": false},
-        "all_views_non_equivocating_proven": {"const": false},
-        "producer_non_equivocation_proven": {"const": false},
-        "global_non_equivocation_proven": {"const": false},
-        "complete_history_proven": {"const": false},
-        "all_manifests_submitted_proven": {"const": false},
-        "selective_submission_absent_proven": {"const": false},
-        "c2pa_manifest_inclusion_proven": {"const": false},
-        "trusted_time_proven": {"const": false},
-        "truth_certified": {"const": false},
-        "authority_created": {"const": false},
-        "canonical_branch_selected": {"const": false},
-        "malicious_behavior_proven": {"const": false},
-        "automatic_remediation_triggered": {"const": false}
+        "witness_identity_proven":{"const":false},"legal_operator_identity_proven":{"const":false},
+        "cryptographic_operator_identity_binding_proven":{"const":false},"operator_control_proven":{"const":false},
+        "operator_independence_proven":{"const":false},"all_witnesses_independent_proven":{"const":false},
+        "all_seven_currently_active_proven":{"const":false},"all_views_non_equivocating_proven":{"const":false},
+        "producer_non_equivocation_proven":{"const":false},"global_non_equivocation_proven":{"const":false},
+        "complete_history_proven":{"const":false},"all_manifests_submitted_proven":{"const":false},
+        "selective_submission_absent_proven":{"const":false},"c2pa_manifest_inclusion_proven":{"const":false},
+        "trusted_time_proven":{"const":false},"truth_certified":{"const":false},"authority_created":{"const":false},
+        "canonical_branch_selected":{"const":false},"malicious_behavior_proven":{"const":false},
+        "automatic_remediation_triggered":{"const":false}
       }
     },
-    "automatic_action": {"const": false},
-    "external_mutation_performed": {"const": false},
-    "verdict": {"enum": ["ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED","INCOMPLETE_PUBLIC_OPERATOR_ATTRIBUTION_TOPOLOGY_FOR_ALL_SEVEN_PINNED_WITNESS_KEYS"]},
-    "receipt_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+    "automatic_action":{"const":false},
+    "external_mutation_performed":{"const":false},
+    "verdict":{"enum":[
+      "ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED",
+      "INCOMPLETE_PUBLIC_OPERATOR_ATTRIBUTION_TOPOLOGY_FOR_ALL_SEVEN_PINNED_WITNESS_KEYS"
+    ]},
+    "receipt_fingerprint_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}
   }
 }

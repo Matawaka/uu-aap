@@ -19,15 +19,17 @@
   "operators": [
     {
       "operator_label": "Mullvad VPN AB",
-      "about_url": "https://witness.stagemole.eu/about",
+      "attribution_url": "https://witness.stagemole.eu/about",
+      "key_material_url": "https://witness.stagemole.eu/about",
+      "key_material_relation": "SAME_SURFACE",
       "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
-      "witness_vkeys": [
-        "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv"
-      ]
+      "witness_vkeys": ["witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv"]
     },
     {
       "operator_label": "TrustFabric",
-      "about_url": "https://transparency.dev/witnesses",
+      "attribution_url": "https://transparency.dev/witnesses",
+      "key_material_url": "https://transparency.dev/witnesses",
+      "key_material_relation": "SAME_SURFACE",
       "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
       "witness_vkeys": [
         "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM",
@@ -36,61 +38,43 @@
     },
     {
       "operator_label": "Florian Larysch",
-      "about_url": "https://remora.n621.de/",
+      "attribution_url": "https://remora.n621.de/",
+      "key_material_url": "https://remora.n621.de/",
+      "key_material_relation": "SAME_SURFACE",
       "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
-      "witness_vkeys": [
-        "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2"
-      ]
+      "witness_vkeys": ["remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2"]
     },
     {
       "operator_label": "Geomys",
-      "about_url": "https://geomys.org/witness/navigli",
+      "attribution_url": "https://geomys.org/witness/navigli",
+      "key_material_url": "https://navigli.sunlight.geomys.org/",
+      "key_material_relation": "OPERATOR_PAGE_LINK",
       "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
-      "witness_vkeys": [
-        "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G"
-      ]
+      "witness_vkeys": ["witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G"]
     },
     {
       "operator_label": "rgdd",
-      "about_url": "https://www.rgdd.se/poc-witness/about",
+      "attribution_url": "https://www.rgdd.se/poc-witness/about",
+      "key_material_url": "https://www.rgdd.se/poc-witness/about",
+      "key_material_relation": "SAME_SURFACE",
       "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
-      "witness_vkeys": [
-        "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG"
-      ]
+      "witness_vkeys": ["rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG"]
     },
     {
       "operator_label": "Elias Rudberg",
-      "about_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "attribution_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "key_material_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "key_material_relation": "SAME_SURFACE",
       "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
-      "witness_vkeys": [
-        "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
-      ]
+      "witness_vkeys": ["witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"]
     }
   ],
   "required_operator_label_count": 6,
-  "required_about_surface_count": 6,
+  "required_attribution_surface_count": 6,
+  "required_key_material_surface_count": 6,
   "strong_verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED",
   "insufficient_verdict": "INCOMPLETE_PUBLIC_OPERATOR_ATTRIBUTION_TOPOLOGY_FOR_ALL_SEVEN_PINNED_WITNESS_KEYS",
   "always_false_claims": [
-    "witness_identity_proven",
-    "legal_operator_identity_proven",
-    "cryptographic_operator_identity_binding_proven",
-    "operator_control_proven",
-    "operator_independence_proven",
-    "all_witnesses_independent_proven",
-    "all_seven_currently_active_proven",
-    "all_views_non_equivocating_proven",
-    "producer_non_equivocation_proven",
-    "global_non_equivocation_proven",
-    "complete_history_proven",
-    "all_manifests_submitted_proven",
-    "selective_submission_absent_proven",
-    "c2pa_manifest_inclusion_proven",
-    "trusted_time_proven",
-    "truth_certified",
-    "authority_created",
-    "canonical_branch_selected",
-    "malicious_behavior_proven",
-    "automatic_remediation_triggered"
+    "witness_identity_proven","legal_operator_identity_proven","cryptographic_operator_identity_binding_proven","operator_control_proven","operator_independence_proven","all_witnesses_independent_proven","all_seven_currently_active_proven","all_views_non_equivocating_proven","producer_non_equivocation_proven","global_non_equivocation_proven","complete_history_proven","all_manifests_submitted_proven","selective_submission_absent_proven","c2pa_manifest_inclusion_proven","trusted_time_proven","truth_certified","authority_created","canonical_branch_selected","malicious_behavior_proven","automatic_remediation_triggered"
   ]
 }
