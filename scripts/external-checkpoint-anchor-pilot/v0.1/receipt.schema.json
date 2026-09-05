@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:external-checkpoint-anchor-pilot-receipt:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "tracking_issue", "external_source_commit", "verdict", "opaque_leaf", "inclusion",
+    "checkpoint_anchor", "evidence_layers", "claims", "automatic_action", "external_mutation_performed",
+    "receipt_fingerprint_sha256"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:external-checkpoint-anchor-pilot-receipt:0.1"},
+    "tracking_issue": {"const": 929},
+    "external_source_commit": {"const": "b75d339e9ed5cce5ef4c2cee1cfa78c3e1e1abf1"},
+    "verdict": {
+      "enum": [
+        "OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_VERIFIED",
+        "OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_NOT_ESTABLISHED",
+        "LEAF_INCLUSION_FAILED",
+        "ANCHOR_BINDING_FAILED",
+        "EXTERNAL_EVIDENCE_UNAVAILABLE"
+      ]
+    },
+    "opaque_leaf": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["index", "raw_sha256", "raw_bytes", "semantic_claim_profile"],
+      "properties": {
+        "index": {"const": 0},
+        "raw_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "raw_bytes": {"type": "integer", "minimum": 1},
+        "semantic_claim_profile": {"type": "null"}
+      }
+    },
+    "inclusion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tree_size", "proof_node_count", "proof_text_sha256", "computed_root_b64", "expected_root_b64", "verified"],
+      "properties": {
+        "tree_size": {"const": 1387},
+        "proof_node_count": {"type": "integer", "minimum": 1},
+        "proof_text_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "computed_root_b64": {"type": "string"},
+        "expected_root_b64": {"const": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA="},
+        "verified": {"type": "boolean"}
+      }
+    },
+    "checkpoint_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "origin", "root_b64", "wallet", "rootcommit_identifier", "preimage_sha256", "commitment_matches_profile",
+        "ots_proof_sha256", "ots_committed_digest_sha256", "ots_binding_verified", "bitcoin_attestation_tag_present",
+        "bitcoin_chain_confirmation"
+      ],
+      "properties": {
+        "origin": {"const": "markovianprotocol.com/log"},
+        "root_b64": {"const": "GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA="},
+        "wallet": {"const": "0xdaE76a3C848CafD453dB5EBF8cEb0DbBA7610273"},
+        "rootcommit_identifier": {"const": "markovianprotocol.com/bitcoin-anchor/rootcommit/v1"},
+        "preimage_sha256": {"const": "4d1cc236c3872701bb27f9e27fad315e153eeb43a767a2cae958a3bb4014e771"},
+        "commitment_matches_profile": {"type": "boolean"},
+        "ots_proof_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "ots_committed_digest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "ots_binding_verified": {"type": "boolean"},
+        "bitcoin_attestation_tag_present": {"type": "boolean"},
+        "bitcoin_chain_confirmation": {"enum": ["VERIFIED_BY_PINNED_REFERENCE_VERIFIER", "NOT_ESTABLISHED"]}
+      }
+    },
+    "evidence_layers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["signed_claim", "claim_commitment", "log_inclusion", "log_append_only_consistency", "checkpoint_non_equivocation", "existence_time_evidence"],
+      "properties": {
+        "signed_claim": {"const": "NOT_IN_SCOPE_OPAQUE_LEAF"},
+        "claim_commitment": {"const": "OPAQUE_LEAF_BYTES_HASHED_ONLY"},
+        "log_inclusion": {"enum": ["VERIFIED", "FAILED"]},
+        "log_append_only_consistency": {"const": "NOT_VERIFIED_SINGLE_CHECKPOINT_ONLY"},
+        "checkpoint_non_equivocation": {"enum": ["EXTERNAL_ANCHOR_BINDING_VERIFIED", "NOT_VERIFIED"]},
+        "existence_time_evidence": {"type": "string"}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "c2pa_manifest_inclusion_proven", "producer_non_equivocation_proven", "global_non_equivocation_proven",
+        "complete_history_proven", "all_manifests_submitted_proven", "selective_submission_absent_proven",
+        "collision_semantics_established", "trusted_time_proven", "truth_certified", "authority_created",
+        "canonical_branch_selected", "malicious_behavior_proven", "remediation_triggered"
+      ],
+      "properties": {
+        "c2pa_manifest_inclusion_proven": {"const": false},
+        "producer_non_equivocation_proven": {"const": false},
+        "global_non_equivocation_proven": {"const": false},
+        "complete_history_proven": {"const": false},
+        "all_manifests_submitted_proven": {"const": false},
+        "selective_submission_absent_proven": {"const": false},
+        "collision_semantics_established": {"const": false},
+        "trusted_time_proven": {"const": false},
+        "truth_certified": {"const": false},
+        "authority_created": {"const": false},
+        "canonical_branch_selected": {"const": false},
+        "malicious_behavior_proven": {"const": false},
+        "remediation_triggered": {"const": false}
+      }
+    },
+    "automatic_action": {"const": false},
+    "external_mutation_performed": {"const": false},
+    "receipt_fingerprint_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}
