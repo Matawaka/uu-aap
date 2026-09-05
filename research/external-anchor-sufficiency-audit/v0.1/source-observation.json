@@ -1,0 +1,55 @@
+{
+  "artifact_type": "ExternalAnchorSufficiencySourceObservation",
+  "version": "0.1",
+  "tracking_issue": 927,
+  "repository_predecessor_main": "e14cbbfb024d57912388468268bce42848f6effd",
+  "c2pa_issue": {
+    "repository": "c2pa-org/specifications",
+    "issue_number": 122,
+    "url": "https://github.com/c2pa-org/specifications/issues/122",
+    "state": "open",
+    "comment_count": 18,
+    "author": "MarkovianProtocol",
+    "author_association": "NONE",
+    "updated_at": "2026-09-05T08:06:04Z",
+    "body_sha256": "4396801c27cc7814c34775e12407ac3c0ed8b682a0074cf39badd47f9416e9ad",
+    "proposal_observations": {
+      "external_claim_hash_commitment_proposed": true,
+      "inclusion_proof_as_assertion_proposed": true,
+      "signature_and_tsa_described_as_point_assertions": true,
+      "c2pa_spec_adoption_established": false
+    }
+  },
+  "new_comment": {
+    "comment_id": 5550475914,
+    "url": "https://github.com/c2pa-org/specifications/issues/122#issuecomment-5550475914",
+    "author": "blev8824-ai",
+    "author_association": "NONE",
+    "created_at": "2026-09-05T08:06:04Z",
+    "body_sha256": "129f1678134512eb64811582abec9d60cc38588a95e3c529be26ebb0ea5f320d",
+    "observed_requirements": {
+      "existence_keyed_commitment_separated_from_publication_time": true,
+      "log_can_fork_or_split_view_if_checkpoint_not_independently_bound": true,
+      "checkpoint_tree_head_needs_its_own_non_equivocation_boundary": true,
+      "merkle_recomputation_alone_is_not_log_non_equivocation_proof": true,
+      "c2pa_maintainer_endorsement_established": false
+    }
+  },
+  "reference_repository": {
+    "repository": "MarkovianProtocol/audit-anchor",
+    "main_sha": "ff6a0000810157f10b6a89ac09d1599eaf29f2bf",
+    "license": "MIT",
+    "readme_observations": {
+      "local_chain_recomputation_described": true,
+      "external_ledger_anchor_described": true,
+      "bitcoin_opentimestamps_tier_described": true,
+      "mechanism_security_property_verified_by_this_audit": false
+    }
+  },
+  "accepted_internal_boundary": {
+    "path": "scripts/observed-authority-branch-divergence/README.md",
+    "blob": "7d00b02b500e98d349d84a11262f50fb8bc00d29",
+    "merged_pr": 900,
+    "required_invariant": "Observed branch divergence != proven global equivocation"
+  }
+}
