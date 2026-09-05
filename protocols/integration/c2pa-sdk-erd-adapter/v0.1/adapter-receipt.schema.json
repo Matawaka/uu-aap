@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:c2pa-sdk-event-responsive-dormancy-adapter-receipt:0.1",
+  "title": "C2PA SDK Event-Responsive Dormancy Adapter Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type", "version", "source_receipt_fingerprint_sha256", "source_observation_sha256",
+    "signal_id", "signal_kind", "signal_evidence_ref", "signal_source_assurance",
+    "dormant_capability_digest", "erd_wake_receipt_digest", "erd_state", "wake_attention_only",
+    "separate_targeted_reaudit_review_required", "direct_erd_reuse", "source_frontier_unchanged",
+    "automatic_transition", "next_admissible_interface", "claims"
+  ],
+  "properties": {
+    "artifact_type": { "const": "C2PASDKEventResponsiveDormancyAdapterReceipt" },
+    "version": { "const": "0.1" },
+    "source_receipt_fingerprint_sha256": { "const": "a7ae8037e188e552c07106f546db16169757bb620250cfd8df17e05e2df77b53" },
+    "source_observation_sha256": { "const": "0d71fe53f7adacb68a671e7d71d146a08036676ea095b83e7a791942ca531dea" },
+    "signal_id": { "type": "string", "minLength": 1 },
+    "signal_kind": { "type": "string", "minLength": 1 },
+    "signal_evidence_ref": { "type": "string", "minLength": 1 },
+    "signal_source_assurance": { "const": "EVIDENCE_BOUND" },
+    "dormant_capability_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "erd_wake_receipt_digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "erd_state": { "enum": ["WAKE_ATTENTION_ONLY", "NO_WAKE_SIGNAL_MATCH"] },
+    "wake_attention_only": { "type": "boolean" },
+    "separate_targeted_reaudit_review_required": { "type": "boolean" },
+    "direct_erd_reuse": { "const": true },
+    "source_frontier_unchanged": { "const": true },
+    "automatic_transition": { "const": false },
+    "next_admissible_interface": { "type": "null" },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "trigger_authorizes_targeted_reaudit", "compatibility_pass_inferred", "c2pa_conformance_established",
+        "old_authority_restored", "old_intent_restored", "old_action_permit_restored", "action_permit_created",
+        "authority_created", "background_polling_performed", "background_activity_authorized", "active_process_created",
+        "external_effect_performed", "rerc_dependency_created", "rsic_composition_required", "stable_core_admission",
+        "interface_registry_successor", "historical_evidence_rewritten", "upstream_modified", "trust_score_created",
+        "truth_certified"
+      ],
+      "properties": {
+        "trigger_authorizes_targeted_reaudit": { "const": false },
+        "compatibility_pass_inferred": { "const": false },
+        "c2pa_conformance_established": { "const": false },
+        "old_authority_restored": { "const": false },
+        "old_intent_restored": { "const": false },
+        "old_action_permit_restored": { "const": false },
+        "action_permit_created": { "const": false },
+        "authority_created": { "const": false },
+        "background_polling_performed": { "const": false },
+        "background_activity_authorized": { "const": false },
+        "active_process_created": { "const": false },
+        "external_effect_performed": { "const": false },
+        "rerc_dependency_created": { "const": false },
+        "rsic_composition_required": { "const": false },
+        "stable_core_admission": { "const": false },
+        "interface_registry_successor": { "const": false },
+        "historical_evidence_rewritten": { "const": false },
+        "upstream_modified": { "const": false },
+        "trust_score_created": { "const": false },
+        "truth_certified": { "const": false }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "erd_state": { "const": "WAKE_ATTENTION_ONLY" } } },
+      "then": {
+        "properties": {
+          "wake_attention_only": { "const": true },
+          "separate_targeted_reaudit_review_required": { "const": true }
+        }
+      },
+      "else": {
+        "properties": {
+          "wake_attention_only": { "const": false },
+          "separate_targeted_reaudit_review_required": { "const": false }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "artifact_type": "C2PASDKEventResponsiveDormancyAdapterImplementationReceipt",
+  "version": "0.1",
+  "tracking_issue": 924,
+  "repository_predecessor_main": "783a053ff41a94e369aad3155431ded78ed8e98e",
+  "implementation_files": {
+    "README.md": "c9d5259991f728edf8c79b8228b2e51adf919f4f",
+    "adapter-receipt.schema.json": "d06a9a4725109ae2b0501d0f4880ffa24dc8b59f",
+    "adapter.js": "7191849b494b729c661e5fcdb850d8366f2d30a0",
+    "source-bindings.json": "5566c2f82af731fabde9e5f443e285702d4da634",
+    "test-adapter.js": "3108fc9620e0c7021f47bef288feb8ec48e0591d",
+    "validate-bindings.js": "977556244f86f3187ad52ae22cbfccb205874fb4"
+  },
+  "workflow": {
+    "path": ".github/workflows/c2pa-sdk-erd-adapter-v0.1.yml",
+    "blob": "33f342f5ee47fe7f4a907fabcdb26a5e23c9f3b0"
+  },
+  "direct_dependencies": {
+    "event_responsive_dormancy_module_blob": "2cadbd2f405391f4f97e100d77245757ce6b5a58",
+    "event_responsive_dormancy_receipt_blob": "e127d784a74f0713fe0b157845ec5a2754647034",
+    "qualification_blob": "e68360a90e9963cb5a66f8f4a2f26a088f47b439",
+    "accepted_swift_targeted_receipt_blob": "357a92b96847251f4d4f974c432cc3fa9b3af40b"
+  },
+  "proof": {
+    "direct_erd_module_reuse": true,
+    "attention_only_boundary": true,
+    "caller_checks_forbidden": true,
+    "evidence_bound_signal_required": true,
+    "accepted_source_frontier_byte_bound": true,
+    "matching_signal_max_state": "WAKE_ATTENTION_ONLY",
+    "nonmatching_signal_state": "NO_WAKE_SIGNAL_MATCH",
+    "hostile_positive_test_count": 25
+  },
+  "non_effects": {
+    "targeted_reaudit_executed": false,
+    "compatibility_pass_established": false,
+    "c2pa_conformance_established": false,
+    "authority_created": false,
+    "action_permit_created": false,
+    "background_polling_enabled": false,
+    "background_activity_authorized": false,
+    "rerc_dependency_created": false,
+    "rsic_composition_demand_created": false,
+    "interface_registry_successor": false,
+    "stable_core_admission": false,
+    "historical_evidence_rewritten": false,
+    "upstream_modified": false,
+    "external_effect_performed": false,
+    "release_published": false
+  }
+}
