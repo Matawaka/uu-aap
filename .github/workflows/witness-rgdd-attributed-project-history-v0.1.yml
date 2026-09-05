@@ -80,6 +80,21 @@ jobs:
           verdict="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["verdict"])' "$receipt")"
           test "$verdict" = 'ALL_SIX_PUBLIC_OPERATOR_LABELS_CORROBORATED_BY_OPERATOR_ATTRIBUTED_PUBLIC_EVIDENCE_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED'
 
+      - name: Validate exact frozen qualification and deterministic parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen='scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json'
+          live='/tmp/rgdd-project-history-qualification.json'
+          test "$(git hash-object "$frozen")" = '2ad3672693c02fe76777f6be8408523ba768cf4d'
+          test "$(sha256sum "$frozen" | awk '{print $1}')" = 'e9d310f64717b5c155697f5c2f7374a3812fccde37adf89d6a88e0f2c296d687'
+          python scripts/witness-rgdd-attributed-project-history/v0.1/rgdd_history.py \
+            --profile scripts/witness-rgdd-attributed-project-history/v0.1/profile.json \
+            --repo-root . \
+            --validate-receipt "$frozen"
+          cmp -s "$live" "$frozen"
+          echo 'RGDD_PROJECT_HISTORY_PARITY: LIVE_EQUALS_FROZEN_EXACT_BYTES'
+
       - name: Verify repository boundary remains clean
         shell: bash
         run: |
