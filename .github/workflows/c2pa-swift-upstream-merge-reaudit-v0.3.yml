@@ -33,7 +33,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python scripts/c2pa-cross-sdk-preservation/validate-contract.py
+          python scripts/c2pa-cross-sdk-preservation/validate-contract.py \
+            scripts/c2pa-cross-sdk-preservation/contract.json
           python scripts/c2pa-sdk-successor-reaudit/test_reaudit.py
 
       - name: Collect current public upstream observation through accepted v0.2 collector
