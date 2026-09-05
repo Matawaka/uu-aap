@@ -1,0 +1,122 @@
+name: Witness Operator-Origin Corroboration v0.1
+on:
+  pull_request:
+    paths:
+      - 'scripts/witness-operator-origin-corroboration/v0.1/**'
+      - '.github/workflows/witness-operator-origin-corroboration-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/witness-operator-origin-corroboration/v0.1/**'
+      - '.github/workflows/witness-operator-origin-corroboration-v0.1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+jobs:
+  witness-operator-origin-corroboration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Validate exact merged #942 predecessor and hostile layers
+        shell: bash
+        run: |
+          set -euo pipefail
+          old=scripts/witness-operator-attribution-topology/v0.1
+          test "$(git hash-object "$old/profile.json")" = 9e05ec58e84c3a77a91739a875ac899529a55dfd
+          test "$(git hash-object "$old/machine-qualification-receipt.json")" = fae2dfd9461fe699ec415615adfb537617a502fd
+          git merge-base --is-ancestor 66678fb27ce55a3e1bb1bc3bb2bbd6d419840520 HEAD
+          python "$old/test_topology.py"
+          python "$old/test_machine_metadata_overlay.py"
+          python - <<'PY'
+          import importlib.util,json,pathlib
+          d=pathlib.Path('scripts/witness-operator-attribution-topology/v0.1')
+          s=importlib.util.spec_from_file_location('o',d/'machine_metadata_overlay.py'); o=importlib.util.module_from_spec(s); s.loader.exec_module(o)
+          r=json.load(open(d/'machine-qualification-receipt.json')); o.validate(r)
+          assert r['receipt_fingerprint_sha256']=='d963ac516836e7dbc0760d273c70ca5861cc0717bdbc4fc23d4a62d5e1683d91'
+          assert r['verdict']=='ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED'
+          print('PASS exact merged #942 predecessor')
+          PY
+          d=scripts/witness-operator-origin-corroboration/v0.1
+          python "$d/test_corroboration.py"
+          python -m py_compile "$d/corroboration.py" "$d/test_corroboration.py"
+      - name: Fetch bounded read-only operator-origin evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          f(){ curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' "$1" -o "$2"; test -s "$2"; }
+          OCT='https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/2025/10/'
+          NOV='https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/2025/11/'
+          CORR='https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/message/VMKKURC6MCXUO42IEEDENGP4R5PVHWHZ/'
+          f "$OCT" /tmp/participate-2025-10.html
+          f "$NOV" /tmp/participate-2025-11.html
+          f "$CORR" /tmp/stagemole-correction.html
+          f https://transparency.dev/witnesses /tmp/trustfabric.html
+          f https://geomys.org/witness/navigli /tmp/geomys.html
+          cat >/tmp/source-map.json <<'JSON'
+          {
+            "https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/2025/10/":"/tmp/participate-2025-10.html",
+            "https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/2025/11/":"/tmp/participate-2025-11.html",
+            "https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/message/VMKKURC6MCXUO42IEEDENGP4R5PVHWHZ/":"/tmp/stagemole-correction.html",
+            "https://transparency.dev/witnesses":"/tmp/trustfabric.html",
+            "https://geomys.org/witness/navigli":"/tmp/geomys.html"
+          }
+          JSON
+      - name: Qualify current operator-origin corroboration frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          d=scripts/witness-operator-origin-corroboration/v0.1
+          python "$d/corroboration.py" --profile "$d/profile.json" --predecessor scripts/witness-operator-attribution-topology/v0.1/machine-qualification-receipt.json --source-map /tmp/source-map.json >/tmp/operator-origin-corroboration.json
+          python "$d/corroboration.py" --validate /tmp/operator-origin-corroboration.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/operator-origin-corroboration.json'))
+          assert r['corroborated_operator_label_count']==5
+          assert r['missing_operator_labels']==['rgdd']
+          assert r['verdict']=='FIVE_OF_SIX_PUBLIC_OPERATOR_LABELS_CORROBORATED_BY_OPERATOR_ORIGIN_ATTRIBUTION_EVIDENCE_ONE_OPERATOR_ORIGIN_RELATION_NOT_ESTABLISHED'
+          assert r['network_curated_table_counted_as_operator_origin_evidence'] is False
+          assert not any(r['claims'].values()) and not r['automatic_action'] and not r['external_mutation_performed']
+          print('PASS bounded first frontier: 5/6 corroborated; rgdd remains not independently established')
+          PY
+      - name: Validate frozen qualification when materialized
+        shell: bash
+        run: |
+          set -euo pipefail
+          d=scripts/witness-operator-origin-corroboration/v0.1; q="$d/qualification-receipt.json"
+          if [ -f "$q" ]; then
+            python "$d/corroboration.py" --validate "$q"
+            python - <<'PY'
+          import json
+          a=json.load(open('/tmp/operator-origin-corroboration.json')); b=json.load(open('scripts/witness-operator-origin-corroboration/v0.1/qualification-receipt.json'))
+          keys=('schema','tracking_issue','repository_predecessor_main','repository_predecessor_tree','corroborated_operator_labels','missing_operator_labels','corroborated_operator_label_count','public_operator_label_count','network_curated_table_counted_as_operator_origin_evidence','claims','automatic_action','external_mutation_performed','verdict')
+          assert {k:a[k] for k in keys}=={k:b[k] for k in keys}
+          print('live operator-origin corroboration semantic contract == frozen qualification')
+          PY
+          else echo 'first qualification run: frozen receipt not materialized yet'; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: witness-operator-origin-corroboration-${{ github.sha }}
+          path: |
+            /tmp/operator-origin-corroboration.json
+            /tmp/participate-2025-10.html
+            /tmp/participate-2025-11.html
+            /tmp/stagemole-correction.html
+            /tmp/trustfabric.html
+            /tmp/geomys.html
+          if-no-files-found: error
+          retention-days: 30
+      - name: Assert additive successor-only and repository-read-only boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then git fetch --quiet origin "$GITHUB_BASE_REF"; changed="$(git diff --name-only "origin/$GITHUB_BASE_REF"...HEAD)"; else changed="$(git diff --name-only HEAD^..HEAD)"; fi
+          test -n "$changed"
+          while IFS= read -r x; do case "$x" in scripts/witness-operator-origin-corroboration/v0.1/*|.github/workflows/witness-operator-origin-corroboration-v0.1.yml) ;; *) echo "unexpected path $x" >&2; exit 1;; esac; done <<<"$changed"
+          ! grep -Eq '^(protocols/core/|protocols/interface-registry/|SPEC.md$|PRINCIPLES.md$|scripts/witness-operator-attribution-topology/|scripts/witness-key-provenance-|scripts/anchored-witnessed-consistency-pilot/)' <<<"$changed"
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
