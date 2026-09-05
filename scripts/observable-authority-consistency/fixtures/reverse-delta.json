@@ -1,0 +1,30 @@
+{
+  "schema": "urn:uu-aap:observable-authority-consistency-input:0.1",
+  "export_surface": {
+    "id": "fixture-witness-export",
+    "document_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "signers": [
+      "fixture-witness-1",
+      "fixture-witness-2",
+      "fixture-witness-3",
+      "fixture-witness-4",
+      "fixture-witness-5",
+      "fixture-witness-6"
+    ]
+  },
+  "signed_root": {
+    "id": "fixture-trust-root",
+    "version": 2,
+    "document_sha256": "c33edf9e7a63444799cb1d35e10cc33e5c1aed5a932fbc2e5ba5bfd1a95cfdd8",
+    "verification_status": "VALID",
+    "admitted_signers": [
+      "fixture-witness-1",
+      "fixture-witness-2",
+      "fixture-witness-3",
+      "fixture-witness-4",
+      "fixture-witness-5",
+      "fixture-witness-6",
+      "fixture-witness-7"
+    ]
+  }
+}
