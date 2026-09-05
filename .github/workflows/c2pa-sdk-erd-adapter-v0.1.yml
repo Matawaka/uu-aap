@@ -1,0 +1,118 @@
+name: C2PA SDK ERD Adapter v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/c2pa-sdk-erd-adapter/v0.1/**'
+      - '.github/workflows/c2pa-sdk-erd-adapter-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/c2pa-sdk-erd-adapter/v0.1/**'
+      - '.github/workflows/c2pa-sdk-erd-adapter-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  c2pa-trigger-is-attention-not-authorization:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Preserve accepted Event-Responsive Dormancy semantics
+        run: node protocols/integration/event-responsive-dormancy/v0.1/test-event-responsive-dormancy.js
+
+      - name: Preserve independent reuse qualification and negative controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tooling/recoverable-state-infrastructure-qualification/v0.1/test_qualification.js
+          node tooling/recoverable-state-infrastructure-qualification/v0.1/validate_qualification.js
+
+      - name: Preserve accepted C2PA SDK successor classifier
+        run: python scripts/c2pa-sdk-successor-reaudit/test_reaudit.py
+
+      - name: Preserve frozen Swift targeted successor evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/c2pa-swift-upstream-merge-reaudit/classify.py \
+            scripts/c2pa-swift-upstream-merge-reaudit/current-observation.json \
+            > /tmp/recomputed-swift-receipt.json
+          python - <<'PY'
+          import json
+          expected=json.load(open('scripts/c2pa-swift-upstream-merge-reaudit/current-receipt.json'))
+          actual=json.load(open('/tmp/recomputed-swift-receipt.json'))
+          assert actual == expected
+          assert expected['source_contract']['classification'] == 'CURRENT_MAIN_SOURCE_PASS'
+          assert expected['external_swiftpm_consumer']['classification'] == 'BLOCKED_SOURCE_BINARY_SKEW'
+          assert expected['android']['classification'] == 'UNCHANGED_NO_RETEST_REQUIRED'
+          assert expected['current_cross_sdk_compatibility_established'] is False
+          assert expected['cross_sdk_p0_3_complete'] is False
+          print('frozen C2PA Swift successor evidence preserved')
+          PY
+
+      - name: Run C2PA SDK ERD adapter hostile and positive tests
+        run: node protocols/integration/c2pa-sdk-erd-adapter/v0.1/test-adapter.js
+
+      - name: Validate exact source bindings and direct ERD seam
+        run: node protocols/integration/c2pa-sdk-erd-adapter/v0.1/validate-bindings.js
+
+      - name: Assert attention-only positive receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const A=require('./protocols/integration/c2pa-sdk-erd-adapter/v0.1/adapter.js');
+          const source=require('./scripts/c2pa-swift-upstream-merge-reaudit/current-receipt.json');
+          const signal={artifact_type:'EventResponsiveWakeSignal',version:'0.1',signal_id:'ci:swift-frontier-change',kind:'SWIFT_PRESERVATION_FRONTIER_CHANGED',context_ref:A.CONTEXT_REF,scope_ref:A.scopeRef(source),evidence_ref:'ci:evidence:bounded-upstream-delta',source_assurance:'EVIDENCE_BOUND'};
+          const out=A.evaluateSignal({source_receipt:source,wake_signal:signal});
+          if(out.erd_wake_receipt.state!=='WAKE_ATTENTION_ONLY') throw new Error('expected WAKE_ATTENTION_ONLY');
+          if(out.erd_wake_receipt.next_admissible_interface!==null) throw new Error('unexpected next interface');
+          if(out.adapter_receipt.separate_targeted_reaudit_review_required!==true) throw new Error('review flag missing');
+          if(Object.values(out.adapter_receipt.claims).some(v=>v!==false)) throw new Error('adapter overclaim');
+          console.log(JSON.stringify(out.adapter_receipt,null,2));
+          NODE
+
+      - name: Assert adapter-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              git fetch --quiet origin "${GITHUB_BASE_REF}"
+              changed="$(git diff --name-only "origin/${GITHUB_BASE_REF}"...HEAD)"
+              ;;
+            push|workflow_dispatch)
+              changed="$(git diff --name-only HEAD^..HEAD)"
+              ;;
+            *) echo "unsupported event ${GITHUB_EVENT_NAME}" >&2; exit 1 ;;
+          esac
+          test -n "$changed"
+          while IFS= read -r file; do
+            case "$file" in
+              protocols/integration/c2pa-sdk-erd-adapter/v0.1/*|.github/workflows/c2pa-sdk-erd-adapter-v0.1.yml) ;;
+              *) echo "unexpected changed path: $file" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^protocols/integration/event-responsive-dormancy/' <<< "$changed"
+          ! grep -q '^protocols/integration/rerc/' <<< "$changed"
+          ! grep -q '^protocols/reusable-infrastructure/recoverable-state/' <<< "$changed"
+          ! grep -q '^protocols/interface-registry/' <<< "$changed"
+          ! grep -q '^scripts/c2pa-' <<< "$changed"
+          ! grep -q '^Core/' <<< "$changed"
+
+      - name: Prove repository-read-only validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
