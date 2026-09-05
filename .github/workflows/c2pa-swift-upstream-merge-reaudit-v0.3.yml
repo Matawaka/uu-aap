@@ -18,6 +18,7 @@ permissions:
 env:
   SWIFT_MAIN_SHA: 6fa8a78c16abac3b3f7eb4832c2cc943c9c19f0f
   ANDROID_MAIN_SHA: 077035cda5bf6849abf270829b98af789cc31e4f
+  PYTHONDONTWRITEBYTECODE: '1'
 
 jobs:
   successor-trigger:
