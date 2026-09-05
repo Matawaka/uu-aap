@@ -1,0 +1,168 @@
+{
+  "schema": "urn:uu-aap:authority-observability-convergence-audit:0.1",
+  "version": "0.1",
+  "origin_main": "928249c2e356d4cfaa9255a9701d30b82bb19cd9",
+  "tracking_issue": 907,
+  "admission_predecessor": {
+    "path": "protocols/integration/reusable-component-admission-audit/v0.1/README.md",
+    "blob_sha1": "ee5568b246db76044bbf109607c86c97b0c233be",
+    "rule": "ADMIT requires at least two genuinely independent current consumer families and no adequate existing reusable interface"
+  },
+  "source_bindings": [
+    {"id":"c2pa_authority_admission","path":"scripts/c2pa-authority-admission/gate.py","blob_sha1":"6f6882c2f70585eb80d93b005c7210b7cfc3df51","role":"primary_domain"},
+    {"id":"observable_authority_consistency","path":"scripts/observable-authority-consistency/receipt.py","blob_sha1":"93a0921ccf04630fe1c3ccb287a9ef879474c3a3","role":"primary_domain"},
+    {"id":"authority_surface_triangulation","path":"scripts/authority-surface-triangulation/receipt.py","blob_sha1":"1e6bb9f243c17a22af6ff3d007796ba0c21a837c","role":"primary_domain"},
+    {"id":"authority_surface_transition","path":"scripts/authority-surface-transition/receipt.py","blob_sha1":"83485b89c5ea590568d118aee70804b575b71132","role":"primary_domain"},
+    {"id":"authority_surface_continuity","path":"scripts/authority-surface-continuity-chain/receipt.py","blob_sha1":"42c68dfd5b864d141c7b1304698e01242fa60089","role":"primary_domain"},
+    {"id":"observed_branch_divergence","path":"scripts/observed-authority-branch-divergence/receipt.py","blob_sha1":"07fb09bad10d2398a4a3b67d085917850e28a60d","role":"primary_domain"},
+    {"id":"observed_branch_set","path":"scripts/observed-authority-branch-set/receipt.py","blob_sha1":"5246f27c8c377b397e962b22a51c5963f482b179","role":"primary_domain"},
+    {"id":"observed_branch_set_transition","path":"scripts/observed-authority-branch-set-transition/receipt.py","blob_sha1":"73dd39f6acab61dd3a1eba871200e674f733ea8d","role":"primary_domain"},
+    {"id":"observed_branch_set_transition_chain","path":"scripts/observed-authority-branch-set-transition-chain/receipt.py","blob_sha1":"e9fb9b962deb7d113657018795b804e6411fb757","role":"primary_domain"},
+    {"id":"public_review_checkpoint","path":"tooling/public-review-observation-checkpoint/v0.1/README.md","blob_sha1":"8a0eadb4fea57d9d55c773b5abb4e10c8a629c23","role":"independent_domain"},
+    {"id":"public_review_disposition","path":"tooling/public-review-disposition-ledger/v0.1/README.md","blob_sha1":"eb1ab362e2ac85c18e4145cca81dadfda4ce6912","role":"independent_domain"},
+    {"id":"kontur_responsibility","path":"server/kontur/v0.1/README.md","blob_sha1":"b7c9763ca4d06ee9b26e2f987c8b72d9c78ce798","role":"independent_domain"},
+    {"id":"life_situation_resolver","path":"pilots/life-situation-resolver/v0.1/README.md","blob_sha1":"e8fd5ce0e2f7eacc484f082a3670deb8c62b934d","role":"independent_domain_partial"},
+    {"id":"bounded_action_e2e","path":"protocols/integration/bounded-action-e2e/v0.1/README.md","blob_sha1":"25b9edce3f397b305a61dabe7ad51d2c5fbb6888","role":"existing_downstream"},
+    {"id":"ambient_observability","path":"protocols/integration/ambient-observability-non-identification/v0.1/README.md","blob_sha1":"8b229487f719e641f48a7cedf60e2b1803b0dbdb","role":"existing_reusable"},
+    {"id":"circumstantial_provenance","path":"protocols/integration/circumstantial-provenance/v0.1/README.md","blob_sha1":"6937c35599d79a7562a055d834fb27f27f2f8ab7","role":"existing_reusable"},
+    {"id":"event_hash_minimalism","path":"protocols/integration/event-hash-minimalism/v0.1/README.md","blob_sha1":"0000d831c15d74b8bd8186b5dad2f5b9ce6920b9","role":"existing_reusable"},
+    {"id":"current_roadmap","path":"docs/ROADMAP-CURRENT.md","blob_sha1":"6063ce07c479c6a59c78091e4212fc5d09c27a04","role":"governance_boundary"}
+  ],
+  "domains": [
+    {
+      "id": "c2pa_authority_observability",
+      "independent": false,
+      "match": "DOMAIN_IMPLEMENTED",
+      "direct_consumer": true,
+      "notes": ["Exact #890-#906 implementation family", "Trust-root/quorum/configuration/export naming remains domain-specific"]
+    },
+    {
+      "id": "public_review",
+      "independent": true,
+      "match": "SECOND_DOMAIN_SEMANTIC_MATCH",
+      "strength": "STRONG",
+      "direct_consumer": false,
+      "notes": ["source observed != admitted", "admission != disposition", "covered-surface absence != global absence", "indexed disposition != new disposition"]
+    },
+    {
+      "id": "kontur",
+      "independent": true,
+      "match": "SECOND_DOMAIN_SEMANTIC_MATCH",
+      "strength": "STRONG",
+      "direct_consumer": false,
+      "notes": ["readiness != authority", "readiness != responsibility acceptance != activation", "transition receipt preserves typed state lineage"]
+    },
+    {
+      "id": "life_situation_resolver",
+      "independent": true,
+      "match": "SECOND_DOMAIN_SEMANTIC_MATCH",
+      "strength": "PARTIAL",
+      "direct_consumer": false,
+      "notes": ["observed/user-asserted/inferred/unknown boundary", "scenario != forecast != intent != authorization", "no demonstrated branch/fork calculus need"]
+    },
+    {
+      "id": "bounded_action",
+      "independent": true,
+      "match": "REUSE_EXISTING",
+      "direct_consumer": false,
+      "notes": ["Existing provider-neutral action lifecycle already owns authorize/execute/outcome/closure", "Observation evidence must not create a second action lifecycle"]
+    },
+    {
+      "id": "workbench",
+      "independent": true,
+      "match": "DEFER",
+      "direct_consumer": false,
+      "excluded_from_demand_count": true,
+      "notes": ["Current roadmap = PAUSED_EXTERNAL_PRODUCT", "Reuse audit != Workbench reactivation"]
+    }
+  ],
+  "components": [
+    {
+      "id": "authority_admission_consistency",
+      "primary_sources": ["c2pa_authority_admission", "observable_authority_consistency"],
+      "second_domain_matches": ["public_review", "kontur"],
+      "direct_reuse_proven": false,
+      "decision": "REUSE_EXISTING",
+      "reason": "Admission/authority separation is already a cross-repository invariant; retain the C2PA quorum gate as a domain adapter rather than minting another generic authority primitive."
+    },
+    {
+      "id": "explainability_observable_consistency",
+      "primary_sources": ["observable_authority_consistency"],
+      "second_domain_matches": ["public_review", "life_situation_resolver"],
+      "direct_reuse_proven": false,
+      "decision": "REUSE_EXISTING",
+      "reason": "Ambient Observability + Circumstantial Provenance + Event-Hash Minimalism already cover bounded observation/provenance/non-overclaim semantics; a new umbrella primitive would mostly rename composition."
+    },
+    {
+      "id": "multi_surface_triangulation",
+      "primary_sources": ["authority_surface_triangulation", "authority_surface_transition", "authority_surface_continuity"],
+      "second_domain_matches": ["public_review", "kontur"],
+      "direct_reuse_proven": false,
+      "decision": "PROFILE_EXTRACTION_CANDIDATE",
+      "reason": "Two independent domains exhibit distinct observed/admitted/decision or readiness/acceptance/activation surfaces, but neither directly consumes the authority triangulation API."
+    },
+    {
+      "id": "observation_set_calculus",
+      "primary_sources": ["observed_branch_divergence", "observed_branch_set", "observed_branch_set_transition", "observed_branch_set_transition_chain"],
+      "second_domain_matches": ["public_review", "kontur"],
+      "partial_matches": ["life_situation_resolver"],
+      "direct_reuse_proven": false,
+      "decision": "PROFILE_EXTRACTION_CANDIDATE",
+      "reason": "Set/divergence/transition/local-history semantics now have independent demand, especially Public Review observation checkpoints, but there is still no neutral API consumed by a second domain."
+    },
+    {
+      "id": "c2pa_authority_surface_adapter",
+      "primary_sources": ["c2pa_authority_admission", "authority_surface_triangulation"],
+      "second_domain_matches": [],
+      "direct_reuse_proven": true,
+      "decision": "DOMAIN_IMPLEMENTED",
+      "reason": "Configured/exported/signed-root/quorum vocabulary remains C2PA/transparency-log-specific and should stay an adapter even if a neutral observation profile is later extracted."
+    }
+  ],
+  "findings": {
+    "semantic_reusable_demand": "CONFIRMED",
+    "strong_independent_second_domain_match_count": 2,
+    "strong_independent_second_domain_matches": ["public_review", "kontur"],
+    "partial_independent_matches": ["life_situation_resolver"],
+    "direct_generic_api_reuse_proven": false,
+    "existing_reusable_observation_provenance_composition_available": true,
+    "profile_extraction_candidate": true,
+    "generic_runtime_helper_justified": false,
+    "new_action_lifecycle_justified": false,
+    "workbench_reactivation_justified": false
+  },
+  "decision": {
+    "overall": "PROFILE_EXTRACTION_CANDIDATE_NO_CORE_ADMISSION",
+    "stable_core_admission": "NO_CORE_ADMISSION",
+    "interface_registry_admission": "DEFER",
+    "generic_runtime_implementation": "DEFER",
+    "next_safe_action": "PROVE_TWO_DOMAIN_ADAPTERS_TO_CANDIDATE_NEUTRAL_PROFILE",
+    "recommended_first_adapter_domain": "public_review",
+    "required_reference_adapter_domain": "c2pa_authority_observability",
+    "kontur_role": "SEMANTIC_CROSS_CHECK_NOT_FIRST_ADAPTER",
+    "lsr_role": "PARTIAL_EPISTEMIC_CROSS_CHECK_ONLY",
+    "workbench_role": "EXCLUDED_WHILE_PAUSED"
+  },
+  "semantic_guards": {
+    "semantic_match_implies_direct_reuse": false,
+    "profile_candidate_implies_core_admission": false,
+    "validation_similarity_implies_shared_runtime": false,
+    "observation_evidence_mints_action_authority": false,
+    "public_review_observation_mints_disposition": false,
+    "kontur_readiness_mints_activation": false,
+    "lsr_attention_mints_required_action": false,
+    "workbench_reactivated": false
+  },
+  "non_effects": {
+    "stable_core_changed": false,
+    "spec_changed": false,
+    "interface_registry_changed": false,
+    "c2pa_reclassified": false,
+    "kontur_activated": false,
+    "lsr_actuated": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false,
+    "release_or_tag_created": false,
+    "external_effect_performed": false
+  }
+}
