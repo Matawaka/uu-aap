@@ -1,0 +1,155 @@
+name: Observation Set Calculus Two-Domain Reuse Proof v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/observation-set-calculus-candidate/v0.1/**'
+      - 'interop/c2pa/observation-set-calculus-adapter/v0.1/**'
+      - 'tooling/public-review-observation-set-adapter/v0.1/**'
+      - 'tooling/observation-set-calculus-two-domain-proof/v0.1/**'
+      - '.github/workflows/observation-set-calculus-two-domain-proof-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/observation-set-calculus-candidate/v0.1/**'
+      - 'interop/c2pa/observation-set-calculus-adapter/v0.1/**'
+      - 'tooling/public-review-observation-set-adapter/v0.1/**'
+      - 'tooling/observation-set-calculus-two-domain-proof/v0.1/**'
+      - '.github/workflows/observation-set-calculus-two-domain-proof-v0.1.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  prove-two-domain-direct-reuse-without-admission:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install pinned JSON Schema dependency required by accepted Public Review validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Preserve merged convergence-audit predecessor result
+        run: |
+          python tooling/authority-observability-convergence-audit/v0.1/validate_audit.py
+          python tooling/authority-observability-convergence-audit/v0.1/test_audit.py
+
+      - name: Preserve existing reusable-component admission discipline
+        run: python protocols/integration/reusable-component-admission-audit/v0.1/validate.py
+
+      - name: Validate candidate observation-set calculus
+        run: python protocols/integration/observation-set-calculus-candidate/v0.1/test_profile.py
+
+      - name: Preserve accepted C2PA source stack
+        run: |
+          python scripts/observed-authority-branch-set/test_receipt.py
+          python scripts/observed-authority-branch-set-transition/test_receipt.py
+          python scripts/observed-authority-branch-set-transition-chain/test_receipt.py
+
+      - name: Prove C2PA adapter parity through candidate profile
+        run: python interop/c2pa/observation-set-calculus-adapter/v0.1/test_adapter.py
+
+      - name: Preserve accepted Public Review checkpoint evidence
+        run: |
+          python tooling/public-review-observation-checkpoint/v0.1/validate_checkpoint.py
+          python tooling/public-review-observation-checkpoint/v0.1/test_checkpoint.py
+
+      - name: Prove Public Review adapter reuse of candidate set evaluator
+        run: python tooling/public-review-observation-set-adapter/v0.1/test_adapter.py
+
+      - name: Emit machine-readable two-domain reuse proof
+        run: python tooling/observation-set-calculus-two-domain-proof/v0.1/prove.py > /tmp/two-domain-proof.json
+
+      - name: Run hostile shared-runtime proof coverage
+        run: python tooling/observation-set-calculus-two-domain-proof/v0.1/test_proof.py
+
+      - name: Assert exact direct-reuse result without admission
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          proof = json.loads(Path('/tmp/two-domain-proof.json').read_text())
+          assert proof['schema'] == 'urn:uu-aap:observation-set-calculus-two-domain-reuse-proof:0.1'
+          assert proof['origin_main'] == '70346024ece165735c7ecb043d048448a18c7578'
+          assert proof['tracking_issue'] == 909
+          assert proof['candidate']['status'] == 'IMPLEMENTED_CANDIDATE_NOT_REGISTERED'
+          direct = proof['direct_reuse']
+          assert direct == {
+              'independent_adapter_count': 2,
+              'same_resolved_profile_path': True,
+              'same_profile_bytes': True,
+              'same_set_receipt_schema': True,
+              'both_invoked_candidate_set_evaluator': True,
+              'direct_shared_implementation_reuse_proven': True,
+          }
+          assert proof['adapters']['c2pa']['set_reuse'] is True
+          assert proof['adapters']['c2pa']['transition_reuse'] is True
+          assert proof['adapters']['c2pa']['chain_reuse'] is True
+          assert proof['adapters']['public_review']['set_reuse'] is True
+          assert proof['adapters']['public_review']['transition_reuse'] is False
+          assert proof['adapters']['public_review']['chain_reuse'] is False
+          assert proof['adapters']['public_review']['actual_projected_external_source_count'] == 1
+          assert all(value is False for value in proof['scope_limits'].values())
+          assert proof['admission'] == {
+              'stable_core_admission_performed': False,
+              'interface_registry_admission_performed': False,
+              'candidate_profile_registered': False,
+              'next_safe_action': 'RE_RUN_REUSABLE_COMPONENT_ADMISSION_AUDIT_AFTER_DIRECT_REUSE_PROOF',
+          }
+          assert all(value is False for value in proof['non_effects'].values())
+          print('two-domain direct reuse without admission: PASS')
+          PY
+
+      - name: Prove additive proof-only pull-request boundary
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git diff --name-only "$BASE_SHA"...HEAD > /tmp/changed.txt
+          cat /tmp/changed.txt
+          python - <<'PY'
+          from pathlib import Path
+
+          changed = [line.strip() for line in Path('/tmp/changed.txt').read_text().splitlines() if line.strip()]
+          allowed_prefixes = (
+              'protocols/integration/observation-set-calculus-candidate/v0.1/',
+              'interop/c2pa/observation-set-calculus-adapter/v0.1/',
+              'tooling/public-review-observation-set-adapter/v0.1/',
+              'tooling/observation-set-calculus-two-domain-proof/v0.1/',
+          )
+          workflow = '.github/workflows/observation-set-calculus-two-domain-proof-v0.1.yml'
+          forbidden = [
+              path for path in changed
+              if path != workflow and not any(path.startswith(prefix) for prefix in allowed_prefixes)
+          ]
+          assert not forbidden, f'non-proof files changed: {forbidden}'
+          assert workflow in changed
+          assert not any(path.startswith('protocols/core/') for path in changed)
+          assert 'protocols/interface-registry/v0.1/registry.json' not in changed
+          assert 'SPEC.md' not in changed
+          assert 'PRINCIPLES.md' not in changed
+          assert 'docs/ROADMAP-CURRENT.md' not in changed
+          print('candidate/adapters/proof-only diff: PASS')
+          PY
+
+      - name: Prove validation is repository-read-only
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'validation mutated repository' >&2
+            git status --short >&2
+            exit 1
+          fi
+          echo 'read-only validation: PASS'
