@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:witness-key-provenance-reproof-receipt-schema:0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "tracking_issue",
+    "predecessor",
+    "quorum_min",
+    "source_records",
+    "matched_witness_key_count",
+    "unique_source_url_count",
+    "unique_source_host_count",
+    "quorum_many_exact_vkeys_reobserved",
+    "quorum_many_distinct_source_urls_reobserved",
+    "key_provenance_assurance",
+    "claims",
+    "automatic_action",
+    "external_mutation_performed",
+    "verdict",
+    "receipt_fingerprint_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "urn:uu-aap:witness-key-provenance-reproof-receipt:0.1"
+    },
+    "tracking_issue": {
+      "const": 935
+    },
+    "predecessor": {
+      "type": "object"
+    },
+    "quorum_min": {
+      "const": 4
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 4
+    },
+    "matched_witness_key_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7
+    },
+    "unique_source_url_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "unique_source_host_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "quorum_many_exact_vkeys_reobserved": {
+      "type": "boolean"
+    },
+    "key_provenance_assurance": {
+      "type": "string"
+    },
+    "claims": {
+      "type": "object"
+    },
+    "automatic_action": {
+      "const": false
+    },
+    "external_mutation_performed": {
+      "const": false
+    },
+    "verdict": {
+      "type": "string"
+    },
+    "receipt_fingerprint_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "quorum_many_distinct_source_urls_reobserved": {
+      "type": "boolean"
+    }
+  }
+}
