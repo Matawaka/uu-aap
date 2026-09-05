@@ -176,6 +176,46 @@ jobs:
           echo "TEMPORAL_DISTINCT_CI_FAIL_CLOSED: verdict=$verdict classifier_rc=$rc" >&2
           exit 2
 
+      - name: Validate frozen strong qualification and live semantic parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen='scripts/witness-temporal-distinct-checkpoint-activity/v0.1/qualification-receipt.json'
+          live='/tmp/temporal-distinct-qualification.json'
+          test "$(git hash-object "$frozen")" = '18342a27d884918bd99eca3d8018c273bf4444c0'
+          python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py \
+            --profile scripts/witness-temporal-distinct-checkpoint-activity/v0.1/profile.json \
+            --repo-root . \
+            --validate-receipt "$frozen"
+          python - "$frozen" "$live" <<'PY'
+          import json, sys
+          frozen = json.load(open(sys.argv[1], encoding='utf-8'))
+          live = json.load(open(sys.argv[2], encoding='utf-8'))
+          strong = 'ALL_SEVEN_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_TWO_DISTINCT_APPEND_ONLY_RELATED_CHECKPOINT_STATES_REPEATED_ACTIVITY_ESTABLISHED_CONTINUOUS_AVAILABILITY_NOT_ESTABLISHED'
+          def contract(r):
+              t = r['temporal_activity']
+              return {
+                  'verdict': r['verdict'],
+                  'distinct': t['distinct_successor_checkpoint_observed'],
+                  'append_only': t['append_only_relation_verified'],
+                  'count': t['verified_pinned_witness_count'],
+                  'repeated': t['repeated_activity_established'],
+                  'same_exact_pins': t['same_exact_pins_observed_across_two_distinct_states'],
+                  'claims': r['claims'],
+                  'automatic_action': r['automatic_action'],
+                  'external_mutation_performed': r['external_mutation_performed'],
+              }
+          fc, lc = contract(frozen), contract(live)
+          if fc['verdict'] != strong or lc['verdict'] != strong:
+              raise SystemExit('frozen/live strong admission class mismatch')
+          for c in (fc, lc):
+              if not (c['distinct'] and c['append_only'] and c['count'] == 7 and c['repeated'] and c['same_exact_pins']):
+                  raise SystemExit('strong semantic contract incomplete')
+              if any(c['claims'].values()) or c['automatic_action'] or c['external_mutation_performed']:
+                  raise SystemExit('strong semantic contract overclaim/effect')
+          print('TEMPORAL_DISTINCT_FROZEN_PARITY: live strong semantic contract == frozen strong admission class')
+          PY
+
       - name: Upload temporal evidence
         if: always()
         uses: actions/upload-artifact@v4
