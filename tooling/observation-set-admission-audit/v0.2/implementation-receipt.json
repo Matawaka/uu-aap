@@ -1,0 +1,24 @@
+{
+  "schema": "urn:uu-aap:observation-set-admission-audit-implementation-receipt:0.2",
+  "origin_main": "552d0f293efaffd6c62c69d415fae17d7c5aff9a",
+  "tracking_issue": 911,
+  "package_bindings": [
+    {"path": "tooling/observation-set-admission-audit/v0.2/README.md", "blob_sha1": "085df7bc977225c3bf35cbd2a3f7047d47bad6d5"},
+    {"path": "tooling/observation-set-admission-audit/v0.2/assessment.json", "blob_sha1": "8404a4d35fa1b6966e418d1c133f4c798e69d8a4"},
+    {"path": "tooling/observation-set-admission-audit/v0.2/assessment.schema.json", "blob_sha1": "46c4c177c9b3a3bf280c2653358e79fe90c6c927"},
+    {"path": "tooling/observation-set-admission-audit/v0.2/implementation-receipt.schema.json", "blob_sha1": "1c8590542e246412ed0c793e83bca71df10561ad"},
+    {"path": "tooling/observation-set-admission-audit/v0.2/test_audit.py", "blob_sha1": "cb3506270c350bf191f6759b9acef4a65a0612a3"},
+    {"path": "tooling/observation-set-admission-audit/v0.2/validate.py", "blob_sha1": "8b6bb925913f97747d3b3dc304730653a7a3e4ab"}
+  ],
+  "source_binding_count": 10,
+  "result": "PARTIAL_ADMISSION_ELIGIBLE_SET_ONLY_NO_CORE_ADMISSION",
+  "next_safe_action": "MATERIALIZE_SET_ONLY_EXPERIMENTAL_INTERFACE_REGISTRY_DELTA",
+  "non_effects": {
+    "interface_registry_mutated": false,
+    "stable_core_mutated": false,
+    "candidate_package_registered": false,
+    "transition_registered": false,
+    "chain_registered": false,
+    "external_effect_performed": false
+  }
+}

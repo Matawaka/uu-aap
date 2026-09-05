@@ -1,0 +1,154 @@
+{
+  "schema": "urn:uu-aap:observation-set-admission-audit:0.2",
+  "version": "0.2",
+  "origin_main": "552d0f293efaffd6c62c69d415fae17d7c5aff9a",
+  "tracking_issue": 911,
+  "predecessor_results": {
+    "convergence_audit": "PROFILE_EXTRACTION_CANDIDATE_NO_CORE_ADMISSION",
+    "two_domain_reuse": "DIRECT_SHARED_IMPLEMENTATION_REUSE_PROVEN",
+    "historical_reusable_admission_threshold": {
+      "minimum_independent_consumer_families": 2,
+      "requires_no_adequate_existing_reusable_interface": true,
+      "stable_core_promotion_implied": false,
+      "interface_registry_promotion_implied": false
+    }
+  },
+  "source_bindings": [
+    {
+      "id": "candidate_profile",
+      "path": "protocols/integration/observation-set-calculus-candidate/v0.1/profile.py",
+      "blob_sha1": "280624ae6a59fa7a199e3419254765a85e78637a",
+      "role": "candidate_implementation"
+    },
+    {
+      "id": "c2pa_adapter",
+      "path": "interop/c2pa/observation-set-calculus-adapter/v0.1/adapter.py",
+      "blob_sha1": "974579c2f2b2d1d537f1c5ccd1653ec231559c46",
+      "role": "direct_consumer"
+    },
+    {
+      "id": "public_review_adapter",
+      "path": "tooling/public-review-observation-set-adapter/v0.1/adapter.py",
+      "blob_sha1": "af099fa9b12d6c40766f029a12afe2a21a04c83a",
+      "role": "direct_consumer"
+    },
+    {
+      "id": "two_domain_proof",
+      "path": "tooling/observation-set-calculus-two-domain-proof/v0.1/prove.py",
+      "blob_sha1": "2cd03641d5d17f1122cce97a091fa1bd4dbe5ba3",
+      "role": "direct_reuse_evidence"
+    },
+    {
+      "id": "convergence_audit",
+      "path": "tooling/authority-observability-convergence-audit/v0.1/audit.json",
+      "blob_sha1": "fbdec25d7968b549429f211cb99503d188c8c58f",
+      "role": "predecessor_audit"
+    },
+    {
+      "id": "reusable_component_admission_v0_1",
+      "path": "protocols/integration/reusable-component-admission-audit/v0.1/assessment.json",
+      "blob_sha1": "e0efb6ad4b65e91360d039dc8842cafafc5079bb",
+      "role": "admission_policy"
+    },
+    {
+      "id": "interface_registry_v0_2",
+      "path": "protocols/interface-registry/v0.2/interface-registry-delta.json",
+      "blob_sha1": "ad705523bada7f64a04e09e34974407725942976",
+      "role": "registry_policy"
+    },
+    {
+      "id": "ambient_observability",
+      "path": "protocols/integration/ambient-observability-non-identification/v0.1/README.md",
+      "blob_sha1": "8b229487f719e641f48a7cedf60e2b1803b0dbdb",
+      "role": "existing_reusable_substrate"
+    },
+    {
+      "id": "circumstantial_provenance",
+      "path": "protocols/integration/circumstantial-provenance/v0.1/README.md",
+      "blob_sha1": "6937c35599d79a7562a055d834fb27f27f2f8ab7",
+      "role": "existing_reusable_substrate"
+    },
+    {
+      "id": "event_hash_minimalism",
+      "path": "protocols/integration/event-hash-minimalism/v0.1/README.md",
+      "blob_sha1": "0000d831c15d74b8bd8186b5dad2f5b9ce6920b9",
+      "role": "existing_reusable_substrate"
+    }
+  ],
+  "api_assessments": [
+    {
+      "id": "ObservationSet",
+      "candidate_api": "evaluate_set",
+      "decision": "ELIGIBLE_EXPERIMENTAL_INTERFACE_ADMISSION",
+      "independent_direct_consumer_families": 2,
+      "consumer_families": [
+        "C2PA authority-observability",
+        "Public Review external-source observation"
+      ],
+      "adequate_existing_reusable_interface": false,
+      "distinct_invariants": [
+        "scope-bound observation multiset identity",
+        "semantic observation identity distinct from exact source binding",
+        "duplicate-safe deterministic multiplicity",
+        "order-independent semantic set fingerprint",
+        "exact-input fingerprint distinct from semantic set fingerprint",
+        "same source binding plus different semantic identity fails closed"
+      ],
+      "existing_substrate_relationship": "COMPOSES_WITH_EXISTING_BUT_NOT_REPLACED_BY_IT",
+      "registry_scope_if_later_admitted": "SET_ONLY",
+      "stable_core_admission": "NO_CORE_ADMISSION"
+    },
+    {
+      "id": "ObservationSetTransition",
+      "candidate_api": "evaluate_transition",
+      "decision": "DEFER_SECOND_DOMAIN_DIRECT_REUSE",
+      "independent_direct_consumer_families": 1,
+      "consumer_families": [
+        "C2PA authority-observability"
+      ],
+      "missing_evidence": [
+        "A second independent domain directly consuming transition semantics over comparable accepted observation sets."
+      ],
+      "stable_core_admission": "NO_CORE_ADMISSION"
+    },
+    {
+      "id": "LocalObservationSetChain",
+      "candidate_api": "evaluate_chain",
+      "decision": "DEFER_SECOND_DOMAIN_DIRECT_REUSE",
+      "independent_direct_consumer_families": 1,
+      "consumer_families": [
+        "C2PA authority-observability"
+      ],
+      "missing_evidence": [
+        "A second independent domain directly consuming local set-chain semantics without fabricated chronology."
+      ],
+      "stable_core_admission": "NO_CORE_ADMISSION"
+    }
+  ],
+  "package_assessment": {
+    "candidate_package": "Observation Set Calculus Candidate v0.1",
+    "decision": "DEFER_SPLIT_REQUIRED",
+    "reason": "Only the set API currently satisfies the two-independent-consumer threshold. Registering the monolithic candidate would silently promote transition and chain semantics that have only one direct consumer family.",
+    "monolithic_registry_admission_eligible": false,
+    "set_only_registry_admission_eligible": true
+  },
+  "overall_result": "PARTIAL_ADMISSION_ELIGIBLE_SET_ONLY_NO_CORE_ADMISSION",
+  "next_safe_action": "MATERIALIZE_SET_ONLY_EXPERIMENTAL_INTERFACE_REGISTRY_DELTA",
+  "human_or_successor_boundary": "REGISTRY_MUTATION_REQUIRES_SEPARATE_SUCCESSOR",
+  "non_effects": {
+    "interface_registry_mutated": false,
+    "stable_core_mutated": false,
+    "spec_or_principles_mutated": false,
+    "candidate_package_registered": false,
+    "transition_registered": false,
+    "chain_registered": false,
+    "c2pa_reclassified": false,
+    "public_review_admission_or_disposition_made": false,
+    "kontur_activated": false,
+    "lsr_actuated": false,
+    "action_permit_created": false,
+    "workbench_reactivated": false,
+    "release_or_tag_created": false,
+    "external_effect_performed": false
+  }
+}

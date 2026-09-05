@@ -1,0 +1,143 @@
+name: Observation Set Admission Audit v0.2
+
+on:
+  pull_request:
+    paths:
+      - 'tooling/observation-set-admission-audit/v0.2/**'
+      - '.github/workflows/observation-set-admission-audit-v0.2.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tooling/observation-set-admission-audit/v0.2/**'
+      - '.github/workflows/observation-set-admission-audit-v0.2.yml'
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  partial-admission-without-registry-mutation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install pinned JSON Schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Parse admission audit package
+        run: |
+          python -m json.tool tooling/observation-set-admission-audit/v0.2/assessment.json >/dev/null
+          python -m json.tool tooling/observation-set-admission-audit/v0.2/assessment.schema.json >/dev/null
+          python -m json.tool tooling/observation-set-admission-audit/v0.2/implementation-receipt.json >/dev/null
+          python -m json.tool tooling/observation-set-admission-audit/v0.2/implementation-receipt.schema.json >/dev/null
+
+      - name: Preserve historical reusable-component admission threshold
+        run: python protocols/integration/reusable-component-admission-audit/v0.1/validate.py
+
+      - name: Preserve merged convergence audit
+        run: |
+          python tooling/authority-observability-convergence-audit/v0.1/validate_audit.py
+          python tooling/authority-observability-convergence-audit/v0.1/test_audit.py
+
+      - name: Preserve merged two-domain direct-reuse evidence
+        run: |
+          python protocols/integration/observation-set-calculus-candidate/v0.1/test_profile.py
+          python interop/c2pa/observation-set-calculus-adapter/v0.1/test_adapter.py
+          python tooling/public-review-observation-set-adapter/v0.1/test_adapter.py
+          python tooling/observation-set-calculus-two-domain-proof/v0.1/test_proof.py
+          python tooling/observation-set-calculus-two-domain-proof/v0.1/prove.py >/tmp/two-domain-proof.json
+
+      - name: Preserve Interface Registry v0.2 boundary
+        run: |
+          node protocols/interface-registry/v0.1/validate-interface-registry.js
+          node protocols/interface-registry/v0.2/validate-interface-registry-v0.2.js
+          node protocols/interface-registry/v0.2/test-interface-registry-v0.2.js
+
+      - name: Validate partial admission assessment
+        run: python tooling/observation-set-admission-audit/v0.2/validate.py
+
+      - name: Run hostile admission mutations
+        run: python tooling/observation-set-admission-audit/v0.2/test_audit.py
+
+      - name: Validate implementation receipt exact bindings
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root = Path('tooling/observation-set-admission-audit/v0.2')
+          receipt = json.loads((root / 'implementation-receipt.json').read_text())
+          schema = json.loads((root / 'implementation-receipt.schema.json').read_text())
+          Draft202012Validator.check_schema(schema)
+          errs = list(Draft202012Validator(schema).iter_errors(receipt))
+          assert not errs, errs[0].message if errs else ''
+          assert receipt['result'] == 'PARTIAL_ADMISSION_ELIGIBLE_SET_ONLY_NO_CORE_ADMISSION'
+          assert receipt['next_safe_action'] == 'MATERIALIZE_SET_ONLY_EXPERIMENTAL_INTERFACE_REGISTRY_DELTA'
+          assert receipt['source_binding_count'] == 10
+          assert len(receipt['package_bindings']) == 6
+          for item in receipt['package_bindings']:
+              actual = subprocess.check_output(['git', 'hash-object', item['path']], text=True).strip()
+              assert actual == item['blob_sha1'], (item['path'], actual, item['blob_sha1'])
+          assert all(v is False for v in receipt['non_effects'].values())
+          PY
+
+      - name: Assert exact partial-admission result
+        run: |
+          python - <<'PY'
+          import json
+          a = json.load(open('tooling/observation-set-admission-audit/v0.2/assessment.json'))
+          apis = {x['id']: x for x in a['api_assessments']}
+          assert apis['ObservationSet']['decision'] == 'ELIGIBLE_EXPERIMENTAL_INTERFACE_ADMISSION'
+          assert apis['ObservationSet']['independent_direct_consumer_families'] == 2
+          assert apis['ObservationSet']['registry_scope_if_later_admitted'] == 'SET_ONLY'
+          assert apis['ObservationSetTransition']['decision'] == 'DEFER_SECOND_DOMAIN_DIRECT_REUSE'
+          assert apis['ObservationSetTransition']['independent_direct_consumer_families'] == 1
+          assert apis['LocalObservationSetChain']['decision'] == 'DEFER_SECOND_DOMAIN_DIRECT_REUSE'
+          assert apis['LocalObservationSetChain']['independent_direct_consumer_families'] == 1
+          assert a['package_assessment']['monolithic_registry_admission_eligible'] is False
+          assert a['package_assessment']['set_only_registry_admission_eligible'] is True
+          assert a['overall_result'] == 'PARTIAL_ADMISSION_ELIGIBLE_SET_ONLY_NO_CORE_ADMISSION'
+          assert all(v is False for v in a['non_effects'].values())
+          PY
+
+      - name: Prove audit-only pull-request boundary
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          git diff --name-only "$BASE_SHA"...HEAD >/tmp/changed.txt
+          cat /tmp/changed.txt
+          python - <<'PY'
+          from pathlib import Path
+          changed = [x for x in Path('/tmp/changed.txt').read_text().splitlines() if x]
+          wf = '.github/workflows/observation-set-admission-audit-v0.2.yml'
+          prefix = 'tooling/observation-set-admission-audit/v0.2/'
+          forbidden = [p for p in changed if p != wf and not p.startswith(prefix)]
+          assert not forbidden, forbidden
+          assert wf in changed
+          assert any(p.startswith(prefix) for p in changed)
+          PY
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/interface-registry/ protocols/core/ SPEC.md PRINCIPLES.md docs/ROADMAP-CURRENT.md
+          git diff --quiet "$BASE_SHA"...HEAD -- protocols/integration/observation-set-calculus-candidate/ interop/c2pa/observation-set-calculus-adapter/ tooling/public-review-observation-set-adapter/ tooling/observation-set-calculus-two-domain-proof/
+
+      - name: Prove repository-read-only validation
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --short
+            exit 1
+          fi
