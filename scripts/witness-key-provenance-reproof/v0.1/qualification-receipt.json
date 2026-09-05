@@ -1,0 +1,90 @@
+{
+  "automatic_action": false,
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_seven_key_provenance_reproven": false,
+    "all_views_non_equivocating_proven": false,
+    "all_witnesses_independent_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "collision_semantics_established": false,
+    "complete_history_proven": false,
+    "global_non_equivocation_proven": false,
+    "malicious_behavior_proven": false,
+    "operator_independence_proven": false,
+    "producer_non_equivocation_proven": false,
+    "second_bitcoin_anchor_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "witness_identity_proven": false
+  },
+  "external_mutation_performed": false,
+  "key_provenance_assurance": "QUORUM_MANY_OPERATOR_PUBLISHED_EXACT_VKEYS_REOBSERVED_FROM_QUORUM_MANY_SOURCE_URLS_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "matched_witness_key_count": 5,
+  "predecessor": {
+    "key_provenance_assurance": "OPERATOR_CURATED_PINS_NOT_INDEPENDENTLY_REPROVEN",
+    "main_sha": "529522f6a47cd202918175ea81f024d12246faaf",
+    "receipt_fingerprint_sha256": "770530d3c8463483cfc0cc0374c6535ab5e9f5e76c48dbe118de83db6c30ec2c",
+    "verdict": "OBSERVED_APPEND_ONLY_EXTENSION_VERIFIED_LATER_CHECKPOINT_KEY_PROVENANCE_NOT_INDEPENDENTLY_ESTABLISHED",
+    "verified_witness_count": 7
+  },
+  "quorum_many_distinct_source_urls_reobserved": true,
+  "quorum_many_exact_vkeys_reobserved": true,
+  "quorum_min": 4,
+  "receipt_fingerprint_sha256": "2a533ce2b03ba170bfb8c6e33cced5994acc61f18fed6b94ee42931307f615d8",
+  "schema": "urn:uu-aap:witness-key-provenance-reproof-receipt:0.1",
+  "source_records": [
+    {
+      "exact_vkey_observed": true,
+      "id": "mullvad-stagemole",
+      "retrieved_body_sha256": "3f7a1a02f0c5709923e3f69f3f0e7e5a83182886d9e31504bc9df94a6183f8c5",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "witness.stagemole.eu",
+      "source_url": "https://witness.stagemole.eu/about",
+      "witness_vkey": "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "trustfabric-little-garden",
+      "retrieved_body_sha256": "30d9b70b592b1d8429673b95a4ef4c6d6aed05a7df1b581bf7e95368054a79dd",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "transparency.dev",
+      "source_url": "https://transparency.dev/witnesses",
+      "witness_vkey": "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "trustfabric-ring-any-bells",
+      "retrieved_body_sha256": "30d9b70b592b1d8429673b95a4ef4c6d6aed05a7df1b581bf7e95368054a79dd",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "transparency.dev",
+      "source_url": "https://transparency.dev/witnesses",
+      "witness_vkey": "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "remora",
+      "retrieved_body_sha256": "aabf8fb9834f28fe308077337ae9a15c699915396c0d5b88d353278d1916a0dc",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "remora.n621.de",
+      "source_url": "https://remora.n621.de/",
+      "witness_vkey": "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "geomys-navigli",
+      "retrieved_body_sha256": "15ff08c471b1482259723e975e6199157919421ccbd930ca58730cdf95990bbb",
+      "source_classification": "OPERATOR_OWNED_REPOSITORY_SOURCE",
+      "source_host": "raw.githubusercontent.com",
+      "source_url": "https://raw.githubusercontent.com/geomys/magnolia/0545421c001b16c0fb328cd9254010c46fa424a6/cmd/hetrix/geomys.go",
+      "witness_vkey": "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G"
+    }
+  ],
+  "tracking_issue": 935,
+  "unique_source_host_count": 4,
+  "unique_source_url_count": 4,
+  "verdict": "QUORUM_MANY_PINNED_WITNESS_KEYS_REOBSERVED_FROM_OPERATOR_PUBLISHED_SOURCES_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED"
+}
