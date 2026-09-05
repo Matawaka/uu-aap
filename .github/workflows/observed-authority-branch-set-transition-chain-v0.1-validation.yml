@@ -1,0 +1,162 @@
+name: Observed Authority Branch-Set Transition Chain Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/observed-authority-branch-set-transition-chain/**'
+      - '.github/workflows/observed-authority-branch-set-transition-chain-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/observed-authority-branch-set-transition-chain/**'
+      - '.github/workflows/observed-authority-branch-set-transition-chain-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  local-observation-set-chain-without-complete-history:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run merged #890 authority-admission tests unchanged
+        run: python scripts/c2pa-authority-admission/test_gate.py
+
+      - name: Re-run merged #892 observable consistency tests unchanged
+        run: python scripts/observable-authority-consistency/test_receipt.py
+
+      - name: Re-run merged #894 triangulation tests unchanged
+        run: python scripts/authority-surface-triangulation/test_receipt.py
+
+      - name: Re-run merged #894 predecessor cross-check unchanged
+        run: python scripts/authority-surface-triangulation/cross_check.py
+
+      - name: Re-run merged #896 transition tests unchanged
+        run: python scripts/authority-surface-transition/test_receipt.py
+
+      - name: Re-run merged #898 continuity-chain tests unchanged
+        run: python scripts/authority-surface-continuity-chain/test_receipt.py
+
+      - name: Re-run merged #900 divergence tests unchanged
+        run: python scripts/observed-authority-branch-divergence/test_receipt.py
+
+      - name: Re-run merged #902 branch-set tests unchanged
+        run: python scripts/observed-authority-branch-set/test_receipt.py
+
+      - name: Re-run merged #902 alias/order regressions unchanged
+        run: python scripts/observed-authority-branch-set/test_alias_semantics.py
+
+      - name: Re-run merged #904 branch-set transition tests unchanged
+        run: python scripts/observed-authority-branch-set-transition/test_receipt.py
+
+      - name: Run branch-set transition-chain hostile and positive tests
+        run: python scripts/observed-authority-branch-set-transition-chain/test_receipt.py
+
+      - name: Build source-bound chain examples from merged #902 fixtures
+        run: |
+          python - <<'PY'
+          import copy
+          import json
+          from pathlib import Path
+
+          source = Path('scripts/observed-authority-branch-set/fixtures/three-branches.json')
+          data = json.loads(source.read_text(encoding='utf-8'))
+          schema = data['schema']
+          a, b, c = data['branches']
+
+          def observed(*branches):
+              return {'schema': schema, 'branches': [copy.deepcopy(x) for x in branches]}
+
+          out = Path('/tmp/branch-set-chain-inputs')
+          out.mkdir(parents=True, exist_ok=True)
+
+          examples = {
+              'membership': {
+                  'schema': 'urn:uu-aap:observed-authority-branch-set-transition-chain-input:0.1',
+                  'sets': [observed(a, b), observed(a, b, c), observed(a, b)],
+              },
+              'multiplicity': {
+                  'schema': 'urn:uu-aap:observed-authority-branch-set-transition-chain-input:0.1',
+                  'sets': [observed(a, b), observed(a, b, a), observed(a, b)],
+              },
+              'reorder': {
+                  'schema': 'urn:uu-aap:observed-authority-branch-set-transition-chain-input:0.1',
+                  'sets': [observed(a, b), observed(b, a)],
+              },
+          }
+          for name, value in examples.items():
+              (out / f'{name}.json').write_text(
+                  json.dumps(value, sort_keys=True), encoding='utf-8'
+              )
+          PY
+
+      - name: Emit deterministic branch-set transition-chain receipts
+        run: |
+          mkdir -p /tmp/branch-set-chain-receipts
+          for fixture in membership multiplicity reorder; do
+            python scripts/observed-authority-branch-set-transition-chain/receipt.py \
+              /tmp/branch-set-chain-inputs/${fixture}.json \
+              > /tmp/branch-set-chain-receipts/${fixture}.json
+          done
+
+      - name: Assert exact local adjacency and non-completeness outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('/tmp/branch-set-chain-receipts')
+          membership = json.loads((root / 'membership.json').read_text())
+          multiplicity = json.loads((root / 'multiplicity.json').read_text())
+          reorder = json.loads((root / 'reorder.json').read_text())
+
+          assert membership['set_count'] == 3
+          assert membership['edge_count'] == 2
+          assert membership['transition_relation_sequence'] == [
+              'OBSERVED_BRANCH_MEMBERSHIP_CHANGED',
+              'OBSERVED_BRANCH_MEMBERSHIP_CHANGED',
+          ]
+          assert membership['local_observation_set_adjacency'] is True
+          for index, edge in enumerate(membership['edges']):
+              assert edge['before_set_fingerprint_sha256'] == membership['sets'][index]['branch_set_fingerprint_sha256']
+              assert edge['after_set_fingerprint_sha256'] == membership['sets'][index + 1]['branch_set_fingerprint_sha256']
+
+          assert multiplicity['transition_relation_sequence'] == [
+              'OBSERVATION_MULTIPLICITY_ONLY_CHANGED',
+              'OBSERVATION_MULTIPLICITY_ONLY_CHANGED',
+          ]
+
+          assert reorder['transition_relation_sequence'] == ['IDENTICAL_OBSERVED_SET']
+          assert reorder['sets'][0]['branch_set_fingerprint_sha256'] == reorder['sets'][1]['branch_set_fingerprint_sha256']
+          assert reorder['sets'][0]['set_input_fingerprint_sha256'] != reorder['sets'][1]['set_input_fingerprint_sha256']
+
+          for receipt in (membership, multiplicity, reorder):
+              guards = receipt['semantic_guards']
+              assert guards['complete_observation_history_proven'] is False
+              assert guards['no_omitted_observation_sets_proven'] is False
+              assert guards['trusted_time_proven'] is False
+              assert guards['set_sequence_proves_chronology'] is False
+              assert guards['newly_observed_proves_branch_creation'] is False
+              assert guards['not_observed_in_next_proves_branch_deletion'] is False
+              assert guards['append_only_log_proven'] is False
+              assert guards['global_non_equivocation_proven'] is False
+              assert guards['global_equivocation_proven'] is False
+          PY
+
+      - name: Prove validation is repository-read-only
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'validation mutated the repository' >&2
+            git status --short >&2
+            exit 1
+          fi
