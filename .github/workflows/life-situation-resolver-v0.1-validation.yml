@@ -17,7 +17,6 @@ permissions:
 
 env:
   PILOT_DIR: pilots/life-situation-resolver/v0.1
-  ORIGIN_FRONTIER: 45d3616e85d73efd3f73fccabcc3c14aa374c285
 
 jobs:
   validate:
@@ -74,7 +73,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git diff --quiet "$ORIGIN_FRONTIER" HEAD -- \
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          git diff --quiet "$BASE_SHA" HEAD -- \
             protocols/core/ protocols/interface-registry/ protocols/integration/ protocols/fcl/ \
             tooling/backlog-entity-reconciliation/ docs/ROADMAP-CURRENT.md \
             SPEC.md PRINCIPLES.md CONTESTABILITY.md RESPONSIBILITY.md schema/uu-aap-manifest.schema.json
@@ -83,12 +83,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
           while IFS= read -r p; do
             [ -z "$p" ] && continue
             case "$p" in
               pilots/life-situation-resolver/v0.1/*|.github/workflows/life-situation-resolver-v0.1-validation.yml) ;;
               *) echo "unexpected changed path: $p" >&2; exit 1 ;;
             esac
-          done < <(git diff --name-only "$ORIGIN_FRONTIER" HEAD)
+          done < <(git diff --name-only "$BASE_SHA" HEAD)
       - name: Clean tree
         run: test -z "$(git status --porcelain --untracked-files=all)"
