@@ -134,6 +134,23 @@ class ObservableAuthorityConsistencyTests(unittest.TestCase):
                 with self.assertRaises(ReceiptInputError):
                     evaluate(data)
 
+    def test_alert_policy_field_rejected(self):
+        data = load("external-shape.json")
+        data["alert_policy"] = "NONE"
+        with self.assertRaises(ReceiptInputError):
+            evaluate(data)
+
+    def test_unknown_nested_fields_rejected(self):
+        for section, key in [
+            ("export_surface", "display_hint"),
+            ("signed_root", "latest"),
+        ]:
+            data = load("external-shape.json")
+            data[section][key] = True
+            with self.subTest(section=section, key=key):
+                with self.assertRaises(ReceiptInputError):
+                    evaluate(data)
+
     def test_receipt_has_no_score_or_remediation_action(self):
         receipt = evaluate(load("external-shape.json"))
         serialized = json.dumps(receipt, sort_keys=True).lower()
