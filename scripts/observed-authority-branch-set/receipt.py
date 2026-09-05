@@ -59,12 +59,7 @@ def _exact_keys(value: Any, expected: set[str], name: str) -> dict[str, Any]:
 
 
 def _canonical_json(value: Any) -> str:
-    return json.dumps(
-        value,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=False,
-    )
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
 
 
 def _sha256_text(value: str) -> str:
@@ -72,9 +67,7 @@ def _sha256_text(value: str) -> str:
 
 
 def _branch_fingerprint(branch_input: dict[str, Any]) -> tuple[str, list[str]]:
-    snapshot_fps = [
-        chain._canonical_fingerprint(snapshot) for snapshot in branch_input["snapshots"]
-    ]
+    snapshot_fps = [chain._canonical_fingerprint(s) for s in branch_input["snapshots"]]
     return divergence._branch_fingerprint(snapshot_fps), snapshot_fps
 
 
@@ -92,27 +85,35 @@ def _chain_summary(receipt: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _assert_digest_content_consistency(
-    branches: list[dict[str, Any]],
-) -> None:
-    seen: dict[tuple[str, str], str] = {}
+def _semantic_signer_set(surface_name: str, surface: dict[str, Any]) -> tuple[str, ...]:
+    """Match #896 same-digest consistency semantics: compare signer membership, not aliases."""
+    if surface_name == "runtime_surface":
+        values = surface["configured_signers"]
+    elif surface_name == "export_surface":
+        values = surface["signers"]
+    elif surface_name == "signed_root":
+        values = surface["admitted_signers"]
+    else:  # pragma: no cover - internal programming guard
+        raise RuntimeError(f"unsupported surface: {surface_name}")
+    return tuple(sorted(values))
+
+
+def _assert_digest_content_consistency(branches: list[dict[str, Any]]) -> None:
+    """Reject one exact document digest mapping to different normalized signer content."""
+    seen: dict[tuple[str, str], tuple[str, ...]] = {}
     for branch_index, branch in enumerate(branches):
         for snapshot_index, snapshot in enumerate(branch["snapshots"]):
-            surfaces = (
-                ("runtime_surface", snapshot["runtime_surface"]),
-                ("export_surface", snapshot["export_surface"]),
-                ("signed_root", snapshot["signed_root"]),
-            )
-            for surface_name, surface in surfaces:
+            for surface_name in ("runtime_surface", "export_surface", "signed_root"):
+                surface = snapshot[surface_name]
                 digest = surface["document_sha256"]
-                canonical = _canonical_json(surface)
+                semantic_content = _semantic_signer_set(surface_name, surface)
                 key = (surface_name, digest)
                 previous = seen.get(key)
                 if previous is None:
-                    seen[key] = canonical
-                elif previous != canonical:
+                    seen[key] = semantic_content
+                elif previous != semantic_content:
                     _fail(
-                        f"{surface_name} document_sha256 maps to different content "
+                        f"{surface_name} document_sha256 maps to different signer content "
                         f"at branches[{branch_index}].snapshots[{snapshot_index}]"
                     )
 
@@ -126,48 +127,34 @@ def _pairwise_summary(receipt: dict[str, Any]) -> dict[str, Any]:
             "left_signed_root": copy.deepcopy(divergence_data["left_signed_root"]),
             "right_signed_root": copy.deepcopy(divergence_data["right_signed_root"]),
         }
-        parallel_variants = divergence_data[
-            "parallel_same_version_root_variants_observed"
-        ]
-
+        parallel_variants = divergence_data["parallel_same_version_root_variants_observed"]
     return {
-        "left_branch_fingerprint_sha256": receipt["left_branch"][
-            "branch_fingerprint_sha256"
-        ],
-        "right_branch_fingerprint_sha256": receipt["right_branch"][
-            "branch_fingerprint_sha256"
-        ],
+        "left_branch_fingerprint_sha256": receipt["left_branch"]["branch_fingerprint_sha256"],
+        "right_branch_fingerprint_sha256": receipt["right_branch"]["branch_fingerprint_sha256"],
         "relation": receipt["relation"],
         "common_observed_prefix_length": receipt["common_observed_prefix_length"],
         "parallel_same_version_root_variants_observed": parallel_variants,
-        "observed_reconvergence_present": receipt["reconvergence"][
-            "observed_reconvergence_present"
-        ],
+        "observed_reconvergence_present": receipt["reconvergence"]["observed_reconvergence_present"],
         "first_divergence_root": first_divergence_root,
     }
 
 
-def _root_variant_groups(
-    branches: list[dict[str, Any]],
-) -> list[dict[str, Any]]:
+def _root_variant_groups(branches: list[dict[str, Any]]) -> list[dict[str, Any]]:
     grouped: dict[tuple[str, int], set[str]] = {}
     for branch in branches:
         for snapshot in branch["snapshots"]:
             root = snapshot["signed_root"]
-            grouped.setdefault((root["id"], root["version"]), set()).add(
-                root["document_sha256"]
-            )
-
+            grouped.setdefault((root["id"], root["version"]), set()).add(root["document_sha256"])
     result = []
     for (root_id, version), digests in sorted(grouped.items(), key=lambda item: item[0]):
-        sorted_digests = sorted(digests)
+        ordered = sorted(digests)
         result.append(
             {
                 "root_id": root_id,
                 "root_version": version,
-                "distinct_document_sha256": sorted_digests,
-                "distinct_digest_count": len(sorted_digests),
-                "multiple_root_digests_observed": len(sorted_digests) > 1,
+                "distinct_document_sha256": ordered,
+                "distinct_digest_count": len(ordered),
+                "multiple_root_digests_observed": len(ordered) > 1,
             }
         )
     return result
@@ -177,14 +164,12 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     data = _exact_keys(data, TOP_LEVEL_KEYS, "input")
     if data.get("schema") != INPUT_SCHEMA:
         _fail("unexpected input schema")
-
     branches = data.get("branches")
     if not isinstance(branches, list):
         _fail("branches must be an array")
     if len(branches) < 2:
         _fail("branches must contain at least two observations")
 
-    chain_receipts: list[dict[str, Any]] = []
     branch_fps: list[str] = []
     snapshot_fps_by_observation: list[list[str]] = []
     canonical_branch_by_fp: dict[str, str] = {}
@@ -196,17 +181,14 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
             chain_receipt = chain.evaluate(branch_input)
         except chain.ChainInputError as exc:
             _fail(f"branches[{index}] invalid: {exc}")
-
         branch_fp, snapshot_fps = _branch_fingerprint(branch_input)
         canonical = _canonical_json(branch_input)
         previous = canonical_branch_by_fp.get(branch_fp)
         if previous is not None and previous != canonical:
             _fail("branch fingerprint collision or canonical branch mismatch")
-
         canonical_branch_by_fp.setdefault(branch_fp, canonical)
         representative_by_fp.setdefault(branch_fp, branch_input)
         receipt_by_fp.setdefault(branch_fp, chain_receipt)
-        chain_receipts.append(chain_receipt)
         branch_fps.append(branch_fp)
         snapshot_fps_by_observation.append(snapshot_fps)
 
@@ -219,8 +201,8 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     observation_counts: dict[str, int] = {}
     for branch_fp in branch_fps:
         observation_counts[branch_fp] = observation_counts.get(branch_fp, 0) + 1
-
     distinct_fps = sorted(observation_counts)
+
     distinct_branches = []
     for branch_fp in distinct_fps:
         representative = representative_by_fp[branch_fp]
@@ -235,11 +217,8 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
         )
 
     duplicate_groups = [
-        {
-            "branch_fingerprint_sha256": branch_fp,
-            "observation_count": count,
-        }
-        for branch_fp, count in sorted(observation_counts.items())
+        {"branch_fingerprint_sha256": fp, "observation_count": count}
+        for fp, count in sorted(observation_counts.items())
         if count > 1
     ]
 
@@ -262,10 +241,6 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
         pairwise_matrix.append(summary)
 
     root_groups = _root_variant_groups(branches)
-    any_root_multiplicity = any(
-        item["multiple_root_digests_observed"] for item in root_groups
-    )
-
     expected_pairs = len(distinct_fps) * (len(distinct_fps) - 1) // 2
     if len(pairwise_matrix) != expected_pairs:
         _fail("pairwise matrix is incomplete")
@@ -282,7 +257,9 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
         "duplicate_observations": duplicate_groups,
         "pairwise_matrix": pairwise_matrix,
         "observed_root_variant_groups": root_groups,
-        "any_multiple_root_digests_observed": any_root_multiplicity,
+        "any_multiple_root_digests_observed": any(
+            item["multiple_root_digests_observed"] for item in root_groups
+        ),
         "semantic_guards": {
             "all_existing_branches_observed": False,
             "global_non_equivocation_proven": False,
