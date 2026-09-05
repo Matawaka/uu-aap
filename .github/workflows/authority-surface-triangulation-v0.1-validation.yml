@@ -1,0 +1,114 @@
+name: Authority Surface Triangulation Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/authority-surface-triangulation/**'
+      - '.github/workflows/authority-surface-triangulation-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/authority-surface-triangulation/**'
+      - '.github/workflows/authority-surface-triangulation-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  triangulation:
+    name: three-surface non-conflation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Re-run merged #890 authority-admission tests unchanged
+        run: >-
+          python -m unittest discover
+          -s scripts/c2pa-authority-admission
+          -p 'test_*.py'
+          -v
+
+      - name: Re-run merged #892 observable-consistency tests unchanged
+        run: >-
+          python -m unittest discover
+          -s scripts/observable-authority-consistency
+          -p 'test_*.py'
+          -v
+
+      - name: Run triangulation hostile and positive tests
+        run: >-
+          python -m unittest discover
+          -s scripts/authority-surface-triangulation
+          -p 'test_*.py'
+          -v
+
+      - name: Cross-check pairwise edges against merged predecessors
+        run: python scripts/authority-surface-triangulation/cross_check.py
+
+      - name: Emit deterministic triangulation receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=scripts/authority-surface-triangulation
+          for fixture in corrected-external-shape aligned runtime-only root-only independent-bidirectional successor-v3; do
+            python "$root/receipt.py" "$root/fixtures/$fixture.json" > "/tmp/$fixture.json"
+          done
+
+      - name: Assert exact corrected external-shape and successor outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def load(name):
+              return json.loads(Path('/tmp', f'{name}.json').read_text())
+
+          corrected = load('corrected-external-shape')
+          rr = corrected['comparisons']['runtime_vs_signed_root']
+          er = corrected['comparisons']['export_vs_signed_root']
+          re = corrected['comparisons']['runtime_vs_export']
+
+          assert corrected['runtime_surface']['configured_signer_count'] == 7
+          assert corrected['export_surface']['exported_signer_count'] == 8
+          assert corrected['signed_root']['admitted_signer_count'] == 7
+          assert rr['delta_present'] is False
+          assert rr['configured_but_unadmitted'] == []
+          assert rr['admitted_but_unconfigured'] == []
+          assert er['exported_but_unadmitted'] == ['fixture-witness-8']
+          assert er['admitted_but_unexported'] == []
+          assert re['configured_but_unexported'] == []
+          assert re['exported_but_unconfigured'] == ['fixture-witness-8']
+          assert corrected['any_delta_present'] is True
+
+          aligned = load('aligned')
+          assert aligned['any_delta_present'] is False
+          assert all(not pair['delta_present'] for pair in aligned['comparisons'].values())
+
+          independent = load('independent-bidirectional')
+          assert all(pair['delta_present'] for pair in independent['comparisons'].values())
+
+          v3 = load('successor-v3')
+          assert v3['signed_root']['version'] == 3
+          assert v3['comparisons']['export_vs_signed_root']['delta_present'] is False
+          assert v3['comparisons']['runtime_vs_signed_root']['admitted_but_unconfigured'] == ['fixture-witness-8']
+          assert v3['comparisons']['runtime_vs_export']['exported_but_unconfigured'] == ['fixture-witness-8']
+          assert v3['semantic_guards']['successor_root_backfills_historical_receipt'] is False
+
+          assert all(value is False for value in corrected['semantic_guards'].values())
+          print('authority surface triangulation exact acceptance: PASS')
+          PY
+
+      - name: Prove validation is repository-read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
