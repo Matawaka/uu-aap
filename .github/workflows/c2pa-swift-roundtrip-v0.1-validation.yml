@@ -1,0 +1,112 @@
+name: C2PA Swift Preservation Frontier v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-swift-roundtrip/**'
+      - '.github/workflows/c2pa-swift-roundtrip-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-swift-roundtrip/**'
+      - '.github/workflows/c2pa-swift-roundtrip-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  C2PA_SWIFT_SHA: b43d93b7c15daca4f04d33284b821fd1330bbf88
+
+jobs:
+  source-contract:
+    name: pinned source contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Inspect exact upstream source frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          git clone --quiet https://github.com/contentauth/c2pa-swift.git /tmp/c2pa-swift
+          git -C /tmp/c2pa-swift checkout --quiet "$C2PA_SWIFT_SHA"
+          test "$(git -C /tmp/c2pa-swift rev-parse HEAD)" = "$C2PA_SWIFT_SHA"
+
+          # PR #161 candidate contains the intended unknown-field preservation surface.
+          grep -q 'additionalFields' /tmp/c2pa-swift/Library/Sources/Manifest/ClaimGeneratorInfo.swift
+          grep -q 'decodeAdditionalFields' /tmp/c2pa-swift/Library/Sources/Manifest/AdditionalFields.swift
+          grep -q 'encodeAdditionalFields' /tmp/c2pa-swift/Library/Sources/Manifest/AdditionalFields.swift
+
+          # The same source frontier already consumes the newer crJSON FFI symbol.
+          grep -q 'c2pa_reader_crjson' /tmp/c2pa-swift/Library/Sources/Reader.swift
+
+          # Public SwiftPM packaging at this frontier still points at C2PAC v0.0.12.
+          grep -q 'releases/download/v0.0.12/C2PAC.xcframework.zip' /tmp/c2pa-swift/Package.swift
+          test -z "$(git status --porcelain)"
+
+  swiftpm-source-binary-skew:
+    name: reproduce SwiftPM source-binary skew
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - name: Select Xcode 16.4
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+          xcodebuild -version
+          swift --version
+      - name: Copy fixture package outside repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-swift-roundtrip
+          cp -R scripts/c2pa-swift-roundtrip /tmp/c2pa-swift-roundtrip
+      - name: Resolve exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          swift package --package-path /tmp/c2pa-swift-roundtrip resolve
+          resolved="$(git -C /tmp/c2pa-swift-roundtrip/.build/checkouts/c2pa-swift rev-parse HEAD)"
+          test "$resolved" = "$C2PA_SWIFT_SHA"
+          grep -q 'releases/download/v0.0.12/C2PAC.xcframework.zip' \
+            /tmp/c2pa-swift-roundtrip/.build/checkouts/c2pa-swift/Package.swift
+      - name: Consumer build must expose the known packaging gap
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          swift build --package-path /tmp/c2pa-swift-roundtrip > /tmp/swift-build.log 2>&1
+          rc=$?
+          set -e
+
+          if [ "$rc" -eq 0 ]; then
+            echo 'Pinned SwiftPM consumer unexpectedly built successfully; packaging frontier changed.' >&2
+            cat /tmp/swift-build.log >&2
+            exit 1
+          fi
+
+          grep -Fq "cannot find 'c2pa_reader_crjson' in scope" /tmp/swift-build.log
+          grep -Fq 'Library/Sources/Reader.swift' /tmp/swift-build.log
+
+          cat > /tmp/c2pa-swift-frontier-receipt.json <<'JSON'
+          {
+            "schema": "urn:uu-aap:c2pa-swift-frontier-receipt:0.1",
+            "upstream_repository": "contentauth/c2pa-swift",
+            "upstream_pr": 161,
+            "upstream_head_sha": "b43d93b7c15daca4f04d33284b821fd1330bbf88",
+            "public_binary_release": "C2PAC v0.0.12",
+            "source_expects_c2pa_reader_crjson": true,
+            "external_swiftpm_consumer_builds": false,
+            "failure_matches_expected_source_binary_skew": true,
+            "round_trip_executed": false,
+            "p0_3_complete": false
+          }
+          JSON
+
+          grep -q '"failure_matches_expected_source_binary_skew": true' /tmp/c2pa-swift-frontier-receipt.json
+          grep -q '"round_trip_executed": false' /tmp/c2pa-swift-frontier-receipt.json
+          grep -q '"p0_3_complete": false' /tmp/c2pa-swift-frontier-receipt.json
+      - run: test -z "$(git status --porcelain)"
