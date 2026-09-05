@@ -1,0 +1,154 @@
+{
+  "automatic_action": false,
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_seven_currently_active_proven": false,
+    "all_views_non_equivocating_proven": false,
+    "all_witnesses_independent_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "complete_history_proven": false,
+    "cryptographic_operator_identity_binding_proven": false,
+    "global_non_equivocation_proven": false,
+    "legal_operator_identity_proven": false,
+    "malicious_behavior_proven": false,
+    "operator_control_proven": false,
+    "operator_independence_proven": false,
+    "producer_non_equivocation_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "witness_identity_proven": false
+  },
+  "corroborated_operator_label_count": 5,
+  "corroborated_operator_labels": [
+    "Elias Rudberg",
+    "Florian Larysch",
+    "Geomys",
+    "Mullvad VPN AB",
+    "TrustFabric"
+  ],
+  "external_mutation_performed": false,
+  "missing_operator_labels": [
+    "rgdd"
+  ],
+  "network_curated_table_counted_as_operator_origin_evidence": false,
+  "operator_records": [
+    {
+      "about_url": "https://witness.stagemole.eu/about",
+      "accepted_vkey_count": 1,
+      "corroboration_source_count": 2,
+      "operator_label": "Mullvad VPN AB",
+      "operator_origin_relation_corroborated": true,
+      "source_records": [
+        {
+          "bounded_segment_observed": true,
+          "required_fragments_observed": true,
+          "retrieved_body_sha256": "dd4b4fb5dcf7a61d7e18bc0e7dd92829a538e537edc0417e812b8997805e8bd9",
+          "source_classification": "PUBLIC_PARTICIPATION_REQUEST_ATTRIBUTED_TO_OPERATOR",
+          "source_url": "https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/2025/11/"
+        },
+        {
+          "bounded_segment_observed": true,
+          "required_fragments_observed": true,
+          "retrieved_body_sha256": "510cee23af22722fae6c9cd80d4df54ba20bf18b7c4cf39a69c61867621d35ee",
+          "source_classification": "PUBLIC_PARTICIPATION_REQUEST_ATTRIBUTED_TO_OPERATOR",
+          "source_url": "https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/message/VMKKURC6MCXUO42IEEDENGP4R5PVHWHZ/"
+        }
+      ],
+      "witness_name": "witness.stagemole.eu"
+    },
+    {
+      "about_url": "https://transparency.dev/witnesses",
+      "accepted_vkey_count": 2,
+      "corroboration_source_count": 1,
+      "operator_label": "TrustFabric",
+      "operator_origin_relation_corroborated": true,
+      "source_records": [
+        {
+          "bounded_segment_observed": true,
+          "required_fragments_observed": true,
+          "retrieved_body_sha256": "30d9b70b592b1d8429673b95a4ef4c6d6aed05a7df1b581bf7e95368054a79dd",
+          "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+          "source_url": "https://transparency.dev/witnesses"
+        }
+      ],
+      "witness_name": "TrustFabric witness set"
+    },
+    {
+      "about_url": "https://remora.n621.de/",
+      "accepted_vkey_count": 1,
+      "corroboration_source_count": 1,
+      "operator_label": "Florian Larysch",
+      "operator_origin_relation_corroborated": true,
+      "source_records": [
+        {
+          "bounded_segment_observed": true,
+          "required_fragments_observed": true,
+          "retrieved_body_sha256": "16dc97265f01dfdafa9c30064109b736d0ad5770447cf3cd0f96e488a5e9af28",
+          "source_classification": "PUBLIC_PARTICIPATION_REQUEST_ATTRIBUTED_TO_OPERATOR",
+          "source_url": "https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/2025/10/"
+        }
+      ],
+      "witness_name": "remora.n621.de"
+    },
+    {
+      "about_url": "https://geomys.org/witness/navigli",
+      "accepted_vkey_count": 1,
+      "corroboration_source_count": 1,
+      "operator_label": "Geomys",
+      "operator_origin_relation_corroborated": true,
+      "source_records": [
+        {
+          "bounded_segment_observed": true,
+          "required_fragments_observed": true,
+          "retrieved_body_sha256": "ecc006d8150d31cf45e0b4ee914b5eeea4dbec6a5449292db8884f82e1591333",
+          "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+          "source_url": "https://geomys.org/witness/navigli"
+        }
+      ],
+      "witness_name": "witness.navigli.sunlight.geomys.org"
+    },
+    {
+      "about_url": "https://www.rgdd.se/poc-witness/about",
+      "accepted_vkey_count": 1,
+      "corroboration_source_count": 0,
+      "operator_label": "rgdd",
+      "operator_origin_relation_corroborated": false,
+      "source_records": [],
+      "witness_name": "rgdd.se/poc-witness"
+    },
+    {
+      "about_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "accepted_vkey_count": 1,
+      "corroboration_source_count": 1,
+      "operator_label": "Elias Rudberg",
+      "operator_origin_relation_corroborated": true,
+      "source_records": [
+        {
+          "bounded_segment_observed": true,
+          "required_fragments_observed": true,
+          "retrieved_body_sha256": "16dc97265f01dfdafa9c30064109b736d0ad5770447cf3cd0f96e488a5e9af28",
+          "source_classification": "PUBLIC_PARTICIPATION_REQUEST_ATTRIBUTED_TO_OPERATOR",
+          "source_url": "https://lists.witness-network.org/mailman3/hyperkitty/list/participate%40lists.witness-network.org/2025/10/"
+        }
+      ],
+      "witness_name": "witness1.smartit.nu/witness1"
+    }
+  ],
+  "predecessor": {
+    "matched_witness_key_count": 7,
+    "public_operator_label_count": 6,
+    "receipt_fingerprint_sha256": "d963ac516836e7dbc0760d273c70ca5861cc0717bdbc4fc23d4a62d5e1683d91",
+    "verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED"
+  },
+  "public_operator_label_count": 6,
+  "receipt_fingerprint_sha256": "8e07ae4f682d580867f8c93525f0cd20796aa05067f12107602f1bebadcda10a",
+  "repository_predecessor_main": "66678fb27ce55a3e1bb1bc3bb2bbd6d419840520",
+  "repository_predecessor_tree": "6d17a25bba8ec1dc18612e0fbeb794cd240ca6ac",
+  "schema": "urn:uu-aap:witness-operator-origin-corroboration-receipt:0.1",
+  "tracking_issue": 944,
+  "verdict": "FIVE_OF_SIX_PUBLIC_OPERATOR_LABELS_CORROBORATED_BY_OPERATOR_ORIGIN_ATTRIBUTION_EVIDENCE_ONE_OPERATOR_ORIGIN_RELATION_NOT_ESTABLISHED"
+}
