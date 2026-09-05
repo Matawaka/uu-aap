@@ -63,17 +63,35 @@ def _scan_forbidden(value: Any, path: str = "$") -> None:
             _scan_forbidden(child, f"{path}[{index}]")
 
 
+def _require_exact_keys(value: dict[str, Any], allowed: set[str], name: str) -> None:
+    actual = set(value)
+    if actual != allowed:
+        missing = sorted(allowed - actual)
+        extra = sorted(actual - allowed)
+        _fail(f"{name} fields must be exact; missing={missing}, extra={extra}")
+
+
 def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(data, dict):
         _fail("input must be a JSON object")
-    if data.get("schema") != INPUT_SCHEMA:
-        _fail("unexpected input schema")
 
     _scan_forbidden(data)
+    _require_exact_keys(
+        data,
+        {"schema", "export_surface", "signed_root"},
+        "input",
+    )
+    if data.get("schema") != INPUT_SCHEMA:
+        _fail("unexpected input schema")
 
     export = data.get("export_surface")
     if not isinstance(export, dict):
         _fail("export_surface must be an object")
+    _require_exact_keys(
+        export,
+        {"id", "document_sha256", "signers"},
+        "export_surface",
+    )
     export_id = export.get("id")
     if not isinstance(export_id, str) or not export_id:
         _fail("export_surface.id must be a non-empty string")
@@ -87,6 +105,17 @@ def evaluate(data: dict[str, Any]) -> dict[str, Any]:
     root = data.get("signed_root")
     if not isinstance(root, dict):
         _fail("signed_root must be an object")
+    _require_exact_keys(
+        root,
+        {
+            "id",
+            "version",
+            "document_sha256",
+            "verification_status",
+            "admitted_signers",
+        },
+        "signed_root",
+    )
     root_id = root.get("id")
     if not isinstance(root_id, str) or not root_id:
         _fail("signed_root.id must be a non-empty string")
