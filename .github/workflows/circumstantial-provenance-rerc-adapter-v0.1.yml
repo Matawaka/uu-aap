@@ -1,0 +1,170 @@
+name: Circumstantial Provenance RERC Adapter v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/circumstantial-provenance-rerc-adapter/**'
+      - '.github/workflows/circumstantial-provenance-rerc-adapter-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/circumstantial-provenance-rerc-adapter/**'
+      - '.github/workflows/circumstantial-provenance-rerc-adapter-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  direct-rerc-reuse-with-provenance-preservation:
+    name: direct RERC reuse without provenance loss
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned receipt-schema validator
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+
+      - name: Preserve Circumstantial Provenance v0.1 unchanged
+        run: node protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js
+
+      - name: Preserve RERC v0.1 unchanged
+        run: node protocols/integration/rerc/v0.1/test-rerc.js
+
+      - name: Preserve merged #884 qualification boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          node tooling/recoverable-state-infrastructure-qualification/v0.1/validate_qualification.js
+          node tooling/recoverable-state-infrastructure-qualification/v0.1/test_qualification.js
+
+      - name: Verify exact source and qualification bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const cp = require('node:child_process');
+          const dir = 'protocols/integration/circumstantial-provenance-rerc-adapter/v0.1';
+          const b = JSON.parse(fs.readFileSync(`${dir}/source-bindings.json`, 'utf8'));
+          function blob(path) { return cp.execFileSync('git', ['rev-parse', `HEAD:${path}`], {encoding:'utf8'}).trim(); }
+          const checks = [
+            [b.qualification.path, b.qualification.blob],
+            [b.circumstantial_provenance.readme_path, b.circumstantial_provenance.readme_blob],
+            [b.circumstantial_provenance.validator_path, b.circumstantial_provenance.validator_blob],
+            [b.circumstantial_provenance.fixture_path, b.circumstantial_provenance.fixture_blob],
+            [b.rerc.module_path, b.rerc.module_blob],
+            [b.rerc.implementation_receipt_path, b.rerc.implementation_receipt_blob],
+          ];
+          for (const [path, expected] of checks) {
+            const actual = blob(path);
+            if (actual !== expected) throw new Error(`source binding drift ${path}: ${actual} != ${expected}`);
+          }
+          const q = JSON.parse(fs.readFileSync(b.qualification.path, 'utf8'));
+          const q2 = q.cases.find(x => x.id === b.qualification.case_id);
+          if (!q2) throw new Error('Q2 qualification missing');
+          if (q2.rerc_fit !== 'ADAPTER_FIT' || q2.recommended_dependency !== 'RERC_ONLY') throw new Error('Q2 qualification drift');
+          if (q2.erd_fit !== 'NOT_NEEDED' || q2.composition_fit !== 'NOT_NEEDED') throw new Error('Q2 composition boundary drift');
+          if (q.overall.composition_independent_demand_established !== false || q.overall.rsic_promotion_authorized !== false) throw new Error('RSIC demand/promotion drift');
+          console.log('SOURCE_BINDINGS_AND_Q2_QUALIFICATION: PASS');
+          NODE
+
+      - name: Verify adapter implementation receipt bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('node:fs');
+          const cp = require('node:child_process');
+          const dir = 'protocols/integration/circumstantial-provenance-rerc-adapter/v0.1';
+          const r = JSON.parse(fs.readFileSync(`${dir}/implementation-receipt.json`, 'utf8'));
+          function blob(path) { return cp.execFileSync('git', ['rev-parse', `HEAD:${path}`], {encoding:'utf8'}).trim(); }
+          if (r.artifact_type !== 'CircumstantialProvenanceRERCAdapterImplementationReceipt' || r.version !== '0.1' || r.tracking_issue !== 918) throw new Error('implementation receipt identity');
+          for (const [name, expected] of Object.entries(r.implementation_files)) {
+            const actual = blob(`${dir}/${name}`);
+            if (actual !== expected) throw new Error(`implementation binding drift ${name}: ${actual} != ${expected}`);
+          }
+          if (r.direct_dependencies.circumstantial_provenance_validator_blob !== blob('protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js')) throw new Error('CP validator dependency drift');
+          if (r.direct_dependencies.rerc_module_blob !== blob('protocols/integration/rerc/v0.1/rerc.js')) throw new Error('RERC dependency drift');
+          if (r.direct_dependencies.qualification_blob !== blob('tooling/recoverable-state-infrastructure-qualification/v0.1/qualification.json')) throw new Error('qualification dependency drift');
+          if (r.proof.rerc_direct_module_reuse !== true || r.proof.derived_copy_only_policy !== true || r.proof.hostile_test_count !== 23) throw new Error('implementation proof drift');
+          if (Object.values(r.non_effects).some(v => v !== false)) throw new Error('implementation non-effect escalation');
+          console.log('IMPLEMENTATION_RECEIPT_BINDINGS: PASS');
+          NODE
+
+      - name: Run 23 adapter hostile and positive tests
+        run: node protocols/integration/circumstantial-provenance-rerc-adapter/v0.1/test-adapter.js
+
+      - name: Emit and validate canonical adapter receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE' > /tmp/cp-rerc-adapter-receipt.json
+          const fs = require('node:fs');
+          const adapter = require('./protocols/integration/circumstantial-provenance-rerc-adapter/v0.1/adapter.js');
+          const assessment = JSON.parse(fs.readFileSync('protocols/integration/circumstantial-provenance/v0.1/fixture.json', 'utf8'));
+          const out = adapter.compressAssessment({assessment, request_id:'ci-canonical-cp-rerc'});
+          console.log(JSON.stringify(out.adapter_receipt, null, 2));
+          NODE
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root = Path('protocols/integration/circumstantial-provenance-rerc-adapter/v0.1')
+          schema = json.loads((root/'adapter-receipt.schema.json').read_text())
+          receipt = json.loads(Path('/tmp/cp-rerc-adapter-receipt.json').read_text())
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(receipt)
+          assert receipt['suppression_candidate_edge_ids'] == ['relation:ev-copy']
+          assert receipt['suppressed_relation_evidence_ids'] == ['ev-copy']
+          assert receipt['retained_evidence_ids'] == ['ev-direct','ev-witness','ev-contradiction']
+          assert receipt['protective_evidence_ids'] == ['ev-contradiction']
+          assert receipt['lineage_gap_ids'] == ['gap-1']
+          assert receipt['source_assessment_result'] == 'partially_supported'
+          assert receipt['direct_rerc_reuse'] is True
+          assert receipt['source_assessment_unchanged'] is True
+          assert receipt['exact_projection_restore_verified'] is True
+          assert all(v is False for v in receipt['claims'].values())
+          print('CANONICAL_ADAPTER_RECEIPT_SCHEMA_AND_ASSERTIONS: PASS')
+          PY
+
+      - name: Prove adapter-only additive diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin main
+          changed="$(git diff --name-only origin/main...HEAD)"
+          test "$(printf '%s\n' "$changed" | sed '/^$/d' | wc -l | tr -d ' ')" = '7'
+          while IFS= read -r path; do
+            case "$path" in
+              protocols/integration/circumstantial-provenance-rerc-adapter/v0.1/*|.github/workflows/circumstantial-provenance-rerc-adapter-v0.1.yml) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^protocols/integration/circumstantial-provenance/v0.1/' <<< "$changed"
+          ! grep -q '^protocols/integration/rerc/v0.1/' <<< "$changed"
+          ! grep -q '^protocols/integration/event-responsive-dormancy/' <<< "$changed"
+          ! grep -q '^protocols/reusable-infrastructure/recoverable-state/' <<< "$changed"
+          ! grep -q '^protocols/interface-registry/' <<< "$changed"
+          ! grep -q '^Core/' <<< "$changed"
+
+      - name: Prove validation is repository-read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

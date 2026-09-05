@@ -1,0 +1,39 @@
+{
+  "artifact_type": "CircumstantialProvenanceRERCAdapterImplementationReceipt",
+  "version": "0.1",
+  "tracking_issue": 918,
+  "repository_predecessor_main": "2782d086b794989e7a7d2093038d55927513beb9",
+  "implementation_files": {
+    "adapter.js": "24746c1903033a56513bcdea764973111c72e0e6",
+    "test-adapter.js": "fe2d5fca971e6647b6ec1604177781f4711b2032",
+    "adapter-receipt.schema.json": "7b5915955ca8b1f84f32d99e71b4db4a24d39544",
+    "source-bindings.json": "c3f29bfa4b3385ed9178ef417d647f8a52aa6ccc",
+    "README.md": "5d9c6a3d8a6aff665e04721288c60251996750af"
+  },
+  "direct_dependencies": {
+    "circumstantial_provenance_validator_blob": "b922ebefd51589cbffc02eb0e25fb800c1e3cee6",
+    "rerc_module_blob": "d2aae21a2e2375477c6349eae5f236ea60cd7151",
+    "qualification_blob": "e68360a90e9963cb5a66f8f4a2f26a088f47b439"
+  },
+  "proof": {
+    "rerc_direct_module_reuse": true,
+    "circumstantial_provenance_source_unchanged": true,
+    "rerc_source_unchanged": true,
+    "derived_copy_only_policy": true,
+    "protective_contradiction_preserved": true,
+    "protective_lineage_gap_preserved": true,
+    "exact_projection_restore_required": true,
+    "hostile_test_count": 23
+  },
+  "non_effects": {
+    "stable_core_admission": false,
+    "interface_registry_successor": false,
+    "erd_dependency": false,
+    "rsic_composition_demand": false,
+    "source_provenance_deleted": false,
+    "authority_created": false,
+    "truth_certified": false,
+    "external_effect_emitted": false,
+    "release_published": false
+  }
+}

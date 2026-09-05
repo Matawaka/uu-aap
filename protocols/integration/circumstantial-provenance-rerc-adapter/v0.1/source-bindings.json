@@ -1,0 +1,36 @@
+{
+  "schema": "urn:uu-aap:circumstantial-provenance-rerc-adapter-source-bindings:0.1",
+  "repository_predecessor_main": "2782d086b794989e7a7d2093038d55927513beb9",
+  "qualification": {
+    "path": "tooling/recoverable-state-infrastructure-qualification/v0.1/qualification.json",
+    "blob": "e68360a90e9963cb5a66f8f4a2f26a088f47b439",
+    "case_id": "Q2_CIRCUMSTANTIAL_PROVENANCE",
+    "expected_rerc_fit": "ADAPTER_FIT",
+    "expected_dependency": "RERC_ONLY"
+  },
+  "circumstantial_provenance": {
+    "readme_path": "protocols/integration/circumstantial-provenance/v0.1/README.md",
+    "readme_blob": "6937c35599d79a7562a055d834fb27f27f2f8ab7",
+    "validator_path": "protocols/integration/circumstantial-provenance/v0.1/validate-circumstantial-provenance.js",
+    "validator_blob": "b922ebefd51589cbffc02eb0e25fb800c1e3cee6",
+    "fixture_path": "protocols/integration/circumstantial-provenance/v0.1/fixture.json",
+    "fixture_blob": "901fb7136b2be3ee37e6ac6210be1da4d6a57f72"
+  },
+  "rerc": {
+    "module_path": "protocols/integration/rerc/v0.1/rerc.js",
+    "module_blob": "d2aae21a2e2375477c6349eae5f236ea60cd7151",
+    "implementation_receipt_path": "protocols/integration/rerc/v0.1/implementation-receipt.json",
+    "implementation_receipt_blob": "83609468622f4a79783b9b29e73a661497bad849"
+  },
+  "non_effects": {
+    "stable_core_modified": false,
+    "circumstantial_provenance_modified": false,
+    "rerc_modified": false,
+    "erd_dependency_added": false,
+    "rsic_composition_required": false,
+    "interface_registry_modified": false,
+    "authority_created": false,
+    "truth_certified": false,
+    "external_effect_emitted": false
+  }
+}
