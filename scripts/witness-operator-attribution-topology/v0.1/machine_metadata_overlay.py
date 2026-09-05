@@ -6,6 +6,7 @@ SCHEMA='urn:uu-aap:witness-operator-attribution-machine-overlay-receipt:0.1'
 STRONG='ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED'
 BASE_INCOMPLETE='INCOMPLETE_PUBLIC_OPERATOR_ATTRIBUTION_TOPOLOGY_FOR_ALL_SEVEN_PINNED_WITNESS_KEYS'
 NAV='witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G'
+V2_HOME='https://navigli.sunlight.geomys.org/'
 MON='https://witness.navigli.skylight.geomys.org/'
 SUB='https://witness.navigli.sunlight.geomys.org/'
 META='https://witness.navigli.sunlight.geomys.org/witness.v0.json'
@@ -37,7 +38,7 @@ def evaluate(profile, base, metadata_bytes):
         if label!='Geomys' and r.get('all_expected_vkeys_observed') is not True: raise ValueError('non-Geomys key gap')
     g=by['Geomys']
     if norm(g.get('attribution_url'))!=norm('https://geomys.org/witness/navigli'): raise ValueError('Geomys attribution drift')
-    if norm(g.get('key_material_url'))!=norm(MON): raise ValueError('Geomys v2 homepage drift')
+    if norm(g.get('key_material_url'))!=norm(V2_HOME): raise ValueError('Geomys v2 homepage drift')
     try: meta=json.loads(metadata_bytes.decode('utf-8'))
     except Exception as e: raise ValueError('metadata JSON') from e
     if not isinstance(meta,dict): raise ValueError('metadata object')
@@ -46,7 +47,6 @@ def evaluate(profile, base, metadata_bytes):
     if norm(meta.get('monitoring_url'))!=norm(MON): raise ValueError('metadata monitoring_url')
     if norm(meta.get('submission_url'))!=norm(SUB): raise ValueError('metadata submission_url')
     if NAV not in keys: raise ValueError('exact Navigli key absent from verifier_keys')
-    # exact seven-pin set comes from bound profile, not from metadata extras
     pins=[]
     for o in profile['operators']: pins.extend(o['witness_vkeys'])
     if len(pins)!=7 or len(set(pins))!=7 or NAV not in pins: raise ValueError('profile pin topology')
