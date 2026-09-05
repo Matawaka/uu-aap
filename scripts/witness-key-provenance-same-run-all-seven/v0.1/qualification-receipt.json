@@ -1,0 +1,117 @@
+{
+  "all_seven_reobserved_in_one_bounded_run": true,
+  "automatic_action": false,
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_seven_currently_active_proven": false,
+    "all_views_non_equivocating_proven": false,
+    "all_witnesses_independent_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "collision_semantics_established": false,
+    "complete_history_proven": false,
+    "global_non_equivocation_proven": false,
+    "legal_operator_identity_proven": false,
+    "malicious_behavior_proven": false,
+    "operator_independence_proven": false,
+    "producer_non_equivocation_proven": false,
+    "second_bitcoin_anchor_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "witness_identity_proven": false
+  },
+  "external_mutation_performed": false,
+  "key_provenance_assurance": "ALL_SEVEN_PINNED_WITNESS_KEY_SOURCE_MATERIAL_REOBSERVED_IN_ONE_BOUNDED_RUN_CURRENT_ACTIVITY_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED",
+  "matched_witness_key_count": 7,
+  "observed_witness_vkeys": [
+    "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2",
+    "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG",
+    "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL",
+    "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM",
+    "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G",
+    "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv",
+    "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
+  ],
+  "predecessor": {
+    "composed_exact_pinned_witness_key_count": 7,
+    "main_sha": "0f064ffc60c15ce98125b657f2f32eba09e0d933",
+    "profile_git_blob": "c2fc9dae0db399e9d2c14c4010d0f2b7d93d9bb0",
+    "qualification_receipt_git_blob": "3d02d7c5b95be3fd813faa4f1118da0ecb6dabe7",
+    "receipt_fingerprint_sha256": "0e46babcd7db57080b282d5216f50f4b9e4955eeed0cf53a14e8c77294ca142a",
+    "verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_OPERATOR_SOURCE_OBSERVED_ACROSS_BOUND_PREDECESSOR_AND_SUCCESSOR_EVIDENCE_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED"
+  },
+  "receipt_fingerprint_sha256": "85e032ce247bb65bdcf1c4032b23b997b0e74ad013c0726107f87b8780795971",
+  "schema": "urn:uu-aap:witness-key-provenance-same-run-all-seven-receipt:0.1",
+  "source_records": [
+    {
+      "exact_vkey_observed": true,
+      "id": "mullvad-stagemole",
+      "retrieved_body_sha256": "3f7a1a02f0c5709923e3f69f3f0e7e5a83182886d9e31504bc9df94a6183f8c5",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "witness.stagemole.eu",
+      "source_url": "https://witness.stagemole.eu/about",
+      "witness_vkey": "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "trustfabric-little-garden",
+      "retrieved_body_sha256": "30d9b70b592b1d8429673b95a4ef4c6d6aed05a7df1b581bf7e95368054a79dd",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "transparency.dev",
+      "source_url": "https://transparency.dev/witnesses",
+      "witness_vkey": "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "trustfabric-ring-any-bells",
+      "retrieved_body_sha256": "30d9b70b592b1d8429673b95a4ef4c6d6aed05a7df1b581bf7e95368054a79dd",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "transparency.dev",
+      "source_url": "https://transparency.dev/witnesses",
+      "witness_vkey": "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "remora",
+      "retrieved_body_sha256": "aabf8fb9834f28fe308077337ae9a15c699915396c0d5b88d353278d1916a0dc",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "remora.n621.de",
+      "source_url": "https://remora.n621.de/",
+      "witness_vkey": "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "geomys-navigli",
+      "retrieved_body_sha256": "15ff08c471b1482259723e975e6199157919421ccbd930ca58730cdf95990bbb",
+      "source_classification": "OPERATOR_OWNED_REPOSITORY_SOURCE",
+      "source_host": "raw.githubusercontent.com",
+      "source_url": "https://raw.githubusercontent.com/geomys/magnolia/0545421c001b16c0fb328cd9254010c46fa424a6/cmd/hetrix/geomys.go",
+      "witness_vkey": "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "rgdd-poc-witness",
+      "retrieved_body_sha256": "a10b46a0376dd93e8c98268f0402eec9a4aa7a751c4f16425d6686e8882c20b1",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "www.rgdd.se",
+      "source_url": "https://www.rgdd.se/poc-witness/about",
+      "witness_vkey": "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG"
+    },
+    {
+      "exact_vkey_observed": true,
+      "id": "smartit-witness1",
+      "retrieved_body_sha256": "e7ffc052384c5dd8983f7886007eaf9a5ffd2c1c8872cb793dfef10fe02a46c1",
+      "source_classification": "OPERATOR_PUBLISHED_WITNESS_PAGE",
+      "source_host": "witness1.smartit.nu",
+      "source_url": "https://witness1.smartit.nu/witness1/about.txt",
+      "witness_vkey": "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
+    }
+  ],
+  "tracking_issue": 939,
+  "unique_source_host_count": 6,
+  "unique_source_url_count": 6,
+  "verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_SOURCE_MATERIAL_REOBSERVED_IN_ONE_BOUNDED_RUN_IDENTITY_INDEPENDENCE_AND_CURRENT_ACTIVITY_NOT_ESTABLISHED"
+}

@@ -1,0 +1,169 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:witness-key-provenance-same-run-all-seven-receipt-schema:0.1",
+  "title": "Witness Key Provenance Same-Run All-Seven Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "tracking_issue",
+    "predecessor",
+    "source_records",
+    "matched_witness_key_count",
+    "unique_source_url_count",
+    "unique_source_host_count",
+    "observed_witness_vkeys",
+    "all_seven_reobserved_in_one_bounded_run",
+    "key_provenance_assurance",
+    "claims",
+    "automatic_action",
+    "external_mutation_performed",
+    "verdict",
+    "receipt_fingerprint_sha256"
+  ],
+  "properties": {
+    "schema": {
+      "const": "urn:uu-aap:witness-key-provenance-same-run-all-seven-receipt:0.1"
+    },
+    "tracking_issue": {
+      "const": 939
+    },
+    "predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "main_sha",
+        "profile_git_blob",
+        "qualification_receipt_git_blob",
+        "receipt_fingerprint_sha256",
+        "verdict",
+        "composed_exact_pinned_witness_key_count"
+      ],
+      "properties": {
+        "main_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "profile_git_blob": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "qualification_receipt_git_blob": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$"
+        },
+        "receipt_fingerprint_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "verdict": {
+          "type": "string",
+          "minLength": 1
+        },
+        "composed_exact_pinned_witness_key_count": {
+          "const": 7
+        }
+      }
+    },
+    "source_records": {
+      "type": "array",
+      "minItems": 7,
+      "maxItems": 7,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "witness_vkey",
+          "source_url",
+          "source_host",
+          "source_classification",
+          "retrieved_body_sha256",
+          "exact_vkey_observed"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "witness_vkey": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_url": {
+            "type": "string",
+            "pattern": "^https://"
+          },
+          "source_host": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_classification": {
+            "enum": [
+              "OPERATOR_PUBLISHED_WITNESS_PAGE",
+              "OPERATOR_OWNED_REPOSITORY_SOURCE"
+            ]
+          },
+          "retrieved_body_sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "exact_vkey_observed": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "matched_witness_key_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 7
+    },
+    "unique_source_url_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "unique_source_host_count": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 6
+    },
+    "observed_witness_vkeys": {
+      "type": "array",
+      "maxItems": 7,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "all_seven_reobserved_in_one_bounded_run": {
+      "type": "boolean"
+    },
+    "key_provenance_assurance": {
+      "type": "string",
+      "minLength": 1
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": {
+        "const": false
+      }
+    },
+    "automatic_action": {
+      "const": false
+    },
+    "external_mutation_performed": {
+      "const": false
+    },
+    "verdict": {
+      "type": "string",
+      "minLength": 1
+    },
+    "receipt_fingerprint_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
