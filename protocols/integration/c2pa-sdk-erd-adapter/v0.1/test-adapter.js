@@ -24,6 +24,13 @@ function signal(overrides = {}) {
     ...overrides,
   };
 }
+function collectKeys(value, out = new Set()) {
+  if (Array.isArray(value)) { for (const item of value) collectKeys(item, out); return out; }
+  if (value && typeof value === 'object') {
+    for (const [key, child] of Object.entries(value)) { out.add(key); collectKeys(child, out); }
+  }
+  return out;
+}
 
 let passed = 0;
 function test(name, fn) {
@@ -163,10 +170,11 @@ test('adapter evaluation is deterministic', () => {
   assert.deepEqual(a, b);
 });
 
-test('score confidence trust and verdict surfaces are absent', () => {
+test('score confidence trust and verdict surfaces are absent while negative guards remain allowed', () => {
   const out = adapter.evaluateSignal({ source_receipt: source, wake_signal: signal() });
-  const text = JSON.stringify(out.adapter_receipt).toLowerCase();
-  for (const forbidden of ['trust_score','compatibility_score','confidence_score','aggregate_score','canonical_verdict']) assert.equal(text.includes(forbidden), false, forbidden);
+  const keys = collectKeys(out.adapter_receipt);
+  for (const forbidden of ['trust_score','compatibility_score','confidence_score','aggregate_score','canonical_verdict']) assert.equal(keys.has(forbidden), false, forbidden);
+  assert.equal(out.adapter_receipt.claims.trust_score_created, false);
 });
 
 test('adapter receipt validator rejects authority promotion', () => {
