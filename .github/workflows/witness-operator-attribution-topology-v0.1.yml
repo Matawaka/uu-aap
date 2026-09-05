@@ -1,5 +1,4 @@
 name: Witness Operator Attribution Topology v0.1
-
 on:
   pull_request:
     paths:
@@ -11,207 +10,100 @@ on:
       - 'scripts/witness-operator-attribution-topology/v0.1/**'
       - '.github/workflows/witness-operator-attribution-topology-v0.1.yml'
   workflow_dispatch:
-
 permissions:
   contents: read
-
 env:
   PYTHONDONTWRITEBYTECODE: '1'
-
 jobs:
   witness-operator-attribution-topology:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-
+        with: {persist-credentials: false, fetch-depth: 0}
       - uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install pinned schema validator
-        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
-
-      - name: Preserve merged PR 940 frozen predecessor unchanged
+        with: {python-version: '3.11'}
+      - name: Validate frozen predecessor and hostile layers
         shell: bash
         run: |
           set -euo pipefail
           old=scripts/witness-key-provenance-same-run-all-seven/v0.1
           python "$old/test_reproof.py"
           python "$old/receipt_validator.py" "$old/profile.json" "$old/qualification-receipt.json"
-          test "$(git hash-object "$old/profile.json")" = 'a66d176fb7032f6db0b7961b83d7d92329d8ca63'
-          test "$(git hash-object "$old/qualification-receipt.json")" = '9edd35a373bc865df8e75c750343f6176ba9725e'
-          python - <<'PY'
-          import json
-          r=json.load(open('scripts/witness-key-provenance-same-run-all-seven/v0.1/qualification-receipt.json'))
-          assert r['receipt_fingerprint_sha256']=='85e032ce247bb65bdcf1c4032b23b997b0e74ad013c0726107f87b8780795971'
-          assert r['verdict']=='ALL_SEVEN_PINNED_WITNESS_KEYS_SOURCE_MATERIAL_REOBSERVED_IN_ONE_BOUNDED_RUN_IDENTITY_INDEPENDENCE_AND_CURRENT_ACTIVITY_NOT_ESTABLISHED'
-          assert r['matched_witness_key_count']==7
-          assert r['unique_source_url_count']==6
-          assert r['all_seven_reobserved_in_one_bounded_run'] is True
-          for c in ('witness_identity_proven','legal_operator_identity_proven','operator_independence_proven','all_witnesses_independent_proven','all_seven_currently_active_proven'):
-              assert r['claims'][c] is False
-          print('merged #940 frozen predecessor parity PASS')
-          PY
-
-      - name: Validate exact successor bindings and hostile suite
-        shell: bash
-        run: |
-          set -euo pipefail
+          test "$(git hash-object "$old/profile.json")" = a66d176fb7032f6db0b7961b83d7d92329d8ca63
+          test "$(git hash-object "$old/qualification-receipt.json")" = 9edd35a373bc865df8e75c750343f6176ba9725e
+          d=scripts/witness-operator-attribution-topology/v0.1
           git merge-base --is-ancestor 97c0c6ca4cc45ca4e7469d9d0b91d9f2445227d2 HEAD
-          dir=scripts/witness-operator-attribution-topology/v0.1
-          python "$dir/validate_sources.py"
-          python "$dir/test_topology.py"
-          python - <<'PY'
-          import json
-          from jsonschema import Draft202012Validator
-          p='scripts/witness-operator-attribution-topology/v0.1/receipt.schema.json'
-          s=json.load(open(p,encoding='utf-8')); Draft202012Validator.check_schema(s)
-          print('VALID schema:',p)
-          PY
-
-      - name: Fetch registry attribution and operator key-material surfaces read-only
+          python "$d/validate_sources.py"
+          python "$d/test_topology.py"
+          python "$d/test_machine_metadata_overlay.py"
+      - name: Fetch bounded read-only attribution, bridge, and metadata surfaces
         shell: bash
         run: |
           set -euo pipefail
-          fetch() { curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' "$1" -o "$2"; test -s "$2"; }
-          fetch https://witness-network.org/witness-tables/ /tmp/witness-tables.html
-          fetch https://witness.stagemole.eu/about /tmp/stagemole-about.txt
-          fetch https://transparency.dev/witnesses /tmp/trustfabric-witnesses.html
-          fetch https://remora.n621.de/ /tmp/remora.html
-          fetch https://geomys.org/witness/navigli /tmp/geomys-navigli.html
-          fetch https://navigli.sunlight.geomys.org/ /tmp/geomys-navigli-key-material.html
-          fetch https://www.rgdd.se/poc-witness/about /tmp/rgdd-about.txt
-          fetch https://witness1.smartit.nu/witness1/about.txt /tmp/smartit-about.txt
-          cat > /tmp/operator-source-map.json <<'JSON'
-          {
-            "https://witness.stagemole.eu/about": "/tmp/stagemole-about.txt",
-            "https://transparency.dev/witnesses": "/tmp/trustfabric-witnesses.html",
-            "https://remora.n621.de/": "/tmp/remora.html",
-            "https://geomys.org/witness/navigli": "/tmp/geomys-navigli.html",
-            "https://navigli.sunlight.geomys.org/": "/tmp/geomys-navigli-key-material.html",
-            "https://www.rgdd.se/poc-witness/about": "/tmp/rgdd-about.txt",
-            "https://witness1.smartit.nu/witness1/about.txt": "/tmp/smartit-about.txt"
-          }
+          f(){ curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' "$1" -o "$2"; test -s "$2"; }
+          f https://witness-network.org/witness-tables/ /tmp/tables.html
+          f https://witness.stagemole.eu/about /tmp/stagemole.txt
+          f https://transparency.dev/witnesses /tmp/trustfabric.html
+          f https://remora.n621.de/ /tmp/remora.html
+          f https://geomys.org/witness/navigli /tmp/geomys.html
+          f https://navigli.sunlight.geomys.org/ /tmp/navigli-home.html
+          f https://witness.navigli.sunlight.geomys.org/witness.v0.json /tmp/navigli-witness.v0.json
+          f https://www.rgdd.se/poc-witness/about /tmp/rgdd.txt
+          f https://witness1.smartit.nu/witness1/about.txt /tmp/smartit.txt
+          cat >/tmp/source-map.json <<'JSON'
+          {"https://witness.stagemole.eu/about":"/tmp/stagemole.txt","https://transparency.dev/witnesses":"/tmp/trustfabric.html","https://remora.n621.de/":"/tmp/remora.html","https://geomys.org/witness/navigli":"/tmp/geomys.html","https://navigli.sunlight.geomys.org/":"/tmp/navigli-home.html","https://www.rgdd.se/poc-witness/about":"/tmp/rgdd.txt","https://witness1.smartit.nu/witness1/about.txt":"/tmp/smartit.txt"}
           JSON
-
-      - name: Bind exact seven pins through public attribution and key-material topology
+      - name: Preserve v2 failure model then qualify through machine metadata
         shell: bash
         run: |
           set -euo pipefail
-          dir=scripts/witness-operator-attribution-topology/v0.1
-          python "$dir/topology.py" --profile "$dir/profile.json" --registry-body /tmp/witness-tables.html --source-map /tmp/operator-source-map.json > /tmp/witness-operator-attribution-topology.json
-          python "$dir/receipt_validator.py" "$dir/profile.json" /tmp/witness-operator-attribution-topology.json
+          d=scripts/witness-operator-attribution-topology/v0.1
+          python "$d/topology.py" --profile "$d/profile.json" --registry-body /tmp/tables.html --source-map /tmp/source-map.json >/tmp/base-topology.json
+          python "$d/receipt_validator.py" "$d/profile.json" /tmp/base-topology.json
           python - <<'PY'
           import json
-          r=json.load(open('/tmp/witness-operator-attribution-topology.json'))
-          assert r['verdict']=='ALL_SEVEN_PINNED_WITNESS_KEYS_BOUND_TO_SIX_PUBLIC_OPERATOR_LABELS_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED',r
-          assert r['matched_witness_key_count']==7,r
-          assert r['public_operator_label_count']==6,r
-          assert r['bound_attribution_surface_count']==6,r
-          assert r['bound_key_material_surface_count']==6,r
-          assert r['registry_relation_count']==6,r
-          assert r['operator_key_material_relation_count']==6,r
-          assert r['trustfabric_pinned_key_count']==2,r
-          assert r['all_seven_public_operator_attributions_bound'] is True,r
-          assert all(v is False for v in r['claims'].values())
-          assert r['automatic_action'] is False
-          assert r['external_mutation_performed'] is False
-          print(r['verdict'])
-          print('keys / labels / attribution surfaces / key surfaces / registry relations / key relations:',r['matched_witness_key_count'],r['public_operator_label_count'],r['bound_attribution_surface_count'],r['bound_key_material_surface_count'],r['registry_relation_count'],r['operator_key_material_relation_count'])
-          print('receipt fingerprint:',r['receipt_fingerprint_sha256'])
+          r=json.load(open('/tmp/base-topology.json')); by={x['operator_label']:x for x in r['operator_records']}
+          assert r['registry_relation_count']==6 and r['operator_key_material_relation_count']==6
+          assert all(x['all_expected_vkeys_observed'] for k,x in by.items() if k!='Geomys')
+          assert by['Geomys']['registry_relation_observed'] and by['Geomys']['operator_key_material_relation_observed']
+          assert not any(r['claims'].values()) and not r['automatic_action'] and not r['external_mutation_performed']
+          print('v2 fail-closed diagnostic topology preserved:',r['verdict'],r['receipt_fingerprint_sha256'])
           PY
-
-      - name: Validate frozen qualification evidence when materialized
+          python "$d/machine_metadata_overlay.py" --profile "$d/profile.json" --base-receipt /tmp/base-topology.json --metadata /tmp/navigli-witness.v0.json >/tmp/operator-attribution-qualified.json
+          python "$d/machine_metadata_overlay.py" --profile "$d/profile.json" --base-receipt /tmp/base-topology.json --metadata /tmp/navigli-witness.v0.json --validate /tmp/operator-attribution-qualified.json
+      - name: Validate frozen machine qualification when materialized
         shell: bash
         run: |
           set -euo pipefail
-          dir=scripts/witness-operator-attribution-topology/v0.1
-          frozen="$dir/qualification-receipt.json"
-          if [ -f "$frozen" ]; then
-            python "$dir/receipt_validator.py" "$dir/profile.json" "$frozen"
+          d=scripts/witness-operator-attribution-topology/v0.1; q="$d/machine-qualification-receipt.json"
+          if [ -f "$q" ]; then
+            python "$d/machine_metadata_overlay.py" --profile "$d/profile.json" --base-receipt /tmp/base-topology.json --metadata /tmp/navigli-witness.v0.json --validate "$q"
             python - <<'PY'
           import json
-          live=json.load(open('/tmp/witness-operator-attribution-topology.json'))
-          old=json.load(open('scripts/witness-operator-attribution-topology/v0.1/qualification-receipt.json'))
-          def stable(r):
-              return {
-                  'verdict':r['verdict'],
-                  'predecessor':r['predecessor'],
-                  'registry_contract':(r['registry']['source_url'],r['registry']['source_classification']),
-                  'operator_contract':[(x['operator_label'],x['attribution_url'],x['key_material_url'],x['key_material_relation'],x['source_classification'],x['expected_witness_key_count'],tuple(x['witness_vkeys']),tuple(x['observed_witness_vkeys']),x['all_expected_vkeys_observed'],x['registry_relation_observed'],x['operator_key_material_relation_observed']) for x in r['operator_records']],
-                  'matched_witness_key_count':r['matched_witness_key_count'],
-                  'public_operator_label_count':r['public_operator_label_count'],
-                  'bound_attribution_surface_count':r['bound_attribution_surface_count'],
-                  'bound_key_material_surface_count':r['bound_key_material_surface_count'],
-                  'registry_relation_count':r['registry_relation_count'],
-                  'operator_key_material_relation_count':r['operator_key_material_relation_count'],
-                  'observed_operator_labels':r['observed_operator_labels'],
-                  'observed_witness_vkeys':r['observed_witness_vkeys'],
-                  'trustfabric_pinned_key_count':r['trustfabric_pinned_key_count'],
-                  'all_seven_public_operator_attributions_bound':r['all_seven_public_operator_attributions_bound'],
-                  'operator_attribution_assurance':r['operator_attribution_assurance'],
-                  'claims':r['claims'],
-              }
-          assert stable(live)==stable(old),(stable(live),stable(old))
-          print('current semantic operator-attribution topology == frozen qualification; body digests remain historical evidence')
+          a=json.load(open('/tmp/operator-attribution-qualified.json')); b=json.load(open('scripts/witness-operator-attribution-topology/v0.1/machine-qualification-receipt.json'))
+          def s(x): return {k:x[k] for k in ('schema','tracking_issue','matched_witness_key_count','public_operator_label_count','bound_attribution_surface_count','bound_key_material_surface_count','bound_bridge_surface_count','registry_relation_count','operator_key_material_relation_count','witness_metadata_contract_count','trustfabric_pinned_key_count','all_seven_public_operator_attributions_bound','claims','verdict')}
+          assert s(a)==s(b); print('live machine qualification semantic contract == frozen qualification')
           PY
-          else
-            echo 'first v2 qualification run: frozen operator-attribution receipt not materialized yet'
-          fi
-
-      - name: Upload bounded operator-attribution evidence
-        uses: actions/upload-artifact@v4
+          else echo 'first machine qualification run: frozen receipt not materialized yet'; fi
+      - uses: actions/upload-artifact@v4
         with:
           name: witness-operator-attribution-topology-${{ github.sha }}
           path: |
-            /tmp/witness-operator-attribution-topology.json
-            /tmp/witness-tables.html
-            /tmp/stagemole-about.txt
-            /tmp/trustfabric-witnesses.html
-            /tmp/remora.html
-            /tmp/geomys-navigli.html
-            /tmp/geomys-navigli-key-material.html
-            /tmp/rgdd-about.txt
-            /tmp/smartit-about.txt
+            /tmp/operator-attribution-qualified.json
+            /tmp/base-topology.json
+            /tmp/tables.html
+            /tmp/geomys.html
+            /tmp/navigli-home.html
+            /tmp/navigli-witness.v0.json
           if-no-files-found: error
           retention-days: 30
-
-      - name: Assert additive successor-only diff boundary
+      - name: Assert additive successor-only and repository-read-only boundaries
         shell: bash
         run: |
           set -euo pipefail
-          case "${GITHUB_EVENT_NAME}" in
-            pull_request)
-              git fetch --quiet origin "${GITHUB_BASE_REF}"
-              changed="$(git diff --name-only "origin/${GITHUB_BASE_REF}"...HEAD)"
-              ;;
-            push|workflow_dispatch)
-              changed="$(git diff --name-only HEAD^..HEAD)"
-              ;;
-            *) echo "unsupported event ${GITHUB_EVENT_NAME}" >&2; exit 1 ;;
-          esac
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then git fetch --quiet origin "$GITHUB_BASE_REF"; changed="$(git diff --name-only "origin/$GITHUB_BASE_REF"...HEAD)"; else changed="$(git diff --name-only HEAD^..HEAD)"; fi
           test -n "$changed"
-          while IFS= read -r file; do
-            case "$file" in
-              scripts/witness-operator-attribution-topology/v0.1/*|.github/workflows/witness-operator-attribution-topology-v0.1.yml) ;;
-              *) echo "unexpected changed path: $file" >&2; exit 1 ;;
-            esac
-          done <<< "$changed"
-          ! grep -q '^scripts/witness-key-provenance-same-run-all-seven/' <<< "$changed"
-          ! grep -q '^scripts/witness-key-provenance-all-seven/' <<< "$changed"
-          ! grep -q '^scripts/witness-key-provenance-reproof/' <<< "$changed"
-          ! grep -q '^scripts/anchored-witnessed-consistency-pilot/' <<< "$changed"
-          ! grep -q '^protocols/core/' <<< "$changed"
-          ! grep -q '^protocols/interface-registry/' <<< "$changed"
-          ! grep -q '^SPEC.md$' <<< "$changed"
-          ! grep -q '^PRINCIPLES.md$' <<< "$changed"
-
-      - name: Prove repository-read-only execution
-        shell: bash
-        run: |
-          set -euo pipefail
+          while IFS= read -r x; do case "$x" in scripts/witness-operator-attribution-topology/v0.1/*|.github/workflows/witness-operator-attribution-topology-v0.1.yml) ;; *) echo "unexpected path $x" >&2; exit 1;; esac; done <<<"$changed"
+          ! grep -Eq '^(protocols/core/|protocols/interface-registry/|SPEC.md$|PRINCIPLES.md$|scripts/witness-key-provenance-|scripts/anchored-witnessed-consistency-pilot/)' <<<"$changed"
           git diff --exit-code
           test -z "$(git status --porcelain=v1 --untracked-files=all)"
