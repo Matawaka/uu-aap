@@ -57,9 +57,27 @@ The input schema is:
 urn:uu-aap:observable-authority-consistency-input:0.1
 ```
 
-Required source bindings:
+The parser is **closed-world**. Only the explicitly defined fields below are accepted; unknown top-level or nested fields fail closed. This prevents semantic-looking controls such as `alert_policy`, `latest`, display hints, scores, or remediation commands from being silently ignored.
+
+Exact top-level fields:
+
+```text
+schema
+export_surface
+signed_root
+```
 
 ### Export surface
+
+Exact fields:
+
+```text
+id
+document_sha256
+signers
+```
+
+Requirements:
 
 - non-empty `id`;
 - exact lowercase SHA-256 in `document_sha256`;
@@ -68,6 +86,18 @@ Required source bindings:
 The export surface is **observed**, not trusted or authoritative merely because it is published.
 
 ### Signed root
+
+Exact fields:
+
+```text
+id
+version
+document_sha256
+verification_status
+admitted_signers
+```
+
+Requirements:
 
 - non-empty `id`;
 - positive integer `version`;
@@ -140,7 +170,7 @@ The primitive performs no latest-root lookup and no historical mutation.
 
 ## No alert dependency
 
-There is deliberately no alert-policy input or output.
+There is deliberately no alert-policy input or output, and the closed-world parser rejects attempts to add one.
 
 The delta is observable because it is part of the receipt itself. A separate consumer may later decide whether to alert, log, display, reconcile, or do nothing, but this primitive grants no such authority.
 
@@ -164,6 +194,8 @@ admit
 revoke
 ```
 
+Unknown fields are also rejected even if they are not on this named list.
+
 The receipt itself exposes semantic guards that remain false for:
 
 - authority decisions;
@@ -176,7 +208,7 @@ The receipt itself exposes semantic guards that remain false for:
 
 ## Tests
 
-`test_receipt.py` covers:
+`test_receipt.py` covers 16 positive/hostile/negative cases, including:
 
 - external-shape exported-but-unadmitted delta;
 - aligned surfaces;
@@ -188,6 +220,8 @@ The receipt itself exposes semantic guards that remain false for:
 - empty signer rejection;
 - malformed source digest rejection;
 - forbidden score/remediation/authority mutation fields;
+- explicit `alert_policy` rejection;
+- unknown nested field rejection;
 - wrong schema rejection;
 - output non-promotion guards.
 
