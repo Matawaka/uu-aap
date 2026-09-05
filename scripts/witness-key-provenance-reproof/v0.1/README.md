@@ -8,16 +8,18 @@ This additive successor starts from merged #934 at exact main `529522f6a47cd2029
 
 `OPERATOR_CURATED_PINS_NOT_INDEPENDENTLY_REPROVEN`.
 
-This package asks one narrower question: can quorum-many of the exact pinned witness vkeys be re-observed from operator-published witness pages independently of the Markovian Protocol monitor configuration?
+This package asks one narrower question: can quorum-many of the exact pinned witness vkeys be re-observed from explicitly bounded operator-published or operator-owned sources independently of the Markovian Protocol monitor configuration?
 
 ## Exact source set
 
-- `https://witness.stagemole.eu/about` — exact stagemole vkey;
-- `https://transparency.dev/witnesses` — exact little-garden vkey and exact ring-any-bells vkey;
-- `https://remora.n621.de/` — exact remora vkey;
-- `https://navigli.sunlight.geomys.org/` — exact Navigli vkey.
+- `https://witness.stagemole.eu/about` — exact stagemole vkey; `OPERATOR_PUBLISHED_WITNESS_PAGE`;
+- `https://transparency.dev/witnesses` — exact little-garden vkey and exact ring-any-bells vkey; `OPERATOR_PUBLISHED_WITNESS_PAGE`;
+- `https://remora.n621.de/` — exact remora vkey; `OPERATOR_PUBLISHED_WITNESS_PAGE`;
+- `geomys/magnolia@0545421c001b16c0fb328cd9254010c46fa424a6`, `cmd/hetrix/geomys.go` — exact Navigli vkey inside Geomys operational monitoring configuration; fetched from the commit-pinned raw URL and required to have Git blob `95a3e95134487229343bb6197f6fa1723cfa20d7`; `OPERATOR_OWNED_REPOSITORY_SOURCE`.
 
 The five vkeys are a strict subset of the seven exact pins already accepted as #934 input. No new witness key can be introduced by this package.
+
+The Geomys repository source replaces the dynamic `https://navigli.sunlight.geomys.org/` page as the executable source for the historical #934 Navigli pin. During qualification the dynamic page was repeatedly reachable but its raw GitHub Actions `curl` body did not contain that historical exact vkey, yielding a correct fail-closed `4 keys / 3 URLs / 3 hosts` result. The source replacement preserves that observation rather than rewriting it or weakening the threshold.
 
 ## Counting boundary
 
@@ -29,29 +31,33 @@ unique_source_url_count
 unique_source_host_count
 ```
 
-The canonical strong case is expected to be `5 / 4 / 4` because the TrustFabric page publishes two distinct pinned witness keys. Strong admission requires both at least four exact pinned vkeys and at least four distinct operator-published source URLs; host count is reported separately and is not an independence claim.
+The canonical strong case is expected to be `5 / 4 / 4` because the TrustFabric page publishes two distinct pinned witness keys. Strong admission requires both at least four exact pinned vkeys and at least four distinct bounded operator source URLs; host count is reported separately and is not an independence claim.
 
 Therefore:
 
 ```text
 Two exact keys on one page != two independent operators
+Operator-owned repository source != witness identity proof
+Repository ownership/source provenance != legal operator identity proof
 Multiple source hosts != organizational independence
 Exact vkey re-observed != witness identity proven
 ```
 
 Four keys from only three URLs are deliberately insufficient for the strongest result, even though the cryptographic witness quorum in #934 is four.
 
-The strongest allowed result is:
+The strongest allowed result remains:
 
 `QUORUM_MANY_PINNED_WITNESS_KEYS_REOBSERVED_FROM_OPERATOR_PUBLISHED_SOURCES_IDENTITY_AND_INDEPENDENCE_NOT_ESTABLISHED`
+
+Here `operator-published sources` is the bounded umbrella for the accepted source classes `OPERATOR_PUBLISHED_WITNESS_PAGE` and `OPERATOR_OWNED_REPOSITORY_SOURCE`; it is not a claim of legal identity or operator independence.
 
 This refines only current evidence about the provenance of matched key bytes. It does not rewrite #934's historical receipt.
 
 ## Live evidence and historical evidence
 
-CI performs HTTPS GET only against the four exact allowlisted pages and records SHA-256 for every fetched body. Exact full vkey presence is the semantic admission condition.
+CI performs HTTPS GET only against four exact allowlisted source URLs and records SHA-256 for every fetched body. Exact full vkey presence is the semantic admission condition. For the Geomys repository source, CI additionally recomputes the Git blob and requires exact equality with `95a3e95134487229343bb6197f6fa1723cfa20d7`.
 
-A later unrelated HTML change is allowed to change the current body digest without rewriting a previously frozen qualification receipt. Historical source-body digests are evidence of what was observed during qualification; current source state is re-evaluated separately.
+A later unrelated dynamic-page change is allowed to change the current body digest without rewriting a previously frozen qualification receipt. Historical source-body digests are evidence of what was observed during qualification; current source state is re-evaluated separately. The commit-pinned Geomys repository source is intentionally immutable for this v0.1 qualification.
 
 ## Non-claims
 
