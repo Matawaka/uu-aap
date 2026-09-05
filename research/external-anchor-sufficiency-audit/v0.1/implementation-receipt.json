@@ -1,0 +1,37 @@
+{
+  "artifact_type": "ExternalAnchorSufficiencyAuditImplementationReceipt",
+  "version": "0.1",
+  "tracking_issue": 927,
+  "repository_predecessor_main": "e14cbbfb024d57912388468268bce42848f6effd",
+  "implementation_files": {
+    "README.md": "c6010011e5a646be72102adb8516221c4a60c267",
+    "audit.json": "87f51187f6c8872db583923ba71df918e44565bf",
+    "audit.schema.json": "d3bc5098190b2c11d181f1f943d7ae82bd53c592",
+    "source-observation.json": "285970378c365d72926392d97ff825a8aea14741",
+    "test_validate.py": "643f9b181b6b906de9cc0faea1548db85ba444b8",
+    "validate.py": "051c0d6a8ddeff172c63bf2659312a29550243be"
+  },
+  "workflow": {
+    "path": ".github/workflows/external-anchor-sufficiency-audit-v0.1.yml",
+    "blob": "7060a825b9cb0232a7d8d8a7bc8a307c8e798f72"
+  },
+  "proof": {
+    "external_source_metadata_frozen_without_long_body_copy": true,
+    "six_evidence_layers_separated": true,
+    "internal_branch_divergence_nonclaim_preserved": true,
+    "actual_external_anchor_evidence_not_admitted": true,
+    "future_collision_binding_required": true,
+    "future_checkpoint_non_equivocation_evidence_required": true
+  },
+  "non_effects": {
+    "external_comment_posted": false,
+    "transparency_log_deployed": false,
+    "bitcoin_transaction_created": false,
+    "c2pa_spec_adoption_established": false,
+    "global_non_equivocation_proven": false,
+    "trusted_time_proven": false,
+    "stable_core_modified": false,
+    "interface_registry_modified": false,
+    "external_effect_performed": false
+  }
+}
