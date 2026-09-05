@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:observation-set-admission-audit:0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "version", "origin_main", "tracking_issue", "predecessor_results",
+    "source_bindings", "api_assessments", "package_assessment", "overall_result",
+    "next_safe_action", "human_or_successor_boundary", "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:observation-set-admission-audit:0.2"},
+    "version": {"const": "0.2"},
+    "origin_main": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "tracking_issue": {"const": 911},
+    "predecessor_results": {"type": "object"},
+    "source_bindings": {
+      "type": "array",
+      "minItems": 10,
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "path", "blob_sha1", "role"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "path": {"type": "string", "minLength": 1},
+          "blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+          "role": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "api_assessments": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "required": ["id", "candidate_api", "decision", "independent_direct_consumer_families", "consumer_families", "stable_core_admission"]
+      }
+    },
+    "package_assessment": {"type": "object"},
+    "overall_result": {"const": "PARTIAL_ADMISSION_ELIGIBLE_SET_ONLY_NO_CORE_ADMISSION"},
+    "next_safe_action": {"const": "MATERIALIZE_SET_ONLY_EXPERIMENTAL_INTERFACE_REGISTRY_DELTA"},
+    "human_or_successor_boundary": {"const": "REGISTRY_MUTATION_REQUIRES_SEPARATE_SUCCESSOR"},
+    "non_effects": {
+      "type": "object",
+      "minProperties": 10,
+      "additionalProperties": {"const": false}
+    }
+  }
+}
