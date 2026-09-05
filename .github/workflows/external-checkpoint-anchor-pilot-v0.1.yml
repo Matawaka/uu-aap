@@ -1,0 +1,208 @@
+name: External Checkpoint Anchor Pilot v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/external-checkpoint-anchor-pilot/v0.1/**'
+      - '.github/workflows/external-checkpoint-anchor-pilot-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/external-checkpoint-anchor-pilot/v0.1/**'
+      - '.github/workflows/external-checkpoint-anchor-pilot-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  EXTERNAL_COMMIT: b75d339e9ed5cce5ef4c2cee1cfa78c3e1e1abf1
+
+jobs:
+  opaque-leaf-to-external-checkpoint-anchor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Preserve merged #900 divergence non-claim
+        run: python scripts/observed-authority-branch-divergence/test_receipt.py
+
+      - name: Preserve merged #928 external-anchor sufficiency boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/external-anchor-sufficiency-audit/v0.1/test_validate.py
+          python research/external-anchor-sufficiency-audit/v0.1/validate.py
+
+      - name: Run local hostile pilot tests
+        run: python scripts/external-checkpoint-anchor-pilot/v0.1/test_pilot.py
+
+      - name: Validate exact predecessor and external source bindings
+        run: python scripts/external-checkpoint-anchor-pilot/v0.1/validate_sources.py
+
+      - name: Fetch exact public external proof corpus read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/tlog-bitcoin-anchor
+          git clone --quiet --no-tags https://github.com/MarkovianProtocol/tlog-bitcoin-anchor.git /tmp/tlog-bitcoin-anchor
+          git -C /tmp/tlog-bitcoin-anchor checkout --quiet "$EXTERNAL_COMMIT"
+          test "$(git -C /tmp/tlog-bitcoin-anchor rev-parse HEAD)" = "$EXTERNAL_COMMIT"
+          test "$(git -C /tmp/tlog-bitcoin-anchor hash-object rootcommit/mkv_rootcommit.json)" = "f6083550fa9dbbc1ba5bf5ec07e3b292665932cc"
+          test "$(git -C /tmp/tlog-bitcoin-anchor hash-object rootcommit/mkv_checkpoint.rootcommit.txt)" = "1fefd6d579b33e532cd7158954635446c4226234"
+          test "$(git -C /tmp/tlog-bitcoin-anchor hash-object rootcommit/rootcommit_preimage.bin.ots)" = "7b3d48c7573b7481ec45011b76f695c130d5c1a2"
+          test "$(git -C /tmp/tlog-bitcoin-anchor hash-object rootcommit/vectors/manifest.json)" = "cbf876a66479d77dedb976cc19664d461bb03864"
+
+      - name: Fetch opaque historical leaf and exact size-1387 inclusion proof
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            https://log.markovianprotocol.com/leaf/0 -o /tmp/opaque-leaf-0.bin
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            'https://log.markovianprotocol.com/inclusion?leaf=0&size=1387' -o /tmp/inclusion-0-1387.txt
+          test -s /tmp/opaque-leaf-0.bin
+          test -s /tmp/inclusion-0-1387.txt
+          echo "leaf bytes: $(wc -c < /tmp/opaque-leaf-0.bin)"
+          echo "inclusion proof lines: $(grep -cve '^$' /tmp/inclusion-0-1387.txt)"
+
+      - name: Attempt pinned reference OpenTimestamps Bitcoin confirmation
+        shell: bash
+        run: |
+          set -euo pipefail
+          confirmation=NOT_ESTABLISHED
+          : > /tmp/ots-install.log
+          : > /tmp/ots-info.log
+          : > /tmp/ots-verify.log
+          set +e
+          python -m pip install --disable-pip-version-check 'opentimestamps-client==0.7.2' > /tmp/ots-install.log 2>&1
+          install_rc=$?
+          if [ "$install_rc" -eq 0 ]; then
+            ots info /tmp/tlog-bitcoin-anchor/rootcommit/rootcommit_preimage.bin.ots > /tmp/ots-info.log 2>&1
+            info_rc=$?
+            ots verify /tmp/tlog-bitcoin-anchor/rootcommit/rootcommit_preimage.bin.ots > /tmp/ots-verify.log 2>&1
+            verify_rc=$?
+            if [ "$info_rc" -eq 0 ] && grep -q 'BitcoinBlockHeaderAttestation' /tmp/ots-info.log && \
+               [ "$verify_rc" -eq 0 ] && grep -Eqi 'Success|verified|Bitcoin' /tmp/ots-verify.log; then
+              confirmation=VERIFIED_BY_PINNED_REFERENCE_VERIFIER
+            fi
+          fi
+          set -e
+          echo "BITCOIN_CONFIRMATION=$confirmation" >> "$GITHUB_ENV"
+          echo "reference verifier classification: $confirmation"
+          cat /tmp/ots-info.log || true
+          cat /tmp/ots-verify.log || true
+
+      - name: Independently evaluate live inclusion plus exact external anchor bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/external-checkpoint-anchor-pilot/v0.1/pilot.py \
+            --profile scripts/external-checkpoint-anchor-pilot/v0.1/profile.json \
+            --leaf /tmp/opaque-leaf-0.bin \
+            --inclusion /tmp/inclusion-0-1387.txt \
+            --rootcommit-json /tmp/tlog-bitcoin-anchor/rootcommit/mkv_rootcommit.json \
+            --ots /tmp/tlog-bitcoin-anchor/rootcommit/rootcommit_preimage.bin.ots \
+            --bitcoin-confirmation "$BITCOIN_CONFIRMATION" \
+            > /tmp/external-checkpoint-anchor-receipt.json
+          python scripts/external-checkpoint-anchor-pilot/v0.1/receipt_validator.py \
+            scripts/external-checkpoint-anchor-pilot/v0.1/profile.json \
+            /tmp/external-checkpoint-anchor-receipt.json
+
+      - name: Require real inclusion and anchor binding without semantic overclaim
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/external-checkpoint-anchor-receipt.json'))
+          assert r['verdict'] in {
+            'OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_VERIFIED',
+            'OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_NOT_ESTABLISHED',
+          }, r
+          assert r['opaque_leaf']['index'] == 0
+          assert r['opaque_leaf']['semantic_claim_profile'] is None
+          assert r['inclusion']['verified'] is True
+          assert r['inclusion']['tree_size'] == 1387
+          assert r['checkpoint_anchor']['commitment_matches_profile'] is True
+          assert r['checkpoint_anchor']['ots_binding_verified'] is True
+          assert r['evidence_layers']['log_append_only_consistency'] == 'NOT_VERIFIED_SINGLE_CHECKPOINT_ONLY'
+          assert all(v is False for v in r['claims'].values())
+          assert r['automatic_action'] is False
+          assert r['external_mutation_performed'] is False
+          print(r['verdict'])
+          print('receipt fingerprint:', r['receipt_fingerprint_sha256'])
+          PY
+
+      - name: Require runtime parity once frozen receipt exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen=scripts/external-checkpoint-anchor-pilot/v0.1/current-receipt.json
+          if [ -f "$frozen" ]; then
+            python - <<'PY'
+          import json
+          live=json.load(open('/tmp/external-checkpoint-anchor-receipt.json'))
+          frozen=json.load(open('scripts/external-checkpoint-anchor-pilot/v0.1/current-receipt.json'))
+          assert live == frozen, (live, frozen)
+          print('runtime == frozen external checkpoint anchor receipt')
+          PY
+          else
+            echo 'first qualification run: frozen receipt not materialized yet'
+          fi
+
+      - name: Upload bounded executable evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: external-checkpoint-anchor-pilot-${{ env.EXTERNAL_COMMIT }}
+          path: |
+            /tmp/external-checkpoint-anchor-receipt.json
+            /tmp/opaque-leaf-0.bin
+            /tmp/inclusion-0-1387.txt
+            /tmp/ots-info.log
+            /tmp/ots-verify.log
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assert pilot-only diff boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "${GITHUB_EVENT_NAME}" in
+            pull_request)
+              git fetch --quiet origin "${GITHUB_BASE_REF}"
+              changed="$(git diff --name-only "origin/${GITHUB_BASE_REF}"...HEAD)"
+              ;;
+            push|workflow_dispatch)
+              changed="$(git diff --name-only HEAD^..HEAD)"
+              ;;
+            *) echo "unsupported event ${GITHUB_EVENT_NAME}" >&2; exit 1 ;;
+          esac
+          test -n "$changed"
+          while IFS= read -r file; do
+            case "$file" in
+              scripts/external-checkpoint-anchor-pilot/v0.1/*|.github/workflows/external-checkpoint-anchor-pilot-v0.1.yml) ;;
+              *) echo "unexpected changed path: $file" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^research/external-anchor-sufficiency-audit/' <<< "$changed"
+          ! grep -q '^scripts/observed-authority-branch-divergence/' <<< "$changed"
+          ! grep -q '^protocols/core/' <<< "$changed"
+          ! grep -q '^protocols/interface-registry/' <<< "$changed"
+          ! grep -q '^SPEC.md$' <<< "$changed"
+          ! grep -q '^PRINCIPLES.md$' <<< "$changed"
+
+      - name: Prove repository-read-only execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
