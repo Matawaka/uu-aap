@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:circumstantial-provenance-rerc-adapter-receipt:0.1",
+  "title": "Circumstantial Provenance RERC Adapter Receipt v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "version",
+    "request_id",
+    "assessment_id",
+    "source_assessment_digest",
+    "source_assessment_result",
+    "projected_observed_graph_digest",
+    "operational_graph_digest",
+    "rerc_receipt_digest",
+    "suppression_candidate_edge_ids",
+    "suppressed_relation_evidence_ids",
+    "retained_evidence_ids",
+    "protective_evidence_ids",
+    "lineage_gap_ids",
+    "direct_rerc_reuse",
+    "source_assessment_unchanged",
+    "exact_projection_restore_verified",
+    "claims"
+  ],
+  "properties": {
+    "artifact_type": { "const": "CircumstantialProvenanceRERCAdapterReceipt" },
+    "version": { "const": "0.1" },
+    "request_id": { "type": "string", "minLength": 1 },
+    "assessment_id": { "type": "string", "minLength": 1 },
+    "source_assessment_digest": { "$ref": "#/$defs/sha256" },
+    "source_assessment_result": { "enum": ["supported", "partially_supported", "inconclusive", "contradicted"] },
+    "projected_observed_graph_digest": { "$ref": "#/$defs/sha256" },
+    "operational_graph_digest": { "$ref": "#/$defs/sha256" },
+    "rerc_receipt_digest": { "$ref": "#/$defs/sha256" },
+    "suppression_candidate_edge_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "suppressed_relation_evidence_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "retained_evidence_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "protective_evidence_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "lineage_gap_ids": { "$ref": "#/$defs/uniqueStrings" },
+    "direct_rerc_reuse": { "const": true },
+    "source_assessment_unchanged": { "const": true },
+    "exact_projection_restore_verified": { "const": true },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "independent_evidence_suppressed",
+        "contradiction_suppressed",
+        "protective_evidence_suppressed",
+        "lineage_gap_suppressed",
+        "provenance_deleted",
+        "copied_evidence_counted_independent",
+        "redundancy_group_proves_equivalence",
+        "authority_created",
+        "truth_certified",
+        "identity_proven",
+        "causality_proven",
+        "responsibility_assigned",
+        "liability_assigned",
+        "canonical_verdict_created",
+        "rsic_composition_required"
+      ],
+      "properties": {
+        "independent_evidence_suppressed": { "const": false },
+        "contradiction_suppressed": { "const": false },
+        "protective_evidence_suppressed": { "const": false },
+        "lineage_gap_suppressed": { "const": false },
+        "provenance_deleted": { "const": false },
+        "copied_evidence_counted_independent": { "const": false },
+        "redundancy_group_proves_equivalence": { "const": false },
+        "authority_created": { "const": false },
+        "truth_certified": { "const": false },
+        "identity_proven": { "const": false },
+        "causality_proven": { "const": false },
+        "responsibility_assigned": { "const": false },
+        "liability_assigned": { "const": false },
+        "canonical_verdict_created": { "const": false },
+        "rsic_composition_required": { "const": false }
+      }
+    }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "uniqueStrings": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}
