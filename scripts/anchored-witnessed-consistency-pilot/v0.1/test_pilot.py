@@ -39,13 +39,15 @@ def raw_pub(priv: Ed25519PrivateKey) -> bytes:
 def log_vkey(name: str, priv: Ed25519PrivateKey) -> tuple[str, bytes]:
     pub = raw_pub(priv)
     kid = hashlib.sha256(name.encode() + b"\n\x01" + pub).digest()[:4]
-    return f"{name}+00000000+{base64.b64encode(b'\x01' + pub).decode().rstrip('=')}", kid
+    encoded = base64.b64encode(bytes([0x01]) + pub).decode().rstrip("=")
+    return f"{name}+00000000+{encoded}", kid
 
 
 def witness_vkey(name: str, priv: Ed25519PrivateKey) -> tuple[str, bytes]:
     pub = raw_pub(priv)
     kid = hashlib.sha256(name.encode() + b"\n\x04" + pub).digest()[:4]
-    return f"{name}+00000000+{base64.b64encode(b'\x04' + pub).decode().rstrip('=')}", kid
+    encoded = base64.b64encode(bytes([0x04]) + pub).decode().rstrip("=")
+    return f"{name}+00000000+{encoded}", kid
 
 
 def make_body(origin="example/log", size=2, root=None):
