@@ -53,8 +53,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git fetch --quiet origin main
-          changed="$(git diff --name-only origin/main...HEAD)"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            test -n "${GITHUB_BASE_REF:-}"
+            git fetch --quiet origin "$GITHUB_BASE_REF"
+            changed="$(git diff --name-only "origin/$GITHUB_BASE_REF...HEAD")"
+          else
+            git rev-parse --verify HEAD^ >/dev/null
+            changed="$(git diff --name-only HEAD^ HEAD)"
+          fi
           test -n "$changed"
           while IFS= read -r path; do
             case "$path" in
