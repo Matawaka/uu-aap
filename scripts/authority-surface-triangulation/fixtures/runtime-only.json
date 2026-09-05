@@ -1,0 +1,20 @@
+{
+  "schema": "urn:uu-aap:authority-surface-triangulation-input:0.1",
+  "runtime_surface": {
+    "id": "fixture-runtime-extra",
+    "document_sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+    "configured_signers": ["fixture-witness-1", "fixture-witness-2", "fixture-witness-3", "fixture-witness-4", "fixture-witness-5", "fixture-witness-6", "fixture-witness-7", "fixture-witness-8"]
+  },
+  "export_surface": {
+    "id": "fixture-export-seven",
+    "document_sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+    "signers": ["fixture-witness-1", "fixture-witness-2", "fixture-witness-3", "fixture-witness-4", "fixture-witness-5", "fixture-witness-6", "fixture-witness-7"]
+  },
+  "signed_root": {
+    "id": "fixture-root-seven",
+    "version": 2,
+    "document_sha256": "9999999999999999999999999999999999999999999999999999999999999999",
+    "verification_status": "VALID",
+    "admitted_signers": ["fixture-witness-1", "fixture-witness-2", "fixture-witness-3", "fixture-witness-4", "fixture-witness-5", "fixture-witness-6", "fixture-witness-7"]
+  }
+}
