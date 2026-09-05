@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:observation-set-admission-audit-implementation-receipt:0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "origin_main", "tracking_issue", "package_bindings",
+    "source_binding_count", "result", "next_safe_action", "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "urn:uu-aap:observation-set-admission-audit-implementation-receipt:0.2"},
+    "origin_main": {"const": "552d0f293efaffd6c62c69d415fae17d7c5aff9a"},
+    "tracking_issue": {"const": 911},
+    "package_bindings": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "blob_sha1"],
+        "properties": {
+          "path": {"type": "string", "minLength": 1},
+          "blob_sha1": {"type": "string", "pattern": "^[0-9a-f]{40}$"}
+        }
+      }
+    },
+    "source_binding_count": {"const": 10},
+    "result": {"const": "PARTIAL_ADMISSION_ELIGIBLE_SET_ONLY_NO_CORE_ADMISSION"},
+    "next_safe_action": {"const": "MATERIALIZE_SET_ONLY_EXPERIMENTAL_INTERFACE_REGISTRY_DELTA"},
+    "non_effects": {
+      "type": "object",
+      "minProperties": 5,
+      "additionalProperties": {"const": false}
+    }
+  }
+}
