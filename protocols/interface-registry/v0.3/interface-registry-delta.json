@@ -1,0 +1,74 @@
+{
+  "artifact_type": "ReusableProtocolInterfaceRegistryDelta",
+  "version": "0.3",
+  "base_registry": {
+    "version": "0.2",
+    "path": "protocols/interface-registry/v0.2/interface-registry-delta.json",
+    "blob": "ad705523bada7f64a04e09e34974407725942976"
+  },
+  "release_registry_equivalent": false,
+  "additions": [
+    {
+      "id": "ObservationSet",
+      "version": "0.1",
+      "status": "experimental",
+      "path": "protocols/integration/observation-set-calculus-candidate/v0.1",
+      "inputs": [
+        "scope_binding_sha256",
+        "observations[] { semantic_fingerprint_sha256, source_binding_sha256 }"
+      ],
+      "outputs": [
+        "ObservationSet receipt",
+        "semantic set fingerprint",
+        "exact-input fingerprint",
+        "duplicate-safe observation multiplicity"
+      ],
+      "dependencies": [],
+      "non_effects": [
+        "observed set != complete world state",
+        "semantic identity != exact source representation",
+        "set membership != truth",
+        "set membership != authority",
+        "set membership != admission or disposition",
+        "set membership != action authorization",
+        "experimental registry entry != Stable Core",
+        "registry entry != published release"
+      ],
+      "next_interfaces": [],
+      "provider_neutral": true,
+      "external_effect_emission": false,
+      "next_interfaces_are_automatic": false
+    }
+  ],
+  "admission_scope": {
+    "admitted_interface_id": "ObservationSet",
+    "admitted_api": "evaluate_set",
+    "implementation_path": "protocols/integration/observation-set-calculus-candidate/v0.1/profile.py",
+    "implementation_blob": "280624ae6a59fa7a199e3419254765a85e78637a",
+    "admission_assessment_path": "tooling/observation-set-admission-audit/v0.2/assessment.json",
+    "admission_assessment_blob": "8404a4d35fa1b6966e418d1c133f4c798e69d8a4",
+    "direct_reuse_proof_path": "tooling/observation-set-calculus-two-domain-proof/v0.1/prove.py",
+    "direct_reuse_proof_blob": "2cd03641d5d17f1122cce97a091fa1bd4dbe5ba3",
+    "independent_consumer_families": [
+      "C2PA_AUTHORITY_OBSERVABILITY",
+      "PUBLIC_REVIEW_EXTERNAL_SOURCE_OBSERVATION"
+    ],
+    "deferred_apis": [
+      "evaluate_transition",
+      "evaluate_chain"
+    ],
+    "monolithic_candidate_admitted": false,
+    "stable_core_admitted": false
+  },
+  "effective_entry_count": 18,
+  "non_claims": [
+    "published_release_status",
+    "stable_core_membership",
+    "automatic_transition_authorized",
+    "external_effect_performed",
+    "authority_created",
+    "transition_interface_admitted",
+    "chain_interface_admitted",
+    "monolithic_calculus_admitted"
+  ]
+}
