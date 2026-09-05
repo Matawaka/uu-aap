@@ -1,0 +1,230 @@
+name: Witness Temporal Distinct Checkpoint Activity v0.1
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/witness-temporal-distinct-checkpoint-activity-v0.1.yml"
+      - "scripts/witness-temporal-distinct-checkpoint-activity/v0.1/**"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/witness-temporal-distinct-checkpoint-activity-v0.1.yml"
+      - "scripts/witness-temporal-distinct-checkpoint-activity/v0.1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify-temporal-distinct-activity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install cryptographic verifier dependency
+        run: python -m pip install --disable-pip-version-check 'cryptography>=42,<47'
+
+      - name: Verify exact merged predecessor and immutable crypto bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_MAIN='f5e08ebcb2e767250fac5584a848bcc9e2b8dfd9'
+          EXPECTED_TREE='4cc64bb081319b6aee5a3bd332574ef05ac559c0'
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            test "${{ github.event.pull_request.base.sha }}" = "$EXPECTED_MAIN"
+          fi
+          test "$(git rev-parse "$EXPECTED_MAIN^{tree}")" = "$EXPECTED_TREE"
+          git merge-base --is-ancestor "$EXPECTED_MAIN" HEAD
+          test "$(git hash-object scripts/witness-current-checkpoint-activity/v0.1/profile.json)" = '0fa00ac9c3bec86debe7c3ffe96f581f38e3c9e8'
+          test "$(git hash-object scripts/witness-current-checkpoint-activity/v0.1/qualification-receipt.json)" = 'bb0adafd4c5eb7a6a0d43df059d4296d73e6d7c0'
+          test "$(git hash-object scripts/anchored-witnessed-consistency-pilot/v0.1/pilot.py)" = '518bc61f4db936031b911e392eb6fe053dc03437'
+
+      - name: Replay accepted anchored/witnessed crypto hostile suite
+        run: python scripts/anchored-witnessed-consistency-pilot/v0.1/test_pilot.py
+
+      - name: Replay accepted current-checkpoint activity hostile suite
+        run: python scripts/witness-current-checkpoint-activity/v0.1/test_activity.py
+
+      - name: Run temporal distinct-checkpoint hostile suite
+        run: python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/test_temporal.py
+
+      - name: Fetch bounded current checkpoint
+        id: checkpoint
+        shell: bash
+        run: |
+          set +e
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 \
+            'https://log.markovianprotocol.com/checkpoint' \
+            --output /tmp/current-checkpoint.txt 2>/tmp/checkpoint-curl.err
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            printf 'checkpoint fetch failed rc=%s: ' "$rc" > /tmp/external-error.txt
+            cat /tmp/checkpoint-curl.err >> /tmp/external-error.txt
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          size="$(sed -n '2p' /tmp/current-checkpoint.txt | tr -d '\r')"
+          case "$size" in
+            ''|*[!0-9]*)
+              echo 'current checkpoint tree size is not an unsigned integer' > /tmp/external-error.txt
+              echo 'available=false' >> "$GITHUB_OUTPUT"
+              exit 0
+              ;;
+          esac
+          echo "tree_size=$size" >> "$GITHUB_OUTPUT"
+          echo 'available=true' >> "$GITHUB_OUTPUT"
+
+      - name: Fetch bounded consistency proof only for an advanced state
+        id: consistency
+        if: steps.checkpoint.outputs.available == 'true'
+        shell: bash
+        run: |
+          set +e
+          size='${{ steps.checkpoint.outputs.tree_size }}'
+          : > /tmp/consistency.txt
+          if [ "$size" -le 7838 ]; then
+            echo 'available=not-required' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 \
+            "https://log.markovianprotocol.com/consistency?old=7838&new=${size}" \
+            --output /tmp/consistency.txt 2>/tmp/consistency-curl.err
+          rc=$?
+          if [ "$rc" -ne 0 ]; then
+            printf 'consistency proof fetch failed rc=%s: ' "$rc" > /tmp/external-error.txt
+            cat /tmp/consistency-curl.err >> /tmp/external-error.txt
+            echo 'available=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo 'available=true' >> "$GITHUB_OUTPUT"
+
+      - name: Classify distinct temporal activity
+        id: classify
+        shell: bash
+        run: |
+          set -uo pipefail
+          common=(
+            --profile scripts/witness-temporal-distinct-checkpoint-activity/v0.1/profile.json
+            --predecessor-receipt scripts/witness-current-checkpoint-activity/v0.1/qualification-receipt.json
+            --repo-root .
+            --output /tmp/temporal-distinct-qualification.json
+          )
+
+          set +e
+          if [ '${{ steps.checkpoint.outputs.available }}' != 'true' ]; then
+            python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py "${common[@]}" \
+              --external-error "$(cat /tmp/external-error.txt 2>/dev/null || echo checkpoint evidence unavailable)"
+            rc=$?
+          elif [ '${{ steps.checkpoint.outputs.tree_size }}' -gt 7838 ] && [ '${{ steps.consistency.outputs.available }}' != 'true' ]; then
+            python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py "${common[@]}" \
+              --external-error "$(cat /tmp/external-error.txt 2>/dev/null || echo consistency evidence unavailable)"
+            rc=$?
+          else
+            python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py "${common[@]}" \
+              --checkpoint /tmp/current-checkpoint.txt \
+              --consistency /tmp/consistency.txt
+            rc=$?
+          fi
+          set -e
+
+          echo "classifier_rc=$rc" >> "$GITHUB_OUTPUT"
+          if [ "$rc" -eq 1 ]; then
+            echo 'classifier rejected malformed or policy-invalid evidence' >&2
+            exit 1
+          fi
+          if [ "$rc" -ne 0 ] && [ "$rc" -ne 2 ]; then
+            echo "unexpected classifier exit code: $rc" >&2
+            exit 1
+          fi
+          test -s /tmp/temporal-distinct-qualification.json
+
+      - name: Validate observation receipt and CI admission class
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt='/tmp/temporal-distinct-qualification.json'
+          python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py \
+            --profile scripts/witness-temporal-distinct-checkpoint-activity/v0.1/profile.json \
+            --repo-root . \
+            --validate-receipt "$receipt"
+
+          verdict="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["verdict"])' "$receipt")"
+          rc='${{ steps.classify.outputs.classifier_rc }}'
+          strong='ALL_SEVEN_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_TWO_DISTINCT_APPEND_ONLY_RELATED_CHECKPOINT_STATES_REPEATED_ACTIVITY_ESTABLISHED_CONTINUOUS_AVAILABILITY_NOT_ESTABLISHED'
+          same='NO_DISTINCT_SUCCESSOR_CHECKPOINT_OBSERVED'
+
+          if [ "$verdict" = "$strong" ] && [ "$rc" = '0' ]; then
+            echo 'TEMPORAL_DISTINCT_CI_ADMISSION: STRONG_EVIDENCE_OBSERVED'
+            exit 0
+          fi
+          if [ "$verdict" = "$same" ] && [ "$rc" = '2' ]; then
+            echo 'TEMPORAL_DISTINCT_CI_ADMISSION: VALID_PENDING_OBSERVATION_NO_SUCCESSOR_STATE'
+            exit 0
+          fi
+
+          echo "TEMPORAL_DISTINCT_CI_FAIL_CLOSED: verdict=$verdict classifier_rc=$rc" >&2
+          exit 2
+
+      - name: Validate frozen strong qualification and live semantic parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen='scripts/witness-temporal-distinct-checkpoint-activity/v0.1/qualification-receipt.json'
+          live='/tmp/temporal-distinct-qualification.json'
+          test "$(git hash-object "$frozen")" = '18342a27d884918bd99eca3d8018c273bf4444c0'
+          python scripts/witness-temporal-distinct-checkpoint-activity/v0.1/temporal.py \
+            --profile scripts/witness-temporal-distinct-checkpoint-activity/v0.1/profile.json \
+            --repo-root . \
+            --validate-receipt "$frozen"
+          python - "$frozen" "$live" <<'PY'
+          import json, sys
+          frozen = json.load(open(sys.argv[1], encoding='utf-8'))
+          live = json.load(open(sys.argv[2], encoding='utf-8'))
+          strong = 'ALL_SEVEN_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_TWO_DISTINCT_APPEND_ONLY_RELATED_CHECKPOINT_STATES_REPEATED_ACTIVITY_ESTABLISHED_CONTINUOUS_AVAILABILITY_NOT_ESTABLISHED'
+          def contract(r):
+              t = r['temporal_activity']
+              return {
+                  'verdict': r['verdict'],
+                  'distinct': t['distinct_successor_checkpoint_observed'],
+                  'append_only': t['append_only_relation_verified'],
+                  'count': t['verified_pinned_witness_count'],
+                  'repeated': t['repeated_activity_established'],
+                  'same_exact_pins': t['same_exact_pins_observed_across_two_distinct_states'],
+                  'claims': r['claims'],
+                  'automatic_action': r['automatic_action'],
+                  'external_mutation_performed': r['external_mutation_performed'],
+              }
+          fc, lc = contract(frozen), contract(live)
+          if fc['verdict'] != strong or lc['verdict'] != strong:
+              raise SystemExit('frozen/live strong admission class mismatch')
+          for c in (fc, lc):
+              if not (c['distinct'] and c['append_only'] and c['count'] == 7 and c['repeated'] and c['same_exact_pins']):
+                  raise SystemExit('strong semantic contract incomplete')
+              if any(c['claims'].values()) or c['automatic_action'] or c['external_mutation_performed']:
+                  raise SystemExit('strong semantic contract overclaim/effect')
+          print('TEMPORAL_DISTINCT_FROZEN_PARITY: live strong semantic contract == frozen strong admission class')
+          PY
+
+      - name: Upload temporal evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: witness-temporal-distinct-checkpoint-activity-v0.1
+          path: |
+            /tmp/temporal-distinct-qualification.json
+            /tmp/current-checkpoint.txt
+            /tmp/consistency.txt
+            /tmp/external-error.txt
+          if-no-files-found: ignore
+          retention-days: 30

@@ -1,0 +1,95 @@
+{
+  "automatic_action": false,
+  "baseline_checkpoint": {
+    "checkpoint_sha256": "5f4d3f7c0f4e7b6b6849e278436f0a2269670536986a80d0d43f01e2fb358432",
+    "root_b64": "+BTr4xhWiF31p14hUfaZI+8PE20qXptMgncNfqnZ5VE=",
+    "signed_body_sha256": "f79f192495304307362c503548ec8bb9ff97a9d4153d10251c97e3eb0c859d76",
+    "tree_size": 7838
+  },
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_seven_currently_active_proven": false,
+    "all_views_non_equivocating_proven": false,
+    "all_witnesses_independent_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "complete_history_proven": false,
+    "continuous_witness_availability_proven": false,
+    "continuous_witness_liveness_proven": false,
+    "cryptographic_operator_identity_binding_proven": false,
+    "global_non_equivocation_proven": false,
+    "legal_operator_identity_proven": false,
+    "malicious_behavior_proven": false,
+    "operator_control_proven": false,
+    "operator_independence_proven": false,
+    "producer_non_equivocation_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "witness_identity_proven": false
+  },
+  "consistency": {
+    "new_size": 7840,
+    "old_size": 7838,
+    "proof_node_count": 10,
+    "proof_parse_error": null,
+    "proof_text_sha256": "795fc3af5fd79f1b8de0459ea22c5a52f399443de561b36852f4ce16b8efb922",
+    "requested": true,
+    "verified": true
+  },
+  "external_mutation_performed": false,
+  "predecessor_receipt_fingerprint_sha256": "61fac79b7c121bcfba0d38fd6dd4a42df5147f709577cc9ce6452f0af1d61efe",
+  "receipt_fingerprint_sha256": "bb7209f25d1516e4ea7da48c468519c64a95ccd3d5fdc854dc09bc3a46e0eb4b",
+  "repository_predecessor_main": "f5e08ebcb2e767250fac5584a848bcc9e2b8dfd9",
+  "repository_predecessor_tree": "4cc64bb081319b6aee5a3bd332574ef05ac559c0",
+  "schema": "urn:uu-aap:witness-temporal-distinct-checkpoint-activity-receipt:0.1",
+  "successor_checkpoint": {
+    "checkpoint_bytes_distinct_from_baseline": true,
+    "checkpoint_sha256": "87ed2f2d7be899e713adce28347d8e067ebe4eceed2e8979a207b336b8858e4b",
+    "log_signature_verified": true,
+    "origin": "markovianprotocol.com/log",
+    "root_b64": "Z/I/bf4LBMMTjT0A3tJQRqxMOiSuCG5W/aDEX5Einv8=",
+    "root_distinct_from_baseline": true,
+    "signed_body_sha256": "a649cf6a158b683a545c3e9f947d757c294f241169840d0785ded03de7fbd301",
+    "source_url": "https://log.markovianprotocol.com/checkpoint",
+    "tree_size": 7840,
+    "tree_size_advanced": true
+  },
+  "temporal_activity": {
+    "append_only_relation_verified": true,
+    "distinct_successor_checkpoint_observed": true,
+    "invalid_pinned_witness_signatures": [],
+    "newest_verified_cosignature_timestamp": 1788636911,
+    "repeated_activity_established": true,
+    "same_exact_pins_observed_across_two_distinct_states": true,
+    "skipped_non_ed25519_cosignature_blobs": 2,
+    "state_ordering_basis": "MERKLE_APPEND_ONLY_CONSISTENCY_PROOF",
+    "temporal_scope": "TWO_DISTINCT_CRYPTOGRAPHICALLY_ORDERED_CHECKPOINT_STATES_NO_CONTINUOUS_OR_TRUSTED_TIME_CLAIM",
+    "unknown_cosigner_names": [
+      "gblin.digital/witness"
+    ],
+    "verified_pinned_witness_count": 7,
+    "verified_pinned_witness_names": [
+      "remora.n621.de",
+      "rgdd.se/poc-witness",
+      "staging.witness.transparency.goog/ring-any-bells",
+      "transparency.dev/DEV:witness-little-garden",
+      "witness.navigli.sunlight.geomys.org",
+      "witness.stagemole.eu",
+      "witness1.smartit.nu/witness1"
+    ],
+    "verified_pinned_witness_vkeys": [
+      "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2",
+      "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG",
+      "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL",
+      "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM",
+      "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G",
+      "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv",
+      "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
+    ]
+  },
+  "tracking_issue": 948,
+  "verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_TWO_DISTINCT_APPEND_ONLY_RELATED_CHECKPOINT_STATES_REPEATED_ACTIVITY_ESTABLISHED_CONTINUOUS_AVAILABILITY_NOT_ESTABLISHED"
+}
