@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from pilot import SCHEMA, fail
+from pilot import SCHEMA, canonical_bytes, fail, sha256_hex
 
 ALLOWED_VERDICTS = {
     "OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_VERIFIED",
@@ -114,6 +114,14 @@ def validate_receipt(receipt: dict[str, Any], profile: dict[str, Any]) -> bool:
         fail("strong verdict requires reference-verifier confirmation")
     if anchor["bitcoin_chain_confirmation"] == "VERIFIED_BY_PINNED_REFERENCE_VERIFIER" and not anchor["bitcoin_attestation_tag_present"]:
         fail("bitcoin confirmation cannot exist without attestation structure")
+
+    fingerprint = receipt.get("receipt_fingerprint_sha256")
+    if not isinstance(fingerprint, str) or len(fingerprint) != 64:
+        fail("receipt fingerprint required")
+    material = dict(receipt)
+    material.pop("receipt_fingerprint_sha256", None)
+    if sha256_hex(canonical_bytes(material)) != fingerprint:
+        fail("receipt fingerprint mismatch")
 
     return True
 
