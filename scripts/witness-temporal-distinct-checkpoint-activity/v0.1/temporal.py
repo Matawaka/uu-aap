@@ -47,7 +47,7 @@ def vp(p):
       'predecessor_receipt_path':'scripts/witness-current-checkpoint-activity/v0.1/qualification-receipt.json','predecessor_receipt_git_blob':RBL,
       'required_predecessor_receipt_fingerprint_sha256':PFP,'required_predecessor_verdict':PVER,
       'crypto_reference_path':'scripts/anchored-witnessed-consistency-pilot/v0.1/pilot.py','crypto_reference_git_blob':CBL,
-      'checkpoint_url':'https://log.markovianprotocol.com/checkpoint','consistency_url_template':'https://log.markovianprotocol.com/log/proof?from={from_size}&to={to_size}',
+      'checkpoint_url':'https://log.markovianprotocol.com/checkpoint','consistency_url_template':'https://log.markovianprotocol.com/consistency?old={from_size}&new={to_size}',
       'required_origin':ORIGIN,'quorum_min':4,'strong_verdict':STRONG,'quorum_verdict':QUORUM,'same_checkpoint_verdict':SAME,
       'authentication_or_consistency_failed_verdict':FAIL,'insufficient_verdict':INSUFF}
     for k,v in exact.items():

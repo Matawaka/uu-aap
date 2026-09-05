@@ -12,7 +12,7 @@
   "crypto_reference_path": "scripts/anchored-witnessed-consistency-pilot/v0.1/pilot.py",
   "crypto_reference_git_blob": "518bc61f4db936031b911e392eb6fe053dc03437",
   "checkpoint_url": "https://log.markovianprotocol.com/checkpoint",
-  "consistency_url_template": "https://log.markovianprotocol.com/log/proof?from={from_size}&to={to_size}",
+  "consistency_url_template": "https://log.markovianprotocol.com/consistency?old={from_size}&new={to_size}",
   "required_origin": "markovianprotocol.com/log",
   "baseline_checkpoint": {
     "tree_size": 7838,
