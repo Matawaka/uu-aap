@@ -1,0 +1,250 @@
+name: C2PA Swift Upstream-Merge Re-audit v0.3
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-swift-upstream-merge-reaudit/**'
+      - '.github/workflows/c2pa-swift-upstream-merge-reaudit-v0.3.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-swift-upstream-merge-reaudit/**'
+      - '.github/workflows/c2pa-swift-upstream-merge-reaudit-v0.3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  SWIFT_MAIN_SHA: 6fa8a78c16abac3b3f7eb4832c2cc943c9c19f0f
+  ANDROID_MAIN_SHA: 077035cda5bf6849abf270829b98af789cc31e4f
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  successor-trigger:
+    name: accepted re-audit trigger + hostile classifier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Preserve merged cross-SDK contract and v0.2 classifier
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/c2pa-cross-sdk-preservation/validate-contract.py \
+            scripts/c2pa-cross-sdk-preservation/contract.json
+          python scripts/c2pa-sdk-successor-reaudit/test_reaudit.py
+
+      - name: Collect current public upstream observation through accepted v0.2 collector
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/c2pa-sdk-successor-reaudit/collect-live.sh > /tmp/c2pa-sdk-live.json
+          python scripts/c2pa-sdk-successor-reaudit/reaudit.py \
+            scripts/c2pa-sdk-successor-reaudit/baseline.json \
+            /tmp/c2pa-sdk-live.json > /tmp/c2pa-sdk-trigger.json
+          python - <<'PY'
+          import json
+          receipt = json.load(open('/tmp/c2pa-sdk-trigger.json'))
+          assert receipt['swift']['classification'] == 'RESOLVED_CANDIDATE_RETEST_REQUIRED', receipt
+          assert receipt['android']['classification'] == 'UNCHANGED', receipt
+          assert receipt['overall'] == 'TARGETED_REAUDIT_REQUIRED', receipt
+          assert receipt['next_gate'] == 'TARGETED_EXECUTABLE_REAUDIT_REQUIRED', receipt
+          assert receipt['current_compatibility_established'] is False
+          assert receipt['historical_evidence']['swift']['historical_surfaces']['external_swiftpm_consumer_roundtrip'] == 'BLOCKED'
+          assert receipt['historical_evidence']['android']['historical_surfaces']['external_reference_generic_roundtrip'] == 'INCOMPATIBLE'
+          print('accepted v0.2 trigger: TARGETED_REAUDIT_REQUIRED')
+          PY
+
+      - name: Run new targeted classifier hostile coverage
+        run: python scripts/c2pa-swift-upstream-merge-reaudit/test_classify.py
+
+      - name: Validate frozen current execution evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/c2pa-swift-upstream-merge-reaudit/classify.py \
+            scripts/c2pa-swift-upstream-merge-reaudit/current-observation.json \
+            > /tmp/frozen-recomputed-receipt.json
+          python - <<'PY'
+          import json
+          expected = json.load(open('scripts/c2pa-swift-upstream-merge-reaudit/current-receipt.json'))
+          actual = json.load(open('/tmp/frozen-recomputed-receipt.json'))
+          assert actual == expected, (actual, expected)
+          assert expected['external_swiftpm_consumer']['classification'] == 'BLOCKED_SOURCE_BINARY_SKEW'
+          assert expected['source_contract']['classification'] == 'CURRENT_MAIN_SOURCE_PASS'
+          assert expected['current_swift_lossless_preservation_established'] is False
+          assert expected['current_cross_sdk_compatibility_established'] is False
+          assert expected['cross_sdk_p0_3_complete'] is False
+          print('frozen Swift successor evidence: BLOCKED_SOURCE_BINARY_SKEW')
+          PY
+
+      - name: Prove successor is additive and does not rewrite historical evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --quiet origin main
+          changed="$(git diff --name-only origin/main...HEAD)"
+          test -n "$changed"
+          while IFS= read -r path; do
+            case "$path" in
+              scripts/c2pa-swift-upstream-merge-reaudit/*|.github/workflows/c2pa-swift-upstream-merge-reaudit-v0.3.yml) ;;
+              *) echo "unexpected changed path: $path" >&2; exit 1 ;;
+            esac
+          done <<< "$changed"
+          ! grep -q '^scripts/c2pa-swift-roundtrip/' <<< "$changed"
+          ! grep -q '^scripts/c2pa-cross-sdk-preservation/' <<< "$changed"
+          ! grep -q '^Core/' <<< "$changed"
+
+      - name: Prove repository-read-only execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+
+  swiftpm-current-main:
+    name: executable current-main SwiftPM retest
+    needs: successor-trigger
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Select Xcode 16.4
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
+          xcodebuild -version
+          swift --version
+
+      - name: Verify exact current upstream source contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-swift-current
+          git clone --quiet https://github.com/contentauth/c2pa-swift.git /tmp/c2pa-swift-current
+          git -C /tmp/c2pa-swift-current checkout --quiet "$SWIFT_MAIN_SHA"
+          test "$(git -C /tmp/c2pa-swift-current rev-parse HEAD)" = "$SWIFT_MAIN_SHA"
+          grep -q 'additionalFields' /tmp/c2pa-swift-current/Library/Sources/Manifest/ClaimGeneratorInfo.swift
+          grep -q 'decodeAdditionalFields' /tmp/c2pa-swift-current/Library/Sources/Manifest/ClaimGeneratorInfo.swift
+          grep -q 'encodeAdditionalFields' /tmp/c2pa-swift-current/Library/Sources/Manifest/ClaimGeneratorInfo.swift
+          grep -q 'c2pa_reader_crjson' /tmp/c2pa-swift-current/Library/Sources/Reader.swift
+          grep -q 'releases/download/v0.0.12/C2PAC.xcframework.zip' /tmp/c2pa-swift-current/Package.swift
+
+      - name: Resolve exact external consumer
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/c2pa-swift-upstream-merge-reaudit
+          cp -R scripts/c2pa-swift-upstream-merge-reaudit /tmp/c2pa-swift-upstream-merge-reaudit
+          swift package --package-path /tmp/c2pa-swift-upstream-merge-reaudit resolve
+          resolved="$(git -C /tmp/c2pa-swift-upstream-merge-reaudit/.build/checkouts/c2pa-swift rev-parse HEAD)"
+          test "$resolved" = "$SWIFT_MAIN_SHA"
+
+      - name: Build, classify, and require parity with frozen successor evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          pkg=/tmp/c2pa-swift-upstream-merge-reaudit
+          set +e
+          swift build --package-path "$pkg" > /tmp/swift-build.log 2>&1
+          build_rc=$?
+          set -e
+
+          skew=false
+          roundtrip_executed=false
+          roundtrip_rc='null'
+          receipt_valid=false
+
+          if [ "$build_rc" -ne 0 ]; then
+            if grep -Fq "cannot find 'c2pa_reader_crjson' in scope" /tmp/swift-build.log && \
+               grep -Fq 'Library/Sources/Reader.swift' /tmp/swift-build.log; then
+              skew=true
+            fi
+          else
+            roundtrip_executed=true
+            set +e
+            swift run --package-path "$pkg" --skip-build RoundTripFixture \
+              "$pkg/fixtures/claim-generator-info.json" \
+              "$pkg/fixtures/external-reference.json" \
+              > /tmp/swift-roundtrip.json 2> /tmp/swift-roundtrip.err
+            rr=$?
+            set -e
+            roundtrip_rc="$rr"
+            if [ "$rr" -eq 0 ]; then
+              python -c "import json; r=json.load(open('/tmp/swift-roundtrip.json')); assert r['schema']=='urn:uu-aap:c2pa-swift-current-main-roundtrip-receipt:0.3'; assert r['upstream_main_sha']=='6fa8a78c16abac3b3f7eb4832c2cc943c9c19f0f'; assert r['upstream_pr_merged'] is True; assert r['assertion_payload_semantic_roundtrip'] is True; assert r['claim_generator_unknown_field_semantic_roundtrip'] is True; assert r['unknown_field_promoted_to_authority_or_trust'] is False; assert r['cross_sdk_p0_3_complete'] is False"
+              receipt_valid=true
+            fi
+          fi
+
+          export BUILD_RC="$build_rc" SKEW="$skew" ROUNDTRIP_EXECUTED="$roundtrip_executed" ROUNDTRIP_RC="$roundtrip_rc" RECEIPT_VALID="$receipt_valid"
+          python - <<'PY' > /tmp/current-observation.json
+          import json, os
+          def b(name): return os.environ[name].lower() == 'true'
+          rr = os.environ['ROUNDTRIP_RC']
+          observation = {
+            'schema': 'urn:uu-aap:c2pa-swift-current-main-execution-observation:0.3',
+            'upstream_main_sha': '6fa8a78c16abac3b3f7eb4832c2cc943c9c19f0f',
+            'upstream_pr_161_merged': True,
+            'public_binary_release': 'v0.0.12',
+            'android_main_sha': '077035cda5bf6849abf270829b98af789cc31e4f',
+            'source_contract': {
+              'claim_generator_additional_fields_present': True,
+              'reader_crjson_present': True,
+            },
+            'build': {
+              'exit_code': int(os.environ['BUILD_RC']),
+              'source_binary_skew_marker': b('SKEW'),
+              'roundtrip_executed': b('ROUNDTRIP_EXECUTED'),
+              'roundtrip_exit_code': None if rr == 'null' else int(rr),
+              'roundtrip_receipt_valid': b('RECEIPT_VALID'),
+            },
+          }
+          print(json.dumps(observation, indent=2, sort_keys=True))
+          PY
+
+          python scripts/c2pa-swift-upstream-merge-reaudit/classify.py \
+            /tmp/current-observation.json > /tmp/current-receipt.json
+
+          python - <<'PY'
+          import json
+          live_observation = json.load(open('/tmp/current-observation.json'))
+          frozen_observation = json.load(open('scripts/c2pa-swift-upstream-merge-reaudit/current-observation.json'))
+          live_receipt = json.load(open('/tmp/current-receipt.json'))
+          frozen_receipt = json.load(open('scripts/c2pa-swift-upstream-merge-reaudit/current-receipt.json'))
+          assert live_observation == frozen_observation, (live_observation, frozen_observation)
+          assert live_receipt == frozen_receipt, (live_receipt, frozen_receipt)
+          assert live_receipt['external_swiftpm_consumer']['classification'] == 'BLOCKED_SOURCE_BINARY_SKEW'
+          assert live_receipt['source_contract']['classification'] == 'CURRENT_MAIN_SOURCE_PASS'
+          assert live_receipt['android']['classification'] == 'UNCHANGED_NO_RETEST_REQUIRED'
+          assert live_receipt['current_swift_lossless_preservation_established'] is False
+          assert live_receipt['current_cross_sdk_compatibility_established'] is False
+          assert live_receipt['cross_sdk_p0_3_complete'] is False
+          print('qualified current Swift state: BLOCKED_SOURCE_BINARY_SKEW (runtime == frozen evidence)')
+          PY
+
+      - name: Upload targeted re-audit evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: c2pa-swift-targeted-reaudit-${{ env.SWIFT_MAIN_SHA }}
+          path: |
+            /tmp/current-observation.json
+            /tmp/current-receipt.json
+            /tmp/swift-build.log
+            /tmp/swift-roundtrip.json
+            /tmp/swift-roundtrip.err
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Prove repository-read-only execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
