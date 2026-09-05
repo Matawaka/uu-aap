@@ -1,0 +1,119 @@
+name: Observed Authority Branch Set Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/observed-authority-branch-set/**'
+      - '.github/workflows/observed-authority-branch-set-v0.1-validation.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/observed-authority-branch-set/**'
+      - '.github/workflows/observed-authority-branch-set-v0.1-validation.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  observed-branch-set-without-exhaustive-branch-claim:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Re-run merged #890 authority-admission tests unchanged
+        run: python scripts/c2pa-authority-admission/test_gate.py
+
+      - name: Re-run merged #892 observable consistency tests unchanged
+        run: python scripts/observable-authority-consistency/test_receipt.py
+
+      - name: Re-run merged #894 triangulation tests unchanged
+        run: python scripts/authority-surface-triangulation/test_receipt.py
+
+      - name: Re-run merged #894 predecessor cross-check unchanged
+        run: python scripts/authority-surface-triangulation/cross_check.py
+
+      - name: Re-run merged #896 transition tests unchanged
+        run: python scripts/authority-surface-transition/test_receipt.py
+
+      - name: Re-run merged #898 continuity-chain tests unchanged
+        run: python scripts/authority-surface-continuity-chain/test_receipt.py
+
+      - name: Re-run merged #900 divergence tests unchanged
+        run: python scripts/observed-authority-branch-divergence/test_receipt.py
+
+      - name: Run branch-set hostile and positive tests
+        run: python scripts/observed-authority-branch-set/test_receipt.py
+
+      - name: Run #896-aligned alias and signer-order regression tests
+        run: python scripts/observed-authority-branch-set/test_alias_semantics.py
+
+      - name: Emit deterministic branch-set receipts
+        run: |
+          mkdir -p /tmp/authority-branch-set-receipts
+          for fixture in three-branches mixed; do
+            python scripts/observed-authority-branch-set/receipt.py \
+              scripts/observed-authority-branch-set/fixtures/${fixture}.json \
+              > /tmp/authority-branch-set-receipts/${fixture}.json
+          done
+
+      - name: Assert exact set, pairwise, multiplicity, and non-global outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('/tmp/authority-branch-set-receipts')
+          three = json.loads((root / 'three-branches.json').read_text())
+          mixed = json.loads((root / 'mixed.json').read_text())
+
+          assert three['observation_count'] == 3
+          assert three['distinct_branch_count'] == 3
+          assert three['pairwise_entry_count'] == 3
+          assert len(three['pairwise_matrix']) == 3
+          assert three['duplicate_observations'] == []
+
+          v3 = next(
+              item for item in three['observed_root_variant_groups']
+              if item['root_id'] == 'fixture-root' and item['root_version'] == 3
+          )
+          assert v3['distinct_digest_count'] == 2
+          assert v3['multiple_root_digests_observed'] is True
+          assert three['any_multiple_root_digests_observed'] is True
+
+          for entry in three['pairwise_matrix']:
+              assert entry['left_branch_fingerprint_sha256'] < entry['right_branch_fingerprint_sha256']
+
+          relations = [entry['relation'] for entry in mixed['pairwise_matrix']]
+          prefix_count = sum(
+              relation in {'LEFT_IS_OBSERVED_PREFIX', 'RIGHT_IS_OBSERVED_PREFIX'}
+              for relation in relations
+          )
+          assert prefix_count == 1
+          assert relations.count('DIVERGENT_OBSERVED_PATHS') == 2
+
+          for receipt in (three, mixed):
+              guards = receipt['semantic_guards']
+              assert guards['all_existing_branches_observed'] is False
+              assert guards['global_non_equivocation_proven'] is False
+              assert guards['global_equivocation_proven'] is False
+              assert guards['complete_fork_topology_proven'] is False
+              assert guards['canonical_branch_selected'] is False
+              assert guards['preferred_branch_selected'] is False
+          PY
+
+      - name: Prove validation is repository-read-only
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'validation mutated the repository' >&2
+            git status --short >&2
+            exit 1
+          fi
