@@ -72,7 +72,7 @@ jobs:
           print('VALID schema:',p)
           PY
 
-      - name: Fetch exact allowlisted operator pages read-only
+      - name: Fetch exact allowlisted operator sources read-only
         shell: bash
         run: |
           set -euo pipefail
@@ -83,17 +83,19 @@ jobs:
           curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
             https://remora.n621.de/ -o /tmp/remora.html
           curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
-            https://navigli.sunlight.geomys.org/ -o /tmp/navigli.html
+            https://raw.githubusercontent.com/geomys/magnolia/0545421c001b16c0fb328cd9254010c46fa424a6/cmd/hetrix/geomys.go \
+            -o /tmp/geomys-magnolia-geomys.go
           test -s /tmp/stagemole-about.txt
           test -s /tmp/trustfabric-witnesses.html
           test -s /tmp/remora.html
-          test -s /tmp/navigli.html
+          test -s /tmp/geomys-magnolia-geomys.go
+          test "$(git hash-object /tmp/geomys-magnolia-geomys.go)" = '95a3e95134487229343bb6197f6fa1723cfa20d7'
           cat > /tmp/source-map.json <<'JSON'
           {
             "https://witness.stagemole.eu/about": "/tmp/stagemole-about.txt",
             "https://transparency.dev/witnesses": "/tmp/trustfabric-witnesses.html",
             "https://remora.n621.de/": "/tmp/remora.html",
-            "https://navigli.sunlight.geomys.org/": "/tmp/navigli.html"
+            "https://raw.githubusercontent.com/geomys/magnolia/0545421c001b16c0fb328cd9254010c46fa424a6/cmd/hetrix/geomys.go": "/tmp/geomys-magnolia-geomys.go"
           }
           JSON
 
@@ -165,7 +167,7 @@ jobs:
             /tmp/stagemole-about.txt
             /tmp/trustfabric-witnesses.html
             /tmp/remora.html
-            /tmp/navigli.html
+            /tmp/geomys-magnolia-geomys.go
           if-no-files-found: error
           retention-days: 30
 
