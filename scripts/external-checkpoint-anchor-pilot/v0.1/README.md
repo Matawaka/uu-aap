@@ -77,16 +77,64 @@ If the reference verifier cannot establish the chain leg, the strongest allowed 
 
 `OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_NOT_ESTABLISHED`.
 
+## First independent executable result
+
+GitHub Actions run `33957485515`, job `101283330453`, executed the complete read-only pilot against the public external frontier.
+
+Observed live evidence:
+
+```text
+opaque leaf index                    0
+opaque leaf bytes                    132
+opaque leaf SHA-256                  c65767dfaf98f6b3fb439feab33932ebc14fc5a2434f04f4cb65dfdeb2bfaeee
+inclusion proof nodes                11
+inclusion proof text SHA-256         cc4ed9f45b36f0ac9cb51c71ef3fbd861715baedbd231ddaccc8bbb6db172220
+computed checkpoint root             GmLAFnmcIf8WgSfpWt7xBleQE+zgSZx8x9zuSOYw+vA=
+rootcommit preimage SHA-256          4d1cc236c3872701bb27f9e27fad315e153eeb43a767a2cae958a3bb4014e771
+OTS proof SHA-256                    676b61280ba00b4fb6ef364f7e42558c2d6d2b35719cecc5d5c677ab17291cb6
+OTS committed digest                 4d1cc236c3872701bb27f9e27fad315e153eeb43a767a2cae958a3bb4014e771
+Bitcoin attestation structure        present
+BitcoinBlockHeaderAttestation height 958802
+reference Bitcoin-node confirmation  NOT_ESTABLISHED
+```
+
+The pinned `opentimestamps-client==0.7.2` parser independently exposed a Bitcoin transaction path and `BitcoinBlockHeaderAttestation(958802)`, but `ots verify` could not connect to a Bitcoin node because the GitHub runner had no Bitcoin Core cookie/configuration. The pilot therefore deliberately **did not** promote the attestation structure into independently established chain confirmation.
+
+Qualified frozen result:
+
+```text
+OPAQUE_LEAF_INCLUDED_ANCHOR_BINDING_VERIFIED_BITCOIN_CONFIRMATION_NOT_ESTABLISHED
+```
+
+Receipt fingerprint:
+
+`60c91b97b7c5308cf6832803b1f399682b579ecb18680a4829a09920d64c71ef`
+
+Artifact ID: `9966830130`.
+Artifact ZIP SHA-256: `15fb51bc5585530a7eb8fa12a1f1af262df955a531ce91b4ce0b3cf8aac69bdd`.
+
+This is a **partial technical proof**, not a failed pilot:
+
+```text
+real opaque-leaf inclusion              VERIFIED
+same-checkpoint rootcommit binding       VERIFIED
+exact OTS committed-digest binding       VERIFIED
+Bitcoin attestation structure            OBSERVED
+Bitcoin chain confirmation               NOT_ESTABLISHED
+```
+
 ## Evidence layers after this pilot
 
-Even on the strongest technical success:
+At the accepted frozen result:
 
 - `SIGNED_CLAIM = NOT_IN_SCOPE_OPAQUE_LEAF`;
 - `CLAIM_COMMITMENT = OPAQUE_LEAF_BYTES_HASHED_ONLY`;
-- `LOG_INCLUSION` may become `VERIFIED`;
+- `LOG_INCLUSION = VERIFIED`;
 - `LOG_APPEND_ONLY_CONSISTENCY = NOT_VERIFIED_SINGLE_CHECKPOINT_ONLY`;
-- `CHECKPOINT_NON_EQUIVOCATION` means only that exact checkpoint root has independently bound external anchor evidence;
-- `EXISTENCE_TIME_EVIDENCE` stays bounded to the exact reference-verifier result.
+- `CHECKPOINT_NON_EQUIVOCATION = EXTERNAL_ANCHOR_BINDING_VERIFIED` for this exact checkpoint binding only;
+- `EXISTENCE_TIME_EVIDENCE = OTS_BITCOIN_ATTESTATION_PRESENT_CHAIN_CONFIRMATION_NOT_ESTABLISHED`.
+
+The phrase `CHECKPOINT_NON_EQUIVOCATION = EXTERNAL_ANCHOR_BINDING_VERIFIED` is deliberately bounded to independently verified external commitment of the exact checkpoint root. It does not establish complete log history, producer submission completeness, or global non-equivocation.
 
 ## Mandatory non-claims
 
@@ -157,4 +205,4 @@ CI never:
 - alerts/remediates;
 - creates authority or an ActionPermit.
 
-After the first independent run, its receipt is frozen into this PR and the final workflow requires `runtime == frozen receipt`.
+`current-receipt.json` is frozen from the first independent Actions artifact. Every final qualification run must reproduce that exact receipt; any external evidence drift, including a newly available Bitcoin-chain confirmation, requires a successor rather than silently rewriting v0.1.
