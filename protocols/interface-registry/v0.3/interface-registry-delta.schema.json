@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:reusable-interface-registry-delta:0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "artifact_type",
+    "version",
+    "base_registry",
+    "release_registry_equivalent",
+    "additions",
+    "admission_scope",
+    "effective_entry_count",
+    "non_claims"
+  ],
+  "properties": {
+    "artifact_type": {"const": "ReusableProtocolInterfaceRegistryDelta"},
+    "version": {"const": "0.3"},
+    "base_registry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "path", "blob"],
+      "properties": {
+        "version": {"const": "0.2"},
+        "path": {"const": "protocols/interface-registry/v0.2/interface-registry-delta.json"},
+        "blob": {"const": "ad705523bada7f64a04e09e34974407725942976"}
+      }
+    },
+    "release_registry_equivalent": {"const": false},
+    "additions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id", "version", "status", "path", "inputs", "outputs", "dependencies",
+          "non_effects", "next_interfaces", "provider_neutral",
+          "external_effect_emission", "next_interfaces_are_automatic"
+        ],
+        "properties": {
+          "id": {"const": "ObservationSet"},
+          "version": {"const": "0.1"},
+          "status": {"const": "experimental"},
+          "path": {"const": "protocols/integration/observation-set-calculus-candidate/v0.1"},
+          "inputs": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "prefixItems": [
+              {"const": "scope_binding_sha256"},
+              {"const": "observations[] { semantic_fingerprint_sha256, source_binding_sha256 }"}
+            ],
+            "items": false
+          },
+          "outputs": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "prefixItems": [
+              {"const": "ObservationSet receipt"},
+              {"const": "semantic set fingerprint"},
+              {"const": "exact-input fingerprint"},
+              {"const": "duplicate-safe observation multiplicity"}
+            ],
+            "items": false
+          },
+          "dependencies": {"type": "array", "maxItems": 0},
+          "non_effects": {
+            "type": "array",
+            "minItems": 8,
+            "maxItems": 8,
+            "uniqueItems": true,
+            "items": {"type": "string", "minLength": 1}
+          },
+          "next_interfaces": {"type": "array", "maxItems": 0},
+          "provider_neutral": {"const": true},
+          "external_effect_emission": {"const": false},
+          "next_interfaces_are_automatic": {"const": false}
+        }
+      }
+    },
+    "admission_scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "admitted_interface_id", "admitted_api", "implementation_path", "implementation_blob",
+        "admission_assessment_path", "admission_assessment_blob",
+        "direct_reuse_proof_path", "direct_reuse_proof_blob",
+        "independent_consumer_families", "deferred_apis",
+        "monolithic_candidate_admitted", "stable_core_admitted"
+      ],
+      "properties": {
+        "admitted_interface_id": {"const": "ObservationSet"},
+        "admitted_api": {"const": "evaluate_set"},
+        "implementation_path": {"const": "protocols/integration/observation-set-calculus-candidate/v0.1/profile.py"},
+        "implementation_blob": {"const": "280624ae6a59fa7a199e3419254765a85e78637a"},
+        "admission_assessment_path": {"const": "tooling/observation-set-admission-audit/v0.2/assessment.json"},
+        "admission_assessment_blob": {"const": "8404a4d35fa1b6966e418d1c133f4c798e69d8a4"},
+        "direct_reuse_proof_path": {"const": "tooling/observation-set-calculus-two-domain-proof/v0.1/prove.py"},
+        "direct_reuse_proof_blob": {"const": "2cd03641d5d17f1122cce97a091fa1bd4dbe5ba3"},
+        "independent_consumer_families": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {"enum": ["C2PA_AUTHORITY_OBSERVABILITY", "PUBLIC_REVIEW_EXTERNAL_SOURCE_OBSERVATION"]}
+        },
+        "deferred_apis": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": {"enum": ["evaluate_transition", "evaluate_chain"]}
+        },
+        "monolithic_candidate_admitted": {"const": false},
+        "stable_core_admitted": {"const": false}
+      }
+    },
+    "effective_entry_count": {"const": 18},
+    "non_claims": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "published_release_status",
+          "stable_core_membership",
+          "automatic_transition_authorized",
+          "external_effect_performed",
+          "authority_created",
+          "transition_interface_admitted",
+          "chain_interface_admitted",
+          "monolithic_calculus_admitted"
+        ]
+      }
+    }
+  }
+}
