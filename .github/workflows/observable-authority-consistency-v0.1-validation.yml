@@ -1,0 +1,103 @@
+name: Observable Authority Consistency Receipt v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/observable-authority-consistency/**'
+      - '.github/workflows/observable-authority-consistency-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/observable-authority-consistency/**'
+      - '.github/workflows/observable-authority-consistency-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  consistency-receipt:
+    name: symmetric authority surface explanation
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Re-run merged predecessor authority-admission tests unchanged
+        run: >-
+          python -m unittest discover
+          -s scripts/c2pa-authority-admission
+          -p 'test_*.py'
+          -v
+
+      - name: Run observable consistency hostile tests
+        run: >-
+          python -m unittest discover
+          -s scripts/observable-authority-consistency
+          -p 'test_*.py'
+          -v
+
+      - name: Emit deterministic receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          root=scripts/observable-authority-consistency
+          python "$root/receipt.py" "$root/fixtures/external-shape.json" > /tmp/external-shape.json
+          python "$root/receipt.py" "$root/fixtures/aligned.json" > /tmp/aligned.json
+          python "$root/receipt.py" "$root/fixtures/reverse-delta.json" > /tmp/reverse.json
+          python "$root/receipt.py" "$root/fixtures/bidirectional.json" > /tmp/bidirectional.json
+          python "$root/receipt.py" "$root/fixtures/successor-v3.json" > /tmp/successor-v3.json
+
+      - name: Assert exact symmetric explanation and successor outcomes
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          def load(name):
+              return json.loads(Path(name).read_text())
+
+          external = load('/tmp/external-shape.json')
+          aligned = load('/tmp/aligned.json')
+          reverse = load('/tmp/reverse.json')
+          both = load('/tmp/bidirectional.json')
+          v3 = load('/tmp/successor-v3.json')
+
+          assert external['consistency']['state'] == 'EXPORTED_UNADMITTED_PRESENT'
+          assert external['consistency']['exported_but_unadmitted'] == ['fixture-witness-8']
+          assert external['consistency']['admitted_but_unexported'] == []
+          assert external['consistency']['delta_present'] is True
+          assert external['semantic_guards']['alert_policy_required_for_observability'] is False
+
+          assert aligned['consistency']['state'] == 'ALIGNED'
+          assert aligned['consistency']['delta_present'] is False
+
+          assert reverse['consistency']['state'] == 'ADMITTED_UNEXPORTED_PRESENT'
+          assert reverse['consistency']['admitted_but_unexported'] == ['fixture-witness-7']
+
+          assert both['consistency']['state'] == 'BIDIRECTIONAL_DELTA'
+          assert both['consistency']['exported_but_unadmitted'] == ['fixture-witness-8']
+          assert both['consistency']['admitted_but_unexported'] == ['fixture-witness-7']
+
+          assert external['signed_root']['version'] == 2
+          assert v3['signed_root']['version'] == 3
+          assert external['signed_root']['document_sha256'] != v3['signed_root']['document_sha256']
+          assert external['consistency']['state'] == 'EXPORTED_UNADMITTED_PRESENT'
+          assert v3['consistency']['state'] == 'ALIGNED'
+          assert external['semantic_guards']['successor_root_backfills_historical_receipt'] is False
+
+          print('observable authority consistency exact acceptance surface: PASS')
+          PY
+
+      - name: Prove validation is repository-read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain)"
