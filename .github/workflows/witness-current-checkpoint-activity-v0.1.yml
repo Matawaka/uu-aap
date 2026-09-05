@@ -1,0 +1,110 @@
+name: Witness Current Checkpoint Activity v0.1
+on:
+  pull_request:
+    paths:
+      - 'scripts/witness-current-checkpoint-activity/v0.1/**'
+      - '.github/workflows/witness-current-checkpoint-activity-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/witness-current-checkpoint-activity/v0.1/**'
+      - '.github/workflows/witness-current-checkpoint-activity-v0.1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONPYCACHEPREFIX: /tmp/uu-aap-pycache
+jobs:
+  witness-current-checkpoint-activity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false, fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.11'}
+      - name: Install pinned crypto dependency
+        run: python -m pip install --disable-pip-version-check 'cryptography==45.0.6'
+      - name: Validate exact merged predecessors and hostile layers
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=scripts/witness-operator-origin-corroboration/v0.1
+          test "$(git hash-object "$p/profile.json")" = 4e61035e4c1adf62c5927bd2b3de7db8715d028f
+          test "$(git hash-object "$p/qualification-receipt.json")" = b7fd97188f2a033de306ecd51b9f3f0cbcb9b62e
+          python "$p/test_corroboration.py"
+          old=scripts/anchored-witnessed-consistency-pilot/v0.1
+          test "$(git hash-object "$old/profile.json")" = 4f1c10b9551661b6236febe3d744e4255065ce52
+          test "$(git hash-object "$old/pilot.py")" = 518bc61f4db936031b911e392eb6fe053dc03437
+          python "$old/test_pilot.py"
+          git merge-base --is-ancestor 9611a245fe517c9c3e32e7c4d88c8f7cfb7d0c2d HEAD
+          d=scripts/witness-current-checkpoint-activity/v0.1
+          python "$d/test_activity.py"
+          python -m py_compile "$d/activity.py" "$d/test_activity.py"
+          test ! -d "$d/__pycache__"
+      - name: Fetch one fresh current checkpoint read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 4 --retry-all-errors --proto '=https' \
+            https://log.markovianprotocol.com/checkpoint -o /tmp/current-checkpoint.txt
+          test -s /tmp/current-checkpoint.txt
+      - name: Qualify fresh current-checkpoint witness activity
+        shell: bash
+        run: |
+          set -euo pipefail
+          d=scripts/witness-current-checkpoint-activity/v0.1
+          python "$d/activity.py" --profile "$d/profile.json" \
+            --predecessor scripts/witness-operator-origin-corroboration/v0.1/qualification-receipt.json \
+            --checkpoint /tmp/current-checkpoint.txt > /tmp/witness-current-activity.json
+          python "$d/activity.py" --validate /tmp/witness-current-activity.json
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/witness-current-activity.json'))
+          assert r['checkpoint']['log_signature_verified'] is True
+          assert r['activity']['invalid_pinned_witness_signatures']==[]
+          assert r['verdict'] in {
+            'ALL_SEVEN_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_ONE_FRESH_CURRENT_CHECKPOINT_CONTINUOUS_LIVENESS_NOT_ESTABLISHED',
+            'QUORUM_MANY_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_ONE_FRESH_CURRENT_CHECKPOINT_CONTINUOUS_LIVENESS_NOT_ESTABLISHED',
+            'INSUFFICIENT_FRESH_CURRENT_CHECKPOINT_PINNED_WITNESS_ACTIVITY'
+          }
+          assert not any(r['claims'].values()) and not r['automatic_action'] and not r['external_mutation_performed']
+          print(r['verdict']); print('verified pinned witnesses:',r['activity']['verified_pinned_witness_count']); print(r['receipt_fingerprint_sha256'])
+          PY
+      - name: Validate frozen qualification when materialized
+        shell: bash
+        run: |
+          set -euo pipefail
+          d=scripts/witness-current-checkpoint-activity/v0.1; q="$d/qualification-receipt.json"
+          if [ -f "$q" ]; then
+            python "$d/activity.py" --validate "$q"
+            python - <<'PY'
+          import json
+          live=json.load(open('/tmp/witness-current-activity.json')); frozen=json.load(open('scripts/witness-current-checkpoint-activity/v0.1/qualification-receipt.json'))
+          stable=('schema','tracking_issue','repository_predecessor_main','repository_predecessor_tree','predecessor_receipt_fingerprint_sha256','claims','automatic_action','external_mutation_performed')
+          assert {k:live[k] for k in stable}=={k:frozen[k] for k in stable}
+          fc=frozen['activity']['verified_pinned_witness_count']; lc=live['activity']['verified_pinned_witness_count']
+          if fc==7: assert lc==7
+          elif fc>=4: assert lc>=4
+          else: assert lc>=0
+          print('live current-checkpoint activity remains within frozen admission class')
+          PY
+          else echo 'first qualification run: frozen receipt not materialized yet'; fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: witness-current-checkpoint-activity-${{ github.sha }}
+          path: |
+            /tmp/current-checkpoint.txt
+            /tmp/witness-current-activity.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: Assert additive successor-only and repository-read-only boundaries
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_EVENT_NAME" = pull_request ]; then git fetch --quiet origin "$GITHUB_BASE_REF"; changed="$(git diff --name-only "origin/$GITHUB_BASE_REF"...HEAD)"; else changed="$(git diff --name-only HEAD^..HEAD)"; fi
+          test -n "$changed"
+          while IFS= read -r x; do case "$x" in scripts/witness-current-checkpoint-activity/v0.1/*|.github/workflows/witness-current-checkpoint-activity-v0.1.yml) ;; *) echo "unexpected path $x" >&2; exit 1;; esac; done <<<"$changed"
+          ! grep -Eq '^(protocols/core/|protocols/interface-registry/|SPEC.md$|PRINCIPLES.md$|scripts/witness-operator-origin-corroboration/|scripts/witness-operator-attribution-topology/|scripts/anchored-witnessed-consistency-pilot/)' <<<"$changed"
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"

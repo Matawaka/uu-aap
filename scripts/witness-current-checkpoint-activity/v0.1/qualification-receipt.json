@@ -1,0 +1,73 @@
+{
+  "activity": {
+    "all_seven_signed_fetched_current_checkpoint": true,
+    "freshness_scope": "ONE_BOUNDED_HTTPS_FETCH_DURING_THIS_WORKFLOW_RUN_NO_TRUSTED_TIME_CLAIM",
+    "invalid_pinned_witness_signatures": [],
+    "newest_verified_cosignature_timestamp": 1788611703,
+    "quorum_many_signed_fetched_current_checkpoint": true,
+    "skipped_non_ed25519_cosignature_blobs": 2,
+    "unknown_cosigner_names": [
+      "gblin.digital/witness"
+    ],
+    "verified_pinned_witness_count": 7,
+    "verified_pinned_witness_names": [
+      "remora.n621.de",
+      "rgdd.se/poc-witness",
+      "staging.witness.transparency.goog/ring-any-bells",
+      "transparency.dev/DEV:witness-little-garden",
+      "witness.navigli.sunlight.geomys.org",
+      "witness.stagemole.eu",
+      "witness1.smartit.nu/witness1"
+    ],
+    "verified_pinned_witness_vkeys": [
+      "remora.n621.de+da77ade7+BOvN63jn/bLvkieywe8R6UYAtVtNbZpXh34x7onlmtw2",
+      "rgdd.se/poc-witness+db03732e+BCjJKlo6BU0xfIb8LutqerIFTWIXEA0L5n3tW3QyPFgG",
+      "staging.witness.transparency.goog/ring-any-bells+2e1a8dc9+BG5JTpLc3FJtwzgh1Uv+Qelz9qeOH2bfWjS1s0s+y4rL",
+      "transparency.dev/DEV:witness-little-garden+d8042a87+BCtusOxINQNUTN5Oj8HObRkh2yHf/MwYaGX4CPdiVEPM",
+      "witness.navigli.sunlight.geomys.org+a3e00fe2+BNy/co4C1Hn1p+INwJrfUlgz7W55dSZReusH/GhUhJ/G",
+      "witness.stagemole.eu+67f7aea0+BEqSG3yu9YrmcM3BHvQYTxwFj3uSWakQepafafpUqklv",
+      "witness1.smartit.nu/witness1+a48c820f+BPSFWg9G6KPiO7QPryYO5Xq4oYJJ+kAvLKLSimDhoxMO"
+    ]
+  },
+  "automatic_action": false,
+  "checkpoint": {
+    "checkpoint_body_sha256": "5f4d3f7c0f4e7b6b6849e278436f0a2269670536986a80d0d43f01e2fb358432",
+    "log_signature_verified": true,
+    "origin": "markovianprotocol.com/log",
+    "root_b64": "+BTr4xhWiF31p14hUfaZI+8PE20qXptMgncNfqnZ5VE=",
+    "signed_body_sha256": "f79f192495304307362c503548ec8bb9ff97a9d4153d10251c97e3eb0c859d76",
+    "source_url": "https://log.markovianprotocol.com/checkpoint",
+    "tree_size": 7838
+  },
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_seven_currently_active_proven": false,
+    "all_views_non_equivocating_proven": false,
+    "all_witnesses_independent_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "complete_history_proven": false,
+    "continuous_witness_liveness_proven": false,
+    "cryptographic_operator_identity_binding_proven": false,
+    "global_non_equivocation_proven": false,
+    "legal_operator_identity_proven": false,
+    "malicious_behavior_proven": false,
+    "operator_control_proven": false,
+    "operator_independence_proven": false,
+    "producer_non_equivocation_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "witness_identity_proven": false
+  },
+  "external_mutation_performed": false,
+  "predecessor_receipt_fingerprint_sha256": "8e07ae4f682d580867f8c93525f0cd20796aa05067f12107602f1bebadcda10a",
+  "receipt_fingerprint_sha256": "61fac79b7c121bcfba0d38fd6dd4a42df5147f709577cc9ce6452f0af1d61efe",
+  "repository_predecessor_main": "9611a245fe517c9c3e32e7c4d88c8f7cfb7d0c2d",
+  "repository_predecessor_tree": "2fc632d527599362c532450e3068189a10d838c0",
+  "schema": "urn:uu-aap:witness-current-checkpoint-activity-receipt:0.1",
+  "tracking_issue": 946,
+  "verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_ONE_FRESH_CURRENT_CHECKPOINT_CONTINUOUS_LIVENESS_NOT_ESTABLISHED"
+}
