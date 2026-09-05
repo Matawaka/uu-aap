@@ -17,6 +17,39 @@ Current public evidence now shows:
 
 The merged v0.2 re-audit classifier therefore requires a targeted executable Swift retest.
 
+## Qualified current result
+
+The independent macOS runner on exact Swift main `6fa8a78c16abac3b3f7eb4832c2cc943c9c19f0f` resolved the public package, downloaded the exact `C2PAC v0.0.12` artifact, and attempted a real external SwiftPM build.
+
+The observed result is:
+
+```text
+Swift current-main source contract = CURRENT_MAIN_SOURCE_PASS
+Swift external SwiftPM consumer     = BLOCKED_SOURCE_BINARY_SKEW
+Android current frontier            = UNCHANGED_NO_RETEST_REQUIRED
+Cross-SDK compatibility             = NOT ESTABLISHED
+P0.3 complete                       = false
+```
+
+The build failed at current `Library/Sources/Reader.swift` because the Swift source calls:
+
+```text
+c2pa_reader_crjson
+```
+
+while the public binary package selected by current `Package.swift` remains `C2PAC v0.0.12` and does not expose that symbol to the Swift build.
+
+The build exit code was `1`; the semantic round-trip executable therefore did not run. This is **not** a failed preservation round trip. It is a packaging/source-binary skew that blocks the consumer before the round-trip can execute.
+
+Frozen machine evidence:
+
+- `current-observation.json` — exact execution observation;
+- `current-receipt.json` — deterministic typed classification;
+- receipt fingerprint: `a7ae8037e188e552c07106f546db16169757bb620250cfd8df17e05e2df77b53`;
+- observation SHA-256: `0d71fe53f7adacb68a671e7d71d146a08036676ea095b83e7a791942ca531dea`.
+
+The qualifying Actions evidence was produced by run `33949831417`, artifact `9964473296`, artifact SHA-256 `0f7040a9201b58b788f7eb9fe0aba814b72c37f9cd2bfb4ae900f1de5fe45af7`. The final CI reruns the same pinned consumer and requires runtime observation/receipt parity with the frozen files.
+
 ## What this tests
 
 The macOS job pins the exact current Swift main and attempts to build an external SwiftPM consumer using the same semantic fixtures originally prepared in #781.
@@ -30,20 +63,19 @@ BUILD_FAILED_OTHER
 ROUNDTRIP_FAILED
 ```
 
-CI accepts as a qualified current frontier only:
+At this pinned frontier, qualification now requires exact parity with the frozen `BLOCKED_SOURCE_BINARY_SKEW` evidence. A future changed upstream/package frontier must be handled by a successor instead of silently changing this historical receipt.
 
-- `ROUNDTRIP_PASS`, after the fixture actually executes and both semantic round trips pass; or
-- `BLOCKED_SOURCE_BINARY_SKEW`, when the build fails on the known `c2pa_reader_crjson` source/binary mismatch.
-
-`BUILD_FAILED_OTHER` and `ROUNDTRIP_FAILED` are observable classifications but fail admission so the unexpected frontier must be investigated rather than normalized.
+`BUILD_FAILED_OTHER` and `ROUNDTRIP_FAILED` remain distinct observable classifications and fail admission so unexpected behavior is investigated rather than normalized.
 
 ## Semantic fixture coverage
 
-If the build succeeds, the fixture verifies:
+If a future successor build succeeds, the fixture is prepared to verify:
 
 1. unknown nested `ClaimGeneratorInfo` data is inspectable through `additionalFields` and survives decode/encode semantically;
 2. standard `c2pa.external-reference` survives the generic assertion path semantically;
 3. unknown data is not promoted into authorship, authority, responsibility, trust or publication authorization.
+
+Those semantic round-trip checks are **not claimed as executed at this v0.3 frontier**, because the external consumer build is blocked first.
 
 ## Historical boundary
 
@@ -53,7 +85,9 @@ This successor never rewrites:
 - #782 historical Android `INCOMPATIBLE / LOSSY` evidence;
 - merged #783 `INCOMPLETE` cross-SDK contract.
 
-A current Swift `ROUNDTRIP_PASS` would establish only the tested Swift current frontier. It would **not** make P0.3 complete while Android remains unchanged.
+The current result refines the reason for Swift blocking after #161 merged: source preservation moved to current main, while external consumer execution remains blocked by the public source/binary package skew.
+
+Android did not move, so P0.3 remains incomplete.
 
 ## Invariants
 
@@ -62,6 +96,7 @@ Source preservation != Consumer round-trip
 Upstream merge != Packaging compatibility
 Packaging compatibility != Semantic preservation
 Semantic preservation != Trust or authority
+Build blocked != Round-trip failed
 Successor result != Historical rewrite
 ```
 
