@@ -1,0 +1,69 @@
+{
+  "artifact_type": "RERCMaturityAssessment",
+  "version": "0.1",
+  "tracking_issue": 920,
+  "repository_predecessor_main": "2d904872b78573f2b106a01ef748ad778a610957",
+  "interface": {
+    "id": "RERC",
+    "version": "0.1",
+    "registry_status": "experimental",
+    "implementation_path": "protocols/integration/rerc/v0.1/rerc.js"
+  },
+  "consumer_census": {
+    "method": "BOUNDED_CURRENT_REPOSITORY_AND_PR_AUDIT",
+    "independent_direct_consumer_count": 1,
+    "independent_direct_consumers": [
+      {
+        "domain": "CIRCUMSTANTIAL_PROVENANCE_EVIDENCE_INDEPENDENCE",
+        "pr": 919,
+        "adapter_path": "protocols/integration/circumstantial-provenance-rerc-adapter/v0.1/adapter.js",
+        "classification": "DIRECT_INDEPENDENT_DOMAIN_REUSE",
+        "accepted_rerc_module_reused": true,
+        "compress_restore_semantics_reimplemented": false
+      }
+    ],
+    "excluded_consumers": [
+      {
+        "id": "RERC_SELF_VALIDATION",
+        "classification": "SELF_VALIDATION_NOT_CONSUMER"
+      },
+      {
+        "id": "INTERFACE_REGISTRY_METADATA",
+        "classification": "DISCOVERY_METADATA_NOT_CONSUMER"
+      },
+      {
+        "id": "RSIC",
+        "classification": "COMPOSITION_NOT_INDEPENDENT_DOMAIN_DEMAND",
+        "path": "protocols/reusable-infrastructure/recoverable-state/v0.1/compose.js"
+      }
+    ],
+    "second_independent_direct_reuse_proven": false,
+    "bounded_exact_materialization_of_second_consumer_found": false
+  },
+  "maturity": {
+    "verdict": "REMAIN_EXPERIMENTAL",
+    "promotion_threshold_satisfied": false,
+    "reason": "One independently motivated direct domain consumer is accepted; RSIC is composition evidence and does not establish a second independent domain demand.",
+    "next_gate": "SEEK_SECOND_INDEPENDENT_DOMAIN_REUSE_OR_MATERIAL_API_EVOLUTION"
+  },
+  "non_effects": {
+    "registry_status_promotion_performed": false,
+    "stable_core_promotion_performed": false,
+    "rerc_semantics_mutated": false,
+    "rsic_admission_triggered": false,
+    "erd_dependency_triggered": false,
+    "action_permit_created": false,
+    "runtime_activated": false,
+    "external_effect_performed": false,
+    "truth_certified": false,
+    "authority_created": false,
+    "scalar_maturity_score_created": false
+  },
+  "invariants": [
+    "Direct Reuse != Stable Core",
+    "Experimental Registration != Promotion",
+    "Synthetic Composition != Independent Domain Demand",
+    "Operational Suppression != Provenance Deletion",
+    "Redundancy Group != Semantic Equivalence Proof"
+  ]
+}
