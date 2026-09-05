@@ -209,7 +209,7 @@ test("four distinct verified witnesses remain distinct", t_four_unique)
 def t_checkpoint_roundtrip():
     body, root = make_body(); p=Ed25519PrivateKey.generate(); v,k=log_vkey("example/log",p)
     name, raw = make_log_sig("example/log", k, p, body)
-    note = body[:-1] + b"\n\n— " + name.encode() + b" " + base64.b64encode(raw) + b"\n"
+    note = body[:-1] + b"\n\n" + "— ".encode("utf-8") + name.encode() + b" " + base64.b64encode(raw) + b"\n"
     parsed_body, origin, size, parsed_root, sigs = pilot.parse_checkpoint(note)
     assert parsed_body == body and origin == "example/log" and size == 2 and parsed_root == root
     assert pilot.verify_log_signature(parsed_body, sigs, v)
