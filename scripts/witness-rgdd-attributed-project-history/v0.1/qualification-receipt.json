@@ -1,0 +1,103 @@
+{
+  "automatic_action": false,
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "all_seven_currently_active_proven": false,
+    "all_views_non_equivocating_proven": false,
+    "all_witnesses_independent_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_manifest_inclusion_proven": false,
+    "canonical_branch_selected": false,
+    "complete_history_proven": false,
+    "continuous_witness_availability_proven": false,
+    "continuous_witness_liveness_proven": false,
+    "cryptographic_operator_identity_binding_proven": false,
+    "global_non_equivocation_proven": false,
+    "legal_operator_identity_proven": false,
+    "malicious_behavior_proven": false,
+    "operator_control_proven": false,
+    "operator_domain_control_proven": false,
+    "operator_independence_proven": false,
+    "producer_non_equivocation_proven": false,
+    "selective_submission_absent_proven": false,
+    "trusted_time_proven": false,
+    "truth_certified": false,
+    "witness_identity_proven": false
+  },
+  "evidence_composition": "FROZEN_FIVE_OPERATOR_ORIGIN_PLUS_LIVE_RGDD_ATTRIBUTED_PROJECT_HISTORY",
+  "external_mutation_performed": false,
+  "historical_operator_origin_labels": [
+    "Mullvad VPN AB",
+    "TrustFabric",
+    "Florian Larysch",
+    "Geomys",
+    "Elias Rudberg"
+  ],
+  "historical_operator_origin_predecessor": {
+    "corroborated_operator_label_count": 5,
+    "missing_operator_labels": [
+      "rgdd"
+    ],
+    "receipt_fingerprint_sha256": "8e07ae4f682d580867f8c93525f0cd20796aa05067f12107602f1bebadcda10a",
+    "verdict": "FIVE_OF_SIX_PUBLIC_OPERATOR_LABELS_CORROBORATED_BY_OPERATOR_ORIGIN_ATTRIBUTION_EVIDENCE_ONE_OPERATOR_ORIGIN_RELATION_NOT_ESTABLISHED"
+  },
+  "network_curated_table_counted_as_project_history_evidence": false,
+  "operator_attributed_public_evidence_label_count": 6,
+  "project_minutes_counted_as_operator_origin_evidence": false,
+  "public_operator_labels": [
+    "Mullvad VPN AB",
+    "TrustFabric",
+    "Florian Larysch",
+    "Geomys",
+    "rgdd",
+    "Elias Rudberg"
+  ],
+  "qualifying_distinct_source_count": 2,
+  "receipt_fingerprint_sha256": "127b25eda4b99d267dbb9ccd77cb5122d75253e00a66405d6b399f62c723b255",
+  "repository_predecessor_main": "373e2911f0a4621a827dee76968a2a2358f6f129",
+  "repository_predecessor_tree": "63edff826cacba65384309a49383fd441b411c5b",
+  "rgdd_handle_to_witness_attribution_corroborated": true,
+  "schema": "urn:uu-aap:witness-rgdd-attributed-project-history-receipt:0.1",
+  "source_records": [
+    {
+      "attribution_block_observed": true,
+      "attribution_block_sha256": "c426f696a078f0589d32e39a4a469d97b9ee0a4495a9114e769fe10f2627ad17",
+      "date": "2025-01-14",
+      "exact_blob_matched": true,
+      "expected_git_blob": "405bc5f343fa5da4839ceb4144a4a746402e5352",
+      "path": "archive/2025-01-14--meeting-minutes.md",
+      "qualifies": true,
+      "required_witness_fragment_observed": true,
+      "retrieved_body_sha256": "1ea40c5432b5d8561350ce04a17e80ba220506cf4ef038980b26197c17c73b66",
+      "retrieved_git_blob": "405bc5f343fa5da4839ceb4144a4a746402e5352",
+      "source_classification": "PUBLIC_PROJECT_MINUTES_ATTRIBUTED_TO_OPERATOR_HANDLE"
+    },
+    {
+      "attribution_block_observed": true,
+      "attribution_block_sha256": "6a3a737aa239ea9c6cc9940f7ec6ae7c7d1110558dc50d88a92d36f0e5961e49",
+      "date": "2026-06-09",
+      "exact_blob_matched": true,
+      "expected_git_blob": "e36839d9963a9f05c04b726f8082bbf95ca382fa",
+      "path": "archive/2026-06-09--meeting-minutes.md",
+      "qualifies": true,
+      "required_witness_fragment_observed": true,
+      "retrieved_body_sha256": "0756b31cd1d7699480315c400dc6d1e8869ee749258671670d3dece4299b619d",
+      "retrieved_git_blob": "e36839d9963a9f05c04b726f8082bbf95ca382fa",
+      "source_classification": "PUBLIC_PROJECT_MINUTES_ATTRIBUTED_TO_OPERATOR_HANDLE"
+    }
+  ],
+  "target_operator_label": "rgdd",
+  "target_witness_name": "rgdd.se/poc-witness",
+  "temporal_predecessor": {
+    "receipt_fingerprint_sha256": "bb7209f25d1516e4ea7da48c468519c64a95ccd3d5fdc854dc09bc3a46e0eb4b",
+    "verdict": "ALL_SEVEN_PINNED_WITNESS_KEYS_CRYPTOGRAPHICALLY_OBSERVED_SIGNING_TWO_DISTINCT_APPEND_ONLY_RELATED_CHECKPOINT_STATES_REPEATED_ACTIVITY_ESTABLISHED_CONTINUOUS_AVAILABILITY_NOT_ESTABLISHED"
+  },
+  "tracking_issue": 950,
+  "upstream": {
+    "commit": "e3ee15ecfb343e083398bf05bc5c5fb55e2d0783",
+    "repository": "sigsum/sigsum",
+    "source_classification": "PUBLIC_PROJECT_MINUTES_ATTRIBUTED_TO_OPERATOR_HANDLE"
+  },
+  "verdict": "ALL_SIX_PUBLIC_OPERATOR_LABELS_CORROBORATED_BY_OPERATOR_ATTRIBUTED_PUBLIC_EVIDENCE_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED"
+}

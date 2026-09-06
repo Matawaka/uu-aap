@@ -1,0 +1,117 @@
+name: Witness rgdd Attributed Project History v0.1
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/witness-rgdd-attributed-project-history-v0.1.yml"
+      - "scripts/witness-rgdd-attributed-project-history/v0.1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify-rgdd-attributed-project-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      PYTHONPYCACHEPREFIX: /tmp/uu-aap-pycache
+    steps:
+      - name: Checkout candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verify exact canonical predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_MAIN='373e2911f0a4621a827dee76968a2a2358f6f129'
+          EXPECTED_TREE='63edff826cacba65384309a49383fd441b411c5b'
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            test "${{ github.event.pull_request.base.sha }}" = "$EXPECTED_MAIN"
+          fi
+          test "$(git rev-parse "$EXPECTED_MAIN^{tree}")" = "$EXPECTED_TREE"
+          git merge-base --is-ancestor "$EXPECTED_MAIN" HEAD
+
+      - name: Run hostile suite
+        run: python scripts/witness-rgdd-attributed-project-history/v0.1/test_rgdd_history.py
+
+      - name: Fetch exact immutable upstream project-history sources
+        shell: bash
+        run: |
+          set -uo pipefail
+          A='https://raw.githubusercontent.com/sigsum/sigsum/e3ee15ecfb343e083398bf05bc5c5fb55e2d0783/archive/2025-01-14--meeting-minutes.md'
+          B='https://raw.githubusercontent.com/sigsum/sigsum/e3ee15ecfb343e083398bf05bc5c5fb55e2d0783/archive/2026-06-09--meeting-minutes.md'
+          : > /tmp/rgdd-source-a.md
+          : > /tmp/rgdd-source-b.md
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 "$A" --output /tmp/rgdd-source-a.md 2>/tmp/rgdd-source-a.err || true
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 "$B" --output /tmp/rgdd-source-b.md 2>/tmp/rgdd-source-b.err || true
+
+      - name: Qualify attributed project-history evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/witness-rgdd-attributed-project-history/v0.1/rgdd_history.py \
+            --profile scripts/witness-rgdd-attributed-project-history/v0.1/profile.json \
+            --repo-root . \
+            --temporal-receipt scripts/witness-temporal-distinct-checkpoint-activity/v0.1/qualification-receipt.json \
+            --operator-origin-receipt scripts/witness-operator-origin-corroboration/v0.1/qualification-receipt.json \
+            --topology-profile scripts/witness-operator-attribution-topology/v0.1/profile.json \
+            --source-a /tmp/rgdd-source-a.md \
+            --source-b /tmp/rgdd-source-b.md \
+            --output /tmp/rgdd-project-history-qualification.json
+
+      - name: Validate strong receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt=/tmp/rgdd-project-history-qualification.json
+          python scripts/witness-rgdd-attributed-project-history/v0.1/rgdd_history.py \
+            --profile scripts/witness-rgdd-attributed-project-history/v0.1/profile.json \
+            --repo-root . \
+            --validate-receipt "$receipt"
+          verdict="$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["verdict"])' "$receipt")"
+          test "$verdict" = 'ALL_SIX_PUBLIC_OPERATOR_LABELS_CORROBORATED_BY_OPERATOR_ATTRIBUTED_PUBLIC_EVIDENCE_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED'
+
+      - name: Validate exact frozen qualification and deterministic parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen='scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json'
+          live='/tmp/rgdd-project-history-qualification.json'
+          test "$(git hash-object "$frozen")" = '2ad3672693c02fe76777f6be8408523ba768cf4d'
+          test "$(sha256sum "$frozen" | awk '{print $1}')" = 'e9d310f64717b5c155697f5c2f7374a3812fccde37adf89d6a88e0f2c296d687'
+          python scripts/witness-rgdd-attributed-project-history/v0.1/rgdd_history.py \
+            --profile scripts/witness-rgdd-attributed-project-history/v0.1/profile.json \
+            --repo-root . \
+            --validate-receipt "$frozen"
+          cmp -s "$live" "$frozen"
+          echo 'RGDD_PROJECT_HISTORY_PARITY: LIVE_EQUALS_FROZEN_EXACT_BYTES'
+
+      - name: Verify repository boundary remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=all)"
+          test ! -d scripts/witness-rgdd-attributed-project-history/v0.1/__pycache__
+
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: witness-rgdd-attributed-project-history-v0.1
+          path: |
+            /tmp/rgdd-project-history-qualification.json
+            /tmp/rgdd-source-a.md
+            /tmp/rgdd-source-b.md
+            /tmp/rgdd-source-a.err
+            /tmp/rgdd-source-b.err
+          if-no-files-found: ignore
+          retention-days: 30
