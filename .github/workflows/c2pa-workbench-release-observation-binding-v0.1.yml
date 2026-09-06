@@ -1,0 +1,206 @@
+name: C2PA Workbench Release Observation Binding v0.1
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/c2pa-workbench-release-observation-binding-v0.1.yml'
+      - 'scripts/c2pa-workbench-release-observation-binding/v0.1/**'
+      - 'scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json'
+      - 'scripts/c2pa-semantic-boundary/check-live-report.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify-workbench-release-observation-binding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact canonical predecessor and immutable source checkpoint
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_MAIN='2f3a583be52b362ec22c047fb6189908f6d856d8'
+          EXPECTED_TREE='844fb44334783b6d9a90045e70aa3608c38893f7'
+          SOURCE_CHECKPOINT='f88f008e8d96748cdf67223df7d48472d6a17a85'
+          if [ "${{ github.event_name }}" = 'pull_request' ]; then
+            test "${{ github.event.pull_request.base.sha }}" = "$EXPECTED_MAIN"
+          fi
+          test "$(git rev-parse "$EXPECTED_MAIN^{tree}")" = "$EXPECTED_TREE"
+          git merge-base --is-ancestor "$EXPECTED_MAIN" HEAD
+          git merge-base --is-ancestor "$SOURCE_CHECKPOINT" HEAD
+
+      - name: Verify exact immutable source observation
+        shell: bash
+        run: |
+          set -euo pipefail
+          source='scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json'
+          test "$(git hash-object "$source")" = 'a18477542aa567aa54eab074b6ca3e4dca19f9bb'
+          test "$(sha256sum "$source" | awk '{print $1}')" = '3da118b4ede0852f30f48bb2d67da5758cafa88710919e14e75b0c7a55fd7456'
+          test "$(wc -c < "$source" | tr -d ' ')" = '1650'
+          test "$(git show f88f008e8d96748cdf67223df7d48472d6a17a85:"$source" | git hash-object --stdin)" = 'a18477542aa567aa54eab074b6ca3e4dca19f9bb'
+
+      - name: Syntax and hostile verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/c2pa-workbench-release-observation-binding/v0.1/verify-live-workbench.js
+          node --check scripts/c2pa-workbench-release-observation-binding/v0.1/verify-binding.js
+          node --check scripts/c2pa-workbench-release-observation-binding/v0.1/build-config.js
+          node --check scripts/c2pa-workbench-release-observation-binding/v0.1/test-binding.js
+          node scripts/c2pa-workbench-release-observation-binding/v0.1/test-binding.js
+
+      - name: Re-observe exact Workbench public release frontier
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 \
+            'https://api.github.com/repos/Matawaka/workbench/git/ref/heads/main' -o /tmp/workbench-main-ref.json
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 \
+            'https://api.github.com/repos/Matawaka/workbench/git/commits/ea852feeb0e8d92a8977bb251693e7e977913dca' -o /tmp/workbench-commit.json
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 \
+            'https://api.github.com/repos/Matawaka/workbench/git/ref/tags/workbench-v0.55.2-accepted' -o /tmp/workbench-tag-ref.json
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 \
+            'https://api.github.com/repos/Matawaka/workbench/git/tags/81fbd3d6265b497e7509b7655554789b5a0dcf8d' -o /tmp/workbench-tag-object.json
+          node scripts/c2pa-workbench-release-observation-binding/v0.1/verify-live-workbench.js \
+            scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json \
+            /tmp/workbench-main-ref.json /tmp/workbench-commit.json /tmp/workbench-tag-ref.json /tmp/workbench-tag-object.json \
+            scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json \
+            /tmp/live-workbench-observation.json
+
+      - name: Resolve immutable source observation URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          profile='scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json'
+          source='scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json'
+          url="$(node -e "const p=require('./${profile}'); process.stdout.write(p.external_url)")"
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 "$url" -o /tmp/resolved-observation.json
+          cmp -s "$source" /tmp/resolved-observation.json
+          cmp -s /tmp/live-workbench-observation.json /tmp/resolved-observation.json
+
+      - name: Fetch pinned c2patool binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          profile='scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json'
+          version="$(node -e "const p=require('./${profile}'); process.stdout.write(p.c2patool_version)")"
+          expected_sha="$(node -e "const p=require('./${profile}'); process.stdout.write(p.c2patool_archive_sha256)")"
+          url="https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v${version}/c2patool-v${version}-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --silent --show-error --proto '=https' --max-time 60 "$url" -o /tmp/c2patool.tar.gz
+          echo "${expected_sha}  /tmp/c2patool.tar.gz" | sha256sum --check --strict
+          mkdir -p /tmp/c2patool
+          tar -xzf /tmp/c2patool.tar.gz -C /tmp/c2patool
+          bin="$(find /tmp/c2patool -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+
+      - name: Create deterministic source asset and manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 --decode > /tmp/source.png
+          node scripts/c2pa-workbench-release-observation-binding/v0.1/build-config.js \
+            scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json \
+            scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json \
+            /tmp/manifest.json > /tmp/build-receipt.json
+
+      - name: Sign and re-read standard c2pa.external-reference fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/source.png --manifest /tmp/manifest.json --create digitalCapture \
+            --output /tmp/c2pa-workbench-release-observation.png --force > /tmp/sign-report.json
+          "$C2PA_BIN" /tmp/c2pa-workbench-release-observation.png > /tmp/read-report.json
+
+      - name: Qualify exact Workbench release observation binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/c2pa-workbench-release-observation-binding/v0.1/verify-binding.js \
+            /tmp/read-report.json \
+            scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json \
+            scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json \
+            /tmp/resolved-observation.json > /tmp/qualification-receipt.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const p=require('./scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json');
+          const r=JSON.parse(fs.readFileSync('/tmp/qualification-receipt.json','utf8'));
+          if (r.verdict !== p.strong_verdict) throw new Error('unexpected verdict');
+          for (const [k,v] of Object.entries(r.claims)) {
+            if (k === 'c2pa_external_reference_binding_established') { if (v !== true) throw new Error('binding not established'); }
+            else if (v !== false) throw new Error(`unsafe claim promoted: ${k}`);
+          }
+          if (r.source_observation.annotated_tag_signature_verified !== false) throw new Error('unsigned tag promoted');
+          if (r.automatic_action !== false || r.external_mutation_performed !== false) throw new Error('unexpected effect');
+          NODE
+
+      - name: Tampered observation must fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          source='scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json'
+          cp "$source" /tmp/tampered.json
+          printf ' ' >> /tmp/tampered.json
+          if node scripts/c2pa-workbench-release-observation-binding/v0.1/verify-binding.js \
+            /tmp/read-report.json scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json \
+            /tmp/tampered.json /tmp/resolved-observation.json >/dev/null 2>&1; then
+            echo 'tampered observation unexpectedly qualified' >&2; exit 1
+          fi
+
+      - name: Validate frozen/live parity when frozen receipt exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          profile='scripts/c2pa-workbench-release-observation-binding/v0.1/profile.json'
+          frozen="$(node -e "const p=require('./${profile}'); process.stdout.write(p.frozen_binding_receipt_path)")"
+          if [ -f "$frozen" ]; then
+            expected_blob="$(node -e "const p=require('./${profile}'); process.stdout.write(p.frozen_binding_receipt_git_blob || '')")"
+            expected_sha="$(node -e "const p=require('./${profile}'); process.stdout.write(p.frozen_binding_receipt_sha256 || '')")"
+            expected_bytes="$(node -e "const p=require('./${profile}'); process.stdout.write(String(p.frozen_binding_receipt_bytes || ''))")"
+            test -n "$expected_blob"; test -n "$expected_sha"; test -n "$expected_bytes"
+            test "$(git hash-object "$frozen")" = "$expected_blob"
+            test "$(sha256sum "$frozen" | awk '{print $1}')" = "$expected_sha"
+            test "$(wc -c < "$frozen" | tr -d ' ')" = "$expected_bytes"
+            cmp -s /tmp/qualification-receipt.json "$frozen"
+            echo 'C2PA_WORKBENCH_RELEASE_OBSERVATION_PARITY: LIVE_EQUALS_FROZEN_EXACT_BYTES'
+          else
+            echo 'C2PA_WORKBENCH_RELEASE_OBSERVATION_PARITY: FIRST_LIVE_QUALIFICATION_NOT_YET_FROZEN'
+          fi
+
+      - name: Verify repository boundary remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c2pa-workbench-release-observation-binding-v0.1
+          path: |
+            /tmp/live-workbench-observation.json
+            /tmp/resolved-observation.json
+            /tmp/build-receipt.json
+            /tmp/manifest.json
+            /tmp/sign-report.json
+            /tmp/read-report.json
+            /tmp/qualification-receipt.json
+            /tmp/c2pa-workbench-release-observation.png
+          if-no-files-found: ignore
+          retention-days: 30
