@@ -1,0 +1,44 @@
+{
+  "schema": "urn:uu-aap:workbench-public-release-observation-receipt:0.1",
+  "tracking_issue": 954,
+  "observed_repository": "Matawaka/workbench",
+  "observed_release": "workbench-v0.55.2-accepted",
+  "public_main": {
+    "commit": "ea852feeb0e8d92a8977bb251693e7e977913dca",
+    "tree": "44d2507df87d991583e00d4bf0df05ef24050c32",
+    "ordered_parents": [
+      "02d81b8559bc7c9676949be0557d20ecb50a9890",
+      "6111fdf82a9e8947a7722e9b603c1e9268a19105"
+    ]
+  },
+  "accepted_tag": {
+    "ref": "refs/tags/workbench-v0.55.2-accepted",
+    "object_type": "tag",
+    "tag_object": "81fbd3d6265b497e7509b7655554789b5a0dcf8d",
+    "peeled_commit": "ea852feeb0e8d92a8977bb251693e7e977913dca",
+    "signature_verification": {
+      "verified": false,
+      "reason": "unsigned"
+    }
+  },
+  "claims": {
+    "public_main_observed": true,
+    "accepted_tag_observed": true,
+    "main_equals_peeled_accepted_tag": true,
+    "exact_two_parent_order_observed": true,
+    "annotated_tag_signature_verified": false,
+    "historical_operator_publication_receipt_reconstructed": false,
+    "publication_authority_proven": false,
+    "truth_certified": false,
+    "c2pa_inclusion_in_original_release_proven": false,
+    "model_invocation_authority_created": false,
+    "runtime_execution_authority_created": false,
+    "response_authority_created": false,
+    "action_permit_created": false,
+    "successor_permit_created": false,
+    "historical_decision_time_availability_proven": false
+  },
+  "automatic_action": false,
+  "external_mutation_performed": false,
+  "verdict": "WORKBENCH_V0552_PUBLIC_MAIN_AND_ACCEPTED_TAG_CONVERGE_ON_EXACT_TWO_PARENT_COMMIT"
+}
