@@ -1,0 +1,47 @@
+{
+  "schema": "urn:uu-aap:c2pa-workbench-release-observation-binding-qualification:0.1",
+  "tracking_issue": 954,
+  "repository_predecessor_main": "2f3a583be52b362ec22c047fb6189908f6d856d8",
+  "repository_predecessor_tree": "844fb44334783b6d9a90045e70aa3608c38893f7",
+  "source_observation": {
+    "checkpoint_commit": "f88f008e8d96748cdf67223df7d48472d6a17a85",
+    "path": "scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json",
+    "git_blob": "a18477542aa567aa54eab074b6ca3e4dca19f9bb",
+    "sha256": "3da118b4ede0852f30f48bb2d67da5758cafa88710919e14e75b0c7a55fd7456",
+    "bytes": 1650,
+    "schema": "urn:uu-aap:workbench-public-release-observation-receipt:0.1",
+    "verdict": "WORKBENCH_V0552_PUBLIC_MAIN_AND_ACCEPTED_TAG_CONVERGE_ON_EXACT_TWO_PARENT_COMMIT",
+    "workbench_main_commit": "ea852feeb0e8d92a8977bb251693e7e977913dca",
+    "accepted_tag_object": "81fbd3d6265b497e7509b7655554789b5a0dcf8d",
+    "accepted_tag_target": "ea852feeb0e8d92a8977bb251693e7e977913dca",
+    "annotated_tag_signature_verified": false
+  },
+  "c2pa_binding": {
+    "assertion_label": "c2pa.external-reference",
+    "digest_alg": "sha256",
+    "media_type": "application/json",
+    "external_url": "https://raw.githubusercontent.com/Matawaka/uu-aap/f88f008e8d96748cdf67223df7d48472d6a17a85/scripts/workbench-v0552-public-release-observation/v0.1/observation-receipt.json",
+    "external_reference_hash_match": true,
+    "immutable_external_resolution_exact_bytes_match": true,
+    "live_c2pa_validation_accepted": true,
+    "custom_assertion_namespace_registered": false,
+    "source_observation_embedded_as_custom_assertion": false
+  },
+  "claims": {
+    "c2pa_external_reference_binding_established": true,
+    "source_observation_rewritten": false,
+    "historical_operator_publication_receipt_reconstructed": false,
+    "publication_authority_proven": false,
+    "truth_certified": false,
+    "git_tag_signature_verified": false,
+    "c2pa_inclusion_in_original_workbench_release_proven": false,
+    "model_invocation_authority_created": false,
+    "runtime_execution_authority_created": false,
+    "response_authority_created": false,
+    "action_permit_created": false,
+    "successor_permit_created": false
+  },
+  "automatic_action": false,
+  "external_mutation_performed": false,
+  "verdict": "WORKBENCH_V0552_PUBLIC_RELEASE_OBSERVATION_HASH_BOUND_BY_STANDARD_C2PA_EXTERNAL_REFERENCE"
+}
