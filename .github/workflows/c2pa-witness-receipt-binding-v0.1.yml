@@ -1,0 +1,217 @@
+name: C2PA Witness Receipt Binding v0.1
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/c2pa-witness-receipt-binding-v0.1.yml'
+      - 'scripts/c2pa-witness-receipt-binding/v0.1/**'
+      - 'scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json'
+      - 'scripts/c2pa-semantic-boundary/check-live-report.js'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify-c2pa-witness-receipt-binding:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify exact canonical predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_MAIN='ca1b8d2c229861f9bbcfe61041fcf31434b7c8e9'
+          EXPECTED_TREE='7c534c186bce8c4fc90f148aa447b52a3eb9ca1c'
+          if [ "${{ github.event_name }}" = 'pull_request' ]; then
+            test "${{ github.event.pull_request.base.sha }}" = "$EXPECTED_MAIN"
+          fi
+          test "$(git rev-parse "$EXPECTED_MAIN^{tree}")" = "$EXPECTED_TREE"
+          git merge-base --is-ancestor "$EXPECTED_MAIN" HEAD
+
+      - name: Verify exact accepted source receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          source='scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json'
+          test "$(git hash-object "$source")" = '2ad3672693c02fe76777f6be8408523ba768cf4d'
+          test "$(sha256sum "$source" | awk '{print $1}')" = 'e9d310f64717b5c155697f5c2f7374a3812fccde37adf89d6a88e0f2c296d687'
+          test "$(wc -c < "$source" | tr -d ' ')" = '4687'
+
+      - name: Syntax and hostile verification
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --check scripts/c2pa-witness-receipt-binding/v0.1/build-config.js
+          node --check scripts/c2pa-witness-receipt-binding/v0.1/verify-binding.js
+          node --check scripts/c2pa-witness-receipt-binding/v0.1/test-binding.js
+          node scripts/c2pa-witness-receipt-binding/v0.1/test-binding.js
+
+      - name: Resolve immutable accepted receipt URL
+        shell: bash
+        run: |
+          set -euo pipefail
+          profile='scripts/c2pa-witness-receipt-binding/v0.1/profile.json'
+          source='scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json'
+          url="$(node -e "const p=require('./${profile}'); process.stdout.write(p.external_url)")"
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576 "$url" --output /tmp/resolved-receipt.json
+          cmp -s "$source" /tmp/resolved-receipt.json
+
+      - name: Fetch pinned c2patool binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          profile='scripts/c2pa-witness-receipt-binding/v0.1/profile.json'
+          version="$(node -e "const p=require('./${profile}'); process.stdout.write(p.c2patool_version)")"
+          expected_sha="$(node -e "const p=require('./${profile}'); process.stdout.write(p.c2patool_archive_sha256)")"
+          url="https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v${version}/c2patool-v${version}-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --silent --show-error --proto '=https' --max-time 60 "$url" --output /tmp/c2patool.tar.gz
+          echo "${expected_sha}  /tmp/c2patool.tar.gz" | sha256sum --check --strict
+          mkdir -p /tmp/c2patool
+          tar -xzf /tmp/c2patool.tar.gz -C /tmp/c2patool
+          bin="$(find /tmp/c2patool -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+
+      - name: Create deterministic source asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 --decode > /tmp/source.png
+          test -s /tmp/source.png
+
+      - name: Build standard external-reference manifest definition
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/c2pa-witness-receipt-binding/v0.1/build-config.js \
+            scripts/c2pa-witness-receipt-binding/v0.1/profile.json \
+            scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json \
+            /tmp/manifest.json \
+            > /tmp/build-receipt.json
+          test -s /tmp/manifest.json
+          test -s /tmp/build-receipt.json
+
+      - name: Sign fixture asset with standard c2pa.external-reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/source.png \
+            --manifest /tmp/manifest.json \
+            --create digitalCapture \
+            --output /tmp/c2pa-witness-receipt-binding.png \
+            --force \
+            > /tmp/sign-report.json
+          test -s /tmp/c2pa-witness-receipt-binding.png
+
+      - name: Re-read bound asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/c2pa-witness-receipt-binding.png > /tmp/read-report.json
+          test -s /tmp/read-report.json
+
+      - name: Qualify exact binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          node scripts/c2pa-witness-receipt-binding/v0.1/verify-binding.js \
+            /tmp/read-report.json \
+            scripts/c2pa-witness-receipt-binding/v0.1/profile.json \
+            scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json \
+            /tmp/resolved-receipt.json \
+            > /tmp/qualification-receipt.json
+          test -s /tmp/qualification-receipt.json
+
+      - name: Validate narrow successor receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          node - <<'NODE'
+          const fs = require('fs');
+          const p = JSON.parse(fs.readFileSync('scripts/c2pa-witness-receipt-binding/v0.1/profile.json', 'utf8'));
+          const r = JSON.parse(fs.readFileSync('/tmp/qualification-receipt.json', 'utf8'));
+          if (r.verdict !== p.strong_verdict) throw new Error(`unexpected verdict: ${r.verdict}`);
+          if (r.claims.c2pa_external_reference_binding_established !== true) throw new Error('binding fact not established');
+          for (const [claim, value] of Object.entries(r.claims)) {
+            if (claim === 'c2pa_external_reference_binding_established') continue;
+            if (value !== false) throw new Error(`unsafe successor claim promoted: ${claim}`);
+          }
+          if (r.source_receipt.historical_c2pa_manifest_inclusion_proven !== false) throw new Error('historical C2PA inclusion was rewritten');
+          if (r.automatic_action !== false || r.external_mutation_performed !== false) throw new Error('unexpected effect claim');
+          NODE
+
+      - name: Tampered accepted or resolved receipt must fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          source='scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json'
+          cp "$source" /tmp/tampered-source.json
+          printf ' ' >> /tmp/tampered-source.json
+          if node scripts/c2pa-witness-receipt-binding/v0.1/verify-binding.js /tmp/read-report.json scripts/c2pa-witness-receipt-binding/v0.1/profile.json /tmp/tampered-source.json /tmp/resolved-receipt.json >/dev/null 2>&1; then
+            echo 'tampered accepted receipt unexpectedly qualified' >&2
+            exit 1
+          fi
+          cp /tmp/resolved-receipt.json /tmp/tampered-resolved.json
+          printf ' ' >> /tmp/tampered-resolved.json
+          if node scripts/c2pa-witness-receipt-binding/v0.1/verify-binding.js /tmp/read-report.json scripts/c2pa-witness-receipt-binding/v0.1/profile.json "$source" /tmp/tampered-resolved.json >/dev/null 2>&1; then
+            echo 'tampered resolved receipt unexpectedly qualified' >&2
+            exit 1
+          fi
+
+      - name: Validate frozen/live parity when frozen receipt exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          profile='scripts/c2pa-witness-receipt-binding/v0.1/profile.json'
+          frozen="$(node -e "const p=require('./${profile}'); process.stdout.write(p.frozen_binding_receipt_path)")"
+          if [ -f "$frozen" ]; then
+            expected_blob="$(node -e "const p=require('./${profile}'); process.stdout.write(p.frozen_binding_receipt_git_blob || '')")"
+            expected_sha="$(node -e "const p=require('./${profile}'); process.stdout.write(p.frozen_binding_receipt_sha256 || '')")"
+            expected_bytes="$(node -e "const p=require('./${profile}'); process.stdout.write(String(p.frozen_binding_receipt_bytes || ''))")"
+            test -n "$expected_blob"
+            test -n "$expected_sha"
+            test -n "$expected_bytes"
+            test "$(git hash-object "$frozen")" = "$expected_blob"
+            test "$(sha256sum "$frozen" | awk '{print $1}')" = "$expected_sha"
+            test "$(wc -c < "$frozen" | tr -d ' ')" = "$expected_bytes"
+            cmp -s /tmp/qualification-receipt.json "$frozen"
+            echo 'C2PA_WITNESS_RECEIPT_BINDING_PARITY: LIVE_EQUALS_FROZEN_EXACT_BYTES'
+          else
+            echo 'C2PA_WITNESS_RECEIPT_BINDING_PARITY: FIRST_LIVE_QUALIFICATION_NOT_YET_FROZEN'
+          fi
+
+      - name: Verify repository boundary remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c2pa-witness-receipt-binding-v0.1
+          path: |
+            /tmp/build-receipt.json
+            /tmp/manifest.json
+            /tmp/sign-report.json
+            /tmp/read-report.json
+            /tmp/qualification-receipt.json
+            /tmp/resolved-receipt.json
+            /tmp/c2pa-witness-receipt-binding.png
+          if-no-files-found: ignore
+          retention-days: 30

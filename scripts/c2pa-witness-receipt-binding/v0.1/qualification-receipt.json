@@ -1,0 +1,45 @@
+{
+  "schema": "urn:uu-aap:c2pa-witness-receipt-binding-qualification:0.1",
+  "tracking_issue": 952,
+  "repository_predecessor_main": "ca1b8d2c229861f9bbcfe61041fcf31434b7c8e9",
+  "repository_predecessor_tree": "7c534c186bce8c4fc90f148aa447b52a3eb9ca1c",
+  "source_receipt": {
+    "path": "scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json",
+    "git_blob": "2ad3672693c02fe76777f6be8408523ba768cf4d",
+    "sha256": "e9d310f64717b5c155697f5c2f7374a3812fccde37adf89d6a88e0f2c296d687",
+    "bytes": 4687,
+    "schema": "urn:uu-aap:witness-rgdd-attributed-project-history-receipt:0.1",
+    "receipt_fingerprint_sha256": "127b25eda4b99d267dbb9ccd77cb5122d75253e00a66405d6b399f62c723b255",
+    "verdict": "ALL_SIX_PUBLIC_OPERATOR_LABELS_CORROBORATED_BY_OPERATOR_ATTRIBUTED_PUBLIC_EVIDENCE_LEGAL_IDENTITY_CONTROL_AND_INDEPENDENCE_NOT_ESTABLISHED",
+    "historical_c2pa_manifest_inclusion_proven": false
+  },
+  "c2pa_binding": {
+    "assertion_label": "c2pa.external-reference",
+    "digest_alg": "sha256",
+    "media_type": "application/json",
+    "external_url": "https://raw.githubusercontent.com/Matawaka/uu-aap/ca1b8d2c229861f9bbcfe61041fcf31434b7c8e9/scripts/witness-rgdd-attributed-project-history/v0.1/qualification-receipt.json",
+    "external_reference_hash_match": true,
+    "immutable_external_resolution_exact_bytes_match": true,
+    "live_c2pa_validation_accepted": true,
+    "custom_assertion_namespace_registered": false,
+    "source_receipt_embedded_as_custom_assertion": false
+  },
+  "claims": {
+    "c2pa_external_reference_binding_established": true,
+    "historical_source_receipt_rewritten": false,
+    "truth_certified": false,
+    "authority_created": false,
+    "legal_operator_identity_proven": false,
+    "cryptographic_operator_identity_binding_proven": false,
+    "operator_control_proven": false,
+    "witness_independence_proven": false,
+    "complete_history_proven": false,
+    "all_manifests_submitted_proven": false,
+    "c2pa_ecosystem_completeness_proven": false,
+    "signer_interpreted_as_witness_operator": false,
+    "signer_interpreted_as_uu_aap_authority": false
+  },
+  "automatic_action": false,
+  "external_mutation_performed": false,
+  "verdict": "ACCEPTED_WITNESS_ATTRIBUTION_RECEIPT_HASH_BOUND_BY_STANDARD_C2PA_EXTERNAL_REFERENCE"
+}
