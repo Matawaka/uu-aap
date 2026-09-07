@@ -34,23 +34,9 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
     profiles = []
     for profile in measured_profiles(benchmark):
         detects = set(profile.get("detects", []))
-        class_results = []
-        detected_hostile = 0
-        detected_domains: set[str] = set()
-        for cls in classes:
-            detected = hostile_per_class if cls in detects else 0
-            detected_hostile += detected
-            if detected:
-                detected_domains.update(domains)
-            class_results.append({
-                "class": cls,
-                "hostile_fixtures": hostile_per_class,
-                "detected": detected,
-                "recall": detected / hostile_per_class,
-                "fixture_id_rule": f"<DOMAIN>::{cls}",
-                "fired_boundary": cls if detected else None,
-            })
-
+        per_class_recall = {cls: (1.0 if cls in detects else 0.0) for cls in classes}
+        fired_boundaries = {cls: (cls if cls in detects else None) for cls in classes}
+        detected_hostile = hostile_per_class * len(detects)
         profiles.append({
             "id": profile["id"],
             "kind": profile["kind"],
@@ -60,9 +46,10 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
             "benign_fixtures": benign_count,
             "benign_false_positives": 0,
             "benign_false_positive_rate": 0.0,
-            "cross_domain_coverage_count": len(detected_domains),
+            "cross_domain_coverage_count": (len(domains) if detects else 0),
             "unsupported_class_count": len(classes) - len(detects),
-            "class_results": class_results,
+            "per_class_recall": per_class_recall,
+            "fired_boundaries": fired_boundaries,
         })
 
     by_id = {p["id"]: p for p in profiles}
@@ -79,6 +66,7 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
         "predecessor": benchmark["predecessor"],
         "benchmark_schema": benchmark["schema"],
         "domains": domains,
+        "fixture_id_rule": "<DOMAIN>::<PROMOTION_CLASS>",
         "fixture_counts": {
             "domains": len(domains),
             "promotion_classes": len(classes),
