@@ -1,0 +1,36 @@
+{
+  "schema": "matawaka.novelty-pressure-qualification-receipt/v0.2",
+  "issue": 958,
+  "pull_request": 959,
+  "predecessor": "80850c1fb3da81b5af40049b35473e4c50123218",
+  "qualified_head": "25a18ec2a94e7c008d9794ec2c301f78961ac3c2",
+  "workflow_run_id": 34122097659,
+  "workflow_job_id": 101742256257,
+  "workflow_name": "Novelty Pressure Test v0.2",
+  "qualification": {
+    "job_conclusion": "success",
+    "frozen_v01_revalidated": true,
+    "v02_pressure_evidence_validated": true,
+    "baseline_hostile_checks": "21/21",
+    "exact_stacked_predecessor_bound": true,
+    "additive_only_boundary_proven": true,
+    "v01_and_semantic_runtime_surfaces_unchanged": true
+  },
+  "claims": {
+    "bounded_pressure_result_qualified": true,
+    "materially_narrowed": 4,
+    "survives_bounded_pressure": 1
+  },
+  "non_effects": {
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "complete_prior_art_search": false,
+    "v01_rewritten": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "merge_authorized": false
+  }
+}
