@@ -1,0 +1,39 @@
+{
+  "schema": "matawaka.semantic-escalation-taxonomy-qualification-receipt/v0.4",
+  "issue": 962,
+  "pull_request": 963,
+  "predecessor": "e4c5c88d3703968334069026873a5fa880bad226",
+  "qualified_head": "e3bb6957136c43633a8aa43a7b4c7b1f122cded8",
+  "workflow_run_id": 34130374439,
+  "workflow_job_id": 101768791681,
+  "workflow_name": "Semantic-Escalation Taxonomy v0.4",
+  "qualification": {
+    "job_conclusion": "success",
+    "frozen_v01_v03_revalidated": true,
+    "taxonomy_evidence_validated": true,
+    "baseline_hostile_checks": "35/35",
+    "exact_stacked_predecessor_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_and_runtime_surfaces_unchanged": true
+  },
+  "claims": {
+    "broad_taxonomy_claim_defeated": true,
+    "top_result": "UNIFIED_CROSS_LAYER_BENCHMARK_CANDIDATE",
+    "promotion_class_count": 10,
+    "public_predecessor_supported_classes": 8,
+    "post_publication_convergence_classes": 1,
+    "exact_materialization_not_found_classes": 1
+  },
+  "non_effects": {
+    "novelty_established": false,
+    "world_first": false,
+    "complete_prior_art_search": false,
+    "foundational_novelty_revived": false,
+    "v01_v03_rewritten": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "merge_authorized": false
+  }
+}
