@@ -1,0 +1,63 @@
+{
+  "ablations": [
+    {
+      "affected_fixture_id_rules": ["<DOMAIN>::AVAILABILITY_TO_INTENT"],
+      "family": "EPISTEMIC_AVAILABILITY_CONSIDERATION",
+      "hostile_detected_after_ablation": 54,
+      "hostile_detection_recall_after_ablation": 0.9,
+      "new_false_negatives": 6,
+      "removed_classes": ["AVAILABILITY_TO_INTENT"]
+    },
+    {
+      "affected_fixture_id_rules": ["<DOMAIN>::CONTEXT_TO_AUTHORITY", "<DOMAIN>::IDENTITY_TO_AUTHORITY"],
+      "family": "IDENTITY_AUTHORITY",
+      "hostile_detected_after_ablation": 48,
+      "hostile_detection_recall_after_ablation": 0.8,
+      "new_false_negatives": 12,
+      "removed_classes": ["CONTEXT_TO_AUTHORITY", "IDENTITY_TO_AUTHORITY"]
+    },
+    {
+      "affected_fixture_id_rules": ["<DOMAIN>::REVIEW_TO_EXECUTION_PERMISSION"],
+      "family": "REVIEW_PERMISSION",
+      "hostile_detected_after_ablation": 54,
+      "hostile_detection_recall_after_ablation": 0.9,
+      "new_false_negatives": 6,
+      "removed_classes": ["REVIEW_TO_EXECUTION_PERMISSION"]
+    },
+    {
+      "affected_fixture_id_rules": ["<DOMAIN>::APPROVAL_TO_PERFORMED_ACTION", "<DOMAIN>::INVOCATION_TO_COMPLETED_EFFECT"],
+      "family": "INVOCATION_EFFECT",
+      "hostile_detected_after_ablation": 48,
+      "hostile_detection_recall_after_ablation": 0.8,
+      "new_false_negatives": 12,
+      "removed_classes": ["APPROVAL_TO_PERFORMED_ACTION", "INVOCATION_TO_COMPLETED_EFFECT"]
+    },
+    {
+      "affected_fixture_id_rules": ["<DOMAIN>::OBSERVATION_TO_BROAD_TRUTH", "<DOMAIN>::DECLARED_TO_VERIFIED_CONTEXT", "<DOMAIN>::PROVENANCE_TO_CAUSALITY"],
+      "family": "PROVENANCE_CAUSALITY",
+      "hostile_detected_after_ablation": 42,
+      "hostile_detection_recall_after_ablation": 0.7,
+      "new_false_negatives": 18,
+      "removed_classes": ["OBSERVATION_TO_BROAD_TRUTH", "DECLARED_TO_VERIFIED_CONTEXT", "PROVENANCE_TO_CAUSALITY"]
+    },
+    {
+      "affected_fixture_id_rules": ["<DOMAIN>::STALE_MEMORY_TO_CURRENT_AUTHORITY"],
+      "family": "FRESHNESS_CURRENT_AUTHORITY",
+      "hostile_detected_after_ablation": 54,
+      "hostile_detection_recall_after_ablation": 0.9,
+      "new_false_negatives": 6,
+      "removed_classes": ["STALE_MEMORY_TO_CURRENT_AUTHORITY"]
+    }
+  ],
+  "baseline_hostile_fixtures": 60,
+  "baseline_profile": "MATAWAKA_TYPED_PROFILE",
+  "domain_count": 6,
+  "non_effects": {
+    "architectural_necessity_proven": false,
+    "merge_authorized": false,
+    "real_world_superiority_established": false,
+    "seven_layer_uniqueness_proven": false
+  },
+  "predecessor": "1473ab2005c876816dab12ae46ed7f39bbfbad6b",
+  "schema": "matawaka.synthetic-semantic-escalation-ablation-results/v0.5"
+}
