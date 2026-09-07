@@ -1,0 +1,46 @@
+{
+  "schema": "matawaka.operational-generalization-implementation-receipt/v0.6",
+  "issue": 966,
+  "predecessor": "186b4a68267f911840ba3a78001dd587fad9af67",
+  "predecessor_v05_tree": "d735e56df71952bbd98f09b2d8884db44d511f0b",
+  "upstream_source_count": 1,
+  "documented_track_count": 13,
+  "mapping_counts": {
+    "direct": 1,
+    "partial": 4,
+    "ambiguous": 3,
+    "unmapped": 5
+  },
+  "ambiguous_benign_design_count": 6,
+  "hostile_check_count": 37,
+  "top_result": "INSUFFICIENT_EVIDENCE",
+  "evidence_level": "UPSTREAM_DATASET_ADAPTED",
+  "performance_measurements": {
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "upstream_score": null
+  },
+  "claims": {
+    "exact_v05_tree_bound": true,
+    "statebench_source_pinned": true,
+    "deterministic_track_adapter_present": true,
+    "operational_advantage_established": false,
+    "operational_non_advantage_established": false
+  },
+  "non_effects": {
+    "upstream_implementation_executed": false,
+    "external_model_executed": false,
+    "full_upstream_payload_replayed": false,
+    "fixture_performance_scored": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "production_code_changed": false,
+    "merge_authorized": false
+  }
+}
