@@ -1,0 +1,34 @@
+{
+  "schema": "matawaka.statebench-track-mapping/v0.6",
+  "upstream_source": "STATEBENCH_V1_0_TEST",
+  "mapping_basis": "PINNED_RELEASE_DOCUMENTATION_PLUS_BOUNDED_TEST_INSPECTION",
+  "actual_test_track_set_fully_replayed": false,
+  "counts": {
+    "documented_tracks_under_audit": 13,
+    "direct": 1,
+    "partial": 4,
+    "ambiguous": 3,
+    "unmapped": 5
+  },
+  "mappings": [
+    {"track": "authority_hierarchy", "classification": "DIRECT", "candidate_promotions": ["CONTEXT_TO_AUTHORITY"], "reason": "The track directly tests lower-authority information overriding a higher-authority source/policy."},
+    {"track": "scope_permission", "classification": "PARTIAL", "candidate_promotions": ["CONTEXT_TO_AUTHORITY", "IDENTITY_TO_AUTHORITY"], "reason": "Scope/permission behavior overlaps authority boundaries but is not equivalent to either v0.4 promotion class."},
+    {"track": "environmental_freshness", "classification": "PARTIAL", "candidate_promotions": ["STALE_MEMORY_TO_CURRENT_AUTHORITY"], "reason": "Freshness failure overlaps stale-state use, but StateBench freshness is broader than current authorization laundering."},
+    {"track": "hallucination_resistance", "classification": "PARTIAL", "candidate_promotions": ["OBSERVATION_TO_BROAD_TRUTH"], "reason": "Unsupported asserted state overlaps semantic overclaim but is not limited to broadening an authentic observation."},
+    {"track": "enterprise_privacy", "classification": "PARTIAL", "candidate_promotions": ["CONTEXT_TO_AUTHORITY"], "reason": "Privacy/access boundaries overlap authority, but disclosure authorization and contextual reasoning are not identical semantics."},
+    {"track": "scope_leak", "classification": "AMBIGUOUS", "candidate_promotions": ["CONTEXT_TO_AUTHORITY", "IDENTITY_TO_AUTHORITY"], "reason": "A scope leak can arise from authority, identity, state partitioning, or retrieval failures; one v0.4 promotion cannot be selected without fixture-level analysis."},
+    {"track": "causality", "classification": "AMBIGUOUS", "candidate_promotions": ["PROVENANCE_TO_CAUSALITY"], "reason": "The label concerns causal state correctness, but it is not enough to infer that the tested failure is specifically provenance being promoted into causality."},
+    {"track": "brutal_realistic", "classification": "AMBIGUOUS", "candidate_promotions": [], "reason": "Mixed realistic scenarios may exercise several state/governance failures; track-level mapping would conceal fixture-level heterogeneity."},
+    {"track": "supersession", "classification": "UNMAPPED", "candidate_promotions": [], "reason": "Superseded-state resurrection is not one of the ten v0.4 semantic-promotion classes."},
+    {"track": "commitment_durability", "classification": "UNMAPPED", "candidate_promotions": [], "reason": "Durability of commitments is a state-continuity property outside the current v0.4 promotion taxonomy."},
+    {"track": "interruption_resumption", "classification": "UNMAPPED", "candidate_promotions": [], "reason": "Resuming after interruption tests continuity/reconstruction rather than a v0.4 semantic promotion."},
+    {"track": "repair_propagation", "classification": "UNMAPPED", "candidate_promotions": [], "reason": "Propagation of corrections through downstream state is not represented by a current v0.4 promotion class."},
+    {"track": "supersession_detection", "classification": "UNMAPPED", "candidate_promotions": [], "reason": "Detecting supersession is a state-change recognition property rather than one of the ten v0.4 promotions."}
+  ],
+  "non_effects": {
+    "fixture_level_mapping_established": false,
+    "portability_advantage_established": false,
+    "portability_failure_established": false,
+    "upstream_taxonomy_reinterpreted": false
+  }
+}

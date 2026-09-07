@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "matawaka.operational-upstream-ledger/v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "predecessor", "sources"],
+  "properties": {
+    "schema": {"const": "matawaka.operational-upstream-ledger/v0.6"},
+    "predecessor": {"const": "186b4a68267f911840ba3a78001dd587fad9af67"},
+    "sources": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["id", "repository", "repository_visibility", "commit", "license", "release", "release_created", "path", "git_blob_sha", "declared_test_fixture_count", "release_seed", "evidence_level", "upstream_implementation_executed", "external_model_executed", "full_payload_replayed_in_v06", "adapter_basis", "allowed_claim", "forbidden_claims"], "properties": {
+      "id": {"const": "STATEBENCH_V1_0_TEST"},
+      "repository": {"const": "Parslee-ai/statebench"},
+      "repository_visibility": {"const": "PUBLIC"},
+      "commit": {"const": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7"},
+      "license": {"const": "MIT"},
+      "release": {"const": "v1.0"},
+      "release_created": {"const": "2025-12-24"},
+      "path": {"const": "data/releases/v1.0/test.jsonl"},
+      "git_blob_sha": {"const": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd"},
+      "declared_test_fixture_count": {"const": 209},
+      "release_seed": {"const": 42},
+      "evidence_level": {"const": "UPSTREAM_DATASET_ADAPTED"},
+      "upstream_implementation_executed": {"const": false},
+      "external_model_executed": {"const": false},
+      "full_payload_replayed_in_v06": {"const": false},
+      "adapter_basis": {"type": "string", "minLength": 80},
+      "allowed_claim": {"type": "string", "minLength": 50},
+      "forbidden_claims": {"type": "array", "minItems": 4, "maxItems": 4, "uniqueItems": true, "items": {"type": "string", "minLength": 20}}
+    }}}
+  }
+}

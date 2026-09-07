@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "matawaka.operational-generalization-results/v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "predecessor", "upstream_source", "evidence_level", "top_result", "mapping", "performance", "complexity", "replay", "verdict_provenance", "advantages", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.operational-generalization-results/v0.6"},
+    "predecessor": {"const": "186b4a68267f911840ba3a78001dd587fad9af67"},
+    "upstream_source": {"const": "STATEBENCH_V1_0_TEST"},
+    "evidence_level": {"const": "UPSTREAM_DATASET_ADAPTED"},
+    "top_result": {"const": "INSUFFICIENT_EVIDENCE"},
+    "mapping": {"type": "object", "additionalProperties": false, "required": ["documented_tracks", "direct", "partial", "ambiguous", "unmapped", "direct_fraction", "unambiguous_candidate_fraction"], "properties": {"documented_tracks": {"const": 13}, "direct": {"const": 1}, "partial": {"const": 4}, "ambiguous": {"const": 3}, "unmapped": {"const": 5}, "direct_fraction": {"const": 0.07692307692307693}, "unambiguous_candidate_fraction": {"const": 0.38461538461538464}}},
+    "performance": {"type": "object", "additionalProperties": false, "required": ["admitted_fixture_count", "held_out_detection_recall", "benign_false_positive_rate", "fixture_level_mapping_count"], "properties": {"admitted_fixture_count": {"type": "null"}, "held_out_detection_recall": {"type": "null"}, "benign_false_positive_rate": {"type": "null"}, "fixture_level_mapping_count": {"const": 0}}},
+    "complexity": {"type": "object", "additionalProperties": false, "required": ["mapping_entry_count", "mapping_classification_kind_count", "candidate_promotion_reference_count"], "properties": {"mapping_entry_count": {"const": 13}, "mapping_classification_kind_count": {"const": 4}, "candidate_promotion_reference_count": {"type": "integer", "minimum": 0}}},
+    "replay": {"type": "object", "additionalProperties": false, "required": ["adapter_deterministic", "full_upstream_payload_replayed", "upstream_implementation_executed", "external_model_executed"], "properties": {"adapter_deterministic": {"const": true}, "full_upstream_payload_replayed": {"const": false}, "upstream_implementation_executed": {"const": false}, "external_model_executed": {"const": false}}},
+    "verdict_provenance": {"type": "object", "additionalProperties": false, "required": ["required_fields", "present_fields", "completeness"], "properties": {"required_fields": {"const": 8}, "present_fields": {"const": 8}, "completeness": {"const": 1.0}}},
+    "advantages": {"type": "object", "additionalProperties": false, "required": ["detection_advantage", "integration_complexity_advantage", "verdict_provenance_advantage", "portability_advantage", "no_measured_operational_advantage"], "properties": {"detection_advantage": {"const": false}, "integration_complexity_advantage": {"const": false}, "verdict_provenance_advantage": {"const": false}, "portability_advantage": {"const": false}, "no_measured_operational_advantage": {"const": false}}},
+    "non_effects": {"type": "object", "additionalProperties": false, "required": ["statebench_score_produced", "upstream_performance_claimed", "real_world_superiority_established", "novelty_established", "world_first", "patentability_established", "merge_authorized"], "properties": {"statebench_score_produced": {"const": false}, "upstream_performance_claimed": {"const": false}, "real_world_superiority_established": {"const": false}, "novelty_established": {"const": false}, "world_first": {"const": false}, "patentability_established": {"const": false}, "merge_authorized": {"const": false}}}
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "advantages": {
+    "detection_advantage": false,
+    "integration_complexity_advantage": false,
+    "no_measured_operational_advantage": false,
+    "portability_advantage": false,
+    "verdict_provenance_advantage": false
+  },
+  "complexity": {
+    "candidate_promotion_reference_count": 9,
+    "mapping_classification_kind_count": 4,
+    "mapping_entry_count": 13
+  },
+  "evidence_level": "UPSTREAM_DATASET_ADAPTED",
+  "mapping": {
+    "ambiguous": 3,
+    "direct": 1,
+    "direct_fraction": 0.07692307692307693,
+    "documented_tracks": 13,
+    "partial": 4,
+    "unambiguous_candidate_fraction": 0.38461538461538464,
+    "unmapped": 5
+  },
+  "non_effects": {
+    "merge_authorized": false,
+    "novelty_established": false,
+    "patentability_established": false,
+    "real_world_superiority_established": false,
+    "statebench_score_produced": false,
+    "upstream_performance_claimed": false,
+    "world_first": false
+  },
+  "performance": {
+    "admitted_fixture_count": null,
+    "benign_false_positive_rate": null,
+    "fixture_level_mapping_count": 0,
+    "held_out_detection_recall": null
+  },
+  "predecessor": "186b4a68267f911840ba3a78001dd587fad9af67",
+  "replay": {
+    "adapter_deterministic": true,
+    "external_model_executed": false,
+    "full_upstream_payload_replayed": false,
+    "upstream_implementation_executed": false
+  },
+  "schema": "matawaka.operational-generalization-results/v0.6",
+  "top_result": "INSUFFICIENT_EVIDENCE",
+  "upstream_source": "STATEBENCH_V1_0_TEST",
+  "verdict_provenance": {
+    "completeness": 1.0,
+    "present_fields": 8,
+    "required_fields": 8
+  }
+}

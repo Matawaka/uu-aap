@@ -1,0 +1,31 @@
+{
+  "schema": "matawaka.operational-upstream-ledger/v0.6",
+  "predecessor": "186b4a68267f911840ba3a78001dd587fad9af67",
+  "sources": [
+    {
+      "id": "STATEBENCH_V1_0_TEST",
+      "repository": "Parslee-ai/statebench",
+      "repository_visibility": "PUBLIC",
+      "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+      "license": "MIT",
+      "release": "v1.0",
+      "release_created": "2025-12-24",
+      "path": "data/releases/v1.0/test.jsonl",
+      "git_blob_sha": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd",
+      "declared_test_fixture_count": 209,
+      "release_seed": 42,
+      "evidence_level": "UPSTREAM_DATASET_ADAPTED",
+      "upstream_implementation_executed": false,
+      "external_model_executed": false,
+      "full_payload_replayed_in_v06": false,
+      "adapter_basis": "Pinned release documentation, exact repository/path/blob provenance, and bounded inspection of the pinned test file. The complete test payload was not replayed in this branch.",
+      "allowed_claim": "The StateBench v1.0 test corpus is independently pinned and its documented track vocabulary is used to pressure semantic portability.",
+      "forbidden_claims": [
+        "StateBench implementation performance was measured",
+        "StateBench baseline models were executed",
+        "Held-out detection recall was measured",
+        "A StateBench fixture-performance score was produced"
+      ]
+    }
+  ]
+}
