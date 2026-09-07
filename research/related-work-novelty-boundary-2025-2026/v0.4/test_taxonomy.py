@@ -47,7 +47,7 @@ def main():
         ("ActionProxy promoted to predecessor", lambda l, m: src(l, "actionproxy-approval-authorization-2026-08-22").__setitem__("temporal_class", "PUBLIC_PREDECESSOR")),
         ("remove WEXP", lambda l, m: l.__setitem__("sources", [x for x in l["sources"] if x["id"] != "wexp-core-2026-07-05"])),
         ("remove StateBench", lambda l, m: l.__setitem__("sources", [x for x in l["sources"] if x["id"] != "statebench-2025-12-21"])),
-        ("remove AIRGuard test status", lambda l, m: src(l, "airguard-authority-confusion-2026-05-27").__setitem__("tested", False)),
+        ("remove all tested context-authority predecessors", lambda l, m: (src(l, "airguard-authority-confusion-2026-05-27").__setitem__("tested", False), src(l, "statebench-2025-12-21").__setitem__("tested", False))),
         ("remove CAP test status", lambda l, m: src(l, "cap-pcl-context-attestation-2026-06-04").__setitem__("tested", False)),
         ("erase causality named tests", lambda l, m: (src(l, "causality-laundering-2026-04-05").__setitem__("tested", False), src(l, "wexp-core-2026-07-05").__setitem__("tested", False))),
         ("change top result", lambda l, m: m.__setitem__("top_result", "BROAD_TAXONOMY_CLAIM_DEFEATED")),
