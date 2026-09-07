@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:foundational-pressure-qualification-receipt:v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "issue", "pull_request", "predecessor", "qualified_head", "workflow_run_id", "workflow_job_id", "workflow_name", "qualification", "claims", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.foundational-pressure-qualification-receipt/v0.3"},
+    "issue": {"const": 960},
+    "pull_request": {"const": 961},
+    "predecessor": {"const": "8aabf16b791ac3564c8178c4bf1e325bba5df59e"},
+    "qualified_head": {"const": "7a7e547fc98b05c7777a629b9d6e65737f7d1994"},
+    "workflow_run_id": {"const": 34128437255},
+    "workflow_job_id": {"const": 101762504998},
+    "workflow_name": {"const": "Foundational Novelty Pressure v0.3"},
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["job_conclusion", "frozen_v01_v02_revalidated", "v03_foundational_evidence_validated", "baseline_hostile_checks", "exact_stacked_predecessor_bound", "additive_only_boundary_proven", "predecessor_research_and_semantic_runtime_surfaces_unchanged"],
+      "properties": {
+        "job_conclusion": {"const": "success"},
+        "frozen_v01_v02_revalidated": {"const": true},
+        "v03_foundational_evidence_validated": {"const": true},
+        "baseline_hostile_checks": {"const": "24/24"},
+        "exact_stacked_predecessor_bound": {"const": true},
+        "additive_only_boundary_proven": {"const": true},
+        "predecessor_research_and_semantic_runtime_surfaces_unchanged": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["foundational_pressure_result_qualified", "defeated", "materially_narrowed", "survives_foundational_pressure"],
+      "properties": {
+        "foundational_pressure_result_qualified": {"const": true},
+        "defeated": {"const": 3},
+        "materially_narrowed": {"const": 2},
+        "survives_foundational_pressure": {"const": 0}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["novelty_established", "world_first", "patentability_established", "complete_prior_art_search", "v01_v02_rewritten", "stable_core_changed", "poai_changed", "c2pa_changed", "runtime_changed", "merge_authorized"],
+      "properties": {
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "patentability_established": {"const": false},
+        "complete_prior_art_search": {"const": false},
+        "v01_v02_rewritten": {"const": false},
+        "stable_core_changed": {"const": false},
+        "poai_changed": {"const": false},
+        "c2pa_changed": {"const": false},
+        "runtime_changed": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}

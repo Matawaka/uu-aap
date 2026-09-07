@@ -1,0 +1,66 @@
+{
+  "schema": "matawaka.foundational-pressure-matrix/v0.3",
+  "predecessor": "8aabf16b791ac3564c8178c4bf1e325bba5df59e",
+  "claims": [
+    {
+      "id": "SNE_HEC",
+      "v02_claim": "A cross-domain semantic-power composition model in which stronger meaning requires an explicit typed transition.",
+      "result": "DEFEATED_AS_FOUNDATIONAL_NOVELTY_CANDIDATE",
+      "foundational_sources": ["denning-lattice-1976", "myers-liskov-ifc-1997", "pca-2001", "policy-composition-2002", "provenance-semirings-2007"],
+      "pressure_reason": ["Noninterference and information-flow control already formalize that composition must not create disallowed information power.", "Proof-carrying authorization and policy-composition calculi already require stronger authorization effects to follow explicit proof/policy semantics rather than implicit composition.", "Provenance semirings show that heterogeneous provenance annotations can have a formal composition algebra."],
+      "surviving_claim": null,
+      "engineering_value": "Matawaka can still provide a useful domain-specific semantic-escalation taxonomy, integration profile and adversarial conformance corpus that composes established ideas across AI governance surfaces.",
+      "forbidden_claims": ["Semantic non-escalation is a foundational logic invented by Matawaka.", "Matawaka first formalized safe composition without privilege or meaning amplification.", "Cross-layer non-promotion is novel merely because Matawaka applies it to AI evidence."],
+      "required_next_evidence": ["Stop treating SNE-HEC itself as a novelty claim and instead define a measurable semantic-escalation fault taxonomy.", "Compare a new benchmark/evaluation method against security-policy interference, IFC and authorization-logic test methodologies.", "Show empirical defects in contemporary AI systems that the integrated Matawaka profile catches more systematically than existing isolated mechanisms."],
+      "novelty_established": false
+    },
+    {
+      "id": "COMMON_NON_EFFECTS",
+      "v02_claim": "A shared receipt envelope where machine-readable non_effects constrain heterogeneous cross-receipt composition.",
+      "result": "DEFEATED_AS_FOUNDATIONAL_NOVELTY_CANDIDATE",
+      "foundational_sources": ["lucassen-gifford-effects-1988", "local-reasoning-2001", "denning-lattice-1976"],
+      "pressure_reason": ["Effect systems make possible side effects first-class machine-checkable semantics and distinguish them from returned values.", "Frame/local reasoning makes preserved or untouched state part of formal correctness reasoning.", "The particular field name non_effects and its receipt placement are representational choices rather than new foundational semantics."],
+      "surviving_claim": null,
+      "engineering_value": "A uniform `non_effects` field can remain a strong protocol-design convention for preventing verifier/UI overclaims across heterogeneous receipts, even though the underlying semantic idea is old.",
+      "forbidden_claims": ["Machine-readable negative effects or preserved-state contracts were invented by Matawaka.", "A common non_effects field is a new foundational semantic primitive.", "Explicit negative receipt semantics have no meaningful pre-AI predecessors."],
+      "required_next_evidence": ["Evaluate whether a standardized negative-semantics envelope improves interoperability and human interpretation across independent evidence systems.", "Treat `non_effects` as a protocol profile/engineering contribution unless a genuinely new formal composition property is demonstrated."],
+      "novelty_established": false
+    },
+    {
+      "id": "AVAILABLE_CONSIDERED_AUTHORITY",
+      "v02_claim": "Heterogeneous resource-level exists != available != considered/relied upon != authority != responsibility.",
+      "result": "MATERIALLY_NARROWED",
+      "foundational_sources": ["fagin-halpern-awareness-1987", "gensch-soofi-consideration-1995", "cohen-levesque-intention-1990", "boid-2001", "w3c-prov-2013"],
+      "pressure_reason": ["Awareness was formally separated from belief by 1987, and awareness sets were explicitly partitioned into consideration and non-consideration sets by 1995.", "Intention and action were separately formalized by 1990; BOID separated beliefs, obligations, intentions and desires before action commitment.", "W3C PROV separately represents plan reliance, agent responsibility and delegation of authority/responsibility."],
+      "surviving_claim": "A machine-auditable protocol profile that represents heterogeneous intelligence resources with provenance and independently records existence, decision-specific availability, actual consideration/reliance, decision authority and responsibility without treating epistemic access as governance power.",
+      "engineering_value": "PoAI can contribute an operational schema, evidence discipline and verification surface that unifies previously separate decision-science, epistemic and provenance relations for AI-augmented decisions.",
+      "forbidden_claims": ["PoAI invented awareness-versus-consideration.", "PoAI invented the separation of epistemic state from intention, obligation or responsibility.", "The conceptual chain exists/available/considered/authority is foundationally new as individual distinctions."],
+      "required_next_evidence": ["Search pre-2025 decision-provenance and knowledge-management systems for one machine record already combining provenance, availability, consideration/reliance and authority/responsibility.", "Define falsifiable semantics for availability and consideration rather than relying on self-declared UI fields.", "Demonstrate independent implementations in materially different decision domains."],
+      "novelty_established": false
+    },
+    {
+      "id": "TYPED_CONTINUITY",
+      "v02_claim": "The exact semantic necessity of State/Evidence -> Availability -> Intent -> Authority/Responsibility -> Coordination -> Action -> Outcome/Successor as non-implicit transitions.",
+      "result": "DEFEATED_AS_FOUNDATIONAL_NOVELTY_CANDIDATE",
+      "foundational_sources": ["cohen-levesque-intention-1990", "boid-2001", "pca-2001", "policy-composition-2002", "w3c-prov-2013", "in-toto-2019"],
+      "pressure_reason": ["Agent theory already separates epistemic/goal/intention/action concepts and deontic components.", "Authorization systems already require explicit proofs/policies before protected actions.", "W3C PROV already links agents, intended plans, responsibility, delegated authority, activities and outcomes in a domain-neutral provenance model.", "in-toto already verifies an expected authorized multi-step action/artifact chain against signed observed execution metadata."],
+      "surviving_claim": null,
+      "engineering_value": "The seven-layer stack can remain a coherent minimal engineering profile for Matawaka, but its exact labels/order are an architectural synthesis rather than evidence of a new foundational logic.",
+      "forbidden_claims": ["The seven-layer sequence is a foundationally novel agent architecture.", "Matawaka first linked evidence, intention, authority, responsibility, action and outcome as explicit types.", "A unique ordering or set of seven names establishes novelty."],
+      "required_next_evidence": ["Reframe the seven layers as a profile justified by failure analysis and implementation utility rather than novelty.", "Provide ablation experiments showing which real AI-governance failures appear when layers are collapsed.", "Compare conformance cost and safety benefit against alternative decompositions including SOOS, PROV-based profiles and authorization/effect systems."],
+      "novelty_established": false
+    },
+    {
+      "id": "CROSS_DOMAIN_REUSE",
+      "v02_claim": "One semantic contract reused across accountable human-AI authorship/decision governance and externally consequential agent action.",
+      "result": "MATERIALLY_NARROWED",
+      "foundational_sources": ["opm-2011", "w3c-prov-2013", "in-toto-2019", "provenance-semirings-2007"],
+      "pressure_reason": ["OPM and W3C PROV are explicitly technology/domain-neutral and represent provenance for digital, physical or conceptual things, human/software/organizational agents, activities, plans, responsibility and delegation.", "in-toto demonstrates that a provenance abstraction can bind authorized actors, expected action steps and observed artifacts.", "Therefore cross-domain abstraction itself is not a novelty claim."],
+      "surviving_claim": "A concrete interoperable profile that combines decision epistemics, responsibility/authority governance and pre-/post-action evidence under one contract and demonstrates unchanged semantics in both human-AI intellectual-work provenance and autonomous external-action use cases.",
+      "engineering_value": "The contribution may be demonstrating a practical bridge between accountability domains that older general provenance models leave policy-neutral, especially by adding fail-closed action admission and decision-time intelligence evidence.",
+      "forbidden_claims": ["Matawaka invented domain-neutral provenance or cross-domain agent/activity modeling.", "No prior model spans human and software agents, plans, responsibility, delegation and artifacts.", "Using one schema in two Matawaka applications proves foundational cross-domain novelty."],
+      "required_next_evidence": ["Search provenance profiles, workflow languages, scientific provenance, legal/audit records and policy-as-code for predecessors that combine descriptive provenance with pre-action authority and decision epistemics.", "Demonstrate exact semantic reuse across independent external consumers, not only Matawaka-authored examples.", "Measure what additional guarantees the Matawaka profile supplies beyond W3C PROV plus a conventional authorization mechanism."],
+      "novelty_established": false
+    }
+  ]
+}

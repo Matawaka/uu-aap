@@ -1,0 +1,37 @@
+{
+  "schema": "matawaka.foundational-pressure-qualification-receipt/v0.3",
+  "issue": 960,
+  "pull_request": 961,
+  "predecessor": "8aabf16b791ac3564c8178c4bf1e325bba5df59e",
+  "qualified_head": "7a7e547fc98b05c7777a629b9d6e65737f7d1994",
+  "workflow_run_id": 34128437255,
+  "workflow_job_id": 101762504998,
+  "workflow_name": "Foundational Novelty Pressure v0.3",
+  "qualification": {
+    "job_conclusion": "success",
+    "frozen_v01_v02_revalidated": true,
+    "v03_foundational_evidence_validated": true,
+    "baseline_hostile_checks": "24/24",
+    "exact_stacked_predecessor_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_research_and_semantic_runtime_surfaces_unchanged": true
+  },
+  "claims": {
+    "foundational_pressure_result_qualified": true,
+    "defeated": 3,
+    "materially_narrowed": 2,
+    "survives_foundational_pressure": 0
+  },
+  "non_effects": {
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "complete_prior_art_search": false,
+    "v01_v02_rewritten": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "merge_authorized": false
+  }
+}

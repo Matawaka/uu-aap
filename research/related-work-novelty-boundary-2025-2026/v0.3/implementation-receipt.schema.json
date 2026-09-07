@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:foundational-pressure-implementation-receipt:v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "issue", "predecessor", "foundational_source_count", "claim_count", "results", "hostile_check_count", "claims", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.foundational-pressure-implementation-receipt/v0.3"},
+    "issue": {"const": 960},
+    "predecessor": {"const": "8aabf16b791ac3564c8178c4bf1e325bba5df59e"},
+    "foundational_source_count": {"const": 14},
+    "claim_count": {"const": 5},
+    "results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["materially_narrowed", "survives_foundational_pressure", "defeated", "insufficient_evidence"],
+      "properties": {
+        "materially_narrowed": {"const": 2},
+        "survives_foundational_pressure": {"const": 0},
+        "defeated": {"const": 3},
+        "insufficient_evidence": {"const": 0}
+      }
+    },
+    "hostile_check_count": {"const": 24},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v02_preserved", "all_candidates_foundationally_pressured", "integration_value_separated_from_foundational_novelty"],
+      "properties": {
+        "v02_preserved": {"const": true},
+        "all_candidates_foundationally_pressured": {"const": true},
+        "integration_value_separated_from_foundational_novelty": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["novelty_established", "world_first", "patentability_established", "complete_prior_art_search", "stable_core_changed", "poai_changed", "c2pa_changed", "runtime_changed", "merge_authorized"],
+      "properties": {
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "patentability_established": {"const": false},
+        "complete_prior_art_search": {"const": false},
+        "stable_core_changed": {"const": false},
+        "poai_changed": {"const": false},
+        "c2pa_changed": {"const": false},
+        "runtime_changed": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}
