@@ -30,6 +30,9 @@ jobs:
       - name: Run hostile landscape tests
         run: python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
 
+      - name: Validate frozen first qualification
+        run: python research/related-work-novelty-boundary-2025-2026/v0.1/validate_qualification.py
+
       - name: Bind exact research predecessor
         shell: bash
         run: |
