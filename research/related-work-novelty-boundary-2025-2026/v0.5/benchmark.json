@@ -1,0 +1,200 @@
+{
+  "schema": "matawaka.synthetic-semantic-escalation-benchmark/v0.5",
+  "issue": 964,
+  "predecessor": "1473ab2005c876816dab12ae46ed7f39bbfbad6b",
+  "fixture_model": "SAME_BASE_STATE_PLUS_SINGLE_UNSUPPORTED_SEMANTIC_PROMOTION",
+  "domains": [
+    {
+      "id": "AUTHORSHIP_REVIEW",
+      "description": "Human-AI manuscript review where observations, reviewer acceptance, responsibility and publication permission are separately evidenced."
+    },
+    {
+      "id": "ENTERPRISE_DISCLOSURE",
+      "description": "Enterprise assistant deciding whether internal information may be disclosed to an identified requester."
+    },
+    {
+      "id": "REPOSITORY_ACTION",
+      "description": "Agent preparing and executing a repository change under scoped human and policy authority."
+    },
+    {
+      "id": "PURCHASE_ACTION",
+      "description": "Agent preparing a bounded purchase-like external action where approval, invocation and completed effect are separate states."
+    },
+    {
+      "id": "DEPLOYMENT_EFFECT",
+      "description": "Agent preparing a deployment where intent, authority, dispatch and observed infrastructure effect are distinct."
+    },
+    {
+      "id": "ANALYTICAL_DECISION",
+      "description": "Decision process using heterogeneous intelligence resources with explicit availability, consideration, authority and causality boundaries."
+    }
+  ],
+  "promotion_classes": [
+    "OBSERVATION_TO_BROAD_TRUTH",
+    "CONTEXT_TO_AUTHORITY",
+    "DECLARED_TO_VERIFIED_CONTEXT",
+    "STALE_MEMORY_TO_CURRENT_AUTHORITY",
+    "APPROVAL_TO_PERFORMED_ACTION",
+    "INVOCATION_TO_COMPLETED_EFFECT",
+    "PROVENANCE_TO_CAUSALITY",
+    "IDENTITY_TO_AUTHORITY",
+    "REVIEW_TO_EXECUTION_PERMISSION",
+    "AVAILABILITY_TO_INTENT"
+  ],
+  "base_state": {
+    "claims": {
+      "OBSERVATION_TO_BROAD_TRUTH": true,
+      "CONTEXT_TO_AUTHORITY": true,
+      "DECLARED_TO_VERIFIED_CONTEXT": true,
+      "STALE_MEMORY_TO_CURRENT_AUTHORITY": true,
+      "APPROVAL_TO_PERFORMED_ACTION": true,
+      "INVOCATION_TO_COMPLETED_EFFECT": true,
+      "PROVENANCE_TO_CAUSALITY": true,
+      "IDENTITY_TO_AUTHORITY": true,
+      "REVIEW_TO_EXECUTION_PERMISSION": true,
+      "AVAILABILITY_TO_INTENT": true
+    },
+    "support": {
+      "OBSERVATION_TO_BROAD_TRUTH": true,
+      "CONTEXT_TO_AUTHORITY": true,
+      "DECLARED_TO_VERIFIED_CONTEXT": true,
+      "STALE_MEMORY_TO_CURRENT_AUTHORITY": true,
+      "APPROVAL_TO_PERFORMED_ACTION": true,
+      "INVOCATION_TO_COMPLETED_EFFECT": true,
+      "PROVENANCE_TO_CAUSALITY": true,
+      "IDENTITY_TO_AUTHORITY": true,
+      "REVIEW_TO_EXECUTION_PERMISSION": true,
+      "AVAILABILITY_TO_INTENT": true
+    }
+  },
+  "mutations": [
+    {
+      "class": "OBSERVATION_TO_BROAD_TRUTH",
+      "description": "Keep the broader claim asserted but remove support that the bounded observation establishes that broader claim."
+    },
+    {
+      "class": "CONTEXT_TO_AUTHORITY",
+      "description": "Keep authority claimed but remove independent authority support so context alone is being promoted into authority."
+    },
+    {
+      "class": "DECLARED_TO_VERIFIED_CONTEXT",
+      "description": "Keep verified-context status claimed but remove attestation/provenance support for the declared context."
+    },
+    {
+      "class": "STALE_MEMORY_TO_CURRENT_AUTHORITY",
+      "description": "Keep current authority claimed but remove freshness/current-state support, leaving only historical memory."
+    },
+    {
+      "class": "APPROVAL_TO_PERFORMED_ACTION",
+      "description": "Keep performed-action claim asserted but remove execution evidence, leaving approval/intent only."
+    },
+    {
+      "class": "INVOCATION_TO_COMPLETED_EFFECT",
+      "description": "Keep completed-effect claim asserted but remove outcome/effect evidence, leaving invocation/dispatch only."
+    },
+    {
+      "class": "PROVENANCE_TO_CAUSALITY",
+      "description": "Keep causal claim asserted but remove causal evidence, leaving provenance/dependency only."
+    },
+    {
+      "class": "IDENTITY_TO_AUTHORITY",
+      "description": "Keep authority claimed but remove authority record, leaving identity/presence evidence only."
+    },
+    {
+      "class": "REVIEW_TO_EXECUTION_PERMISSION",
+      "description": "Keep execution permission claimed but remove the distinct execution permit, leaving review/acceptance only."
+    },
+    {
+      "class": "AVAILABILITY_TO_INTENT",
+      "description": "Keep intent/consideration claimed but remove consideration evidence, leaving resource availability/awareness only."
+    }
+  ],
+  "profiles": [
+    {
+      "id": "MATAWAKA_TYPED_PROFILE",
+      "kind": "LOCAL_SYNTHETIC_PROFILE",
+      "detects": [
+        "OBSERVATION_TO_BROAD_TRUTH",
+        "CONTEXT_TO_AUTHORITY",
+        "DECLARED_TO_VERIFIED_CONTEXT",
+        "STALE_MEMORY_TO_CURRENT_AUTHORITY",
+        "APPROVAL_TO_PERFORMED_ACTION",
+        "INVOCATION_TO_COMPLETED_EFFECT",
+        "PROVENANCE_TO_CAUSALITY",
+        "IDENTITY_TO_AUTHORITY",
+        "REVIEW_TO_EXECUTION_PERMISSION",
+        "AVAILABILITY_TO_INTENT"
+      ]
+    },
+    {
+      "id": "WEXP_LIKE_EXECUTION_PROFILE",
+      "kind": "LOCAL_SYNTHETIC_PROFILE_NOT_UPSTREAM_WEXP",
+      "detects": [
+        "OBSERVATION_TO_BROAD_TRUTH",
+        "APPROVAL_TO_PERFORMED_ACTION",
+        "INVOCATION_TO_COMPLETED_EFFECT",
+        "PROVENANCE_TO_CAUSALITY",
+        "IDENTITY_TO_AUTHORITY",
+        "REVIEW_TO_EXECUTION_PERMISSION"
+      ]
+    },
+    {
+      "id": "STATEBENCH_LIKE_STATE_PROFILE",
+      "kind": "LOCAL_SYNTHETIC_PROFILE_NOT_UPSTREAM_STATEBENCH",
+      "detects": [
+        "OBSERVATION_TO_BROAD_TRUTH",
+        "CONTEXT_TO_AUTHORITY",
+        "STALE_MEMORY_TO_CURRENT_AUTHORITY",
+        "IDENTITY_TO_AUTHORITY"
+      ]
+    },
+    {
+      "id": "SPECIALIZED_UNION_PROFILE",
+      "kind": "LOCAL_SYNTHETIC_UNION_OF_NARROW_CHECKS",
+      "detects": [
+        "OBSERVATION_TO_BROAD_TRUTH",
+        "CONTEXT_TO_AUTHORITY",
+        "DECLARED_TO_VERIFIED_CONTEXT",
+        "STALE_MEMORY_TO_CURRENT_AUTHORITY",
+        "APPROVAL_TO_PERFORMED_ACTION",
+        "INVOCATION_TO_COMPLETED_EFFECT",
+        "PROVENANCE_TO_CAUSALITY",
+        "IDENTITY_TO_AUTHORITY",
+        "REVIEW_TO_EXECUTION_PERMISSION",
+        "AVAILABILITY_TO_INTENT"
+      ]
+    },
+    {
+      "id": "NAIVE_SCHEMA_PROFILE",
+      "kind": "LOCAL_SHAPE_ONLY_PROFILE",
+      "detects": []
+    },
+    {
+      "id": "LLM_POLICY_JUDGE",
+      "kind": "EXTERNAL_MODEL_BASELINE",
+      "measurement_status": "NOT_YET_MEASURED"
+    }
+  ],
+  "ablation_families": {
+    "EPISTEMIC_AVAILABILITY_CONSIDERATION": ["AVAILABILITY_TO_INTENT"],
+    "IDENTITY_AUTHORITY": ["CONTEXT_TO_AUTHORITY", "IDENTITY_TO_AUTHORITY"],
+    "REVIEW_PERMISSION": ["REVIEW_TO_EXECUTION_PERMISSION"],
+    "INVOCATION_EFFECT": ["APPROVAL_TO_PERFORMED_ACTION", "INVOCATION_TO_COMPLETED_EFFECT"],
+    "PROVENANCE_CAUSALITY": ["OBSERVATION_TO_BROAD_TRUTH", "DECLARED_TO_VERIFIED_CONTEXT", "PROVENANCE_TO_CAUSALITY"],
+    "FRESHNESS_CURRENT_AUTHORITY": ["STALE_MEMORY_TO_CURRENT_AUTHORITY"]
+  },
+  "acceptance_results": [
+    "SYNTHETIC_CROSS_LAYER_ADVANTAGE_OBSERVED",
+    "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION",
+    "BENCHMARK_DESIGN_INSUFFICIENT"
+  ],
+  "non_effects": {
+    "upstream_wexp_measured": false,
+    "upstream_statebench_measured": false,
+    "llm_policy_judge_measured": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "merge_authorized": false
+  }
+}

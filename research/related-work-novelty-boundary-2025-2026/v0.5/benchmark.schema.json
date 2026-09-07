@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:synthetic-semantic-escalation-benchmark:v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "issue", "predecessor", "fixture_model", "domains", "promotion_classes", "base_state", "mutations", "profiles", "ablation_families", "acceptance_results", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.synthetic-semantic-escalation-benchmark/v0.5"},
+    "issue": {"const": 964},
+    "predecessor": {"const": "1473ab2005c876816dab12ae46ed7f39bbfbad6b"},
+    "fixture_model": {"const": "SAME_BASE_STATE_PLUS_SINGLE_UNSUPPORTED_SEMANTIC_PROMOTION"},
+    "domains": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "description"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "description": {"type": "string", "minLength": 20}
+        }
+      }
+    },
+    "promotion_classes": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "uniqueItems": true,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "base_state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claims", "support"],
+      "properties": {
+        "claims": {"type": "object", "minProperties": 10, "maxProperties": 10, "additionalProperties": {"const": true}},
+        "support": {"type": "object", "minProperties": 10, "maxProperties": 10, "additionalProperties": {"const": true}}
+      }
+    },
+    "mutations": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["class", "description"],
+        "properties": {
+          "class": {"type": "string", "minLength": 1},
+          "description": {"type": "string", "minLength": 20}
+        }
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "required": ["id", "kind"],
+        "properties": {
+          "id": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "detects": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "measurement_status": {"type": "string"}
+        },
+        "additionalProperties": false
+      }
+    },
+    "ablation_families": {
+      "type": "object",
+      "minProperties": 6,
+      "maxProperties": 6,
+      "additionalProperties": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+    },
+    "acceptance_results": {
+      "type": "array",
+      "const": ["SYNTHETIC_CROSS_LAYER_ADVANTAGE_OBSERVED", "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION", "BENCHMARK_DESIGN_INSUFFICIENT"]
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["upstream_wexp_measured", "upstream_statebench_measured", "llm_policy_judge_measured", "real_world_superiority_established", "novelty_established", "world_first", "merge_authorized"],
+      "properties": {
+        "upstream_wexp_measured": {"const": false},
+        "upstream_statebench_measured": {"const": false},
+        "llm_policy_judge_measured": {"const": false},
+        "real_world_superiority_established": {"const": false},
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}

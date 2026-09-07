@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:synthetic-semantic-escalation-results:v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "predecessor", "benchmark_schema", "domains", "fixture_id_rule", "fixture_counts", "profiles", "llm_policy_judge", "comparison", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.synthetic-semantic-escalation-results/v0.5"},
+    "predecessor": {"const": "1473ab2005c876816dab12ae46ed7f39bbfbad6b"},
+    "benchmark_schema": {"const": "matawaka.synthetic-semantic-escalation-benchmark/v0.5"},
+    "domains": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"type": "string"}},
+    "fixture_id_rule": {"const": "<DOMAIN>::<PROMOTION_CLASS>"},
+    "fixture_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["domains", "promotion_classes", "benign", "hostile", "total"],
+      "properties": {
+        "domains": {"const": 6},
+        "promotion_classes": {"const": 10},
+        "benign": {"const": 6},
+        "hostile": {"const": 60},
+        "total": {"const": 66}
+      }
+    },
+    "profiles": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "hostile_fixtures", "hostile_detected", "hostile_detection_recall", "benign_fixtures", "benign_false_positives", "benign_false_positive_rate", "cross_domain_coverage_count", "unsupported_class_count", "per_class_recall", "fired_boundaries"],
+        "properties": {
+          "id": {"type": "string"},
+          "kind": {"type": "string"},
+          "hostile_fixtures": {"const": 60},
+          "hostile_detected": {"type": "integer", "minimum": 0, "maximum": 60},
+          "hostile_detection_recall": {"type": "number", "minimum": 0, "maximum": 1},
+          "benign_fixtures": {"const": 6},
+          "benign_false_positives": {"type": "integer", "minimum": 0, "maximum": 6},
+          "benign_false_positive_rate": {"type": "number", "minimum": 0, "maximum": 1},
+          "cross_domain_coverage_count": {"type": "integer", "minimum": 0, "maximum": 6},
+          "unsupported_class_count": {"type": "integer", "minimum": 0, "maximum": 10},
+          "per_class_recall": {"type": "object", "minProperties": 10, "maxProperties": 10, "additionalProperties": {"enum": [0.0, 1.0]}},
+          "fired_boundaries": {"type": "object", "minProperties": 10, "maxProperties": 10, "additionalProperties": {"type": ["string", "null"]}}
+        }
+      }
+    },
+    "llm_policy_judge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measurement_status", "score", "reason"],
+      "properties": {
+        "measurement_status": {"const": "NOT_YET_MEASURED"},
+        "score": {"const": null},
+        "reason": {"type": "string", "minLength": 20}
+      }
+    },
+    "comparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matawaka_profile", "specialized_union_profile", "matawaka_hostile_recall", "specialized_union_hostile_recall", "recall_delta", "top_result"],
+      "properties": {
+        "matawaka_profile": {"const": "MATAWAKA_TYPED_PROFILE"},
+        "specialized_union_profile": {"const": "SPECIALIZED_UNION_PROFILE"},
+        "matawaka_hostile_recall": {"const": 1.0},
+        "specialized_union_hostile_recall": {"const": 1.0},
+        "recall_delta": {"const": 0.0},
+        "top_result": {"const": "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["upstream_implementations_measured", "llm_policy_judge_measured", "real_world_superiority_established", "novelty_established", "world_first", "merge_authorized"],
+      "properties": {
+        "upstream_implementations_measured": {"const": false},
+        "llm_policy_judge_measured": {"const": false},
+        "real_world_superiority_established": {"const": false},
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}
