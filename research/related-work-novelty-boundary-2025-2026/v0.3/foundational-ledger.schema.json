@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:foundational-pressure-ledger:v0.3",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "audit_as_of", "predecessor", "sources"],
+  "properties": {
+    "schema": {"const": "matawaka.foundational-pressure-ledger/v0.3"},
+    "audit_as_of": {"const": "2026-09-07"},
+    "predecessor": {"const": "8aabf16b791ac3564c8178c4bf1e325bba5df59e"},
+    "sources": {
+      "type": "array",
+      "minItems": 12,
+      "items": {"$ref": "#/$defs/source"}
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "title", "public_date", "date_precision", "status", "family", "url", "date_basis", "pressure_targets", "overlap", "non_overlap"],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "public_date": {"type": "string", "format": "date"},
+        "date_precision": {"enum": ["DAY", "MONTH"]},
+        "status": {"enum": ["PEER_REVIEWED_ARTICLE", "PEER_REVIEWED_CONFERENCE", "TECHNICAL_REPORT", "W3C_RECOMMENDATION"]},
+        "family": {"enum": ["INFORMATION_FLOW", "EFFECTS_FRAMES", "AUTHORIZATION_LOGIC", "AGENT_EPISTEMICS_INTENT", "CHOICE_AWARENESS", "PROVENANCE_ALGEBRA", "DOMAIN_NEUTRAL_PROVENANCE", "ACTION_ARTIFACT_PROVENANCE"]},
+        "url": {"type": "string", "format": "uri"},
+        "date_basis": {"type": "string", "minLength": 1},
+        "pressure_targets": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"enum": ["SNE_HEC", "COMMON_NON_EFFECTS", "AVAILABLE_CONSIDERED_AUTHORITY", "TYPED_CONTINUITY", "CROSS_DOMAIN_REUSE"]}
+        },
+        "overlap": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "non_overlap": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}
