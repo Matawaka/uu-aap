@@ -1,0 +1,39 @@
+{
+  "schema": "matawaka.synthetic-semantic-escalation-implementation-receipt/v0.5",
+  "issue": 964,
+  "predecessor": "1473ab2005c876816dab12ae46ed7f39bbfbad6b",
+  "fixture_counts": {
+    "domains": 6,
+    "promotion_classes": 10,
+    "benign": 6,
+    "hostile": 60,
+    "total": 66
+  },
+  "profile_count": 6,
+  "hostile_check_count": 34,
+  "result": {
+    "top_result": "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION",
+    "matawaka_recall": 1.0,
+    "specialized_union_recall": 1.0,
+    "recall_delta": 0.0,
+    "llm_policy_judge": "NOT_YET_MEASURED"
+  },
+  "claims": {
+    "v04_byte_bound": true,
+    "synthetic_results_reproducible": true,
+    "ablation_results_reproducible": true,
+    "negative_result_preserved": true
+  },
+  "non_effects": {
+    "upstream_implementations_measured": false,
+    "llm_policy_judge_measured": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "merge_authorized": false
+  }
+}
