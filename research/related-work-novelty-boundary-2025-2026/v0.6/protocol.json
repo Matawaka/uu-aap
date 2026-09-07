@@ -1,0 +1,57 @@
+{
+  "schema": "matawaka.operational-generalization-protocol/v0.6",
+  "issue": 966,
+  "predecessor": "186b4a68267f911840ba3a78001dd587fad9af67",
+  "predecessor_v05_tree": "d735e56df71952bbd98f09b2d8884db44d511f0b",
+  "frozen_v05_result": "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION",
+  "research_question": "Does one common typed semantic-boundary architecture show measurable operational value on independent held-out material without promoting lower evidence into stronger execution claims?",
+  "evidence_levels": [
+    "UPSTREAM_DATASET_ADAPTED",
+    "UPSTREAM_SPEC_VECTOR_REPLAYED",
+    "UPSTREAM_IMPLEMENTATION_EXECUTED",
+    "EXTERNAL_MODEL_EXECUTED",
+    "NOT_EXECUTED"
+  ],
+  "operational_hypotheses": [
+    "DETECTION_ADVANTAGE",
+    "INTEGRATION_COMPLEXITY_ADVANTAGE",
+    "VERDICT_PROVENANCE_ADVANTAGE",
+    "PORTABILITY_ADVANTAGE",
+    "NO_MEASURED_OPERATIONAL_ADVANTAGE",
+    "INSUFFICIENT_EVIDENCE"
+  ],
+  "first_upstream_target": "STATEBENCH_V1_0_TEST",
+  "selection_recipe": {
+    "intended_rule": "first four appearances of each actual track in canonical pinned test.jsonl file order",
+    "payload_replayed": false,
+    "derived_fixture_snapshot_materialized": false,
+    "fixture_performance_scored": false,
+    "reason": "The exact upstream blob is pinned, but the complete payload was not materialized and replayed in the v0.6 branch; the rule is preserved for a later admitted replay rather than simulated from documentation."
+  },
+  "required_metrics": [
+    "admitted_fixture_count",
+    "held_out_detection_recall",
+    "benign_false_positive_rate",
+    "unmapped_or_ambiguous_count",
+    "adapter_complexity",
+    "mapping_entry_count",
+    "deterministic_replay",
+    "verdict_provenance_completeness",
+    "execution_evidence_level"
+  ],
+  "non_effects": {
+    "v05_result_rewritten": false,
+    "upstream_implementation_executed": false,
+    "external_model_executed": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "production_code_changed": false,
+    "merge_authorized": false
+  }
+}
