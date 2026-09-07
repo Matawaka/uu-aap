@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:semantic-escalation-taxonomy-qualification:v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "issue", "pull_request", "predecessor", "qualified_head", "workflow_run_id", "workflow_job_id", "workflow_name", "qualification", "claims", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.semantic-escalation-taxonomy-qualification-receipt/v0.4"},
+    "issue": {"const": 962},
+    "pull_request": {"const": 963},
+    "predecessor": {"const": "e4c5c88d3703968334069026873a5fa880bad226"},
+    "qualified_head": {"const": "e3bb6957136c43633a8aa43a7b4c7b1f122cded8"},
+    "workflow_run_id": {"const": 34130374439},
+    "workflow_job_id": {"const": 101768791681},
+    "workflow_name": {"const": "Semantic-Escalation Taxonomy v0.4"},
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["job_conclusion", "frozen_v01_v03_revalidated", "taxonomy_evidence_validated", "baseline_hostile_checks", "exact_stacked_predecessor_bound", "additive_only_boundary_proven", "predecessor_and_runtime_surfaces_unchanged"],
+      "properties": {
+        "job_conclusion": {"const": "success"},
+        "frozen_v01_v03_revalidated": {"const": true},
+        "taxonomy_evidence_validated": {"const": true},
+        "baseline_hostile_checks": {"const": "35/35"},
+        "exact_stacked_predecessor_bound": {"const": true},
+        "additive_only_boundary_proven": {"const": true},
+        "predecessor_and_runtime_surfaces_unchanged": {"const": true}
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["broad_taxonomy_claim_defeated", "top_result", "promotion_class_count", "public_predecessor_supported_classes", "post_publication_convergence_classes", "exact_materialization_not_found_classes"],
+      "properties": {
+        "broad_taxonomy_claim_defeated": {"const": true},
+        "top_result": {"const": "UNIFIED_CROSS_LAYER_BENCHMARK_CANDIDATE"},
+        "promotion_class_count": {"const": 10},
+        "public_predecessor_supported_classes": {"const": 8},
+        "post_publication_convergence_classes": {"const": 1},
+        "exact_materialization_not_found_classes": {"const": 1}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["novelty_established", "world_first", "complete_prior_art_search", "foundational_novelty_revived", "v01_v03_rewritten", "stable_core_changed", "poai_changed", "c2pa_changed", "runtime_changed", "merge_authorized"],
+      "properties": {
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "complete_prior_art_search": {"const": false},
+        "foundational_novelty_revived": {"const": false},
+        "v01_v03_rewritten": {"const": false},
+        "stable_core_changed": {"const": false},
+        "poai_changed": {"const": false},
+        "c2pa_changed": {"const": false},
+        "runtime_changed": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}
