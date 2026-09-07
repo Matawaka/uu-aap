@@ -1,0 +1,101 @@
+{
+  "schema": "matawaka.semantic-escalation-promotion-matrix/v0.4",
+  "predecessor": "e4c5c88d3703968334069026873a5fa880bad226",
+  "top_result": "UNIFIED_CROSS_LAYER_BENCHMARK_CANDIDATE",
+  "broad_taxonomy_claim_defeated": true,
+  "narrow_candidate": "A single machine-checkable mutation corpus and verifier discipline spanning multiple independently typed promotion families across decision epistemics, evidence/provenance, authority/review, invocation/execution/effect and causality; exact materialization not found in the bounded corpus.",
+  "classes": [
+    {
+      "id": "OBSERVATION_TO_BROAD_TRUTH",
+      "promotion": "narrow observation/evidence -> universal truth, safety, quality or broader semantic claim",
+      "classification": "PREDECESSOR_NAMED_NOT_UNIFIED",
+      "source_refs": ["apl-semantic-overclaim-2026-05-14", "statebench-2025-12-21", "wexp-core-2026-07-05"],
+      "why": ["APL explicitly names semantic overclaim and decontextualization and supplies deterministic frame/bridge validation.", "StateBench tests hallucinated or unsupported state.", "WEXP forbids signature/evidence and observation-depth inflation into unsupported content claims."],
+      "residual_gap": "These systems do not combine this class with authority, human-review, execution-effect and causality promotions in one common mutation corpus."
+    },
+    {
+      "id": "CONTEXT_TO_AUTHORITY",
+      "promotion": "untrusted or attacker-controlled context -> authority for side effects",
+      "classification": "PREDECESSOR_NAMED_AND_TESTED",
+      "source_refs": ["airguard-authority-confusion-2026-05-27", "statebench-2025-12-21"],
+      "why": ["AIRGuard explicitly names authority confusion and benchmarks runtime enforcement on AgentTrap and DTAP-150.", "StateBench separately tests authority violations and scope leakage."],
+      "residual_gap": "The named benchmark is focused on runtime authority control rather than a general semantic-promotion oracle."
+    },
+    {
+      "id": "DECLARED_TO_VERIFIED_CONTEXT",
+      "promotion": "self-declared or policy-satisfying context -> verified authorization context",
+      "classification": "PREDECESSOR_NAMED_AND_TESTED",
+      "source_refs": ["cap-pcl-context-attestation-2026-06-04"],
+      "why": ["CAP+PCL isolates forged-but-policy-satisfying declared context as a distinct authorization blind spot and evaluates 170 main scenarios plus a 12-scenario robustness probe."],
+      "residual_gap": "The benchmark is confined to context attestation before policy authorization."
+    },
+    {
+      "id": "STALE_MEMORY_TO_CURRENT_AUTHORITY",
+      "promotion": "historical, superseded or lossy persistent memory -> current authority",
+      "classification": "POST_PUBLICATION_CONVERGENCE",
+      "source_refs": ["statebench-2025-12-21", "eal-bench-2026-09-01"],
+      "why": ["StateBench predates UU-AAP and tests resurrection, stale reasoning, authority violation and temporal decay as separate state failures.", "EAL-Bench, after the UU-AAP public anchor, directly names endogenous authorization laundering and benchmarks false authority formation and propagation to tool actions."],
+      "residual_gap": "The exact memory-to-authority laundering formulation is post-publication convergence, while its state and authority subcomponents have earlier executable predecessors."
+    },
+    {
+      "id": "APPROVAL_TO_PERFORMED_ACTION",
+      "promotion": "intent, approval or authorization evidence -> claim that the action was performed",
+      "classification": "PREDECESSOR_NAMED_NOT_UNIFIED",
+      "source_refs": ["wexp-core-2026-07-05", "aac-2026-06-13", "scitt-agent-receipt-2026-06-23"],
+      "why": ["WEXP treats intent/approval as a distinct content base that does not establish authority, invocation or execution.", "AAC and SCITT action receipts separate authorization evidence from records of what an agent actually did."],
+      "residual_gap": "These predecessors strongly defeat any generic approval-equals-action novelty claim but do not span non-execution semantic families in the same corpus."
+    },
+    {
+      "id": "INVOCATION_TO_COMPLETED_EFFECT",
+      "promotion": "attempt, dispatch or invocation -> completed or durable external effect",
+      "classification": "PREDECESSOR_NAMED_NOT_UNIFIED",
+      "source_refs": ["wexp-core-2026-07-05", "aac-2026-06-13", "qik-vrt-effect-ack-2026-07-22"],
+      "why": ["WEXP normatively states that invocation does not establish execution, completion or effect and that execution itself does not establish durable external effect.", "AAC and QIK-VRT preserve separate action/effect boundaries."],
+      "residual_gap": "The execution-evidence axis is well developed, leaving only cross-family integration as a possible contribution."
+    },
+    {
+      "id": "PROVENANCE_TO_CAUSALITY",
+      "promotion": "provenance, dependency or temporal association -> causal proof",
+      "classification": "PREDECESSOR_NAMED_AND_TESTED",
+      "source_refs": ["cheney-provenance-causality-2010-04-19", "causality-laundering-2026-04-05", "wexp-core-2026-07-05"],
+      "why": ["Cheney formally separates provenance concepts from causality long before agentic AI.", "Causality Laundering names and evaluates a concrete agent failure where flat provenance misses denial-induced causal influence.", "WEXP separately refuses to inflate provenance into runtime occurrence or deeper content claims."],
+      "residual_gap": "Existing work is already strong for this class; Matawaka can at most integrate it beside other promotion classes."
+    },
+    {
+      "id": "IDENTITY_TO_AUTHORITY",
+      "promotion": "identity, signer presence or account attribution -> standing or action authority",
+      "classification": "PREDECESSOR_NAMED_NOT_UNIFIED",
+      "source_refs": ["ep-aec-2026-06-22", "wexp-core-2026-07-05", "statebench-2025-12-21"],
+      "why": ["EP-AEC treats identity evidence and authorization evidence as complementary but non-interchangeable receipt classes.", "WEXP states that signatures and identity binding do not establish authority or event occurrence.", "StateBench tests authority violation under conflicting authority levels."],
+      "residual_gap": "A common identity-to-standing/action-authority mutation profile across authorship, review and runtime contexts was not found in the bounded corpus."
+    },
+    {
+      "id": "REVIEW_TO_EXECUTION_PERMISSION",
+      "promotion": "review, acceptance or human approval signal -> current execution permission",
+      "classification": "PREDECESSOR_NAMED_NOT_UNIFIED",
+      "source_refs": ["wexp-core-2026-07-05", "ep-aec-2026-06-22", "actionproxy-approval-authorization-2026-08-22"],
+      "why": ["WEXP includes approval within the intent content base and explicitly states that it does not establish authority, authorization validity, invocation or execution.", "EP-AEC keeps human authorization evidence as one verifier-bound component rather than universal execution authority.", "ActionProxy independently states on the same public-anchor date that approval is evidence rather than the whole authorization decision."],
+      "residual_gap": "No pre-anchor single benchmark was found that treats review-to-execution promotion as one member of a broad cross-layer mutation taxonomy."
+    },
+    {
+      "id": "AVAILABILITY_TO_INTENT",
+      "promotion": "information availability, possible awareness or resource existence -> actual consideration, reliance or intent",
+      "classification": "EXACT_MATERIALIZATION_NOT_FOUND_IN_BOUNDED_AUDIT",
+      "source_refs": ["observation-missingness-2026-05-12"],
+      "why": ["Observation-missingness work shows that information potentially available to a decision-maker is distinct from the recorded observation set and materially affects interpretation.", "The bounded modern corpus did not reveal a named executable AI-governance benchmark that directly scores availability-to-consideration-or-intent promotion."],
+      "residual_gap": "Foundational awareness/consideration theory exists and was already admitted in v0.3, so this exact-match absence supports only an evaluation-gap candidate, not foundational novelty."
+    }
+  ],
+  "non_effects": {
+    "novelty_established": false,
+    "world_first": false,
+    "complete_prior_art_search": false,
+    "foundational_novelty_revived": false,
+    "v01_v02_v03_rewritten": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "merge_authorized": false
+  }
+}

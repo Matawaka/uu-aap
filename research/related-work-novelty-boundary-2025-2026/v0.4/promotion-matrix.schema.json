@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:semantic-escalation-promotion-matrix:v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "predecessor", "top_result", "broad_taxonomy_claim_defeated", "narrow_candidate", "classes", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.semantic-escalation-promotion-matrix/v0.4"},
+    "predecessor": {"const": "e4c5c88d3703968334069026873a5fa880bad226"},
+    "top_result": {"enum": ["BROAD_TAXONOMY_CLAIM_DEFEATED", "UNIFIED_CROSS_LAYER_BENCHMARK_CANDIDATE", "DEFEATED_AS_INTEGRATION_CANDIDATE", "INSUFFICIENT_EVIDENCE"]},
+    "broad_taxonomy_claim_defeated": {"type": "boolean"},
+    "narrow_candidate": {"type": ["string", "null"]},
+    "classes": {
+      "type": "array",
+      "minItems": 10,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "promotion", "classification", "source_refs", "why", "residual_gap"],
+        "properties": {
+          "id": {"type": "string"},
+          "promotion": {"type": "string", "minLength": 1},
+          "classification": {"enum": ["PREDECESSOR_NAMED_AND_TESTED", "PREDECESSOR_NAMED_NOT_UNIFIED", "POST_PUBLICATION_CONVERGENCE", "EXACT_MATERIALIZATION_NOT_FOUND_IN_BOUNDED_AUDIT", "INSUFFICIENT_EVIDENCE"]},
+          "source_refs": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "why": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "residual_gap": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["novelty_established", "world_first", "complete_prior_art_search", "foundational_novelty_revived", "v01_v02_v03_rewritten", "stable_core_changed", "poai_changed", "c2pa_changed", "runtime_changed", "merge_authorized"],
+      "properties": {
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "complete_prior_art_search": {"const": false},
+        "foundational_novelty_revived": {"const": false},
+        "v01_v02_v03_rewritten": {"const": false},
+        "stable_core_changed": {"const": false},
+        "poai_changed": {"const": false},
+        "c2pa_changed": {"const": false},
+        "runtime_changed": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}

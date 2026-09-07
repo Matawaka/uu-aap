@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:semantic-escalation-taxonomy-ledger:v0.4",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "audit_as_of", "predecessor", "public_anchor", "sources"],
+  "properties": {
+    "schema": {"const": "matawaka.semantic-escalation-taxonomy-ledger/v0.4"},
+    "audit_as_of": {"const": "2026-09-07"},
+    "predecessor": {"const": "e4c5c88d3703968334069026873a5fa880bad226"},
+    "public_anchor": {"const": "2026-08-22"},
+    "sources": {
+      "type": "array",
+      "minItems": 12,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "title", "first_public_date", "temporal_class", "status", "url", "date_basis", "promotion_targets", "named_failures", "tested", "overlap", "non_overlap"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+          "title": {"type": "string", "minLength": 1},
+          "first_public_date": {"type": "string", "format": "date"},
+          "temporal_class": {"enum": ["PUBLIC_PREDECESSOR", "PARALLEL_WINDOW", "POST_PUBLICATION_CONVERGENCE"]},
+          "status": {"enum": ["PEER_REVIEWED_ARTICLE", "PUBLIC_GITHUB_BENCHMARK", "PREPRINT", "DRAFT_PROTOCOL", "ZENODO_REPORT", "INDIVIDUAL_INTERNET_DRAFT", "PRACTITIONER_GUIDE"]},
+          "url": {"type": "string", "format": "uri"},
+          "date_basis": {"type": "string", "minLength": 1},
+          "promotion_targets": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "named_failures": {"type": "array", "uniqueItems": true, "items": {"type": "string"}},
+          "tested": {"type": "boolean"},
+          "overlap": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "non_overlap": {"type": "array", "minItems": 1, "items": {"type": "string"}}
+        }
+      }
+    }
+  }
+}
