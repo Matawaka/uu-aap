@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:related-work-novelty-boundary-qualification:2025-2026:v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "exact_predecessor",
+    "first_failed_run",
+    "first_green_qualification",
+    "claims",
+    "verdict"
+  ],
+  "properties": {
+    "schema": {"const": "matawaka.related-work-novelty-boundary-qualification/2025-2026/v0.1"},
+    "exact_predecessor": {"const": "0e74f89695bbcb02c759000752696c322d908f7a"},
+    "first_failed_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["head", "run_id", "job_id", "result", "failure_stage", "content_validator_passed", "hostile_tests_passed"],
+      "properties": {
+        "head": {"const": "686a5083f4c2f1860cc60588561fdbbf68c85b79"},
+        "run_id": {"const": 34120022581},
+        "job_id": {"const": 101735701547},
+        "result": {"const": "FAIL_CLOSED"},
+        "failure_stage": {"const": "AUDIT_ONLY_DIFF_GUARD_BASE_OBJECT_NOT_FETCHED"},
+        "content_validator_passed": {"const": true},
+        "hostile_tests_passed": {"const": true}
+      }
+    },
+    "first_green_qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["head", "run_id", "job_id", "result", "hostile_checks", "gates"],
+      "properties": {
+        "head": {"const": "0c2c17ae81a82c19c16f4655d351b69a1ab9681a"},
+        "run_id": {"const": 34120116526},
+        "job_id": {"const": 101735999036},
+        "result": {"const": "SUCCESS"},
+        "hostile_checks": {"const": "16/16"},
+        "gates": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["ledger_and_matrix", "hostile_suite", "exact_predecessor", "audit_only_diff", "normative_runtime_guard"],
+          "properties": {
+            "ledger_and_matrix": {"const": "SUCCESS"},
+            "hostile_suite": {"const": "SUCCESS"},
+            "exact_predecessor": {"const": "SUCCESS"},
+            "audit_only_diff": {"const": "SUCCESS"},
+            "normative_runtime_guard": {"const": "SUCCESS"}
+          }
+        }
+      }
+    },
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "research_package_qualified_bounded",
+        "novelty_established",
+        "patentability_established",
+        "freedom_to_operate_established",
+        "world_first_established",
+        "semantic_influence_established",
+        "merge_authority_created"
+      ],
+      "properties": {
+        "research_package_qualified_bounded": {"const": true},
+        "novelty_established": {"const": false},
+        "patentability_established": {"const": false},
+        "freedom_to_operate_established": {"const": false},
+        "world_first_established": {"const": false},
+        "semantic_influence_established": {"const": false},
+        "merge_authority_created": {"const": false}
+      }
+    },
+    "verdict": {"const": "BOUNDED_RESEARCH_LANDSCAPE_PACKAGE_FIRST_INDEPENDENT_QUALIFICATION_PASS_NOVELTY_NOT_ESTABLISHED"}
+  }
+}
