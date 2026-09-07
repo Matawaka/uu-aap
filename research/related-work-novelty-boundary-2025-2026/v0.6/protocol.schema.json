@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "matawaka.operational-generalization-protocol/v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "issue", "predecessor", "predecessor_v05_tree", "frozen_v05_result", "research_question", "evidence_levels", "operational_hypotheses", "first_upstream_target", "selection_recipe", "required_metrics", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.operational-generalization-protocol/v0.6"},
+    "issue": {"const": 966},
+    "predecessor": {"const": "186b4a68267f911840ba3a78001dd587fad9af67"},
+    "predecessor_v05_tree": {"const": "d735e56df71952bbd98f09b2d8884db44d511f0b"},
+    "frozen_v05_result": {"const": "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION"},
+    "research_question": {"type": "string", "minLength": 20},
+    "evidence_levels": {"type": "array", "minItems": 5, "maxItems": 5, "uniqueItems": true, "items": {"enum": ["UPSTREAM_DATASET_ADAPTED", "UPSTREAM_SPEC_VECTOR_REPLAYED", "UPSTREAM_IMPLEMENTATION_EXECUTED", "EXTERNAL_MODEL_EXECUTED", "NOT_EXECUTED"]}},
+    "operational_hypotheses": {"type": "array", "minItems": 6, "maxItems": 6, "uniqueItems": true, "items": {"enum": ["DETECTION_ADVANTAGE", "INTEGRATION_COMPLEXITY_ADVANTAGE", "VERDICT_PROVENANCE_ADVANTAGE", "PORTABILITY_ADVANTAGE", "NO_MEASURED_OPERATIONAL_ADVANTAGE", "INSUFFICIENT_EVIDENCE"]}},
+    "first_upstream_target": {"const": "STATEBENCH_V1_0_TEST"},
+    "selection_recipe": {"type": "object", "additionalProperties": false, "required": ["intended_rule", "payload_replayed", "derived_fixture_snapshot_materialized", "fixture_performance_scored", "reason"], "properties": {"intended_rule": {"type": "string", "minLength": 20}, "payload_replayed": {"const": false}, "derived_fixture_snapshot_materialized": {"const": false}, "fixture_performance_scored": {"const": false}, "reason": {"type": "string", "minLength": 40}}},
+    "required_metrics": {"type": "array", "minItems": 9, "maxItems": 9, "uniqueItems": true, "items": {"type": "string", "minLength": 3}},
+    "non_effects": {"type": "object", "additionalProperties": false, "required": ["v05_result_rewritten", "upstream_implementation_executed", "external_model_executed", "real_world_superiority_established", "novelty_established", "world_first", "patentability_established", "stable_core_changed", "poai_changed", "c2pa_changed", "runtime_changed", "production_code_changed", "merge_authorized"], "properties": {"v05_result_rewritten": {"const": false}, "upstream_implementation_executed": {"const": false}, "external_model_executed": {"const": false}, "real_world_superiority_established": {"const": false}, "novelty_established": {"const": false}, "world_first": {"const": false}, "patentability_established": {"const": false}, "stable_core_changed": {"const": false}, "poai_changed": {"const": false}, "c2pa_changed": {"const": false}, "runtime_changed": {"const": false}, "production_code_changed": {"const": false}, "merge_authorized": {"const": false}}}
+  }
+}
