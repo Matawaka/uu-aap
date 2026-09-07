@@ -67,16 +67,32 @@ The stronger remaining research candidates are narrower:
 
 All five remain `NOVELTY_CANDIDATE`, not `NOVELTY_ESTABLISHED`, until the source ledger and claim matrix close.
 
-## Planned v0.1 package
+## v0.1 package
 
 - `README.md` — method, interpretation, boundaries and synthesis.
+- `STATUS.md` — exact predecessor and current bounded research posture.
 - `source-ledger.json` — machine-readable public-source census.
 - `source-ledger.schema.json` — closed schema for the census.
 - `claim-matrix.json` — Matawaka claim -> external overlap -> bounded novelty posture.
 - `claim-matrix.schema.json` — closed schema.
-- `validate_landscape.py` — deterministic structural/semantic checks.
+- `validate_landscape.py` — deterministic cross-document and semantic validator.
+- `test_landscape.py` — hostile mutation suite preventing temporal/semantic promotion.
 - `SOURCES.md` — human-readable annotated bibliography and status notes.
 - `NOVELTY-BOUNDARY.md` — candidate claims that survive the bounded audit and claims that should not be used.
+- `.github/workflows/related-work-novelty-boundary-v0.1.yml` — repository-read-only CI; located outside this directory only because GitHub Actions requires workflow placement under `.github/workflows/`.
+
+## Validation intent
+
+The validator and hostile suite enforce at minimum:
+
+- unique source and claim identifiers;
+- closed vocabularies and exact public anchors;
+- conservative separation of predecessor, parallel-window and post-publication evidence;
+- post-publication convergence cannot defeat or narrow a pre-existing novelty claim;
+- claim references must resolve to admitted ledger sources;
+- crowded broad claims require an actual public predecessor classified as defeating the broad claim;
+- novelty candidates require bounded surviving claims and cannot silently become `world-first`, `patentable`, or equivalent positive conclusions;
+- unknown fields and score/confidence injection fail closed.
 
 ## Non-effects
 
