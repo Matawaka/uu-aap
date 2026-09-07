@@ -1,0 +1,105 @@
+name: Operational Generalization v0.6
+
+on:
+  pull_request:
+    paths:
+      - 'research/related-work-novelty-boundary-2025-2026/v0.6/**'
+      - '.github/workflows/operational-generalization-v0.6.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Revalidate frozen v0.1-v0.5 research
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/test_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/test_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/test_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.5/test_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_qualification.py
+
+      - name: Validate v0.6 admitted evidence boundary
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.6/statebench_track_adapter.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.6/test_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_implementation.py
+          if [ -f research/related-work-novelty-boundary-2025-2026/v0.6/qualification-receipt.json ]; then
+            python research/related-work-novelty-boundary-2025-2026/v0.6/validate_qualification.py
+          fi
+
+      - name: Bind exact stacked predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='186b4a68267f911840ba3a78001dd587fad9af67'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "v0.6 stacked predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+          observed_tree="$(git rev-parse "$expected:research/related-work-novelty-boundary-2025-2026/v0.5")"
+          test "$observed_tree" = 'd735e56df71952bbd98f09b2d8884db44d511f0b'
+
+      - name: Prove v0.6 additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='186b4a68267f911840ba3a78001dd587fad9af67'
+          mapfile -t changed < <(git diff --name-only "$base" HEAD)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              research/related-work-novelty-boundary-2025-2026/v0.6/*|.github/workflows/operational-generalization-v0.6.yml)
+                ;;
+              *)
+                echo "Unexpected path outside bounded v0.6 audit: $path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test "${#changed[@]}" -gt 0
+
+      - name: Prove predecessor research and semantic runtime surfaces unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='186b4a68267f911840ba3a78001dd587fad9af67'
+          if ! git diff --quiet "$base" HEAD -- research/related-work-novelty-boundary-2025-2026/v0.1 research/related-work-novelty-boundary-2025-2026/v0.2 research/related-work-novelty-boundary-2025-2026/v0.3 research/related-work-novelty-boundary-2025-2026/v0.4 research/related-work-novelty-boundary-2025-2026/v0.5; then
+            echo 'v0.6 attempted to rewrite frozen predecessor research evidence' >&2
+            exit 1
+          fi
+          if git diff --name-only "$base" HEAD | grep -E '^(SPEC\.md|PRINCIPLES\.md|protocols/core/|proposals/poai/|interop/c2pa/|packages/|applications/|scripts/)'; then
+            echo 'v0.6 touched a protected semantic/runtime/product surface' >&2
+            exit 1
+          fi
