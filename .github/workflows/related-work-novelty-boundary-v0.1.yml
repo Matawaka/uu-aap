@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,14 +30,23 @@ jobs:
       - name: Run hostile landscape tests
         run: python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
 
+      - name: Bind exact research predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='0e74f89695bbcb02c759000752696c322d908f7a'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "Research predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+
       - name: Prove audit-only boundary
         shell: bash
         run: |
           set -euo pipefail
-          base='${{ github.event.pull_request.base.sha }}'
-          if [ -z "$base" ]; then
-            base="$(git rev-parse HEAD^)"
-          fi
+          base='0e74f89695bbcb02c759000752696c322d908f7a'
           mapfile -t changed < <(git diff --name-only "$base" HEAD)
           for path in "${changed[@]}"; do
             case "$path" in
@@ -53,10 +64,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          base='${{ github.event.pull_request.base.sha }}'
-          if [ -z "$base" ]; then
-            base="$(git rev-parse HEAD^)"
-          fi
+          base='0e74f89695bbcb02c759000752696c322d908f7a'
           if git diff --name-only "$base" HEAD | grep -E '^(SPEC\.md|PRINCIPLES\.md|protocols/core/|proposals/poai/|interop/c2pa/|packages/|applications/|scripts/)'; then
             echo 'Research audit touched a protected semantic/runtime surface' >&2
             exit 1
