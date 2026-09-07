@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:synthetic-semantic-escalation-qualification:v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "issue", "pull_request", "predecessor", "qualified_head", "workflow_run_id", "workflow_job_id", "workflow_name", "qualification", "result", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.synthetic-semantic-escalation-qualification-receipt/v0.5"},
+    "issue": {"const": 964},
+    "pull_request": {"const": 965},
+    "predecessor": {"const": "1473ab2005c876816dab12ae46ed7f39bbfbad6b"},
+    "qualified_head": {"const": "e5c32d878a8a925453c8544cbeb9be36527b56ad"},
+    "workflow_run_id": {"const": 34132180712},
+    "workflow_job_id": {"const": 101774643578},
+    "workflow_name": {"const": "Empirical Semantic-Escalation Benchmark v0.5"},
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["job_conclusion", "frozen_v01_v04_revalidated", "v05_benchmark_reproduced", "baseline_hostile_checks", "exact_stacked_predecessor_bound", "additive_only_boundary_proven", "predecessor_and_runtime_surfaces_unchanged"],
+      "properties": {
+        "job_conclusion": {"const": "success"},
+        "frozen_v01_v04_revalidated": {"const": true},
+        "v05_benchmark_reproduced": {"const": true},
+        "baseline_hostile_checks": {"const": "34/34"},
+        "exact_stacked_predecessor_bound": {"const": true},
+        "additive_only_boundary_proven": {"const": true},
+        "predecessor_and_runtime_surfaces_unchanged": {"const": true}
+      }
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["top_result", "matawaka_recall", "specialized_union_recall", "recall_delta", "llm_policy_judge"],
+      "properties": {
+        "top_result": {"const": "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION"},
+        "matawaka_recall": {"const": 1.0},
+        "specialized_union_recall": {"const": 1.0},
+        "recall_delta": {"const": 0.0},
+        "llm_policy_judge": {"const": "NOT_YET_MEASURED"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["upstream_implementations_measured", "llm_policy_judge_measured", "real_world_superiority_established", "novelty_established", "world_first", "stable_core_changed", "poai_changed", "c2pa_changed", "runtime_changed", "merge_authorized"],
+      "properties": {
+        "upstream_implementations_measured": {"const": false},
+        "llm_policy_judge_measured": {"const": false},
+        "real_world_superiority_established": {"const": false},
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "stable_core_changed": {"const": false},
+        "poai_changed": {"const": false},
+        "c2pa_changed": {"const": false},
+        "runtime_changed": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}
