@@ -26,7 +26,7 @@
       "status": "PUBLIC_GITHUB_BENCHMARK",
       "url": "https://github.com/Parslee-ai/statebench",
       "date_basis": "GitHub repository metadata created_at=2025-12-21T20:32:45Z.",
-      "promotion_targets": ["STALE_MEMORY_TO_CURRENT_AUTHORITY", "IDENTITY_TO_AUTHORITY", "OBSERVATION_TO_BROAD_TRUTH"],
+      "promotion_targets": ["STALE_MEMORY_TO_CURRENT_AUTHORITY", "IDENTITY_TO_AUTHORITY", "OBSERVATION_TO_BROAD_TRUTH", "CONTEXT_TO_AUTHORITY"],
       "named_failures": ["Resurrection", "Hallucination", "Scope Leak", "Stale Reasoning", "Authority Violation", "Temporal Decay Failure"],
       "tested": true,
       "overlap": ["Defines an executable multi-class failure taxonomy for stateful agents including resurrection, stale reasoning, authority violation, scope leak and temporal decay.", "Uses conformance tests and corrected scoring rather than prose-only warnings."],
