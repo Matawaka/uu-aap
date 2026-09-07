@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:related-work-source-ledger:2025-2026:v0.1",
+  "title": "Matawaka Related Work Source Ledger 2025-2026 v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "audit_as_of",
+    "matawaka_public_anchor",
+    "status_classes",
+    "temporal_classes",
+    "sources"
+  ],
+  "properties": {
+    "schema": {"const": "matawaka.related-work-source-ledger/2025-2026/v0.1"},
+    "audit_as_of": {"type": "string", "format": "date"},
+    "matawaka_public_anchor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository_created", "poai_compositional_anchor", "stable_core_anchor", "gateway_anchor"],
+      "properties": {
+        "repository_created": {"const": "2026-08-22"},
+        "poai_compositional_anchor": {"const": "2026-08-22"},
+        "stable_core_anchor": {"const": "2026-08-24"},
+        "gateway_anchor": {"const": "2026-08-24"}
+      }
+    },
+    "status_classes": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "enum": [
+          "IETF_CONSENSUS_RFC",
+          "INDIVIDUAL_INTERNET_DRAFT",
+          "STANDARDS_BODY_DRAFT",
+          "STANDARDS_BODY_RATIFIED",
+          "PEER_REVIEWED_ARTICLE",
+          "PREPRINT",
+          "INDUSTRY_ANNOUNCEMENT",
+          "PUBLIC_GITHUB_PROPOSAL",
+          "PROJECT_PUBLICATION"
+        ]
+      }
+    },
+    "temporal_classes": {
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "enum": ["PUBLIC_PREDECESSOR", "PARALLEL_WINDOW", "POST_PUBLICATION_CONVERGENCE"]
+      }
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/source"}
+    }
+  },
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "first_public_date",
+        "date_precision",
+        "source_status",
+        "temporal_class",
+        "url",
+        "cluster",
+        "overlap",
+        "non_overlap",
+        "novelty_effect",
+        "status_limitations"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+        "title": {"type": "string", "minLength": 1},
+        "first_public_date": {"type": "string", "pattern": "^20(25|26)-[0-1][0-9](-[0-3][0-9])?$"},
+        "date_precision": {"enum": ["DAY", "MONTH"]},
+        "source_status": {
+          "enum": [
+            "IETF_CONSENSUS_RFC",
+            "INDIVIDUAL_INTERNET_DRAFT",
+            "STANDARDS_BODY_DRAFT",
+            "STANDARDS_BODY_RATIFIED",
+            "PEER_REVIEWED_ARTICLE",
+            "PREPRINT",
+            "INDUSTRY_ANNOUNCEMENT",
+            "PUBLIC_GITHUB_PROPOSAL",
+            "PROJECT_PUBLICATION"
+          ]
+        },
+        "temporal_class": {"enum": ["PUBLIC_PREDECESSOR", "PARALLEL_WINDOW", "POST_PUBLICATION_CONVERGENCE"]},
+        "url": {"type": "string", "format": "uri"},
+        "cluster": {
+          "enum": [
+            "HUMAN_AI_AUTHORSHIP",
+            "CONTENT_PROVENANCE_IDENTITY_CONSENT",
+            "DECISION_EVIDENCE",
+            "AGENT_AUTHORIZATION",
+            "HUMAN_ESCALATION_GOVERNANCE",
+            "TRANSPARENCY_NON_EQUIVOCATION",
+            "EVIDENCE_COMPOSITION",
+            "SEMANTIC_GUARDRAILS"
+          ]
+        },
+        "overlap": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "non_overlap": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "novelty_effect": {
+          "enum": [
+            "DEFEATS_BROAD_CLAIM",
+            "MATERIALLY_NARROWS_CLAIM",
+            "ADJACENT_ONLY",
+            "POST_PUBLICATION_CONVERGENCE_ONLY"
+          ]
+        },
+        "status_limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"date_precision": {"const": "DAY"}}},
+          "then": {"properties": {"first_public_date": {"pattern": "^20(25|26)-[0-1][0-9]-[0-3][0-9]$"}}}
+        },
+        {
+          "if": {"properties": {"date_precision": {"const": "MONTH"}}},
+          "then": {"properties": {"first_public_date": {"pattern": "^20(25|26)-[0-1][0-9]$"}}}
+        }
+      ]
+    }
+  }
+}
