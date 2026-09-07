@@ -47,7 +47,6 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
                 "hostile_fixtures": hostile_per_class,
                 "detected": detected,
                 "recall": detected / hostile_per_class,
-                "domains": domains,
                 "fixture_id_rule": f"<DOMAIN>::{cls}",
                 "fired_boundary": cls if detected else None,
             })
@@ -79,6 +78,7 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
         "schema": "matawaka.synthetic-semantic-escalation-results/v0.5",
         "predecessor": benchmark["predecessor"],
         "benchmark_schema": benchmark["schema"],
+        "domains": domains,
         "fixture_counts": {
             "domains": len(domains),
             "promotion_classes": len(classes),
@@ -117,22 +117,21 @@ def compute_ablations(benchmark: dict[str, Any]) -> dict[str, Any]:
     hostile_count = len(domains) * len(classes)
     rows = []
     for family, removed_classes in benchmark["ablation_families"].items():
-        removed = set(removed_classes)
-        false_negatives = len(domains) * len(removed)
+        false_negatives = len(domains) * len(removed_classes)
         rows.append({
             "family": family,
             "removed_classes": list(removed_classes),
             "new_false_negatives": false_negatives,
             "hostile_detected_after_ablation": hostile_count - false_negatives,
             "hostile_detection_recall_after_ablation": (hostile_count - false_negatives) / hostile_count,
-            "affected_domains": domains,
-            "affected_fixture_id_rules": [f"<DOMAIN>::{cls}" for cls in classes if cls in removed],
+            "affected_fixture_id_rules": [f"<DOMAIN>::{cls}" for cls in removed_classes],
         })
     return {
         "schema": "matawaka.synthetic-semantic-escalation-ablation-results/v0.5",
         "predecessor": benchmark["predecessor"],
         "baseline_profile": "MATAWAKA_TYPED_PROFILE",
         "baseline_hostile_fixtures": hostile_count,
+        "domain_count": len(domains),
         "ablations": rows,
         "non_effects": {
             "seven_layer_uniqueness_proven": False,
