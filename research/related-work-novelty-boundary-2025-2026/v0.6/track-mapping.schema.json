@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "matawaka.statebench-track-mapping/v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "upstream_source", "mapping_basis", "actual_test_track_set_fully_replayed", "counts", "mappings", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.statebench-track-mapping/v0.6"},
+    "upstream_source": {"const": "STATEBENCH_V1_0_TEST"},
+    "mapping_basis": {"const": "PINNED_RELEASE_DOCUMENTATION_PLUS_BOUNDED_TEST_INSPECTION"},
+    "actual_test_track_set_fully_replayed": {"const": false},
+    "counts": {"type": "object", "additionalProperties": false, "required": ["documented_tracks_under_audit", "direct", "partial", "ambiguous", "unmapped"], "properties": {"documented_tracks_under_audit": {"const": 13}, "direct": {"const": 1}, "partial": {"const": 4}, "ambiguous": {"const": 3}, "unmapped": {"const": 5}}},
+    "mappings": {"type": "array", "minItems": 13, "maxItems": 13, "items": {"type": "object", "additionalProperties": false, "required": ["track", "classification", "candidate_promotions", "reason"], "properties": {"track": {"type": "string", "minLength": 3}, "classification": {"enum": ["DIRECT", "PARTIAL", "AMBIGUOUS", "UNMAPPED"]}, "candidate_promotions": {"type": "array", "uniqueItems": true, "items": {"enum": ["OBSERVATION_TO_BROAD_TRUTH", "CONTEXT_TO_AUTHORITY", "DECLARED_TO_VERIFIED_CONTEXT", "STALE_MEMORY_TO_CURRENT_AUTHORITY", "APPROVAL_TO_PERFORMED_ACTION", "INVOCATION_TO_COMPLETED_EFFECT", "PROVENANCE_TO_CAUSALITY", "IDENTITY_TO_AUTHORITY", "REVIEW_TO_EXECUTION_PERMISSION", "AVAILABILITY_TO_INTENT"]}}, "reason": {"type": "string", "minLength": 40}}}},
+    "non_effects": {"type": "object", "additionalProperties": false, "required": ["fixture_level_mapping_established", "portability_advantage_established", "portability_failure_established", "upstream_taxonomy_reinterpreted"], "properties": {"fixture_level_mapping_established": {"const": false}, "portability_advantage_established": {"const": false}, "portability_failure_established": {"const": false}, "upstream_taxonomy_reinterpreted": {"const": false}}}
+  }
+}
