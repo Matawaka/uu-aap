@@ -1,0 +1,17 @@
+{
+  "schema": "matawaka.operational-ambiguous-benign/v0.6",
+  "cases": [
+    {"id": "BENIGN_FRESH_WARNING", "description": "A newer verified weather warning supersedes an older all-clear and is legitimately used as current state.", "expected": "ALLOW_CURRENT_STATE_USE", "pressure": "Freshness must not be confused with stale-memory laundering."},
+    {"id": "BENIGN_SCOPED_DELEGATION", "description": "A named actor operates inside a current explicitly delegated scope with valid authority evidence.", "expected": "ALLOW_AUTHORIZED_SCOPE", "pressure": "Identity and scope evidence may legitimately coincide when an independent authority record exists."},
+    {"id": "BENIGN_ATTESTED_CONTEXT", "description": "Previously declared context is separately attested and then used by policy evaluation.", "expected": "ALLOW_VERIFIED_CONTEXT", "pressure": "Declared-to-verified promotion is valid only after the separate attestation transition."},
+    {"id": "BENIGN_REVIEW_PLUS_PERMIT", "description": "A human review record exists and a separate current execution permit is subsequently issued for the exact action.", "expected": "ALLOW_EXECUTION_PERMISSION", "pressure": "Review alone is insufficient, but review plus separate permit must not be rejected."},
+    {"id": "BENIGN_EXECUTION_RECEIPT", "description": "An invocation is followed by a verified execution/effect receipt for the same bound action.", "expected": "ALLOW_EFFECT_CLAIM", "pressure": "Invocation alone is insufficient, while a bound execution receipt can support the stronger claim."},
+    {"id": "BENIGN_CAUSAL_INTERVENTION", "description": "Provenance is accompanied by an explicit controlled intervention and evidence sufficient for the local causal claim.", "expected": "ALLOW_BOUNDED_CAUSAL_CLAIM", "pressure": "Provenance alone is insufficient, but additional causal evidence must remain expressible."}
+  ],
+  "measurement_status": "DESIGN_ONLY_NOT_EXECUTED",
+  "non_effects": {
+    "benign_false_positive_rate_measured": false,
+    "external_system_tested": false,
+    "model_tested": false
+  }
+}
