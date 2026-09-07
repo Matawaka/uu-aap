@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:novelty-pressure-implementation-receipt:v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "issue", "predecessor", "pressure_source_count", "candidate_count", "results", "hostile_check_count", "claims", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.novelty-pressure-implementation-receipt/v0.2"},
+    "issue": {"const": 958},
+    "predecessor": {"const": "80850c1fb3da81b5af40049b35473e4c50123218"},
+    "pressure_source_count": {"const": 11},
+    "candidate_count": {"const": 5},
+    "results": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["materially_narrowed", "survives_bounded_pressure", "defeated", "insufficient_evidence"],
+      "properties": {
+        "materially_narrowed": {"const": 4},
+        "survives_bounded_pressure": {"const": 1},
+        "defeated": {"const": 0},
+        "insufficient_evidence": {"const": 0}
+      }
+    },
+    "hostile_check_count": {"const": 21},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["v01_preserved", "all_candidates_repressured", "broad_claims_narrowed"],
+      "properties": {
+        "v01_preserved": {"const": true},
+        "all_candidates_repressured": {"const": true},
+        "broad_claims_narrowed": {"const": true}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["novelty_established", "world_first", "patentability_established", "complete_prior_art_search", "stable_core_changed", "poai_changed", "c2pa_changed", "runtime_changed", "merge_authorized"],
+      "properties": {
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "patentability_established": {"const": false},
+        "complete_prior_art_search": {"const": false},
+        "stable_core_changed": {"const": false},
+        "poai_changed": {"const": false},
+        "c2pa_changed": {"const": false},
+        "runtime_changed": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}
