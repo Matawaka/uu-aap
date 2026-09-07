@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:related-work-claim-matrix:2025-2026:v0.1",
+  "title": "Matawaka Related Work Claim Matrix 2025-2026 v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "audit_as_of", "claims"],
+  "properties": {
+    "schema": {"const": "matawaka.related-work-claim-matrix/2025-2026/v0.1"},
+    "audit_as_of": {"const": "2026-09-07"},
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/claim"}
+    }
+  },
+  "$defs": {
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "statement",
+        "posture",
+        "public_anchor",
+        "basis_sources",
+        "overlap_summary",
+        "surviving_narrow_claim",
+        "forbidden_claims",
+        "required_next_evidence"
+      ],
+      "properties": {
+        "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"},
+        "statement": {"type": "string", "minLength": 1},
+        "posture": {
+          "enum": [
+            "CROWDED_BROAD_CLAIM",
+            "PARTIALLY_OVERLAPPED",
+            "NOVELTY_CANDIDATE",
+            "POST_PUBLICATION_CONVERGENCE_ONLY",
+            "UNRESOLVED"
+          ]
+        },
+        "public_anchor": {"enum": ["2026-08-22", "2026-08-24"]},
+        "basis_sources": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]+$"}
+        },
+        "overlap_summary": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "surviving_narrow_claim": {"type": ["string", "null"]},
+        "forbidden_claims": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+        "required_next_evidence": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}}
+      }
+    }
+  }
+}
