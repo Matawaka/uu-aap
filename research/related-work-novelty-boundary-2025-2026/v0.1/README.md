@@ -1,6 +1,6 @@
 # Matawaka Related Work & Novelty Boundary 2025–2026 — v0.1
 
-Status: `RESEARCH_AUDIT_IN_PROGRESS`
+Status: `BOUNDED_RESEARCH_PACKAGE_QUALIFIED; NOVELTY_UNRESOLVED`
 
 This directory contains a bounded research-landscape audit for public work published during 2025–2026 that materially overlaps with UU-AAP, Proof of Available Intelligence (PoAI), Matawaka authority/action boundaries, C2PA interoperability, decision provenance, agent authorization, transparency, and human–AI authorship.
 
@@ -53,7 +53,7 @@ novelty audit != freedom-to-operate opinion
 
 The audit must not claim that Matawaka is "first in the world" unless a separate appropriately scoped evidence process could support that statement. A negative search result is recorded only as `EXACT_MATCH_NOT_FOUND_IN_BOUNDED_AUDIT`.
 
-## Current provisional thesis
+## Current thesis under bounded audit
 
 The most crowded areas are already clear: AI-contribution disclosure, human accountability, content provenance, provenance-versus-permission separation, agent action authorization, pre-action permits, delegation receipts, execution receipts, transparency/non-equivocation, and ordinary decision traces all have substantial public predecessors.
 
@@ -65,12 +65,13 @@ The stronger remaining research candidates are narrower:
 4. **End-to-end typed semantic continuity** — one provider-neutral stack links state/evidence, availability, intent, authority/responsibility, coordination, action permission, observed action/outcome, and successor state without implicit transitions.
 5. **Cross-domain composition** — the same semantic discipline is applied to human–AI authorship/governance and real-world agent action rather than treating those as unrelated accountability domains.
 
-All five remain `NOVELTY_CANDIDATE`, not `NOVELTY_ESTABLISHED`, until the source ledger and claim matrix close.
+All five remain `NOVELTY_CANDIDATE`, not `NOVELTY_ESTABLISHED`.
 
 ## v0.1 package
 
 - `README.md` — method, interpretation, boundaries and synthesis.
 - `STATUS.md` — exact predecessor and current bounded research posture.
+- `NOTE.md` — preserves the distinction between materialization and independent qualification.
 - `source-ledger.json` — machine-readable public-source census.
 - `source-ledger.schema.json` — closed schema for the census.
 - `claim-matrix.json` — Matawaka claim -> external overlap -> bounded novelty posture.
@@ -79,7 +80,24 @@ All five remain `NOVELTY_CANDIDATE`, not `NOVELTY_ESTABLISHED`, until the source
 - `test_landscape.py` — hostile mutation suite preventing temporal/semantic promotion.
 - `SOURCES.md` — human-readable annotated bibliography and status notes.
 - `NOVELTY-BOUNDARY.md` — candidate claims that survive the bounded audit and claims that should not be used.
+- `implementation-receipt.json` + schema — preserves the pre-qualification candidate state.
+- `qualification-receipt.json` + schema — preserves the first fail-closed run and first independent GREEN qualification without rewriting either history.
+- `validate_qualification.py` — exact frozen first-qualification validator.
 - `.github/workflows/related-work-novelty-boundary-v0.1.yml` — repository-read-only CI; located outside this directory only because GitHub Actions requires workflow placement under `.github/workflows/`.
+
+## Qualification history
+
+The first pull-request run correctly failed closed only at the audit-only diff guard because the shallow checkout did not contain the exact predecessor object. The source ledger/claim-matrix validator and hostile suite had already passed.
+
+The successor workflow fetched full history, bound the exact predecessor, and produced the first independent GREEN qualification on head `0c2c17ae81a82c19c16f4655d351b69a1ab9681a`:
+
+- source ledger + claim matrix: `SUCCESS`;
+- hostile suite: `16/16`;
+- exact predecessor: `SUCCESS`;
+- audit-only diff: `SUCCESS`;
+- normative/runtime guard: `SUCCESS`.
+
+This establishes only that the bounded research package and its anti-promotion guards executed as designed. It does not establish novelty, patentability, freedom to operate, influence, priority, or world-first status.
 
 ## Validation intent
 
