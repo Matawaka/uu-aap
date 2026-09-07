@@ -1,0 +1,1 @@
+This v0.1 package is frozen for semantic conclusions. Additional novelty pressure work proceeds only in a stacked v0.2 successor branch from qualified head 80850c1fb3da81b5af40049b35473e4c50123218. This note does not change any v0.1 claim classification.
