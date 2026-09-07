@@ -1,0 +1,44 @@
+{
+  "schema": "matawaka.operational-generalization-qualification-receipt/v0.6",
+  "issue": 966,
+  "pull_request": 969,
+  "predecessor": "186b4a68267f911840ba3a78001dd587fad9af67",
+  "qualified_head": "80655fffad40d78159ae293a383a731bdcd19f3a",
+  "workflow_run_id": 34135495805,
+  "workflow_job_id": 101785353488,
+  "workflow_name": "Operational Generalization v0.6",
+  "qualification": {
+    "job_conclusion": "success",
+    "frozen_v01_v05_revalidated": true,
+    "operational_evidence_boundary_validated": true,
+    "baseline_hostile_checks": "37/37",
+    "exact_stacked_predecessor_bound": true,
+    "exact_v05_tree_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_and_runtime_product_surfaces_unchanged": true
+  },
+  "result": {
+    "top_result": "INSUFFICIENT_EVIDENCE",
+    "evidence_level": "UPSTREAM_DATASET_ADAPTED",
+    "documented_track_count": 13,
+    "direct": 1,
+    "partial": 4,
+    "ambiguous": 3,
+    "unmapped": 5,
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null
+  },
+  "non_effects": {
+    "operational_advantage_established": false,
+    "operational_non_advantage_established": false,
+    "upstream_implementation_executed": false,
+    "external_model_executed": false,
+    "full_upstream_payload_replayed": false,
+    "fixture_performance_scored": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "merge_authorized": false
+  }
+}
