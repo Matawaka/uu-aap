@@ -1,0 +1,90 @@
+name: Novelty Pressure Test v0.2
+
+on:
+  pull_request:
+    paths:
+      - 'research/related-work-novelty-boundary-2025-2026/v0.2/**'
+      - '.github/workflows/novelty-pressure-test-v0.2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Revalidate frozen v0.1 landscape
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_qualification.py
+
+      - name: Validate v0.2 pressure evidence
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/test_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_implementation.py
+
+      - name: Validate frozen first v0.2 qualification when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          receipt='research/related-work-novelty-boundary-2025-2026/v0.2/qualification-receipt.json'
+          if [ -f "$receipt" ]; then
+            python research/related-work-novelty-boundary-2025-2026/v0.2/validate_qualification.py
+          fi
+
+      - name: Bind exact stacked predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='80850c1fb3da81b5af40049b35473e4c50123218'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "v0.2 stacked predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+
+      - name: Prove v0.2 additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='80850c1fb3da81b5af40049b35473e4c50123218'
+          mapfile -t changed < <(git diff --name-only "$base" HEAD)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              research/related-work-novelty-boundary-2025-2026/v0.2/*|.github/workflows/novelty-pressure-test-v0.2.yml)
+                ;;
+              *)
+                echo "Unexpected path outside bounded v0.2 audit: $path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test "${#changed[@]}" -gt 0
+
+      - name: Prove v0.1 and semantic runtime surfaces unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='80850c1fb3da81b5af40049b35473e4c50123218'
+          if ! git diff --quiet "$base" HEAD -- research/related-work-novelty-boundary-2025-2026/v0.1; then
+            echo 'v0.2 attempted to rewrite frozen v0.1 research evidence' >&2
+            exit 1
+          fi
+          if git diff --name-only "$base" HEAD | grep -E '^(SPEC\.md|PRINCIPLES\.md|protocols/core/|proposals/poai/|interop/c2pa/|packages/|applications/|scripts/)'; then
+            echo 'v0.2 touched a protected semantic/runtime surface' >&2
+            exit 1
+          fi

@@ -1,0 +1,128 @@
+{
+  "schema": "matawaka.novelty-pressure-ledger/2025-2026/v0.2",
+  "audit_as_of": "2026-09-07",
+  "predecessor": "80850c1fb3da81b5af40049b35473e4c50123218",
+  "sources": [
+    {
+      "id": "mvar-execution-witness-2026-04-22",
+      "title": "Execution-Witness Binding: Proof-Carrying Authorization for LLM Agent Runtimes",
+      "first_public_date": "2026-04-22",
+      "status": "SSRN_PREPRINT",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6352164",
+      "date_basis": "SSRN posting date; paper states date written 2026-02-01 but public posting is used conservatively.",
+      "pressure_targets": ["SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Separates planning-phase policy evaluation from execution-phase authorization through an execution witness.", "Uses one-time execution tokens and deterministic enforcement rather than trusting model behavior."],
+      "non_overlap": ["Does not define availability/consideration/intent/responsibility as independent semantic receipt layers.", "Does not span human-AI authorship governance."]
+    },
+    {
+      "id": "soos-idp-2026-05-10",
+      "title": "The Intent Declaration Primitive (IDP) for Agentic AI Systems",
+      "first_public_date": "2026-05-10",
+      "status": "INDIVIDUAL_INTERNET_DRAFT",
+      "url": "https://datatracker.ietf.org/doc/html/draft-sato-soos-idp-00",
+      "date_basis": "IETF Internet-Draft -00 publication date.",
+      "pressure_targets": ["SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Defines a structured per-transition intent declaration at the moment of agent action.", "Treats access permission and declared action intent as different concerns."],
+      "non_overlap": ["Intent declaration is one layer within SOOS and is not the same as the UU-AAP seven-stage chain.", "Does not model available-versus-considered intelligence resources."]
+    },
+    {
+      "id": "soos-mad-2026-05-24",
+      "title": "Multi-Agent Delegation in Sovereign Object Systems",
+      "first_public_date": "2026-05-24",
+      "status": "INDIVIDUAL_INTERNET_DRAFT",
+      "url": "https://datatracker.ietf.org/doc/html/draft-sato-soos-mad-00",
+      "date_basis": "IETF Internet-Draft -00 publication date.",
+      "pressure_targets": ["SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Defines a multi-layer governance architecture with a normative narrowing property for delegated authority.", "Composes identity, mandate and execution governance rather than relying on one token."],
+      "non_overlap": ["Its core unit is agent authority over Sovereign Objects, not a general evidence-to-successor semantic stack.", "Does not provide one common receipt envelope covering availability, authorship responsibility and outcome semantics."]
+    },
+    {
+      "id": "observation-missingness-2026-05-12",
+      "title": "Quantifying Potential Observation Missingness in Inverse Reinforcement Learning",
+      "first_public_date": "2026-05-12",
+      "status": "PREPRINT",
+      "url": "https://arxiv.org/abs/2605.12831",
+      "date_basis": "arXiv initial submission date.",
+      "pressure_targets": ["AVAILABLE_CONSIDERED_AUTHORITY"],
+      "overlap": ["Formally distinguishes recorded observations from observations that may have been available to the original decision-maker.", "Shows that missing decision-time observations can materially change interpretation of an expert action."],
+      "non_overlap": ["Does not separately record whether each available resource was considered or relied upon.", "Does not model authority or responsibility as separate from epistemic access."]
+    },
+    {
+      "id": "oplogica-verification-discipline-2026-06-06",
+      "title": "Oplogica v0.2 deterministic verification discipline",
+      "first_public_date": "2026-06-06",
+      "status": "PUBLIC_GITHUB_IMPLEMENTATION",
+      "url": "https://github.com/oplogica/oplogica-verify/blob/main/ova_demo/verification_discipline.py",
+      "date_basis": "Repository was created 2026-05-20 and current public repository metadata reports latest push 2026-06-06; current machine-readable discipline therefore predates the Matawaka public anchor under this bounded observation.",
+      "pressure_targets": ["COMMON_NON_EFFECTS", "SNE_HEC"],
+      "overlap": ["Attaches machine-readable false claims such as verifies_decision_correctness=false, certifies_compliance=false and establishes_fairness=false to verification output.", "Uses deterministic overclaim prevention and explicit meaning/not-meaning boundaries."],
+      "non_overlap": ["The block describes one verification result family rather than a shared envelope across heterogeneous semantic receipt types.", "It does not define typed transitions among availability, intent, authority, responsibility, action and successor state."]
+    },
+    {
+      "id": "aac-2026-06-13",
+      "title": "An Agent Action Capsule Profile for SCITT",
+      "first_public_date": "2026-06-13",
+      "status": "INDIVIDUAL_INTERNET_DRAFT",
+      "url": "https://datatracker.ietf.org/doc/draft-mih-scitt-agent-action-capsule/00/",
+      "date_basis": "IETF Internet-Draft -00 publication date.",
+      "pressure_targets": ["SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Separates pre-execution authorization records from the different question of what an agent actually did.", "Uses typed dispositions, deterministic constraint records and separate outcome statements."],
+      "non_overlap": ["Does not define availability, consideration or responsibility binding as predecessor receipt layers.", "Does not reuse the same semantic stack for authorship governance."]
+    },
+    {
+      "id": "microsoft-ifc-2026-06-16",
+      "title": "Information-flow control: Moving toward secure, autonomous agents",
+      "first_public_date": "2026-06-16",
+      "status": "INDUSTRY_RESEARCH_PUBLICATION",
+      "url": "https://commandline.microsoft.com/information-flow-control-moving-toward-secure-autonomous-agents/",
+      "date_basis": "Microsoft publication date.",
+      "pressure_targets": ["SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Uses deterministic system-level controls so permission to invoke a tool does not imply permission for arbitrary information to flow through that action.", "Separates data-flow policy from model reasoning and human approval."],
+      "non_overlap": ["Information-flow noninterference is not a general evidentiary semantic composition model.", "Does not define cross-domain receipt semantics or availability-versus-consideration."]
+    },
+    {
+      "id": "ep-aec-2026-06-22",
+      "title": "Authorization Evidence Chains: Composing Heterogeneous Agent-Authorization Receipts",
+      "first_public_date": "2026-06-22",
+      "status": "INDIVIDUAL_INTERNET_DRAFT",
+      "url": "https://www.ietf.org/archive/id/draft-schrock-ep-authorization-evidence-chain-00.html",
+      "date_basis": "IETF Internet-Draft -00 publication date.",
+      "pressure_targets": ["SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Composes heterogeneous receipt types for one exact action and dispatches each to its own verifier.", "Uses a fail-closed requirement expression and explicitly treats identity, delegation, permit, human authorization and transparency as complementary layers."],
+      "non_overlap": ["Composition terminates in authorization-evidence satisfaction for one action rather than a general semantic chain from state/availability through outcome/successor.", "Does not model authorship or available-versus-considered intelligence."]
+    },
+    {
+      "id": "scitt-agent-receipt-2026-06-23",
+      "title": "A SCITT Profile for AI-Agent Action Receipts",
+      "first_public_date": "2026-06-23",
+      "status": "INDIVIDUAL_INTERNET_DRAFT",
+      "url": "https://datatracker.ietf.org/doc/draft-noa-scitt-ai-agent-receipt/",
+      "date_basis": "IETF Internet-Draft -00 publication date.",
+      "pressure_targets": ["COMMON_NON_EFFECTS", "SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Defines a narrow signed per-action receipt and explicitly states what the receipt does and does not prove.", "Separates recorded action/principal/policy/verdict authenticity from correctness, safety, true inputs and real-world outcome."],
+      "non_overlap": ["Negative semantic boundaries are normative prose rather than a common machine-readable non_effects field across receipt classes.", "Does not define pre-action availability, consideration, intent and authority-responsibility composition."]
+    },
+    {
+      "id": "qik-vrt-effect-ack-2026-07-22",
+      "title": "QIK-VRT Effect Acknowledgement: Separating Receipt from Authorization for Downstream Effect",
+      "first_public_date": "2026-07-22",
+      "status": "INDIVIDUAL_INTERNET_DRAFT",
+      "url": "https://datatracker.ietf.org/doc/html/draft-lohmann-qikvrt-effect-ack-01",
+      "date_basis": "IETF Internet-Draft -01 publication date observed in bounded search.",
+      "pressure_targets": ["SNE_HEC", "COMMON_NON_EFFECTS", "TYPED_CONTINUITY"],
+      "overlap": ["Explicitly specifies that technical receipt does not establish understanding, policy compliance or authority for downstream effect.", "Requires separate evidence, policy, freshness and origin checks before downstream release."],
+      "non_overlap": ["It is a specialized receipt-to-effect boundary rather than a general cross-domain receipt calculus.", "Does not represent decision resource availability, consideration or responsibility."]
+    },
+    {
+      "id": "fava-2026-07-29",
+      "title": "FAVA: Formal Authorization for Verified Agents with Evidence-Backed Permission Graphs",
+      "first_public_date": "2026-07-29",
+      "status": "PREPRINT",
+      "url": "https://arxiv.org/abs/2607.27267",
+      "date_basis": "arXiv publication date observed in bounded search.",
+      "pressure_targets": ["SNE_HEC", "TYPED_CONTINUITY"],
+      "overlap": ["Builds an evidence-backed permission graph from structured constraints and data-flow dependencies.", "Uses deterministic lowering and SMT verification before any effectful action executes."],
+      "non_overlap": ["Its graph establishes authorization constraints, not the full evidence/availability/intent/responsibility/outcome semantic sequence.", "Does not span human-AI authorship governance."]
+    }
+  ]
+}

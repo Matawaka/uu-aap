@@ -1,0 +1,30 @@
+{
+  "schema": "matawaka.novelty-pressure-implementation-receipt/v0.2",
+  "issue": 958,
+  "predecessor": "80850c1fb3da81b5af40049b35473e4c50123218",
+  "pressure_source_count": 11,
+  "candidate_count": 5,
+  "results": {
+    "materially_narrowed": 4,
+    "survives_bounded_pressure": 1,
+    "defeated": 0,
+    "insufficient_evidence": 0
+  },
+  "hostile_check_count": 21,
+  "claims": {
+    "v01_preserved": true,
+    "all_candidates_repressured": true,
+    "broad_claims_narrowed": true
+  },
+  "non_effects": {
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "complete_prior_art_search": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "merge_authorized": false
+  }
+}

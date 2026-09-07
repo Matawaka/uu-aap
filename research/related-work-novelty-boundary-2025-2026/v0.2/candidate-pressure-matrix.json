@@ -1,0 +1,61 @@
+{
+  "schema": "matawaka.novelty-pressure-matrix/2025-2026/v0.2",
+  "predecessor": "80850c1fb3da81b5af40049b35473e4c50123218",
+  "candidates": [
+    {
+      "id": "SNE_HEC",
+      "v01_claim": "Semantic Non-Escalation under Heterogeneous Evidence Composition.",
+      "result": "MATERIALLY_NARROWED",
+      "pressure_sources": ["ep-aec-2026-06-22", "qik-vrt-effect-ack-2026-07-22", "scitt-agent-receipt-2026-06-23", "microsoft-ifc-2026-06-16", "fava-2026-07-29"],
+      "pressure_reason": ["EP-AEC already composes heterogeneous authorization receipts under type-specific verification and a fail-closed requirement expression.", "QIK-VRT and SCITT agent receipts explicitly prohibit upgrading narrow evidence such as technical receipt or signed record into effect authorization, truth, safety or outcome.", "Information-flow control and FAVA show deterministic non-promotion constraints across data flow, permission and effect boundaries."],
+      "surviving_claim": "A broader cross-domain semantic non-escalation contract in which evidence, availability, consideration, intent, authority, responsibility, coordination, action and outcome are distinct typed semantic powers and composition cannot create a stronger power without its explicit transition.",
+      "forbidden_claims": ["Matawaka first invented fail-closed heterogeneous evidence composition.", "Matawaka first separated a receipt from stronger authorization or outcome meaning.", "SNE-HEC is novel merely because valid evidence cannot automatically imply truth or authorization."],
+      "required_next_evidence": ["Formalize semantic powers and an explicit composition operator independent of Matawaka vocabulary.", "Compare the formal operator against EP-AEC requirement satisfaction, information-flow noninterference and authorization logics.", "Produce adversarial cross-domain cases where authorization-only composition is insufficient but the broader semantic calculus rejects escalation."],
+      "novelty_established": false
+    },
+    {
+      "id": "COMMON_NON_EFFECTS",
+      "v01_claim": "First-class machine-readable non_effects across a common receipt contract.",
+      "result": "MATERIALLY_NARROWED",
+      "pressure_sources": ["oplogica-verification-discipline-2026-06-06", "scitt-agent-receipt-2026-06-23", "qik-vrt-effect-ack-2026-07-22"],
+      "pressure_reason": ["Oplogica predates the public Matawaka anchor and attaches deterministic machine-readable false claims to every verification result.", "SCITT agent receipts and QIK-VRT already make explicit normative not-proven boundaries central to receipt interpretation."],
+      "surviving_claim": "A shared receipt-envelope contract in which each heterogeneous receipt type carries machine-readable non_effects that participate in cross-receipt composition validation, rather than one result family exposing fixed negative flags or a specification listing prose non-claims.",
+      "forbidden_claims": ["Matawaka first made receipt limitations machine-readable.", "Matawaka first required systems to state what evidence does not prove.", "The mere existence of a non_effects field is a novel contribution."],
+      "required_next_evidence": ["Define exact algebra for how non_effects constrain composition and successor transitions.", "Compare against Oplogica machine-readable verification discipline and claim-profile systems that include does_not_establish fields.", "Demonstrate at least two independent receipt families using one shared non_effects envelope with cross-type hostile tests."],
+      "novelty_established": false
+    },
+    {
+      "id": "AVAILABLE_CONSIDERED_AUTHORITY",
+      "v01_claim": "Available Intelligence != Considered Intelligence != Authority.",
+      "result": "MATERIALLY_NARROWED",
+      "pressure_sources": ["observation-missingness-2026-05-12"],
+      "pressure_reason": ["Observation-missingness research already treats observations available to the original decision-maker as distinct from what later records preserve, so decision-time availability itself is not a new idea.", "Decision provenance practice in the wider landscape also records information available at the time, so availability cannot be the novelty claim by itself."],
+      "surviving_claim": "For heterogeneous human, AI, documentary, dataset, model, expert-group and institutional resources, resource existence, decision-time availability, actual consideration and decision authority are separately represented first-class states, with epistemic advantage prohibited from creating authority or responsibility.",
+      "forbidden_claims": ["PoAI first proposed recording information available at decision time.", "PoAI first observed that later audit data can omit information known to the original decision-maker.", "Availability alone is the novel PoAI primitive."],
+      "required_next_evidence": ["Search decision science, provenance and epistemic-governance literature specifically for resource-level availability versus consideration or reliance.", "Formalize availability and consideration as independently falsifiable relations rather than UI fields.", "Construct cases where identical considered evidence but different available intelligence changes the audit conclusion without changing authority."],
+      "novelty_established": false
+    },
+    {
+      "id": "TYPED_CONTINUITY",
+      "v01_claim": "End-to-end provider-neutral typed continuity from State/Evidence through Availability, Intent, Authority/Responsibility, Coordination, Action Gate and Outcome/Successor.",
+      "result": "MATERIALLY_NARROWED",
+      "pressure_sources": ["soos-idp-2026-05-10", "soos-mad-2026-05-24", "ep-aec-2026-06-22", "aac-2026-06-13", "mvar-execution-witness-2026-04-22"],
+      "pressure_reason": ["SOOS is a pre-existing multi-protocol governance architecture connecting intent, mandate/delegation, governed objects, execution, human escalation and audit.", "AAC separates authorization records, performed action and later outcome statements; MVAR separates planning policy from execution authorization; EP-AEC composes multiple authorization layers."],
+      "surviving_claim": "The exact provider-neutral semantic sequence State/Evidence -> Availability -> Intent -> Authority/Responsibility -> Coordination -> Action Permit/Receipt -> Outcome/Successor, with every transition explicit and historical semantic strength preserved rather than a broader claim to multi-layer agent governance architecture.",
+      "forbidden_claims": ["Matawaka first created a multi-layer governance stack for agents.", "Matawaka first linked intent, delegation, execution and audit.", "Seven named layers are novel merely because no predecessor uses the same labels."],
+      "required_next_evidence": ["Perform structural mapping against the full SOOS stack, not only IDP and MAD.", "Define a minimal semantic necessity argument for Availability and Responsibility/Coordination as independent layers rather than arbitrary decomposition.", "Show conformance vectors where collapsing any one of the seven transitions causes a demonstrable semantic escalation or historical reinterpretation."],
+      "novelty_established": false
+    },
+    {
+      "id": "CROSS_DOMAIN_REUSE",
+      "v01_claim": "One semantic discipline reused across human-AI authorship/governance and real-world agent action.",
+      "result": "SURVIVES_BOUNDED_PRESSURE",
+      "pressure_sources": ["soos-idp-2026-05-10", "ep-aec-2026-06-22", "scitt-agent-receipt-2026-06-23", "observation-missingness-2026-05-12"],
+      "pressure_reason": ["The strongest agent-governance predecessors remain centered on authorization, execution, audit or decision reconstruction.", "The bounded pressure corpus did not locate a predecessor using one typed semantic contract both for accountable human-AI authorship and for externally consequential autonomous agent actions."],
+      "surviving_claim": "Cross-domain reuse of one semantic non-escalation and receipt discipline across accountable human-AI authorship/decision governance and externally consequential agent actions, without treating either domain as merely an example of the other.",
+      "forbidden_claims": ["No prior system anywhere has connected authorship and agent governance.", "Cross-domain reuse is established as novel outside the bounded 2025-2026 corpus.", "Similarity of two Matawaka applications proves universal applicability."],
+      "required_next_evidence": ["Expand search into workflow provenance, scientific authorship, legal decision records and policy-as-code systems that may bridge content and action governance.", "Implement two independent consumers using the exact same receipt semantics without domain-specific reinterpretation.", "Define what must remain invariant for cross-domain reuse to count as one semantic contract rather than two analogous implementations."],
+      "novelty_established": false
+    }
+  ]
+}
