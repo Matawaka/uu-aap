@@ -1,0 +1,38 @@
+{
+  "schema": "matawaka.synthetic-semantic-escalation-qualification-receipt/v0.5",
+  "issue": 964,
+  "pull_request": 965,
+  "predecessor": "1473ab2005c876816dab12ae46ed7f39bbfbad6b",
+  "qualified_head": "e5c32d878a8a925453c8544cbeb9be36527b56ad",
+  "workflow_run_id": 34132180712,
+  "workflow_job_id": 101774643578,
+  "workflow_name": "Empirical Semantic-Escalation Benchmark v0.5",
+  "qualification": {
+    "job_conclusion": "success",
+    "frozen_v01_v04_revalidated": true,
+    "v05_benchmark_reproduced": true,
+    "baseline_hostile_checks": "34/34",
+    "exact_stacked_predecessor_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_and_runtime_surfaces_unchanged": true
+  },
+  "result": {
+    "top_result": "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION",
+    "matawaka_recall": 1.0,
+    "specialized_union_recall": 1.0,
+    "recall_delta": 0.0,
+    "llm_policy_judge": "NOT_YET_MEASURED"
+  },
+  "non_effects": {
+    "upstream_implementations_measured": false,
+    "llm_policy_judge_measured": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "stable_core_changed": false,
+    "poai_changed": false,
+    "c2pa_changed": false,
+    "runtime_changed": false,
+    "merge_authorized": false
+  }
+}
