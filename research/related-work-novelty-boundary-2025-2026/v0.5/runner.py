@@ -24,10 +24,6 @@ def measured_profiles(benchmark: dict[str, Any]) -> list[dict[str, Any]]:
     return [p for p in benchmark["profiles"] if p["id"] != "LLM_POLICY_JUDGE"]
 
 
-def make_fixture_ids(domains: list[str], promotion_class: str) -> list[str]:
-    return [f"{domain}::{promotion_class}" for domain in domains]
-
-
 def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
     domains = [d["id"] for d in benchmark["domains"]]
     classes = list(benchmark["promotion_classes"])
@@ -42,7 +38,6 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
         detected_hostile = 0
         detected_domains: set[str] = set()
         for cls in classes:
-            ids = make_fixture_ids(domains, cls)
             detected = hostile_per_class if cls in detects else 0
             detected_hostile += detected
             if detected:
@@ -52,7 +47,8 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
                 "hostile_fixtures": hostile_per_class,
                 "detected": detected,
                 "recall": detected / hostile_per_class,
-                "fixture_ids": ids,
+                "domains": domains,
+                "fixture_id_rule": f"<DOMAIN>::{cls}",
                 "fired_boundary": cls if detected else None,
             })
 
@@ -73,10 +69,11 @@ def compute_synthetic(benchmark: dict[str, Any]) -> dict[str, Any]:
     by_id = {p["id"]: p for p in profiles}
     matawaka = by_id["MATAWAKA_TYPED_PROFILE"]["hostile_detection_recall"]
     specialized = by_id["SPECIALIZED_UNION_PROFILE"]["hostile_detection_recall"]
-    if matawaka > specialized:
-        top_result = "SYNTHETIC_CROSS_LAYER_ADVANTAGE_OBSERVED"
-    else:
-        top_result = "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION"
+    top_result = (
+        "SYNTHETIC_CROSS_LAYER_ADVANTAGE_OBSERVED"
+        if matawaka > specialized
+        else "NO_SYNTHETIC_ADVANTAGE_OVER_SPECIALIZED_COMPOSITION"
+    )
 
     return {
         "schema": "matawaka.synthetic-semantic-escalation-results/v0.5",
@@ -128,11 +125,8 @@ def compute_ablations(benchmark: dict[str, Any]) -> dict[str, Any]:
             "new_false_negatives": false_negatives,
             "hostile_detected_after_ablation": hostile_count - false_negatives,
             "hostile_detection_recall_after_ablation": (hostile_count - false_negatives) / hostile_count,
-            "affected_fixture_ids": [
-                f"{domain}::{cls}"
-                for cls in classes if cls in removed
-                for domain in domains
-            ],
+            "affected_domains": domains,
+            "affected_fixture_id_rules": [f"<DOMAIN>::{cls}" for cls in classes if cls in removed],
         })
     return {
         "schema": "matawaka.synthetic-semantic-escalation-ablation-results/v0.5",
