@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "matawaka.operational-ambiguous-benign/v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "cases", "measurement_status", "non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.operational-ambiguous-benign/v0.6"},
+    "cases": {"type": "array", "minItems": 6, "maxItems": 6, "items": {"type": "object", "additionalProperties": false, "required": ["id", "description", "expected", "pressure"], "properties": {"id": {"type": "string", "pattern": "^BENIGN_"}, "description": {"type": "string", "minLength": 40}, "expected": {"type": "string", "pattern": "^ALLOW_"}, "pressure": {"type": "string", "minLength": 40}}}},
+    "measurement_status": {"const": "DESIGN_ONLY_NOT_EXECUTED"},
+    "non_effects": {"type": "object", "additionalProperties": false, "required": ["benign_false_positive_rate_measured", "external_system_tested", "model_tested"], "properties": {"benign_false_positive_rate_measured": {"const": false}, "external_system_tested": {"const": false}, "model_tested": {"const": false}}}
+  }
+}
