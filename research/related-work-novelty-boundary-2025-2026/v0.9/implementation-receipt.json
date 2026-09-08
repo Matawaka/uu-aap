@@ -1,0 +1,91 @@
+{
+  "schema": "matawaka.statebench-evaluator-availability-implementation-receipt/v0.9",
+  "issue": 974,
+  "pull_request": 975,
+  "predecessor": "46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3",
+  "predecessor_v08_tree": "8bd96e94cdc71be82a97bd550686478e9a4b2d5b",
+  "first_independent_green_head": "5477c8e92d11826952cad4b62b74b2d317058051",
+  "workflow_name": "StateBench Evaluator Availability v0.9",
+  "workflow_run_id": 34186691734,
+  "workflow_job_id": 101936364032,
+  "upstream": {
+    "repository": "Parslee-ai/statebench",
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "package_version": "2.0.0"
+  },
+  "execution": {
+    "status": "PINNED_MODEL_PATH_AVAILABILITY_AUDITED",
+    "native_overall_no_key_status": "NOT_READY_WITHOUT_REMOTE_CREDENTIAL_OR_CAR_RUNTIME",
+    "native_model_generation_executed": false,
+    "provider_statuses": {
+      "openai": "NOT_READY_NO_CREDENTIAL_EVIDENCE",
+      "anthropic": "NOT_READY_NO_CREDENTIAL_EVIDENCE",
+      "google": "NOT_READY_NO_CREDENTIAL_EVIDENCE",
+      "car": "NOT_READY_CAR_RUNTIME_MODULE_ABSENT"
+    },
+    "provider_client_constructibility_without_observed_credentials": {
+      "openai": false,
+      "anthropic": true,
+      "google": false
+    },
+    "car_runtime_module_present": false,
+    "network_guard_active": true,
+    "deterministic_scorer_status": "DETERMINISTIC_SCORER_CORE_EXECUTED_ON_NON_MODEL_CONTROL",
+    "control_response": "EMPTY_STRING_FOR_EVERY_QUERY",
+    "timeline_count": 209,
+    "query_count": 251,
+    "control_signature_sha256": "b090bfc426a02de6330789cd41c36dc51d2601414346077016e50e1bea62b58b",
+    "deterministic_result_sha256": "73f1acb0861dea212416cf757d2de92e867a362c7d10f3eeb0e49562a430e737",
+    "environment": {
+      "python": "3.12.14",
+      "uv": "0.12.10"
+    }
+  },
+  "lm_eval_surface": {
+    "status": "LOCAL_HF_PATH_SOURCE_PRESENT_SIMPLIFIED_UNEXECUTED_UNPINNED_DEPENDENCIES",
+    "huggingface_local_model_supported": true,
+    "model_executed": false,
+    "dependency_lock_present": false,
+    "full_sfrr_metrics": false,
+    "full_provenance_metrics": false
+  },
+  "qualification_evidence": {
+    "job_conclusion": "success",
+    "frozen_v01_v08_revalidated": true,
+    "baseline_hostile_checks": "25/25",
+    "exact_upstream_evaluator_surfaces_verified": true,
+    "frozen_native_environment_used": true,
+    "credential_evidence_absent": true,
+    "network_guard_active_before_provider_probe": true,
+    "no_model_request_issued": true,
+    "all_native_provider_paths_audited": true,
+    "deterministic_scorer_control_executed": true,
+    "exact_v08_predecessor_bound": true,
+    "exact_v08_tree_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_and_runtime_product_surfaces_unchanged": true
+  },
+  "performance": {
+    "statebench_model_score": null,
+    "matawaka_model_score": null,
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "decision_accuracy": null,
+    "sfrr": null
+  },
+  "non_effects": {
+    "native_statebench_model_harness_executed": false,
+    "statebench_lm_eval_model_executed": false,
+    "paid_external_model_called": false,
+    "user_credentials_used": false,
+    "official_statebench_benchmark_executed": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "merge_authorized": false
+  }
+}

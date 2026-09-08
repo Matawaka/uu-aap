@@ -1,0 +1,188 @@
+name: StateBench Evaluator Availability v0.9
+
+on:
+  pull_request:
+    paths:
+      - 'research/related-work-novelty-boundary-2025-2026/v0.9/**'
+      - '.github/workflows/statebench-evaluator-availability-v0.9.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Matawaka candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up exact Python 3.12.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.14'
+
+      - name: Revalidate frozen v0.1-v0.8 research chain
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/test_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/test_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/test_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.5/test_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/statebench_track_adapter.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.6/test_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_replay.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/test_replay.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_execution.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/test_execution_contract.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_qualification.py
+
+      - name: Validate v0.9 static and hostile boundary
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_availability.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/test_availability_contract.py
+
+      - name: Checkout exact pinned StateBench source
+        uses: actions/checkout@v4
+        with:
+          repository: Parslee-ai/statebench
+          ref: 1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7
+          path: upstream-statebench
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact upstream evaluator surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream-statebench rev-parse HEAD)" = '1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7'
+          test "$(git -C upstream-statebench rev-parse HEAD:src/statebench/evaluation)" = '78925d480b3af2ba850286f96bc6f1d61e3223db'
+          test "$(git -C upstream-statebench rev-parse HEAD:src/statebench/evaluation/judge.py)" = 'aac5ce3c9cf301fe0150e45eedb48379773e9130'
+          test "$(git -C upstream-statebench rev-parse HEAD:src/statebench/runner/harness.py)" = '7bbf24843ccbddf931dd1a0ff022330d73fa924d'
+          test "$(git -C upstream-statebench rev-parse HEAD:src/statebench/runner/car_provider.py)" = '167d289d3968a1c33bea656a917f35e80e0e2ec9'
+          test "$(git -C upstream-statebench rev-parse HEAD:src/statebench/runner/completion.py)" = '207e0704e92566919c63441558ad59cc113c8434'
+          test "$(git -C upstream-statebench rev-parse HEAD:src/statebench/cli.py)" = '78217375141b6afd404d227189a89227cea3b195'
+          test "$(git -C upstream-statebench rev-parse HEAD:docs/EVALUATION.md)" = '002194eba370008e0bc278959ccddb9f1a8f0849'
+          test "$(git -C upstream-statebench rev-parse HEAD:data/releases/v1.0/test.jsonl)" = '3d0bcce1a7725384cf7c25eb4695a784e6a275cd'
+          test "$(git -C upstream-statebench rev-parse HEAD:uv.lock)" = '58b24498b3ffb56247482613c5c01dec3e46bc0d'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/lm_eval)" = '6faf51814c2f6b9dacb4bec06839edc3f332ada3'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/lm_eval/tasks/statebench)" = '51a5cae28d109cfab5a259b5c1fdbc971d9816db'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/README.md)" = '078fae2dd058eba61c6c152a5ba97b7188a3e915'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/pyproject.toml)" = '08cd4d62c138ef3a1c444f757bab3575651d47a3'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/lm_eval/tasks/statebench/_default_template.yaml)" = '63316e2a338534b2758fec290c79b2f6d5993a17'
+
+      - name: Install exact uv and frozen native StateBench environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(python --version)" = 'Python 3.12.14'
+          python -m pip install --disable-pip-version-check 'uv==0.12.10'
+          test "$(uv --version | awk '{print $1" "$2}')" = 'uv 0.12.10'
+          cd upstream-statebench
+          uv sync --frozen --extra dev
+          uv run --frozen python - <<'PY'
+          import importlib.metadata, sys
+          assert sys.version.split()[0] == '3.12.14'
+          assert importlib.metadata.version('statebench') == '2.0.0'
+          PY
+
+      - name: Execute no-key evaluator availability and deterministic scorer probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY GEMINI_API_KEY
+          unset GOOGLE_APPLICATION_CREDENTIALS GOOGLE_CLOUD_PROJECT GOOGLE_CLOUD_LOCATION GOOGLE_GENAI_USE_VERTEXAI
+          unset CAR_AUTH_TOKEN
+          cd upstream-statebench
+          uv run --frozen python "$GITHUB_WORKSPACE/research/related-work-novelty-boundary-2025-2026/v0.9/probe_evaluator_availability.py" \
+            --source-dir "$GITHUB_WORKSPACE/upstream-statebench" \
+            --output /tmp/statebench-v09-results.json \
+            --hash-output /tmp/statebench-v09-results.sha256
+          echo '--- v0.9 evaluator availability result ---'
+          cat /tmp/statebench-v09-results.json
+          echo '--- v0.9 deterministic result SHA-256 ---'
+          cat /tmp/statebench-v09-results.sha256
+
+      - name: Reproduce frozen result and validate receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          result='research/related-work-novelty-boundary-2025-2026/v0.9/results.json'
+          digest='research/related-work-novelty-boundary-2025-2026/v0.9/results.sha256'
+          test -f "$result"
+          test -f "$digest"
+          cmp "$result" /tmp/statebench-v09-results.json
+          test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v09-results.sha256)"
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_availability.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_qualification.py
+
+      - name: Bind exact v0.8 qualified predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "v0.9 predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+          observed_tree="$(git rev-parse "$expected:research/related-work-novelty-boundary-2025-2026/v0.8")"
+          test "$observed_tree" = '8bd96e94cdc71be82a97bd550686478e9a4b2d5b'
+
+      - name: Prove v0.9 additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3'
+          mapfile -t changed < <(git diff --name-only "$base" HEAD)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              research/related-work-novelty-boundary-2025-2026/v0.9/*|.github/workflows/statebench-evaluator-availability-v0.9.yml)
+                ;;
+              *)
+                echo "Unexpected path outside bounded v0.9 audit: $path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test "${#changed[@]}" -gt 0
+
+      - name: Prove predecessor and semantic runtime surfaces unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3'
+          if ! git diff --quiet "$base" HEAD -- research/related-work-novelty-boundary-2025-2026/v0.1 research/related-work-novelty-boundary-2025-2026/v0.2 research/related-work-novelty-boundary-2025-2026/v0.3 research/related-work-novelty-boundary-2025-2026/v0.4 research/related-work-novelty-boundary-2025-2026/v0.5 research/related-work-novelty-boundary-2025-2026/v0.6 research/related-work-novelty-boundary-2025-2026/v0.7 research/related-work-novelty-boundary-2025-2026/v0.8; then
+            echo 'v0.9 attempted to rewrite frozen predecessor research evidence' >&2
+            exit 1
+          fi
+          if git diff --name-only "$base" HEAD | grep -E '^(SPEC\.md|PRINCIPLES\.md|protocols/core/|proposals/poai/|interop/c2pa/|packages/|applications/|scripts/)'; then
+            echo 'v0.9 touched a protected semantic/runtime/product surface' >&2
+            exit 1
+          fi

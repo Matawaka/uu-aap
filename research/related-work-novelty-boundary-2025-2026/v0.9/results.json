@@ -1,0 +1,118 @@
+{
+  "credential_evidence": {
+    "ANTHROPIC_API_KEY": false,
+    "CAR_AUTH_TOKEN": false,
+    "GEMINI_API_KEY": false,
+    "GOOGLE_API_KEY": false,
+    "GOOGLE_APPLICATION_CREDENTIALS": false,
+    "GOOGLE_CLOUD_LOCATION": false,
+    "GOOGLE_CLOUD_PROJECT": false,
+    "GOOGLE_GENAI_USE_VERTEXAI": false,
+    "OPENAI_API_KEY": false
+  },
+  "deterministic_scorer_control": {
+    "aggregate_mechanical_counts": {
+      "decision_correct": 0,
+      "must_mention_hits": 0,
+      "must_mention_misses": 493,
+      "must_not_mention_violations": 0,
+      "resurrected_superseded": 0,
+      "skipped_phrases": 65
+    },
+    "control_response": "EMPTY_STRING_FOR_EVERY_QUERY",
+    "control_signature_sha256": "b090bfc426a02de6330789cd41c36dc51d2601414346077016e50e1bea62b58b",
+    "judge_descriptor": "deterministic-only",
+    "non_model_control": true,
+    "query_count": 251,
+    "query_result_count": 251,
+    "status": "DETERMINISTIC_SCORER_CORE_EXECUTED_ON_NON_MODEL_CONTROL",
+    "timeline_count": 209
+  },
+  "environment": {
+    "python": "3.12.14",
+    "uv": "0.12.10"
+  },
+  "native_full_metrics_harness": {
+    "deterministic_only_judge_bypasses_generation": false,
+    "generation_precedes_judging": true,
+    "model_generation_executed": false,
+    "overall_no_key_status": "NOT_READY_WITHOUT_REMOTE_CREDENTIAL_OR_CAR_RUNTIME",
+    "providers": {
+      "anthropic": {
+        "client_constructible_without_observed_credentials": true,
+        "credential_evidence_present": false,
+        "model_request_attempted": false,
+        "status": "NOT_READY_NO_CREDENTIAL_EVIDENCE"
+      },
+      "car": {
+        "car_runtime_module_present": false,
+        "car_server_daemon_probed": false,
+        "credential_evidence_present": false,
+        "model_request_attempted": false,
+        "status": "NOT_READY_CAR_RUNTIME_MODULE_ABSENT"
+      },
+      "google": {
+        "client_constructible_without_observed_credentials": false,
+        "credential_evidence_present": false,
+        "model_request_attempted": false,
+        "status": "NOT_READY_NO_CREDENTIAL_EVIDENCE"
+      },
+      "openai": {
+        "client_constructible_without_observed_credentials": false,
+        "credential_evidence_present": false,
+        "model_request_attempted": false,
+        "status": "NOT_READY_NO_CREDENTIAL_EVIDENCE"
+      }
+    },
+    "status": "PINNED_MODEL_PATH_AVAILABILITY_AUDITED"
+  },
+  "network_guard_active_during_provider_and_scorer_probe": true,
+  "non_effects": {
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "merge_authorized": false,
+    "native_statebench_model_harness_executed": false,
+    "novelty_established": false,
+    "official_statebench_benchmark_executed": false,
+    "paid_external_model_called": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "statebench_lm_eval_model_executed": false,
+    "user_credentials_used": false,
+    "world_first": false
+  },
+  "performance": {
+    "benign_false_positive_rate": null,
+    "decision_accuracy": null,
+    "held_out_detection_recall": null,
+    "matawaka_model_score": null,
+    "sfrr": null,
+    "statebench_model_score": null
+  },
+  "predecessor": "46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3",
+  "protocol_implementation_seams": {
+    "lm_eval_template_explicit_temperature_zero": true,
+    "native_generation_explicitly_sets_temperature": false,
+    "native_variance_report_seed_controls_model_sampling": false,
+    "official_spec_requires_temperature_zero": true
+  },
+  "schema": "matawaka.statebench-evaluator-availability-results/v0.9",
+  "simplified_lm_eval_surface": {
+    "dependency_lock_present": false,
+    "dependency_requirement": "lm-eval>=0.4.0",
+    "do_sample": false,
+    "full_provenance_metrics": false,
+    "full_sfrr_metrics": false,
+    "huggingface_local_model_supported": true,
+    "mode": "SIMPLIFIED_TRANSCRIPT_REPLAY_FLATTENED_QUERY_DECISION_ACCURACY_ONLY",
+    "model_executed": false,
+    "status": "LOCAL_HF_PATH_SOURCE_PRESENT_SIMPLIFIED_UNEXECUTED_UNPINNED_DEPENDENCIES",
+    "temperature_zero": true
+  },
+  "upstream": {
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "package_version": "2.0.0",
+    "repository": "Parslee-ai/statebench"
+  }
+}

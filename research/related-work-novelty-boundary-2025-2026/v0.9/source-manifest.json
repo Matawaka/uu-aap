@@ -1,0 +1,74 @@
+{
+  "schema": "matawaka.statebench-evaluator-availability-source-manifest/v0.9",
+  "issue": 974,
+  "frozen_predecessor": {
+    "commit": "46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3",
+    "v08_tree": "8bd96e94cdc71be82a97bd550686478e9a4b2d5b"
+  },
+  "source": {
+    "repository": "Parslee-ai/statebench",
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "package_name": "statebench",
+    "package_version": "2.0.0",
+    "license": "MIT",
+    "git_objects": {
+      "evaluation_tree": "78925d480b3af2ba850286f96bc6f1d61e3223db",
+      "judge_blob": "aac5ce3c9cf301fe0150e45eedb48379773e9130",
+      "harness_blob": "7bbf24843ccbddf931dd1a0ff022330d73fa924d",
+      "car_provider_blob": "167d289d3968a1c33bea656a917f35e80e0e2ec9",
+      "completion_blob": "207e0704e92566919c63441558ad59cc113c8434",
+      "cli_blob": "78217375141b6afd404d227189a89227cea3b195",
+      "evaluation_spec_blob": "002194eba370008e0bc278959ccddb9f1a8f0849",
+      "test_payload_blob": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd",
+      "uv_lock_blob": "58b24498b3ffb56247482613c5c01dec3e46bc0d",
+      "lm_eval_tree": "6faf51814c2f6b9dacb4bec06839edc3f332ada3",
+      "lm_eval_task_tree": "51a5cae28d109cfab5a259b5c1fdbc971d9816db",
+      "lm_eval_readme_blob": "078fae2dd058eba61c6c152a5ba97b7188a3e915",
+      "lm_eval_pyproject_blob": "08cd4d62c138ef3a1c444f757bab3575651d47a3",
+      "lm_eval_template_blob": "63316e2a338534b2758fec290c79b2f6d5993a17"
+    },
+    "native_harness": {
+      "generation_providers": ["openai", "anthropic", "google", "car"],
+      "generation_is_mandatory_before_judging": true,
+      "deterministic_only_judge_bypasses_generation": false,
+      "car_requires_optional_runtime_module": "car_runtime",
+      "car_requires_daemon": "car-server"
+    },
+    "official_evaluation_spec": {
+      "test_split": "data/releases/v1.0/test.jsonl",
+      "temperature_zero": true,
+      "multi_seed_count": 3,
+      "mean_std_required": true,
+      "all_primary_metrics_required": true,
+      "by_track_required": true,
+      "judge_configuration_required": true
+    },
+    "native_cli_observation": {
+      "variance_report_seeds_control_model_sampling": false,
+      "native_generation_method_explicitly_sets_temperature": false
+    },
+    "lm_eval_surface": {
+      "package_name": "statebench-lm-eval",
+      "package_version": "0.1.0",
+      "huggingface_model_supported": true,
+      "temperature_zero_explicit": true,
+      "do_sample": false,
+      "mode": "SIMPLIFIED_TRANSCRIPT_REPLAY_FLATTENED_QUERY_DECISION_ACCURACY_ONLY",
+      "full_sfrr_metrics": false,
+      "full_provenance_metrics": false,
+      "dependency_requirement": "lm-eval>=0.4.0",
+      "dependency_lock_present_in_surface_root": false
+    }
+  },
+  "credential_names_required_absent": [
+    "OPENAI_API_KEY",
+    "ANTHROPIC_API_KEY",
+    "GOOGLE_API_KEY",
+    "GEMINI_API_KEY",
+    "GOOGLE_APPLICATION_CREDENTIALS",
+    "GOOGLE_CLOUD_PROJECT",
+    "GOOGLE_CLOUD_LOCATION",
+    "GOOGLE_GENAI_USE_VERTEXAI",
+    "CAR_AUTH_TOKEN"
+  ]
+}

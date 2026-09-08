@@ -1,0 +1,62 @@
+{
+  "schema": "matawaka.statebench-evaluator-availability-protocol/v0.9",
+  "issue": 974,
+  "predecessor": "46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3",
+  "predecessor_v08_tree": "8bd96e94cdc71be82a97bd550686478e9a4b2d5b",
+  "target_statuses": [
+    "PINNED_MODEL_PATH_AVAILABILITY_AUDITED",
+    "DETERMINISTIC_SCORER_CORE_EXECUTED_ON_NON_MODEL_CONTROL"
+  ],
+  "surfaces": {
+    "native_full_metrics_harness": "AUDIT_NO_KEY_READINESS_WITHOUT_MODEL_REQUEST",
+    "statebench_lm_eval": "DISCOVER_AND_CLASSIFY_SEPARATE_SIMPLIFIED_LOCAL_MODEL_SURFACE"
+  },
+  "requirements": {
+    "exact_pinned_upstream": true,
+    "exact_python": "3.12.14",
+    "exact_uv": "0.12.10",
+    "frozen_upstream_uv_lock": true,
+    "all_model_and_cloud_credentials_absent": true,
+    "no_external_model_request": true,
+    "audit_all_native_generation_providers": true,
+    "prove_generation_precedes_native_judging": true,
+    "execute_deterministic_judge_on_exact_test_split_non_model_control": true,
+    "control_response": "EMPTY_STRING_FOR_EVERY_QUERY",
+    "control_query_count": 251,
+    "control_timeline_count": 209,
+    "no_post_result_provider_omission": true,
+    "no_official_benchmark_claim": true
+  },
+  "official_protocol_boundary": {
+    "test_split_required": true,
+    "temperature_zero_required": true,
+    "three_seed_evaluation_required": true,
+    "mean_std_reporting_required": true,
+    "all_primary_metrics_required": true,
+    "by_track_reporting_required": true,
+    "judge_configuration_required": true
+  },
+  "performance_fields": {
+    "statebench_model_score": null,
+    "matawaka_model_score": null,
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "decision_accuracy": null,
+    "sfrr": null
+  },
+  "non_effects": {
+    "native_statebench_model_harness_executed": false,
+    "statebench_lm_eval_model_executed": false,
+    "paid_external_model_called": false,
+    "user_credentials_used": false,
+    "official_statebench_benchmark_executed": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "merge_authorized": false
+  }
+}
