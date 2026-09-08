@@ -1,0 +1,26 @@
+{
+  "schema": "matawaka.single-response-filter-contract/v0.19",
+  "profile": "MATAWAKA_SINGLE_RESPONSE_FILTER_BRIDGE_V019",
+  "predecessor": "648811172c9711a8b2c482e93ff8cee493ef3b50",
+  "documents": 251,
+  "repetitions": 2,
+  "filter": {"name": "none", "components": ["take_first"]},
+  "responses_per_request": 1,
+  "response_origin": "HAND_AUTHORED_SYNTHETIC_NOT_MODEL_OUTPUT",
+  "response_pattern": "MATAWAKA_SYNTHETIC_RESPONSE_V019:<three-digit-sequence>",
+  "admission": "WHOLE_BATCH_BEFORE_ATTACHMENT_AND_FILTERING",
+  "output_gate": "WHOLE_FILTERED_COLLECTION_BEFORE_SCORING",
+  "scoring": "UNCHANGED_V018_BOUND_FULL_DOCUMENT_CALLBACK",
+  "raw_diagnostics": ["two_responses_keeps_first", "bare_string_yields_character", "late_empty_partial_write"],
+  "adapter_blob": "f6735ed35e3474feb63ef68bb089e73518c9fc60",
+  "native_filter_sources": {
+    "api/filter.py": "8d9db6821724c497c4a27116a1238e3b8d32ae29",
+    "filters/selection.py": "8c670ed74d00655441cc45181fba1265f0db5290",
+    "filters/__init__.py": "0049be4e01bcf1e0f3adaaf45f43f5443ff13d84"
+  },
+  "original_metric_status": "NONPASS",
+  "aggregate_computed": false,
+  "model_authorized": false,
+  "dispatch_authorized": false,
+  "merge_authorized": false
+}
