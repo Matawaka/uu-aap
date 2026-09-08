@@ -1,0 +1,75 @@
+{
+  "schema": "matawaka.statebench-frozen-sync-import-qualification-receipt/v0.11",
+  "issue": 978,
+  "qualified_status": "FROZEN_SYNC_AND_IMPORT_SMOKE_EXECUTED",
+  "qualified_candidate_head": "8e55249ab77694e015cc958409e6f2a01acab154",
+  "workflow_run": 34199453507,
+  "workflow_job": 101974654824,
+  "workflow_name": "StateBench Frozen Sync Import v0.11",
+  "workflow_conclusion": "success",
+  "first_independent_green": true,
+  "result_sha256": "08068dd3ebaf9546b5c1592cf77908487fc09cc8944f19f08c55ec9e298a8ce1",
+  "artifact": {
+    "id": 10045263322,
+    "name": "statebench-frozen-sync-import-v0.11",
+    "zip_sha256": "e9a54544ddbda6583f587a63f00186016a646cdb8f753cfd35b0f2d5e2da3f99",
+    "retention_days": 30,
+    "is_primary_durable_evidence": false
+  },
+  "gates": {
+    "frozen_v01_v010_revalidated": true,
+    "v011_hostile": "16/16",
+    "exact_uv_bootstrap": true,
+    "frozen_lock_identity_before_sync": true,
+    "frozen_sync_completed": true,
+    "frozen_lock_identity_after_sync": true,
+    "offline_network_blocked_import_smoke": true,
+    "seven_required_imports": true,
+    "exact_predecessor_bound": true,
+    "additive_only": true,
+    "protected_surfaces_unchanged": true
+  },
+  "historical_reds_preserved": [
+    {
+      "head": "1fef59c677db15e9c7408340e875bde6372cc874",
+      "run": 34198815950,
+      "job": 101972639515,
+      "classification": "BOOTSTRAP_UV_PATH_AMBIGUITY_BEFORE_SYNC",
+      "statebench_sync_started": false
+    },
+    {
+      "head": "5954c8d33c22113ca675da578e9430aa29055e70",
+      "run": 34199033437,
+      "job": 101973332810,
+      "classification": "BOOTSTRAP_PYTHON_MODULE_ENTRYPOINT_ASSUMPTION_BEFORE_SYNC",
+      "statebench_sync_started": false
+    },
+    {
+      "head": "4ddbb4f41d125c4d1205c15b1bd3412b28a098c2",
+      "run": 34199214251,
+      "job": 101973895922,
+      "classification": "BOOTSTRAP_UV_CLI_LITERAL_VERSION_MISMATCH_BEFORE_SYNC",
+      "statebench_sync_started": false
+    }
+  ],
+  "non_effects": {
+    "language_model_executed": false,
+    "statebench_task_loaded": false,
+    "dataset_loaded": false,
+    "dataset_downloaded": false,
+    "huggingface_model_downloaded": false,
+    "provider_api_called": false,
+    "user_credentials_used": false,
+    "official_statebench_benchmark_executed": false,
+    "model_performance_established": false,
+    "task_compatibility_established": false,
+    "exact_data_plugin_processing_established": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "merge_authorized": false
+  }
+}
