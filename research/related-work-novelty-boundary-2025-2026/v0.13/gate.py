@@ -97,6 +97,10 @@ def boundary(repo: Path) -> None:
         require(status == "A" and (path.startswith(ROOT + "/v0.13/") or path == WF), "PROTECTED_OR_NON_ADDITIVE_DIFF:" + path)
 
 
+def validate_callback_metadata(kwargs: dict) -> None:
+    require(kwargs == {"config_source": "inline"}, "UNDECLARED_CALLBACK_METADATA")
+
+
 def qualified_observation(result: dict) -> None:
     require(result["audit_execution"] == "COMPLETED", "AUDIT_NOT_COMPLETED")
     require(result["compatibility"] == "NONPASS", "NONPASS_HISTORY_PROMOTION")
@@ -262,9 +266,12 @@ def run(repo: Path, predecessor: Path, upstream: Path, evidence12: Path, cache: 
         require(len(rows) == 209, "EXACT_ROW_COUNT_REQUIRED")
         row_dataset = Dataset.from_list(rows)
         dataset_calls = Counter()
+        callback_metadata = {}
+        result["callback_metadata"] = callback_metadata
 
         def exact_rows(**kwargs):
-            require(not kwargs, "UNDECLARED_DATASET_KWARGS")
+            callback_metadata["rows"] = dict(kwargs)
+            validate_callback_metadata(kwargs)
             dataset_calls["rows"] += 1
             return DatasetDict({"test": row_dataset})
 
@@ -282,6 +289,7 @@ def run(repo: Path, predecessor: Path, upstream: Path, evidence12: Path, cache: 
             container_error = error_record(exc, lm_root, upstream)
         else:
             raise ValueError("SOURCE_PREDICTED_CONTAINER_REJECTION_NOT_OBSERVED")
+        result["container_probe"] = {"admission": "UNCLASSIFIED_EXCEPTION", "exception": container_error, "observed_process_returns": returns}
         require(container_error["type"] == "AttributeError" and "'list' object has no attribute 'features'" in container_error["message"], "CONTAINER_FAILURE_NOT_CLASSIFIED")
         require(any(f["file"] == "lm_eval/api/task.py" and "self.task_docs.features" in (f["source"] or "") for f in container_error["upstream_frames"]), "PINNED_CONTAINER_FAILURE_SITE_MISSING")
         observed_returns = [v for v in returns if v["probe"] == probe]
@@ -298,7 +306,8 @@ def run(repo: Path, predecessor: Path, upstream: Path, evidence12: Path, cache: 
         require(sha(encode([dict(d) for d in doc_dataset])) == DOCS12, "CONTROL_CONTAINER_CHANGED_DOCUMENTS")
 
         def exact_documents(**kwargs):
-            require(not kwargs, "UNDECLARED_CONTROL_DATASET_KWARGS")
+            callback_metadata["documents"] = dict(kwargs)
+            validate_callback_metadata(kwargs)
             dataset_calls["documents"] += 1
             return DatasetDict({"test": doc_dataset})
 
@@ -365,6 +374,12 @@ class GuardTests(unittest.TestCase):
 
     def test_valid_negative_observation(self):
         qualified_observation(self.fixture())
+
+    def test_exact_callback_metadata(self):
+        validate_callback_metadata({"config_source": "inline"})
+
+    def test_extra_callback_metadata_denied(self):
+        with self.assertRaises(ValueError): validate_callback_metadata({"config_source": "inline", "token": "not-real"})
 
     def test_empty_group_not_task(self):
         r = self.fixture(); r["raw_yaml"]["task_names"] = ["statebench"]
