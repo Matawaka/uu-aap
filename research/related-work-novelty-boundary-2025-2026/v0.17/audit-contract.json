@@ -1,0 +1,21 @@
+{
+  "schema": "matawaka.synthetic-scoring-audit-contract/v0.17",
+  "profile": "MATAWAKA_SYNTHETIC_RESPONSE_SCORING_AUDIT_V017",
+  "predecessor": "a5fd76f8d0c21359edd8ec60c22456484db9c240",
+  "response_origin": "HAND_AUTHORED_SYNTHETIC_NOT_MODEL_OUTPUT",
+  "response_marker": "MATAWAKA_SYNTHETIC_RESPONSE_V017",
+  "documents": 251,
+  "fresh_repetitions": 2,
+  "diagnostic_task": "matawaka_statebench_original_metric_diagnostic_v017",
+  "native_controls": [
+    {"id": "synthetic_yes_yes", "response": "yes", "expected": "yes", "correct": true},
+    {"id": "synthetic_no_yes", "response": "no", "expected": "yes", "correct": false},
+    {"id": "synthetic_no_no", "response": "no", "expected": "no", "correct": true},
+    {"id": "synthetic_yes_no", "response": "yes", "expected": "no", "correct": false}
+  ],
+  "cardinality_probes": ["empty_both", "empty_predictions_one_reference", "one_prediction_empty_references"],
+  "expected_scoring_compatibility": "NONPASS",
+  "expected_native_control_booleans": [true, false, true, false],
+  "model_or_provider_authorized": false,
+  "merge_authorized": false
+}

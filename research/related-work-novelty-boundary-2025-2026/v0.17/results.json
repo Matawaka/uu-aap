@@ -1,0 +1,116 @@
+{
+  "actual_calls": {
+    "create_judge": 3,
+    "judge": 8,
+    "plugin_decision_accuracy": 1010,
+    "plugin_get_judge": 1012,
+    "plugin_process_docs": 4,
+    "task_process_results": 1004
+  },
+  "adapter_default": "SCORING_DISABLED_EMPTY_DICTIONARIES",
+  "audit_execution": "COMPLETED",
+  "cardinality_probes": [
+    {
+      "case": "empty_both",
+      "interpretation": "NO_INPUT_CARDINALITY_REJECTION_NOT_BENCHMARK_SCORE",
+      "observed_return": 0.0,
+      "predictions": 0,
+      "references": 0
+    },
+    {
+      "case": "empty_predictions_one_reference",
+      "interpretation": "NO_INPUT_CARDINALITY_REJECTION_NOT_BENCHMARK_SCORE",
+      "observed_return": 0.0,
+      "predictions": 0,
+      "references": 1
+    },
+    {
+      "case": "one_prediction_empty_references",
+      "interpretation": "NO_INPUT_CARDINALITY_REJECTION_NOT_BENCHMARK_SCORE",
+      "observed_return": 0.0,
+      "predictions": 1,
+      "references": 0
+    }
+  ],
+  "contract_sha256": "6d65bd4b833343f24be4e7799f4ce0fefa3c12f6c9d98800f293b653deab39bc",
+  "direct_metric": "RESPONSEJUDGE_EXTRACT_DECISION_METHOD_ABSENT",
+  "document_sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0",
+  "documents_per_repetition": 251,
+  "effects": {
+    "deterministic_judge_controls_executed": true,
+    "synthetic_responses_used": true,
+    "task_process_results_called": true,
+    "upstream_metric_attempted": true
+  },
+  "forbidden_effect_attempts": [],
+  "judge_api": {
+    "class": "ResponseJudge",
+    "decisions_match_method_exists": false,
+    "descriptor": "deterministic-only",
+    "extract_decision_method_exists": false,
+    "judge_method_exists": true,
+    "use_llm_judge": false
+  },
+  "native_control_booleans": [
+    true,
+    false,
+    true,
+    false
+  ],
+  "non_effects": {
+    "aggregate_benchmark_score_established": false,
+    "dependency_profile_changed": false,
+    "evaluation_dispatched": false,
+    "filters_applied": false,
+    "full_native_judge_semantics_established": false,
+    "full_upstream_task_compatible": false,
+    "historical_nonpass_promoted": false,
+    "hub_dataset_loaded": false,
+    "llm_judge_called": false,
+    "merge_authorized": false,
+    "model_downloaded": false,
+    "model_executed": false,
+    "model_generated_responses": false,
+    "model_instantiated": false,
+    "model_performance_established": false,
+    "novelty_established": false,
+    "old_adapter_modified": false,
+    "original_metric_compatible": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "request_cache_used": false,
+    "scoring_adapter_implemented": false,
+    "site_packages_patched": false,
+    "standards_authorized": false,
+    "upstream_source_modified": false,
+    "user_credentials_used": false
+  },
+  "original_task_compatibility": "NONPASS",
+  "predecessor": "a5fd76f8d0c21359edd8ec60c22456484db9c240",
+  "prior_result_sha256": "fbee1820bd69778462ca8ea74d91f9ea28a0d547a4e7921af05c881538186d5b",
+  "profile": "MATAWAKA_SYNTHETIC_RESPONSE_SCORING_AUDIT_V017",
+  "repetitions": 2,
+  "repetitions_identical": true,
+  "requests_sha256": "05740117ac6a6b139d51882873f99eafa0373c6874eb00c7871ee8772bbc36be",
+  "response_origin": "HAND_AUTHORED_SYNTHETIC_NOT_MODEL_OUTPUT",
+  "schema": "matawaka.synthetic-scoring-audit-result/v0.17",
+  "scoring_compatibility": "NONPASS",
+  "scoring_trace_sha256": "0e4766902099986d52083c27bcac18c91d9753c1c7a16ead0854f15bf1efff7d",
+  "source_blobs": {
+    "lm_eval": {
+      "api/task.py": "9255170de444bae6edd53797e3477031cd5d5da5",
+      "config/task.py": "c3a3b712be912789370d18f2abc89d7439dcf1a7"
+    },
+    "statebench": {
+      "evaluation/__init__.py": "f8bfa0e42b3bfc9ea6066c70963d0b9ea3e80ab3",
+      "evaluation/judge.py": "aac5ce3c9cf301fe0150e45eedb48379773e9130",
+      "evaluation/metrics.py": "b4be7173bbcc166a9cdedb569858b152aab5c962",
+      "evaluation/phrase_quality.py": "1053fefedccf21122eb4cf60e5892b72f857739b",
+      "evaluation/rubric.py": "3fbeb680f0bb899fc208e1754f1d67cb9d93611a",
+      "schema/timeline.py": "6dd5849aa4ad22c37cf68a73606eab8155c7f1c1"
+    }
+  },
+  "status": "SYNTHETIC_SCORING_CONTRACT_AUDIT_EXECUTED_NONPASS",
+  "task_metric": "STRING_REFERENCE_TYPE_ERROR_THEN_MISSING_REFERENCE_FALLBACK_ARGUMENT"
+}
