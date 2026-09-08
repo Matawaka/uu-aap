@@ -159,6 +159,13 @@ jobs:
           test -z "$(git -C "$PREDECESSOR13" status --porcelain --untracked-files=no)"
           test -z "$(git -C /tmp/statebench-v014-source status --porcelain --untracked-files=no)"
 
+      - name: Require fresh byte-identical result and first A/B qualification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.14/validate_qualification.py" --self-test
+          python "$RESEARCH/v0.14/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --evidence "$EVIDENCE"
+
       - name: Upload complete or failed environment observation
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
