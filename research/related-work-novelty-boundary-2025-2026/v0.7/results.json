@@ -1,0 +1,74 @@
+{
+  "dataset_replay_status": "FULL_PINNED_TEST_PAYLOAD_REPLAYED",
+  "domain_counts": {
+    "hr": 30,
+    "procurement": 38,
+    "project": 49,
+    "sales": 57,
+    "support": 35
+  },
+  "execution_evidence_level": "UPSTREAM_DATASET_ADAPTED",
+  "fixture_counts": {
+    "missing_ids": 0,
+    "total": 209,
+    "unique_ids": 209
+  },
+  "mapping_counts": {
+    "AMBIGUOUS": 45,
+    "DIRECT": 15,
+    "PARTIAL": 62,
+    "UNMAPPED": 87
+  },
+  "non_effects": {
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "external_model_executed": false,
+    "merge_authorized": false,
+    "novelty_established": false,
+    "statebench_baseline_executed": false,
+    "upstream_implementation_executed": false,
+    "world_first": false
+  },
+  "payload": {
+    "bytes": 638933,
+    "git_blob_sha1": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd",
+    "jsonl_records": 209,
+    "sha256": "7df54da79653488bcc2253c9431dc35fd5c2411ec12afe1f22958ed09395a7c9",
+    "utf8_valid": true
+  },
+  "performance": {
+    "benign_false_positive_rate": null,
+    "held_out_detection_recall": null,
+    "matawaka_model_score": null,
+    "statebench_model_score": null
+  },
+  "predecessor": "6823b9765894f410960c15ad797c4f6949c6225e",
+  "query_counts": {
+    "events": 251,
+    "with_ground_truth": 251,
+    "without_ground_truth": 0
+  },
+  "schema": "matawaka.statebench-full-payload-replay-results/v0.7",
+  "source": {
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "git_blob_sha1": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd",
+    "path": "data/releases/v1.0/test.jsonl",
+    "repository": "Parslee-ai/statebench"
+  },
+  "track_counts": {
+    "authority_hierarchy": 15,
+    "brutal_realistic": 15,
+    "causality": 15,
+    "commitment_durability": 15,
+    "enterprise_privacy": 15,
+    "environmental_freshness": 16,
+    "hallucination_resistance": 15,
+    "interruption_resumption": 15,
+    "repair_propagation": 15,
+    "scope_leak": 15,
+    "scope_permission": 16,
+    "supersession": 27,
+    "supersession_detection": 15
+  },
+  "unexpected_tracks": []
+}
