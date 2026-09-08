@@ -1,0 +1,78 @@
+{
+  "schema": "matawaka.statebench-upstream-code-execution-implementation-receipt/v0.8",
+  "issue": 972,
+  "pull_request": 973,
+  "predecessor": "c2ea9dc329b1d3060770c028554f37aa1cb93611",
+  "first_independent_green_head": "86634201d0d2e1626e32979d1a6f43934c0240dc",
+  "workflow_run_id": 34184550397,
+  "workflow_job_id": 101930148141,
+  "workflow_name": "StateBench Upstream Code Execution v0.8",
+  "upstream": {
+    "repository": "Parslee-ai/statebench",
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "package_name": "statebench",
+    "package_version": "2.0.0",
+    "src_tree": "93d4843a4a444f8ea583c19a4d5961ed9042a586",
+    "tests_tree": "b9c5cd768f7e117b9a7871eb4b91a8ecb3e2c6df",
+    "pyproject_toml_blob": "54a9ba6b6cb711074d771bf3da45a4f0cb17d166",
+    "uv_lock_blob": "58b24498b3ffb56247482613c5c01dec3e46bc0d"
+  },
+  "execution": {
+    "status": "PINNED_UPSTREAM_TEST_SUITE_EXECUTED_PASS",
+    "entire_pinned_tests_tree_selected": true,
+    "tests": 245,
+    "passed": 245,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "pytest_exit_code": 0,
+    "model_credentials_present": {
+      "OPENAI_API_KEY": false,
+      "ANTHROPIC_API_KEY": false,
+      "GOOGLE_API_KEY": false
+    },
+    "environment": {
+      "python": "3.12.14",
+      "pytest": "9.0.2",
+      "uv": "0.12.10",
+      "platform_observed": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39"
+    },
+    "deterministic_result_sha256": "6af16515eeb26d8dcd99574122f682db4f1f9460679656af2776292516b5e114"
+  },
+  "qualification_evidence": {
+    "job_conclusion": "success",
+    "frozen_v01_v07_revalidated": true,
+    "execution_boundary_hostile_checks": "18/18",
+    "exact_upstream_checkout": true,
+    "exact_upstream_git_objects_verified": true,
+    "frozen_upstream_lock_used": true,
+    "full_tests_tree_executed": true,
+    "model_keys_absent": true,
+    "exact_v07_predecessor_bound": true,
+    "exact_v07_tree_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_and_runtime_product_surfaces_unchanged": true
+  },
+  "performance": {
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "statebench_model_score": null,
+    "matawaka_model_score": null
+  },
+  "non_effects": {
+    "statebench_model_harness_executed": false,
+    "statebench_baseline_executed": false,
+    "external_model_executed": false,
+    "matawaka_model_executed": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "production_readiness_established": false,
+    "release_authorized": false,
+    "standards_submission_authorized": false,
+    "merge_authorized": false
+  }
+}

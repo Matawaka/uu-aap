@@ -1,0 +1,57 @@
+{
+  "environment": {
+    "implementation": "CPython",
+    "platform": "Linux-6.17.0-1022-azure-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "uv": "uv 0.12.10 (x86_64-unknown-linux-gnu)"
+  },
+  "execution": {
+    "dependency_source": "PINNED_UPSTREAM_UV_LOCK",
+    "entire_pinned_tests_tree_selected": true,
+    "errors": 0,
+    "failures": 0,
+    "harness_provenance": "INDEPENDENT_REPRODUCTION_HARNESS",
+    "model_credentials_present": {
+      "ANTHROPIC_API_KEY": false,
+      "GOOGLE_API_KEY": false,
+      "OPENAI_API_KEY": false
+    },
+    "passed": 245,
+    "pytest_exit_code": 0,
+    "skipped": 0,
+    "status": "PINNED_UPSTREAM_TEST_SUITE_EXECUTED_PASS",
+    "tests": 245
+  },
+  "non_effects": {
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "external_model_executed": false,
+    "matawaka_model_executed": false,
+    "merge_authorized": false,
+    "novelty_established": false,
+    "statebench_baseline_executed": false,
+    "statebench_model_harness_executed": false,
+    "world_first": false
+  },
+  "performance": {
+    "benign_false_positive_rate": null,
+    "held_out_detection_recall": null,
+    "matawaka_model_score": null,
+    "statebench_model_score": null
+  },
+  "predecessor": "c2ea9dc329b1d3060770c028554f37aa1cb93611",
+  "schema": "matawaka.statebench-upstream-code-execution-results/v0.8",
+  "upstream": {
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "git_objects": {
+      "pyproject_toml_blob": "54a9ba6b6cb711074d771bf3da45a4f0cb17d166",
+      "src_tree": "93d4843a4a444f8ea583c19a4d5961ed9042a586",
+      "tests_tree": "b9c5cd768f7e117b9a7871eb4b91a8ecb3e2c6df",
+      "uv_lock_blob": "58b24498b3ffb56247482613c5c01dec3e46bc0d"
+    },
+    "license": "MIT",
+    "package_name": "statebench",
+    "package_version": "2.0.0",
+    "repository": "Parslee-ai/statebench"
+  }
+}

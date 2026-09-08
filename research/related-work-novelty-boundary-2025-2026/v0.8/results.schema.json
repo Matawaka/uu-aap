@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:statebench-upstream-code-execution-results:v0.8",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","predecessor","upstream","execution","environment","performance","non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.statebench-upstream-code-execution-results/v0.8"},
+    "predecessor": {"const": "c2ea9dc329b1d3060770c028554f37aa1cb93611"},
+    "upstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository","commit","package_name","package_version","license","git_objects"],
+      "properties": {
+        "repository": {"const": "Parslee-ai/statebench"},
+        "commit": {"const": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7"},
+        "package_name": {"const": "statebench"},
+        "package_version": {"const": "2.0.0"},
+        "license": {"const": "MIT"},
+        "git_objects": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["src_tree","tests_tree","pyproject_toml_blob","uv_lock_blob"],
+          "properties": {
+            "src_tree": {"const": "93d4843a4a444f8ea583c19a4d5961ed9042a586"},
+            "tests_tree": {"const": "b9c5cd768f7e117b9a7871eb4b91a8ecb3e2c6df"},
+            "pyproject_toml_blob": {"const": "54a9ba6b6cb711074d771bf3da45a4f0cb17d166"},
+            "uv_lock_blob": {"const": "58b24498b3ffb56247482613c5c01dec3e46bc0d"}
+          }
+        }
+      }
+    },
+    "execution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status","harness_provenance","dependency_source","pytest_exit_code","tests","passed","failures","errors","skipped","entire_pinned_tests_tree_selected","model_credentials_present"],
+      "properties": {
+        "status": {"enum": ["PINNED_UPSTREAM_TEST_SUITE_EXECUTED_PASS","PINNED_UPSTREAM_TEST_SUITE_EXECUTED_NONPASS"]},
+        "harness_provenance": {"const": "INDEPENDENT_REPRODUCTION_HARNESS"},
+        "dependency_source": {"const": "PINNED_UPSTREAM_UV_LOCK"},
+        "pytest_exit_code": {"enum": [0,1]},
+        "tests": {"type": "integer", "minimum": 1},
+        "passed": {"type": "integer", "minimum": 0},
+        "failures": {"type": "integer", "minimum": 0},
+        "errors": {"type": "integer", "minimum": 0},
+        "skipped": {"type": "integer", "minimum": 0},
+        "entire_pinned_tests_tree_selected": {"const": true},
+        "model_credentials_present": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["OPENAI_API_KEY","ANTHROPIC_API_KEY","GOOGLE_API_KEY"],
+          "properties": {
+            "OPENAI_API_KEY": {"const": false},
+            "ANTHROPIC_API_KEY": {"const": false},
+            "GOOGLE_API_KEY": {"const": false}
+          }
+        }
+      }
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["python","implementation","platform","uv"],
+      "properties": {
+        "python": {"type": "string", "minLength": 1},
+        "implementation": {"const": "CPython"},
+        "platform": {"type": "string", "minLength": 1},
+        "uv": {"type": "string", "pattern": "^uv [0-9]"}
+      }
+    },
+    "performance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["held_out_detection_recall","benign_false_positive_rate","statebench_model_score","matawaka_model_score"],
+      "properties": {
+        "held_out_detection_recall": {"type": "null"},
+        "benign_false_positive_rate": {"type": "null"},
+        "statebench_model_score": {"type": "null"},
+        "matawaka_model_score": {"type": "null"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statebench_model_harness_executed","statebench_baseline_executed","external_model_executed","matawaka_model_executed","detection_advantage_established","detection_non_advantage_established","novelty_established","world_first","merge_authorized"],
+      "properties": {
+        "statebench_model_harness_executed": {"const": false},
+        "statebench_baseline_executed": {"const": false},
+        "external_model_executed": {"const": false},
+        "matawaka_model_executed": {"const": false},
+        "detection_advantage_established": {"const": false},
+        "detection_non_advantage_established": {"const": false},
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}

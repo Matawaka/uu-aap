@@ -1,0 +1,51 @@
+{
+  "schema": "matawaka.statebench-upstream-code-execution-protocol/v0.8",
+  "issue": 972,
+  "predecessor": "c2ea9dc329b1d3060770c028554f37aa1cb93611",
+  "predecessor_v07_tree": "9771bd009efc930df5b42e1c9fb5a870a68dc3a5",
+  "purpose": "EXECUTE_EXACT_PINNED_STATEBENCH_CODE_AND_UNMODIFIED_UPSTREAM_TEST_SUITE_WITHOUT_MODEL_CREDENTIALS",
+  "target_status": "PINNED_UPSTREAM_TEST_SUITE_EXECUTED",
+  "harness_provenance": "MATAWAKA_EXECUTION_HARNESS_USING_UPSTREAM_UV_LOCK",
+  "upstream_github_workflow_present_at_pinned_commit": false,
+  "requirements": {
+    "checkout_exact_upstream_commit": true,
+    "verify_upstream_head": true,
+    "verify_src_tree": true,
+    "verify_tests_tree": true,
+    "verify_pyproject_blob": true,
+    "verify_uv_lock_blob": true,
+    "install_from_frozen_uv_lock": true,
+    "install_dev_dependencies": true,
+    "unset_openai_api_key": true,
+    "unset_anthropic_api_key": true,
+    "unset_google_api_key": true,
+    "execute_entire_tests_tree": true,
+    "no_post_result_test_selection_change": true,
+    "record_pytest_exit_code": true,
+    "record_test_counts": true,
+    "record_python_uv_package_versions": true,
+    "preserve_failure_as_evidence": true
+  },
+  "performance_fields": {
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "statebench_model_score": null,
+    "matawaka_model_score": null
+  },
+  "non_effects": {
+    "statebench_model_harness_executed": false,
+    "statebench_baseline_executed": false,
+    "external_model_executed": false,
+    "matawaka_model_executed": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "production_readiness_established": false,
+    "release_authorized": false,
+    "standards_submission_authorized": false,
+    "merge_authorized": false
+  }
+}
