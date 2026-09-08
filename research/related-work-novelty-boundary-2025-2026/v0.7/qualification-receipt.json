@@ -1,0 +1,53 @@
+{
+  "schema": "matawaka.statebench-full-payload-replay-qualification-receipt/v0.7",
+  "issue": 970,
+  "pull_request": 971,
+  "predecessor": "6823b9765894f410960c15ad797c4f6949c6225e",
+  "qualified_head": "55c9ef9d368f6ca4ecdbc4ae80954fe86a51ca65",
+  "workflow_run_id": 34183720674,
+  "workflow_job_id": 101927787273,
+  "workflow_name": "StateBench Full Payload Replay v0.7",
+  "qualification": {
+    "job_conclusion": "success",
+    "frozen_v01_v06_revalidated": true,
+    "static_replay_boundary_validated": true,
+    "baseline_hostile_checks": "18/18",
+    "network_payload_fetch_succeeded": true,
+    "payload_byte_length_verified": true,
+    "payload_git_blob_verified": true,
+    "all_209_fixtures_replayed": true,
+    "all_fixture_ids_unique": true,
+    "frozen_v06_mapping_applied": true,
+    "exact_stacked_predecessor_bound": true,
+    "exact_v06_tree_bound": true,
+    "exact_v06_mapping_blob_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_and_runtime_product_surfaces_unchanged": true
+  },
+  "result": {
+    "dataset_replay_status": "FULL_PINNED_TEST_PAYLOAD_REPLAYED",
+    "execution_evidence_level": "UPSTREAM_DATASET_ADAPTED",
+    "payload_sha256": "7df54da79653488bcc2253c9431dc35fd5c2411ec12afe1f22958ed09395a7c9",
+    "deterministic_result_sha256": "983a183510688345a2f8c75e28051782867d8e7006dc5227e1e83f4cd8704d43",
+    "fixtures": 209,
+    "queries_with_ground_truth": 251,
+    "direct": 15,
+    "partial": 62,
+    "ambiguous": 45,
+    "unmapped": 87,
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null
+  },
+  "non_effects": {
+    "upstream_implementation_executed": false,
+    "statebench_baseline_executed": false,
+    "external_model_executed": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "merge_authorized": false
+  }
+}
