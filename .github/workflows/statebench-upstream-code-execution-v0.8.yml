@@ -1,0 +1,200 @@
+name: StateBench Upstream Code Execution v0.8
+
+on:
+  pull_request:
+    paths:
+      - 'research/related-work-novelty-boundary-2025-2026/v0.8/**'
+      - '.github/workflows/statebench-upstream-code-execution-v0.8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Matawaka candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Revalidate frozen v0.1-v0.7 research chain
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/test_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/test_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/test_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.5/test_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/statebench_track_adapter.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.6/test_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_replay.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/test_replay.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_qualification.py
+
+      - name: Validate v0.8 execution contract and hostile tests
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_execution.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/test_execution_contract.py
+
+      - name: Checkout exact pinned StateBench source
+        uses: actions/checkout@v4
+        with:
+          repository: Parslee-ai/statebench
+          ref: 1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7
+          path: upstream-statebench
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact upstream Git object identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream-statebench rev-parse HEAD)" = '1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7'
+          test "$(git -C upstream-statebench rev-parse HEAD:src)" = '93d4843a4a444f8ea583c19a4d5961ed9042a586'
+          test "$(git -C upstream-statebench rev-parse HEAD:tests)" = 'b9c5cd768f7e117b9a7871eb4b91a8ecb3e2c6df'
+          test "$(git -C upstream-statebench rev-parse HEAD:pyproject.toml)" = '54a9ba6b6cb711074d771bf3da45a4f0cb17d166'
+          test "$(git -C upstream-statebench rev-parse HEAD:uv.lock)" = '58b24498b3ffb56247482613c5c01dec3e46bc0d'
+
+      - name: Install uv runner and frozen upstream dev environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check uv
+          uv --version | tee /tmp/statebench-v08-uv-version.txt
+          cd upstream-statebench
+          uv sync --frozen --extra dev
+          uv run --frozen python - <<'PY'
+          import importlib.metadata
+          import sys
+          observed = importlib.metadata.version('statebench')
+          print(f'python={sys.version.split()[0]}')
+          print(f'statebench={observed}')
+          assert observed == '2.0.0'
+          PY
+
+      - name: Execute entire pinned upstream pytest tree without model credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY
+          test -z "${OPENAI_API_KEY-}"
+          test -z "${ANTHROPIC_API_KEY-}"
+          test -z "${GOOGLE_API_KEY-}"
+          cd upstream-statebench
+          set +e
+          uv run --frozen pytest tests --junitxml=/tmp/statebench-v08-junit.xml -ra 2>&1 | tee /tmp/statebench-v08-pytest.log
+          rc=${PIPESTATUS[0]}
+          set -e
+          printf '%s\n' "$rc" | tee /tmp/statebench-v08-pytest-exit-code.txt
+          test -f /tmp/statebench-v08-junit.xml
+
+      - name: Summarize completed upstream execution fail closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          unset OPENAI_API_KEY ANTHROPIC_API_KEY GOOGLE_API_KEY
+          rc="$(tr -d '\r\n' < /tmp/statebench-v08-pytest-exit-code.txt)"
+          cd upstream-statebench
+          uv run --frozen python "$GITHUB_WORKSPACE/research/related-work-novelty-boundary-2025-2026/v0.8/summarize_execution.py" \
+            --source-dir "$GITHUB_WORKSPACE/upstream-statebench" \
+            --junit /tmp/statebench-v08-junit.xml \
+            --pytest-exit-code "$rc" \
+            --output /tmp/statebench-v08-results.json \
+            --hash-output /tmp/statebench-v08-results.sha256
+          echo '--- v0.8 execution result ---'
+          cat /tmp/statebench-v08-results.json
+          echo '--- v0.8 deterministic result SHA-256 ---'
+          cat /tmp/statebench-v08-results.sha256
+
+      - name: Reproduce frozen result when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          result='research/related-work-novelty-boundary-2025-2026/v0.8/results.json'
+          digest='research/related-work-novelty-boundary-2025-2026/v0.8/results.sha256'
+          if [ -f "$result" ]; then
+            cmp "$result" /tmp/statebench-v08-results.json
+            python research/related-work-novelty-boundary-2025-2026/v0.8/validate_execution.py
+          fi
+          if [ -f "$digest" ]; then
+            test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v08-results.sha256)"
+          fi
+
+      - name: Bind exact v0.7 stacked predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='c2ea9dc329b1d3060770c028554f37aa1cb93611'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "v0.8 stacked predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+          observed_tree="$(git rev-parse "$expected:research/related-work-novelty-boundary-2025-2026/v0.7")"
+          test "$observed_tree" = '9771bd009efc930df5b42e1c9fb5a870a68dc3a5'
+
+      - name: Prove v0.8 additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='c2ea9dc329b1d3060770c028554f37aa1cb93611'
+          mapfile -t changed < <(git diff --name-only "$base" HEAD)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              research/related-work-novelty-boundary-2025-2026/v0.8/*|.github/workflows/statebench-upstream-code-execution-v0.8.yml)
+                ;;
+              *)
+                echo "Unexpected path outside bounded v0.8 execution audit: $path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test "${#changed[@]}" -gt 0
+
+      - name: Prove frozen research and semantic runtime surfaces unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='c2ea9dc329b1d3060770c028554f37aa1cb93611'
+          if ! git diff --quiet "$base" HEAD -- \
+            research/related-work-novelty-boundary-2025-2026/v0.1 \
+            research/related-work-novelty-boundary-2025-2026/v0.2 \
+            research/related-work-novelty-boundary-2025-2026/v0.3 \
+            research/related-work-novelty-boundary-2025-2026/v0.4 \
+            research/related-work-novelty-boundary-2025-2026/v0.5 \
+            research/related-work-novelty-boundary-2025-2026/v0.6 \
+            research/related-work-novelty-boundary-2025-2026/v0.7; then
+            echo 'v0.8 attempted to rewrite frozen predecessor research evidence' >&2
+            exit 1
+          fi
+          if git diff --name-only "$base" HEAD | grep -E '^(SPEC\.md|PRINCIPLES\.md|protocols/core/|proposals/poai/|interop/c2pa/|packages/|applications/|scripts/)'; then
+            echo 'v0.8 touched a protected semantic/runtime/product surface' >&2
+            exit 1
+          fi
