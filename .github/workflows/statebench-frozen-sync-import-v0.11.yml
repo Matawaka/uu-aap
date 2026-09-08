@@ -63,13 +63,22 @@ jobs:
           print(sysconfig.get_path('scripts') + '/uv')
           PY
           )"
-          test -x "$uv_exact"
-          test "$("$uv_exact" --version)" = 'uv 0.12.10'
-          test "$(python - <<'PY'
+          uv_metadata="$(python - <<'PY'
           import importlib.metadata
           print(importlib.metadata.version('uv'))
           PY
-          )" = '0.12.10'
+          )"
+          echo "uv_exact=$uv_exact"
+          echo "uv_metadata=$uv_metadata"
+          ls -l "$uv_exact"
+          uv_cli="$("$uv_exact" --version)"
+          echo "uv_cli=$uv_cli"
+          test -x "$uv_exact"
+          test "$uv_metadata" = '0.12.10'
+          case "$uv_cli" in
+            'uv 0.12.10'*) ;;
+            *) echo "unexpected exact uv CLI version: $uv_cli" >&2; exit 1 ;;
+          esac
           printf 'UV_EXACT=%s\n' "$uv_exact" >> "$GITHUB_ENV"
 
       - name: Verify frozen lock identity before sync
