@@ -121,6 +121,14 @@ jobs:
           python research/related-work-novelty-boundary-2025-2026/v0.12/gate.py boundary
           test -z "$(git -C /tmp/statebench-v012-source status --porcelain --untracked-files=no)"
 
+      - name: Reproduce frozen first GREEN and validate qualification receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          validator='research/related-work-novelty-boundary-2025-2026/v0.12/validate_qualification.py'
+          python "$validator" --self-test
+          python "$validator" --repo "$GITHUB_WORKSPACE" --observed /tmp/statebench-v012-evidence
+
       - name: Upload observed evidence even on non-pass
         if: always()
         uses: actions/upload-artifact@v4
