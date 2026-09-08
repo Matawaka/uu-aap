@@ -69,19 +69,22 @@ jobs:
           echo '--- deterministic result sha256 ---'
           cat /tmp/statebench-v07-results.sha256
 
-      - name: Reproduce checked-in replay result when present
+      - name: Reproduce frozen first replay result
         shell: bash
         run: |
           set -euo pipefail
           result='research/related-work-novelty-boundary-2025-2026/v0.7/results.json'
           digest='research/related-work-novelty-boundary-2025-2026/v0.7/results.sha256'
-          if [ -f "$result" ]; then
-            cmp "$result" /tmp/statebench-v07-results.json
-            python research/related-work-novelty-boundary-2025-2026/v0.7/validate_replay.py
-          fi
-          if [ -f "$digest" ]; then
-            test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v07-results.sha256)"
-          fi
+          test -f "$result"
+          test -f "$digest"
+          cmp "$result" /tmp/statebench-v07-results.json
+          test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v07-results.sha256)"
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_replay.py
+
+      - name: Validate frozen v0.7 receipts
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_qualification.py
 
       - name: Bind exact v0.6 stacked predecessor
         shell: bash
