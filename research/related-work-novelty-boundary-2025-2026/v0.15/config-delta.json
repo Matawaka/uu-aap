@@ -1,0 +1,52 @@
+{
+  "adapter_group": "matawaka_statebench_model_free_v015",
+  "adapter_leaf": "matawaka_statebench_model_free_v015::exact_test_model_free",
+  "changes": {
+    "group_and_leaf_separated": true,
+    "hub_route_replaced_with_exact_local_callback": true,
+    "metadata_replaced_with_adapter_identity": true,
+    "metrics_disabled_not_reimplemented": true,
+    "only_null_filter_docs_removed": true,
+    "training_and_fewshot_disabled": true,
+    "until_moved_to_generation_kwargs": true,
+    "upstream_list_wrapped_in_dataset": true,
+    "validation_disabled_not_aliased_to_test": true
+  },
+  "construction_route": "PUBLIC_LEAF_TASKMANAGER_THEN_GROUP_ADD_THEN_TASKMANAGER",
+  "full_upstream_configuration_equivalence_claimed": false,
+  "preserved": [
+    "description",
+    "doc_to_text",
+    "doc_to_target",
+    "generation_parameter_values",
+    "test_split"
+  ],
+  "profile": "MATAWAKA_STATEBENCH_EXACT_TEST_MODEL_FREE_V015",
+  "request_or_generation_semantics_established": false,
+  "schema": "matawaka.statebench-model-free-adapter-delta/v0.15",
+  "source_group": "statebench",
+  "source_task": "statebench",
+  "source_values": {
+    "dataset_name": null,
+    "dataset_path": "parslee/statebench",
+    "description": "StateBench measures LLM state correctness over multi-turn conversations. This task evaluates decision accuracy across all 13 benchmark tracks.\n",
+    "filter_docs": null,
+    "generation_kwargs": {
+      "do_sample": false,
+      "max_gen_toks": 256,
+      "temperature": 0
+    },
+    "group": "statebench",
+    "metadata": {
+      "version": 1.0
+    },
+    "output_type": "generate_until",
+    "task": "statebench",
+    "test_split": "test",
+    "until": [
+      "\n",
+      "\n\n"
+    ],
+    "validation_split": "validation"
+  }
+}
