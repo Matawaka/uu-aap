@@ -51,6 +51,7 @@ jobs:
           set -euo pipefail
           python "$RESEARCH/v0.13/gate.py" self-test
           python "$RESEARCH/v0.13/gate.py" boundary
+          python "$RESEARCH/v0.13/namespace_audit.py" --self-test
           git worktree add --detach "$PREDECESSOR" 98f13086f8e2d75fc6692ff68e21700bdffa37a5
 
       - name: Revalidate frozen chain inside its own exact worktree
@@ -83,6 +84,13 @@ jobs:
           "$exact" sync --frozen --project "$PREDECESSOR/$RESEARCH/v0.10/lock-project"
           python "$PREDECESSOR/$RESEARCH/v0.12/gate.py" boundary --repo "$PREDECESSOR"
           test -z "$(git -C "$PREDECESSOR" status --porcelain -- "$RESEARCH/v0.10/lock-project/uv.lock")"
+
+      - name: Observe installed namespace ownership without imports or repairs
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -E unshare --net -- setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups /tmp/statebench-v013-venv/bin/python \
+            "$RESEARCH/v0.13/namespace_audit.py" --output /tmp/statebench-v013-namespace.json
 
       - name: Reproduce v0.11 import bytes without network
         shell: bash
@@ -134,6 +142,28 @@ jobs:
           set -euo pipefail
           python "$RESEARCH/v0.13/validate_qualification.py" --self-test
           python "$RESEARCH/v0.13/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --observed /tmp/statebench-v013-evidence
+
+      - name: Fail closed on conflicting frozen distribution ownership
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          observation = json.loads(Path('/tmp/statebench-v013-namespace.json').read_text())
+          if observation['conflicting_record_claims']:
+              raise SystemExit('NAMESPACE_OWNERSHIP_CONFLICT_BLOCKS_QUALIFICATION')
+          PY
+
+      - name: Upload namespace observation even when qualification is blocked
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: statebench-task-namespace-v0.13
+          path: /tmp/statebench-v013-namespace.json
+          if-no-files-found: warn
+          retention-days: 30
 
       - name: Upload audit observation even on inconclusive result
         if: always()

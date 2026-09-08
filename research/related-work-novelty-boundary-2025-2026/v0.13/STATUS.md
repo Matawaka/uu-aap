@@ -1,15 +1,27 @@
-# v0.13 bounded status and continuation
+# v0.13 current status: successor reproduction blocked
 
-First complete independent diagnostic: `0f2f1023f8fe1e73e566b4bc00a0ffeba3c4041b`, run `34216120618`, job `102028146188`.
+`COMPATIBILITY_NONPASS_OBSERVED; SUCCESSOR_REPRODUCTION_BLOCKED`.
 
-`audit_execution=COMPLETED; compatibility=NONPASS`.
+Do NOT label the whole v0.13 candidate qualified and do NOT create a v0.13 qualified-base ref. The frozen first-complete receipt records one real diagnostic observation, not a guarantee that the frozen environment reproduces that observation reliably.
 
-The exact original YAML creates an empty group, not a Task. Separately forced TaskConfig diagnostics reject top-level `until` and `filter_docs`. The minimal exact-data route calls unchanged upstream process_docs, retains the 251-document v0.12 digest, then fails at `lm_eval/api/task.py:805` because a list has no `.features`.
+## Preserved complete observation
 
-The explicitly different preprocessed HF Dataset diagnostic control constructs a Task and preserves all 251 prompt/target pairs. It is not the unmodified upstream task, a production adapter, a scoring result or a model benchmark.
+Head `0f2f1023f8fe1e73e566b4bc00a0ffeba3c4041b`, run `34216120618`, job `102028146188`: all diagnostic steps completed. `audit_execution=COMPLETED; compatibility=NONPASS`.
 
-`results.json` and `qualification-receipt.json` freeze the first complete observed result. `validate_qualification.py` unconditionally requires a separately executed result with identical bytes and the same 251-entry format trace. It binds the exact successful experiment code and first workflow, plus both historical INCONCLUSIVE results and their older observer code identities. The initial README is retained as pre-runtime history; see OBSERVATION-HISTORY.md for explicit observer refinements. No upstream code or earlier version was changed.
+Original YAML: empty group, zero Tasks. Separate forced TaskConfig probes: unsupported top-level `until` and `filter_docs`. Minimal exact-data Task: unchanged process_docs produced the exact 251 v0.12 documents, then AttributeError at `lm_eval/api/task.py:805` because list has no `.features`. A separately named preprocessed Dataset diagnostic control constructed a Task and preserved all 251 prompt/target pairs. It is not the unchanged upstream task or a model/scoring result.
 
-Next separate gate after successor reproduction: an explicitly named model-free compatibility adapter, with a declared group/leaf-task configuration delta, correct generation-kwargs location for until, explicit treatment of the null filter_docs field, and a byte-preserving list-to-Dataset seam around unchanged process_docs. It must retain the original NONPASS observation and compare all 251 documents and prompt/target pairs. Scoring compatibility, model execution and benchmark claims remain separate later gates.
+`results.json`, its digest, first-complete `qualification-receipt.json` and experiment code remain frozen. The two earlier INCONCLUSIVE observations are retained separately in history and described in OBSERVATION-HISTORY.md.
 
-No model, provider API, user credentials, scoring/judge, dispatch, Hub dataset, release, main mutation or merge authority. Draft/open PR #983; #981 unchanged.
+## Failed independent successor
+
+Head `2a298cdf1de05f794273026e30f38f65b810a366`, run `34216833250`, job `102030474477`: v0.11 and v0.12 reproduced, but v0.13 imports failed: cannot import TaskManager from lm_eval.tasks. Task probes and final qualification were not executed. Its exact result is `history/successor-import-inconclusive-results.json`, SHA-256 `3c750e8901b74c017968eabf8af2f0fabb74638d820c905b1fb6988913e98af1`.
+
+The six bound installed source files did not include the shared tasks/__init__.py. Source inspection shows both pinned distributions install that path, with the plugin's initializer empty. `namespace_audit.py` separately inspects both installed RECORD claims and actual bytes, without importing lm_eval or changing any file/package. It admits either observed owner and never treats a lucky initializer selection as a fix. The workflow fails closed if actual conflicting ownership is observed. See #982 for the exact subsequent audit run and raw ownership observation.
+
+## Next boundary
+
+Resolve frozen-environment namespace ownership in a SEPARATE explicit successor environment; retain the old lock and all successful/failed historical observations unchanged. Reordering installation, force-reinstalling, overwriting __init__.py, changing imports merely to bypass the initializer or retrying until GREEN are not qualified remedies.
+
+Only after a collision-free installation is verified should a separately named model-free task adapter address the original group/leaf, until/filter_docs and list-to-Dataset boundaries. Preserve 209 timelines, 251 documents and their prompt/target hashes. Scoring and model evaluation remain later gates.
+
+No model, provider API, user credentials, scoring, dispatch, Hub dataset load, upstream patch, main mutation, release or merge authority. PR #983 stays draft/open; #981 and v0.1-v0.12 are unchanged.
