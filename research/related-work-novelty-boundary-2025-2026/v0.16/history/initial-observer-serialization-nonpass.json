@@ -1,0 +1,43 @@
+{
+  "actual_calls": {
+    "upstream_process_docs": 1
+  },
+  "failure_detail": "Object of type function is not JSON serializable",
+  "failure_stage": "adapter_construction_0",
+  "failure_type": "TypeError",
+  "forbidden_effect_attempts": [],
+  "non_effects": {
+    "adapter_modified": false,
+    "benchmark_score_established": false,
+    "chat_template_applied": false,
+    "dependency_profile_changed": false,
+    "evaluation_dispatched": false,
+    "fewshot_examples_used": false,
+    "filters_applied": false,
+    "full_upstream_task_compatible": false,
+    "historical_nonpass_promoted": false,
+    "hub_dataset_loaded": false,
+    "merge_authorized": false,
+    "model_context_limit_verified": false,
+    "model_downloaded": false,
+    "model_executed": false,
+    "model_instantiated": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "request_cache_used": false,
+    "request_cache_written": false,
+    "scoring_compatibility_established": false,
+    "scoring_or_judge_called": false,
+    "site_packages_patched": false,
+    "standards_authorized": false,
+    "system_instruction_added": false,
+    "upstream_source_modified": false,
+    "user_credentials_used": false
+  },
+  "predecessor": "4b4a7959b6821fa93c31ef2ba2e015b415d5ada9",
+  "profile": "MATAWAKA_STATEBENCH_EXACT_PLAIN_REQUESTS_V016",
+  "schema": "matawaka.plain-request-construction-result/v0.16",
+  "status": "INCONCLUSIVE_OR_NONPASS"
+}

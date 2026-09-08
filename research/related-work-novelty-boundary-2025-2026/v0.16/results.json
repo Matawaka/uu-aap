@@ -1,0 +1,98 @@
+{
+  "actual_calls": {
+    "build_all_requests": 3,
+    "construct_requests": 753,
+    "disabled_cache_reads": 3,
+    "fewshot_context": 753,
+    "instance_initializations": 753,
+    "upstream_process_docs": 5
+  },
+  "all_response_fields_empty": true,
+  "build_flags": {
+    "apply_chat_template": false,
+    "cache_requests": false,
+    "chat_template": null,
+    "fewshot_as_multiturn": false,
+    "limit": null,
+    "rank": 0,
+    "rewrite_requests_cache": false,
+    "samples": null,
+    "system_instruction": null,
+    "tokenizer_name": "",
+    "world_size": 1
+  },
+  "builds": 3,
+  "config_and_documents_unchanged": true,
+  "context_trace_sha256": "78d5e3a6399d73c494524c87ea7a9e17174b1448913462581d197bef1e246e5a",
+  "description": {
+    "combination": "DESCRIPTION_PLUS_DOC_PROMPT_WITH_NO_EXTRA_SEPARATOR",
+    "preserved_final_newline": true,
+    "source_sha256": "6039c1fa651581d37e45968f4e65578430ba46d76f6c2cb886f0a47c52ee5f6c",
+    "target_answer_appended": false
+  },
+  "document_sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0",
+  "effects": {
+    "plain_request_objects_constructed": true
+  },
+  "forbidden_effect_attempts": [],
+  "fresh_adapter_build_identical": true,
+  "generation_arguments": {
+    "do_sample": false,
+    "max_gen_toks": 256,
+    "temperature": 0.0,
+    "until": [
+      "\n",
+      "\n\n"
+    ]
+  },
+  "generation_mutables_independent": true,
+  "non_effects": {
+    "adapter_modified": false,
+    "benchmark_score_established": false,
+    "chat_template_applied": false,
+    "dependency_profile_changed": false,
+    "evaluation_dispatched": false,
+    "fewshot_examples_used": false,
+    "filters_applied": false,
+    "full_upstream_task_compatible": false,
+    "historical_nonpass_promoted": false,
+    "hub_dataset_loaded": false,
+    "merge_authorized": false,
+    "model_context_limit_verified": false,
+    "model_downloaded": false,
+    "model_executed": false,
+    "model_instantiated": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "request_cache_used": false,
+    "request_cache_written": false,
+    "scoring_compatibility_established": false,
+    "scoring_or_judge_called": false,
+    "site_packages_patched": false,
+    "standards_authorized": false,
+    "system_instruction_added": false,
+    "upstream_source_modified": false,
+    "user_credentials_used": false
+  },
+  "original_task_compatibility": "NONPASS",
+  "predecessor": "4b4a7959b6821fa93c31ef2ba2e015b415d5ada9",
+  "profile": "MATAWAKA_STATEBENCH_EXACT_PLAIN_REQUESTS_V016",
+  "qualification_scope": "NAMED_ADAPTER_ZERO_SHOT_PLAIN_REQUEST_CONTENT_ONLY",
+  "request_contract_sha256": "f1fda311f73a6c3efd57acde3b923d1374f957b50d306c88eb62c9bd2c5abf87",
+  "requests": 251,
+  "requests_sha256": "05740117ac6a6b139d51882873f99eafa0373c6874eb00c7871ee8772bbc36be",
+  "same_task_rebuild_identical": true,
+  "schema": "matawaka.plain-request-construction-result/v0.16",
+  "source_blobs": {
+    "api/instance.py": "d3c6afa0644e729ba441728c72a2469fdad07b8f",
+    "api/task.py": "9255170de444bae6edd53797e3477031cd5d5da5",
+    "api/utils.py": "e38f5f67839633b211219fdd1f1a3ea55ab84fed",
+    "caching/cache.py": "ce289cbf472307b0ae8082b52483661422170c71",
+    "utils.py": "602d5c8ced4ded447691dd1a86879340e91b6c69"
+  },
+  "status": "MODEL_FREE_PLAIN_REQUEST_CONSTRUCTION_EXECUTED_PASS",
+  "v015_format_trace_sha256": "3685c45f32574313d11bfdaf8d70ced7843ecd236af4de0e6690a14f176806f3",
+  "v015_result_sha256": "f83a8be7bb64ed2b8950641c44c7944cbc317f776c1683a043b739168f1605f6"
+}

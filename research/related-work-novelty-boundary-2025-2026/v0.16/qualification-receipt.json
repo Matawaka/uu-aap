@@ -1,0 +1,93 @@
+{
+  "actual_calls_per_job": {
+    "build_all_requests": 3,
+    "construct_requests": 753,
+    "disabled_cache_reads": 3,
+    "fewshot_context": 753,
+    "instance_initializations": 753,
+    "upstream_process_docs": 5
+  },
+  "artifact_retention_days": 30,
+  "artifacts_primary_durable_evidence": false,
+  "context_trace_sha256": "78d5e3a6399d73c494524c87ea7a9e17174b1448913462581d197bef1e246e5a",
+  "evidence_member_count": 24,
+  "first_gate_blob": "f63454b95b3ae6f748447eba0150bb58375723a6",
+  "first_head": "3918bd05054e722d7110b5084e610bfa7ea7991d",
+  "first_jobs": {
+    "A": {
+      "artifact_id": 10058516016,
+      "conclusion": "success",
+      "job_id": 102082100161,
+      "runner_id": 1000017133,
+      "zip_bytes": 3053885,
+      "zip_sha256": "99a2a276d249450baa48d37d5e7bb2001ec50241432892caa6d64bebd06c4300"
+    },
+    "B": {
+      "artifact_id": 10058519814,
+      "conclusion": "success",
+      "job_id": 102082099863,
+      "runner_id": 1000017132,
+      "zip_bytes": 3053885,
+      "zip_sha256": "0672e47611de76daa594892568c65ef0008eec94789552c44319608819c7b30e"
+    }
+  },
+  "first_run": 34232564112,
+  "first_workflow_blob": "47d374947e9d47b174503195ca150af87c74bd57",
+  "history": [
+    {
+      "classification": "OBSERVER_SERIALIZATION_INCONCLUSIVE_BEFORE_REQUEST_BUILD",
+      "head": "175e6672f141dfddcd5239b2248ce7a6b68874ad",
+      "job_ids": [
+        102079803389,
+        102079803423
+      ],
+      "result_sha256": "33288cbb687252adb20b1e0a8df4a3716f645dc9a045b04410e79e32685dcad9",
+      "run": 34231882415
+    }
+  ],
+  "initial_oracle_unchanged": true,
+  "manifest_sha256": "faabdde9b2364589efb872813c284ef00486aa82082abba15b68feacce4c815e",
+  "member_identity_verified": true,
+  "non_effects": {
+    "adapter_modified": false,
+    "benchmark_score_established": false,
+    "chat_template_applied": false,
+    "dependency_profile_changed": false,
+    "evaluation_dispatched": false,
+    "fewshot_examples_used": false,
+    "filters_applied": false,
+    "full_upstream_task_compatible": false,
+    "historical_nonpass_promoted": false,
+    "hub_dataset_loaded": false,
+    "merge_authorized": false,
+    "model_context_limit_verified": false,
+    "model_downloaded": false,
+    "model_executed": false,
+    "model_instantiated": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "request_cache_used": false,
+    "request_cache_written": false,
+    "scoring_compatibility_established": false,
+    "scoring_or_judge_called": false,
+    "site_packages_patched": false,
+    "standards_authorized": false,
+    "system_instruction_added": false,
+    "upstream_source_modified": false,
+    "user_credentials_used": false
+  },
+  "original_task_compatibility": "NONPASS",
+  "predecessor": "4b4a7959b6821fa93c31ef2ba2e015b415d5ada9",
+  "predecessor_subtree": "c9d6fc3dc8b54e68fc707cd8ec4abb5f57960a39",
+  "qualification_scope": "NAMED_ADAPTER_ZERO_SHOT_PLAIN_REQUEST_CONTENT_ONLY",
+  "qualified_adapter_unchanged": true,
+  "replay_blob": "a060a88fcaf35930433f4b92667fc1d899465b08",
+  "request_contract_sha256": "f1fda311f73a6c3efd57acde3b923d1374f957b50d306c88eb62c9bd2c5abf87",
+  "requests_bytes": 744403,
+  "requests_sha256": "05740117ac6a6b139d51882873f99eafa0373c6874eb00c7871ee8772bbc36be",
+  "result_bytes": 3598,
+  "result_sha256": "fbee1820bd69778462ca8ea74d91f9ea28a0d547a4e7921af05c881538186d5b",
+  "schema": "matawaka.plain-request-construction-qualification/v0.16"
+}
