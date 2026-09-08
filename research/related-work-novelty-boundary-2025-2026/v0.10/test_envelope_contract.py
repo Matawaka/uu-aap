@@ -7,6 +7,7 @@ import tempfile
 from pathlib import Path
 
 from validate_envelope import DEFAULT_PROJECT, DEFAULT_PROTOCOL, validate
+from validate_qualification import main as validate_qualification_main
 
 
 def expect_failure(protocol: dict, project_text: str, label: str) -> None:
@@ -95,6 +96,9 @@ def main() -> int:
 
     for protocol, project_text, label in mutations:
         expect_failure(protocol, project_text, label)
+
+    if validate_qualification_main() != 0:
+        raise AssertionError("qualification receipt validation failed")
 
     print(f"STATEBENCH_LM_EVAL_ENVELOPE_V0.10_HOSTILE_GREEN {len(mutations)}/{len(mutations)}")
     return 0
