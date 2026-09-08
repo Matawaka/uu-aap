@@ -1,0 +1,138 @@
+name: StateBench Task Compatibility v0.13
+
+on:
+  pull_request:
+    branches:
+      - research/statebench-exact-data-processing-v0.12-qualified-base
+
+permissions:
+  contents: read
+
+jobs:
+  task-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+      HF_TOKEN: ""
+      HUGGING_FACE_HUB_TOKEN: ""
+      AZURE_OPENAI_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      GOOGLE_APPLICATION_CREDENTIALS: ""
+      HF_HUB_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      UV_PROJECT_ENVIRONMENT: /tmp/statebench-v013-venv
+      PREDECESSOR: /tmp/statebench-v013-predecessor
+      RESEARCH: research/related-work-novelty-boundary-2025-2026
+
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.14
+
+      - name: Bind v0.12 predecessor and test anti-promotion guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.13/gate.py" self-test
+          python "$RESEARCH/v0.13/gate.py" boundary
+          git worktree add --detach "$PREDECESSOR" 98f13086f8e2d75fc6692ff68e21700bdffa37a5
+
+      - name: Revalidate frozen chain inside its own exact worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$PREDECESSOR"
+          python "$RESEARCH/v0.10/validate_envelope.py"
+          python "$RESEARCH/v0.10/test_envelope_contract.py"
+          python "$RESEARCH/v0.10/validate_implementation.py"
+          python "$RESEARCH/v0.10/validate_qualification.py"
+          python "$RESEARCH/v0.11/validate_contract.py"
+          python "$RESEARCH/v0.11/validate_implementation.py"
+          python "$RESEARCH/v0.11/validate_qualification.py"
+          python "$RESEARCH/v0.12/gate.py" hostile
+          python "$RESEARCH/v0.12/gate.py" boundary
+          python "$RESEARCH/v0.12/validate_qualification.py" --self-test
+
+      - name: Bootstrap exact uv and sync unchanged frozen lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-input 'uv==0.12.10'
+          exact="$(python -c 'import sysconfig; print(sysconfig.get_path("scripts") + "/uv")')"
+          test "$(python -c 'import importlib.metadata; print(importlib.metadata.version("uv"))')" = '0.12.10'
+          case "$("$exact" --version)" in
+            'uv 0.12.10'*) ;;
+            *) exit 1 ;;
+          esac
+          "$exact" sync --frozen --project "$PREDECESSOR/$RESEARCH/v0.10/lock-project"
+          python "$PREDECESSOR/$RESEARCH/v0.12/gate.py" boundary --repo "$PREDECESSOR"
+          test -z "$(git -C "$PREDECESSOR" status --porcelain -- "$RESEARCH/v0.10/lock-project/uv.lock")"
+
+      - name: Reproduce v0.11 import bytes without network
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -E unshare --net -- setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups /tmp/statebench-v013-venv/bin/python \
+            "$PREDECESSOR/$RESEARCH/v0.11/run_import_smoke.py" --output /tmp/statebench-v013-import.json
+          cmp /tmp/statebench-v013-import.json "$PREDECESSOR/$RESEARCH/v0.11/results.json"
+
+      - name: Acquire pinned source and previously SHA-bound BPE side input
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init /tmp/statebench-v013-source
+          git -C /tmp/statebench-v013-source fetch --depth=1 https://github.com/Parslee-ai/statebench.git 1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7
+          git -C /tmp/statebench-v013-source checkout --detach FETCH_HEAD
+          python "$PREDECESSOR/$RESEARCH/v0.12/gate.py" acquire-tokenizer --cache /tmp/statebench-v013-tokenizer
+
+      - name: Reproduce and verify exact v0.12 processing evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -E unshare --net -- setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups /tmp/statebench-v013-venv/bin/python \
+            "$PREDECESSOR/$RESEARCH/v0.12/gate.py" process --repo "$PREDECESSOR" \
+            --upstream /tmp/statebench-v013-source --cache /tmp/statebench-v013-tokenizer --output /tmp/statebench-v013-v012-evidence
+          python "$PREDECESSOR/$RESEARCH/v0.12/validate_qualification.py" --repo "$PREDECESSOR" --observed /tmp/statebench-v013-v012-evidence
+
+      - name: Execute raw YAML, list-container and separately named Dataset control probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          export MATAWAKA_PARENT_NETNS="$(readlink /proc/self/ns/net)"
+          sudo -E unshare --net -- setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups /tmp/statebench-v013-venv/bin/python \
+            "$RESEARCH/v0.13/gate.py" run --repo "$GITHUB_WORKSPACE" --predecessor "$PREDECESSOR" \
+            --upstream /tmp/statebench-v013-source --evidence12 /tmp/statebench-v013-v012-evidence \
+            --cache /tmp/statebench-v013-tokenizer --output /tmp/statebench-v013-evidence
+
+      - name: Recheck frozen source, predecessor and additive scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.13/gate.py" boundary
+          test -z "$(git -C "$PREDECESSOR" status --porcelain --untracked-files=no)"
+          test -z "$(git -C /tmp/statebench-v013-source status --porcelain --untracked-files=no)"
+
+      - name: Upload audit observation even on inconclusive result
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: statebench-task-compatibility-v0.13
+          path: /tmp/statebench-v013-evidence/
+          if-no-files-found: warn
+          retention-days: 30
