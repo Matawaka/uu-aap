@@ -1,0 +1,64 @@
+{
+  "schema": "matawaka.statebench-frozen-sync-import-protocol/v0.11",
+  "issue": 978,
+  "predecessor": "0b82089449e5a1401ad5f9310e2ce8ff43fa1bf1",
+  "predecessor_v010_tree": "65999dd76af39c79872131231355b3655c52573d",
+  "target_status": "FROZEN_SYNC_AND_IMPORT_SMOKE_EXECUTED",
+  "environment": {
+    "python": "3.12.14",
+    "uv": "0.12.10",
+    "lock_path": "research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock",
+    "lock_sha256": "324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532",
+    "lock_git_blob_sha1": "975210dd6ee71d3504e9ff2b8f482d7e4d6f5123",
+    "lock_bytes": 224954,
+    "lock_package_count": 133
+  },
+  "imports": [
+    "statebench",
+    "lm_eval",
+    "datasets",
+    "torch",
+    "transformers",
+    "accelerate",
+    "peft"
+  ],
+  "requirements": {
+    "sync_from_frozen_lock_only": true,
+    "lock_identity_before_sync": true,
+    "lock_identity_after_sync": true,
+    "no_reresolution_as_source_of_truth": true,
+    "network_blocked_during_import_smoke": true,
+    "provider_credentials_absent": true,
+    "hub_datasets_transformers_offline_during_smoke": true,
+    "record_imported_versions": true,
+    "no_task_loading": true,
+    "no_dataset_loading": true,
+    "no_model_instantiation": true,
+    "no_scoring": true
+  },
+  "performance": {
+    "decision_accuracy": null,
+    "statebench_model_score": null,
+    "sfrr": null,
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null
+  },
+  "non_effects": {
+    "language_model_executed": false,
+    "statebench_task_loaded": false,
+    "dataset_loaded": false,
+    "dataset_downloaded": false,
+    "huggingface_model_downloaded": false,
+    "provider_api_called": false,
+    "user_credentials_used": false,
+    "official_statebench_benchmark_executed": false,
+    "model_performance_established": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "merge_authorized": false
+  }
+}
