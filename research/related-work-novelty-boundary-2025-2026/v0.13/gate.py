@@ -33,6 +33,7 @@ LM_BLOBS = {
     "tasks/manager.py": "1e4d5b631f46a83367e7a834c1530d93ef923fe6",
     "tasks/_factory.py": "a43b2d48d6f5c656b7cd4c0e16caec67db17c63c",
     "tasks/_yaml_loader.py": "9e608eb4cdf07927825b66aea5df884c9a742247",
+    "tasks/_index.py": "c37260731dcf3a9dd38815ecb5eb3e3a3f7c93be",
 }
 TASK_DIR = "statebench-lm-eval/lm_eval/tasks/statebench"
 TASK_BLOBS = {
@@ -100,7 +101,9 @@ def qualified_observation(result: dict) -> None:
     require(result["audit_execution"] == "COMPLETED", "AUDIT_NOT_COMPLETED")
     require(result["compatibility"] == "NONPASS", "NONPASS_HISTORY_PROMOTION")
     require(result["non_effects"] == NON_EFFECTS and all(x is False for x in result["non_effects"].values()), "NON_EFFECT_PROMOTION")
-    require(result["raw_yaml"]["admission"] == "REJECTED_TASK_CONFIG", "RAW_YAML_RESULT_CHANGED")
+    require(result["raw_yaml"]["admission"] == "EMPTY_GROUP_NO_TASK", "RAW_YAML_RESULT_CHANGED")
+    require(result["raw_yaml"]["task_names"] == [] and result["raw_yaml"]["group_map"] == {"statebench": []}, "EMPTY_GROUP_PROMOTED_TO_TASK")
+    require(result["raw_yaml"]["task_config_probe"]["type"] == "TypeError", "CONFIG_REJECTION_CHANGED")
     require(result["container_probe"]["admission"] == "REJECTED_LIST_WITHOUT_FEATURES", "CONTAINER_RESULT_CHANGED")
     require(result["container_probe"]["processed_documents_sha256"] == DOCS12, "PROCESSED_DOCUMENTS_CHANGED")
     control = result["diagnostic_control"]
@@ -223,13 +226,20 @@ def run(repo: Path, predecessor: Path, upstream: Path, evidence12: Path, cache: 
         structural = {"group", "tag", "task_list"}
         unsupported = sorted(set(raw_cfg) - structural - {f.name for f in fields(TaskConfig)})
         require(unsupported == ["filter_docs", "until"], "UNEXPECTED_TASK_CONFIG_FIELD_SET")
+        loaded = TaskManager(include_defaults=False).load(str(task_dir / "statebench.yaml"))
+        task_names = sorted(loaded["tasks"])
+        group_names = sorted(loaded["groups"])
+        group_map = loaded["group_map"]
+        require(task_names == [] and group_names == ["statebench"] and group_map == {"statebench": []}, "RAW_YAML_MEMBERSHIP_NOT_CLASSIFIED")
+        # Explicit diagnostic, not an upstream YAML edit: force only the TaskConfig
+        # admission seam after exactly the factory's structural-key removal.
         try:
-            TaskManager(include_defaults=False).load(str(task_dir / "statebench.yaml"))
+            TaskConfig(**{k: v for k, v in raw_cfg.items() if k not in structural})
         except Exception as exc:
             raw_error = error_record(exc, lm_root, upstream)
         else:
-            raise ValueError("SOURCE_PREDICTED_YAML_REJECTION_NOT_OBSERVED")
-        require(raw_error["type"] == "TypeError" and "unexpected keyword argument 'until'" in raw_error["message"], "RAW_YAML_FAILURE_NOT_CLASSIFIED")
+            raise ValueError("TASK_CONFIG_REJECTION_NOT_OBSERVED")
+        require(raw_error["type"] == "TypeError" and "unexpected keyword argument 'until'" in raw_error["message"], "TASK_CONFIG_FAILURE_NOT_CLASSIFIED")
         individual = {}
         for key in unsupported:
             try:
@@ -240,7 +250,9 @@ def run(repo: Path, predecessor: Path, upstream: Path, evidence12: Path, cache: 
             else:
                 raise ValueError("UNSUPPORTED_FIELD_WAS_ACCEPTED:" + key)
         require(calls[probe] == 0, "PROCESSING_OCCURRED_BEFORE_CONFIG_ADMISSION")
-        result["raw_yaml"] = {"yaml_loaded": True, "admission": "REJECTED_TASK_CONFIG", "exception": raw_error,
+        result["raw_yaml"] = {"yaml_loaded": True, "admission": "EMPTY_GROUP_NO_TASK", "task_names": task_names,
+                              "group_names": group_names, "group_map": group_map, "task_config_probe": raw_error,
+                              "task_config_probe_is_explicit_diagnostic": True,
                               "unsupported_after_factory_structural_keys": unsupported, "individual_field_probes": individual,
                               "plugin_processing_calls": 0, "ordinary_hub_path_not_executed": True}
 
@@ -346,13 +358,21 @@ def run(repo: Path, predecessor: Path, upstream: Path, evidence12: Path, cache: 
 class GuardTests(unittest.TestCase):
     def fixture(self):
         return {"audit_execution": "COMPLETED", "compatibility": "NONPASS", "non_effects": NON_EFFECTS.copy(),
-                "raw_yaml": {"admission": "REJECTED_TASK_CONFIG"},
+                "raw_yaml": {"admission": "EMPTY_GROUP_NO_TASK", "task_names": [], "group_map": {"statebench": []}, "task_config_probe": {"type": "TypeError"}},
                 "container_probe": {"admission": "REJECTED_LIST_WITHOUT_FEATURES", "processed_documents_sha256": DOCS12},
                 "diagnostic_control": {"upstream_unmodified_task": False, "task_constructed": True, "documents": 251, "all_prompt_target_pairs_equal": True},
                 "forbidden_effect_attempts": []}
 
     def test_valid_negative_observation(self):
         qualified_observation(self.fixture())
+
+    def test_empty_group_not_task(self):
+        r = self.fixture(); r["raw_yaml"]["task_names"] = ["statebench"]
+        with self.assertRaises(ValueError): qualified_observation(r)
+
+    def test_group_children_not_ignored(self):
+        r = self.fixture(); r["raw_yaml"]["group_map"] = {"statebench": ["other"]}
+        with self.assertRaises(ValueError): qualified_observation(r)
 
     def test_nonpass_promotion(self):
         r = self.fixture(); r["compatibility"] = "PASS"
