@@ -9,6 +9,7 @@
     "statebench_commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
     "statebench_package_version": "2.0.0",
     "statebench_lm_eval_version": "0.1.0",
+    "lm_eval_requirement": "lm-eval[hf]==0.4.13",
     "lm_eval_version": "0.4.13",
     "lm_eval_signed_tag": "v0.4.13",
     "lm_eval_annotated_tag_object": "eb4678c395c2c1f157d462b8f3a09831160c861a",
@@ -35,7 +36,8 @@
   },
   "known_seams": {
     "statebench_native_v08_lock_datasets_version": "4.6.0",
-    "lm_eval_v0413_release_declares_datasets_below_4": true,
+    "lm_eval_v0413_datasets_requirement": ">=2.16.0",
+    "datasets_version_conflict_established": false,
     "joint_environment_may_resolve_different_transitives_than_native_statebench_lock": true,
     "ordinary_statebench_lm_eval_task_dataset_path_is_hub": "parslee/statebench"
   },
