@@ -1,0 +1,66 @@
+{
+  "schema": "matawaka.statebench-full-payload-replay-implementation-receipt/v0.7",
+  "issue": 970,
+  "pull_request": 971,
+  "predecessor": "6823b9765894f410960c15ad797c4f6949c6225e",
+  "first_independent_green_head": "55c9ef9d368f6ca4ecdbc4ae80954fe86a51ca65",
+  "workflow_run_id": 34183720674,
+  "workflow_job_id": 101927787273,
+  "workflow_name": "StateBench Full Payload Replay v0.7",
+  "source": {
+    "repository": "Parslee-ai/statebench",
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "path": "data/releases/v1.0/test.jsonl",
+    "bytes": 638933,
+    "git_blob_sha1": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd",
+    "payload_sha256": "7df54da79653488bcc2253c9431dc35fd5c2411ec12afe1f22958ed09395a7c9"
+  },
+  "replay": {
+    "status": "FULL_PINNED_TEST_PAYLOAD_REPLAYED",
+    "execution_evidence_level": "UPSTREAM_DATASET_ADAPTED",
+    "fixture_count": 209,
+    "unique_fixture_ids": 209,
+    "query_events": 251,
+    "query_events_with_ground_truth": 251,
+    "unexpected_tracks": [],
+    "mapping_counts": {
+      "DIRECT": 15,
+      "PARTIAL": 62,
+      "AMBIGUOUS": 45,
+      "UNMAPPED": 87
+    },
+    "deterministic_result_sha256": "983a183510688345a2f8c75e28051782867d8e7006dc5227e1e83f4cd8704d43"
+  },
+  "qualification_evidence": {
+    "job_conclusion": "success",
+    "frozen_v01_v06_revalidated": true,
+    "offline_baseline_hostile_checks": "18/18",
+    "exact_network_payload_replayed": true,
+    "exact_v06_predecessor_bound": true,
+    "exact_v06_tree_bound": true,
+    "exact_v06_mapping_blob_bound": true,
+    "additive_only_boundary_proven": true,
+    "predecessor_and_runtime_product_surfaces_unchanged": true
+  },
+  "performance": {
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "statebench_model_score": null,
+    "matawaka_model_score": null
+  },
+  "non_effects": {
+    "upstream_implementation_executed": false,
+    "statebench_baseline_executed": false,
+    "external_model_executed": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "production_readiness_established": false,
+    "release_authorized": false,
+    "standards_submission_authorized": false,
+    "merge_authorized": false
+  }
+}

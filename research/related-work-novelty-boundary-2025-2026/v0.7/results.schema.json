@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:statebench-full-payload-replay-results:v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "predecessor",
+    "source",
+    "dataset_replay_status",
+    "execution_evidence_level",
+    "payload",
+    "fixture_counts",
+    "mapping_counts",
+    "track_counts",
+    "domain_counts",
+    "query_counts",
+    "unexpected_tracks",
+    "performance",
+    "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "matawaka.statebench-full-payload-replay-results/v0.7"},
+    "predecessor": {"const": "6823b9765894f410960c15ad797c4f6949c6225e"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository", "commit", "path", "git_blob_sha1"],
+      "properties": {
+        "repository": {"const": "Parslee-ai/statebench"},
+        "commit": {"const": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7"},
+        "path": {"const": "data/releases/v1.0/test.jsonl"},
+        "git_blob_sha1": {"const": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd"}
+      }
+    },
+    "dataset_replay_status": {"const": "FULL_PINNED_TEST_PAYLOAD_REPLAYED"},
+    "execution_evidence_level": {"const": "UPSTREAM_DATASET_ADAPTED"},
+    "payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["bytes", "git_blob_sha1", "sha256", "utf8_valid", "jsonl_records"],
+      "properties": {
+        "bytes": {"const": 638933},
+        "git_blob_sha1": {"const": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd"},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "utf8_valid": {"const": true},
+        "jsonl_records": {"const": 209}
+      }
+    },
+    "fixture_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["total", "unique_ids", "missing_ids"],
+      "properties": {
+        "total": {"const": 209},
+        "unique_ids": {"const": 209},
+        "missing_ids": {"const": 0}
+      }
+    },
+    "mapping_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["DIRECT", "PARTIAL", "AMBIGUOUS", "UNMAPPED"],
+      "properties": {
+        "DIRECT": {"type": "integer", "minimum": 0},
+        "PARTIAL": {"type": "integer", "minimum": 0},
+        "AMBIGUOUS": {"type": "integer", "minimum": 0},
+        "UNMAPPED": {"type": "integer", "minimum": 0}
+      }
+    },
+    "track_counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "domain_counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 1}
+    },
+    "query_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["events", "with_ground_truth", "without_ground_truth"],
+      "properties": {
+        "events": {"type": "integer", "minimum": 0},
+        "with_ground_truth": {"type": "integer", "minimum": 0},
+        "without_ground_truth": {"type": "integer", "minimum": 0}
+      }
+    },
+    "unexpected_tracks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "uniqueItems": true
+    },
+    "performance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["held_out_detection_recall", "benign_false_positive_rate", "statebench_model_score", "matawaka_model_score"],
+      "properties": {
+        "held_out_detection_recall": {"type": "null"},
+        "benign_false_positive_rate": {"type": "null"},
+        "statebench_model_score": {"type": "null"},
+        "matawaka_model_score": {"type": "null"}
+      }
+    },
+    "non_effects": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upstream_implementation_executed",
+        "external_model_executed",
+        "statebench_baseline_executed",
+        "detection_advantage_established",
+        "detection_non_advantage_established",
+        "novelty_established",
+        "world_first",
+        "merge_authorized"
+      ],
+      "properties": {
+        "upstream_implementation_executed": {"const": false},
+        "external_model_executed": {"const": false},
+        "statebench_baseline_executed": {"const": false},
+        "detection_advantage_established": {"const": false},
+        "detection_non_advantage_established": {"const": false},
+        "novelty_established": {"const": false},
+        "world_first": {"const": false},
+        "merge_authorized": {"const": false}
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:statebench-full-payload-replay-implementation-receipt:v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","issue","pull_request","predecessor","first_independent_green_head","workflow_run_id","workflow_job_id","workflow_name","source","replay","qualification_evidence","performance","non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.statebench-full-payload-replay-implementation-receipt/v0.7"},
+    "issue": {"const": 970},
+    "pull_request": {"const": 971},
+    "predecessor": {"const": "6823b9765894f410960c15ad797c4f6949c6225e"},
+    "first_independent_green_head": {"const": "55c9ef9d368f6ca4ecdbc4ae80954fe86a51ca65"},
+    "workflow_run_id": {"const": 34183720674},
+    "workflow_job_id": {"const": 101927787273},
+    "workflow_name": {"const": "StateBench Full Payload Replay v0.7"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["repository","commit","path","bytes","git_blob_sha1","payload_sha256"],
+      "properties": {
+        "repository": {"const": "Parslee-ai/statebench"},
+        "commit": {"const": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7"},
+        "path": {"const": "data/releases/v1.0/test.jsonl"},
+        "bytes": {"const": 638933},
+        "git_blob_sha1": {"const": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd"},
+        "payload_sha256": {"const": "7df54da79653488bcc2253c9431dc35fd5c2411ec12afe1f22958ed09395a7c9"}
+      }
+    },
+    "replay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status","execution_evidence_level","fixture_count","unique_fixture_ids","query_events","query_events_with_ground_truth","unexpected_tracks","mapping_counts","deterministic_result_sha256"],
+      "properties": {
+        "status": {"const": "FULL_PINNED_TEST_PAYLOAD_REPLAYED"},
+        "execution_evidence_level": {"const": "UPSTREAM_DATASET_ADAPTED"},
+        "fixture_count": {"const": 209},
+        "unique_fixture_ids": {"const": 209},
+        "query_events": {"const": 251},
+        "query_events_with_ground_truth": {"const": 251},
+        "unexpected_tracks": {"type":"array","maxItems":0},
+        "mapping_counts": {
+          "type":"object","additionalProperties":false,
+          "required":["DIRECT","PARTIAL","AMBIGUOUS","UNMAPPED"],
+          "properties": {
+            "DIRECT":{"const":15},"PARTIAL":{"const":62},"AMBIGUOUS":{"const":45},"UNMAPPED":{"const":87}
+          }
+        },
+        "deterministic_result_sha256": {"const": "983a183510688345a2f8c75e28051782867d8e7006dc5227e1e83f4cd8704d43"}
+      }
+    },
+    "qualification_evidence": {"type":"object"},
+    "performance": {
+      "type":"object","additionalProperties":false,
+      "required":["held_out_detection_recall","benign_false_positive_rate","statebench_model_score","matawaka_model_score"],
+      "properties": {
+        "held_out_detection_recall":{"type":"null"},"benign_false_positive_rate":{"type":"null"},"statebench_model_score":{"type":"null"},"matawaka_model_score":{"type":"null"}
+      }
+    },
+    "non_effects": {
+      "type":"object","additionalProperties":{"const":false}
+    }
+  }
+}
