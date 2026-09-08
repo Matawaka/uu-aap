@@ -42,14 +42,39 @@ def main() -> int:
     mutations.append((p, base_project, "unproven datasets conflict promotion"))
     p = copy.deepcopy(base_protocol); p["known_seams"]["ordinary_statebench_lm_eval_task_dataset_path_is_hub"] = "local/test.jsonl"
     mutations.append((p, base_project, "silent exact-data substitution"))
+    p = copy.deepcopy(base_protocol); p["known_seams"]["lock_resolution_is_runtime_compatibility_evidence"] = True
+    mutations.append((p, base_project, "lock promoted to runtime compatibility"))
+    p = copy.deepcopy(base_protocol); p["known_seams"]["workflow_event_sha_is_pr_head_sha"] = True
+    mutations.append((p, base_project, "PR topology collapse"))
+
+    p = copy.deepcopy(base_protocol); p["frozen_lock"]["sha256"] = "0" * 64
+    mutations.append((p, base_project, "frozen lock SHA rewrite"))
+    p = copy.deepcopy(base_protocol); p["frozen_lock"]["git_blob_sha1"] = "0" * 40
+    mutations.append((p, base_project, "frozen Git blob rewrite"))
+    p = copy.deepcopy(base_protocol); p["frozen_lock"]["package_count"] = 132
+    mutations.append((p, base_project, "frozen package-count rewrite"))
+    p = copy.deepcopy(base_protocol); p["frozen_lock"]["first_resolver_pr_head"] = p["frozen_lock"]["first_resolver_workflow_event_sha"]
+    mutations.append((p, base_project, "synthetic event SHA relabeled as PR head"))
+    p = copy.deepcopy(base_protocol); p["frozen_lock"]["one_shot_write_surface_retired"] = False
+    mutations.append((p, base_project, "write authority retained"))
+    p = copy.deepcopy(base_protocol); p["resolved_observations"]["transformers"] = "latest"
+    mutations.append((p, base_project, "resolved version rewrite"))
+
     p = copy.deepcopy(base_protocol); p["requirements"]["freeze_lock_before_model_execution"] = False
     mutations.append((p, base_project, "model-before-lock permission"))
+    p = copy.deepcopy(base_protocol); p["requirements"]["successor_must_not_reresolve_as_source_of_truth"] = False
+    mutations.append((p, base_project, "re-resolution promoted as successor truth"))
     p = copy.deepcopy(base_protocol); p["requirements"]["no_dataset_download"] = False
     mutations.append((p, base_project, "dataset download permission"))
     p = copy.deepcopy(base_protocol); p["requirements"]["no_huggingface_model_download"] = False
     mutations.append((p, base_project, "model download permission"))
+
     p = copy.deepcopy(base_protocol); p["performance"]["decision_accuracy"] = 0.5
     mutations.append((p, base_project, "performance population"))
+    p = copy.deepcopy(base_protocol); p["non_effects"]["environment_synced"] = True
+    mutations.append((p, base_project, "environment sync claim"))
+    p = copy.deepcopy(base_protocol); p["non_effects"]["runtime_compatibility_established"] = True
+    mutations.append((p, base_project, "runtime compatibility claim"))
     p = copy.deepcopy(base_protocol); p["non_effects"]["model_executed"] = True
     mutations.append((p, base_project, "model execution claim"))
     p = copy.deepcopy(base_protocol); p["non_effects"]["official_statebench_benchmark_executed"] = True
