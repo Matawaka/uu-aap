@@ -90,6 +90,13 @@ jobs:
           test -z "$(git -C /tmp/statebench-v014-source status --porcelain --untracked-files=no)"
           cp -r "$EVIDENCE" "$NEW_EVIDENCE/predecessor"
 
+      - name: Require fresh adapter evidence identical to the first A/B pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.15/validate_qualification.py" --self-test
+          python "$RESEARCH/v0.15/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --evidence "$NEW_EVIDENCE"
+
       - name: Upload actual adapter evidence even on non-pass
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

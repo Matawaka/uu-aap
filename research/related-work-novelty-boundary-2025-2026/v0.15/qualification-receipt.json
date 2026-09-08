@@ -1,0 +1,78 @@
+{
+  "all_first_members_equal": true,
+  "artifacts_supplementary_retention_days": 30,
+  "code_blobs": {
+    "adapter.py": "2bbcc1d996b5b0586371894027153b3765e98c7c",
+    "gate.py": "74dc9af16ae0aee11afde8ffb97a5c194d54aa28",
+    "replay_environment.py": "8cd1854cb2d4d018c2f5a05eb48e0e6cc02d54eb"
+  },
+  "config_delta_sha256": "ccd3dd8d9b1909a59518ebd979d43e8ff86f3645813485e39032879df6bd5485",
+  "evidence_member_count": 19,
+  "evidence_members_sha256": "e9e68fb413e84d862bad51f9ce00847dfbb491498775f57ba2575a96df0036b9",
+  "first_head": "71aeeade1450e11aaeb8b0b1d90c372f23733e1c",
+  "first_jobs": {
+    "A": {
+      "artifact_id": 10056579892,
+      "conclusion": "success",
+      "job_id": 102066507148,
+      "runner_id": 1000017109,
+      "zip_bytes": 2264927,
+      "zip_sha256": "4e6725c7cf23a1a27d6f565e879fdd24a71bd4f09fd746c7d5676bbeaf214566"
+    },
+    "B": {
+      "artifact_id": 10056581838,
+      "conclusion": "success",
+      "job_id": 102066506976,
+      "runner_id": 1000017108,
+      "zip_bytes": 2264927,
+      "zip_sha256": "b7ad910b4f56fc78a7f01f18aacafe6e37eeb8a9d7634409cebe9aa74049e8e4"
+    }
+  },
+  "first_workflow_blob": "2418ee3625163d6343ddf7cad1d744ab104602a5",
+  "first_workflow_run": 34227917879,
+  "historical_nonpass": {
+    "classification": "INITIAL_ADAPTER_GROUP_ROUTE_FAILURE_NOT_ENVIRONMENT_FAILURE",
+    "failure_detail": "TaskConfig.__init__() got an unexpected keyword argument 'group'",
+    "head": "85adf080c5884851515a2837d6d087cadf95dd96",
+    "jobs": {
+      "A": 102064147803,
+      "B": 102064147540
+    },
+    "result_file": "history/initial-adapter-group-nonpass.json",
+    "result_sha256": "e81c1766087db8e51cd457f997a543b48066dbb3385dfcd0f69e93114e69e882",
+    "rewritten_or_promoted": false,
+    "run": 34227210796
+  },
+  "independent_successor_required": true,
+  "non_effects": {
+    "benchmark_score_established": false,
+    "dependency_profile_changed": false,
+    "evaluation_dispatched": false,
+    "full_request_building_established": false,
+    "full_upstream_task_compatible": false,
+    "historical_nonpass_promoted": false,
+    "hub_dataset_loaded": false,
+    "merge_authorized": false,
+    "model_downloaded": false,
+    "model_executed": false,
+    "model_instantiated": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "requests_constructed": false,
+    "scoring_compatibility_established": false,
+    "scoring_or_judge_called": false,
+    "site_packages_patched": false,
+    "standards_authorized": false,
+    "upstream_source_modified": false,
+    "user_credentials_used": false
+  },
+  "original_task_compatibility": "NONPASS",
+  "predecessor": "997df26af32d23a5fe98dc9f89bba0f37dc1b7ca",
+  "predecessor_subtree": "42efaef1126466e21207429c7494b4e6cb44cea4",
+  "request_building_or_model_scope_granted": false,
+  "result_sha256": "f83a8be7bb64ed2b8950641c44c7944cbc317f776c1683a043b739168f1605f6",
+  "schema": "matawaka.model-free-task-adapter-qualification/v0.15",
+  "scope": "NAMED_ADAPTER_TASK_CONSTRUCTION_AND_DOC_FORMATTING_ONLY"
+}

@@ -1,0 +1,94 @@
+{
+  "actual_upstream_processing_calls": 4,
+  "config_delta_sha256": "ccd3dd8d9b1909a59518ebd979d43e8ff86f3645813485e39032879df6bd5485",
+  "constructor_and_reread": {
+    "calls": {
+      "exact_raw_dataset_load": 1,
+      "upstream_processing_and_container_wrap": 2
+    },
+    "documents": 251,
+    "documents_sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0",
+    "features": [
+      "context",
+      "decision_type",
+      "difficulty",
+      "domain",
+      "expected_decision",
+      "ground_truth_json",
+      "must_mention",
+      "must_not_mention",
+      "query",
+      "query_idx",
+      "timeline_id",
+      "track"
+    ],
+    "format_trace_sha256": "3685c45f32574313d11bfdaf8d70ced7843ecd236af4de0e6690a14f176806f3",
+    "group_map": {
+      "matawaka_statebench_model_free_v015": [
+        "matawaka_statebench_model_free_v015::exact_test_model_free"
+      ]
+    },
+    "groups": [
+      "matawaka_statebench_model_free_v015"
+    ],
+    "second_eval_docs_equal": true,
+    "tasks": [
+      "matawaka_statebench_model_free_v015::exact_test_model_free"
+    ]
+  },
+  "document_sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0",
+  "documents": 251,
+  "environment_result_sha256": "7c341beee6680a2d743d723e622f1baa6debdd65b946504144adfbcb40f8e3ff",
+  "forbidden_effect_attempts": [],
+  "format_trace_sha256": "3685c45f32574313d11bfdaf8d70ced7843ecd236af4de0e6690a14f176806f3",
+  "fresh_adapter_repetitions": 2,
+  "hostile_exact_document_mutations_rejected": 6,
+  "non_effects": {
+    "benchmark_score_established": false,
+    "dependency_profile_changed": false,
+    "evaluation_dispatched": false,
+    "full_request_building_established": false,
+    "full_upstream_task_compatible": false,
+    "historical_nonpass_promoted": false,
+    "hub_dataset_loaded": false,
+    "merge_authorized": false,
+    "model_downloaded": false,
+    "model_executed": false,
+    "model_instantiated": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "requests_constructed": false,
+    "scoring_compatibility_established": false,
+    "scoring_or_judge_called": false,
+    "site_packages_patched": false,
+    "standards_authorized": false,
+    "upstream_source_modified": false,
+    "user_credentials_used": false
+  },
+  "original_task_compatibility": "NONPASS",
+  "predecessor": "997df26af32d23a5fe98dc9f89bba0f37dc1b7ca",
+  "profile": "MATAWAKA_STATEBENCH_EXACT_TEST_MODEL_FREE_V015",
+  "qualification_scope": "NAMED_ADAPTER_TASK_CONSTRUCTION_AND_DOC_FORMATTING_ONLY",
+  "schema": "matawaka.model-free-task-adapter-result/v0.15",
+  "status": "MODEL_FREE_TASK_ADAPTER_EXECUTED_PASS",
+  "upstream_processing_returns": [
+    {
+      "documents": 251,
+      "sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0"
+    },
+    {
+      "documents": 251,
+      "sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0"
+    },
+    {
+      "documents": 251,
+      "sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0"
+    },
+    {
+      "documents": 251,
+      "sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0"
+    }
+  ]
+}
