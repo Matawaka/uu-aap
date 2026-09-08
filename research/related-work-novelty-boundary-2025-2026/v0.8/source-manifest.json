@@ -1,0 +1,48 @@
+{
+  "schema": "matawaka.statebench-upstream-code-source-manifest/v0.8",
+  "source": {
+    "repository": "Parslee-ai/statebench",
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "license": "MIT",
+    "package_name": "statebench",
+    "package_version": "2.0.0",
+    "requires_python": ">=3.11",
+    "git_objects": {
+      "src_tree": "93d4843a4a444f8ea583c19a4d5961ed9042a586",
+      "tests_tree": "b9c5cd768f7e117b9a7871eb4b91a8ecb3e2c6df",
+      "pyproject_toml_blob": "54a9ba6b6cb711074d771bf3da45a4f0cb17d166",
+      "uv_lock_blob": "58b24498b3ffb56247482613c5c01dec3e46bc0d"
+    },
+    "dependency_lock": {
+      "path": "uv.lock",
+      "lock_format_version": 1,
+      "revision": 3,
+      "frozen_required": true
+    },
+    "test_scope": {
+      "path": "tests",
+      "selection": "ENTIRE_PINNED_TEST_TREE",
+      "tree_sha": "b9c5cd768f7e117b9a7871eb4b91a8ecb3e2c6df",
+      "post_result_exclusions_permitted": false
+    },
+    "upstream_ci": {
+      "github_workflows_directory_present": false,
+      "execution_procedure_claimed_as_upstream_ci": false
+    }
+  },
+  "execution_harness": {
+    "owner": "Matawaka",
+    "kind": "INDEPENDENT_REPRODUCTION_HARNESS",
+    "dependency_source": "PINNED_UPSTREAM_UV_LOCK",
+    "model_credentials_required_present": false,
+    "model_credential_names_required_unset": [
+      "OPENAI_API_KEY",
+      "ANTHROPIC_API_KEY",
+      "GOOGLE_API_KEY"
+    ]
+  },
+  "frozen_predecessor": {
+    "commit": "c2ea9dc329b1d3060770c028554f37aa1cb93611",
+    "v07_tree": "9771bd009efc930df5b42e1c9fb5a870a68dc3a5"
+  }
+}
