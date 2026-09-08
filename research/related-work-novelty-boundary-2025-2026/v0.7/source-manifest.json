@@ -1,0 +1,30 @@
+{
+  "schema": "matawaka.statebench-pinned-source-manifest/v0.7",
+  "source": {
+    "id": "STATEBENCH_V1_0_TEST",
+    "repository": "Parslee-ai/statebench",
+    "repository_visibility": "PUBLIC",
+    "commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "release": "v1.0",
+    "license": "MIT",
+    "path": "data/releases/v1.0/test.jsonl",
+    "raw_url": "https://raw.githubusercontent.com/Parslee-ai/statebench/1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7/data/releases/v1.0/test.jsonl",
+    "git_blob_sha1": "3d0bcce1a7725384cf7c25eb4695a784e6a275cd",
+    "expected_bytes": 638933,
+    "expected_fixture_count": 209,
+    "release_seed": 42
+  },
+  "frozen_predecessor": {
+    "commit": "6823b9765894f410960c15ad797c4f6949c6225e",
+    "v06_tree": "9372de8b191fd4d4a024e16723556eba097e2cfc",
+    "track_mapping_path": "research/related-work-novelty-boundary-2025-2026/v0.6/track-mapping.json",
+    "track_mapping_git_blob_sha1": "f108b84827d4076c7ace196480c94aa4e127d3de"
+  },
+  "evidence_boundary": {
+    "execution_evidence_level": "UPSTREAM_DATASET_ADAPTED",
+    "dataset_replay_status_before_execution": "NOT_EXECUTED",
+    "upstream_implementation_executed": false,
+    "external_model_executed": false,
+    "statebench_baseline_executed": false
+  }
+}
