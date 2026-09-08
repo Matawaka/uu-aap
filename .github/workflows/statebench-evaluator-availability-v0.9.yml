@@ -127,19 +127,19 @@ jobs:
           echo '--- v0.9 deterministic result SHA-256 ---'
           cat /tmp/statebench-v09-results.sha256
 
-      - name: Reproduce frozen result when present
+      - name: Reproduce frozen result and validate receipts
         shell: bash
         run: |
           set -euo pipefail
           result='research/related-work-novelty-boundary-2025-2026/v0.9/results.json'
           digest='research/related-work-novelty-boundary-2025-2026/v0.9/results.sha256'
-          if [ -f "$result" ]; then
-            cmp "$result" /tmp/statebench-v09-results.json
-            python research/related-work-novelty-boundary-2025-2026/v0.9/validate_availability.py
-          fi
-          if [ -f "$digest" ]; then
-            test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v09-results.sha256)"
-          fi
+          test -f "$result"
+          test -f "$digest"
+          cmp "$result" /tmp/statebench-v09-results.json
+          test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v09-results.sha256)"
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_availability.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_qualification.py
 
       - name: Bind exact v0.8 qualified predecessor
         shell: bash
