@@ -58,7 +58,12 @@ jobs:
         run: |
           set -euo pipefail
           python -m pip install --disable-pip-version-check --no-input 'uv==0.12.10'
-          test "$(uv --version)" = 'uv 0.12.10'
+          test "$(python -m uv --version)" = 'uv 0.12.10'
+          test "$(python - <<'PY'
+          import importlib.metadata
+          print(importlib.metadata.version('uv'))
+          PY
+          )" = '0.12.10'
 
       - name: Verify frozen lock identity before sync
         shell: bash
@@ -74,7 +79,7 @@ jobs:
         run: |
           set -euo pipefail
           project='research/related-work-novelty-boundary-2025-2026/v0.10/lock-project'
-          uv sync --frozen --project "$project"
+          python -m uv sync --frozen --project "$project"
           test -x /tmp/statebench-v011-venv/bin/python
 
       - name: Verify frozen lock identity after sync
