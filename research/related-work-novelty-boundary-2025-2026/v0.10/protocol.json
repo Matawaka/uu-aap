@@ -3,7 +3,7 @@
   "issue": 976,
   "predecessor": "1b2c5e622501dd07f4560d5356e0708fa9633833",
   "predecessor_v09_tree": "d409b43debc532a1423092200661b8a823990eda",
-  "target_status": "JOINT_INTEGRATION_DEPENDENCY_LOCK_MATERIALIZED",
+  "target_status": "JOINT_INTEGRATION_DEPENDENCY_LOCK_FROZEN",
   "selected_sources": {
     "statebench_repository": "Parslee-ai/statebench",
     "statebench_commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
@@ -21,11 +21,41 @@
     "kind": "MATAWAKA_JOINT_INTEGRATION_ENVIRONMENT",
     "is_native_statebench_uv_lock": false
   },
+  "frozen_lock": {
+    "path": "research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock",
+    "sha256": "324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532",
+    "git_blob_sha1": "975210dd6ee71d3504e9ff2b8f482d7e4d6f5123",
+    "bytes": 224954,
+    "package_count": 133,
+    "first_resolver_run": 34188348738,
+    "first_resolver_job": 101941119988,
+    "first_resolver_pr_head": "c5b0f90e561bae00f192fd427c1c6addf034907f",
+    "first_resolver_workflow_event_sha": "c549b916157b755bc24bfd1eee392448dbb5af15",
+    "first_resolver_common_tree": "49d6251bbbac489038fd3f3dac080a2522d0b123",
+    "artifact_id": 10041299424,
+    "artifact_zip_sha256": "a36a86e4541d108caa47cc21d87ceafdee8c9053b703f9e5dcbb0b7e9005cd40",
+    "freeze_run": 34188905760,
+    "freeze_commit": "19ced1d6854b1bc4459ce36c94169f2a4fb2efd8",
+    "freeze_commit_added_only_lock": true,
+    "one_shot_write_surface_retired": true
+  },
+  "resolved_observations": {
+    "lm-eval": "0.4.13",
+    "statebench": "2.0.0",
+    "statebench-lm-eval": "0.1.0",
+    "datasets": "5.0.1",
+    "torch": "2.14.0",
+    "transformers": "5.16.1",
+    "accelerate": "1.14.0",
+    "peft": "0.20.0"
+  },
   "requirements": {
     "resolve_complete_uv_lock": true,
     "statebench_source_exact_git_commit": true,
     "lm_eval_exact_release_version": true,
     "freeze_lock_before_model_execution": true,
+    "frozen_lock_byte_identity_required": true,
+    "successor_must_not_reresolve_as_source_of_truth": true,
     "emit_lock_sha256": true,
     "emit_resolved_package_inventory": true,
     "no_model_execution": true,
@@ -39,7 +69,9 @@
     "lm_eval_v0413_datasets_requirement": ">=2.16.0",
     "datasets_version_conflict_established": false,
     "joint_environment_may_resolve_different_transitives_than_native_statebench_lock": true,
-    "ordinary_statebench_lm_eval_task_dataset_path_is_hub": "parslee/statebench"
+    "ordinary_statebench_lm_eval_task_dataset_path_is_hub": "parslee/statebench",
+    "lock_resolution_is_runtime_compatibility_evidence": false,
+    "workflow_event_sha_is_pr_head_sha": false
   },
   "performance": {
     "decision_accuracy": null,
@@ -51,6 +83,8 @@
   "non_effects": {
     "model_executed": false,
     "dataset_executed": false,
+    "environment_synced": false,
+    "runtime_compatibility_established": false,
     "official_statebench_benchmark_executed": false,
     "native_statebench_environment_reproduced": false,
     "user_credentials_used": false,
