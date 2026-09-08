@@ -105,6 +105,13 @@ jobs:
             cp "$RESEARCH/v0.17/$file" "$SCORING_EVIDENCE/source/$file"
           done
 
+      - name: Require fresh scoring NONPASS evidence identical to first A/B pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.17/validate_qualification.py" --self-test
+          python "$RESEARCH/v0.17/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --evidence "$SCORING_EVIDENCE"
+
       - name: Upload actual scoring observation even on inconclusive result
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
