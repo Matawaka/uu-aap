@@ -1,0 +1,28 @@
+{
+  "adapter_blob": "9ed5294978ef4cb7a3f145cc5e9dde13a67c503c",
+  "admission": "ENTIRE_ORDERED_BATCH_AND_GROUND_TRUTH_BEFORE_JUDGE",
+  "documents": 251,
+  "hashes_prove_authenticity": false,
+  "merge_authorized": false,
+  "metric_list": [],
+  "model_authorized": false,
+  "native_interface": "create_judge(use_llm=False).judge",
+  "native_reference_proves_semantic_correctness": false,
+  "no_aggregation": true,
+  "old_loader_metadata_preserved": true,
+  "predecessor": "05c6cfc746517e6c7befd6995d31be0d0fb738f6",
+  "profile": "MATAWAKA_BOUND_SYNTHETIC_SCORING_V018",
+  "repetitions": 2,
+  "response_byte_ceiling": 65536,
+  "response_marker": "MATAWAKA_SYNTHETIC_RESPONSE_V018",
+  "response_origin": "HAND_AUTHORED_SYNTHETIC_NOT_MODEL_OUTPUT",
+  "schema": "matawaka.bound-synthetic-scoring-contract/v0.18",
+  "semantic_cases": 16,
+  "semantic_controls_sha256": "7a4a46a01e8aebb9747f7b80e24acef1a2543a08ce85607a151b426c1f9c5574",
+  "single_use": true,
+  "task_delta": [
+    "task",
+    "process_results"
+  ],
+  "upstream_metric_status": "NONPASS"
+}

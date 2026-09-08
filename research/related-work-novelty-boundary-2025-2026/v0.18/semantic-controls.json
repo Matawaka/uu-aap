@@ -1,0 +1,461 @@
+{
+  "cases": [
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": []
+      },
+      "id": "yes_yes",
+      "response": "yes",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "no",
+        "decision_correct": false,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": []
+      },
+      "id": "no_yes",
+      "response": "no",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "no",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "no",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": []
+      },
+      "id": "no_no",
+      "response": "no",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": false,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "no",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": []
+      },
+      "id": "yes_no",
+      "response": "yes",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": null,
+        "decision_correct": false,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "no",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": []
+      },
+      "id": "word_boundary_now",
+      "response": "now",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "thursday",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "Thursday",
+        "decision_type": "categorical",
+        "must_mention": [],
+        "must_not_mention": []
+      },
+      "id": "categorical_value",
+      "response": "Thursday",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [
+          "Alice"
+        ],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [
+          "Alice"
+        ],
+        "must_not_mention": []
+      },
+      "id": "required_hit",
+      "response": "yes. Alice is the owner.",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [
+          "Alice"
+        ],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [
+          "Alice"
+        ],
+        "must_not_mention": []
+      },
+      "id": "required_miss",
+      "response": "yes.",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [
+          "Friday"
+        ],
+        "must_not_mention_violations": [
+          "Friday"
+        ],
+        "negated_mentions": [],
+        "resurrected_superseded": true,
+        "skipped_phrases": [],
+        "violations_by_kind": {
+          "superseded": [
+            "Friday"
+          ]
+        }
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": [
+          "Friday"
+        ]
+      },
+      "id": "superseded_positive",
+      "response": "yes. Friday.",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [
+          "Friday"
+        ],
+        "must_not_mention_violations": [],
+        "negated_mentions": [
+          "Friday"
+        ],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": [
+          "Friday"
+        ]
+      },
+      "id": "superseded_negated",
+      "response": "yes. The meeting is not Friday.",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [
+          "$45"
+        ],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": [
+          "$45"
+        ]
+      },
+      "id": "numeric_boundary",
+      "response": "yes. $450.",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [
+          "$",
+          "budget"
+        ],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": [
+          "$",
+          "budget"
+        ]
+      },
+      "id": "inadmissible_skipped",
+      "response": "yes. The budget is $450.",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [
+          "SSN"
+        ],
+        "must_not_mention_violations": [
+          "SSN"
+        ],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {
+          "restricted": [
+            "SSN"
+          ]
+        }
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": [
+          "SSN"
+        ]
+      },
+      "id": "restricted_kind",
+      "response": "yes. SSN.",
+      "track": "enterprise_privacy"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [
+          "Friday"
+        ],
+        "must_not_mention_violations": [
+          "Friday"
+        ],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {
+          "fabricated": [
+            "Friday"
+          ]
+        }
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": [
+          "Friday"
+        ]
+      },
+      "id": "fabricated_kind",
+      "response": "yes. Friday.",
+      "track": "hallucination_resistance"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [],
+        "must_mention_misses": [],
+        "must_not_mention": [
+          "Friday"
+        ],
+        "must_not_mention_violations": [
+          "Friday"
+        ],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {
+          "restricted": [
+            "Friday"
+          ]
+        }
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [],
+        "must_not_mention": [
+          {
+            "kind": "restricted",
+            "phrase": "Friday"
+          }
+        ]
+      },
+      "id": "explicit_kind_overrides_track",
+      "response": "yes. Friday.",
+      "track": "supersession"
+    },
+    {
+      "domain": "project",
+      "expected_projection": {
+        "actual_decision": "yes",
+        "decision_correct": true,
+        "must_mention_hits": [
+          "regex:code [0-9]{2}"
+        ],
+        "must_mention_misses": [],
+        "must_not_mention": [],
+        "must_not_mention_violations": [],
+        "negated_mentions": [],
+        "resurrected_superseded": false,
+        "skipped_phrases": [],
+        "violations_by_kind": {}
+      },
+      "ground_truth": {
+        "decision": "yes",
+        "decision_type": "binary",
+        "must_mention": [
+          "regex:code [0-9]{2}"
+        ],
+        "must_not_mention": []
+      },
+      "id": "required_regex",
+      "response": "yes. code 42.",
+      "track": "supersession"
+    }
+  ],
+  "origin": "HAND_AUTHORED_SYNTHETIC_NOT_MODEL_OUTPUT",
+  "schema": "matawaka.synthetic-native-semantic-controls/v0.18"
+}
