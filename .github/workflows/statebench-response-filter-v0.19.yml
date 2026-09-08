@@ -1,0 +1,119 @@
+name: StateBench Bound Response Filter v0.19
+
+on:
+  pull_request:
+    branches:
+      - research/statebench-bound-scoring-v0.18-qualified-base
+
+permissions:
+  contents: read
+
+jobs:
+  response-filter:
+    name: response-filter-${{ matrix.lane }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [A, B]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+      HF_TOKEN: ""
+      HUGGING_FACE_HUB_TOKEN: ""
+      AZURE_OPENAI_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      GOOGLE_APPLICATION_CREDENTIALS: ""
+      STATEBENCH_JUDGE: ""
+      HF_HUB_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      UV_PROJECT_ENVIRONMENT: /tmp/statebench-v014-venv
+      UV_CACHE_DIR: /tmp/statebench-v014-uv-cache
+      PREDECESSOR12: /tmp/statebench-v014-v012
+      PREDECESSOR13: /tmp/statebench-v014-v013
+      PREDECESSOR14: /tmp/statebench-v015-v014
+      PREDECESSOR15: /tmp/statebench-v016-v015
+      PREDECESSOR16: /tmp/statebench-v017-v016
+      PREDECESSOR17: /tmp/statebench-v018-v017
+      PREDECESSOR18: /tmp/statebench-v019-v018
+      EVIDENCE: /tmp/statebench-v014-evidence
+      NEW_EVIDENCE: /tmp/statebench-v015-evidence
+      REQUEST_EVIDENCE: /tmp/statebench-v016-evidence
+      SCORING_EVIDENCE: /tmp/statebench-v017-evidence
+      BOUND_EVIDENCE: /tmp/statebench-v018-evidence
+      FILTER_EVIDENCE: /tmp/statebench-v019-evidence
+      RESEARCH: research/related-work-novelty-boundary-2025-2026
+
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.14
+
+      - name: Validate filter helpers and immutable predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.19/gate.py" self-test
+          python "$RESEARCH/v0.19/gate.py" boundary
+
+      - name: Reproduce all exact v0.18 run blocks and frozen history
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.19/replay_predecessor.py" --repo "$GITHUB_WORKSPACE" --worktree "$PREDECESSOR18"
+
+      - name: Execute singleton native filter and bound synthetic scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v014-offline "$GITHUB_WORKSPACE/$RESEARCH/v0.19/gate.py" run \
+            --repo "$GITHUB_WORKSPACE" --predecessor "$PREDECESSOR18" \
+            --upstream /tmp/statebench-v014-source --cache /tmp/statebench-v014-tokenizer \
+            --prior "$BOUND_EVIDENCE" --output "$FILTER_EVIDENCE"
+
+      - name: Recheck namespace imports and preserve exact predecessor evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v014-offline "$PREDECESSOR14/$RESEARCH/v0.14/gate.py" observe --repo "$PREDECESSOR14" --output "$FILTER_EVIDENCE/namespace-after-filter.json"
+          /tmp/statebench-v014-offline "$PREDECESSOR14/$RESEARCH/v0.14/gate.py" imports --output "$FILTER_EVIDENCE/imports-after-filter.json"
+          cmp "$FILTER_EVIDENCE/namespace-after-filter.json" "$BOUND_EVIDENCE/namespace-after-bound-scoring.json"
+          cmp "$FILTER_EVIDENCE/imports-after-filter.json" "$BOUND_EVIDENCE/imports-after-bound-scoring.json"
+          python "$RESEARCH/v0.19/gate.py" boundary
+          test -z "$(git -C "$PREDECESSOR18" status --porcelain --untracked-files=no)"
+          test -z "$(git -C /tmp/statebench-v014-source status --porcelain --untracked-files=no)"
+          cp -r "$BOUND_EVIDENCE" "$FILTER_EVIDENCE/predecessor"
+
+      - name: Preserve fixed response bridge source for recovery
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$FILTER_EVIDENCE/source"
+          for file in adapter.py gate.py replay_predecessor.py contract.json README.md; do
+            cp "$RESEARCH/v0.19/$file" "$FILTER_EVIDENCE/source/$file"
+          done
+
+      - name: Upload actual filter evidence even on non-pass
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: statebench-response-filter-v0.19-${{ matrix.lane }}
+          path: /tmp/statebench-v019-evidence/
+          if-no-files-found: warn
+          retention-days: 30
