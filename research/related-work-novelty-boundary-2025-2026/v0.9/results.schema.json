@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:statebench-evaluator-availability-results:v0.9",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema", "predecessor", "upstream", "credential_evidence",
+    "network_guard_active_during_provider_and_scorer_probe",
+    "native_full_metrics_harness", "protocol_implementation_seams",
+    "simplified_lm_eval_surface", "deterministic_scorer_control",
+    "environment", "performance", "non_effects"
+  ],
+  "properties": {
+    "schema": {"const": "matawaka.statebench-evaluator-availability-results/v0.9"},
+    "predecessor": {"const": "46a70e83f56c33f07a1c5d43fbe1ec49fb2465b3"},
+    "upstream": {"type": "object"},
+    "credential_evidence": {"type": "object"},
+    "network_guard_active_during_provider_and_scorer_probe": {"const": true},
+    "native_full_metrics_harness": {"type": "object"},
+    "protocol_implementation_seams": {"type": "object"},
+    "simplified_lm_eval_surface": {"type": "object"},
+    "deterministic_scorer_control": {"type": "object"},
+    "environment": {"type": "object"},
+    "performance": {"type": "object"},
+    "non_effects": {"type": "object"}
+  }
+}
