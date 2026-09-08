@@ -1,0 +1,52 @@
+{
+  "schema": "matawaka.statebench-lm-eval-envelope-qualification-receipt/v0.10",
+  "issue": 976,
+  "predecessor": "1b2c5e622501dd07f4560d5356e0708fa9633833",
+  "predecessor_v09_tree": "d409b43debc532a1423092200661b8a823990eda",
+  "qualified_status": "JOINT_INTEGRATION_DEPENDENCY_LOCK_FROZEN_AND_FROZEN_ONLY_VALIDATED",
+  "implementation_receipt": "research/related-work-novelty-boundary-2025-2026/v0.10/implementation-receipt.json",
+  "frozen_lock": {
+    "sha256": "324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532",
+    "git_blob_sha1": "975210dd6ee71d3504e9ff2b8f482d7e4d6f5123",
+    "bytes": 224954,
+    "package_count": 133
+  },
+  "successor_validation": {
+    "pr_head": "b72365b3f06f2f8cfb6d56274e22f11add5e9f7d",
+    "workflow_event_sha": "170aee67a7ff378130fbf1a6c3579dc395ff62e7",
+    "run": 34189262783,
+    "job": 101943768396,
+    "conclusion": "success",
+    "artifact_id": 10041606064,
+    "artifact_zip_sha256": "d5e1c6e99bb2e33883b3c2f2ce5aae1a18190cd5a4cf5d681be24bd3bb107a1",
+    "lock_source": "FROZEN_FIRST_GREEN",
+    "lock_reresolved_as_source_of_truth": false,
+    "uv_lock_check_passed": true,
+    "byte_identity_revalidated": true,
+    "predecessor_gate_passed": true,
+    "additive_only_gate_passed": true,
+    "protected_surfaces_unchanged": true
+  },
+  "boundary": {
+    "dependency_resolution_evidence": true,
+    "lock_freeze_evidence": true,
+    "frozen_lock_consistency_evidence": true,
+    "environment_sync_evidence": false,
+    "runtime_import_compatibility_evidence": false,
+    "local_hf_model_execution_evidence": false,
+    "dataset_execution_evidence": false,
+    "official_statebench_benchmark_evidence": false,
+    "decision_accuracy": null,
+    "sfrr": null,
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "merge_authorized": false
+  },
+  "next_gate": "FROZEN_SYNC_AND_IMPORT_SMOKE_ONLY"
+}
