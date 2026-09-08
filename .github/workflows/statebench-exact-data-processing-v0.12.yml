@@ -1,0 +1,131 @@
+name: StateBench Exact Data Processing v0.12
+
+on:
+  pull_request:
+    branches:
+      - research/statebench-frozen-sync-import-v0.11-qualified-base
+
+permissions:
+  contents: read
+
+jobs:
+  exact-data-processing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+      HF_TOKEN: ""
+      HUGGING_FACE_HUB_TOKEN: ""
+      AZURE_OPENAI_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      GOOGLE_APPLICATION_CREDENTIALS: ""
+      HF_HUB_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      UV_PROJECT_ENVIRONMENT: /tmp/statebench-v012-venv
+
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up exact Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.14
+
+      - name: Revalidate frozen v0.1-v0.11 chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/related-work-novelty-boundary-2025-2026'
+          python "$root/v0.10/validate_envelope.py"
+          python "$root/v0.10/test_envelope_contract.py"
+          python "$root/v0.10/validate_implementation.py"
+          python "$root/v0.10/validate_qualification.py"
+          python "$root/v0.11/validate_contract.py"
+          python "$root/v0.11/validate_implementation.py"
+          python "$root/v0.11/validate_qualification.py"
+
+      - name: Test hostile data boundary and bind additive predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          gate='research/related-work-novelty-boundary-2025-2026/v0.12/gate.py'
+          python "$gate" hostile
+          python "$gate" boundary
+
+      - name: Bootstrap exact uv through exact Python scripts path
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-input 'uv==0.12.10'
+          exact="$(python -c 'import sysconfig; print(sysconfig.get_path("scripts") + "/uv")')"
+          test "$(python -c 'import importlib.metadata; print(importlib.metadata.version("uv"))')" = '0.12.10'
+          case "$("$exact" --version)" in
+            'uv 0.12.10'*) ;;
+            *) exit 1 ;;
+          esac
+          printf 'UV_EXACT=%s\n' "$exact" >> "$GITHUB_ENV"
+
+      - name: Sync unchanged frozen environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          gate='research/related-work-novelty-boundary-2025-2026/v0.12/gate.py'
+          python "$gate" boundary
+          "$UV_EXACT" sync --frozen --project research/related-work-novelty-boundary-2025-2026/v0.10/lock-project
+          python "$gate" boundary
+          test -z "$(git status --porcelain -- research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock)"
+
+      - name: Reproduce v0.11 offline import result without network
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -E unshare --net -- setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups /tmp/statebench-v012-venv/bin/python \
+            research/related-work-novelty-boundary-2025-2026/v0.11/run_import_smoke.py \
+            --output /tmp/statebench-v012-predecessor-import.json
+          cmp /tmp/statebench-v012-predecessor-import.json research/related-work-novelty-boundary-2025-2026/v0.11/results.json
+
+      - name: Acquire exact public upstream source and explicit tokenizer side input
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init /tmp/statebench-v012-source
+          git -C /tmp/statebench-v012-source fetch --depth=1 https://github.com/Parslee-ai/statebench.git 1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7
+          git -C /tmp/statebench-v012-source checkout --detach FETCH_HEAD
+          python research/related-work-novelty-boundary-2025-2026/v0.12/gate.py acquire-tokenizer --cache /tmp/statebench-v012-tokenizer
+
+      - name: Process all exact test data using unchanged upstream plugin without network
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo -E unshare --net -- setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups /tmp/statebench-v012-venv/bin/python \
+            research/related-work-novelty-boundary-2025-2026/v0.12/gate.py process \
+            --repo "$GITHUB_WORKSPACE" --upstream /tmp/statebench-v012-source \
+            --cache /tmp/statebench-v012-tokenizer --output /tmp/statebench-v012-evidence
+
+      - name: Recheck unchanged lock, upstream worktree and protected predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/related-work-novelty-boundary-2025-2026/v0.12/gate.py boundary
+          test -z "$(git -C /tmp/statebench-v012-source status --porcelain --untracked-files=no)"
+
+      - name: Upload observed evidence even on non-pass
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: statebench-exact-data-processing-v0.12
+          path: /tmp/statebench-v012-evidence/
+          if-no-files-found: warn
+          retention-days: 30
