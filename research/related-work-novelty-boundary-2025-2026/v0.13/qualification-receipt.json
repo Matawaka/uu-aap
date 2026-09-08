@@ -1,0 +1,88 @@
+{
+  "artifact": {
+    "id": 10051859853,
+    "is_primary_durable_evidence": false,
+    "name": "statebench-task-compatibility-v0.13",
+    "retention_days": 30,
+    "zip_bytes": 12800,
+    "zip_sha256": "475f1070b9b169b48f1d8d14263d14c16f252cfd6e087e56781a502e008f328c"
+  },
+  "audit_execution": "COMPLETED",
+  "compatibility": "NONPASS",
+  "experiment_code_blob": "713082bcc9c0aae15f6ec8d6106f3cc819beac89",
+  "first_complete_independent_observation": true,
+  "first_observation_head": "0f2f1023f8fe1e73e566b4bc00a0ffeba3c4041b",
+  "first_workflow_blob": "94a5a207393e580778bfb8958200033d04a82963",
+  "format_trace_sha256": "3685c45f32574313d11bfdaf8d70ced7843ecd236af4de0e6690a14f176806f3",
+  "gates": {
+    "additive_scope_and_predecessor_unchanged": true,
+    "diagnostic_control_is_upstream_unmodified_task": false,
+    "diagnostic_control_prompt_target_pairs": 251,
+    "forbidden_effect_attempts": 0,
+    "frozen_v011_import_reproduced": true,
+    "frozen_v012_processing_reproduced": true,
+    "helper_tests": 16,
+    "independent_format_trace_matches": true,
+    "network_namespace_and_non_root_verified": true,
+    "original_yaml_empty_group_observed": true,
+    "processed_documents": 251,
+    "six_installed_lm_eval_source_blobs_verified": true,
+    "unchanged_processor_list_rejection_observed": true,
+    "unsupported_task_config_fields": [
+      "filter_docs",
+      "until"
+    ]
+  },
+  "historical_inconclusive_runs": [
+    {
+      "classification": "DISPROVEN_OBSERVER_YAML_EXCEPTION_PREDICTION",
+      "code_blob": "d9664ada03728fc89aa233dc0651df40732a2462",
+      "head": "ed795acdc0dfdb0faa46547fef9094d89f096729",
+      "job": 102025422814,
+      "result_file": "history/initial-inconclusive-results.json",
+      "result_sha256": "43cdf77ede5a1dc8847568ed7c570dd0ace9d34556481c6b671677d3e8f87699",
+      "retrospectively_qualified": false,
+      "run": 34215268253
+    },
+    {
+      "classification": "CONTAINER_PROBE_UNCLASSIFIED_EXCEPTION_NESTED_DETAIL_NOT_RECORDED",
+      "code_blob": "38df40a9801f94d265cf7940f134d8c955e27ba9",
+      "head": "14370037dee6eccc26e2b7d4502046653880b043",
+      "job": 102026872013,
+      "result_file": "history/second-inconclusive-results.json",
+      "result_sha256": "f8f2e8a17652e7bf6c6ff910722a1059fb8949aa360279d049ade148b57ba508",
+      "retrospectively_qualified": false,
+      "run": 34215721241
+    }
+  ],
+  "issue": 982,
+  "non_effects": {
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "evaluation_or_generation_dispatched": false,
+    "full_upstream_task_compatibility_established": false,
+    "hub_dataset_loaded": false,
+    "language_model_executed": false,
+    "merge_authorized": false,
+    "model_downloaded": false,
+    "model_instantiated": false,
+    "model_performance_established": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "scoring_or_judge_called": false,
+    "standards_authorized": false,
+    "user_credentials_used": false
+  },
+  "predecessor": "98f13086f8e2d75fc6692ff68e21700bdffa37a5",
+  "predecessor_subtree": "82548649f877fb6ba1d405aec239f2a88c3a5997",
+  "pull_request": 983,
+  "qualified_status": "LM_EVAL_TASK_COMPATIBILITY_EXECUTED_NONPASS",
+  "result_sha256": "2528206426613f1efce19ff3f4dab17a1daac34f828af37df021c054e78c16d8",
+  "schema": "matawaka.statebench-task-compatibility-qualification-receipt/v0.13",
+  "workflow_conclusion": "success",
+  "workflow_job": 102028146188,
+  "workflow_name": "StateBench Task Compatibility v0.13",
+  "workflow_run": 34216120618
+}

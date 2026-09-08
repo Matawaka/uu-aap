@@ -128,6 +128,13 @@ jobs:
           test -z "$(git -C "$PREDECESSOR" status --porcelain --untracked-files=no)"
           test -z "$(git -C /tmp/statebench-v013-source status --porcelain --untracked-files=no)"
 
+      - name: Reproduce frozen negative observation and validate history receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.13/validate_qualification.py" --self-test
+          python "$RESEARCH/v0.13/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --observed /tmp/statebench-v013-evidence
+
       - name: Upload audit observation even on inconclusive result
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
