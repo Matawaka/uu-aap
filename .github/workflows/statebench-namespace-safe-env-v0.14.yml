@@ -1,0 +1,169 @@
+name: StateBench Namespace Safe Environment v0.14
+
+on:
+  pull_request:
+    branches:
+      - research/statebench-task-compatibility-v0.13
+
+permissions:
+  contents: read
+
+jobs:
+  namespace-safe-environment:
+    name: namespace-safe-${{ matrix.lane }}
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [A, B]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+      HF_TOKEN: ""
+      HUGGING_FACE_HUB_TOKEN: ""
+      AZURE_OPENAI_API_KEY: ""
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
+      GOOGLE_APPLICATION_CREDENTIALS: ""
+      HF_HUB_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      UV_PROJECT_ENVIRONMENT: /tmp/statebench-v014-venv
+      UV_CACHE_DIR: /tmp/statebench-v014-uv-cache
+      PREDECESSOR12: /tmp/statebench-v014-v012
+      PREDECESSOR13: /tmp/statebench-v014-v013
+      EVIDENCE: /tmp/statebench-v014-evidence
+      RESEARCH: research/related-work-novelty-boundary-2025-2026
+
+    steps:
+      - name: Checkout exact candidate without persisted credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up exact Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: 3.12.14
+
+      - name: Preflight exact profile and historical worktrees
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$EVIDENCE"
+          python "$RESEARCH/v0.14/gate.py" self-test
+          python "$RESEARCH/v0.14/gate.py" boundary
+          git worktree add --detach "$PREDECESSOR12" 98f13086f8e2d75fc6692ff68e21700bdffa37a5
+          git worktree add --detach "$PREDECESSOR13" 497002001f9eac4adafe2db525d5bb07d9205d21
+          cat > /tmp/statebench-v014-offline <<'SH'
+          #!/bin/bash
+          set -euo pipefail
+          export MATAWAKA_PARENT_NETNS="$(readlink /proc/self/ns/net)"
+          exec sudo -E unshare --net -- setpriv --reuid="$(id -u)" --regid="$(id -g)" --init-groups /tmp/statebench-v014-venv/bin/python -I "$@"
+          SH
+          chmod 700 /tmp/statebench-v014-offline
+
+      - name: Validate frozen history without weakening predecessor guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$PREDECESSOR12"
+          python "$RESEARCH/v0.10/validate_envelope.py"
+          python "$RESEARCH/v0.10/test_envelope_contract.py"
+          python "$RESEARCH/v0.10/validate_implementation.py"
+          python "$RESEARCH/v0.10/validate_qualification.py"
+          python "$RESEARCH/v0.11/validate_contract.py"
+          python "$RESEARCH/v0.11/validate_implementation.py"
+          python "$RESEARCH/v0.11/validate_qualification.py"
+          python "$RESEARCH/v0.12/gate.py" hostile
+          python "$RESEARCH/v0.12/gate.py" boundary
+          python "$RESEARCH/v0.12/validate_qualification.py" --self-test
+          cd "$PREDECESSOR13"
+          python "$RESEARCH/v0.13/gate.py" boundary
+          python "$RESEARCH/v0.13/gate.py" self-test
+          python "$RESEARCH/v0.13/namespace_audit.py" --self-test
+          python "$RESEARCH/v0.13/validate_qualification.py" --self-test
+
+      - name: Single fresh frozen installation with explicit distribution exclusion
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$UV_PROJECT_ENVIRONMENT"
+          test ! -e "$UV_CACHE_DIR"
+          python -m pip install --disable-pip-version-check --no-input 'uv==0.12.10'
+          exact="$(python -c 'import sysconfig; print(sysconfig.get_path("scripts") + "/uv")')"
+          test "$(python -c 'import importlib.metadata; print(importlib.metadata.version("uv"))')" = '0.12.10'
+          case "$("$exact" --version)" in
+            'uv 0.12.10'*) ;;
+            *) exit 1 ;;
+          esac
+          "$exact" sync --frozen --no-install-package statebench-lm-eval --project "$PREDECESSOR12/$RESEARCH/v0.10/lock-project"
+          "$exact" pip check --python "$UV_PROJECT_ENVIRONMENT/bin/python"
+          python "$RESEARCH/v0.14/gate.py" boundary
+          python "$PREDECESSOR12/$RESEARCH/v0.12/gate.py" boundary --repo "$PREDECESSOR12"
+
+      - name: Census namespace ownership and first public import before data probes
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v014-offline "$GITHUB_WORKSPACE/$RESEARCH/v0.14/gate.py" observe --repo "$GITHUB_WORKSPACE" --output "$EVIDENCE/namespace-before.json"
+          /tmp/statebench-v014-offline "$GITHUB_WORKSPACE/$RESEARCH/v0.14/gate.py" imports --output "$EVIDENCE/imports-before.json"
+
+      - name: Re-execute old import probe in new explicitly selected environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v014-offline "$PREDECESSOR12/$RESEARCH/v0.11/run_import_smoke.py" --output "$EVIDENCE/v011-import.json"
+          cmp "$EVIDENCE/v011-import.json" "$PREDECESSOR12/$RESEARCH/v0.11/results.json"
+
+      - name: Acquire unchanged external plugin source and explicit BPE side input
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init /tmp/statebench-v014-source
+          git -C /tmp/statebench-v014-source fetch --depth=1 https://github.com/Parslee-ai/statebench.git 1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7
+          git -C /tmp/statebench-v014-source checkout --detach FETCH_HEAD
+          python "$PREDECESSOR12/$RESEARCH/v0.12/gate.py" acquire-tokenizer --cache /tmp/statebench-v014-tokenizer
+
+      - name: Re-execute unchanged exact-data probe and compare frozen bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v014-offline "$PREDECESSOR12/$RESEARCH/v0.12/gate.py" process --repo "$PREDECESSOR12" \
+            --upstream /tmp/statebench-v014-source --cache /tmp/statebench-v014-tokenizer --output "$EVIDENCE/v012"
+          python "$PREDECESSOR12/$RESEARCH/v0.12/validate_qualification.py" --repo "$PREDECESSOR12" --observed "$EVIDENCE/v012"
+
+      - name: Re-execute unchanged Task NONPASS without implementing an adapter
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v014-offline "$PREDECESSOR13/$RESEARCH/v0.13/gate.py" run --repo "$PREDECESSOR13" --predecessor "$PREDECESSOR12" \
+            --upstream /tmp/statebench-v014-source --evidence12 "$EVIDENCE/v012" --cache /tmp/statebench-v014-tokenizer --output "$EVIDENCE/v013"
+          python "$PREDECESSOR13/$RESEARCH/v0.13/validate_qualification.py" --repo "$PREDECESSOR13" --observed "$EVIDENCE/v013"
+
+      - name: Repeat census and fresh public import after probes and close environment result
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v014-offline "$GITHUB_WORKSPACE/$RESEARCH/v0.14/gate.py" observe --repo "$GITHUB_WORKSPACE" --output "$EVIDENCE/namespace-after.json"
+          /tmp/statebench-v014-offline "$GITHUB_WORKSPACE/$RESEARCH/v0.14/gate.py" imports --output "$EVIDENCE/imports-after.json"
+          python "$RESEARCH/v0.14/gate.py" finish --repo "$GITHUB_WORKSPACE" --evidence "$EVIDENCE" --output "$EVIDENCE/results.json"
+          test -z "$(git -C "$PREDECESSOR12" status --porcelain --untracked-files=no)"
+          test -z "$(git -C "$PREDECESSOR13" status --porcelain --untracked-files=no)"
+          test -z "$(git -C /tmp/statebench-v014-source status --porcelain --untracked-files=no)"
+
+      - name: Upload complete or failed environment observation
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: statebench-namespace-safe-v0.14-${{ matrix.lane }}
+          path: /tmp/statebench-v014-evidence/
+          if-no-files-found: warn
+          retention-days: 30

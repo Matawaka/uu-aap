@@ -1,0 +1,45 @@
+{
+  "conflicting_record_claims": true,
+  "distributions": {
+    "lm-eval": {
+      "actual_bytes": 6321,
+      "actual_git_blob": "b70b6a5f4062a51b95e885112ffde0fca302fd6b",
+      "actual_sha256": "aa87536f343662e6a6935448725e7f7243b0f62e3618de77e633e1c9fe579da9",
+      "declared_bytes": 6321,
+      "declared_sha256": "aa87536f343662e6a6935448725e7f7243b0f62e3618de77e633e1c9fe579da9",
+      "installed_bytes_match_own_record": true,
+      "version": "0.4.13"
+    },
+    "statebench-lm-eval": {
+      "actual_bytes": 6321,
+      "actual_git_blob": "b70b6a5f4062a51b95e885112ffde0fca302fd6b",
+      "actual_sha256": "aa87536f343662e6a6935448725e7f7243b0f62e3618de77e633e1c9fe579da9",
+      "declared_bytes": 0,
+      "declared_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "installed_bytes_match_own_record": false,
+      "version": "0.1.0"
+    }
+  },
+  "installation_order_or_race_mechanism_proven": false,
+  "installed_bytes_match_distribution": "lm-eval",
+  "interpretation": "TWO_PINNED_DISTRIBUTIONS_CLAIM_DIFFERENT_BYTES_AT_ONE_PATH",
+  "logical_path": "lm_eval/tasks/__init__.py",
+  "non_effects": {
+    "dependency_lock_changed": false,
+    "initializer_repaired": false,
+    "lm_eval_imported_by_observer": false,
+    "merge_authorized": false,
+    "model_executed": false,
+    "package_reinstalled": false,
+    "provider_api_called": false,
+    "scoring_called": false,
+    "upstream_code_changed": false
+  },
+  "same_installed_path": true,
+  "schema": "matawaka.statebench-namespace-ownership-observation/v0.13",
+  "source_initializer_blobs": {
+    "lm-eval": "b70b6a5f4062a51b95e885112ffde0fca302fd6b",
+    "statebench-lm-eval": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+  },
+  "status": "FROZEN_ENVIRONMENT_NAMESPACE_COLLISION_OBSERVED"
+}
