@@ -38,7 +38,7 @@
         "status": {"enum": ["PINNED_UPSTREAM_TEST_SUITE_EXECUTED_PASS","PINNED_UPSTREAM_TEST_SUITE_EXECUTED_NONPASS"]},
         "harness_provenance": {"const": "INDEPENDENT_REPRODUCTION_HARNESS"},
         "dependency_source": {"const": "PINNED_UPSTREAM_UV_LOCK"},
-        "pytest_exit_code": {"type": "integer", "minimum": 0},
+        "pytest_exit_code": {"enum": [0,1]},
         "tests": {"type": "integer", "minimum": 1},
         "passed": {"type": "integer", "minimum": 0},
         "failures": {"type": "integer", "minimum": 0},
