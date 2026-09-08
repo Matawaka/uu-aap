@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:statebench-full-payload-replay-qualification-receipt:v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema","issue","pull_request","predecessor","qualified_head","workflow_run_id","workflow_job_id","workflow_name","qualification","result","non_effects"],
+  "properties": {
+    "schema": {"const": "matawaka.statebench-full-payload-replay-qualification-receipt/v0.7"},
+    "issue": {"const": 970},
+    "pull_request": {"const": 971},
+    "predecessor": {"const": "6823b9765894f410960c15ad797c4f6949c6225e"},
+    "qualified_head": {"const": "55c9ef9d368f6ca4ecdbc4ae80954fe86a51ca65"},
+    "workflow_run_id": {"const": 34183720674},
+    "workflow_job_id": {"const": 101927787273},
+    "workflow_name": {"const": "StateBench Full Payload Replay v0.7"},
+    "qualification": {
+      "type":"object","additionalProperties":false,
+      "required":["job_conclusion","frozen_v01_v06_revalidated","static_replay_boundary_validated","baseline_hostile_checks","network_payload_fetch_succeeded","payload_byte_length_verified","payload_git_blob_verified","all_209_fixtures_replayed","all_fixture_ids_unique","frozen_v06_mapping_applied","exact_stacked_predecessor_bound","exact_v06_tree_bound","exact_v06_mapping_blob_bound","additive_only_boundary_proven","predecessor_and_runtime_product_surfaces_unchanged"],
+      "properties": {
+        "job_conclusion":{"const":"success"},
+        "frozen_v01_v06_revalidated":{"const":true},
+        "static_replay_boundary_validated":{"const":true},
+        "baseline_hostile_checks":{"const":"18/18"},
+        "network_payload_fetch_succeeded":{"const":true},
+        "payload_byte_length_verified":{"const":true},
+        "payload_git_blob_verified":{"const":true},
+        "all_209_fixtures_replayed":{"const":true},
+        "all_fixture_ids_unique":{"const":true},
+        "frozen_v06_mapping_applied":{"const":true},
+        "exact_stacked_predecessor_bound":{"const":true},
+        "exact_v06_tree_bound":{"const":true},
+        "exact_v06_mapping_blob_bound":{"const":true},
+        "additive_only_boundary_proven":{"const":true},
+        "predecessor_and_runtime_product_surfaces_unchanged":{"const":true}
+      }
+    },
+    "result": {
+      "type":"object","additionalProperties":false,
+      "required":["dataset_replay_status","execution_evidence_level","payload_sha256","deterministic_result_sha256","fixtures","queries_with_ground_truth","direct","partial","ambiguous","unmapped","held_out_detection_recall","benign_false_positive_rate"],
+      "properties": {
+        "dataset_replay_status":{"const":"FULL_PINNED_TEST_PAYLOAD_REPLAYED"},
+        "execution_evidence_level":{"const":"UPSTREAM_DATASET_ADAPTED"},
+        "payload_sha256":{"const":"7df54da79653488bcc2253c9431dc35fd5c2411ec12afe1f22958ed09395a7c9"},
+        "deterministic_result_sha256":{"const":"983a183510688345a2f8c75e28051782867d8e7006dc5227e1e83f4cd8704d43"},
+        "fixtures":{"const":209},
+        "queries_with_ground_truth":{"const":251},
+        "direct":{"const":15},
+        "partial":{"const":62},
+        "ambiguous":{"const":45},
+        "unmapped":{"const":87},
+        "held_out_detection_recall":{"type":"null"},
+        "benign_false_positive_rate":{"type":"null"}
+      }
+    },
+    "non_effects": {"type":"object","additionalProperties":{"const":false}}
+  }
+}
