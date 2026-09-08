@@ -85,9 +85,9 @@ def verify_documents(docs: Any) -> None:
 
 
 def validate_callback(kwargs: dict[str, Any]) -> None:
-    # Nested inline leaf construction passes its metadata directly, unlike the
-    # standalone factory route. Neither model_args nor unbounded paths are accepted.
-    require(kwargs == {'adapter_profile': PROFILE}, 'UNDECLARED_CALLBACK_ARGUMENTS')
+    # The public standalone leaf factory adds exactly config_source=inline.
+    # Neither model_args nor unbounded paths are accepted.
+    require(kwargs == {'adapter_profile': PROFILE, 'config_source': 'inline'}, 'UNDECLARED_CALLBACK_ARGUMENTS')
 
 
 def validate_source_config(raw: dict[str, Any]) -> None:
@@ -129,6 +129,7 @@ def adapt_config(raw: dict[str, Any], loader: Any, processor: Any) -> tuple[dict
             'metadata_replaced_with_adapter_identity': True,
         },
         'preserved': ['description', 'doc_to_text', 'doc_to_target', 'generation_parameter_values', 'test_split'],
+        'construction_route': 'PUBLIC_LEAF_TASKMANAGER_THEN_GROUP_ADD_THEN_TASKMANAGER',
         'full_upstream_configuration_equivalence_claimed': False,
         'request_or_generation_semantics_established': False,
     }
@@ -156,6 +157,24 @@ class ExactTestAdapter:
         def dataset_wrapped_docs(dataset):
             return self.process_rows(dataset)
         self.spec, self.delta = adapt_config(self.raw, local_exact_rows, dataset_wrapped_docs)
+
+    def construct(self):
+        # Keep group structure OUT of TaskConfig; use the documented public APIs.
+        # Inline group overrides in the pinned factory were observed to leak the
+        # group key into its inline leaf. No upstream factory is patched here.
+        from lm_eval.tasks import TaskManager
+        from lm_eval.api.group import Group
+        require(blob(regular(Path(inspect.getsourcefile(Group)))) == '9f210f883e63d62b59c4f39b6c525d75735ece8f', 'GROUP_API_SOURCE_CHANGED')
+        manager = TaskManager(include_defaults=False)
+        leaf_config = copy.deepcopy(self.spec['task'][0])
+        leaf_config['task'] = TASK
+        require('group' not in leaf_config, 'GROUP_KEY_IN_LEAF')
+        task = manager.load(leaf_config)['tasks'][TASK]
+        group = Group(GROUP, aggregate_metric_list=[])
+        group.add(task)
+        grouped = manager.load(group)
+        require(grouped['tasks'][TASK] is task, 'GROUP_CHANGED_TASK_IDENTITY')
+        return grouped
 
     def verify_inputs(self) -> None:
         head = subprocess.check_output(['git', '-C', str(self.upstream), 'rev-parse', 'HEAD'], text=True).strip()

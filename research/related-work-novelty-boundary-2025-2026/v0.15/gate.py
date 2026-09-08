@@ -130,7 +130,7 @@ def run(repo, predecessor, upstream, cache, prior, output):
         for repeat in range(2):
             stage = 'adapter_construction_' + str(repeat)
             adapter = a.ExactTestAdapter(upstream, cache)
-            loaded = TaskManager(include_defaults=False).load(adapter.spec)
+            loaded = adapter.construct()
             require(sorted(loaded['tasks']) == [a.TASK] and sorted(loaded['groups']) == [a.GROUP], 'GROUP_OR_LEAF_MEMBERSHIP_WRONG')
             require(loaded['group_map'] == {a.GROUP: [a.TASK]}, 'GROUP_MEMBERSHIP_WRONG')
             task = loaded['tasks'][a.TASK]
@@ -231,7 +231,7 @@ class Hostile(unittest.TestCase):
         raw = self.fixture(); raw['metric_list'] = []
         with self.assertRaises(ValueError): a.validate_source_config(raw)
     def test_callback_exact(self):
-        a.validate_callback({'adapter_profile': a.PROFILE})
+        a.validate_callback({'adapter_profile': a.PROFILE, 'config_source': 'inline'})
     def test_callback_injection(self):
         for kwargs in ({}, {'adapter_profile': a.PROFILE, 'model_args': 'x'}, {'adapter_profile': 'other'}):
             with self.subTest(kwargs=kwargs), self.assertRaises(ValueError): a.validate_callback(kwargs)
