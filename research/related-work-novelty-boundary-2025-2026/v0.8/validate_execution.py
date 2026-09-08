@@ -93,7 +93,7 @@ def validate_result(result: dict[str, Any]) -> None:
     }
     assert execution["harness_provenance"] == "INDEPENDENT_REPRODUCTION_HARNESS"
     assert execution["dependency_source"] == "PINNED_UPSTREAM_UV_LOCK"
-    assert isinstance(execution["pytest_exit_code"], int) and execution["pytest_exit_code"] >= 0
+    assert execution["pytest_exit_code"] in {0, 1}
     for key in ("tests", "passed", "failures", "errors", "skipped"):
         assert isinstance(execution[key], int) and execution[key] >= 0
     assert execution["tests"] > 0
