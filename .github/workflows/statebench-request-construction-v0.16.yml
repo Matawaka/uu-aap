@@ -93,6 +93,13 @@ jobs:
           test -z "$(git -C /tmp/statebench-v014-source status --porcelain --untracked-files=no)"
           cp -r "$NEW_EVIDENCE" "$REQUEST_EVIDENCE/predecessor"
 
+      - name: Require fresh requests identical to first complete A/B evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.16/validate_qualification.py" --self-test
+          python "$RESEARCH/v0.16/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --evidence "$REQUEST_EVIDENCE"
+
       - name: Upload actual request evidence even on non-pass
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
