@@ -137,6 +137,7 @@ jobs:
           ANTHROPIC_API_KEY: ''
           GOOGLE_API_KEY: ''
           GEMINI_API_KEY: ''
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
           project="$GITHUB_WORKSPACE/research/related-work-novelty-boundary-2025-2026/v0.10/lock-project"
@@ -202,8 +203,6 @@ jobs:
           assert receipt['lock_sha256'] == '324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532'
           (out / 'validation-receipt.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n', encoding='utf-8')
           PY
-        env:
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
 
       - name: Bind exact v0.9 qualified predecessor
         shell: bash
