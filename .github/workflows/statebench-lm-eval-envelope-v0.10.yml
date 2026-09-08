@@ -1,0 +1,258 @@
+name: StateBench lm-eval Envelope v0.10
+
+on:
+  pull_request:
+    paths:
+      - 'research/related-work-novelty-boundary-2025-2026/v0.10/**'
+      - '.github/workflows/statebench-lm-eval-envelope-v0.10.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate-frozen-lock:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Matawaka candidate without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up exact Python 3.12.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12.14'
+
+      - name: Revalidate frozen v0.1-v0.9 research chain
+        run: |
+          set -euo pipefail
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/test_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/test_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/test_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.5/test_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/statebench_track_adapter.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.6/test_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_replay.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/test_replay.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_execution.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/test_execution_contract.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_availability.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/test_availability_contract.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.9/validate_qualification.py
+
+      - name: Validate v0.10 frozen static hostile and implementation boundary
+        run: |
+          set -euo pipefail
+          python research/related-work-novelty-boundary-2025-2026/v0.10/validate_envelope.py
+          python research/related-work-novelty-boundary-2025-2026/v0.10/test_envelope_contract.py
+          python research/related-work-novelty-boundary-2025-2026/v0.10/validate_implementation.py
+
+      - name: Checkout exact pinned StateBench source
+        uses: actions/checkout@v4
+        with:
+          repository: Parslee-ai/statebench
+          ref: 1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7
+          path: upstream-statebench
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact StateBench root and lm-eval plugin source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream-statebench rev-parse HEAD)" = '1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7'
+          test "$(git -C upstream-statebench rev-parse HEAD:pyproject.toml)" = '54a9ba6b6cb711074d771bf3da45a4f0cb17d166'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/pyproject.toml)" = '08cd4d62c138ef3a1c444f757bab3575651d47a3'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/README.md)" = '078fae2dd058eba61c6c152a5ba97b7188a3e915'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/lm_eval/tasks/statebench/_default_template.yaml)" = '63316e2a338534b2758fec290c79b2f6d5993a17'
+          test "$(git -C upstream-statebench rev-parse HEAD:statebench-lm-eval/lm_eval/tasks/statebench/utils.py)" = 'd868c2138084cf08a842bdddfc204d556d46ed92'
+          grep -F 'dataset_path: parslee/statebench' upstream-statebench/statebench-lm-eval/lm_eval/tasks/statebench/_default_template.yaml
+          grep -F 'temperature: 0' upstream-statebench/statebench-lm-eval/lm_eval/tasks/statebench/_default_template.yaml
+          grep -F 'do_sample: false' upstream-statebench/statebench-lm-eval/lm_eval/tasks/statebench/_default_template.yaml
+
+      - name: Checkout exact lm-eval v0.4.13 commit
+        uses: actions/checkout@v4
+        with:
+          repository: EleutherAI/lm-evaluation-harness
+          ref: ddd67220430a2470529f25fd5c05a576ca1057a0
+          path: upstream-lm-eval
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact lm-eval release surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git -C upstream-lm-eval rev-parse HEAD)" = 'ddd67220430a2470529f25fd5c05a576ca1057a0'
+          test "$(git -C upstream-lm-eval rev-parse HEAD:pyproject.toml)" = '1207dc59797b43b15a486eac05196390c0589b5d'
+          grep -F 'version = "0.4.13"' upstream-lm-eval/pyproject.toml
+          grep -F '"datasets>=2.16.0"' upstream-lm-eval/pyproject.toml
+          grep -F 'hf = ["transformers>=4.1","torch>=1.8", "accelerate>=0.26.0", "peft>=0.2.0",]' upstream-lm-eval/pyproject.toml
+          if grep -F 'datasets<4' upstream-lm-eval/pyproject.toml; then
+            echo 'Unexpected datasets<4 requirement in exact v0.4.13 project metadata' >&2
+            exit 1
+          fi
+
+      - name: Install exact uv only
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(python --version)" = 'Python 3.12.14'
+          python -m pip install --disable-pip-version-check 'uv==0.12.10'
+          test "$(uv --version | awk '{print $1" "$2}')" = 'uv 0.12.10'
+
+      - name: Validate canonical frozen lock without re-resolution
+        shell: bash
+        env:
+          HF_TOKEN: ''
+          HUGGING_FACE_HUB_TOKEN: ''
+          OPENAI_API_KEY: ''
+          ANTHROPIC_API_KEY: ''
+          GOOGLE_API_KEY: ''
+          GEMINI_API_KEY: ''
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          project="$GITHUB_WORKSPACE/research/related-work-novelty-boundary-2025-2026/v0.10/lock-project"
+          lock="$project/uv.lock"
+          test -f "$lock"
+          before="$(sha256sum "$lock" | awk '{print $1}')"
+          test "$before" = '324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532'
+          test "$(wc -c < "$lock" | tr -d ' ')" = '224954'
+          cd "$project"
+          uv lock --check
+          after="$(sha256sum uv.lock | awk '{print $1}')"
+          test "$after" = "$before"
+          test ! -d .venv
+          mkdir -p /tmp/statebench-v010-frozen
+          cp uv.lock /tmp/statebench-v010-frozen/uv.lock
+          python - <<'PY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import tomllib
+          from pathlib import Path
+          lock_path = Path('uv.lock')
+          raw = lock_path.read_bytes()
+          lock = tomllib.loads(raw.decode('utf-8'))
+          packages = sorted(
+              ({'name': p.get('name'), 'version': p.get('version'), 'source': p.get('source')} for p in lock.get('package', [])),
+              key=lambda x: (x['name'] or '', x['version'] or '', json.dumps(x['source'], sort_keys=True)),
+          )
+          assert len(packages) == 133
+          versions = {p['name']: p['version'] for p in packages}
+          expected = {
+              'lm-eval': '0.4.13', 'statebench': '2.0.0', 'statebench-lm-eval': '0.1.0',
+              'datasets': '5.0.1', 'torch': '2.14.0', 'transformers': '5.16.1',
+              'accelerate': '1.14.0', 'peft': '0.20.0',
+          }
+          for name, version in expected.items():
+              assert versions[name] == version, (name, versions[name])
+          out = Path('/tmp/statebench-v010-frozen')
+          (out / 'package-inventory.json').write_text(json.dumps(packages, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          receipt = {
+              'schema': 'matawaka.statebench-lm-eval-frozen-lock-validation/v0.10',
+              'pull_request_head_sha': os.environ.get('PR_HEAD_SHA'),
+              'workflow_event_sha': os.environ['GITHUB_SHA'],
+              'python': subprocess.check_output(['python', '--version'], text=True).strip(),
+              'uv': subprocess.check_output(['uv', '--version'], text=True).strip(),
+              'lock_sha256': hashlib.sha256(raw).hexdigest(),
+              'lock_bytes': len(raw),
+              'package_count': len(packages),
+              'lock_source': 'FROZEN_FIRST_GREEN',
+              'lock_reresolved_as_source_of_truth': False,
+              'environment_synced': False,
+              'runtime_imports_executed': False,
+              'model_executed': False,
+              'dataset_executed': False,
+              'huggingface_model_downloaded': False,
+              'external_model_api_called': False,
+              'user_credentials_used': False,
+              'official_statebench_benchmark_executed': False,
+              'runtime_compatibility_established': False,
+              'merge_authorized': False,
+          }
+          assert receipt['lock_sha256'] == '324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532'
+          (out / 'validation-receipt.json').write_text(json.dumps(receipt, indent=2, sort_keys=True) + '\n', encoding='utf-8')
+          PY
+
+      - name: Bind exact v0.9 qualified predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='1b2c5e622501dd07f4560d5356e0708fa9633833'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "v0.10 predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+          test "$(git rev-parse "$expected:research/related-work-novelty-boundary-2025-2026/v0.9")" = 'd409b43debc532a1423092200661b8a823990eda'
+
+      - name: Prove v0.10 additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='1b2c5e622501dd07f4560d5356e0708fa9633833'
+          mapfile -t changed < <(git diff --name-only "$base" HEAD)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              research/related-work-novelty-boundary-2025-2026/v0.10/*|.github/workflows/statebench-lm-eval-envelope-v0.10.yml)
+                ;;
+              *)
+                echo "Unexpected path outside bounded v0.10 envelope: $path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test "${#changed[@]}" -gt 0
+
+      - name: Prove predecessor and protected surfaces unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='1b2c5e622501dd07f4560d5356e0708fa9633833'
+          if ! git diff --quiet "$base" HEAD -- research/related-work-novelty-boundary-2025-2026/v0.1 research/related-work-novelty-boundary-2025-2026/v0.2 research/related-work-novelty-boundary-2025-2026/v0.3 research/related-work-novelty-boundary-2025-2026/v0.4 research/related-work-novelty-boundary-2025-2026/v0.5 research/related-work-novelty-boundary-2025-2026/v0.6 research/related-work-novelty-boundary-2025-2026/v0.7 research/related-work-novelty-boundary-2025-2026/v0.8 research/related-work-novelty-boundary-2025-2026/v0.9; then
+            echo 'v0.10 attempted to rewrite frozen predecessor research evidence' >&2
+            exit 1
+          fi
+          if git diff --name-only "$base" HEAD | grep -E '^(SPEC\.md|PRINCIPLES\.md|protocols/core/|proposals/poai/|interop/c2pa/|packages/|applications/|scripts/)'; then
+            echo 'v0.10 touched a protected semantic/runtime/product surface' >&2
+            exit 1
+          fi
+
+      - name: Upload frozen-lock validation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: statebench-lm-eval-frozen-v0.10-${{ github.sha }}
+          path: /tmp/statebench-v010-frozen
+          if-no-files-found: error
+          retention-days: 14
