@@ -120,6 +120,16 @@ jobs:
           echo '--- result sha256 ---'
           cat /tmp/statebench-v011-results.sha256
 
+      - name: Reproduce frozen first-green result and validate receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          root='research/related-work-novelty-boundary-2025-2026/v0.11'
+          cmp -s /tmp/statebench-v011-results.json "$root/results.json"
+          test "$(cat /tmp/statebench-v011-results.sha256)" = '08068dd3ebaf9546b5c1592cf77908487fc09cc8944f19f08c55ec9e298a8ce1'
+          python "$root/validate_implementation.py"
+          python "$root/validate_qualification.py"
+
       - name: Bind exact v0.10 qualified predecessor
         shell: bash
         run: |
