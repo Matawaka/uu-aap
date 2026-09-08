@@ -1,0 +1,65 @@
+{
+  "audit_execution": "INCONCLUSIVE",
+  "compatibility": "NOT_ESTABLISHED",
+  "environment": {
+    "python": "3.12.14",
+    "versions": {
+      "accelerate": "1.14.0",
+      "datasets": "5.0.1",
+      "lm-eval": "0.4.13",
+      "peft": "0.20.0",
+      "statebench": "2.0.0",
+      "tiktoken": "0.14.0",
+      "torch": "2.14.0",
+      "transformers": "5.16.1"
+    }
+  },
+  "failure_detail": "cannot import name 'TaskManager' from 'lm_eval.tasks' (/tmp/statebench-v013-venv/lib/python3.12/site-packages/lm_eval/tasks/__init__.py)",
+  "failure_stage": "imports",
+  "failure_type": "ImportError",
+  "forbidden_effect_attempts": [],
+  "inputs": {
+    "dataset_sha256": "7df54da79653488bcc2253c9431dc35fd5c2411ec12afe1f22958ed09395a7c9",
+    "documents_sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0",
+    "lm_eval_commit": "ddd67220430a2470529f25fd5c05a576ca1057a0",
+    "lm_eval_source_blobs": {
+      "api/task.py": "9255170de444bae6edd53797e3477031cd5d5da5",
+      "config/task.py": "c3a3b712be912789370d18f2abc89d7439dcf1a7",
+      "tasks/_factory.py": "a43b2d48d6f5c656b7cd4c0e16caec67db17c63c",
+      "tasks/_index.py": "c37260731dcf3a9dd38815ecb5eb3e3a3f7c93be",
+      "tasks/_yaml_loader.py": "9e608eb4cdf07927825b66aea5df884c9a742247",
+      "tasks/manager.py": "1e4d5b631f46a83367e7a834c1530d93ef923fe6"
+    },
+    "lock_sha256": "324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532",
+    "statebench_commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "task_source_blobs": {
+      "_default_template.yaml": "63316e2a338534b2758fec290c79b2f6d5993a17",
+      "statebench.yaml": "361bb6187e9d2a3dab708a4040a29024f0ccfa33",
+      "utils.py": "d868c2138084cf08a842bdddfc204d556d46ed92"
+    },
+    "tokenizer_sha256": "223921b76ee99bde995b7ff738513eef100fb51d18c93597a113bcffe865b2a7",
+    "v012_result_sha256": "677c354a5edf1052e1a616da65f84ca04d0df6e1eba60821e4080236250ceac3"
+  },
+  "non_effects": {
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "evaluation_or_generation_dispatched": false,
+    "full_upstream_task_compatibility_established": false,
+    "hub_dataset_loaded": false,
+    "language_model_executed": false,
+    "merge_authorized": false,
+    "model_downloaded": false,
+    "model_instantiated": false,
+    "model_performance_established": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "provider_api_called": false,
+    "release_authorized": false,
+    "scoring_or_judge_called": false,
+    "standards_authorized": false,
+    "user_credentials_used": false
+  },
+  "predecessor": "98f13086f8e2d75fc6692ff68e21700bdffa37a5",
+  "schema": "matawaka.statebench-task-compatibility-results/v0.13",
+  "status": "AUDIT_INCONCLUSIVE"
+}
