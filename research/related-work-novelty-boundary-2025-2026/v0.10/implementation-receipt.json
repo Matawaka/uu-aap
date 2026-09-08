@@ -1,0 +1,68 @@
+{
+  "schema": "matawaka.statebench-lm-eval-envelope-implementation-receipt/v0.10",
+  "issue": 976,
+  "predecessor": "1b2c5e622501dd07f4560d5356e0708fa9633833",
+  "predecessor_v09_tree": "d409b43debc532a1423092200661b8a823990eda",
+  "first_resolver": {
+    "pr_head": "c5b0f90e561bae00f192fd427c1c6addf034907f",
+    "workflow_event_sha": "c549b916157b755bc24bfd1eee392448dbb5af15",
+    "common_tree": "49d6251bbbac489038fd3f3dac080a2522d0b123",
+    "run": 34188348738,
+    "job": 101941119988,
+    "conclusion": "success",
+    "artifact_id": 10041299424,
+    "artifact_zip_sha256": "a36a86e4541d108caa47cc21d87ceafdee8c9053b703f9e5dcbb0b7e9005cd40"
+  },
+  "frozen_lock": {
+    "path": "research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock",
+    "sha256": "324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532",
+    "git_blob_sha1": "975210dd6ee71d3504e9ff2b8f482d7e4d6f5123",
+    "bytes": 224954,
+    "package_count": 133
+  },
+  "freeze": {
+    "run": 34188905760,
+    "job": 101942732978,
+    "conclusion": "success",
+    "commit": "19ced1d6854b1bc4459ce36c94169f2a4fb2efd8",
+    "commit_message": "research: freeze first-GREEN v0.10 dependency lock",
+    "changed_paths": [
+      "research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock"
+    ],
+    "source_was_exact_first_green_artifact": true,
+    "lock_sha_verified_before_write": true,
+    "unchanged_head_verified_before_write": true,
+    "fast_forward_only": true,
+    "one_shot_write_workflow_retired_commit": "f811cc212daffffa77f578b3424c5682d9e21a6f"
+  },
+  "source_correction": {
+    "incorrect_prior_hypothesis": "lm-eval v0.4.13 requires datasets<4",
+    "exact_observed_requirement": "datasets>=2.16.0",
+    "datasets_version_conflict_established": false,
+    "correction_commit": "9989d95d4257330a1f58f339130a56b96d2ab1a3"
+  },
+  "resolved_observations": {
+    "lm-eval": "0.4.13",
+    "statebench": "2.0.0",
+    "statebench-lm-eval": "0.1.0",
+    "datasets": "5.0.1",
+    "torch": "2.14.0",
+    "transformers": "5.16.1",
+    "accelerate": "1.14.0",
+    "peft": "0.20.0"
+  },
+  "effects": {
+    "dependency_graph_resolved": true,
+    "lock_frozen": true,
+    "environment_synced": false,
+    "runtime_imports_executed": false,
+    "model_executed": false,
+    "dataset_executed": false,
+    "huggingface_model_downloaded": false,
+    "external_model_api_called": false,
+    "user_credentials_used": false,
+    "official_statebench_benchmark_executed": false,
+    "runtime_compatibility_established": false,
+    "merge_authorized": false
+  }
+}
