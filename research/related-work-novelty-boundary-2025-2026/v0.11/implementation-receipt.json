@@ -1,0 +1,64 @@
+{
+  "schema": "matawaka.statebench-frozen-sync-import-implementation-receipt/v0.11",
+  "issue": 978,
+  "predecessor": "0b82089449e5a1401ad5f9310e2ce8ff43fa1bf1",
+  "predecessor_v010_tree": "65999dd76af39c79872131231355b3655c52573d",
+  "status": "FROZEN_SYNC_AND_IMPORT_SMOKE_EXECUTED",
+  "frozen_lock": {
+    "sha256": "324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532",
+    "git_blob_sha1": "975210dd6ee71d3504e9ff2b8f482d7e4d6f5123",
+    "bytes": 224954,
+    "declared_packages": 133,
+    "sync_mode": "uv sync --frozen",
+    "lock_unchanged_before_after": true
+  },
+  "runtime": {
+    "python": "3.12.14",
+    "uv_distribution": "0.12.10",
+    "uv_cli_observed": "uv 0.12.10 (x86_64-unknown-linux-gnu)",
+    "runner_os": "Ubuntu 24.04.4 LTS",
+    "runner_image": "ubuntu-24.04",
+    "runner_image_version": "20260831.293.1"
+  },
+  "observed_imports": {
+    "statebench": "2.0.0",
+    "lm_eval": "0.4.13",
+    "datasets": "5.0.1",
+    "torch": "2.14.0",
+    "transformers": "5.16.1",
+    "accelerate": "1.14.0",
+    "peft": "0.20.0"
+  },
+  "smoke_controls": {
+    "provider_credentials_absent": true,
+    "hf_hub_offline": true,
+    "hf_datasets_offline": true,
+    "transformers_offline": true,
+    "socket_network_guard_active_before_imports": true
+  },
+  "result": {
+    "path": "research/related-work-novelty-boundary-2025-2026/v0.11/results.json",
+    "sha256": "08068dd3ebaf9546b5c1592cf77908487fc09cc8944f19f08c55ec9e298a8ce1",
+    "bytes": 1620
+  },
+  "non_effects": {
+    "language_model_executed": false,
+    "statebench_task_loaded": false,
+    "dataset_loaded": false,
+    "dataset_downloaded": false,
+    "huggingface_model_downloaded": false,
+    "provider_api_called": false,
+    "user_credentials_used": false,
+    "official_statebench_benchmark_executed": false,
+    "model_performance_established": false,
+    "task_compatibility_established": false,
+    "exact_data_plugin_processing_established": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "novelty_established": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "merge_authorized": false
+  }
+}
