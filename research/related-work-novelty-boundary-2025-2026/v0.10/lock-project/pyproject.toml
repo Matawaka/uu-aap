@@ -1,0 +1,13 @@
+[project]
+name = "matawaka-statebench-lm-eval-envelope"
+version = "0.0.0"
+description = "Resolver-only reproduction envelope for the pinned StateBench lm-eval integration"
+requires-python = ">=3.12.14,<3.13"
+dependencies = [
+  "lm-eval[hf]==0.4.13",
+  "statebench @ git+https://github.com/Parslee-ai/statebench.git@1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+  "statebench-lm-eval @ git+https://github.com/Parslee-ai/statebench.git@1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7#subdirectory=statebench-lm-eval",
+]
+
+[tool.uv]
+package = false
