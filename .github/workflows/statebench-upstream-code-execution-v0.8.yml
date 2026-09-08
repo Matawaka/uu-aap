@@ -19,10 +19,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python 3.12
+      - name: Set up exact Python 3.12.14
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.12.14'
 
       - name: Revalidate frozen v0.1-v0.7 research chain
         run: |
@@ -81,12 +81,14 @@ jobs:
           test "$(git -C upstream-statebench rev-parse HEAD:pyproject.toml)" = '54a9ba6b6cb711074d771bf3da45a4f0cb17d166'
           test "$(git -C upstream-statebench rev-parse HEAD:uv.lock)" = '58b24498b3ffb56247482613c5c01dec3e46bc0d'
 
-      - name: Install uv runner and frozen upstream dev environment
+      - name: Install exact uv runner and frozen upstream dev environment
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --disable-pip-version-check uv
+          test "$(python --version)" = 'Python 3.12.14'
+          python -m pip install --disable-pip-version-check 'uv==0.12.10'
           uv --version | tee /tmp/statebench-v08-uv-version.txt
+          test "$(uv --version | awk '{print $1" "$2}')" = 'uv 0.12.10'
           cd upstream-statebench
           uv sync --frozen --extra dev
           uv run --frozen python - <<'PY'
@@ -95,6 +97,7 @@ jobs:
           observed = importlib.metadata.version('statebench')
           print(f'python={sys.version.split()[0]}')
           print(f'statebench={observed}')
+          assert sys.version.split()[0] == '3.12.14'
           assert observed == '2.0.0'
           PY
 
@@ -132,19 +135,19 @@ jobs:
           echo '--- v0.8 deterministic result SHA-256 ---'
           cat /tmp/statebench-v08-results.sha256
 
-      - name: Reproduce frozen result when present
+      - name: Reproduce frozen result and validate receipts
         shell: bash
         run: |
           set -euo pipefail
           result='research/related-work-novelty-boundary-2025-2026/v0.8/results.json'
           digest='research/related-work-novelty-boundary-2025-2026/v0.8/results.sha256'
-          if [ -f "$result" ]; then
-            cmp "$result" /tmp/statebench-v08-results.json
-            python research/related-work-novelty-boundary-2025-2026/v0.8/validate_execution.py
-          fi
-          if [ -f "$digest" ]; then
-            test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v08-results.sha256)"
-          fi
+          test -f "$result"
+          test -f "$digest"
+          cmp "$result" /tmp/statebench-v08-results.json
+          test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v08-results.sha256)"
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_execution.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.8/validate_qualification.py
 
       - name: Bind exact v0.7 stacked predecessor
         shell: bash
