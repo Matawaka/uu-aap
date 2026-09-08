@@ -78,6 +78,11 @@ def main() -> int:
     parser.add_argument("--hash-output", type=Path)
     args = parser.parse_args()
 
+    if args.pytest_exit_code not in {0, 1}:
+        raise ValueError(
+            f"pytest exit {args.pytest_exit_code} is an execution blocker, not a completed suite PASS/NONPASS result"
+        )
+
     observed = verify_source(args.source_dir)
     credential_presence = {key: bool(os.environ.get(key)) for key in MODEL_KEYS}
     if any(credential_presence.values()):
