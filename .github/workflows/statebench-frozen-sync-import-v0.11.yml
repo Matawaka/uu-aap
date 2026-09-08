@@ -1,0 +1,145 @@
+name: StateBench Frozen Sync Import v0.11
+
+on:
+  pull_request:
+    branches:
+      - research/statebench-lm-eval-envelope-v0.10-qualified-base
+
+permissions:
+  contents: read
+
+jobs:
+  frozen-sync-import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENAI_API_KEY: ""
+      ANTHROPIC_API_KEY: ""
+      GOOGLE_API_KEY: ""
+      GEMINI_API_KEY: ""
+      HF_TOKEN: ""
+      HUGGING_FACE_HUB_TOKEN: ""
+      HF_HUB_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      UV_PROJECT_ENVIRONMENT: /tmp/statebench-v011-venv
+
+    steps:
+      - name: Checkout Matawaka candidate without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up exact Python 3.12.14
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12.14
+
+      - name: Revalidate frozen v0.1-v0.10 research chain
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/related-work-novelty-boundary-2025-2026/v0.10/validate_envelope.py
+          python research/related-work-novelty-boundary-2025-2026/v0.10/test_envelope_contract.py
+          python research/related-work-novelty-boundary-2025-2026/v0.10/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.10/validate_qualification.py
+
+      - name: Validate v0.11 static and hostile boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          python research/related-work-novelty-boundary-2025-2026/v0.11/validate_contract.py
+
+      - name: Install exact uv only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check --no-input 'uv==0.12.10'
+          test "$(uv --version)" = 'uv 0.12.10'
+
+      - name: Verify frozen lock identity before sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          lock='research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock'
+          test "$(wc -c < "$lock" | tr -d ' ')" = '224954'
+          test "$(sha256sum "$lock" | awk '{print $1}')" = '324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532'
+          test "$(git hash-object "$lock")" = '975210dd6ee71d3504e9ff2b8f482d7e4d6f5123'
+
+      - name: Sync exact frozen environment without re-resolution
+        shell: bash
+        run: |
+          set -euo pipefail
+          project='research/related-work-novelty-boundary-2025-2026/v0.10/lock-project'
+          uv sync --frozen --project "$project"
+          test -x /tmp/statebench-v011-venv/bin/python
+
+      - name: Verify frozen lock identity after sync
+        shell: bash
+        run: |
+          set -euo pipefail
+          lock='research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock'
+          test "$(wc -c < "$lock" | tr -d ' ')" = '224954'
+          test "$(sha256sum "$lock" | awk '{print $1}')" = '324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532'
+          test "$(git hash-object "$lock")" = '975210dd6ee71d3504e9ff2b8f482d7e4d6f5123'
+          test -z "$(git status --porcelain -- research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock)"
+
+      - name: Execute offline network-blocked import smoke only
+        shell: bash
+        run: |
+          set -euo pipefail
+          /tmp/statebench-v011-venv/bin/python \
+            research/related-work-novelty-boundary-2025-2026/v0.11/run_import_smoke.py \
+            --output /tmp/statebench-v011-results.json
+          sha256sum /tmp/statebench-v011-results.json | awk '{print $1}' > /tmp/statebench-v011-results.sha256
+          cat /tmp/statebench-v011-results.json
+          echo '--- result sha256 ---'
+          cat /tmp/statebench-v011-results.sha256
+
+      - name: Bind exact v0.10 qualified predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='0b82089449e5a1401ad5f9310e2ce8ff43fa1bf1'
+          tree='65999dd76af39c79872131231355b3655c52573d'
+          git cat-file -e "${base}^{commit}"
+          test "$(git rev-parse "${base}:research/related-work-novelty-boundary-2025-2026/v0.10")" = "$tree"
+
+      - name: Prove v0.11 additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='0b82089449e5a1401ad5f9310e2ce8ff43fa1bf1'
+          bad=0
+          while IFS= read -r path; do
+            case "$path" in
+              research/related-work-novelty-boundary-2025-2026/v0.11/*|.github/workflows/statebench-frozen-sync-import-v0.11.yml) ;;
+              *) echo "unauthorized v0.11 path: $path" >&2; bad=1 ;;
+            esac
+          done < <(git diff --name-only "$base" HEAD)
+          test "$bad" = 0
+
+      - name: Prove predecessor and protected surfaces unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='0b82089449e5a1401ad5f9310e2ce8ff43fa1bf1'
+          test "$(git rev-parse "${base}:research/related-work-novelty-boundary-2025-2026/v0.10")" = "$(git rev-parse 'HEAD:research/related-work-novelty-boundary-2025-2026/v0.10')"
+          for p in SPEC.md poai interop packages applications scripts; do
+            if git cat-file -e "${base}:$p" 2>/dev/null && git cat-file -e "HEAD:$p" 2>/dev/null; then
+              test "$(git rev-parse "${base}:$p")" = "$(git rev-parse "HEAD:$p")"
+            fi
+          done
+
+      - name: Upload v0.11 smoke evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: statebench-frozen-sync-import-v0.11
+          path: |
+            /tmp/statebench-v011-results.json
+            /tmp/statebench-v011-results.sha256
+          if-no-files-found: error
+          retention-days: 30
