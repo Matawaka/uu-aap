@@ -109,6 +109,13 @@ jobs:
             cp "$RESEARCH/v0.19/$file" "$FILTER_EVIDENCE/source/$file"
           done
 
+      - name: Require fresh filter evidence identical to first A/B pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.19/validate_qualification.py" --self-test
+          python "$RESEARCH/v0.19/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --evidence "$FILTER_EVIDENCE"
+
       - name: Upload actual filter evidence even on non-pass
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

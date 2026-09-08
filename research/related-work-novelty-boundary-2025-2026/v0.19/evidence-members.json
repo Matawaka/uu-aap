@@ -1,0 +1,63 @@
+{
+  "new_members": {
+    "bridge.json": {
+      "bytes": 466074,
+      "sha256": "f781cc7567cbbcbdcffb63fb2d4b90dadba978aa927d85901331f1d52b3f7ab6"
+    },
+    "filtered-instances.json": {
+      "bytes": 771511,
+      "sha256": "5a088fdb0e79a158ba30e1675d46f57d872f224ab0b51761eca2732ea03604a6"
+    },
+    "imports-after-filter.json": {
+      "bytes": 976,
+      "sha256": "c418614b54031769ca1d6f951ce0d342e4b7328e340f199f9e5686fbf02d37fa"
+    },
+    "namespace-after-filter.json": {
+      "bytes": 2900822,
+      "sha256": "883c1aadac75b1051b02f723bdd4e93f52ff6447872332fba7d16632a06aed46"
+    },
+    "native-reference.json": {
+      "bytes": 250103,
+      "sha256": "1982e9fbdb42b166bc84b6c98e73a96cc87ccd20bf90e3ebfe6ca89ae75140cb"
+    },
+    "raw-filter-diagnostics.json": {
+      "bytes": 1038,
+      "sha256": "8d6b08c8e69dad21b46c66a09151dd152b2bc7fb61b30efdac64fe1aed59817d"
+    },
+    "rejections.json": {
+      "bytes": 18425,
+      "sha256": "e2ec7da4f86b396a65e14553c9cdfe1b9a01566a7b8b05f6385867bcf65c3c10"
+    },
+    "responses.json": {
+      "bytes": 119666,
+      "sha256": "be6f779bb3ae3111dcbbeb43cd47dca52d8d854c2196aa7f1b6e158b85064b43"
+    },
+    "results.json": {
+      "bytes": 3951,
+      "sha256": "d36235a0b6fd3d708e15dde16b736b70015be524e7486408d77e10048da6bdae"
+    },
+    "source/README.md": {
+      "bytes": 4654,
+      "sha256": "5d9f4affa62fdc5cd1ee6cba1f6c842630236c11afcb713c4d67e1ddc12c8f72"
+    },
+    "source/adapter.py": {
+      "bytes": 8470,
+      "sha256": "32fea602bbc53aad87a7ce4b55fb518a5c1477b93595b07594ceb37dd3076424"
+    },
+    "source/contract.json": {
+      "bytes": 1220,
+      "sha256": "25ffd222b3a34f572d26abe2bd75967f45ae28ba1aacee1205af9e6c6168de3f"
+    },
+    "source/gate.py": {
+      "bytes": 24342,
+      "sha256": "c766ff69df3a62803ed22498e1f136de68a0771151457be16090a965e8dd03ac"
+    },
+    "source/replay_predecessor.py": {
+      "bytes": 2343,
+      "sha256": "52b69d4d7816914ffbc4c4e5e3e59f89bd3bd8649c52fa45c031d31224197693"
+    }
+  },
+  "predecessor_manifest_sha256": "3a1a253b8d51278edaca9e3385c71e6b5da4750216126a9c9c37bd721833d368",
+  "schema": "matawaka.layered-evidence-members/v0.19",
+  "total_file_count": 61
+}
