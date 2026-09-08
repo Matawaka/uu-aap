@@ -1,0 +1,43 @@
+{
+  "schema": "matawaka.statebench-full-payload-replay-protocol/v0.7",
+  "issue": 970,
+  "predecessor": "6823b9765894f410960c15ad797c4f6949c6225e",
+  "predecessor_v06_tree": "9372de8b191fd4d4a024e16723556eba097e2cfc",
+  "purpose": "FULL_PINNED_STATEBENCH_TEST_PAYLOAD_REPLAY_FOR_FIXTURE_LEVEL_PORTABILITY_PRESSURE",
+  "execution_evidence_level": "UPSTREAM_DATASET_ADAPTED",
+  "target_replay_status": "FULL_PINNED_TEST_PAYLOAD_REPLAYED",
+  "requirements": {
+    "network_fetch_exact_pinned_commit": true,
+    "verify_expected_bytes": true,
+    "verify_git_blob_sha1": true,
+    "parse_all_nonempty_jsonl_records": true,
+    "require_unique_fixture_ids": true,
+    "require_exact_fixture_count": 209,
+    "bind_frozen_v06_track_mapping": true,
+    "derive_fixture_level_mapping_counts": true,
+    "derive_actual_track_domain_query_counts": true,
+    "preserve_unknown_tracks_as_unmapped": true,
+    "emit_deterministic_result": true
+  },
+  "performance_fields": {
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null,
+    "statebench_model_score": null,
+    "matawaka_model_score": null
+  },
+  "non_effects": {
+    "upstream_implementation_executed": false,
+    "external_model_executed": false,
+    "statebench_baseline_executed": false,
+    "matawaka_detection_advantage_established": false,
+    "matawaka_detection_non_advantage_established": false,
+    "real_world_superiority_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "patentability_established": false,
+    "production_readiness_established": false,
+    "release_authorized": false,
+    "standards_submission_authorized": false,
+    "merge_authorized": false
+  }
+}
