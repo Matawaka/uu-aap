@@ -107,6 +107,13 @@ jobs:
             cp "$RESEARCH/v0.18/$file" "$BOUND_EVIDENCE/source/$file"
           done
 
+      - name: Require fresh bound scoring evidence identical to first A/B pair
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$RESEARCH/v0.18/validate_qualification.py" --self-test
+          python "$RESEARCH/v0.18/validate_qualification.py" --repo "$GITHUB_WORKSPACE" --evidence "$BOUND_EVIDENCE"
+
       - name: Upload actual bound scoring evidence even on non-pass
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
