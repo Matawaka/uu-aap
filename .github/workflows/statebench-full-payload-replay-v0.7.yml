@@ -1,0 +1,138 @@
+name: StateBench Full Payload Replay v0.7
+
+on:
+  pull_request:
+    paths:
+      - 'research/related-work-novelty-boundary-2025-2026/v0.7/**'
+      - '.github/workflows/statebench-full-payload-replay-v0.7.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Revalidate frozen v0.1-v0.6 research chain
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/test_landscape.py
+          python research/related-work-novelty-boundary-2025-2026/v0.1/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/test_pressure.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.2/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/test_foundational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.3/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/test_taxonomy.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.4/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.5/test_benchmark.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.5/validate_qualification.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/statebench_track_adapter.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/runner.py --check
+          python research/related-work-novelty-boundary-2025-2026/v0.6/test_operational.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_implementation.py
+          python research/related-work-novelty-boundary-2025-2026/v0.6/validate_qualification.py
+
+      - name: Validate v0.7 static replay boundary and hostile tests
+        run: |
+          python research/related-work-novelty-boundary-2025-2026/v0.7/validate_replay.py
+          python research/related-work-novelty-boundary-2025-2026/v0.7/test_replay.py
+
+      - name: Fetch and replay exact pinned StateBench v1.0 test payload
+        run: |
+          set -euo pipefail
+          python research/related-work-novelty-boundary-2025-2026/v0.7/replay_statebench.py \
+            --output /tmp/statebench-v07-results.json \
+            --hash-output /tmp/statebench-v07-results.sha256
+          echo '--- v0.7 replay result ---'
+          cat /tmp/statebench-v07-results.json
+          echo '--- deterministic result sha256 ---'
+          cat /tmp/statebench-v07-results.sha256
+
+      - name: Reproduce checked-in replay result when present
+        shell: bash
+        run: |
+          set -euo pipefail
+          result='research/related-work-novelty-boundary-2025-2026/v0.7/results.json'
+          digest='research/related-work-novelty-boundary-2025-2026/v0.7/results.sha256'
+          if [ -f "$result" ]; then
+            cmp "$result" /tmp/statebench-v07-results.json
+            python research/related-work-novelty-boundary-2025-2026/v0.7/validate_replay.py
+          fi
+          if [ -f "$digest" ]; then
+            test "$(tr -d '\r\n' < "$digest")" = "$(tr -d '\r\n' < /tmp/statebench-v07-results.sha256)"
+          fi
+
+      - name: Bind exact v0.6 stacked predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='6823b9765894f410960c15ad797c4f6949c6225e'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "v0.7 stacked predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+          observed_tree="$(git rev-parse "$expected:research/related-work-novelty-boundary-2025-2026/v0.6")"
+          test "$observed_tree" = '9372de8b191fd4d4a024e16723556eba097e2cfc'
+          observed_mapping="$(git rev-parse "$expected:research/related-work-novelty-boundary-2025-2026/v0.6/track-mapping.json")"
+          test "$observed_mapping" = 'f108b84827d4076c7ace196480c94aa4e127d3de'
+
+      - name: Prove v0.7 additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='6823b9765894f410960c15ad797c4f6949c6225e'
+          mapfile -t changed < <(git diff --name-only "$base" HEAD)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              research/related-work-novelty-boundary-2025-2026/v0.7/*|.github/workflows/statebench-full-payload-replay-v0.7.yml)
+                ;;
+              *)
+                echo "Unexpected path outside bounded v0.7 replay: $path" >&2
+                exit 1
+                ;;
+            esac
+          done
+          test "${#changed[@]}" -gt 0
+
+      - name: Prove frozen research and semantic runtime surfaces unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='6823b9765894f410960c15ad797c4f6949c6225e'
+          if ! git diff --quiet "$base" HEAD -- \
+            research/related-work-novelty-boundary-2025-2026/v0.1 \
+            research/related-work-novelty-boundary-2025-2026/v0.2 \
+            research/related-work-novelty-boundary-2025-2026/v0.3 \
+            research/related-work-novelty-boundary-2025-2026/v0.4 \
+            research/related-work-novelty-boundary-2025-2026/v0.5 \
+            research/related-work-novelty-boundary-2025-2026/v0.6; then
+            echo 'v0.7 attempted to rewrite frozen predecessor research evidence' >&2
+            exit 1
+          fi
+          if git diff --name-only "$base" HEAD | grep -E '^(SPEC\.md|PRINCIPLES\.md|protocols/core/|proposals/poai/|interop/c2pa/|packages/|applications/|scripts/)'; then
+            echo 'v0.7 touched a protected semantic/runtime/product surface' >&2
+            exit 1
+          fi
