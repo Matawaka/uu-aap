@@ -1,0 +1,34 @@
+{
+  "blocked_predecessor": "497002001f9eac4adafe2db525d5bb07d9205d21",
+  "excluded_distributions": [
+    "statebench-lm-eval"
+  ],
+  "expected_installed_distributions": 129,
+  "external_plugin_blob": "d868c2138084cf08a842bdddfc204d556d46ed92",
+  "external_plugin_commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+  "fresh_environment_and_cache_per_job": true,
+  "full_original_project_sync_claimed": false,
+  "last_fully_qualified_predecessor": "98f13086f8e2d75fc6692ff68e21700bdffa37a5",
+  "lock_path": "research/related-work-novelty-boundary-2025-2026/v0.10/lock-project/uv.lock",
+  "lock_sha256": "324ab96f208bfbe1e6a2d03bc6ceb4bf5aa4867a57eeac5217e81571b7925532",
+  "machine": "x86_64",
+  "name": "MATAWAKA_NAMESPACE_SAFE_EXTERNAL_PLUGIN_SOURCE",
+  "namespace_scope": "lm_eval/",
+  "python": "3.12.14",
+  "reinstall_or_initializer_repair_allowed": false,
+  "requested_extras": {
+    "lm-eval": [
+      "hf"
+    ]
+  },
+  "runner": "ubuntu-24.04",
+  "schema": "matawaka.statebench-install-selection/v0.14",
+  "sync_selection": [
+    "--frozen",
+    "--no-install-package",
+    "statebench-lm-eval"
+  ],
+  "two_independent_jobs_required": true,
+  "uv": "0.12.10",
+  "whole_dependency_filesystem_audit_claimed": false
+}
