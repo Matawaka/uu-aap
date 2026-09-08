@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 from collections import Counter
 import copy
+from dataclasses import fields, is_dataclass
 import hashlib
 import importlib.util
 import json
@@ -91,6 +92,20 @@ def boundary(repo: Path) -> None:
         status, path = line.split('\t', 1)
         require(status == 'A' and (path.startswith(ROOT + '/v0.16/') or path == WF), 'PROTECTED_OR_NONADDITIVE_DIFF')
     require(not git(repo, 'diff', '--name-only'), 'TRACKED_WORKTREE_CHANGED')
+
+
+def configuration_snapshot(value: Any) -> tuple:
+    """In-process equality only; callable identities never enter durable results."""
+    if callable(value):
+        return ('callable', id(value))
+    if is_dataclass(value):
+        return ('dataclass', type(value).__qualname__, tuple((f.name, configuration_snapshot(getattr(value, f.name))) for f in fields(value)))
+    if isinstance(value, dict):
+        return ('dict', tuple((k, configuration_snapshot(v)) for k, v in sorted(value.items())))
+    if isinstance(value, (list, tuple)):
+        return (type(value).__name__, tuple(configuration_snapshot(v) for v in value))
+    require(value is None or type(value) in (str, int, float, bool), 'UNSUPPORTED_CONFIG_VALUE_TYPE')
+    return (type(value).__name__, value)
 
 
 def reference_prompt(doc: dict) -> str:
@@ -230,7 +245,7 @@ def run(repo: Path, predecessor: Path, upstream: Path, cache: Path, prior: Path,
             require(task.config.description == DESCRIPTION, 'DESCRIPTION_CHANGED')
             require(encode(task.config.generation_kwargs) == encode(GENERATION), 'GENERATION_CHANGED')
             require(task.config.doc_to_text is adapter.raw['doc_to_text'] and task.config.doc_to_target is adapter.raw['doc_to_target'], 'FORMAT_METHOD_REPLACED')
-            config_before = encode(task.dump_config())
+            config_before = configuration_snapshot(task.config)
             require(sha(encode([dict(x) for x in task.task_docs])) == DOCS, 'TASK_DOCS_CHANGED')
             for build in range(2 if repetition == 0 else 1):
                 stage = 'build_requests_' + str(len(traces))
@@ -244,7 +259,7 @@ def run(repo: Path, predecessor: Path, upstream: Path, cache: Path, prior: Path,
                 until_ids = {id(inst.arguments[1]['until']) for inst in instances}
                 require(len(kw_ids) == len(until_ids) == 251, 'SHARED_GENERATION_MUTABLES')
                 require(id(task.config.generation_kwargs) not in kw_ids and id(task.config.generation_kwargs['until']) not in until_ids, 'GENERATION_ALIASES_TASK_CONFIG')
-                require(encode(task.dump_config()) == config_before, 'REQUEST_BUILD_MUTATED_CONFIG')
+                require(configuration_snapshot(task.config) == config_before, 'REQUEST_BUILD_MUTATED_CONFIG')
                 require(sha(encode([dict(x) for x in task.task_docs])) == DOCS, 'REQUEST_BUILD_MUTATED_TASK_DOCS')
                 traces.append(trace)
             require(adapter.plugin._judge is None, 'JUDGE_INITIALIZED')
@@ -292,6 +307,19 @@ def run(repo: Path, predecessor: Path, upstream: Path, cache: Path, prior: Path,
 
 
 class Hostile(unittest.TestCase):
+    def test_configuration_snapshot_with_nested_callables(self):
+        from dataclasses import dataclass
+        @dataclass
+        class Config:
+            nested: dict
+        f, h = lambda: None, lambda: None
+        c = Config({'nested': [f], 'count': 1})
+        self.assertEqual(configuration_snapshot(c), configuration_snapshot(copy.deepcopy(c)))
+        before = configuration_snapshot(c)
+        c.nested['nested'][0] = h
+        self.assertNotEqual(before, configuration_snapshot(c))
+        self.assertNotEqual(configuration_snapshot(True), configuration_snapshot(1))
+        with self.assertRaises(ValueError): configuration_snapshot(object())
     def fixture(self):
         return reference_requests([dict(context='History', query='Question', expected_decision='SECRET', query_idx=0)])
     def test_reference_excludes_answer(self):
