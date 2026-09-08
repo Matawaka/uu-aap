@@ -1,0 +1,68 @@
+{
+  "credentials_present": [],
+  "imports": [
+    {
+      "distribution": "statebench",
+      "imported": true,
+      "module": "statebench",
+      "version": "2.0.0"
+    },
+    {
+      "distribution": "lm_eval",
+      "imported": true,
+      "module": "lm_eval",
+      "version": "0.4.13"
+    },
+    {
+      "distribution": "datasets",
+      "imported": true,
+      "module": "datasets",
+      "version": "5.0.1"
+    },
+    {
+      "distribution": "torch",
+      "imported": true,
+      "module": "torch",
+      "version": "2.14.0"
+    },
+    {
+      "distribution": "transformers",
+      "imported": true,
+      "module": "transformers",
+      "version": "5.16.1"
+    },
+    {
+      "distribution": "accelerate",
+      "imported": true,
+      "module": "accelerate",
+      "version": "1.14.0"
+    },
+    {
+      "distribution": "peft",
+      "imported": true,
+      "module": "peft",
+      "version": "0.20.0"
+    }
+  ],
+  "network_guard_active": true,
+  "non_effects": {
+    "dataset_downloaded": false,
+    "dataset_loaded": false,
+    "huggingface_model_downloaded": false,
+    "language_model_executed": false,
+    "merge_authorized": false,
+    "model_performance_established": false,
+    "official_statebench_benchmark_executed": false,
+    "provider_api_called": false,
+    "statebench_task_loaded": false,
+    "user_credentials_used": false
+  },
+  "offline_controls": {
+    "HF_DATASETS_OFFLINE": "1",
+    "HF_HUB_OFFLINE": "1",
+    "TRANSFORMERS_OFFLINE": "1"
+  },
+  "python": "3.12.14",
+  "schema": "matawaka.statebench-frozen-sync-import-result/v0.11",
+  "status": "FROZEN_SYNC_AND_IMPORT_SMOKE_EXECUTED"
+}
