@@ -1,0 +1,44 @@
+{
+  "builds": 3,
+  "context_rule": "DESCRIPTION_PLUS_DOC_PROMPT_WITH_NO_EXTRA_SEPARATOR",
+  "description_sha256": "6039c1fa651581d37e45968f4e65578430ba46d76f6c2cb886f0a47c52ee5f6c",
+  "dispatch_authorized": false,
+  "expected_call_counts": {
+    "build_all_requests": 3,
+    "construct_requests": 753,
+    "disabled_cache_reads": 3,
+    "fewshot_context": 753,
+    "instance_initializations": 753,
+    "upstream_process_docs": 5
+  },
+  "expected_requests_bytes": 744403,
+  "expected_requests_sha256": "05740117ac6a6b139d51882873f99eafa0373c6874eb00c7871ee8772bbc36be",
+  "expected_source_documents_sha256": "30b756a7eb85db5ceeae843f178c34bff3fa1690c73635160d25ed73cabd78f0",
+  "flags": {
+    "apply_chat_template": false,
+    "cache_requests": false,
+    "chat_template": null,
+    "fewshot_as_multiturn": false,
+    "limit": null,
+    "rank": 0,
+    "rewrite_requests_cache": false,
+    "samples": null,
+    "system_instruction": null,
+    "tokenizer_name": "",
+    "world_size": 1
+  },
+  "generation": {
+    "do_sample": false,
+    "max_gen_toks": 256,
+    "temperature": 0.0,
+    "until": [
+      "\n",
+      "\n\n"
+    ]
+  },
+  "oracle_is_not_runtime_observation": true,
+  "predecessor": "4b4a7959b6821fa93c31ef2ba2e015b415d5ada9",
+  "profile": "MATAWAKA_STATEBENCH_EXACT_PLAIN_REQUESTS_V016",
+  "request_count": 251,
+  "schema": "matawaka.plain-request-contract/v0.16"
+}
