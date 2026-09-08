@@ -1,0 +1,65 @@
+{
+  "schema": "matawaka.statebench-lm-eval-envelope-protocol/v0.10",
+  "issue": 976,
+  "predecessor": "1b2c5e622501dd07f4560d5356e0708fa9633833",
+  "predecessor_v09_tree": "d409b43debc532a1423092200661b8a823990eda",
+  "target_status": "JOINT_INTEGRATION_DEPENDENCY_LOCK_MATERIALIZED",
+  "selected_sources": {
+    "statebench_repository": "Parslee-ai/statebench",
+    "statebench_commit": "1b87cf6f43bcd6ec21e01bdec5705fcba04e71a7",
+    "statebench_package_version": "2.0.0",
+    "statebench_lm_eval_version": "0.1.0",
+    "lm_eval_version": "0.4.13",
+    "lm_eval_signed_tag": "v0.4.13",
+    "lm_eval_annotated_tag_object": "eb4678c395c2c1f157d462b8f3a09831160c861a",
+    "lm_eval_commit": "ddd67220430a2470529f25fd5c05a576ca1057a0"
+  },
+  "environment": {
+    "python": "3.12.14",
+    "uv": "0.12.10",
+    "kind": "MATAWAKA_JOINT_INTEGRATION_ENVIRONMENT",
+    "is_native_statebench_uv_lock": false
+  },
+  "requirements": {
+    "resolve_complete_uv_lock": true,
+    "statebench_source_exact_git_commit": true,
+    "lm_eval_exact_release_version": true,
+    "freeze_lock_before_model_execution": true,
+    "emit_lock_sha256": true,
+    "emit_resolved_package_inventory": true,
+    "no_model_execution": true,
+    "no_dataset_download": true,
+    "no_huggingface_model_download": true,
+    "no_user_credentials": true,
+    "no_official_benchmark_claim": true
+  },
+  "known_seams": {
+    "statebench_native_v08_lock_datasets_version": "4.6.0",
+    "lm_eval_v0413_release_declares_datasets_below_4": true,
+    "joint_environment_may_resolve_different_transitives_than_native_statebench_lock": true,
+    "ordinary_statebench_lm_eval_task_dataset_path_is_hub": "parslee/statebench"
+  },
+  "performance": {
+    "decision_accuracy": null,
+    "statebench_model_score": null,
+    "sfrr": null,
+    "held_out_detection_recall": null,
+    "benign_false_positive_rate": null
+  },
+  "non_effects": {
+    "model_executed": false,
+    "dataset_executed": false,
+    "official_statebench_benchmark_executed": false,
+    "native_statebench_environment_reproduced": false,
+    "user_credentials_used": false,
+    "paid_external_model_called": false,
+    "detection_advantage_established": false,
+    "detection_non_advantage_established": false,
+    "novelty_established": false,
+    "world_first": false,
+    "production_ready": false,
+    "release_authorized": false,
+    "standards_authorized": false,
+    "merge_authorized": false
+  }
+}
