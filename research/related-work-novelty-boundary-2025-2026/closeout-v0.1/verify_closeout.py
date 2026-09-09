@@ -10,6 +10,10 @@ import unittest
 
 BASE = 'ec4e6826ff2a1be90751e44077d8fec3e96ecbb2'
 MAIN = '0e74f89695bbcb02c759000752696c322d908f7a'
+# Terminal snapshot bindings from the original 97ac046 closeout, not a
+# general-purpose evolving schema. Acceptance is recorded separately in #997.
+SNAPSHOT_SHA256 = 'c5f6dc00091386d216de47f86257972d2d971b514c883811be17e361f0880053'
+REPORT_SHA256 = '18c716af301086497e36ec9d2ca2ce4bf799a33990bbd9b77af7006204e5f13c'
 ROOT = 'research/related-work-novelty-boundary-2025-2026'
 HERE = ROOT + '/closeout-v0.1'
 WF = '.github/workflows/research-closeout-v0.1.yml'
@@ -44,6 +48,24 @@ def encode(x):
 
 
 def exact(a,b): require(encode(a)==encode(b),'TYPED_VALUE_MISMATCH')
+
+
+def decode(data):
+ # Reject duplicate keys at EVERY nesting level rather than accepting the
+ # last spelling. Reject non-JSON numeric constants without coercion.
+ def unique(pairs):
+  result = {}
+  for key, value in pairs:
+   require(key not in result, 'DUPLICATE_JSON_KEY:' + key)
+   result[key] = value
+  return result
+ def invalid_constant(value):
+  raise ValueError('NON_JSON_CONSTANT:' + value)
+ return json.loads(data, object_pairs_hook=unique, parse_constant=invalid_constant)
+
+
+def check_report(data):
+ require(hashlib.sha256(data).hexdigest()==REPORT_SHA256,'EXACT_REPORT_BYTES_REQUIRED')
 
 
 def blob(data):
@@ -90,11 +112,18 @@ def check(data):
  exact(archive['bound_documents'],251);exact(archive['preserved_rejection_records_per_job'],94)
  for k in ('native_runtime_rerun','independent_judge_semantics_proven','authenticity_proven','full_runtime_snapshots_git_committed','user_long_term_custody_confirmed'):
   require(archive[k] is False,'ARCHIVE_EVIDENCE_PROMOTION')
+ # Bind all values, nested keys, exact dispositions, dates, checkpoint,
+ # reactivation conditions and the twelve intended source paths. A count,
+ # suffix or shape-only check cannot establish their semantic identity.
+ require(hashlib.sha256(encode(data)).hexdigest()==SNAPSHOT_SHA256,'EXACT_CLOSEOUT_SNAPSHOT_REQUIRED')
 
 
 def verify(repo):
  directory=repo/HERE
- data=json.loads((directory/'closeout.json').read_bytes());check(data)
+ for name in ('closeout.json','README.md'):
+  require((directory/name).is_file() and not (directory/name).is_symlink(),'REGULAR_CLOSEOUT_FILE_REQUIRED')
+ data=decode((directory/'closeout.json').read_bytes());check(data)
+ check_report((directory/'README.md').read_bytes())
  git(repo,'merge-base','--is-ancestor',MAIN,BASE)
  git(repo,'merge-base','--is-ancestor',BASE,'HEAD')
  require(git(repo,'rev-parse',f'HEAD:{ROOT}/v0.19').decode().strip()==data['experimental_subtree'],'FROZEN_V019_TREE_CHANGED')
@@ -131,7 +160,7 @@ def verify(repo):
 
 
 class Tests(unittest.TestCase):
- def setUp(self):self.data=json.loads(Path(__file__).with_name('closeout.json').read_bytes())
+ def setUp(self):self.data=decode(Path(__file__).with_name('closeout.json').read_bytes())
  def test_valid(self):check(self.data)
  def test_unknown_field(self):
   self.data['extra']=1
@@ -160,6 +189,42 @@ class Tests(unittest.TestCase):
  def test_numeric_false_not_boolean(self):
   self.data['non_effects']['model_executed']=0
   with self.assertRaises(ValueError):check(self.data)
+
+ def test_promoted_retained_disposition(self):
+  self.data['version_coverage'][12]['disposition']='QUALIFIED_FULL_COMPATIBILITY_RETAINED'
+  with self.assertRaises(ValueError):check(self.data)
+ def test_checkpoint_changed(self):
+  self.data['checkpoint_ref']='main'
+  with self.assertRaises(ValueError):check(self.data)
+ def test_nested_unknown_authority(self):
+  self.data['archive_recheck']['merge_authorized']=True
+  with self.assertRaises(ValueError):check(self.data)
+ def test_archive_status_promoted(self):
+  self.data['archive_recheck']['status']='EXTERNALLY_VALIDATED'
+  with self.assertRaises(ValueError):check(self.data)
+ def test_archive_filename_changed(self):
+  self.data['archive_recheck']['archive']='unverified.zip'
+  with self.assertRaises(ValueError):check(self.data)
+ def test_source_set_changed_same_size(self):
+  value=self.data['source_blobs'].pop('ROADMAP.md')
+  self.data['source_blobs']['OTHER.md']=value
+  with self.assertRaises(ValueError):check(self.data)
+ def test_reactivation_weakened(self):
+  self.data['backlog'][0]['reactivation']='Automatically restart without any evidence or approval.'
+  with self.assertRaises(ValueError):check(self.data)
+ def test_observation_date_changed(self):
+  self.data['observed_on']='2099-01-01'
+  with self.assertRaises(ValueError):check(self.data)
+ def test_duplicate_top_key(self):
+  with self.assertRaises(ValueError):decode('{"x":1,"x":2}')
+ def test_duplicate_nested_key(self):
+  with self.assertRaises(ValueError):decode('{"archive":{"a":false,"a":true}}')
+ def test_non_json_constants(self):
+  for value in ('NaN','Infinity','-Infinity'):
+   with self.subTest(value=value),self.assertRaises(ValueError):decode('{"x":'+value+'}')
+ def test_report_identity(self):check_report(Path(__file__).with_name('README.md').read_bytes())
+ def test_report_changed(self):
+  with self.assertRaises(ValueError):check_report(Path(__file__).with_name('README.md').read_bytes()+b'PROMOTED')
 
 
 def main():

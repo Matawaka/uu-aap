@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - research/statebench-response-filter-v0.19-qualified-base
+      - archive/related-work-statebench-closeout-2026-09-09
 
 permissions:
   contents: read
