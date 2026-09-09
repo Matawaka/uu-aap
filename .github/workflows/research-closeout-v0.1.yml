@@ -1,0 +1,35 @@
+name: Research Closeout Source and Decision Check
+
+on:
+  pull_request:
+    branches:
+      - research/statebench-response-filter-v0.19-qualified-base
+
+permissions:
+  contents: read
+
+jobs:
+  closeout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact closeout candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Validate terminal decisions and unchanged historical sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          check=research/related-work-novelty-boundary-2025-2026/closeout-v0.1/verify_closeout.py
+          python3 "$check" --self-test
+          python3 "$check" --repo "$GITHUB_WORKSPACE"
+      - name: Preserve closeout report for review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: research-closeout-review-package
+          path: research/related-work-novelty-boundary-2025-2026/closeout-v0.1/
+          if-no-files-found: error
+          retention-days: 30
