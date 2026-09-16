@@ -1,0 +1,39 @@
+{
+  "status": "ARTWORK_BUILD_ONLY_NOT_UU_VERIFIED_ISSUANCE",
+  "sampling_fps": 50,
+  "max_content_radius": 373.03399600499495,
+  "inner_ring_radius": 380.0,
+  "glyphs_clipped_to_capsule": true,
+  "original_reference_sha256": "90ed6871efde5f5348c4985a5d7ef3c77c219664cd3eeba8548e5cc10255d8aa",
+  "cairo_version": "1.18.4",
+  "files": {
+    "UU_verified.gif": {
+      "sha256": "b278999c4de856365acc65472087bc339b7d4c19675f2b057afaa0e6ef0af2f6",
+      "bytes": 3467299,
+      "frames": 530,
+      "duration_ms": 16500,
+      "size": [
+        768,
+        768
+      ],
+      "loop": 0,
+      "matches_delivered_bytes": true
+    },
+    "UU_verified_once.gif": {
+      "sha256": "f3fb47e091eb4ebe96b890a0099a427f50e9f5210d24ece215597b169374b4ee",
+      "bytes": 3137659,
+      "frames": 481,
+      "duration_ms": 15500,
+      "size": [
+        768,
+        768
+      ],
+      "loop": null,
+      "matches_delivered_bytes": true
+    },
+    "UU_verified.mp4": {
+      "bytes": 435004,
+      "sha256": "bf6f51832a732ba3243b4ab96e26d5c4cc684b27d640791053324d5078e3d9ff"
+    }
+  }
+}
