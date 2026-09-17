@@ -1,0 +1,39 @@
+name: UU VERIFIED UV-02 candidate contract
+on:
+  pull_request:
+    paths:
+      - "proposals/uu-verified/v0.1/uv02/**"
+      - ".github/workflows/uu-verified-uv02-validation.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: python -m pip install jsonschema==4.26.0
+      - name: Run bounded UV-02 contract checks
+        run: python proposals/uu-verified/v0.1/uv02/validate_uv02.py --self-test
+      - name: Bind exact UV-01 predecessor and additive-only boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected='2878eead51f5da22a54d120d196d8a03646df516'
+          event_base='${{ github.event.pull_request.base.sha }}'
+          if [ -n "$event_base" ] && [ "$event_base" != "$expected" ]; then
+            echo "UV-01 predecessor moved: expected $expected, observed $event_base" >&2
+            exit 1
+          fi
+          git cat-file -e "$expected^{commit}"
+          mapfile -t changed < <(git diff --name-only "$expected" HEAD)
+          for path in "${changed[@]}"; do
+            case "$path" in
+              proposals/uu-verified/v0.1/uv02/*|.github/workflows/uu-verified-uv02-validation.yml) ;;
+              *) echo "Unexpected UV-02 path: $path" >&2; exit 1 ;;
+            esac
+          done
+          test "${#changed[@]}" -gt 0

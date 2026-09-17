@@ -1,0 +1,177 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:uu-verified:uv-arch-1:0.1.0-draft:record-schema",
+  "title": "UU VERIFIED UV-ARCH-1 candidate evidence record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["recordType","schemaVersion","recordId","stage","profileBinding","subject","findings","review","issuance","lifecycle","displayDecision","failureReasons","discovery","nonEffects"],
+  "properties": {
+    "recordType": {"const":"UU_VERIFIED_RECORD"},
+    "schemaVersion": {"const":"0.1.0-draft"},
+    "recordId": {"type":"string","pattern":"^urn:uu-verified:[A-Za-z0-9._:-]{1,200}$"},
+    "stage": {"enum":["DECLARED","EVIDENCE_BOUND","REPRODUCED","INDEPENDENTLY_REVIEWED","ISSUED","CURRENTLY_VALID"]},
+    "profileBinding": {
+      "type":"object","additionalProperties":false,
+      "required":["profileId","profileVersion","sha256"],
+      "properties": {
+        "profileId":{"const":"UV-ARCH-1"},
+        "profileVersion":{"const":"0.1.0-draft"},
+        "sha256":{"$ref":"#/$defs/sha256"}
+      }
+    },
+    "subject": {
+      "type":"object","additionalProperties":false,
+      "required":["kind","subjectId","operatorIds","sourceRepository","sourceCommit","artifactDigests","configuration","dependencies","environment"],
+      "properties": {
+        "kind":{"enum":["DESIGN_DOCUMENT","SOURCE_IMPLEMENTATION","BUILD_ARTIFACT","DEPLOYMENT"]},
+        "subjectId":{"type":"string","minLength":1,"maxLength":256},
+        "operatorIds":{"type":"array","minItems":1,"maxItems":32,"uniqueItems":true,"items":{"type":"string","minLength":1,"maxLength":256}},
+        "sourceRepository":{"type":"string","format":"uri","maxLength":2048},
+        "sourceCommit":{"$ref":"#/$defs/gitCommit"},
+        "artifactDigests":{"type":"array","maxItems":64,"items":{"$ref":"#/$defs/digest"}},
+        "configuration":{"$ref":"#/$defs/bindingOrExplicitNone"},
+        "dependencies":{"$ref":"#/$defs/bindingOrExplicitNone"},
+        "environment":{"$ref":"#/$defs/bindingOrExplicitNone"}
+      }
+    },
+    "findings": {
+      "type":"array","minItems":19,"maxItems":19,
+      "items": {
+        "type":"object","additionalProperties":false,
+        "required":["requirementId","result","evidence","reason"],
+        "properties": {
+          "requirementId":{"pattern":"^UV-(?:P(?:0[1-9]|1[0-2])|A0[1-7])$"},
+          "result":{"enum":["PASS","FAIL","INSUFFICIENT_EVIDENCE","NOT_APPLICABLE"]},
+          "reason":{"type":"string","minLength":1,"maxLength":4096},
+          "evidence":{"type":"array","maxItems":128,"items":{"$ref":"#/$defs/evidence"}},
+          "applicability":{
+            "type":"object","additionalProperties":false,
+            "required":["ruleId","rationale","reviewerDisposition"],
+            "properties":{
+              "ruleId":{"type":"string","minLength":1,"maxLength":128},
+              "rationale":{"type":"string","minLength":1,"maxLength":4096},
+              "reviewerDisposition":{"enum":["APPROVED","REJECTED","UNREVIEWED"]}
+            }
+          }
+        }
+      }
+    },
+    "review": {
+      "type":"object","additionalProperties":false,
+      "required":["state","reviewerOperatorIds","independence","conflicts","disposition"],
+      "properties":{
+        "state":{"enum":["NOT_PERFORMED","SCOPED_REVIEW","INDEPENDENT_REVIEW"]},
+        "reviewerOperatorIds":{"type":"array","maxItems":32,"uniqueItems":true,"items":{"type":"string","minLength":1,"maxLength":256}},
+        "independence":{"enum":["NOT_ESTABLISHED","OUTSIDE_IMPLEMENTER_CONTROL"]},
+        "conflicts":{"type":"array","maxItems":64,"items":{"type":"string","maxLength":2048}},
+        "disposition":{"enum":["NOT_REVIEWED","ACCEPT","REJECT","QUALIFIED"]}
+      }
+    },
+    "issuance": {
+      "type":"object","additionalProperties":false,
+      "required":["state","issuerId","issuerPolicyBinding","decisionId","signatureBinding"],
+      "properties":{
+        "state":{"enum":["NOT_ISSUED","ISSUED"]},
+        "issuerId":{"type":["string","null"],"maxLength":256},
+        "issuerPolicyBinding":{"oneOf":[{"$ref":"#/$defs/digest"},{"type":"null"}]},
+        "decisionId":{"type":["string","null"],"maxLength":256},
+        "signatureBinding":{"oneOf":[{"$ref":"#/$defs/digest"},{"type":"null"}]}
+      }
+    },
+    "lifecycle": {
+      "type":"object","additionalProperties":false,
+      "required":["state","asOf","validFrom","validUntil","clockBasis","statusBinding","successorRecordIds"],
+      "properties":{
+        "state":{"enum":["DRAFT","ACTIVE","SUSPENDED","REVOKED","EXPIRED","SUPERSEDED","STATUS_UNKNOWN","CONFLICT"]},
+        "asOf":{"type":"string","format":"date-time"},
+        "validFrom":{"type":["string","null"],"format":"date-time"},
+        "validUntil":{"type":["string","null"],"format":"date-time"},
+        "clockBasis":{"type":"string","minLength":1,"maxLength":512},
+        "statusBinding":{"oneOf":[{"$ref":"#/$defs/digest"},{"type":"null"}]},
+        "successorRecordIds":{"type":"array","maxItems":64,"uniqueItems":true,"items":{"type":"string","pattern":"^urn:uu-verified:[A-Za-z0-9._:-]{1,200}$"}}
+      }
+    },
+    "displayDecision":{"enum":["NO_MARK","REVIEWED_DESIGN_ONLY","VERIFIED_CURRENT"]},
+    "failureReasons": {
+      "type":"array","maxItems":64,"uniqueItems":true,
+      "items":{"enum":[
+        "PROFILE_BINDING_MISMATCH","UNSUPPORTED_SUBJECT_KIND","SUBJECT_BINDING_INCOMPLETE","REQUIRED_REQUIREMENT_MISSING","DUPLICATE_REQUIREMENT","PASS_WITHOUT_OBSERVED_EVIDENCE","NOT_APPLICABLE_NOT_ALLOWED","REVIEW_NOT_INDEPENDENT","ISSUANCE_NOT_ESTABLISHED","ISSUER_POLICY_NOT_BOUND","STATUS_NOT_CURRENT","STATUS_BLOCKS_POSITIVE_DISPLAY","EVIDENCE_INSUFFICIENT","C2PA_SEMANTIC_ESCALATION","DISCOVERY_INCOMPLETE","NON_EFFECTS_INCOMPLETE"
+      ]}
+    },
+    "discovery": {
+      "type":"object","additionalProperties":false,
+      "required":["machineRecord","schema","humanEn","humanRu","challenge","requiresLogin","requiresPayment","requiresProprietaryProvider"],
+      "properties":{
+        "machineRecord":{"type":"string","format":"uri"},
+        "schema":{"type":"string","format":"uri"},
+        "humanEn":{"type":"string","format":"uri"},
+        "humanRu":{"type":"string","format":"uri"},
+        "challenge":{"type":"string","format":"uri"},
+        "requiresLogin":{"const":false},
+        "requiresPayment":{"const":false},
+        "requiresProprietaryProvider":{"const":false}
+      }
+    },
+    "c2paInterop": {
+      "type":"object","additionalProperties":false,
+      "required":["baseline","binding","externalReference"],
+      "properties":{
+        "baseline":{"const":"2.4"},
+        "binding":{"const":"c2pa.external-reference"},
+        "externalReference":{"$ref":"#/$defs/digest"}
+      }
+    },
+    "nonEffects": {
+      "type":"array","minItems":6,"maxItems":32,"uniqueItems":true,
+      "items":{"enum":[
+        "DOES_NOT_CERTIFY_TRUTH","DOES_NOT_ESTABLISH_COPYRIGHT_OWNERSHIP","DOES_NOT_ESTABLISH_LEGAL_IDENTITY","DOES_NOT_GRANT_ACTION_AUTHORITY","DOES_NOT_ESTABLISH_LEGAL_LIABILITY","DOES_NOT_GUARANTEE_UNIVERSAL_PRODUCTION_SAFETY","DOES_NOT_PROVE_C2PA_PROVENANCE_IS_PERMISSION","DOES_NOT_PROVE_PUBLIC_REPRODUCIBILITY_FROM_PRIVATE_HASH_ONLY"
+      ]},
+      "allOf":[
+        {"contains":{"const":"DOES_NOT_CERTIFY_TRUTH"}},
+        {"contains":{"const":"DOES_NOT_ESTABLISH_COPYRIGHT_OWNERSHIP"}},
+        {"contains":{"const":"DOES_NOT_ESTABLISH_LEGAL_IDENTITY"}},
+        {"contains":{"const":"DOES_NOT_GRANT_ACTION_AUTHORITY"}},
+        {"contains":{"const":"DOES_NOT_ESTABLISH_LEGAL_LIABILITY"}},
+        {"contains":{"const":"DOES_NOT_GUARANTEE_UNIVERSAL_PRODUCTION_SAFETY"}}
+      ]
+    }
+  },
+  "$defs": {
+    "sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"},
+    "gitCommit":{
+      "type":"object","additionalProperties":false,
+      "required":["algorithm","oid"],
+      "properties":{
+        "algorithm":{"enum":["git-sha1","git-sha256"]},
+        "oid":{"type":"string","pattern":"^(?:[0-9a-f]{40}|[0-9a-f]{64})$"}
+      }
+    },
+    "digest":{
+      "type":"object","additionalProperties":false,
+      "required":["algorithm","value"],
+      "properties":{
+        "algorithm":{"enum":["sha256","sha512"]},
+        "value":{"type":"string","pattern":"^[0-9a-f]{64}(?:[0-9a-f]{64})?$"}
+      }
+    },
+    "bindingOrExplicitNone":{
+      "oneOf":[
+        {"$ref":"#/$defs/digest"},
+        {"type":"object","additionalProperties":false,"required":["state","reason"],"properties":{"state":{"const":"NOT_APPLICABLE"},"reason":{"type":"string","minLength":1,"maxLength":1024}}}
+      ]
+    },
+    "evidence":{
+      "type":"object","additionalProperties":false,
+      "required":["evidenceId","type","origin","accessClass","observationState","binding","limitations"],
+      "properties":{
+        "evidenceId":{"type":"string","minLength":1,"maxLength":256},
+        "type":{"enum":["DOCUMENT","RECEIPT","TEST_RUN","REVIEW_RECORD","STATUS_RECORD","ATTESTATION","PROVENANCE_RECORD","OTHER"]},
+        "origin":{"type":"string","minLength":1,"maxLength":2048},
+        "accessClass":{"enum":["PUBLIC_REPRODUCIBLE","REDACTED","RESTRICTED_REVIEWER_ATTESTED","UNAVAILABLE"]},
+        "observationState":{"enum":["OBSERVED","DECLARED"]},
+        "binding":{"$ref":"#/$defs/digest"},
+        "limitations":{"type":"array","maxItems":64,"items":{"type":"string","maxLength":2048}}
+      }
+    }
+  }
+}
