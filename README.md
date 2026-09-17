@@ -15,6 +15,24 @@ It is designed around a simple distinction:
 - humans and organizations can exercise authority, judgment and responsibility in defined scopes;
 - the protocol should make those relationships inspectable without pretending that authorship can be reduced to a “human/AI percentage”.
 
+## UU meanings and the proposed UU VERIFIED mark
+
+**Усиленный Ум / Augmented Mind** is the originating concept. Three complementary English expressions explain its direction:
+
+- **Unified Understanding** — shared understanding with distinct authority and responsibility;
+- **Understanding Unlocked** — expanded human understanding and meaningful choice;
+- **Universal Understanding** — openly accessible and interoperable understanding for humans and machine-readable platforms.
+
+These meanings are not three assurance levels and do not rename the historical protocol. See the [English concept](proposals/uu-verified/v0.1/README.md), [Russian concept](proposals/uu-verified/v0.1/README.ru.md), [machine-readable requirements catalogue](proposals/uu-verified/v0.1/concept.json), and [development backlog #1000](https://github.com/Matawaka/uu-aap/issues/1000).
+
+**UU VERIFIED is a proposed scoped, version-bound, contestable architecture-conformance attestation, not an active certification or an issued mark.** A future record must bind exact implementation/profile/evidence, independent review, issuer policy, validity/status and a public challenge path. Humans and machines must be able to inspect its scope and limitations without a mandatory proprietary account. Reading or displaying a mark never grants action authority.
+
+`UU-AAP/V != UU VERIFIED`
+
+`UU VERIFIED != truth, copyright ownership, universal safety or ActionPermit`
+
+The concept does not change D/T/V/R, RA1 or the Stable Core. [PRINCIPLES.ru.md](PRINCIPLES.ru.md) provides an explanatory Russian translation of all twelve source principles.
+
 ## Start here / participate in 5 minutes
 
 New to the project? Start with [`START-HERE.md`](START-HERE.md) or the [web participation landing](https://matawaka.github.io/uu-aap/participate/).
@@ -65,13 +83,15 @@ UU-AAP adds that layer.
 
 ## First real-work pilot
 
-**Pilot 001 — «Вайбкодинг реальности»** is now published as a **UU-AAP/T — Traceable** manifest.
+**Pilot 001 — «Вайбкодинг реальности»** is preserved here as the initial **UU-AAP/T — Traceable** manifest.
 
 - [Pilot overview](pilots/vibe-coding-reality/README.md)
 - [Machine-readable manifest](pilots/vibe-coding-reality/manifest.json)
 - [Evidence and limitations note](pilots/vibe-coding-reality/EVIDENCE.md)
 
-The pilot intentionally does **not** claim profile V yet: no canonical PDF/EPUB artifact has been selected and cryptographically bound. This makes the example useful for testing whether the protocol can represent incomplete but honest provenance rather than forcing a false appearance of completeness.
+This original pilot intentionally does **not** claim profile V: no canonical PDF/EPUB artifact was selected and cryptographically bound in that record. It remains an example of incomplete but honest provenance rather than a false appearance of completeness.
+
+The separate book repository's [VERIFICATION.md](https://github.com/Matawaka/vibe-coding-reality/blob/main/VERIFICATION.md) records a V successor for edition `2026.1`, with an exact PDF digest, frozen release reference and preserved limitations. That successor does not rewrite this T manifest, establish copyright ownership or award the proposed UU VERIFIED mark. The new [source audit](proposals/uu-verified/v0.1/SOURCE-AUDIT.md) distinguishes documentary lineage from a fresh execution of those historical verification steps.
 
 ## Research proposals
 
@@ -110,7 +130,7 @@ For the lowest-friction path, one short external comment on Issue #422 is enough
 
 ## Read in this order
 
-1. [`PRINCIPLES.md`](PRINCIPLES.md) — non-negotiable design principles.
+1. [`PRINCIPLES.md`](PRINCIPLES.md) — non-negotiable design principles; [Russian explanation](PRINCIPLES.ru.md).
 2. [`SPEC.md`](SPEC.md) — normative public draft.
 3. [`SPEC.ru.md`](SPEC.ru.md) — Russian explanatory translation.
 4. [`schema/uu-aap-manifest.schema.json`](schema/uu-aap-manifest.schema.json) — machine-readable draft.
@@ -121,6 +141,8 @@ For the lowest-friction path, one short external comment on Issue #422 is enough
 9. [`REFERENCES.md`](REFERENCES.md) — standards and adjacent work.
 10. [`docs/CANONICAL-STATE.md`](docs/CANONICAL-STATE.md) — canonical repository anchors, provenance, licensing and protection-status boundaries.
 11. [`NOTICE.md`](NOTICE.md), [`RESPONSIBILITY.md`](RESPONSIBILITY.md), [`LICENSE.md`](LICENSE.md) and [`GOVERNANCE.md`](GOVERNANCE.md) — repository provenance, responsibility, licensing and governance records.
+12. [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md) — current roadmap marker; [`ROADMAP.md`](ROADMAP.md) preserves historical tooling-convergence evidence.
+13. [`proposals/uu-verified/v0.1/`](proposals/uu-verified/v0.1/) — non-normative UU meaning and evidence-based architecture-mark proposal.
 
 ## Four conformance profiles
 
