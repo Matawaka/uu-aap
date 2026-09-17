@@ -1,0 +1,51 @@
+{
+  "recordType": "UU_VERIFIED_PROFILE",
+  "profileId": "UV-ARCH-1",
+  "version": "0.1.0-draft",
+  "status": "DRAFT_NOT_ACCEPTED",
+  "predecessor": {"proposalPr":1001,"proposalHead":"2878eead51f5da22a54d120d196d8a03646df516","backlogIssue":1000},
+  "subjectPolicy": {
+    "eligibleKinds": ["SOURCE_IMPLEMENTATION","BUILD_ARTIFACT"],
+    "designOnlyKind": "DESIGN_DOCUMENT",
+    "designOnlyMaximumDisplay": "REVIEWED_DESIGN_ONLY",
+    "deploymentKind": "DEPLOYMENT",
+    "deploymentPositiveStatusRequiresSeparateProfile": true
+  },
+  "requirements": [
+    {"id":"UV-P01","source":"P1","mandatory":true},{"id":"UV-P02","source":"P2","mandatory":true},
+    {"id":"UV-P03","source":"P3","mandatory":true},{"id":"UV-P04","source":"P4","mandatory":true},
+    {"id":"UV-P05","source":"P5","mandatory":true},{"id":"UV-P06","source":"P6","mandatory":true},
+    {"id":"UV-P07","source":"P7","mandatory":true},{"id":"UV-P08","source":"P8","mandatory":true},
+    {"id":"UV-P09","source":"P9","mandatory":true},{"id":"UV-P10","source":"P10","mandatory":true},
+    {"id":"UV-P11","source":"P11","mandatory":true},{"id":"UV-P12","source":"P12","mandatory":true},
+    {"id":"UV-A01","source":"EXACT_SUBJECT","mandatory":true},{"id":"UV-A02","source":"SEMANTIC_SEPARATION","mandatory":true},
+    {"id":"UV-A03","source":"EXECUTABLE_EVIDENCE","mandatory":true},{"id":"UV-A04","source":"INDEPENDENCE_AND_REVIEW","mandatory":true},
+    {"id":"UV-A05","source":"ISSUER_POLICY_AND_ISSUANCE","mandatory":true},{"id":"UV-A06","source":"LIFECYCLE","mandatory":true},
+    {"id":"UV-A07","source":"PUBLIC_HUMAN_MACHINE_PARITY","mandatory":true}
+  ],
+  "requirementOutcomes": ["PASS","FAIL","INSUFFICIENT_EVIDENCE","NOT_APPLICABLE"],
+  "topLevelNotApplicableAllowed": [],
+  "evidenceStages": ["DECLARED","EVIDENCE_BOUND","REPRODUCED","INDEPENDENTLY_REVIEWED","ISSUED","CURRENTLY_VALID"],
+  "blockingLifecycleStates": ["SUSPENDED","REVOKED","EXPIRED","SUPERSEDED","STATUS_UNKNOWN","CONFLICT"],
+  "reviewPolicy": {
+    "independentStageRequiresOutsideImplementerControl": true,
+    "subjectReviewerOperatorOverlapForbidden": true,
+    "twoAccountsAloneProveIndependence": false,
+    "reviewDoesNotIssueMark": true
+  },
+  "discoveryPolicy": {
+    "candidateDescriptorPath": "/.well-known/uu-verified.json",
+    "wellKnownUriRegistered": false,
+    "discoveryEstablishesAuthenticity": false,
+    "publicVerificationRequiresLogin": false,
+    "publicVerificationRequiresPayment": false,
+    "publicVerificationRequiresProprietaryProvider": false
+  },
+  "requiredNonEffects": [
+    "DOES_NOT_CERTIFY_TRUTH","DOES_NOT_ESTABLISH_COPYRIGHT_OWNERSHIP","DOES_NOT_ESTABLISH_LEGAL_IDENTITY",
+    "DOES_NOT_GRANT_ACTION_AUTHORITY","DOES_NOT_ESTABLISH_LEGAL_LIABILITY","DOES_NOT_GUARANTEE_UNIVERSAL_PRODUCTION_SAFETY"
+  ],
+  "c2paInterop": {"baseline":"2.4","preferredBinding":"c2pa.external-reference","dedicatedUuAapAssertionNamespaceRequired":false,"tolerantParsingCountsAsPreservation":false,"provenanceGrantsPermission":false},
+  "parserLimits": {"maxRecordBytes":1048576,"maxDepth":32,"duplicateObjectKeys":"REJECT"},
+  "nonEffects": {"acceptedNormativeProfile":false,"issuedAttestation":false,"issuerAuthorityEstablished":false,"actionPermissionGranted":false,"runtimeActivation":false,"historicalEvidenceRewritten":false}
+}
