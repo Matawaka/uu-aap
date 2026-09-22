@@ -217,6 +217,10 @@ def main():
     bad_profile["experimental_witness_policy"]["threshold"] = 1
     hostile(lambda: m.validate_profile(bad_profile), "witness-policy shape drift")
 
+    bad_profile = copy.deepcopy(profile)
+    bad_profile["frozen_qualification"]["receipt_sha256"] = "0" * 64
+    hostile(lambda: m.validate_profile(bad_profile), "frozen qualification binding drift")
+
     print("C2PA_WITNESSED_CHECKPOINT_PROFILE_HOSTILE: PASS")
 
 
