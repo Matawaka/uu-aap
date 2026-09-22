@@ -57,6 +57,14 @@ def normalize_key(name: str) -> str:
     return "".join(ch for ch in name if ch.isalnum()).lower()
 
 
+def require_exact_keys(obj: Any, expected: set[str], label: str) -> None:
+    if not isinstance(obj, dict):
+        fail(f"{label} must be an object")
+    actual = set(obj)
+    if actual != expected:
+        fail(f"{label} fields mismatch: missing={sorted(expected-actual)} extra={sorted(actual-expected)}")
+
+
 def find_key(obj: dict[str, Any], *names: str) -> Any:
     wanted = {normalize_key(n) for n in names}
     for key, value in obj.items():
@@ -392,6 +400,36 @@ def parse_note(note_text: str) -> tuple[bytes, list[tuple[str, bytes]]]:
 
 def verify_bundle(profile: dict[str, Any], parent: dict[str, Any], bundle: dict[str, Any]) -> dict[str, Any]:
     validate_profile(profile)
+    require_exact_keys(bundle, {
+        "schema", "profile_version", "subject_scope", "subject", "log", "checkpoint",
+        "witness_policy", "witness_observation", "semantic_boundaries"
+    }, "bundle")
+    require_exact_keys(bundle.get("subject"), {
+        "active_manifest", "claim_signature", "witness_policy_sha256", "hash_algorithm",
+        "commitment_domain", "commitment_preimage_sha256", "leaf_commitment_b64"
+    }, "bundle.subject")
+    require_exact_keys(bundle.get("log"), {
+        "origin", "leaf_index", "tree_size", "leaf_hash_b64", "inclusion_proof_b64", "root_b64"
+    }, "bundle.log")
+    require_exact_keys(bundle.get("checkpoint"), {
+        "signed_note", "sha256", "signed_body_sha256", "log_vkey"
+    }, "bundle.checkpoint")
+    require_exact_keys(bundle.get("witness_policy"), {"policy", "policy_sha256", "analysis"}, "bundle.witness_policy")
+    require_exact_keys(bundle.get("witness_policy", {}).get("policy"), {
+        "schema", "version", "origin", "algorithm", "threshold", "witnesses", "trust_semantics"
+    }, "bundle.witness_policy.policy")
+    require_exact_keys(bundle.get("witness_policy", {}).get("analysis"), {
+        "witness_count", "threshold", "minimum_pairwise_quorum_intersection",
+        "disjoint_quorum_possible", "honest_witness_assumption_required", "witness_independence_proven"
+    }, "bundle.witness_policy.analysis")
+    require_exact_keys(bundle.get("witness_observation"), {
+        "cosigned_witnesses", "verified_witness_count", "quorum_satisfied",
+        "timestamps_are_observation_claims_only"
+    }, "bundle.witness_observation")
+    for w in bundle.get("witness_policy", {}).get("policy", {}).get("witnesses", []):
+        require_exact_keys(w, {"name", "vkey"}, "bundle.witness_policy.policy.witness")
+    for w in bundle.get("witness_observation", {}).get("cosigned_witnesses", []):
+        require_exact_keys(w, {"name", "timestamp"}, "bundle.witness_observation.cosigned_witness")
     if bundle.get("schema") != BUNDLE_SCHEMA:
         fail("bundle schema mismatch")
     if bundle.get("subject_scope") != "PREDECESSOR_C2PA_MANIFEST_REFERENCED_BY_SUCCESSOR_UPDATE":
@@ -585,12 +623,21 @@ def verify_successor(
     parents = [i for i in ingredients if str(i.get("relationship", "")).lower() == "parentof"]
     if len(parents) != 1:
         fail(f"successor Update Manifest must expose exactly one parentOf ingredient, found {len(parents)}")
+    if parents[0].get("label") != "c2pa.ingredient.v3":
+        fail("successor Update Manifest parent must be c2pa.ingredient.v3")
+    assertion_labels = [str(a.get("label", "")) for a in manifest.get("assertions", []) if isinstance(a, dict)]
+    hard_bindings = [label for label in assertion_labels if label.startswith("c2pa.hash.")]
+    if hard_bindings:
+        fail(f"Update Manifest must not contain hard-binding assertions: {hard_bindings}")
     successor_parent = extract_parent_link(successor_report, successor_detailed)
     if successor_parent != parent:
         fail("successor parent hashed-URI binding differs from bundle predecessor subject")
 
     assertion = find_external_reference(manifest, profile["external_reference"]["assertion_label"])
-    location = (assertion.get("data") or {}).get("location") or {}
+    assertion_data = assertion.get("data") or {}
+    if "label" in assertion_data:
+        fail("external evidence JSON must not be reinterpreted as a custom C2PA assertion label")
+    location = assertion_data.get("location") or {}
     expected_hash = sha256(bundle_bytes)
     bound_hash = normalize_external_hash(location.get("hash"))
     if location.get("url") != profile["external_reference"]["url"]:
