@@ -1,0 +1,55 @@
+{
+  "android_executed": false,
+  "authority_created": false,
+  "binary_archive_sha256": "631ebb565d7f893dded6d99526067b3d901e209705c80d7be51be111a5aeefec",
+  "binary_version": "0.0.13",
+  "c2pa_conformance": false,
+  "classification": "READER_JSON_EXTENSION_TYPE_DRIFT_CRJSON_PRESERVED",
+  "codec_assertion": "PASS",
+  "codec_claim": "PASS",
+  "consumer_build": "PASS",
+  "cross_sdk_compatibility_established": false,
+  "execution_scope": {
+    "platform": "ProductName:\t\tmacOS\nProductVersion:\t\t15.7.9\nBuildVersion:\t\t24G830",
+    "swift": "swift-driver version: 1.120.5 Apple Swift version 6.1.2 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)\nTarget: arm64-apple-macosx15.0",
+    "xcode": "Xcode 16.4\nBuild version 16F6"
+  },
+  "external_reviewer_execution": false,
+  "historical_evidence_rewritten": false,
+  "phase_receipt_sha256": "87508fbb8c0fdc2cec09ce6cbe5d61237aa5edd85156e4b47e81e6a0c6998b77",
+  "production_authority_expanded": false,
+  "reader_paths": {
+    "classification": "READER_JSON_EXTENSION_TYPE_DRIFT_CRJSON_PRESERVED",
+    "codec_extension_equal": true,
+    "crjson_assertion_payload_evaluated": false,
+    "irreversible_signed_asset_data_loss_proven": false,
+    "native_input_extension_equal": true,
+    "reader_crjson_differences": [],
+    "reader_crjson_extension_equal": true,
+    "reader_json_differences": [
+      {
+        "after": "AQID",
+        "after_type": "str",
+        "before": [
+          1,
+          2,
+          3
+        ],
+        "before_type": "list",
+        "path": "/nested/sequence"
+      }
+    ],
+    "reader_json_extension_equal": false,
+    "reader_json_external_reference_equal": true,
+    "reader_reported_native_core": "0.90.0"
+  },
+  "receipt_fingerprint_sha256": "f0ac0da8406685f394cace5cd8d857d098f893aae19cca93550d99953016d2f1",
+  "repository_predecessor": "260e325619ffd2eed12c43f982c369e6468d5f07",
+  "resolved_lock_sha256": "b2d20a2a55e0e28c0f48e4af2f1e8c4bee216784662711388d49fb2d09be96c5",
+  "schema": "urn:uu-aap:swift-public-binary-qualification:0.1",
+  "source_built_native_executed": false,
+  "target_id": "current_main",
+  "tracking_issue": 988,
+  "trusted_signer": false,
+  "upstream_commit": "4a698825259ff1142df7de90d62a0d3f2f50b467"
+}

@@ -47,27 +47,34 @@ jobs:
               assert status=='A', line
               assert path.startswith('scripts/c2pa-swift-public-binary-reaudit/v0.1/') or path=='.github/workflows/c2pa-swift-public-binary-reaudit-v0.1.yml', line
           PY
-      - name: Fail-closed classifier tests
+      - name: Fail-closed classifier and Reader-path tests
         working-directory: scripts/c2pa-swift-public-binary-reaudit/v0.1
-        run: python -m unittest -v test_reaudit
-      - name: Resolve build and execute public consumer
+        run: python -m unittest -v test_reaudit test_reader
+      - name: Resolve build execute and re-derive Reader-path evidence
         run: |
-          python scripts/c2pa-swift-public-binary-reaudit/v0.1/reaudit.py \
+          python scripts/c2pa-swift-public-binary-reaudit/v0.1/qualify.py \
             --target '${{ matrix.target }}' --repo "$GITHUB_WORKSPACE" \
             --out "$RUNNER_TEMP/reaudit-${{ matrix.target }}"
-      - name: Draft bootstrap or exact frozen observation
-        env:
-          IS_DRAFT: ${{ github.event.pull_request.draft }}
+      - name: Require frozen exact-byte observation and lock
+        shell: bash
         run: |
+          set -euo pipefail
           p=scripts/c2pa-swift-public-binary-reaudit/v0.1
           target='${{ matrix.target }}'
-          if [ -f "$p/frozen/$target.json" ]; then
-            cmp "$p/frozen/$target.json" "$RUNNER_TEMP/reaudit-$target/receipt.json"
-            test -s "$p/locks/$target.resolved"
-          else
-            test "$IS_DRAFT" = true
-            echo 'DRAFT_EXPLORATION_ONLY_NOT_FINAL_QUALIFICATION'
-          fi
+          test -s "$p/frozen/$target.json"
+          test -s "$p/locks/$target.resolved"
+          python - "$p" "$target" <<'PY'
+          import hashlib, pathlib, sys
+          p=pathlib.Path(sys.argv[1]); target=sys.argv[2]
+          pins={
+            'current_main':('d2dfc4c6c62861531fe9f7b4c960e4bfa398762377721f12cb06ac12f4f90a37','b2d20a2a55e0e28c0f48e4af2f1e8c4bee216784662711388d49fb2d09be96c5'),
+            'release_frontier':('9ac979c040ba0c4f90a792974bd55113bf052ee160c77e349335c968d201a87d','5d4e566e5e2e6f17f1ef4a662b167b4b90bef2700164080d610acfd1141f8ee4')}
+          for file,want in zip((p/'frozen'/f'{target}.json',p/'locks'/f'{target}.resolved'),pins[target]):
+              assert hashlib.sha256(file.read_bytes()).hexdigest()==want, str(file)
+          PY
+          cmp "$p/frozen/$target.json" "$RUNNER_TEMP/reaudit-$target/qualification-receipt.json"
+          cmp "$p/locks/$target.resolved" "$RUNNER_TEMP/reaudit-$target/Package.resolved"
+          echo 'REPRODUCED_BOUNDED_READER_PATH_CLASSIFICATION_NOT_BLANKET_COMPATIBILITY_PASS'
       - name: Repository remains byte-clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
       - name: Retain exact execution evidence
