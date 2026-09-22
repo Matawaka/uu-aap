@@ -1,0 +1,245 @@
+name: C2PA Witnessed Checkpoint Profile v0.1
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/c2pa-witnessed-checkpoint-profile-v0.1.yml"
+      - "scripts/c2pa-witnessed-checkpoint-profile/v0.1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install profile cryptographic dependency
+        run: python -m pip install --disable-pip-version-check "cryptography>=42,<51"
+
+      - name: Verify exact merged predecessor and accepted evidence bindings
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_MAIN='f9a051b28b54088b202051f135fd77d084fb7326'
+          EXPECTED_TREE='649138588814ce5c95540002b08bdf03adacb87f'
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            test "${{ github.event.pull_request.base.sha }}" = "$EXPECTED_MAIN"
+          fi
+          test "$(git rev-parse "$EXPECTED_MAIN^{tree}")" = "$EXPECTED_TREE"
+          git merge-base --is-ancestor "$EXPECTED_MAIN" HEAD
+
+          python - <<'PY'
+          import importlib.util, json
+          from pathlib import Path
+          path=Path('scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.py')
+          spec=importlib.util.spec_from_file_location('p', path)
+          p=importlib.util.module_from_spec(spec); spec.loader.exec_module(p)
+          profile=json.load(open('scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.json'))
+          p.validate_predecessor_bindings(profile, Path('.'))
+          print('C2PA_WITNESSED_PREDECESSOR_BINDINGS: PASS')
+          PY
+
+      - name: Replay accepted predecessor hostile suites
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/cryptovalid-c2sp-witness-qualification/v0.1/test_qualify.py
+          node scripts/c2pa-witness-receipt-binding/v0.1/test-binding.js
+          python scripts/c2pa-witnessed-checkpoint-profile/v0.1/test_profile.py
+
+      - name: Fetch pinned accepted c2patool binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://github.com/contentauth/c2pa-rs/releases/download/c2patool-v0.27.16/c2patool-v0.27.16-x86_64-unknown-linux-gnu.tar.gz'
+          curl --fail --location --silent --show-error --proto '=https' --max-time 60 "$url" -o /tmp/c2patool.tar.gz
+          echo '62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663  /tmp/c2patool.tar.gz' | sha256sum --check --strict
+          mkdir -p /tmp/c2patool
+          tar -xzf /tmp/c2patool.tar.gz -C /tmp/c2patool
+          bin="$(find /tmp/c2patool -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+
+      - name: Fetch and byte-bind fixed C2PA predecessor asset
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --proto '=https' --max-time 30 --max-filesize 1048576             'https://raw.githubusercontent.com/contentauth/c2pa-rs/c2patool-v0.27.16/sdk/tests/fixtures/C.jpg'             -o /tmp/predecessor.jpg
+          test "$(git hash-object /tmp/predecessor.jpg)" = 'b6579b3281fbd448163f77fe46bf8d24f3e5a018'
+          test "$(wc -c < /tmp/predecessor.jpg | tr -d ' ')" = '132518'
+          "$C2PA_BIN" /tmp/predecessor.jpg > /tmp/predecessor-report.json
+          node - <<'NODE'
+          const fs=require('fs');
+          const {assertLiveC2paReport}=require('./scripts/c2pa-semantic-boundary/check-live-report');
+          const r=JSON.parse(fs.readFileSync('/tmp/predecessor-report.json','utf8'));
+          const x=assertLiveC2paReport(r);
+          if (!['Valid','Trusted'].includes(x.validation_state)) throw new Error('predecessor not accepted');
+          console.log('C2PA_FIXED_PREDECESSOR_VALIDATION: PASS');
+          NODE
+
+      - name: Create probe Update Manifest and extract exact predecessor references
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat > /tmp/probe-config.json <<'JSON'
+          {
+            "claim_generator_info": [
+              {"name": "UU-AAP update parent probe", "version": "0.1"}
+            ],
+            "assertions": []
+          }
+          JSON
+
+          "$C2PA_BIN" /tmp/predecessor.jpg             --config "$(cat /tmp/probe-config.json)"             --update             --output /tmp/probe-update.jpg             --force > /tmp/probe-sign-report.json
+
+          "$C2PA_BIN" /tmp/probe-update.jpg > /tmp/probe-report.json
+          "$C2PA_BIN" /tmp/probe-update.jpg --detailed > /tmp/probe-detailed.json
+
+          node - <<'NODE'
+          const fs=require('fs');
+          const {assertLiveC2paReport}=require('./scripts/c2pa-semantic-boundary/check-live-report');
+          const r=JSON.parse(fs.readFileSync('/tmp/probe-report.json','utf8'));
+          assertLiveC2paReport(r);
+          console.log('C2PA_UPDATE_PROBE_VALIDATION: PASS');
+          NODE
+
+          python scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.py extract-parent             --documents /tmp/probe-report.json /tmp/probe-detailed.json             --output /tmp/parent-link.json
+          test -s /tmp/parent-link.json
+
+      - name: Build and independently verify witnessed-checkpoint bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.py build-bundle             --profile scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.json             --parent /tmp/parent-link.json             --output /tmp/witnessed-checkpoint-bundle.json
+
+          python scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.py verify-bundle             --profile scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.json             --parent /tmp/parent-link.json             --bundle /tmp/witnessed-checkpoint-bundle.json             > /tmp/bundle-verification.json
+          test -s /tmp/bundle-verification.json
+
+      - name: Serve exact evidence bundle on loopback
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/evidence-server
+          cp /tmp/witnessed-checkpoint-bundle.json /tmp/evidence-server/witnessed-checkpoint-bundle.json
+          python -m http.server 8765 --bind 127.0.0.1 --directory /tmp/evidence-server             >/tmp/evidence-server.log 2>&1 &
+          echo "$!" > /tmp/evidence-server.pid
+
+          for i in 1 2 3 4 5; do
+            if curl --fail --silent --show-error --max-time 2               'http://127.0.0.1:8765/witnessed-checkpoint-bundle.json'               -o /tmp/resolved-bundle.json; then
+              break
+            fi
+            sleep 1
+          done
+          test -s /tmp/resolved-bundle.json
+          cmp -s /tmp/witnessed-checkpoint-bundle.json /tmp/resolved-bundle.json
+
+      - name: Build successor Update Manifest config
+        run: |
+          python scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.py build-manifest             --profile scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.json             --bundle /tmp/witnessed-checkpoint-bundle.json             --output /tmp/successor-config.json
+          test -s /tmp/successor-config.json
+
+      - name: Create and re-read final successor Update Manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$C2PA_BIN" /tmp/predecessor.jpg             --manifest /tmp/successor-config.json             --update             --output /tmp/successor-update.jpg             --force > /tmp/successor-sign-report.json
+
+          "$C2PA_BIN" /tmp/successor-update.jpg > /tmp/successor-report.json
+          "$C2PA_BIN" /tmp/successor-update.jpg --detailed > /tmp/successor-detailed.json
+
+          node - <<'NODE'
+          const fs=require('fs');
+          const {assertLiveC2paReport}=require('./scripts/c2pa-semantic-boundary/check-live-report');
+          const r=JSON.parse(fs.readFileSync('/tmp/successor-report.json','utf8'));
+          assertLiveC2paReport(r);
+          console.log('C2PA_SUCCESSOR_UPDATE_VALIDATION: PASS');
+          NODE
+
+      - name: Qualify exact non-circular predecessor witness binding
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.py qualify             --profile scripts/c2pa-witnessed-checkpoint-profile/v0.1/profile.json             --parent /tmp/parent-link.json             --bundle /tmp/witnessed-checkpoint-bundle.json             --resolved-bundle /tmp/resolved-bundle.json             --successor-report /tmp/successor-report.json             --successor-detailed /tmp/successor-detailed.json             --repo-root .             --output /tmp/qualification-receipt.json             > /tmp/qualification-output.json
+
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/qualification-receipt.json'))
+          expected='PREDECESSOR_C2PA_EVIDENCE_WITNESSED_AND_BOUND_BY_SUCCESSOR_UPDATE_MANIFEST'
+          if r['verdict'] != expected:
+              raise SystemExit('unexpected bounded verdict')
+          if r['claims']['predecessor_c2pa_evidence_witnessed_and_bound_by_successor_update_manifest'] is not True:
+              raise SystemExit('bounded positive fact missing')
+          false_claims={k:v for k,v in r['claims'].items() if k!='predecessor_c2pa_evidence_witnessed_and_bound_by_successor_update_manifest'}
+          if any(false_claims.values()):
+              raise SystemExit('unsafe claim promoted')
+          s=r['successor_update_manifest']
+          if not all([
+              s['c2pa_validation_accepted'],
+              s['exactly_one_parent_of'],
+              s['parent_binding_matches_bundle_subject'],
+              s['external_reference_exact_bundle_binding'],
+              s['same_claim_self_reference_classification']=='SAME_CLAIM_SELF_REFERENCE_REJECTED'
+          ]):
+              raise SystemExit('successor semantic contract incomplete')
+          if r['automatic_action'] or r['external_mutation_performed']:
+              raise SystemExit('unexpected external effect')
+          print('C2PA_WITNESSED_CHECKPOINT_PROFILE: BOUNDED_GREEN')
+          PY
+
+      - name: Stop loopback evidence server
+        if: always()
+        shell: bash
+        run: |
+          if [ -f /tmp/evidence-server.pid ]; then
+            kill "$(cat /tmp/evidence-server.pid)" 2>/dev/null || true
+          fi
+
+      - name: Verify repository boundary remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c2pa-witnessed-checkpoint-profile-v0.1
+          path: |
+            /tmp/predecessor-report.json
+            /tmp/probe-config.json
+            /tmp/probe-sign-report.json
+            /tmp/probe-report.json
+            /tmp/probe-detailed.json
+            /tmp/parent-link.json
+            /tmp/witnessed-checkpoint-bundle.json
+            /tmp/bundle-verification.json
+            /tmp/resolved-bundle.json
+            /tmp/successor-config.json
+            /tmp/successor-sign-report.json
+            /tmp/successor-report.json
+            /tmp/successor-detailed.json
+            /tmp/qualification-receipt.json
+            /tmp/qualification-output.json
+            /tmp/evidence-server.log
+          if-no-files-found: ignore
+          retention-days: 30
