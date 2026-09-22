@@ -124,6 +124,17 @@ jobs:
           print('CRYPTOVALID_C2SP_WITNESS_QUALIFICATION: BOUNDED_GREEN')
           PY
 
+      - name: Verify frozen qualification receipt exact-byte parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          frozen='scripts/cryptovalid-c2sp-witness-qualification/v0.1/qualification-receipt.json'
+          test "$(git hash-object "$frozen")" = '84f5c907c70ded2b52dc69ceef878f8e9def0840'
+          test "$(sha256sum "$frozen" | awk '{print $1}')" = '13e33a5da9fbfe6978b0f2fb986e3491212ff9be7fccea70f7f4ee1f2c3e98b4'
+          test "$(wc -c < "$frozen" | tr -d ' ')" = '5162'
+          cmp -s /tmp/qualification-receipt.json "$frozen"
+          echo 'CRYPTOVALID_C2SP_FROZEN_PARITY: LIVE_EQUALS_FROZEN_EXACT_BYTES'
+
       - name: Verify repository boundary remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
 
