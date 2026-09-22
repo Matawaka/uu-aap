@@ -124,16 +124,75 @@ jobs:
           print('CRYPTOVALID_C2SP_WITNESS_QUALIFICATION: BOUNDED_GREEN')
           PY
 
-      - name: Verify frozen qualification receipt exact-byte parity
+      - name: Verify frozen historical receipt and live semantic parity
         shell: bash
         run: |
           set -euo pipefail
           frozen='scripts/cryptovalid-c2sp-witness-qualification/v0.1/qualification-receipt.json'
+          live='/tmp/qualification-receipt.json'
+          profile='scripts/cryptovalid-c2sp-witness-qualification/v0.1/profile.json'
+
+          # The first successful execution remains byte-frozen historical evidence.
           test "$(git hash-object "$frozen")" = '84f5c907c70ded2b52dc69ceef878f8e9def0840'
           test "$(sha256sum "$frozen" | awk '{print $1}')" = '13e33a5da9fbfe6978b0f2fb986e3491212ff9be7fccea70f7f4ee1f2c3e98b4'
           test "$(wc -c < "$frozen" | tr -d ' ')" = '5162'
-          cmp -s /tmp/qualification-receipt.json "$frozen"
-          echo 'CRYPTOVALID_C2SP_FROZEN_PARITY: LIVE_EQUALS_FROZEN_EXACT_BYTES'
+
+          python - "$frozen" "$live" "$profile" <<'PY'
+          import json, sys
+
+          frozen = json.load(open(sys.argv[1], encoding='utf-8'))
+          live = json.load(open(sys.argv[2], encoding='utf-8'))
+          profile = json.load(open(sys.argv[3], encoding='utf-8'))
+          strong = 'CROSS_IMPLEMENTATION_MATCH_ON_BOUNDED_VECTOR_SET_PORTABLE_CONFLICT_EVIDENCE_REVERIFIED_AUTHENTICATED_POLICY_OBJECT_ABSENT'
+
+          if frozen['verdict'] != strong or live['verdict'] != strong:
+              raise SystemExit('strong bounded verdict drift')
+
+          def stable_projection(r):
+              p = r['portable_conflict_evidence']
+              return {
+                  'schema': r['schema'],
+                  'tracking_issue': r['tracking_issue'],
+                  'repository_predecessor_main': r['repository_predecessor_main'],
+                  'candidate_target': r['candidate_target'],
+                  'reference_target': r['reference_target'],
+                  'fixture_set': r['fixture_set'],
+                  'case_comparison': r['case_comparison'],
+                  'portable_conflict_evidence': {
+                      'present': p['present'],
+                      'reverified': p['reverified'],
+                      'origin': p['origin'],
+                      'tree_size': p['tree_size'],
+                      'distinct_roots': p['distinct_roots'],
+                      'both_log_signatures_verified': p['both_log_signatures_verified'],
+                      'second_note_sha256': p['second_note_sha256'],
+                      'artifact_record_count': p['artifact_record_count'],
+                  },
+                  'candidate_policy_boundary': r['candidate_policy_boundary'],
+                  'time_semantics': r['time_semantics'],
+                  'completeness_semantics': r['completeness_semantics'],
+                  'verdict': r['verdict'],
+                  'claims': r['claims'],
+                  'automatic_action': r['automatic_action'],
+                  'external_mutation_performed': r['external_mutation_performed'],
+              }
+
+          if stable_projection(frozen) != stable_projection(live):
+              raise SystemExit('live/frozen bounded semantic contract drift')
+
+          p = live['portable_conflict_evidence']
+          expected = profile['split_view_semantic_boundary']['expected_semantic_pair_fingerprint_sha256']
+          if p.get('semantic_pair_fingerprint_sha256') != expected:
+              raise SystemExit('deterministic split-view semantic fingerprint drift')
+          if p.get('raw_note_hashes_include_execution_specific_witness_signatures') is not True:
+              raise SystemExit('raw-note randomized-signature boundary missing')
+          if p.get('raw_artifact_exact_byte_reproducibility') is not False:
+              raise SystemExit('raw-artifact byte reproducibility incorrectly promoted')
+          if not isinstance(p.get('artifact_sha256'), str) or not isinstance(p.get('first_note_sha256'), str):
+              raise SystemExit('execution-specific evidence hashes missing')
+
+          print('CRYPTOVALID_C2SP_FROZEN_PARITY: LIVE_STRONG_SEMANTIC_CONTRACT_EQUALS_FROZEN; RANDOMIZED_MLDSA_BYTES_EXCLUDED')
+          PY
 
       - name: Verify repository boundary remains clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
