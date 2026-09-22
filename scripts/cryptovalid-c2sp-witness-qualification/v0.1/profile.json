@@ -63,5 +63,10 @@
   },
   "repository_predecessor_main": "0e74f89695bbcb02c759000752696c322d908f7a",
   "schema": "urn:uu-aap:cryptovalid-c2sp-witness-qualification-profile:0.1",
-  "tracking_issue": 1005
+  "tracking_issue": 1005,
+  "split_view_semantic_boundary": {
+    "expected_semantic_pair_fingerprint_sha256": "688e247a2ce7bed35d198000e0fafbe5e39c31bfaba00fe62070800cdaf755b9",
+    "raw_artifact_exact_byte_reproducibility": false,
+    "reason": "ML-DSA-44 signatures are randomized; raw previous-note/evidence bytes are execution-specific while authenticated checkpoint roots and bounded verdict semantics remain stable"
+  }
 }
