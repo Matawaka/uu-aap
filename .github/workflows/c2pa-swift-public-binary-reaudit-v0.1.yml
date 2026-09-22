@@ -1,0 +1,80 @@
+name: C2PA Swift Public Binary Re-audit v0.1
+
+on:
+  pull_request:
+    paths:
+      - scripts/c2pa-swift-public-binary-reaudit/v0.1/**
+      - .github/workflows/c2pa-swift-public-binary-reaudit-v0.1.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  consumer:
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [release_frontier, current_main]
+    runs-on: macos-15
+    timeout-minutes: 35
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact predecessor and additive surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=260e325619ffd2eed12c43f982c369e6468d5f07
+          test "$(git rev-parse "$base^{tree}")" = e31aa59a911ae9d393721d6c74c7a906ba810865
+          git merge-base --is-ancestor "$base" HEAD
+          if [ '${{ github.event_name }}' = pull_request ]; then
+            test '${{ github.event.pull_request.base.sha }}' = "$base"
+          fi
+          git diff --name-status "$base" HEAD > "$RUNNER_TEMP/additive-diff.txt"
+          python - "$RUNNER_TEMP/additive-diff.txt" <<'PY'
+          import sys
+          for line in open(sys.argv[1]):
+              status,path=line.rstrip('\n').split('\t')
+              assert status=='A', line
+              assert path.startswith('scripts/c2pa-swift-public-binary-reaudit/v0.1/') or path=='.github/workflows/c2pa-swift-public-binary-reaudit-v0.1.yml', line
+          PY
+      - name: Fail-closed classifier tests
+        working-directory: scripts/c2pa-swift-public-binary-reaudit/v0.1
+        run: python -m unittest -v test_reaudit
+      - name: Resolve build and execute public consumer
+        run: |
+          python scripts/c2pa-swift-public-binary-reaudit/v0.1/reaudit.py \
+            --target '${{ matrix.target }}' --repo "$GITHUB_WORKSPACE" \
+            --out "$RUNNER_TEMP/reaudit-${{ matrix.target }}"
+      - name: Draft bootstrap or exact frozen observation
+        env:
+          IS_DRAFT: ${{ github.event.pull_request.draft }}
+        run: |
+          p=scripts/c2pa-swift-public-binary-reaudit/v0.1
+          target='${{ matrix.target }}'
+          if [ -f "$p/frozen/$target.json" ]; then
+            cmp "$p/frozen/$target.json" "$RUNNER_TEMP/reaudit-$target/receipt.json"
+            test -s "$p/locks/$target.resolved"
+          else
+            test "$IS_DRAFT" = true
+            echo 'DRAFT_EXPLORATION_ONLY_NOT_FINAL_QUALIFICATION'
+          fi
+      - name: Repository remains byte-clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Retain exact execution evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: swift-public-reaudit-${{ matrix.target }}
+          path: ${{ runner.temp }}/reaudit-${{ matrix.target }}/
+          if-no-files-found: error
+          retention-days: 30
