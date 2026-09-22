@@ -62,10 +62,16 @@ jobs:
             --live /tmp/c2pa-replay-live/live-observation.json \
             --tests /tmp/c2pa-replay-tests.tap \
             --output /tmp/c2pa-replay-qualification.json
-      - name: Draft bootstrap or frozen receipt comparison
+      - name: Require exact frozen readiness parity
+        shell: bash
         run: |
+          set -euo pipefail
           f=scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/qualification-receipt.json
-          if [ -f "$f" ]; then cmp /tmp/c2pa-replay-qualification.json "$f"; else echo UNFROZEN_DRAFT_ONLY; fi
+          test -s "$f"
+          test "$(git hash-object "$f")" = eae4083459874ff0024b64a6faf44152671aae91
+          test "$(sha256sum "$f" | cut -d ' ' -f 1)" = 95bc2651489239a3d25db04c32d48bc51baeda019b4ef9549a80a943e1074151
+          cmp /tmp/c2pa-replay-qualification.json "$f"
+          echo PORTABLE_REPLAY_LIVE_EQUALS_FROZEN_READINESS
       - name: Check repository remains byte-clean
         run: test -z "$(git status --porcelain --untracked-files=all)"
       - name: Upload portable package and run-specific evidence
