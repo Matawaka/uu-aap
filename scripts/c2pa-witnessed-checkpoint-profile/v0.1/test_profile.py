@@ -168,7 +168,7 @@ def main():
     hostile(lambda: m.verify_bundle(profile, parent, bad), "commitment domain mismatch")
 
     bad = copy.deepcopy(bundle)
-    bad["unexpected"] = true if False else "hostile"
+    bad["unexpected"] = "hostile"
     hostile(lambda: m.verify_bundle(profile, parent, bad), "bundle fields mismatch")
 
     bad = copy.deepcopy(bundle)
