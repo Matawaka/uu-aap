@@ -1,0 +1,144 @@
+name: cryptovalid C2SP Witness Qualification v0.1
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/cryptovalid-c2sp-witness-qualification-v0.1.yml"
+      - "scripts/cryptovalid-c2sp-witness-qualification/v0.1/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact UU-AAP candidate
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.26.0"
+
+      - name: Install candidate cryptographic dependency
+        run: python -m pip install --disable-pip-version-check "cryptography==49.0.0"
+
+      - name: Verify exact UU-AAP predecessor
+        shell: bash
+        run: |
+          set -euo pipefail
+          EXPECTED_MAIN='0e74f89695bbcb02c759000752696c322d908f7a'
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            test "${{ github.event.pull_request.base.sha }}" = "$EXPECTED_MAIN"
+          fi
+          git merge-base --is-ancestor "$EXPECTED_MAIN" HEAD
+          test "$(git hash-object scripts/anchored-witnessed-consistency-pilot/v0.1/pilot.py)" =             '518bc61f4db936031b911e392eb6fe053dc03437'
+
+      - name: Clone and byte-bind exact external targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          git init -q /tmp/cryptovalid
+          git -C /tmp/cryptovalid remote add origin https://github.com/robertolocatelli81-dev/cryptovalid-opencore.git
+          git -C /tmp/cryptovalid fetch -q --depth=1 origin c12d847854a4007f3ba40912addabb1b00eb1550
+          git -C /tmp/cryptovalid checkout -q --detach FETCH_HEAD
+          test "$(git -C /tmp/cryptovalid rev-parse HEAD)" = 'c12d847854a4007f3ba40912addabb1b00eb1550'
+
+          test "$(git -C /tmp/cryptovalid hash-object cryptovalid_checkpoint.py)" = '11a757ab57afc35ad3aeb28c913a861444fa9c4a'
+          test "$(git -C /tmp/cryptovalid hash-object cryptovalid_witness.py)" = '6797ccbc7e4a0fc826b9c09dcb10b17006cbc9fc'
+          test "$(git -C /tmp/cryptovalid hash-object test_cryptovalid_witness.py)" = 'b7edd0e115409e36cf46800a4cda527740fa4c6b'
+          test "$(git -C /tmp/cryptovalid hash-object examples/checkpoints/rekor_v1.vkey)" = '37f3fe27d9d7b5b0095ffeadcad93adfddb8cdd7'
+          test "$(git -C /tmp/cryptovalid hash-object examples/checkpoints/rekor_v1_1193050959916656506_2770974847.note)" = '68460e4b1f3ad2bc5242b7e4b80fdbc989e98afc'
+          test "$(git -C /tmp/cryptovalid hash-object examples/checkpoints/rekor_v1_2605736670972794746_117740831.note)" = '56eefa7ba3deaa81af43e048e3462d9611aa5378'
+          test "$(git -C /tmp/cryptovalid hash-object examples/checkpoints/rekor_v1_3904496407287907110_4163431.note)" = '8703f657cd7088f0f7f9e675b9e413f03846db65'
+
+          git init -q /tmp/reference-witness
+          git -C /tmp/reference-witness remote add origin https://github.com/transparency-dev/witness.git
+          git -C /tmp/reference-witness fetch -q --depth=1 origin 55a5a0bf332a04f64296841ea857f86ec4494fc3
+          git -C /tmp/reference-witness checkout -q --detach FETCH_HEAD
+          test "$(git -C /tmp/reference-witness rev-parse HEAD)" = '55a5a0bf332a04f64296841ea857f86ec4494fc3'
+          test "$(git -C /tmp/reference-witness hash-object go.mod)" = 'e32fb371f5b3ddd9a3ec91a61bda0e31c2451b24'
+          test "$(git -C /tmp/reference-witness hash-object witness/witness.go)" = '1947958014a474a30db2d5794e5576b371c22104'
+          test "$(git -C /tmp/reference-witness hash-object witness/witness_test.go)" = 'a3fcf35f2fb1a8f6e8fe270a9c4a73148c95aff3'
+
+      - name: Run candidate's declared witness regression suite
+        working-directory: /tmp/cryptovalid
+        env:
+          CV_REQUIRE_CRYPTO: "1"
+        run: python test_cryptovalid_witness.py
+
+      - name: Run UU-AAP hostile/profile tests
+        run: python scripts/cryptovalid-c2sp-witness-qualification/v0.1/test_qualify.py
+
+      - name: Generate normalized fixtures and execute reference witness
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/fixtures
+          cp scripts/cryptovalid-c2sp-witness-qualification/v0.1/reference_driver_test.go             /tmp/reference-witness/witness/zz_uu_aap_differential_test.go
+          (
+            cd /tmp/reference-witness
+            UU_AAP_OUT=/tmp/reference-result.json             UU_AAP_FIXTURES=/tmp/fixtures               go test ./witness -run '^TestUUAAPDifferentialQualification$' -count=1 -v
+          )
+          test -s /tmp/reference-result.json
+          test -s /tmp/fixtures/metadata.json
+
+      - name: Execute cryptovalid against the exact same fixture bytes
+        run: |
+          python scripts/cryptovalid-c2sp-witness-qualification/v0.1/candidate_driver.py             --candidate-root /tmp/cryptovalid             --fixtures /tmp/fixtures             --output /tmp/candidate-result.json
+          test -s /tmp/candidate-result.json
+
+      - name: Qualify bounded differential behavior
+        shell: bash
+        run: |
+          set +e
+          python scripts/cryptovalid-c2sp-witness-qualification/v0.1/qualify.py             --profile scripts/cryptovalid-c2sp-witness-qualification/v0.1/profile.json             --reference /tmp/reference-result.json             --candidate /tmp/candidate-result.json             --fixtures-metadata /tmp/fixtures/metadata.json             --repo-root .             --output /tmp/qualification-receipt.json
+          rc=$?
+          set -e
+          test "$rc" -eq 0
+          python - <<'PY'
+          import json
+          r=json.load(open('/tmp/qualification-receipt.json',encoding='utf-8'))
+          expected='CROSS_IMPLEMENTATION_MATCH_ON_BOUNDED_VECTOR_SET_PORTABLE_CONFLICT_EVIDENCE_REVERIFIED_AUTHENTICATED_POLICY_OBJECT_ABSENT'
+          assert r['verdict']==expected, r['verdict']
+          assert r['portable_conflict_evidence']['reverified'] is True
+          assert r['candidate_policy_boundary']['authenticated_policy_object'] is False
+          assert r['candidate_policy_boundary']['same_name_multi_algorithm_counts_as_one_witness'] is True
+          assert not any(r['claims'].values())
+          assert r['automatic_action'] is False
+          assert r['external_mutation_performed'] is False
+          print('CRYPTOVALID_C2SP_WITNESS_QUALIFICATION: BOUNDED_GREEN')
+          PY
+
+      - name: Verify repository boundary remains clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+
+      - name: Upload executable qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cryptovalid-c2sp-witness-qualification-v0.1
+          path: |
+            /tmp/reference-result.json
+            /tmp/candidate-result.json
+            /tmp/qualification-receipt.json
+            /tmp/fixtures/metadata.json
+            /tmp/fixtures/first.note
+            /tmp/fixtures/successor.note
+            /tmp/fixtures/fork.note
+            /tmp/fixtures/tampered.note
+            /tmp/fixtures/candidate-state.json.evidence.jsonl
+          if-no-files-found: ignore
+          retention-days: 30
