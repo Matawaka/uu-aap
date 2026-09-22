@@ -14,6 +14,8 @@ jobs:
   qualify:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
     steps:
       - name: Checkout exact UU-AAP candidate
         uses: actions/checkout@v4
