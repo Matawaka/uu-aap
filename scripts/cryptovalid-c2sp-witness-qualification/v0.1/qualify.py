@@ -67,6 +67,11 @@ def validate_profile(p: dict[str, Any]) -> None:
         fail("case set drift")
     if len(set(p.get("always_false_claims", []))) != len(p.get("always_false_claims", [])):
         fail("duplicate always-false claim")
+    sb = p.get("split_view_semantic_boundary", {})
+    if sb.get("expected_semantic_pair_fingerprint_sha256") != "688e247a2ce7bed35d198000e0fafbe5e39c31bfaba00fe62070800cdaf755b9":
+        fail("split-view semantic fingerprint drift")
+    if sb.get("raw_artifact_exact_byte_reproducibility") is not False:
+        fail("randomized raw-artifact boundary promoted")
 
 
 def verify_split_pair(candidate: dict[str, Any], pilot: Any, log_vkey: str) -> dict[str, Any]:
@@ -165,6 +170,8 @@ def main() -> int:
             and isinstance(evidence_file.get("sha256"), str)
             and evidence_file.get("record_count", 0) >= 1
             and split.get("reverified") is True
+            and split.get("semantic_pair_fingerprint_sha256")
+                == p["split_view_semantic_boundary"]["expected_semantic_pair_fingerprint_sha256"]
         )
 
         if all_match and portable_ok and policy_ok:
@@ -195,6 +202,10 @@ def main() -> int:
             "portable_conflict_evidence": split | {
                 "artifact_sha256": evidence_file.get("sha256"),
                 "artifact_record_count": evidence_file.get("record_count"),
+                "raw_artifact_exact_byte_reproducibility":
+                    p["split_view_semantic_boundary"]["raw_artifact_exact_byte_reproducibility"],
+                "raw_artifact_variability_reason":
+                    p["split_view_semantic_boundary"]["reason"],
             },
             "candidate_policy_boundary": {
                 "classification": policy.get("classification"),
