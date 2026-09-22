@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "record_type": "OBSERVATION_INTAKE",
+  "dataset_kind": "SYNTHETIC_EXAMPLE",
+  "id": "example-not-a-real-pilot",
+  "basin_id": null,
+  "population_scope": null,
+  "period": {"start": null, "end": null},
+  "authority_effect": "NONE",
+  "causal_effect": "NOT_ESTABLISHED",
+  "independent_review": "NOT_PERFORMED",
+  "metrics": [
+    {"metric_id": "freshwater_withdrawal", "value": null, "unit": "m3", "evidence_status": "NOT_MEASURED", "source_refs": [], "method": null, "uncertainty": null, "currency": null, "counterfactual": null},
+    {"metric_id": "additional_replenishment_estimate", "value": null, "unit": "m3", "evidence_status": "NOT_MEASURED", "source_refs": [], "method": null, "uncertainty": null, "currency": null, "counterfactual": null},
+    {"metric_id": "household_water_cost_share", "value": null, "unit": "percent", "evidence_status": "NOT_MEASURED", "source_refs": [], "method": null, "uncertainty": null, "currency": null, "counterfactual": null}
+  ]
+}

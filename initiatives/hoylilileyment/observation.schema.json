@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HOYLILILEYMENT observation intake 0.2.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "record_type", "dataset_kind", "id", "basin_id", "population_scope", "period", "authority_effect", "causal_effect", "independent_review", "metrics"],
+  "properties": {
+    "version": {"const": "0.2.0"},
+    "record_type": {"const": "OBSERVATION_INTAKE"},
+    "dataset_kind": {"enum": ["SYNTHETIC_EXAMPLE", "REAL_OBSERVATION_SUBMISSION"]},
+    "id": {"type": "string", "minLength": 1, "maxLength": 160},
+    "basin_id": {"type": ["string", "null"], "minLength": 1, "maxLength": 200},
+    "population_scope": {"type": ["string", "null"], "minLength": 1, "maxLength": 2000},
+    "period": {"type": "object", "additionalProperties": false, "required": ["start", "end"], "properties": {"start": {"type": ["string", "null"], "format": "date"}, "end": {"type": ["string", "null"], "format": "date"}}},
+    "authority_effect": {"const": "NONE"},
+    "causal_effect": {"const": "NOT_ESTABLISHED"},
+    "independent_review": {"const": "NOT_PERFORMED"},
+    "metrics": {"type": "array", "minItems": 1, "maxItems": 100, "items": {"$ref": "#/$defs/metric"}}
+  },
+  "$defs": {
+    "metric": {
+      "type": "object", "additionalProperties": false,
+      "required": ["metric_id", "value", "unit", "evidence_status", "source_refs", "method", "uncertainty", "currency", "counterfactual"],
+      "properties": {
+        "metric_id": {"type": "string", "minLength": 1, "maxLength": 120},
+        "value": {"type": ["number", "null"]},
+        "unit": {"type": "string", "minLength": 1, "maxLength": 40},
+        "evidence_status": {"enum": ["NOT_MEASURED", "MEASURED", "ESTIMATED", "DISPUTED"]},
+        "source_refs": {"type": "array", "maxItems": 30, "uniqueItems": true, "items": {"type": "string", "format": "uri"}},
+        "method": {"type": ["string", "null"], "minLength": 1, "maxLength": 4000},
+        "uncertainty": {"type": ["string", "null"], "minLength": 1, "maxLength": 2000},
+        "currency": {"type": ["string", "null"], "pattern": "^[A-Z]{3}$"},
+        "counterfactual": {"type": ["string", "null"], "minLength": 1, "maxLength": 4000}
+      },
+      "allOf": [
+        {"if": {"properties": {"evidence_status": {"const": "NOT_MEASURED"}}}, "then": {"properties": {"value": {"const": null}, "source_refs": {"maxItems": 0}, "method": {"const": null}, "uncertainty": {"const": null}, "counterfactual": {"const": null}}}, "else": {"properties": {"value": {"type": "number"}, "source_refs": {"minItems": 1}, "method": {"type": "string", "minLength": 1}, "uncertainty": {"type": "string", "minLength": 1}}}}
+      ]
+    }
+  }
+}

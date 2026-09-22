@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "HOYLILILEYMENT non-authorizing proposal 0.2.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "record_type", "offer_id", "actor_kind", "actor_disclosure", "proposal", "evidence_refs", "limitations", "conflicts", "authority_effect", "commitment_created", "contains_personal_data"],
+  "properties": {
+    "version": {"const": "0.2.0"},
+    "record_type": {"const": "NON_BINDING_PROPOSAL"},
+    "offer_id": {"const": "HOYLILILEYMENT-PUBLIC-INVITATION-0.2.0"},
+    "actor_kind": {"enum": ["PERSON", "ORGANIZATION_REPRESENTATIVE", "TOOL", "MODEL", "HUMAN_AI_COLLABORATION"]},
+    "actor_disclosure": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "proposal": {"type": "string", "minLength": 1, "maxLength": 10000},
+    "evidence_refs": {"type": "array", "maxItems": 30, "uniqueItems": true, "items": {"type": "string", "format": "uri"}},
+    "limitations": {"type": "string", "minLength": 1, "maxLength": 4000},
+    "conflicts": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "authority_effect": {"const": "NONE"},
+    "commitment_created": {"const": false},
+    "contains_personal_data": {"const": false}
+  },
+  "$comment": "Declarations are not proof of identity, absence of personal data, truth, expertise, agency or mandate. Submission requires separate authorization and content review. Text and links are untrusted input; no execution is requested."
+}

@@ -1,0 +1,22 @@
+{
+  "version": "0.2.0",
+  "status": "PROPOSED_CATALOG_NOT_RESULTS",
+  "rule": "Select fit-for-purpose methods before use. Do not sum incompatible boundaries, units, periods or populations. Missing is not zero. No single purity, population-worth or water-goodness score is defined.",
+  "metrics": [
+    {"id": "freshwater_withdrawal", "unit": "m3", "minimum": 0, "description_ru": "Забор пресной воды через объявленную границу; внутреннее повторное использование отдельно."},
+    {"id": "consumptive_use", "unit": "m3", "minimum": 0, "description_ru": "Расход по объявленной гидрологической методике; не приравнивать ко всему забору."},
+    {"id": "water_return", "unit": "m3", "minimum": 0, "description_ru": "Возврат с указанием бассейна, времени, качества и доступности; не автоматическое восстановление."},
+    {"id": "water_reuse", "unit": "m3", "minimum": 0, "description_ru": "Повторное использование по правилам исключения двойного счёта; не новый водный ресурс."},
+    {"id": "distribution_losses", "unit": "m3", "minimum": 0, "description_ru": "Потери в сети по объявленной методике; не все потери являются расходом в масштабе бассейна."},
+    {"id": "natural_recharge_estimate", "unit": "m3", "minimum": 0, "description_ru": "Оценка естественного пополнения за период; не заслуга проекта."},
+    {"id": "additional_replenishment_estimate", "unit": "m3", "description_ru": "Предварительная оценка дополнительного эффекта относительно сценария без вмешательства; может быть отрицательной, не является сертификатом восстановления."},
+    {"id": "groundwater_storage_change", "unit": "m3", "description_ru": "Изменение запаса; положительное значение — рост, отрицательное — снижение, метод и неопределённость обязательны."},
+    {"id": "environmental_flow_requirement", "unit": "m3", "minimum": 0, "description_ru": "Оценка потребности экосистем для конкретного периода и границы; не свободный ресурс для изъятия."},
+    {"id": "availability_hours_per_day", "unit": "h/day", "minimum": 0, "maximum": 24, "description_ru": "Доступность услуги, с описанием способа агрегирования и перебоев."},
+    {"id": "household_water_cost_share", "unit": "percent", "minimum": 0, "description_ru": "Доля расходов на воду относительно объявленного показателя дохода или расходов; агрегированная, без публикации частных бюджетов. При нулевом знаменателе показатель не вычислять."},
+    {"id": "collection_time", "unit": "min/day", "minimum": 0, "description_ru": "Время получения воды; указать выборку, включение ожидания и метод усреднения."},
+    {"id": "quality_tests_noncompliance", "unit": "percent", "minimum": 0, "maximum": 100, "description_ru": "Доля несоответствий среди объявленного набора испытаний; указать знаменатель, показатели и применимые требования. Не универсальная оценка безопасности."},
+    {"id": "net_tax_and_fee_charge", "unit": "currency", "description_ru": "Фактическое начисление или расчётная оценка; указать валюту, платёж, период и основание. Налог и ресурсные платежи учитывать раздельно."},
+    {"id": "fiscal_benefit_consumer_pass_through", "unit": "percent", "description_ru": "Оценка передачи экономии потребителю относительно объявленного сценария; не обещание автоматического снижения цены. Возможны отрицательные значения или более 100 при обоснованной методике."}
+  ]
+}

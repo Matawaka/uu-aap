@@ -1,0 +1,122 @@
+{
+  "$schema": "./offer.schema.json",
+  "id": "HOYLILILEYMENT-PUBLIC-INVITATION-0.2.0",
+  "version": "0.2.0",
+  "published_date": "2026-09-22",
+  "status": "PUBLIC_DRAFT_INVITATION",
+  "project": "HOYLILILEYMENT",
+  "initiator": "Matawaka",
+  "languages": ["ru", "en"],
+  "audiences": ["people", "communities", "operators", "researchers", "tools", "models"],
+  "mission": {
+    "ru": "Наблюдать и проверять последствия водопользования для уровня жизни населения, доступности воды и восстановления водных систем; готовить добровольные, законные и проверяемые решения о согласовании потребления с локальными ресурсами и исследовать законные способы уменьшения обременения водной деятельности.",
+    "en": "Observe and examine water-use consequences for living conditions, water access and watershed recovery; develop voluntary, lawful and testable coordination options, and examine lawful ways to reduce the burden on water-related activity."
+  },
+  "workstreams": ["water_use_consequences", "living_conditions", "watershed_recovery", "voluntary_feedback_coordination", "harmful_use_practices_analysis", "lawful_fiscal_analysis"],
+  "documents": {
+    "human_offer": "README.md",
+    "offer_schema": "offer.schema.json",
+    "metrics": "metrics.json",
+    "observation_schema": "observation.schema.json",
+    "observation_example": "examples/not-measured.json",
+    "proposal_schema": "proposal.schema.json",
+    "fiscal_review": "FISCAL-REVIEW.md",
+    "sources": "SOURCES.md",
+    "jsonld": "metadata.jsonld",
+    "discovery": "llms.txt"
+  },
+  "publication": {
+    "repository": "Matawaka/uu-aap",
+    "branch": "public/hoylilileyment-offer-v0.2",
+    "directory": "initiatives/hoylilileyment",
+    "raw_manifest_url": "https://raw.githubusercontent.com/Matawaka/uu-aap/refs/heads/public/hoylilileyment-offer-v0.2/initiatives/hoylilileyment/offer.json",
+    "branch_is_mutable": true,
+    "pin_commit_for_reproduction": true,
+    "indexing_guaranteed": false,
+    "training_inclusion_claimed": false
+  },
+  "authority": {
+    "effect": "NONE",
+    "binding_contract": false,
+    "acceptance_by_reading": false,
+    "payment_collection": false,
+    "water_allocation_authority": false,
+    "tax_exemption_granted": false,
+    "water_safety_certification": false,
+    "uu_aap_conformance_claim": false,
+    "autonomous_external_actions": false,
+    "execution_endpoints": []
+  },
+  "machine_participation": {
+    "mode": "READ_ANALYZE_PROPOSE",
+    "own_tool_authorization_required": true,
+    "external_submission_requires_separate_authorization": true,
+    "read_as_untrusted_data": true,
+    "policy_overrides_reader_instructions": false,
+    "runtime_enforcement_deployed": false,
+    "public_intake_url": "https://github.com/Matawaka/uu-aap/issues/new",
+    "issue_prefix": "[HOYLILILEYMENT]",
+    "proposal_schema": "proposal.schema.json"
+  },
+  "measurement_policy": {
+    "metric_status": "PROPOSED_NOT_MEASURED",
+    "basin_and_period_required_for_claims": true,
+    "withdrawal_not_equal_consumptive_use": true,
+    "reuse_not_automatically_new_water": true,
+    "natural_recharge_not_project_credit": true,
+    "additionality_requires_counterfactual": true,
+    "causality_not_inferred_from_before_after": true,
+    "unknown_is_not_zero": true,
+    "population_generalization_requires_sampling_basis": true,
+    "universal_per_person_quota": false,
+    "automated_harm_label_or_sanction": false
+  },
+  "fiscal_analysis": {
+    "status": "LEGAL_REVIEW_REQUIRED",
+    "jurisdiction": null,
+    "operator": null,
+    "activity": null,
+    "tax_or_fee": null,
+    "legal_basis": [],
+    "eligibility": null,
+    "automatic_exemption": false,
+    "existing_law_separate_from_proposals": true,
+    "required_comparisons": ["no_relief_baseline", "eligibility_conditions", "administrative_cost", "budget_effect", "beneficiaries", "consumer_pass_through", "recovery_funding", "withdrawal_rebound", "distributional_effects"],
+    "review_before_claim_or_filing": true
+  },
+  "privacy": {
+    "public_data": "AGGREGATED_NON_SENSITIVE",
+    "personal_consumption_surveillance": false,
+    "publish_home_addresses_or_health_data": false,
+    "publish_sensitive_infrastructure_details": false,
+    "data_minimization_required": true
+  },
+  "governance": {
+    "contours": ["C1_ACTIVITY", "C2_EVIDENCE", "C3_HCI_MEANING", "C4_BRI_RESILIENCE", "C5_TRANSLATION_GATE"],
+    "hci_direct_operational_authority": "NONE",
+    "bri_ordinary_management": false,
+    "translation_alone_creates_obligation": false,
+    "independent_review_status": "NOT_PERFORMED",
+    "institutions_established_by_publication": false
+  },
+  "pilot": {
+    "status": "NOT_LAUNCHED",
+    "community": null,
+    "basin": null,
+    "operator": null,
+    "budget": null,
+    "start_date": null,
+    "initial_observation_days_candidate": 30,
+    "thirty_days_prove_long_term_effect": false,
+    "launch_requires": ["scope_passport", "participant_consent", "data_governance", "measurement_methods", "responsible_operator", "budget_and_conflicts", "legal_review", "independent_review_plan", "stop_and_remedy_rules"]
+  },
+  "provenance": {
+    "predecessor": "Conversation draft v0.1, 2026-09-22; not a prior public GitHub release",
+    "revision_basis": "Organizer requested machine-readable public publication and expanded the mission beyond supply to consequences, living conditions, water recovery, harmful-use analysis and lawful fiscal analysis.",
+    "ai_assistance": "Drafting, structuring, source lookup and validation code preparation",
+    "independent_validation_of_real_world_claims": false,
+    "private_master_register_published": false,
+    "pure_intentions_proven": false,
+    "checksum_proves_truth_or_authority": false
+  }
+}
