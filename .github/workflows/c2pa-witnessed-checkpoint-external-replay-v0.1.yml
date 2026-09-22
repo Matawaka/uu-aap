@@ -1,0 +1,92 @@
+name: C2PA Portable External Replay v0.1
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/**'
+      - '.github/workflows/c2pa-witnessed-checkpoint-external-replay-v0.1.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Pin predecessor and enforce additive-only surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          base=06b6d9b194938a1d6de21d9958b67f264ea47c25
+          git merge-base --is-ancestor "$base" HEAD
+          test "$(git rev-parse "$base^{tree}")" = c0bee31f53a6fe839a9d1e1f18e12461aa358c71
+          if [ '${{ github.event_name }}' = pull_request ]; then
+            test '${{ github.event.pull_request.base.sha }}' = "$base"
+          fi
+          git diff --name-status "$base" HEAD > /tmp/c2pa-replay-diff.txt
+          python - <<'PY'
+          from pathlib import Path
+          for line in Path('/tmp/c2pa-replay-diff.txt').read_text().splitlines():
+              status, path = line.split('\t')
+              allowed = path.startswith('scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/') or path == '.github/workflows/c2pa-witnessed-checkpoint-external-replay-v0.1.yml'
+              if status != 'A' or not allowed:
+                  raise SystemExit('PROTECTED_SURFACE_CHANGED:' + line)
+          PY
+          test "$(git hash-object scripts/c2pa-witnessed-checkpoint-profile/v0.1/qualification-receipt.json)" = 8094b98b29dfb0997a89ebdeb5ed60225239d508
+          cmp scripts/c2pa-witnessed-checkpoint-profile/v0.1/qualification-receipt.json scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/historical-receipt.json
+      - name: Standalone offline crypto replay and hostile suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          p=scripts/c2pa-witnessed-checkpoint-external-replay/v0.1
+          node "$p/verify.mjs" > /tmp/c2pa-replay-offline.json
+          node --test "$p/test.mjs" | tee /tmp/c2pa-replay-tests.tap
+      - name: Fresh C2PA SDK execution with separately implemented binding verifier
+        run: python scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/live-replay.py --output-dir /tmp/c2pa-replay-live
+      - name: Produce bounded package-readiness receipt
+        run: |
+          python scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/gate.py \
+            --offline /tmp/c2pa-replay-offline.json \
+            --live /tmp/c2pa-replay-live/live-observation.json \
+            --tests /tmp/c2pa-replay-tests.tap \
+            --output /tmp/c2pa-replay-qualification.json
+      - name: Require exact frozen readiness parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          f=scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/qualification-receipt.json
+          test -s "$f"
+          test "$(git hash-object "$f")" = eae4083459874ff0024b64a6faf44152671aae91
+          test "$(sha256sum "$f" | cut -d ' ' -f 1)" = 95bc2651489239a3d25db04c32d48bc51baeda019b4ef9549a80a943e1074151
+          cmp /tmp/c2pa-replay-qualification.json "$f"
+          echo PORTABLE_REPLAY_LIVE_EQUALS_FROZEN_READINESS
+      - name: Check repository remains byte-clean
+        run: test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Upload portable package and run-specific evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: c2pa-external-replay-v0.1
+          retention-days: 30
+          if-no-files-found: error
+          path: |
+            scripts/c2pa-witnessed-checkpoint-external-replay/v0.1/
+            /tmp/c2pa-replay-offline.json
+            /tmp/c2pa-replay-tests.tap
+            /tmp/c2pa-replay-qualification.json
+            /tmp/c2pa-replay-live/*.json
+            /tmp/c2pa-replay-live/*.jpg
+            /tmp/c2pa-replay-live/*.txt
+            /tmp/c2pa-replay-live/*.stderr
