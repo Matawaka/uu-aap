@@ -1,0 +1,37 @@
+name: HOYLILILEYMENT public invitation checks
+on:
+  push:
+    branches:
+      - public/hoylilileyment-offer-v0.2
+    paths:
+      - initiatives/hoylilileyment/**
+      - .github/workflows/hoylilileyment-public-validation.yml
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Fetch exact public commit without credentials
+        env:
+          PUBLIC_REPOSITORY: ${{ github.repository }}
+          EXACT_COMMIT: ${{ github.sha }}
+        run: |
+          git init --quiet .
+          git remote add origin "https://github.com/${PUBLIC_REPOSITORY}.git"
+          git -c credential.helper= fetch --no-tags --depth=1 origin "$EXACT_COMMIT"
+          git checkout --detach FETCH_HEAD
+          test "$(git rev-parse HEAD)" = "$EXACT_COMMIT"
+      - name: Install pinned validation dependency
+        run: python3 -m pip install --disable-pip-version-check -r initiatives/hoylilileyment/requirements.txt
+      - name: Validate published package and negative cases
+        run: |
+          cd initiatives/hoylilileyment
+          python3 validate.py | tee validation-report.json
+          printf '## HOYLILILEYMENT structural validation\n\n```json\n' >> "$GITHUB_STEP_SUMMARY"
+          cat validation-report.json >> "$GITHUB_STEP_SUMMARY"
+          printf '\n```\n\nThis is not an independent water, legal or impact audit.\n' >> "$GITHUB_STEP_SUMMARY"
