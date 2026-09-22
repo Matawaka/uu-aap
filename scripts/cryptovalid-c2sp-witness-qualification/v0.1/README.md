@@ -43,6 +43,23 @@ For the same-size conflict, `cryptovalid-opencore` must preserve a retrievable
 pair of log-signed notes. UU-AAP independently verifies both log signatures,
 same origin and tree size, and distinct roots.
 
+## Reproducibility boundary
+
+The raw split-view evidence file is retained exactly as emitted by each execution,
+but it is **not** expected to be byte-identical across executions because the
+stored previous checkpoint contains an ML-DSA-44 cosignature and ML-DSA signing
+is randomized. The qualification therefore binds a deterministic semantic pair
+fingerprint over the authenticated origin, tree size, the two checkpoint roots,
+root distinctness, and verification of both log signatures.
+
+The first successful execution receipt and artifact remain frozen as historical
+evidence. Later runs must reproduce the same bounded semantic contract; they must
+not manufacture byte parity by stripping or rewriting the original evidence.
+
+`ML-DSA randomized signature bytes != semantic drift`
+
+`Frozen historical execution receipt != byte-reproducible live receipt`
+
 `Portable conflict evidence != global equivocation`
 
 `Non-equivocation evidence != submission completeness`
