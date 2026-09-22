@@ -1,0 +1,108 @@
+{
+  "checkpoint": {
+    "log_vkey": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1+e01168e2+Ac6bQB1kIEHuFvRhiY/bLjXTceSw0btOeyIv/RUXOaI3",
+    "sha256": "0fa548c4d9e16d82f11cf55209214545267c754079ff126d198471b7df6f3c86",
+    "signed_body_sha256": "8f822f018ad8f83dbc558de3ba5fa2af38689b9786fd6a754a989bad5af22874",
+    "signed_note": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1\n2\nbn+/BkRU7a9kpdZmnKB1eOOS+UZVHxYjB86utTWLO9U=\n\n— uu-aap.local/c2pa-witnessed-checkpoint/v0.1 4BFo4r/lALMXqnczFwPeo03phjchlWxVsvwgsYxImgLDLMS20IQLy/CtSmzxsyfrjMTossmZOx41m3cDPIScsz4J8AQ=\n— uu-aap.local/witness-a +4m3pgAAAABlU/FlrQvZdxWucpi7d7RWdNiH4ZkpijiGP64O29HRhsQs/7U0HsaOpfkSAVHGYpN97cOEL39U+h4hSdju1bFpjkXyCg==\n— uu-aap.local/witness-b uKl/cgAAAABlU/Fmxs/VsutER0iJxfhB3CFmF6fLETVUxD/IngD4vtN8fUh3z6zN8Qidd3/1+Iryctyu7f+B8EQheyiqbxvzK7c8DQ==\n"
+  },
+  "log": {
+    "inclusion_proof_b64": [
+      "U2fOcnJ2XZSjUnoYFCM/ccuZ7O0+kOwqnfC5Zk+c/+k="
+    ],
+    "leaf_hash_b64": "lX6B6JR1dA04q5/6M7Jj5tvNBeS7vAyegd+2dtvj1V4=",
+    "leaf_index": 1,
+    "origin": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1",
+    "root_b64": "bn+/BkRU7a9kpdZmnKB1eOOS+UZVHxYjB86utTWLO9U=",
+    "tree_size": 2
+  },
+  "profile_version": "0.1",
+  "schema": "urn:uu-aap:c2pa-witnessed-checkpoint-evidence-bundle:0.1",
+  "semantic_boundaries": {
+    "all_manifests_submitted_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_profile_adopted_by_specification": false,
+    "c2pa_specification_conformance_proven": false,
+    "canonical_branch_selected": false,
+    "global_non_equivocation_proven": false,
+    "malicious_behavior_proven": false,
+    "no_time_trust_assumptions_proven": false,
+    "policy_trust_proven": false,
+    "producer_non_equivocation_proven": false,
+    "same_claim_self_anchor_proven": false,
+    "selective_submission_absent_proven": false,
+    "submission_completeness_proven": false,
+    "successor_manifest_transparency_inclusion_proven": false,
+    "trusted_universal_time_proven": false,
+    "truth_certified": false,
+    "witness_independence_proven": false
+  },
+  "subject": {
+    "active_manifest": {
+      "alg": "sha256",
+      "hash_b64": "yA05RSmh/GfF//2PhLoyIIhz1uWH7fwm6S2H511PQ8E=",
+      "hash_hex": "c80d394529a1fc67c5fffd8f84ba32208873d6e587edfc26e92d87e75d4f43c1",
+      "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3"
+    },
+    "claim_signature": {
+      "alg": "sha256",
+      "hash_b64": "o3Lm9ie7uXy08qLWeoFjwfR5r1ZVqSMpvthWW9o1Uac=",
+      "hash_hex": "a372e6f627bbb97cb4f2a2d67a8163c1f479af5655a92329bed8565bda3551a7",
+      "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+    },
+    "commitment_domain": "urn:uu-aap:c2pa-witnessed-checkpoint-subject:v0.1",
+    "commitment_preimage_sha256": "295b775ff48cbfdb4ef3da0de66e682a87538cb1dd8360faabe018cc1e5cc90a",
+    "hash_algorithm": "sha256",
+    "leaf_commitment_b64": "KVt3X/SMv9tO89oN5m5oKodTjLHdg2D6q+AYzB5cyQo=",
+    "witness_policy_sha256": "5b024ce5c80fe7db8b525fea7033e8d8a7e23c04b78dfefb76e3805dc4e2ae68"
+  },
+  "subject_scope": "PREDECESSOR_C2PA_MANIFEST_REFERENCED_BY_SUCCESSOR_UPDATE",
+  "witness_observation": {
+    "cosigned_witnesses": [
+      {
+        "name": "uu-aap.local/witness-a",
+        "timestamp": 1700000101
+      },
+      {
+        "name": "uu-aap.local/witness-b",
+        "timestamp": 1700000102
+      }
+    ],
+    "quorum_satisfied": true,
+    "timestamps_are_observation_claims_only": true,
+    "verified_witness_count": 2
+  },
+  "witness_policy": {
+    "analysis": {
+      "disjoint_quorum_possible": false,
+      "honest_witness_assumption_required": true,
+      "minimum_pairwise_quorum_intersection": 1,
+      "threshold": 2,
+      "witness_count": 3,
+      "witness_independence_proven": false
+    },
+    "policy": {
+      "algorithm": "ed25519-cosignature-v1",
+      "origin": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1",
+      "schema": "urn:uu-aap:experimental-witness-policy:0.1",
+      "threshold": 2,
+      "trust_semantics": "EXPERIMENTAL_HASH_BOUND_POLICY_NOT_C2PA_STANDARD_NOT_INDEPENDENCE_PROOF",
+      "version": "0.1",
+      "witnesses": [
+        {
+          "name": "uu-aap.local/witness-a",
+          "vkey": "uu-aap.local/witness-a+fb89b7a6+BOOcTPC376EOJrT+1jH3DfIMXKlFlOdgZfQ+uPbuxTYy"
+        },
+        {
+          "name": "uu-aap.local/witness-b",
+          "vkey": "uu-aap.local/witness-b+b8a97f72+BKjXEOFgjLUUxPFLb6dyhvq0Q7RFkFglTMe6JdjTRWjj"
+        },
+        {
+          "name": "uu-aap.local/witness-c",
+          "vkey": "uu-aap.local/witness-c+7c05f585+BAC6fcd6oDV0j8HqFRY6rW9Zymp5A36pOtjzy8Q+pVhg"
+        }
+      ]
+    },
+    "policy_sha256": "5b024ce5c80fe7db8b525fea7033e8d8a7e23c04b78dfefb76e3805dc4e2ae68"
+  }
+}

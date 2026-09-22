@@ -1,0 +1,58 @@
+{
+  "assertions": [
+    {
+      "created": false,
+      "data": {
+        "description": "UU-AAP experimental witnessed-checkpoint evidence about the predecessor manifest referenced by this Update Manifest; not evidence that this successor claim itself was logged.",
+        "location": {
+          "alg": "sha256",
+          "dc:format": "application/json",
+          "hash": [
+            86,
+            251,
+            87,
+            131,
+            144,
+            78,
+            139,
+            117,
+            193,
+            221,
+            215,
+            237,
+            93,
+            19,
+            172,
+            186,
+            17,
+            26,
+            175,
+            103,
+            27,
+            142,
+            194,
+            97,
+            44,
+            236,
+            133,
+            211,
+            216,
+            110,
+            103,
+            46
+          ],
+          "size": 4789,
+          "url": "http://127.0.0.1:8765/witnessed-checkpoint-bundle.json"
+        }
+      },
+      "kind": "Cbor",
+      "label": "c2pa.external-reference"
+    }
+  ],
+  "claim_generator_info": [
+    {
+      "name": "UU-AAP witnessed-checkpoint successor fixture",
+      "version": "0.1"
+    }
+  ]
+}

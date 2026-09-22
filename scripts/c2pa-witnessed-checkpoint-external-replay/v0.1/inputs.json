@@ -1,0 +1,178 @@
+{
+  "expected": {
+    "all_false_claims": [
+      "all_manifests_submitted_proven",
+      "authority_created",
+      "automatic_remediation_triggered",
+      "c2pa_profile_adopted_by_specification",
+      "c2pa_specification_conformance_proven",
+      "canonical_branch_selected",
+      "global_non_equivocation_proven",
+      "malicious_behavior_proven",
+      "no_time_trust_assumptions_proven",
+      "policy_trust_proven",
+      "producer_non_equivocation_proven",
+      "same_claim_self_anchor_proven",
+      "selective_submission_absent_proven",
+      "submission_completeness_proven",
+      "successor_manifest_transparency_inclusion_proven",
+      "trusted_universal_time_proven",
+      "truth_certified",
+      "witness_independence_proven"
+    ],
+    "bundle_bytes": 4789,
+    "bundle_sha256": "56fb5783904e8b75c1ddd7ed5d13acba111aaf671b8ec2612cec85d3d86e672e",
+    "external_reviewer_execution": false,
+    "self_reference": "SUCCESSOR_SUBJECT_FORBIDDEN",
+    "semantic_fingerprint_sha256": "39ad8a08ac1637d5afebdccf444aee39eb65ccfea18139a903b03375f9234480"
+  },
+  "predecessor": {
+    "active_manifest": {
+      "alg": "sha256",
+      "hash_b64": "yA05RSmh/GfF//2PhLoyIIhz1uWH7fwm6S2H511PQ8E=",
+      "hash_hex": "c80d394529a1fc67c5fffd8f84ba32208873d6e587edfc26e92d87e75d4f43c1",
+      "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3"
+    },
+    "claim_signature": {
+      "alg": "sha256",
+      "hash_b64": "o3Lm9ie7uXy08qLWeoFjwfR5r1ZVqSMpvthWW9o1Uac=",
+      "hash_hex": "a372e6f627bbb97cb4f2a2d67a8163c1f479af5655a92329bed8565bda3551a7",
+      "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+    },
+    "relationship": "parentOf"
+  },
+  "schema": "urn:uu-aap:c2pa-external-replay-inputs:0.1",
+  "source": {
+    "accepted_main": "06b6d9b194938a1d6de21d9958b67f264ea47c25",
+    "accepted_tree": "c0bee31f53a6fe839a9d1e1f18e12461aa358c71",
+    "artifact_id": 10679103065,
+    "artifact_sha256": "6243023c03172354a05ccc081200bb8798a214df22f5db437016a79d6cc76331",
+    "c2pa_observation_kind": "EXPLICIT_PROJECTION_OF_FROZEN_REPORTS_NOT_ORIGINAL_SIGNED_ASSET",
+    "historical_receipt_role": "REFERENCE_ONLY_NEVER_A_VERIFICATION_ORACLE",
+    "original_files": {
+      "parent-link.json": {
+        "bytes": 618,
+        "sha256": "5a31c8aab7f80e8d6169b8b020f1dd740a4d78c52e1b9b8899db3a07b7570472"
+      },
+      "qualification-receipt.json": {
+        "bytes": 3227,
+        "sha256": "e9c1ecbfefc9fdd7c1e53768b62ecc0f57197a6ac3e6d13e3ade1d662eda01f4"
+      },
+      "successor-detailed.json": {
+        "bytes": 11705,
+        "sha256": "bfcd221ce7745753de4c320c914f6dea63f919c42cc71aff0bdbbdf893a97c7b"
+      },
+      "successor-report.json": {
+        "bytes": 10472,
+        "sha256": "c507e9598bc8e4463c8a821352d8f8873a5a115f3eced08fe5e3c369d0c47a54"
+      },
+      "witnessed-checkpoint-bundle.json": {
+        "bytes": 4789,
+        "sha256": "56fb5783904e8b75c1ddd7ed5d13acba111aaf671b8ec2612cec85d3d86e672e"
+      }
+    },
+    "source_head": "65f03ef873590b6a356df2923b81ab9e64f13d83",
+    "source_run_id": 35693812515
+  },
+  "successor_observation": {
+    "active_manifest": "urn:c2pa:3fec7744-af50-4c34-a359-5e68f188e1c4",
+    "assertion_labels": [
+      "c2pa.external-reference",
+      "c2pa.thumbnail.ingredient",
+      "c2pa.ingredient.v3",
+      "c2pa.actions.v2"
+    ],
+    "claim": {
+      "alg": "sha256",
+      "claim_generator_info": {
+        "name": "UU-AAP witnessed-checkpoint successor fixture",
+        "org.contentauth.c2pa_rs": "0.90.16",
+        "version": "0.1"
+      },
+      "claim_version": 2,
+      "created_assertions": [],
+      "dc:title": "successor-update.jpg",
+      "gathered_assertions": [
+        {
+          "hash": "9nsJR0pLyembDU6QQBR5kGb4ypoYiG6aSQji/AI+7/c=",
+          "url": "self#jumbf=c2pa.assertions/c2pa.thumbnail.ingredient"
+        },
+        {
+          "hash": "Vp5tLSHXHQEpoNoIy99nL493wrYZls+1imCAa9m2MnA=",
+          "url": "self#jumbf=c2pa.assertions/c2pa.ingredient.v3"
+        },
+        {
+          "hash": "zc7ociZ8zqYVf+i8g797i9aRuUKiRvfB97WgyOJX3fA=",
+          "url": "self#jumbf=c2pa.assertions/c2pa.external-reference"
+        },
+        {
+          "hash": "DxrP+YVf0CfGIbS8KclKc13MgQKCDSLM04agpbXJs5E=",
+          "url": "self#jumbf=c2pa.assertions/c2pa.actions.v2"
+        }
+      ],
+      "instanceID": "xmp:iid:71f85dbb-8801-40f7-b436-009a76f39d43",
+      "signature": "self#jumbf=/c2pa/urn:c2pa:3fec7744-af50-4c34-a359-5e68f188e1c4/c2pa.signature"
+    },
+    "external_reference": {
+      "description": "UU-AAP experimental witnessed-checkpoint evidence about the predecessor manifest referenced by this Update Manifest; not evidence that this successor claim itself was logged.",
+      "location": {
+        "alg": "sha256",
+        "dc:format": "application/json",
+        "hash": "VvtXg5BOi3XB3dftXROsuhEar2cbjsJhLOyF09huZy4=",
+        "size": 4789,
+        "url": "http://127.0.0.1:8765/witnessed-checkpoint-bundle.json"
+      }
+    },
+    "parent_assertion": {
+      "activeManifest": {
+        "alg": "sha256",
+        "hash": "yA05RSmh/GfF//2PhLoyIIhz1uWH7fwm6S2H511PQ8E=",
+        "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3"
+      },
+      "claimSignature": {
+        "alg": "sha256",
+        "hash": "o3Lm9ie7uXy08qLWeoFjwfR5r1ZVqSMpvthWW9o1Uac=",
+        "url": "self#jumbf=/c2pa/contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3/c2pa.signature"
+      },
+      "relationship": "parentOf"
+    },
+    "parent_ingredients": [
+      {
+        "active_manifest": "contentauth:urn:uuid:b2b1f7fa-b119-4de1-9c0d-c97fbea3f2c3",
+        "label": "c2pa.ingredient.v3",
+        "relationship": "parentOf"
+      }
+    ]
+  },
+  "verification_configuration": {
+    "commitment_domain": "urn:uu-aap:c2pa-witnessed-checkpoint-subject:v0.1",
+    "external_url": "http://127.0.0.1:8765/witnessed-checkpoint-bundle.json",
+    "kind": "FIXTURE_PUBLIC_KEYS_AND_POLICY_NOT_PRODUCTION_TRUST",
+    "log_origin": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1",
+    "log_vkey": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1+e01168e2+Ac6bQB1kIEHuFvRhiY/bLjXTceSw0btOeyIv/RUXOaI3",
+    "policy": {
+      "algorithm": "ed25519-cosignature-v1",
+      "origin": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1",
+      "schema": "urn:uu-aap:experimental-witness-policy:0.1",
+      "threshold": 2,
+      "trust_semantics": "EXPERIMENTAL_HASH_BOUND_POLICY_NOT_C2PA_STANDARD_NOT_INDEPENDENCE_PROOF",
+      "version": "0.1",
+      "witnesses": [
+        {
+          "name": "uu-aap.local/witness-a",
+          "vkey": "uu-aap.local/witness-a+fb89b7a6+BOOcTPC376EOJrT+1jH3DfIMXKlFlOdgZfQ+uPbuxTYy"
+        },
+        {
+          "name": "uu-aap.local/witness-b",
+          "vkey": "uu-aap.local/witness-b+b8a97f72+BKjXEOFgjLUUxPFLb6dyhvq0Q7RFkFglTMe6JdjTRWjj"
+        },
+        {
+          "name": "uu-aap.local/witness-c",
+          "vkey": "uu-aap.local/witness-c+7c05f585+BAC6fcd6oDV0j8HqFRY6rW9Zymp5A36pOtjzy8Q+pVhg"
+        }
+      ]
+    },
+    "policy_sha256": "5b024ce5c80fe7db8b525fea7033e8d8a7e23c04b78dfefb76e3805dc4e2ae68",
+    "subject_scope": "PREDECESSOR_C2PA_MANIFEST_REFERENCED_BY_SUCCESSOR_UPDATE"
+  }
+}
