@@ -1,0 +1,72 @@
+{
+  "accepted_independent_verifier": {
+    "git_blob": "518bc61f4db936031b911e392eb6fe053dc03437",
+    "path": "scripts/anchored-witnessed-consistency-pilot/v0.1/pilot.py"
+  },
+  "always_false_claims": [
+    "specification_conformance_proven",
+    "c2pa_adoption_proven",
+    "global_non_equivocation_proven",
+    "producer_non_equivocation_proven",
+    "submission_completeness_proven",
+    "all_manifests_submitted_proven",
+    "witness_independence_proven",
+    "trusted_universal_time_proven",
+    "no_time_trust_assumptions_proven",
+    "truth_certified",
+    "authority_created",
+    "canonical_branch_selected",
+    "malicious_behavior_proven",
+    "automatic_remediation_triggered"
+  ],
+  "candidate": {
+    "authenticated_policy_object": false,
+    "blobs": {
+      "cryptovalid_checkpoint.py": "11a757ab57afc35ad3aeb28c913a861444fa9c4a",
+      "cryptovalid_witness.py": "6797ccbc7e4a0fc826b9c09dcb10b17006cbc9fc",
+      "examples/checkpoints/rekor_v1.vkey": "37f3fe27d9d7b5b0095ffeadcad93adfddb8cdd7",
+      "examples/checkpoints/rekor_v1_1193050959916656506_2770974847.note": "68460e4b1f3ad2bc5242b7e4b80fdbc989e98afc",
+      "examples/checkpoints/rekor_v1_2605736670972794746_117740831.note": "56eefa7ba3deaa81af43e048e3462d9611aa5378",
+      "examples/checkpoints/rekor_v1_3904496407287907110_4163431.note": "8703f657cd7088f0f7f9e675b9e413f03846db65",
+      "test_cryptovalid_witness.py": "b7edd0e115409e36cf46800a4cda527740fa4c6b"
+    },
+    "commit": "c12d847854a4007f3ba40912addabb1b00eb1550",
+    "declared_policy_surface": "NAKED_SCALAR_WITNESS_THRESHOLD_ONLY",
+    "repository": "robertolocatelli81-dev/cryptovalid-opencore",
+    "tag": "v0.14.0"
+  },
+  "cases": [
+    "first_sight",
+    "append_only_successor",
+    "rollback_replay",
+    "same_size_conflict",
+    "invalid_signature"
+  ],
+  "frozen_qualification": {
+    "artifact_digest": "sha256:b92c4a1063be2bb29a2edfa473344887df82afebc0877865ef538f3c0ba7b0e5",
+    "artifact_id": 10676118718,
+    "receipt_bytes": 5162,
+    "receipt_git_blob": "84f5c907c70ded2b52dc69ceef878f8e9def0840",
+    "receipt_path": "scripts/cryptovalid-c2sp-witness-qualification/v0.1/qualification-receipt.json",
+    "receipt_sha256": "13e33a5da9fbfe6978b0f2fb986e3491212ff9be7fccea70f7f4ee1f2c3e98b4",
+    "run_head_sha": "fb9a416cce6187c1cdb1b24e3cf419fd2bcd5d94",
+    "run_id": 35686045563
+  },
+  "reference": {
+    "blobs": {
+      "go.mod": "e32fb371f5b3ddd9a3ec91a61bda0e31c2451b24",
+      "witness/witness.go": "1947958014a474a30db2d5794e5576b371c22104",
+      "witness/witness_test.go": "a3fcf35f2fb1a8f6e8fe270a9c4a73148c95aff3"
+    },
+    "commit": "55a5a0bf332a04f64296841ea857f86ec4494fc3",
+    "repository": "transparency-dev/witness"
+  },
+  "repository_predecessor_main": "0e74f89695bbcb02c759000752696c322d908f7a",
+  "schema": "urn:uu-aap:cryptovalid-c2sp-witness-qualification-profile:0.1",
+  "tracking_issue": 1005,
+  "split_view_semantic_boundary": {
+    "expected_semantic_pair_fingerprint_sha256": "688e247a2ce7bed35d198000e0fafbe5e39c31bfaba00fe62070800cdaf755b9",
+    "raw_artifact_exact_byte_reproducibility": false,
+    "reason": "ML-DSA-44 signatures are randomized; raw previous-note/evidence bytes are execution-specific while authenticated checkpoint roots and bounded verdict semantics remain stable"
+  }
+}

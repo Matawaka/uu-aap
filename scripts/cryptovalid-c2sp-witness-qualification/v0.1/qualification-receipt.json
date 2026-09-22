@@ -1,0 +1,119 @@
+{
+  "automatic_action": false,
+  "candidate_policy_boundary": {
+    "authenticated_policy_object": false,
+    "classification": "NAKED_SCALAR_WITNESS_THRESHOLD_ONLY",
+    "same_name_multi_algorithm_counts_as_one_witness": true,
+    "uu_aap_authenticated_policy_experiment": "SEPARATE_NOT_ATTRIBUTED_TO_CANDIDATE"
+  },
+  "candidate_target": {
+    "blobs": {
+      "cryptovalid_checkpoint.py": "11a757ab57afc35ad3aeb28c913a861444fa9c4a",
+      "cryptovalid_witness.py": "6797ccbc7e4a0fc826b9c09dcb10b17006cbc9fc",
+      "examples/checkpoints/rekor_v1.vkey": "37f3fe27d9d7b5b0095ffeadcad93adfddb8cdd7",
+      "examples/checkpoints/rekor_v1_1193050959916656506_2770974847.note": "68460e4b1f3ad2bc5242b7e4b80fdbc989e98afc",
+      "examples/checkpoints/rekor_v1_2605736670972794746_117740831.note": "56eefa7ba3deaa81af43e048e3462d9611aa5378",
+      "examples/checkpoints/rekor_v1_3904496407287907110_4163431.note": "8703f657cd7088f0f7f9e675b9e413f03846db65",
+      "test_cryptovalid_witness.py": "b7edd0e115409e36cf46800a4cda527740fa4c6b"
+    },
+    "commit": "c12d847854a4007f3ba40912addabb1b00eb1550",
+    "repository": "robertolocatelli81-dev/cryptovalid-opencore",
+    "tag": "v0.14.0"
+  },
+  "case_comparison": {
+    "append_only_successor": {
+      "bounded_semantic_match": true,
+      "candidate_semantic": "ACCEPT_SUCCESSOR",
+      "expected_candidate": "ACCEPT_SUCCESSOR",
+      "expected_reference": "ACCEPT_SUCCESSOR",
+      "reference_semantic": "ACCEPT_SUCCESSOR"
+    },
+    "first_sight": {
+      "bounded_semantic_match": true,
+      "candidate_semantic": "ACCEPT_FIRST",
+      "expected_candidate": "ACCEPT_FIRST",
+      "expected_reference": "ACCEPT_FIRST",
+      "reference_semantic": "ACCEPT_FIRST"
+    },
+    "invalid_signature": {
+      "bounded_semantic_match": true,
+      "candidate_semantic": "REJECT_INVALID_SIGNATURE",
+      "expected_candidate": "REJECT_INVALID_SIGNATURE",
+      "expected_reference": "REJECT_INVALID_SIGNATURE",
+      "reference_semantic": "REJECT_INVALID_SIGNATURE"
+    },
+    "rollback_replay": {
+      "bounded_semantic_match": true,
+      "candidate_semantic": "REJECT_ROLLBACK",
+      "expected_candidate": "REJECT_ROLLBACK",
+      "expected_reference": "REJECT_ROLLBACK",
+      "reference_semantic": "REJECT_ROLLBACK"
+    },
+    "same_size_conflict": {
+      "bounded_semantic_match": true,
+      "candidate_semantic": "REJECT_CONFLICT_SAME_SIZE",
+      "expected_candidate": "REJECT_CONFLICT_SAME_SIZE",
+      "expected_reference": "REJECT_CONFLICT_SAME_SIZE",
+      "reference_semantic": "REJECT_CONFLICT_SAME_SIZE"
+    }
+  },
+  "claims": {
+    "all_manifests_submitted_proven": false,
+    "authority_created": false,
+    "automatic_remediation_triggered": false,
+    "c2pa_adoption_proven": false,
+    "canonical_branch_selected": false,
+    "global_non_equivocation_proven": false,
+    "malicious_behavior_proven": false,
+    "no_time_trust_assumptions_proven": false,
+    "producer_non_equivocation_proven": false,
+    "specification_conformance_proven": false,
+    "submission_completeness_proven": false,
+    "trusted_universal_time_proven": false,
+    "truth_certified": false,
+    "witness_independence_proven": false
+  },
+  "completeness_semantics": {
+    "manifest_never_submitted_leaves_transparency_trace": false,
+    "submission_completeness_proven": false,
+    "submitted_log_view_anti_equivocation_only": true
+  },
+  "external_mutation_performed": false,
+  "fixture_set": {
+    "log_vkey": "monkeys+db4d9f7e+AULaJMvTtDLHPUcUrjdDad9vDlh/PTfC2VV60JUtCfWT",
+    "metadata_sha256": "2c886f4b2c2785799c383419ee9724d5a115f22b0c58744ff590d6d7fca76776",
+    "origin": "monkeys"
+  },
+  "portable_conflict_evidence": {
+    "artifact_record_count": 1,
+    "artifact_sha256": "3ca94cb1c6eb0c59052d859284512b70d1e75136623795b940f6288683ae0e34",
+    "both_log_signatures_verified": true,
+    "distinct_roots": true,
+    "first_note_sha256": "3ada6e062df44caeb7bf0355d14039a5cb3f6f32d1b277717a5e594a25998d7c",
+    "origin": "monkeys",
+    "present": true,
+    "reverified": true,
+    "second_note_sha256": "5fa7f4e0879d64e3635d123e3e0c2a491ca55decef834fa6f3e19bf54f7fb972",
+    "tree_size": 8
+  },
+  "receipt_fingerprint_sha256": "5a34fc5f3f3418c7cba9026b5557d5e33ff7435a7a12a5086f1aff7d893d5a4e",
+  "reference_target": {
+    "blobs": {
+      "go.mod": "e32fb371f5b3ddd9a3ec91a61bda0e31c2451b24",
+      "witness/witness.go": "1947958014a474a30db2d5794e5576b371c22104",
+      "witness/witness_test.go": "a3fcf35f2fb1a8f6e8fe270a9c4a73148c95aff3"
+    },
+    "commit": "55a5a0bf332a04f64296841ea857f86ec4494fc3",
+    "repository": "transparency-dev/witness"
+  },
+  "repository_predecessor_main": "0e74f89695bbcb02c759000752696c322d908f7a",
+  "schema": "urn:uu-aap:cryptovalid-c2sp-witness-qualification-receipt:0.1",
+  "time_semantics": {
+    "no_time_trust_assumptions_proven": false,
+    "single_tsa_dependency_required_by_this_fixture": false,
+    "trusted_universal_time_proven": false,
+    "witness_timestamp_is_observation_claim_only": true
+  },
+  "tracking_issue": 1005,
+  "verdict": "CROSS_IMPLEMENTATION_MATCH_ON_BOUNDED_VECTOR_SET_PORTABLE_CONFLICT_EVIDENCE_REVERIFIED_AUTHENTICATED_POLICY_OBJECT_ABSENT"
+}
