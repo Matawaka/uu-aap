@@ -1,0 +1,95 @@
+{
+  "schema": "urn:uu-aap:c2pa-witnessed-checkpoint-profile:0.1",
+  "tracking_issue": 1007,
+  "repository_predecessor_main": "f9a051b28b54088b202051f135fd77d084fb7326",
+  "repository_predecessor_tree": "649138588814ce5c95540002b08bdf03adacb87f",
+  "accepted_witness_qualification": {
+    "receipt_path": "scripts/cryptovalid-c2sp-witness-qualification/v0.1/qualification-receipt.json",
+    "receipt_git_blob": "84f5c907c70ded2b52dc69ceef878f8e9def0840",
+    "receipt_fingerprint_sha256": "5a34fc5f3f3418c7cba9026b5557d5e33ff7435a7a12a5086f1aff7d893d5a4e",
+    "profile_path": "scripts/cryptovalid-c2sp-witness-qualification/v0.1/profile.json",
+    "profile_git_blob": "fdc5ee00b6063eeb4a318bc8a60da0ef86c30ca0"
+  },
+  "accepted_c2pa_binding": {
+    "profile_path": "scripts/c2pa-witness-receipt-binding/v0.1/profile.json",
+    "profile_git_blob": "8746052f0748db66404013dc83f4dad42dc71801",
+    "receipt_path": "scripts/c2pa-witness-receipt-binding/v0.1/qualification-receipt.json",
+    "receipt_git_blob": "fc034ae1ee6dd5eb6ae61cdfdf3d41992f461578",
+    "build_config_git_blob": "3bdeb238738feb5344ae974900bb088c45015cc4",
+    "verify_binding_git_blob": "f8682478df335508bfe0d7a949324f6ec83d7550",
+    "test_binding_git_blob": "9a5142831f4c489e9e5dcfcd1896c6135ee6c2d3"
+  },
+  "c2patool": {
+    "version": "0.27.16",
+    "archive_sha256": "62eed34f0c90a24b696b1969c8aad4340e11ec7264e1cf6fc375ad15c1db7663"
+  },
+  "predecessor_fixture": {
+    "repository": "contentauth/c2pa-rs",
+    "ref": "c2patool-v0.27.16",
+    "path": "sdk/tests/fixtures/C.jpg",
+    "git_blob": "b6579b3281fbd448163f77fe46bf8d24f3e5a018",
+    "bytes": 132518,
+    "url": "https://raw.githubusercontent.com/contentauth/c2pa-rs/c2patool-v0.27.16/sdk/tests/fixtures/C.jpg"
+  },
+  "commitment": {
+    "domain": "urn:uu-aap:c2pa-witnessed-checkpoint-subject:v0.1",
+    "algorithm": "sha256",
+    "merkle": "RFC6962_SHA256_TWO_LEAF_FIXTURE",
+    "subject_leaf_index": 1,
+    "tree_size": 2
+  },
+  "experimental_witness_policy": {
+    "schema": "urn:uu-aap:experimental-witness-policy:0.1",
+    "version": "0.1",
+    "origin": "uu-aap.local/c2pa-witnessed-checkpoint/v0.1",
+    "threshold": 2,
+    "witness_names": [
+      "uu-aap.local/witness-a",
+      "uu-aap.local/witness-b",
+      "uu-aap.local/witness-c"
+    ],
+    "algorithm": "ed25519-cosignature-v1",
+    "trust_semantics": "EXPERIMENTAL_HASH_BOUND_POLICY_NOT_C2PA_STANDARD_NOT_INDEPENDENCE_PROOF"
+  },
+  "external_reference": {
+    "assertion_label": "c2pa.external-reference",
+    "url": "http://127.0.0.1:8765/witnessed-checkpoint-bundle.json",
+    "digest_alg": "sha256",
+    "media_type": "application/json"
+  },
+  "strong_verdict": "PREDECESSOR_C2PA_EVIDENCE_WITNESSED_AND_BOUND_BY_SUCCESSOR_UPDATE_MANIFEST",
+  "always_false_claims": [
+    "successor_manifest_transparency_inclusion_proven",
+    "same_claim_self_anchor_proven",
+    "global_non_equivocation_proven",
+    "producer_non_equivocation_proven",
+    "submission_completeness_proven",
+    "all_manifests_submitted_proven",
+    "selective_submission_absent_proven",
+    "witness_independence_proven",
+    "policy_trust_proven",
+    "trusted_universal_time_proven",
+    "no_time_trust_assumptions_proven",
+    "c2pa_specification_conformance_proven",
+    "c2pa_profile_adopted_by_specification",
+    "truth_certified",
+    "authority_created",
+    "canonical_branch_selected",
+    "malicious_behavior_proven",
+    "automatic_remediation_triggered"
+  ],
+  "frozen_qualification": {
+    "run_id": 35693812515,
+    "run_head_sha": "65f03ef873590b6a356df2923b81ab9e64f13d83",
+    "artifact_id": 10679103065,
+    "artifact_digest": "sha256:6243023c03172354a05ccc081200bb8798a214df22f5db437016a79d6cc76331",
+    "receipt_path": "scripts/c2pa-witnessed-checkpoint-profile/v0.1/qualification-receipt.json",
+    "receipt_git_blob": "8094b98b29dfb0997a89ebdeb5ed60225239d508",
+    "receipt_sha256": "e9c1ecbfefc9fdd7c1e53768b62ecc0f57197a6ac3e6d13e3ade1d662eda01f4",
+    "receipt_bytes": 3227,
+    "receipt_fingerprint_sha256": "85242eaafc3418134e5ed7850a6ccc0727ee7fc04919f8555f65a433699c0527",
+    "evidence_bundle_sha256": "56fb5783904e8b75c1ddd7ed5d13acba111aaf671b8ec2612cec85d3d86e672e",
+    "evidence_bundle_bytes": 4789,
+    "stable_semantic_fingerprint_sha256": "39ad8a08ac1637d5afebdccf444aee39eb65ccfea18139a903b03375f9234480"
+  }
+}
