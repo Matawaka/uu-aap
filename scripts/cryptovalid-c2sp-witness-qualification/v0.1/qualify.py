@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import importlib.util
 import json
@@ -85,6 +86,14 @@ def verify_split_pair(candidate: dict[str, Any], pilot: Any, log_vkey: str) -> d
     same_scope = parsed[0][0] == parsed[1][0] and parsed[0][1] == parsed[1][1]
     distinct_roots = parsed[0][2] != parsed[1][2]
     signatures = parsed[0][3] and parsed[1][3]
+    roots_b64 = [base64.b64encode(parsed[0][2]).decode("ascii"), base64.b64encode(parsed[1][2]).decode("ascii")]
+    stable_pair = {
+        "origin": parsed[0][0] if same_scope else None,
+        "tree_size": parsed[0][1] if same_scope else None,
+        "roots_b64": sorted(roots_b64),
+        "both_log_signatures_verified": bool(signatures),
+        "distinct_roots": bool(distinct_roots),
+    }
     return {
         "present": True,
         "reverified": bool(same_scope and distinct_roots and signatures),
@@ -92,6 +101,10 @@ def verify_split_pair(candidate: dict[str, Any], pilot: Any, log_vkey: str) -> d
         "tree_size": parsed[0][1] if same_scope else None,
         "distinct_roots": distinct_roots,
         "both_log_signatures_verified": signatures,
+        "first_root_b64": roots_b64[0],
+        "second_root_b64": roots_b64[1],
+        "semantic_pair_fingerprint_sha256": sha256(canonical(stable_pair)),
+        "raw_note_hashes_include_execution_specific_witness_signatures": True,
         "first_note_sha256": parsed[0][4],
         "second_note_sha256": parsed[1][4],
     }
