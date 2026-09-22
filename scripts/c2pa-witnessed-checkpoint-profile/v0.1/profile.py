@@ -163,6 +163,23 @@ def validate_profile(profile: dict[str, Any]) -> None:
         fail("strong verdict drift")
     if len(set(profile.get("always_false_claims", []))) != len(profile.get("always_false_claims", [])):
         fail("duplicate always-false claim")
+    frozen = profile.get("frozen_qualification", {})
+    expected_frozen = {
+        "run_id": 35693812515,
+        "run_head_sha": "65f03ef873590b6a356df2923b81ab9e64f13d83",
+        "artifact_id": 10679103065,
+        "artifact_digest": "sha256:6243023c03172354a05ccc081200bb8798a214df22f5db437016a79d6cc76331",
+        "receipt_path": "scripts/c2pa-witnessed-checkpoint-profile/v0.1/qualification-receipt.json",
+        "receipt_git_blob": "8094b98b29dfb0997a89ebdeb5ed60225239d508",
+        "receipt_sha256": "e9c1ecbfefc9fdd7c1e53768b62ecc0f57197a6ac3e6d13e3ade1d662eda01f4",
+        "receipt_bytes": 3227,
+        "receipt_fingerprint_sha256": "85242eaafc3418134e5ed7850a6ccc0727ee7fc04919f8555f65a433699c0527",
+        "evidence_bundle_sha256": "56fb5783904e8b75c1ddd7ed5d13acba111aaf671b8ec2612cec85d3d86e672e",
+        "evidence_bundle_bytes": 4789,
+        "stable_semantic_fingerprint_sha256": "39ad8a08ac1637d5afebdccf444aee39eb65ccfea18139a903b03375f9234480",
+    }
+    if frozen != expected_frozen:
+        fail("frozen qualification binding drift")
 
 
 def validate_predecessor_bindings(profile: dict[str, Any], repo_root: Path) -> None:
