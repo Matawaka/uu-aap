@@ -33,6 +33,14 @@ def main():
     bad["candidate"]["authenticated_policy_object"] = True
     expect_fail(lambda: q.validate_profile(bad), "policy capability promoted")
 
+    bad = json.loads(json.dumps(p))
+    bad["split_view_semantic_boundary"]["expected_semantic_pair_fingerprint_sha256"] = "0" * 64
+    expect_fail(lambda: q.validate_profile(bad), "split-view semantic fingerprint drift")
+
+    bad = json.loads(json.dumps(p))
+    bad["split_view_semantic_boundary"]["raw_artifact_exact_byte_reproducibility"] = True
+    expect_fail(lambda: q.validate_profile(bad), "randomized raw-artifact boundary promoted")
+
     payload = b"abc"
     assert q.git_blob(payload) == "f2ba8f84ab5c1bce84a7b441cb1959cfc7093b7f"
 
