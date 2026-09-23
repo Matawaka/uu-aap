@@ -1,0 +1,110 @@
+{
+  "recordType": "UU_VERIFIED_CONCEPT",
+  "version": "0.1.0-draft",
+  "status": "NON_NORMATIVE_PROPOSAL",
+  "date": "2026-09-16",
+  "sourceFrontier": "0e74f89695bbcb02c759000752696c322d908f7a",
+  "backlog": "https://github.com/Matawaka/uu-aap/issues/1000",
+  "sourceReview": "DOCUMENT_REVIEW_ONLY_NO_IMPLEMENTATION_REEXECUTION",
+  "originalConcept": {"ru": "Усиленный Ум", "en": "Augmented Mind"},
+  "meanings": [
+    {"id": "UU-M01", "name": "Unified Understanding", "en": "Shared understanding with distinct authority and responsibility", "ru": "Согласованное понимание при раздельных полномочиях и ответственности"},
+    {"id": "UU-M02", "name": "Understanding Unlocked", "en": "Expanded human understanding and meaningful choice", "ru": "Раскрытие возможностей понимания и осмысленного человеческого выбора"},
+    {"id": "UU-M03", "name": "Universal Understanding", "en": "Openly accessible and interoperable understanding for humans and machine-readable platforms", "ru": "Открытая доступность и совместимость понимания для людей и машиночитаемых платформ"}
+  ],
+  "meaningsAreAssuranceLevels": false,
+  "historicalProtocolTitleChanged": false,
+  "proposedMark": "UU VERIFIED",
+  "candidateProfile": {
+    "id": "UV-ARCH-1",
+    "status": "DRAFT_NOT_ACCEPTED",
+    "subjectKind": "EXACT_IMPLEMENTATION",
+    "designOnlyOutcome": "REVIEWED_DESIGN_ONLY",
+    "deploymentCoverage": "SEPARATE_PROFILE_AND_EVIDENCE_REQUIRED",
+    "historicalProfilesChanged": false,
+    "requiredPrinciples": ["P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "P11", "P12"],
+    "requirementOutcomes": ["PASS", "FAIL", "INSUFFICIENT_EVIDENCE", "NOT_APPLICABLE"],
+    "applicabilityPolicy": "ALL_PRINCIPLES_ADDRESSED_SPECIFIC_TEST_EXCLUSION_REQUIRES_PROFILE_RULE_EVIDENCE_AND_REVIEW",
+    "aggregateRule": "ALL_APPLICABLE_MANDATORY_REQUIREMENTS_PLUS_INDEPENDENT_REVIEW_LEGITIMATE_ISSUANCE_INTEGRITY_ISSUER_POLICY_AND_FRESH_VALID_STATUS",
+    "currentPositiveDisplay": "VERIFIED_CURRENT",
+    "blockingLifecycleStates": ["SUSPENDED", "REVOKED", "EXPIRED", "SUPERSEDED", "STATUS_UNKNOWN", "CONFLICT"],
+    "scalarTrustScore": false
+  },
+  "principleRequirements": [
+    {"id": "UV-P01", "source": "P1", "method": "ROLE_AND_HUMAN_CONTROL_REVIEW", "reject": "AI_USE_PERCENTAGE_OR_DETECTOR_AS_CONFORMANCE_PROXY"},
+    {"id": "UV-P02", "source": "P2", "method": "ALTERNATIVES_REFUSAL_CORRECTION_STOP_AND_SCOPE_TESTS", "reject": "HIDDEN_DELEGATION_OR_UNAUTHORIZED_SCOPE_EXPANSION"},
+    {"id": "UV-P03", "source": "P3", "method": "SCOPED_RESPONSIBILITY_STAGE_B_AND_APPLICABLE_RA1_COVERAGE", "reject": "ACTOR_REFERENCE_OR_SIGNATURE_AS_AUTHORITY_OR_LEGAL_ACCEPTANCE"},
+    {"id": "UV-P04", "source": "P4", "method": "SAMPLED_DECISION_PROVENANCE_RECONSTRUCTION", "reject": "MANDATORY_PRIVATE_REASONING_OR_KEYSTROKE_SURVEILLANCE"},
+    {"id": "UV-P05", "source": "P5", "method": "UNCERTAINTY_PARSE_STORE_RENDER_PARITY", "reject": "MISSING_EVIDENCE_RENDERED_AS_PASS"},
+    {"id": "UV-P06", "source": "P6", "method": "REDACTION_SELECTIVE_DISCLOSURE_AND_LEAKAGE_TESTS", "reject": "HIDDEN_EVIDENCE_HASH_AS_SUBSTANTIVE_PROOF"},
+    {"id": "UV-P07", "source": "P7", "method": "CHALLENGE_DISPOSITION_APPEAL_AND_DISSENT_REHEARSAL", "reject": "ERASED_OBJECTION_OR_UNADDRESSABLE_APPEAL"},
+    {"id": "UV-P08", "source": "P8", "method": "PREDECESSOR_SUCCESSOR_TAMPER_ROLLBACK_AND_FRESHNESS_TESTS", "reject": "SILENT_HISTORY_REWRITE"},
+    {"id": "UV-P09", "source": "P9", "method": "INTEGRITY_PROVENANCE_REVIEW_IDENTITY_AUTHORITY_TRUTH_SEPARATION", "reject": "SIGNATURE_OR_RECEIPT_AS_TRUTH"},
+    {"id": "UV-P10", "source": "P10", "method": "UI_API_AND_RECORD_NO_SCALAR_TRUST_AUDIT", "reject": "UNIVERSAL_INTELLIGENCE_AUTHORSHIP_FACTUALITY_TRUST_SCORE"},
+    {"id": "UV-P11", "source": "P11", "method": "INDEPENDENT_VERIFICATION_AND_OPEN_EXPORT_IMPORT", "reject": "MANDATORY_VENDOR_ACCOUNT_OR_PROVIDER"},
+    {"id": "UV-P12", "source": "P12", "method": "VERSIONED_PROFILE_CORRECTION_AND_GOVERNANCE_REHEARSAL", "reject": "RETROACTIVE_PROFILE_OR_EVIDENCE_REINTERPRETATION"}
+  ],
+  "architectureGates": [
+    {"id": "UV-A01", "name": "EXACT_SUBJECT", "requires": ["sourceCommit", "artifactDigests", "buildProvenanceWhenBinaryClaimed", "configuration", "dependencies", "environment", "externalServiceAndModelLimits"]},
+    {"id": "UV-A02", "name": "SEMANTIC_SEPARATION", "requires": ["existingSevenPrimitiveMapping", "noImplicitAuthorityTransition", "effectAndNonEffectTests"]},
+    {"id": "UV-A03", "name": "EXECUTABLE_EVIDENCE", "requires": ["pinnedTestsAndVerifier", "actualBoundedRunEvidence", "separatelyAuthorizedIsolatedWorker", "noClaimantCommandsInPassiveVerification"]},
+    {"id": "UV-A04", "name": "INDEPENDENCE_AND_REVIEW", "requires": ["twoIndependentlyOperatedReproductions", "oneOutsideImplementerControl", "scopedHumanReview", "controlAndConflictEvidence"]},
+    {"id": "UV-A05", "name": "ISSUER_POLICY_AND_ISSUANCE", "requires": ["separateKeyControlAndIssuerAuthority", "publishedVersionedGovernance", "nonCircularTrustRoot", "attributableIssuanceDecision"]},
+    {"id": "UV-A06", "name": "LIFECYCLE", "requires": ["validity", "signedStatus", "freshnessAndClockBasis", "rollbackProtection", "keyCompromiseHandling", "revocationSuspensionSupersession", "appeal"]},
+    {"id": "UV-A07", "name": "PUBLIC_HUMAN_MACHINE_PARITY", "requires": ["sameVerifiedRecord", "stableRequirementIds", "accessibleEnRuText", "portableMachineRecord", "publicChallengePath", "noActionAuthority"]}
+  ],
+  "evidenceStages": ["DECLARED", "EVIDENCE_BOUND", "REPRODUCED", "INDEPENDENTLY_REVIEWED", "ISSUED", "CURRENTLY_VALID"],
+  "evidenceAccessClasses": ["PUBLIC_REPRODUCIBLE", "REDACTED", "RESTRICTED_REVIEWER_ATTESTED", "UNAVAILABLE"],
+  "restrictedEvidenceRule": "DO_NOT_CLAIM_PUBLIC_REPRODUCIBILITY_IF_ONLY_REVIEWER_ATTESTATION_IS_AVAILABLE",
+  "essentialMissingEvidenceRule": "INSUFFICIENT_EVIDENCE_OR_NARROWER_CLAIM_NEVER_FULL_PASS",
+  "discovery": {
+    "humanDocuments": {"en": "README.md", "ru": "README.ru.md"},
+    "candidateDescriptorPath": "/.well-known/uu-verified.json",
+    "wellKnownUriRegistered": false,
+    "discoveryEstablishesAuthenticity": false,
+    "publicVerificationRequiresLogin": false,
+    "publicVerificationRequiresPayment": false,
+    "publicVerificationRequiresProprietaryProvider": false,
+    "offlineCurrentStatus": "ONLY_WITHIN_ACCEPTED_FRESHNESS_BOUND"
+  },
+  "sourceBindings": [
+    {"path": "PRINCIPLES.md", "gitBlobSha1": "b37f0d0f525c82520cfb336d8167b05a590521d3"},
+    {"path": "SPEC.md", "gitBlobSha1": "44b91e0e48dee9d928c843bbb304a5c246582da7"},
+    {"path": "protocols/attestation/v0.1/README.md", "gitBlobSha1": "48c2ff28039b6512a0a65a63791932a66367b092"},
+    {"path": "protocols/responsibility-assurance/v0.1/README.md", "gitBlobSha1": "41c887e08fd1309f9f854b886365a9c3b0fe7d12"},
+    {"path": "research/external-anchor-sufficiency-audit/v0.1/README.md", "gitBlobSha1": "c6010011e5a646be72102adb8516221c4a60c267"},
+    {"repository": "Matawaka/vibe-coding-reality", "path": "VERIFICATION.md", "gitBlobSha1": "3e5a28401549177c90b58943795817536f936997", "role": "HISTORICAL_DOCUMENTARY_PRECEDENT_NOT_REEXECUTED"}
+  ],
+  "plannedHostileVectors": [
+    "WRONG_SUBJECT_DIGEST", "WRONG_BUILD_OR_DEPLOYMENT", "DEPENDENCY_OR_CONFIGURATION_DRIFT", "OMITTED_REQUIRED_PRINCIPLE", "UNJUSTIFIED_NOT_APPLICABLE", "WEAKER_PROFILE_SUBSTITUTION", "DECLARED_TEST_AS_EXECUTED_TEST", "MALICIOUS_TEST_COMMAND", "SELF_REVIEW_AS_INDEPENDENT_REVIEW", "TWO_ACCOUNTS_AS_INDEPENDENCE", "UNTRUSTED_ISSUER_WITH_VALID_SIGNATURE", "CIRCULAR_ISSUER_AUTHORIZATION", "REPLAYED_OR_EXPIRED_RECORD", "STATUS_ROLLBACK", "UNKNOWN_STATUS_AS_CURRENT_PASS", "PRIVATE_HASH_AS_PUBLIC_REPRODUCTION", "BILINGUAL_OR_UI_STATUS_DRIFT", "BADGE_AS_ACTION_PERMIT", "INCLUSION_AS_GLOBAL_NON_EQUIVOCATION", "COPYRIGHT_OR_TRUTH_PROMOTION"
+  ],
+  "plannedHostileVectorsExecuted": false,
+  "backlogStages": [
+    {"id": "UV-01", "priority": "P0", "scope": "BILINGUAL_DOCUMENTATION", "state": "PROPOSED_FOR_REVIEW"},
+    {"id": "UV-02", "priority": "P0", "scope": "PROFILE_AND_CLOSED_SCHEMA", "state": "NEXT_IMPLEMENTATION_GATE"},
+    {"id": "UV-03", "priority": "P1", "scope": "READ_ONLY_EVIDENCE_COMPOSITION", "state": "PLANNED"},
+    {"id": "UV-04", "priority": "P1", "scope": "INDEPENDENT_REPRODUCTION_AND_HOSTILE_TESTS", "state": "PLANNED"},
+    {"id": "UV-05", "priority": "P1", "scope": "ISSUER_GOVERNANCE_AND_STATUS", "state": "PLANNED"},
+    {"id": "UV-06", "priority": "P2", "scope": "OPEN_HUMAN_MACHINE_SURFACES", "state": "PLANNED"},
+    {"id": "UV-07", "priority": "P2", "scope": "REAL_SCOPED_PILOT", "state": "BLOCKED_ON_ACCEPTED_PREDECESSOR_GATES"}
+  ],
+  "nonEffects": {
+    "acceptedNormativeProfile": false,
+    "credentialSchemaImplemented": false,
+    "executableAssessmentImplemented": false,
+    "attestationIssued": false,
+    "markDisplayPermissionGranted": false,
+    "issuerAuthorityEstablished": false,
+    "runtimeActivation": false,
+    "actionPermit": false,
+    "externalEffectAuthorization": false,
+    "truthCertified": false,
+    "copyrightOwnershipEstablished": false,
+    "legalIdentityEstablished": false,
+    "legalLiabilityEstablished": false,
+    "universalProductionSafety": false,
+    "globalNonEquivocationProven": false,
+    "trustedTimeProven": false,
+    "historicalEvidenceRewritten": false
+  }
+}
