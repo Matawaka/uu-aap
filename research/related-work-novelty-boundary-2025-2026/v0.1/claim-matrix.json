@@ -1,0 +1,295 @@
+{
+  "schema": "matawaka.related-work-claim-matrix/2025-2026/v0.1",
+  "audit_as_of": "2026-09-07",
+  "claims": [
+    {
+      "id": "ai-contribution-disclosure",
+      "statement": "Structured disclosure of AI contribution to authored work is itself a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-22",
+      "basis_sources": ["gaidet-2025", "tas5-2025", "provenance-not-prohibition-2026", "petmalu-ai-2026", "authorship-after-generative-ai-2026"],
+      "overlap_summary": [
+        "Multiple public predecessors classify or report AI participation in human-authored work.",
+        "Several predecessors retain human accountability rather than equating machine contribution with authorship."
+      ],
+      "surviving_narrow_claim": null,
+      "forbidden_claims": [
+        "Matawaka or UU-AAP was the first framework to disclose human/AI contribution.",
+        "Human accountability in AI-assisted authorship originated with UU-AAP."
+      ],
+      "required_next_evidence": [
+        "Treat these works as related work rather than novelty support.",
+        "Compare only narrower machine-verifiable governance semantics if claiming differentiation."
+      ]
+    },
+    {
+      "id": "provenance-not-permission",
+      "statement": "Separating artifact provenance, identity, consent/permission, and authorization is itself a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-22",
+      "basis_sources": ["cawg-endorsement-1.0-draft", "c2pa-digital-likeness-100", "cawg-consent-2026", "cawg-identity-1.3-2026"],
+      "overlap_summary": [
+        "CAWG and external C2PA proposals already model identity, endorsement/consent and provenance as orthogonal assertion surfaces.",
+        "The March 2026 digital-likeness proposal states the permission-state gap explicitly and uses the phrase 'Provenance is not permission.'"
+      ],
+      "surviving_narrow_claim": "Matawaka may still differ in enforcing non-escalation across a larger set of decision/action semantics, but the basic separation itself is prior public work.",
+      "forbidden_claims": [
+        "Matawaka first discovered that provenance is not permission.",
+        "C2PA/CAWG lacked any pre-UU-AAP separation of provenance, identity and consent/authorization-like evidence."
+      ],
+      "required_next_evidence": [
+        "Compare exact composition/failure semantics rather than labels alone.",
+        "Keep C2PA/CAWG source-status boundaries explicit."
+      ]
+    },
+    {
+      "id": "pre-action-agent-authorization",
+      "statement": "A deterministic pre-action boundary that authorizes an exact AI-agent effect before execution is itself a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["agentic-jwt-2025", "ferz-authorization-boundary-2026", "mastercard-verifiable-intent-2026", "intent-token-2026", "agentroa-2026", "delegation-receipt-protocol-2026", "permit-receipts-2026", "ncs-2026", "cva-2026"],
+      "overlap_summary": [
+        "Multiple public predecessors separate access/workload identity from action authorization.",
+        "Several bind exact action scope, policy/frontier state, validity and anti-replay before an external effect.",
+        "FERZ explicitly frames the missing MCP/gateway authorization boundary months before public UU-AAP."
+      ],
+      "surviving_narrow_claim": null,
+      "forbidden_claims": [
+        "Matawaka invented the AI Agent Action Gateway concept.",
+        "Matawaka was first to require authorization before an AI-agent external effect.",
+        "Matawaka first separated access authorization from action authorization.",
+        "ActionPermit alone establishes novelty."
+      ],
+      "required_next_evidence": [
+        "Treat the action gate as reuse/convergence unless a narrower semantic property is being evaluated.",
+        "Cite maturity differences: preprints, industry announcements and individual I-Ds are not consensus standards."
+      ]
+    },
+    {
+      "id": "delegation-and-scope-narrowing",
+      "statement": "Signed delegation chains with bounded scope and monotonic narrowing are themselves a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["agentic-jwt-2025", "agentroa-2026", "delegation-receipt-protocol-2026", "sato-mjwt-2026", "intent-token-2026"],
+      "overlap_summary": [
+        "Predecessors already encode principal/mission/action scope and delegation chains.",
+        "AgentROA and related work explicitly constrain downstream scope rather than allowing delegation to broaden authority."
+      ],
+      "surviving_narrow_claim": null,
+      "forbidden_claims": [
+        "Matawaka invented cryptographically bounded agent delegation.",
+        "Monotonic delegation narrowing is unique to Matawaka."
+      ],
+      "required_next_evidence": [
+        "Use these mechanisms as related work and compare only Matawaka-specific semantic composition rules."
+      ]
+    },
+    {
+      "id": "execution-and-outcome-receipts",
+      "statement": "Post-action receipts that record execution or observed effects are themselves a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["agentroa-2026", "sato-gar-2026", "sato-aep-2026", "auditable-llm-autonomy-2026", "certified-amnesia-2026"],
+      "overlap_summary": [
+        "Public predecessors already record execution, governance events and outcomes separately from pre-action authorization.",
+        "Some explicitly separate attempt/execution evidence from stronger claims about effect or causality."
+      ],
+      "surviving_narrow_claim": "The exact UU-AAP transition from ActionPermit to ActionReceipt to OutcomeReceipt to SuccessorStateReceipt may still be a narrower composition candidate, but receipt existence itself is crowded.",
+      "forbidden_claims": [
+        "Matawaka invented post-action agent receipts.",
+        "Recording what an agent actually did is unique to UU-AAP."
+      ],
+      "required_next_evidence": [
+        "Compare execution-attempt, confirmed-effect, observed-outcome and successor semantics separately.",
+        "Add Agent Action Capsule family to the source ledger before making a narrower action/outcome claim."
+      ]
+    },
+    {
+      "id": "transparency-and-non-equivocation",
+      "statement": "Append-only transparency, witness cosigning or external anchoring for non-equivocation is itself a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["scitt-rfc9943-2026", "c2pa-non-equivocation-122", "delegation-receipt-protocol-2026"],
+      "overlap_summary": [
+        "SCITT is an IETF consensus architecture for signed statements and transparent services.",
+        "The C2PA external discussion independently decomposes manifest signing, append-only consistency, witness/anchor evidence and non-equivocation."
+      ],
+      "surviving_narrow_claim": null,
+      "forbidden_claims": [
+        "Matawaka invented transparency logs for AI provenance.",
+        "Witnessed checkpoints or external anchoring are novel Matawaka primitives."
+      ],
+      "required_next_evidence": [
+        "Position Matawaka transparency work as executable interoperability/reuse evidence rather than core novelty."
+      ]
+    },
+    {
+      "id": "decision-time-evidence-trace",
+      "statement": "Preserving evidence or context available at decision time together with a decision trace is itself a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-22",
+      "basis_sources": ["baxdt-2025", "decision-event-schema-2026", "omp-2026", "auditable-llm-autonomy-2026", "certified-amnesia-2026"],
+      "overlap_summary": [
+        "Several predecessors capture per-decision inputs/context, policy evaluation, trace and outcome information.",
+        "Auditable LLM Autonomy explicitly requires provenance/freshness-aware evidence and separates evidence, decision trace and outcome."
+      ],
+      "surviving_narrow_claim": "PoAI's stronger candidate is not decision-time evidence in general, but explicit separation of heterogeneous resource existence/provenance, availability, consideration and authority/responsibility.",
+      "forbidden_claims": [
+        "PoAI was first to ask what information was available when a decision was made.",
+        "Decision provenance originated with PoAI."
+      ],
+      "required_next_evidence": [
+        "Search decision-science, provenance, legal audit and safety literature for explicit available-versus-considered resource sets.",
+        "Do not conflate consumed inputs with all relevant available intelligence."
+      ]
+    },
+    {
+      "id": "heterogeneous-authorization-evidence-composition",
+      "statement": "Composing heterogeneous identity, delegation, policy, approval, transparency, capability and execution evidence for one action is itself a Matawaka novelty claim.",
+      "posture": "PARTIALLY_OVERLAPPED",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["ep-aec-2026", "principal-verifier-binding-2026", "cva-2026"],
+      "overlap_summary": [
+        "EP-AEC directly composes heterogeneous authorization evidence while retaining native validity and action binding.",
+        "Principal/Verifier Binding and CVA separately insist that identity, authority/delegation, request binding and execution evidence are different verifiable claims."
+      ],
+      "surviving_narrow_claim": "A broader semantic non-escalation rule may survive if it covers evidence, availability, consideration, intent, authority, responsibility, coordination, permission, action, outcome, causality and truth rather than authorization evidence alone.",
+      "forbidden_claims": [
+        "Matawaka was first to compose heterogeneous agent authorization receipts.",
+        "Receipt composition by itself is a novel Matawaka concept."
+      ],
+      "required_next_evidence": [
+        "Perform exact field/transition comparison with EP-AEC and verifier-binding drafts.",
+        "Formally specify what semantic dimensions exist outside their authorization-evidence scope."
+      ]
+    },
+    {
+      "id": "semantic-non-escalation",
+      "statement": "A provider-neutral rule prevents valid evidence from silently acquiring stronger semantic power through heterogeneous composition unless an explicit typed transition establishes the stronger claim.",
+      "posture": "NOVELTY_CANDIDATE",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["principal-verifier-binding-2026", "ep-aec-2026", "cva-2026", "stored-is-not-supported-2026"],
+      "overlap_summary": [
+        "Pre-publication sources already separate several claim classes and warn against overclaiming from valid evidence.",
+        "EP-AEC prevents SATISFIED authorization evidence from becoming universal authorization or execution/outcome proof.",
+        "Stored Is Not Supported is a post-publication convergence signal that explicitly prevents persistence from upgrading epistemic standing."
+      ],
+      "surviving_narrow_claim": "The candidate contribution is the generalized cross-domain semantic non-escalation contract over the full UU-AAP/PoAI lifecycle, not the narrower observation that some claims are distinct.",
+      "forbidden_claims": [
+        "No prior system separated semantic claims before Matawaka.",
+        "Semantic non-escalation is established as a world-first contribution.",
+        "The post-publication Stored Is Not Supported paper proves Matawaka priority or influence."
+      ],
+      "required_next_evidence": [
+        "Define a formal lattice or typed transition system for permitted semantic strengthening.",
+        "Test composition hostile cases where individually valid receipts would create an invalid stronger aggregate claim.",
+        "Broaden prior-art search beyond agent protocols into evidence logic, information-flow type systems and provenance calculi."
+      ]
+    },
+    {
+      "id": "explicit-machine-readable-non-effects",
+      "statement": "Every typed receipt carries machine-readable positive assertions plus explicit negative semantic boundaries describing material claims it does not establish.",
+      "posture": "NOVELTY_CANDIDATE",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["ep-aec-2026", "principal-verifier-binding-2026", "permit-receipts-2026", "auditable-llm-autonomy-2026"],
+      "overlap_summary": [
+        "External predecessors contain explicit semantic limitations and narrow verdict meanings.",
+        "The bounded audit has not yet found an earlier provider-neutral common receipt envelope that normatively requires machine-readable non-effects across every lifecycle primitive."
+      ],
+      "surviving_narrow_claim": "A common typed receipt contract in which non-effects are first-class machine semantics may be a distinct Matawaka contribution if broader provenance/type-system prior art does not already materialize the same structure.",
+      "forbidden_claims": [
+        "Explicit non-effects are proven novel or patentable.",
+        "No earlier evidence system encoded negative assertions or limitations.",
+        "Absence from this bounded search proves absence from prior art."
+      ],
+      "required_next_evidence": [
+        "Search formal provenance, negative claims, closed-world attestations, proof-carrying authorization and refinement-type literature.",
+        "Define canonical machine semantics for contradiction between assertions and non-effects.",
+        "Demonstrate why prose-only limitations are insufficient for safe composition."
+      ]
+    },
+    {
+      "id": "available-versus-considered-intelligence",
+      "statement": "PoAI models heterogeneous intelligence resources with resource provenance, availability and consideration separately from decision authority and responsibility.",
+      "posture": "NOVELTY_CANDIDATE",
+      "public_anchor": "2026-08-22",
+      "basis_sources": ["baxdt-2025", "decision-event-schema-2026", "auditable-llm-autonomy-2026", "certified-amnesia-2026"],
+      "overlap_summary": [
+        "Prior systems record evidence/context used or available around a decision and sometimes bind it cryptographically.",
+        "The bounded corpus has not yet produced an exact predecessor for a heterogeneous resource set whose provenance, availability and consideration are first-class states and whose epistemic advantage cannot imply authority/responsibility."
+      ],
+      "surviving_narrow_claim": "Available Intelligence != Considered Intelligence != Authority is a plausible distinct research contribution when applied compositionally to human, AI, documentary, model, expert-group and institutional resources.",
+      "forbidden_claims": [
+        "PoAI invented decision-time evidence.",
+        "PoAI is established as the first system to distinguish available and considered information.",
+        "A resource listed in PoAI is thereby proven available, used, authoritative or true."
+      ],
+      "required_next_evidence": [
+        "Search cognitive decision science, legal discovery/audit, information-set models, data lineage and human-factors literature.",
+        "Create hostile fixtures for available-not-considered, considered-not-relied-upon, unavailable-but-cited and epistemic-advantage-without-authority cases.",
+        "Define whether 'materially influenced' is a separate layer from consideration."
+      ]
+    },
+    {
+      "id": "seven-layer-typed-continuity",
+      "statement": "One provider-neutral typed protocol preserves explicit transitions from State/Evidence through Availability, Intent, Authority/Responsibility, Coordination and Action Gate to Outcome/Successor State, with no implicit cross-layer transitions.",
+      "posture": "NOVELTY_CANDIDATE",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["sato-idp-2026", "sato-hem-2026", "sato-gar-2026", "sato-aep-2026", "sato-mjwt-2026", "ep-aec-2026", "permit-receipts-2026", "auditable-llm-autonomy-2026"],
+      "overlap_summary": [
+        "The Sato/SOOS family provides serious predecessor pressure with separate intent, mandate, human escalation, execution and audit primitives.",
+        "EP-AEC composes many authorization evidence types and Permit Receipts supplies a strong effect boundary.",
+        "Auditable LLM Autonomy independently separates evidence, decision trace and outcome."
+      ],
+      "surviving_narrow_claim": "The exact seven-layer combination may remain distinct if Availability, Responsibility, Coordination, explicit non-effects and successor-state semantics form one provider-neutral contract rather than a runtime-specific family of adjacent mechanisms.",
+      "forbidden_claims": [
+        "No prior architecture linked intent, authorization, human escalation, execution and audit before UU-AAP.",
+        "The seven-layer stack is established as globally novel merely because no exact name match was found."
+      ],
+      "required_next_evidence": [
+        "Perform a component-by-component comparison against the complete Sato/SOOS draft family and EP-AEC.",
+        "Search workflow/protocol calculi outside AI for equivalent typed state-to-effect-to-successor semantics.",
+        "Prove that removing any candidate-distinguishing layer causes a semantic ambiguity that the predecessor families do not already solve."
+      ]
+    },
+    {
+      "id": "cross-domain-authorship-to-action",
+      "statement": "The same semantic discipline spans human-AI authorship/governance and externally consequential autonomous-agent action rather than treating the two as unrelated accountability domains.",
+      "posture": "NOVELTY_CANDIDATE",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["gaidet-2025", "petmalu-ai-2026", "authorship-after-generative-ai-2026", "ferz-authorization-boundary-2026", "ep-aec-2026", "permit-receipts-2026"],
+      "overlap_summary": [
+        "The bounded landscape contains mature clusters for authorship accountability and for autonomous action authorization, but they are largely separate bodies of work.",
+        "No exact earlier framework was found in this bounded audit that uses one typed semantic non-escalation architecture across both domains."
+      ],
+      "surviving_narrow_claim": "Cross-domain reuse of one explicit evidence/availability/intent/authority/responsibility/action/outcome semantics is a plausible system-level novelty candidate.",
+      "forbidden_claims": [
+        "Absence of an exact earlier cross-domain framework is proof of novelty.",
+        "UU-AAP subsumes or replaces C2PA, CAWG, agent authorization standards or authorship-reporting frameworks."
+      ],
+      "required_next_evidence": [
+        "Search accountable-computing, workflow provenance, safety-case and socio-technical governance literature for cross-domain analogues.",
+        "Build paired conformance fixtures showing the same invariant preventing semantic escalation in authorship and agent-action cases."
+      ]
+    },
+    {
+      "id": "agent-discoverable-gateway",
+      "statement": "An AI-facing gateway that agents can call before consequential tool use is itself a Matawaka novelty claim.",
+      "posture": "CROWDED_BROAD_CLAIM",
+      "public_anchor": "2026-08-24",
+      "basis_sources": ["ferz-authorization-boundary-2026", "cheq-2025", "agentroa-2026", "sato-aep-2026", "permit-receipts-2026"],
+      "overlap_summary": [
+        "MCP/gateway authorization boundaries, human-confirmation protocol surfaces and runtime execution enforcement already predate the public Matawaka gateway issue.",
+        "The presence of an agent-callable enforcement/gateway interface therefore cannot carry a broad novelty claim."
+      ],
+      "surviving_narrow_claim": "Matawaka can still evaluate whether agents voluntarily select a semantically richer evidence/authority gateway under consequential uncertainty, but that is an empirical adoption/evaluation claim rather than origin of the gateway pattern.",
+      "forbidden_claims": [
+        "Matawaka invented the agent-callable action gateway.",
+        "MCP lacked any proposed human/action authorization boundary before Matawaka."
+      ],
+      "required_next_evidence": [
+        "Frame future paired evals as comparative effectiveness evidence, not novelty evidence."
+      ]
+    }
+  ]
+}

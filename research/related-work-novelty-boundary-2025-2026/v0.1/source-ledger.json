@@ -1,0 +1,914 @@
+{
+  "schema": "matawaka.related-work-source-ledger/2025-2026/v0.1",
+  "audit_as_of": "2026-09-07",
+  "matawaka_public_anchor": {
+    "repository_created": "2026-08-22",
+    "poai_compositional_anchor": "2026-08-22",
+    "stable_core_anchor": "2026-08-24",
+    "gateway_anchor": "2026-08-24"
+  },
+  "status_classes": [
+    "IETF_CONSENSUS_RFC",
+    "INDIVIDUAL_INTERNET_DRAFT",
+    "STANDARDS_BODY_DRAFT",
+    "STANDARDS_BODY_RATIFIED",
+    "PEER_REVIEWED_ARTICLE",
+    "PREPRINT",
+    "INDUSTRY_ANNOUNCEMENT",
+    "PUBLIC_GITHUB_PROPOSAL",
+    "PROJECT_PUBLICATION"
+  ],
+  "temporal_classes": [
+    "PUBLIC_PREDECESSOR",
+    "PARALLEL_WINDOW",
+    "POST_PUBLICATION_CONVERGENCE"
+  ],
+  "sources": [
+    {
+      "id": "cawg-endorsement-1.0-draft",
+      "title": "CAWG Endorsement Assertion 1.0 Draft",
+      "first_public_date": "2025-04-14",
+      "date_precision": "DAY",
+      "source_status": "STANDARDS_BODY_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://cawg.io/endorsement/1.0-draft/",
+      "cluster": "CONTENT_PROVENANCE_IDENTITY_CONSENT",
+      "overlap": [
+        "signed approval for specific downstream actions",
+        "bounded permission relation distinct from basic content provenance",
+        "validity-bounded authorization-like evidence"
+      ],
+      "non_overlap": [
+        "content-workflow endorsement rather than a general AI-agent action gate",
+        "does not define PoAI availability or the UU-AAP seven-layer lifecycle"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "CAWG draft rather than final ratified specification",
+        "domain is C2PA asset workflow endorsement"
+      ]
+    },
+    {
+      "id": "gaidet-2025",
+      "title": "GAIDeT (Generative AI Delegation Taxonomy)",
+      "first_public_date": "2025-08-08",
+      "date_precision": "DAY",
+      "source_status": "PEER_REVIEWED_ARTICLE",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://www.tandfonline.com/doi/full/10.1080/08989621.2025.2544331",
+      "cluster": "HUMAN_AI_AUTHORSHIP",
+      "overlap": [
+        "stage-specific documentation of generative-AI contribution",
+        "human oversight and accountability in AI-assisted research",
+        "structured human-AI delegation disclosure"
+      ],
+      "non_overlap": [
+        "reporting taxonomy rather than cryptographic or typed action-authority protocol",
+        "does not distinguish available intelligence from considered intelligence and decision authority"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "scholarly research and publishing domain",
+        "taxonomy does not claim execution-time enforcement"
+      ]
+    },
+    {
+      "id": "cheq-2025",
+      "title": "CHEQ: A Protocol for Confirmation AI Agent Decisions with Human in the Loop (HITL)",
+      "first_public_date": "2025-10-19",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-rosenberg-aiproto-cheq-00",
+      "cluster": "HUMAN_ESCALATION_GOVERNANCE",
+      "overlap": [
+        "human confirmation before AI-proposed actions are acted upon",
+        "signed confirmation object designed to compose with MCP and A2A",
+        "pre-effect human gate"
+      ],
+      "non_overlap": [
+        "confirmation protocol rather than full evidence-to-successor semantic stack",
+        "does not establish PoAI resource availability semantics"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "expired individual Internet-Draft",
+        "not IETF consensus or an RFC"
+      ]
+    },
+    {
+      "id": "baxdt-2025",
+      "title": "Blockchain-assisted explainable decision traces (BAXDT)",
+      "first_public_date": "2025-11-04",
+      "date_precision": "DAY",
+      "source_status": "PEER_REVIEWED_ARTICLE",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://www.sciencedirect.com/science/article/pii/S0950705125014418",
+      "cluster": "DECISION_EVIDENCE",
+      "overlap": [
+        "immutable per-decision structured trace",
+        "records what decision was made, why, based on what, and when",
+        "cryptographic integrity binding for decision evidence"
+      ],
+      "non_overlap": [
+        "SHAP/XAI-oriented trace rather than authority/action-permit semantics",
+        "records consumed decision context rather than a typed available-versus-considered intelligence set"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "model-decision transparency focus",
+        "blockchain integrity is not equivalent to authority or truth"
+      ]
+    },
+    {
+      "id": "tas5-2025",
+      "title": "TAS-5: A Cross-Industry Framework for Transparent Disclosure of AI Involvement in Content Creation",
+      "first_public_date": "2025-12-12",
+      "date_precision": "DAY",
+      "source_status": "PROJECT_PUBLICATION",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://www.media.mit.edu/articles/tas-5-a-cross-industry-framework-for-transparent-disclosure-of-ai-involvement-in-content-creation/",
+      "cluster": "HUMAN_AI_AUTHORSHIP",
+      "overlap": [
+        "media-agnostic AI-involvement disclosure",
+        "authorship transparency across text, media, code and professional work"
+      ],
+      "non_overlap": [
+        "disclosure-level framework rather than decision-authority provenance",
+        "does not define action permits, successor state or explicit non-effects"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "white-paper/framework publication rather than consensus standard",
+        "disclosure focus is narrower than full governance lifecycle"
+      ]
+    },
+    {
+      "id": "agentic-jwt-2025",
+      "title": "Secure Intent Protocol: JWT Compatible Agentic Identity and Workflow Management",
+      "first_public_date": "2025-12-31",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-goswami-agentic-jwt-00",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "explicitly identifies drift between user intent and autonomous agent actions",
+        "extends OAuth-oriented authorization for agentic workflows",
+        "treats user intent as a security-relevant authorization boundary"
+      ],
+      "non_overlap": [
+        "JWT/OAuth extension rather than provider-neutral evidence semantics",
+        "does not define PoAI availability or a general outcome-successor protocol"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "ferz-authorization-boundary-2026",
+      "title": "The Authorization Boundary: What MCP and AI Gateways Do Not Establish for Regulated Agentic AI",
+      "first_public_date": "2026-02-20",
+      "date_precision": "DAY",
+      "source_status": "PREPRINT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6219602",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "access authorization separated from action authorization",
+        "deterministic pre-execution authorization artifact",
+        "binding to policy/version state and replayable independent reconstruction"
+      ],
+      "non_overlap": [
+        "regulated action-authorization analysis rather than a human-AI authorship protocol",
+        "does not define PoAI compositional available-intelligence resources"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "SSRN/Zenodo conceptual work rather than standards consensus",
+        "author discloses commercial interest in deterministic authorization infrastructure"
+      ]
+    },
+    {
+      "id": "mastercard-verifiable-intent-2026",
+      "title": "Verifiable Intent",
+      "first_public_date": "2026-03-05",
+      "date_precision": "DAY",
+      "source_status": "INDUSTRY_ANNOUNCEMENT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://www.mastercard.com/global/en/news-and-trends/stories/2026/verifiable-intent.html",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "verifiable record of what a user authorized an AI agent to do",
+        "focus on proving user intent before consequential agentic commerce"
+      ],
+      "non_overlap": [
+        "commerce-specific industry mechanism",
+        "public announcement does not by itself provide a complete general protocol semantics comparable to UU-AAP"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "industry announcement rather than peer-reviewed paper or consensus standard",
+        "co-developed commercial context with Google"
+      ]
+    },
+    {
+      "id": "c2pa-digital-likeness-100",
+      "title": "Proposal for org.c2pa.digital-likeness — Consent and Permission-State Assertion",
+      "first_public_date": "2026-03-11",
+      "date_precision": "DAY",
+      "source_status": "PUBLIC_GITHUB_PROPOSAL",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://github.com/c2pa-org/specifications/issues/100",
+      "cluster": "CONTENT_PROVENANCE_IDENTITY_CONSENT",
+      "overlap": [
+        "explicit statement that provenance is not permission",
+        "live permission-state treated separately from provenance, identity and rights metadata",
+        "tamper-evident pointer to external consent/permission evidence"
+      ],
+      "non_overlap": [
+        "digital-likeness consent use case",
+        "proposal does not define general agent execution authority or PoAI semantics"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "external proposal posted to C2PA repository",
+        "closed as completed does not mean normative C2PA adoption"
+      ]
+    },
+    {
+      "id": "intent-token-2026",
+      "title": "The Intent Token: A Cryptographic Authorization Primitive for Autonomous Agents",
+      "first_public_date": "2026-03-19",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-williams-intent-token-00",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "signed human-declared authorization envelope before action execution",
+        "explicit access-versus-action authorization gap",
+        "time-bounded action scope, delegation and anti-replay enforcement",
+        "append-only audit of enforcement decisions"
+      ],
+      "non_overlap": [
+        "intent-token authorization primitive rather than complete authorship/decision-evidence stack",
+        "does not model heterogeneous available intelligence separately from consideration"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "omp-2026",
+      "title": "Operating Model Protocol: A Deterministic Routing and Evidence Architecture for AI Decision Accountability",
+      "first_public_date": "2026-03-21",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-veridom-omp-00",
+      "cluster": "DECISION_EVIDENCE",
+      "overlap": [
+        "deterministic routing at decision time",
+        "tamper-evident trace emitted for individual decisions",
+        "accountability architecture rather than post-hoc dashboard only"
+      ],
+      "non_overlap": [
+        "confidence/routing architecture rather than UU-AAP semantic non-escalation stack",
+        "does not create the PoAI availability-versus-consideration distinction"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "agentroa-2026",
+      "title": "Agent Route Origin Authorization (AgentROA)",
+      "first_public_date": "2026-04-08",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-nivalto-agentroa-route-authorization-00",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "signed policy envelope for authorized agent action scope",
+        "monotonic scope narrowing through delegation",
+        "per-hop attestation and execution receipt at MCP tool-call boundary"
+      ],
+      "non_overlap": [
+        "agent authorization and delegation focus rather than human-AI authorship",
+        "no PoAI available-intelligence object model"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "decision-event-schema-2026",
+      "title": "Decision Trace Schema for Governance Evidence in Real-Time Risk Systems",
+      "first_public_date": "2026-04-10",
+      "date_precision": "DAY",
+      "source_status": "PREPRINT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://arxiv.org/abs/2604.09296",
+      "cluster": "DECISION_EVIDENCE",
+      "overlap": [
+        "machine-readable per-decision governance evidence schema",
+        "combines inference, policy evaluation, cross-system coupling and governance metadata",
+        "degradation-aware evidence design"
+      ],
+      "non_overlap": [
+        "decision reconstruction schema rather than a typed authorization lifecycle",
+        "does not define explicit receipt non-effects across semantic layers"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "arXiv preprint",
+        "not a standards consensus artifact"
+      ]
+    },
+    {
+      "id": "delegation-receipt-protocol-2026",
+      "title": "Delegation Receipt Protocol for AI Agent Authorization",
+      "first_public_date": "2026-04-26",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-nelson-agent-delegation-receipts-04",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "user-signed authorization object before agent runtime receives control",
+        "scope, boundaries, validity window and instruction-hash binding",
+        "append-only authorization record and explicit revocation"
+      ],
+      "non_overlap": [
+        "delegation-specific authorization primitive",
+        "does not define availability, consideration or successor-state semantics"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "sato-hem-2026",
+      "title": "The Human Escalation Mechanism (HEM) for Agentic AI Systems",
+      "first_public_date": "2026-05-10",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/draft-sato-soos-hem/00/",
+      "cluster": "HUMAN_ESCALATION_GOVERNANCE",
+      "overlap": [
+        "explicit machine state for human escalation",
+        "agent is prevented from proceeding while human decision is pending",
+        "human judgment is a separate governed transition rather than implicit runtime authority"
+      ],
+      "non_overlap": [
+        "kernel-specific SOOS governance architecture",
+        "does not address human-AI authorship provenance"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "sato-idp-2026",
+      "title": "The Intent Declaration Primitive (IDP) for Agentic AI Systems",
+      "first_public_date": "2026-05-10",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-sato-soos-idp-00",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "structured per-transition intent declaration",
+        "intent is distinct from access-token permission",
+        "intent is recorded at action-step granularity"
+      ],
+      "non_overlap": [
+        "agent-declared reasoning/intent primitive rather than user-intent evidence provenance",
+        "does not by itself define UU-AAP responsibility or PoAI availability"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "sato-gar-2026",
+      "title": "The Governance Audit Record (GAR) for Agentic AI Systems",
+      "first_public_date": "2026-05-17",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/draft-sato-soos-gar/00/",
+      "cluster": "DECISION_EVIDENCE",
+      "overlap": [
+        "signed governance event stream for agent sessions",
+        "audit artifacts intended to survive adverse or inconvenient outcomes",
+        "explicit reconstruction of governed decisions"
+      ],
+      "non_overlap": [
+        "SOOS-specific audit architecture",
+        "does not make explicit non-effects a common semantic contract for all receipts"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "sato-aep-2026",
+      "title": "The Agent Execution Protocol (AEP) for Agentic AI Systems",
+      "first_public_date": "2026-05-24",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/draft-sato-soos-aep/00/",
+      "cluster": "HUMAN_ESCALATION_GOVERNANCE",
+      "overlap": [
+        "normative interface between agent reasoning loop and enforcement component",
+        "state and permission context delivered at each action step",
+        "policy enforcement plus tamper-evident transition recording"
+      ],
+      "non_overlap": [
+        "SOOS kernel/runtime contract rather than provider-neutral authorship-to-action semantics",
+        "does not directly model heterogeneous intelligence availability/consideration"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "sato-mjwt-2026",
+      "title": "The Mandate JWT (MJWT) for Agentic AI Systems",
+      "first_public_date": "2026-05-24",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/draft-sato-soos-mjwt/00/",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "authority bound to a specific resource instance, human principal, action scope and mission",
+        "delegation-chain traceability",
+        "governance binding beyond workload identity"
+      ],
+      "non_overlap": [
+        "JWT credential profile rather than a complete action/outcome semantic stack",
+        "does not model PoAI available intelligence"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "permit-receipts-2026",
+      "title": "Permit Receipts for Permit-Before-Commit Authorization of AI-Agent and Workload External Effects",
+      "first_public_date": "2026-06-04",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-lee-orprg-permit-receipts-00",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "effect-boundary interception before external commitment",
+        "canonical action digest and current-policy-state verification",
+        "fail-closed permit-before-commit decision",
+        "narrow claim that exact effect is not committed without machine-verifiable authorization evidence"
+      ],
+      "non_overlap": [
+        "permit/effect boundary rather than full decision provenance and authorship stack",
+        "does not define available intelligence or responsibility acceptance"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft offered for discussion",
+        "IETF IPR disclosure exists for related patent US12640933B1",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "auditable-llm-autonomy-2026",
+      "title": "Auditable LLM Autonomy for Operational Decision-Making: Big Data Evidence and Decision Traces",
+      "first_public_date": "2026-06-15",
+      "date_precision": "DAY",
+      "source_status": "PEER_REVIEWED_ARTICLE",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://www.techscience.com/cmc/v88n2/67675",
+      "cluster": "DECISION_EVIDENCE",
+      "overlap": [
+        "separate evidence, decision-trace and outcome planes",
+        "provenance and freshness constraints on decision evidence",
+        "action gating and post-decision outcome capture",
+        "explicit warning that recorded associations do not prove causality"
+      ],
+      "non_overlap": [
+        "review/assurance framework rather than typed authority and responsibility receipt protocol",
+        "evidence plane does not explicitly inventory unconsidered but available intelligence as a separate first-class set"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "review article rather than interoperability standard",
+        "operational LLM autonomy focus"
+      ]
+    },
+    {
+      "id": "scitt-rfc9943-2026",
+      "title": "RFC 9943: An Architecture for Trustworthy and Transparent Digital Supply Chains",
+      "first_public_date": "2026-06",
+      "date_precision": "MONTH",
+      "source_status": "IETF_CONSENSUS_RFC",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://www.rfc-editor.org/info/rfc9943/",
+      "cluster": "TRANSPARENCY_NON_EQUIVOCATION",
+      "overlap": [
+        "signed heterogeneous statements plus transparency-service receipts",
+        "auditable provenance and history",
+        "verifiable data structures for non-equivocation and statement registration"
+      ],
+      "non_overlap": [
+        "content-agnostic statement transparency rather than semantic action authorization",
+        "SCITT explicitly leaves many application meanings and trust decisions out of scope"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "IETF consensus Proposed Standard",
+        "scope is transparency of signed statements, not a complete agent governance lifecycle"
+      ]
+    },
+    {
+      "id": "provenance-not-prohibition-2026",
+      "title": "Provenance, Not Prohibition: A Framework for AI in Scholarly Publishing",
+      "first_public_date": "2026-06-29",
+      "date_precision": "DAY",
+      "source_status": "PEER_REVIEWED_ARTICLE",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13314381/",
+      "cluster": "HUMAN_AI_AUTHORSHIP",
+      "overlap": [
+        "provenance-centered governance of AI-assisted publishing",
+        "focus on tracing how claims, citations, analyses and interpretations were produced and verified",
+        "rejects simplistic permission/prohibition as the core transparency mechanism"
+      ],
+      "non_overlap": [
+        "publishing-policy framework rather than executable action-authority protocol",
+        "does not provide UU-AAP-style typed cross-layer receipt interfaces"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "scholarly publishing domain",
+        "does not claim general agent authorization"
+      ]
+    },
+    {
+      "id": "principal-verifier-binding-2026",
+      "title": "Security Principal and Verifier Binding for Agent Communication Protocols",
+      "first_public_date": "2026-07-04",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-bu-agentproto-security-principal-binding-00",
+      "cluster": "SEMANTIC_GUARDRAILS",
+      "overlap": [
+        "identity, user authority, delegation, session continuity and action evidence are explicitly separate claims",
+        "each claim has a distinct verifier, binding, freshness and failure behavior",
+        "warns that collapsing claims can imply more authority/accountability than can be verified"
+      ],
+      "non_overlap": [
+        "verifier-facing comparison discipline rather than full state-to-successor protocol",
+        "does not define PoAI availability or human-AI authorship"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "ep-aec-2026",
+      "title": "Authorization Evidence Chains: Composing Heterogeneous Agent-Action Evidence (EP-AEC)",
+      "first_public_date": "2026-07-06",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-schrock-ep-authorization-evidence-chain-04",
+      "cluster": "EVIDENCE_COMPOSITION",
+      "overlap": [
+        "composes heterogeneous identity, delegation, policy, permit, approval, transparency, capability and execution evidence",
+        "native validity is insufficient without exact material-action binding",
+        "SATISFIED is explicitly not universal authorization and not proof of execution/outcome",
+        "executor makes a separate local authorization/effect decision"
+      ],
+      "non_overlap": [
+        "authorization-evidence composition around a consequential action rather than a human-AI authorship and available-intelligence stack",
+        "does not define a generic assertion plus non-effect contract across every semantic lifecycle primitive"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "mission-bound-authorization-2026",
+      "title": "Mission-Bound Authorization for OAuth 2.0",
+      "first_public_date": "2026-07-06",
+      "date_precision": "DAY",
+      "source_status": "INDIVIDUAL_INTERNET_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://datatracker.ietf.org/doc/html/draft-mcguinness-oauth-mission-00",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "durable human-approved mission artifact binds agent authority to user-approved task",
+        "explicitly separates mission issuance from per-action runtime enforcement",
+        "documents approval-to-execution gap and need for a separate runtime enforcement layer"
+      ],
+      "non_overlap": [
+        "OAuth authorization issuance profile rather than full action gate",
+        "does not model PoAI resource availability and consideration"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "individual Internet-Draft",
+        "not IETF consensus"
+      ]
+    },
+    {
+      "id": "c2pa-non-equivocation-122",
+      "title": "C2PA non-equivocation and optional append-only anchor proposal",
+      "first_public_date": "2026-07-08",
+      "date_precision": "DAY",
+      "source_status": "PUBLIC_GITHUB_PROPOSAL",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://github.com/c2pa-org/specifications/issues/122",
+      "cluster": "TRANSPARENCY_NON_EQUIVOCATION",
+      "overlap": [
+        "signed C2PA manifest does not by itself prove it is the only manifest issued",
+        "append-only transparency and witnessed/anchored checkpoints discussed as separate evidence layers",
+        "signature/TSA evidence separated from non-equivocation and existence-time evidence"
+      ],
+      "non_overlap": [
+        "C2PA external proposal/discussion rather than adopted C2PA requirement",
+        "does not define general authority/responsibility semantics"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "open GitHub issue authored by an external participant",
+        "not C2PA specification adoption or maintainer endorsement"
+      ]
+    },
+    {
+      "id": "cawg-consent-2026",
+      "title": "CAWG Consent Assertion 1.0 Draft",
+      "first_public_date": "2026-07-12",
+      "date_precision": "DAY",
+      "source_status": "STANDARDS_BODY_DRAFT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://cawg.io/consent/1.0-draft/",
+      "cluster": "CONTENT_PROVENANCE_IDENTITY_CONSENT",
+      "overlap": [
+        "signed machine-readable reference to authoritative consent/permission source",
+        "consent represented separately from basic artifact provenance"
+      ],
+      "non_overlap": [
+        "asset-consent assertion rather than generic agent authority",
+        "does not define availability, consideration, coordination or action outcome"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "working draft subject to change",
+        "not final CAWG ratification"
+      ]
+    },
+    {
+      "id": "petmalu-ai-2026",
+      "title": "PETMALU-AI: A Reporting Checklist for Transparent and Accountable Generative AI-Assisted Research Writing",
+      "first_public_date": "2026-07-15",
+      "date_precision": "DAY",
+      "source_status": "PEER_REVIEWED_ARTICLE",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://doi.org/10.3390/educsci16071127",
+      "cluster": "HUMAN_AI_AUTHORSHIP",
+      "overlap": [
+        "structured disclosure of AI-assisted research work",
+        "human accountability, AI contribution, prompting, provenance, validation, limitations and reproducibility"
+      ],
+      "non_overlap": [
+        "reporting checklist rather than machine-verifiable action authority",
+        "does not define a state-to-successor receipt protocol"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "research-writing domain",
+        "reporting framework rather than runtime protocol"
+      ]
+    },
+    {
+      "id": "ncs-2026",
+      "title": "From Neural Intent to Cryptographic Authorization: Governing Agentic Workflows",
+      "first_public_date": "2026-07-17",
+      "date_precision": "DAY",
+      "source_status": "PREPRINT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://arxiv.org/abs/2607.15596",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "LLM/planner has no execution authority",
+        "deterministic controller releases exactly one authorized instruction at a time",
+        "tool parameters are strictly bound to signed instruction payload",
+        "mismatched or out-of-order calls fail closed"
+      ],
+      "non_overlap": [
+        "cryptographic workflow control rather than broad evidence/authority/responsibility semantics",
+        "does not model human-AI authorship or PoAI available intelligence"
+      ],
+      "novelty_effect": "DEFEATS_BROAD_CLAIM",
+      "status_limitations": [
+        "arXiv preprint",
+        "not a standards consensus artifact"
+      ]
+    },
+    {
+      "id": "cva-2026",
+      "title": "Toward cryptographically verifiable authorization for autonomous AI agents",
+      "first_public_date": "2026-07-23",
+      "date_precision": "DAY",
+      "source_status": "PREPRINT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://arxiv.org/abs/2607.21325",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "authorization evidence is distinct from identity, delegation, execution and audit evidence",
+        "binds principal, concrete request, execution context and policy satisfaction",
+        "formally identifies identity binding, authorization-request binding and runtime execution binding as separate properties"
+      ],
+      "non_overlap": [
+        "cryptographic authorization relation rather than end-to-end governance lifecycle",
+        "does not define PoAI availability/consideration semantics"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "arXiv preprint",
+        "preliminary model and proof of concept rather than mature standard"
+      ]
+    },
+    {
+      "id": "certified-amnesia-2026",
+      "title": "Certified Amnesia: A Decision-Evidence Protocol for Provable Context Exclusion in AI Agents",
+      "first_public_date": "2026-07-29",
+      "date_precision": "DAY",
+      "source_status": "PREPRINT",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://www.researchgate.net/publication/410951333_Certified_Amnesia_A_Decision-Evidence_Protocol_for_Provable_Context_Exclusion_in_AI_Agents",
+      "cluster": "DECISION_EVIDENCE",
+      "overlap": [
+        "decision-time context evidence bound to proposed action and current policy state",
+        "pre-action certificate plus separate gateway execution receipt",
+        "execution binding separated from exclusion assurance and explicit coverage boundary"
+      ],
+      "non_overlap": [
+        "context-exclusion assurance rather than comprehensive available-intelligence inventory",
+        "does not define human-AI authorship or full UU-AAP lifecycle"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "preprint surfaced through ResearchGate",
+        "not peer reviewed or consensus standard"
+      ]
+    },
+    {
+      "id": "authorship-after-generative-ai-2026",
+      "title": "Authorship After Generative AI: Distributed Creativity and Relational Responsibility",
+      "first_public_date": "2026-08-12",
+      "date_precision": "DAY",
+      "source_status": "PEER_REVIEWED_ARTICLE",
+      "temporal_class": "PUBLIC_PREDECESSOR",
+      "url": "https://link.springer.com/article/10.1007/s13347-026-01170-w",
+      "cluster": "HUMAN_AI_AUTHORSHIP",
+      "overlap": [
+        "authorship treated as relational/distributed rather than simple human-purity test",
+        "human answerability and responsibility remain central despite machine contribution"
+      ],
+      "non_overlap": [
+        "philosophical authorship analysis rather than machine-readable provenance/action protocol",
+        "does not define exact authority or execution receipts"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "peer-reviewed philosophy/technology article",
+        "not a technical conformance specification"
+      ]
+    },
+    {
+      "id": "cawg-identity-1.3-2026",
+      "title": "CAWG Identity Assertion 1.3",
+      "first_public_date": "2026-08-17",
+      "date_precision": "DAY",
+      "source_status": "STANDARDS_BODY_RATIFIED",
+      "temporal_class": "PARALLEL_WINDOW",
+      "url": "https://cawg.io/identity/1.3/",
+      "cluster": "CONTENT_PROVENANCE_IDENTITY_CONSENT",
+      "overlap": [
+        "credential holder proves control over a digital identity",
+        "actor role in asset lifecycle is represented as a distinct assertion surface"
+      ],
+      "non_overlap": [
+        "identity/role proof does not itself define decision authority or action permission",
+        "no PoAI available-intelligence model"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "DIF-ratified CAWG specification",
+        "asset identity scope rather than general agent governance"
+      ]
+    },
+    {
+      "id": "ethical-llm-assisted-research-2026",
+      "title": "Ethical LLM-Assisted Research: A Framework for Responsible Delegation, Verification, and Epistemic Value",
+      "first_public_date": "2026-08-24",
+      "date_precision": "DAY",
+      "source_status": "PREPRINT",
+      "temporal_class": "PARALLEL_WINDOW",
+      "url": "https://arxiv.org/abs/2608.23644",
+      "cluster": "HUMAN_AI_AUTHORSHIP",
+      "overlap": [
+        "separates contribution origin, verification, responsibility, human ownership and epistemic outcome",
+        "proposes structured epistemic audit for delegated LLM-assisted research"
+      ],
+      "non_overlap": [
+        "research-authorship framework rather than action-gate protocol",
+        "does not establish influence from or on UU-AAP because it appeared in the same narrow public window"
+      ],
+      "novelty_effect": "MATERIALLY_NARROWS_CLAIM",
+      "status_limitations": [
+        "arXiv preprint",
+        "same-day public window as UU-AAP stable-core/gateway issues prevents causal inference from chronology alone"
+      ]
+    },
+    {
+      "id": "agentminder-2026",
+      "title": "Broadcom AgentMinder",
+      "first_public_date": "2026-08-31",
+      "date_precision": "DAY",
+      "source_status": "INDUSTRY_ANNOUNCEMENT",
+      "temporal_class": "POST_PUBLICATION_CONVERGENCE",
+      "url": "https://investors.broadcom.com/news-releases/news-release-details/broadcom-unveils-agentminder-enterprise-solution-ai-agent",
+      "cluster": "AGENT_AUTHORIZATION",
+      "overlap": [
+        "independently verifies agent identity and each action before enterprise resource access",
+        "checks declared mission, intent, context and current risk at runtime"
+      ],
+      "non_overlap": [
+        "commercial product announcement rather than public protocol semantics",
+        "postdates public UU-AAP/PoAI anchors and therefore is convergence evidence only in this audit"
+      ],
+      "novelty_effect": "POST_PUBLICATION_CONVERGENCE_ONLY",
+      "status_limitations": [
+        "industry announcement",
+        "no inference of influence or derivation is made"
+      ]
+    },
+    {
+      "id": "stored-is-not-supported-2026",
+      "title": "Stored Is Not Supported: Typed Provenance and Assertion Guardrails for Persistent AI Agents",
+      "first_public_date": "2026-09-02",
+      "date_precision": "DAY",
+      "source_status": "PREPRINT",
+      "temporal_class": "POST_PUBLICATION_CONVERGENCE",
+      "url": "https://arxiv.org/abs/2609.02127",
+      "cluster": "SEMANTIC_GUARDRAILS",
+      "overlap": [
+        "persistence changes availability but not epistemic standing",
+        "typed provenance separates origin, dependency lineage, epistemic role, validity and disclosure scope",
+        "semantic assertions are mediated against evidence before release"
+      ],
+      "non_overlap": [
+        "persistent-memory assertion boundedness rather than general decision/action authority",
+        "postdates public Matawaka anchors"
+      ],
+      "novelty_effect": "POST_PUBLICATION_CONVERGENCE_ONLY",
+      "status_limitations": [
+        "arXiv preprint",
+        "chronology supports only post-publication convergence, not influence"
+      ]
+    }
+  ]
+}
