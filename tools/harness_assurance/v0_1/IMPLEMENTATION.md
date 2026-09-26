@@ -1,3 +1,20 @@
+# Current HA-1 checkpoint — bounded self-review R1
+
+**Status: LOCAL_REVIEW_R1_FIXED_REPRODUCED_EXTERNAL_REVIEW_PENDING.**
+See [REVIEW-R1.md](REVIEW-R1.md) and [review-r1.json](review-r1.json) for the current
+findings, narrowed field semantics, 114-test reproduction and source identities.
+The predecessor result below and `local-checks.json` remain historical observations.
+
+Current full test command (the historical test_reducer.py command alone runs only 77):
+
+```bash
+python -B -m unittest discover -s tools/harness_assurance/v0_1 -p 'test_*.py' -v
+python -B tools/harness_assurance/v0_1/check_mutations.py
+python -B tools/harness_assurance/v0_1/check_review_mutations.py
+```
+
+## Historical initial HA-1 implementation contract
+
 # HA-1 offline fixture profile — bounded implementation contract
 
 Status: LOCAL_CANDIDATE_40_CASES_CHECKED_REVIEW_PENDING. Tracking #1012, Draft PR #1013.

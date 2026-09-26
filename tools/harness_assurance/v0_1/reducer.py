@@ -11,6 +11,11 @@ BAD = 'WORKFLOW_REQUIREMENTS_UNSATISFIED'
 UNKNOWN = 'INSUFFICIENT_EVIDENCE'
 S, U, I, N = 'SATISFIED', 'UNSATISFIED', UNKNOWN, 'NOT_APPLICABLE'
 MAX_BYTES = 2_000_000
+# Closed vocabulary for normalized fixture observations, not a code classifier.
+SENSITIVE_DOMAINS = {'authz', 'authn', 'crypto', 'secrets', 'payment', 'billing',
+                     'migration', 'external-mutation', 'public-api',
+                     'infrastructure', 'control-policy'}
+CHANGE_DOMAINS = SENSITIVE_DOMAINS | {'ordinary-code'}
 DEPS = {'contract_frozen': [], 'contract_reviewed': ['contract_frozen'],
         'expected_red_observed': ['contract_reviewed'],
         'implementation_recorded': ['expected_red_observed'],
@@ -30,13 +35,15 @@ def need(ok, code='shape_invalid'):
 
 
 def _json_tree(value, depth=0, count=None):
-    count = [0] if count is None else count
+    count = [0, 0] if count is None else count
     count[0] += 1
     need(depth <= 32 and count[0] <= 50_000, 'input_limit')
     if type(value) is dict:
         need(len(value) <= 2048, 'input_limit')
         for k, v in value.items():
             need(type(k) is str and len(k) <= 128, 'key_invalid')
+            count[1] += len(k.encode('utf-8'))
+            need(count[1] <= MAX_BYTES, 'input_limit')
             _json_tree(v, depth + 1, count)
     elif type(value) is list:
         need(len(value) <= 2048, 'input_limit')
@@ -44,7 +51,8 @@ def _json_tree(value, depth=0, count=None):
             _json_tree(v, depth + 1, count)
     elif type(value) is str:
         need(len(value) <= 65536, 'input_limit')
-        value.encode('utf-8')
+        count[1] += len(value.encode('utf-8'))
+        need(count[1] <= MAX_BYTES, 'input_limit')
     elif type(value) is int:
         need(abs(value) <= 2**53 - 1, 'integer_range')
     else:
@@ -72,8 +80,9 @@ def strict_loads(text):
         return obj
     def invalid_number(_):
         raise InvalidInput('non_integer_number')
-    need(type(text) is str and len(text.encode('utf-8')) <= MAX_BYTES, 'input_limit')
+    need(type(text) is str and len(text) <= MAX_BYTES, 'input_limit')
     try:
+        need(len(text.encode('utf-8')) <= MAX_BYTES, 'input_limit')
         value = json.loads(text, object_pairs_hook=pairs, parse_float=invalid_number, parse_constant=invalid_number)
         _json_tree(value)
         return value
@@ -164,7 +173,20 @@ def _reduce(p, inventory, b, t):
     need(type(b['records']) is list and len(b['records']) <= 128, 'record_limit')
     if inventory is not None: shape(inventory, INVENTORY)
     need(p['profile'] == PROFILE and t['profile'] == 'caller-pinned-synthetic/v0.1', 'unsupported_profile')
-    need(p['minimum_tier'] in (1, 2, 3) and p['max_heartbeat_age'] >= 0, 'policy_range')
+    need(p['minimum_tier'] in (1, 2, 3) and p['max_heartbeat_age'] >= 0 and
+         bool(p['expected_red_reason'].strip()), 'policy_range')
+    # A pinned successor declaration still cannot be its own predecessor or cycle.
+    successors = t['contract_successors']
+    need(all(re.fullmatch(r'sha256:[0-9a-f]{64}', h)
+             for pair in successors.items() for h in pair), 'contract_lineage_invalid')
+    visited = set()
+    for start in successors:
+        current, active = start, set()
+        while current in successors and current not in visited:
+            need(current not in active, 'contract_lineage_invalid')
+            active.add(current)
+            current = successors[current]
+        visited.update(active)
     need(t['evaluation_tick'] >= 0 and b['anchors']['session_epoch'] >= 0, 'anchor_range')
     need(bool(p['required_mutations']) and set(p['required_mutations'].values()) == {'ALLOW', 'REJECT'}, 'mutation_policy_empty_or_one_sided')
     a = b['anchors']; rows = set(); current_requirement = 'profile'; missing_artifacts = set(); missing_invocations = set()
@@ -267,7 +289,13 @@ def _reduce(p, inventory, b, t):
             prev = admitted[dep]
             check(r['prerequisite_refs'].get(dep) == digest(prev), 'ordering', 'prerequisite_digest_mismatch')
             check(prev['sequence_ref']['ordinal'] < r['sequence_ref']['ordinal'], 'ordering', 'causal_order_mismatch')
-        if key != 'expected_red_observed': check(r['data']['status'] == 'PASS', 'stage_outcome', 'stage_not_passed')
+        if key != 'expected_red_observed':
+            d = r['data']
+            check(d['status'] == 'PASS', 'stage_outcome', 'stage_not_passed')
+            if d['status'] == 'PASS':
+                check(d['exit_code'] == 0 and d['diagnostic_class'] == 'NONE' and
+                      d['failed'] == 0 and not d['failed_ids'] and d['skipped'] == 0,
+                      'stage_outcome', 'stage_success_contradiction')
     red, green = admitted.get('expected_red_observed'), admitted.get('green_observed')
     for r in (red, green):
         if r is None: continue
@@ -282,7 +310,17 @@ def _reduce(p, inventory, b, t):
         check(d['status'] == 'RED' and d['diagnostic_class'] == 'ASSERTION_FAILURE' and d['failed'] > 0 and d['exit_code'] != 0 and d['reason'] == p['expected_red_reason'], 'test_observation', 'red_reason_mismatch')
     current_requirement = 'green_observed'
     if green: check(green['data']['failed'] == 0 and green['data']['exit_code'] == 0 and green['data']['diagnostic_class'] == 'NONE', 'test_observation', 'green_not_established')
-    if red and green: check(red['data']['discovered_ids'] == green['data']['discovered_ids'], 'test_observation', 'test_identity_drift')
+    if red and green: check(set(red['data']['discovered_ids']) == set(green['data']['discovered_ids']), 'test_observation', 'test_identity_drift')
+    # Bindings/order alone do not satisfy a prerequisite whose own assessment failed.
+    # Propagate insufficiency in fixed topological order, independent of input order.
+    # This does not assert that an unobserved predecessor physically never happened.
+    for key in (*DEPS, 'mobile_smoke'):
+        if key not in graph or not graph[key]['applicable']:
+            continue
+        current_requirement = key
+        for dep in graph[key]['requires']:
+            if any(k == dep and status in (U, I) for k, _, status, _ in rows):
+                add('process_coverage', I, 'prerequisite_not_satisfied')
     current_requirement = 'controls'
     cr = admitted.get('controls')
     if cr is None: add('liveness_observation', I, 'control_observation_missing')
@@ -291,6 +329,7 @@ def _reduce(p, inventory, b, t):
         check(d['heartbeat_revision'] == cr['control_revision'], 'liveness_observation', 'liveness_wrong_revision', I)
         check(d['heartbeat_status'] == 'PASS' and 0 <= t['evaluation_tick'] - d['heartbeat_tick'] <= p['max_heartbeat_age'], 'liveness_observation', 'liveness_not_established', I)
         check(not (d['failure_mode'] == 'OPEN' and d['effect_after_failure']), 'effect_boundary', 'authority_fail_open')
+        check(not d['effect_after_failure'], 'effect_boundary', 'effect_after_control_failure')
         need(len({m['id'] for m in d['mutations']}) == len(d['mutations']), 'duplicate_mutation')
         check(set(p['required_mutations']) <= {m['id'] for m in d['mutations']}, 'mutation_sensitivity', 'mutation_evidence_missing', I)
         for m in d['mutations']:
@@ -305,13 +344,19 @@ def _reduce(p, inventory, b, t):
         need(d['tier'] in (1, 2, 3) and all(d[k] >= 0 for k in ('budget_used', 'budget_limit', 'unresolved_critical', 'retry_count')), 'context_range')
         need(0 <= d['cache_share_ppm'] <= 1_000_000, 'context_range')
         check(not d['handover_permit_claim'], 'session', 'handover_authority_escalation')
-        check(not (d['human_stop'] and d['restarted']), 'session', 'human_stop_bypassed')
+        check(not (d['human_stop'] and (d['restarted'] or d['advanced'] or d['completion_claim'])), 'session', 'human_stop_bypassed')
+        if d['human_stop']: add('session', I, 'human_stop_latched')
+        if not d['completion_claim']: add('process_coverage', I, 'completion_not_established')
         check(not (d['budget_used'] > d['budget_limit'] and d['completion_claim']), 'budget', 'budget_success_promotion')
         if d['budget_used'] > d['budget_limit']: add('budget', I, 'budget_incomplete')
-        check(not (d['blocked_dependencies'] and d['advanced']), 'dependencies', 'blocked_dependency_ignored')
+        check(not (d['blocked_dependencies'] and (d['advanced'] or d['completion_claim'])), 'dependencies', 'blocked_dependency_ignored')
+        if d['blocked_dependencies']: add('dependencies', I, 'dependency_unresolved')
         check(not (d['environment_status'] == 'FAILED' and d['completion_claim']), 'environment', 'environment_failure_promotion')
         if d['environment_status'] != 'OK': add('environment', I, 'environment_evidence_missing')
-        sensitive = bool(set(d['change_domains']) & {'authz', 'crypto', 'secrets', 'payment', 'migration', 'external-mutation'})
+        domains = set(d['change_domains'])
+        if not domains or not domains <= CHANGE_DOMAINS:
+            add('risk', I, 'risk_domain_unestablished')
+        sensitive = bool(domains & SENSITIVE_DOMAINS)
         check(d['tier'] >= max(p['minimum_tier'], 3 if sensitive else 1), 'risk', 'sensitive_change_misrouted')
         if d['unresolved_critical']: add('review', I, 'critical_triage_unresolved')
         operators = [t['reviewer_operators'].get(v) for v in d['reviewers']]
@@ -324,12 +369,18 @@ def _reduce(p, inventory, b, t):
         if d['minimum_cost_claim']: add('metrics', I, 'cost_not_established')
         check(not (d['outcome'] == 'UNKNOWN' and (d['retry_count'] or d['success_claim'])), 'outcome_observation', 'unknown_outcome_promoted')
         if d['outcome'] == 'UNKNOWN': add('outcome_observation', I, 'outcome_unresolved')
+        check(not (d['success_claim'] and d['outcome'] in ('FAILED', 'NOT_PERFORMED')),
+              'outcome_observation', 'outcome_success_contradiction')
+        if d['outcome'] == 'FAILED':
+            check(not d['completion_claim'], 'outcome_observation', 'outcome_failure_promotion')
+            add('outcome_observation', I, 'outcome_failure_unresolved')
         check(d['authority_source'] != 'OBSERVER_REPORT', 'effect_boundary', 'observer_authority_escalation')
         check(not any(c['protected'] and c['id'] in d['removed_controls'] for c in controls.values()), 'protective_coverage', 'protective_requirement_pruned')
         if d['previous_contract'] is not None or a['contract_digest'] in t['contract_successors']:
             admitted_revision = (d['previous_contract'] is not None and
                 t['contract_successors'].get(a['contract_digest']) == d['previous_contract'] and
-                d['previous_contract'] in available and bool(d['revision_reason']))
+                d['previous_contract'] in available and
+                bool(d['revision_reason'] and d['revision_reason'].strip()))
             revalidated = all(v['contract_digest'] == a['contract_digest'] for v in admitted.values()) and all(k in admitted for k in DEPS) and not any(status in (U, I) for _, _, status, _ in rows)
             if admitted_revision and revalidated: add('contract_revision', S, 'revised_contract_revalidated')
             else: add('contract_revision', I, 'contract_revision_not_admitted_or_revalidated')
