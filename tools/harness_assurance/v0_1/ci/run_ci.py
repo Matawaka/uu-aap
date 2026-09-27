@@ -58,6 +58,52 @@ def verify_sources(root: Path, pins: dict[str, str]) -> None:
         require(sha256(candidate) == expected, 'pinned_source_changed')
 
 
+
+def verify_import_surface(root: Path, pins: dict[str, str]) -> list[str]:
+    """Admit the fixed package's Python namespace BEFORE importing any tests.
+
+    A source pin inventory is not an executable-entrypoint inventory: unittest
+    discovery imports even modules that contribute zero test methods. Keep
+    unpinned source, bytecode, native extensions and symlinked trees out of the
+    two import roots used below. This is not a sandbox against an edited runner,
+    a malicious pin manifest, interpreter, or concurrent checkout mutation.
+    """
+    package = root / 'tools/harness_assurance/v0_1'
+    require(package.is_dir() and not package.is_symlink(), 'python_namespace_missing')
+    expected = set()
+    for relative in pins:
+        path = Path(relative)
+        if path.suffix == '.py' and path.is_relative_to(Path('tools/harness_assurance/v0_1')):
+            expected.add(path.as_posix())
+    require(bool(expected), 'python_source_inventory_empty')
+    observed = set()
+    for number, entry in enumerate(package.rglob('*'), 1):
+        require(number <= 4096, 'python_namespace_limit')
+        require(not entry.is_symlink(), 'python_namespace_symlink')
+        if not entry.is_file():
+            continue
+        suffix = entry.suffix.lower()
+        require(suffix not in {'.pyc', '.pyo', '.so', '.pyd', '.dll'},
+                'python_namespace_binary')
+        if suffix == '.py':
+            observed.add(entry.relative_to(root).as_posix())
+    require(observed == expected, 'python_source_inventory_mismatch')
+    return sorted(observed)
+
+
+def load_ha1_suite(manifest: dict) -> unittest.TestSuite:
+    """Validate the import surface, then load ONLY pinned named test modules."""
+    verify_sources(ROOT, manifest['source_files'])
+    verify_import_surface(ROOT, manifest['source_files'])
+    names = sorted({test_id.split('.', 1)[0] for test_id in manifest['test_ids']})
+    require(bool(names), 'empty_test_inventory')
+    for name in names:
+        require(re.fullmatch(r'test_[a-zA-Z0-9_]+', name) is not None,
+                'test_module_name_invalid')
+        relative = (PACKAGE / (name + '.py')).relative_to(ROOT).as_posix()
+        require(relative in manifest['source_files'], 'test_module_not_pinned')
+    return unittest.defaultTestLoader.loadTestsFromNames(names)
+
 def flatten(suite: unittest.TestSuite):
     for test in suite:
         if isinstance(test, unittest.TestSuite):
@@ -143,17 +189,20 @@ def main() -> int:
                               'Hosted execution is not an independent reviewer or producer attestation.',
                               'No repository-wide or live harness qualification is claimed.']}
     try:
+        require(sys.flags.isolated == 1, 'isolated_python_required')
         require(re.fullmatch('[0-9a-f]{40}', args.expected_source) is not None, 'invalid_source_sha')
         source = git('rev-parse', 'HEAD')
         require(source == args.expected_source, 'checkout_source_mismatch')
         require(not git('status', '--porcelain', '--untracked-files=all'), 'checkout_not_clean')
         report.update(source_sha=source, source_tree=git('rev-parse', 'HEAD^{tree}'),
                       python=sys.version, platform=sys.platform,
-                      hash_seed=os.environ.get('PYTHONHASHSEED', 'unset'),
+                      hash_seed='RANDOMIZED_ISOLATED',
                       run_id=os.environ.get('GITHUB_RUN_ID'), run_attempt=os.environ.get('GITHUB_RUN_ATTEMPT'))
         manifest = json.loads((HERE / 'manifest.json').read_text(encoding='utf-8'))
         require(manifest['schema'] == 'matawaka.ha1.ci-manifest/v0.1', 'unsupported_manifest')
         verify_sources(ROOT, manifest['source_files'])
+        report['import_surface'] = verify_import_surface(ROOT, manifest['source_files'])
+        report['isolated_python'] = True
         report['source_checkpoint'] = manifest['source_checkpoint']
         report['source_pins'] = manifest['source_files']
         report['ci_source_hashes'] = {str(p.relative_to(ROOT)): sha256(p) for p in [
@@ -161,8 +210,8 @@ def main() -> int:
             ROOT / '.github/workflows/harness-assurance-v0.1.yml']}
         sys.path.insert(0, str(PACKAGE))
         sys.path.insert(0, str(HERE))
-        # These imports execute only previously hash-checked repository modules.
-        suite = unittest.defaultTestLoader.discover(str(PACKAGE), pattern='test_*.py')
+        # No glob discovery: it would execute unpinned zero-test modules.
+        suite = load_ha1_suite(manifest)
         report['checks']['ha1_tests'] = execute_suite(suite, manifest['test_ids'], output, 'ha1-tests')
         ci_suite = unittest.defaultTestLoader.loadTestsFromName('test_ci_gate')
         report['checks']['ci_gate_tests'] = execute_suite(ci_suite, manifest['ci_test_ids'], output, 'ci-gate-tests')
@@ -182,6 +231,7 @@ def main() -> int:
         report['checks']['historical_design'] = {'result': design['result'], 'mutations_rejected': 10,
                                                 'scope': 'STATIC_DESIGN_ONLY'}
         verify_sources(ROOT, manifest['source_files'])
+        verify_import_surface(ROOT, manifest['source_files'])
         require(not git('status', '--porcelain', '--untracked-files=all'), 'checkout_changed')
         report['status'] = 'CI_CHECKS_PASS'
     except Exception as error:

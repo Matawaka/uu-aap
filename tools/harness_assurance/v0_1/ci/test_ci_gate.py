@@ -6,8 +6,12 @@ import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
+from unittest import mock
 
-from run_ci import CheckFailure, check_inventory, check_result, check_mutants, verify_sources
+import run_ci
+
+from run_ci import (CheckFailure, check_inventory, check_result, check_mutants,
+                    verify_sources, verify_import_surface, load_ha1_suite)
 
 
 def good_result():
@@ -109,6 +113,116 @@ class SourceChecks(unittest.TestCase):
         with self.assertRaises(CheckFailure): verify_sources(self.root, {'link.py': self.pins['source.py']})
     def test_empty_sources_fail(self):
         with self.assertRaises(CheckFailure): verify_sources(self.root, {})
+
+
+class ImportSurfaceChecks(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name).resolve()
+        self.package = self.root / 'tools/harness_assurance/v0_1'
+        self.package.mkdir(parents=True)
+        (self.package / 'ci').mkdir()
+        self.relative = 'tools/harness_assurance/v0_1/test_known.py'
+        (self.root / self.relative).write_bytes(b'# known test entrypoint\n')
+        self.pins = {self.relative: hashlib.sha256(b'# known test entrypoint\n').hexdigest()}
+
+    def test_exact_python_namespace_passes(self):
+        self.assertEqual(verify_import_surface(self.root, self.pins), [self.relative])
+
+    def test_zero_test_unpinned_module_refused(self):
+        (self.package / 'test_extra.py').write_text('raise AssertionError("must not import")\n')
+        with self.assertRaisesRegex(CheckFailure, 'python_source_inventory_mismatch'):
+            verify_import_surface(self.root, self.pins)
+
+    def test_shadow_module_in_ci_refused(self):
+        (self.package / 'ci/reducer.py').write_text('# unpinned shadow\n')
+        with self.assertRaisesRegex(CheckFailure, 'python_source_inventory_mismatch'):
+            verify_import_surface(self.root, self.pins)
+
+    def test_nested_unpinned_package_refused(self):
+        (self.package / 'nested').mkdir()
+        (self.package / 'nested/__init__.py').write_text('# unpinned import hook\n')
+        with self.assertRaisesRegex(CheckFailure, 'python_source_inventory_mismatch'):
+            verify_import_surface(self.root, self.pins)
+
+    def test_missing_python_source_refused(self):
+        (self.root / self.relative).unlink()
+        with self.assertRaisesRegex(CheckFailure, 'python_source_inventory_mismatch'):
+            verify_import_surface(self.root, self.pins)
+
+    def test_symlink_source_refused(self):
+        (self.package / 'test_link.py').symlink_to(self.root / self.relative)
+        with self.assertRaisesRegex(CheckFailure, 'python_namespace_symlink'):
+            verify_import_surface(self.root, self.pins)
+
+    def test_symlink_directory_refused(self):
+        (self.package / 'linked').symlink_to(self.root, target_is_directory=True)
+        with self.assertRaisesRegex(CheckFailure, 'python_namespace_symlink'):
+            verify_import_surface(self.root, self.pins)
+
+    def test_cached_bytecode_refused(self):
+        cache = self.package / '__pycache__'
+        cache.mkdir()
+        (cache / 'test_known.cpython-313.pyc').write_bytes(b'not executable probe')
+        with self.assertRaisesRegex(CheckFailure, 'python_namespace_binary'):
+            verify_import_surface(self.root, self.pins)
+
+    def test_native_extension_refused(self):
+        for suffix in ('.so', '.pyd', '.dll', '.pyo'):
+            with self.subTest(suffix=suffix):
+                p = self.package / ('test_known' + suffix)
+                p.write_bytes(b'not executable probe')
+                try:
+                    with self.assertRaisesRegex(CheckFailure, 'python_namespace_binary'):
+                        verify_import_surface(self.root, self.pins)
+                finally:
+                    p.unlink()
+
+    def test_documentation_is_not_an_import_entrypoint(self):
+        (self.package / 'review.md').write_text('Non-executable review note.\n')
+        self.assertEqual(verify_import_surface(self.root, self.pins), [self.relative])
+
+    def test_rejection_happens_before_module_loader(self):
+        (self.package / 'test_extra.py').write_text('raise AssertionError("must not import")\n')
+        manifest = {'source_files': self.pins, 'test_ids': ['test_known.C.test_a']}
+        with mock.patch.object(run_ci, 'ROOT', self.root), \
+             mock.patch.object(run_ci, 'PACKAGE', self.package), \
+             mock.patch.object(unittest.defaultTestLoader, 'loadTestsFromNames') as loader:
+            with self.assertRaisesRegex(CheckFailure, 'python_source_inventory_mismatch'):
+                load_ha1_suite(manifest)
+            loader.assert_not_called()
+
+    def test_only_named_pinned_modules_are_loaded(self):
+        manifest = {'source_files': self.pins, 'test_ids': ['test_known.C.test_a', 'test_known.C.test_b']}
+        with mock.patch.object(run_ci, 'ROOT', self.root), \
+             mock.patch.object(run_ci, 'PACKAGE', self.package), \
+             mock.patch.object(unittest.defaultTestLoader, 'loadTestsFromNames', return_value='suite') as loader:
+            self.assertEqual(load_ha1_suite(manifest), 'suite')
+            loader.assert_called_once_with(['test_known'])
+
+    def test_unknown_requested_module_refused(self):
+        manifest = {'source_files': self.pins, 'test_ids': ['test_unpinned.C.test_a']}
+        with mock.patch.object(run_ci, 'ROOT', self.root), \
+             mock.patch.object(run_ci, 'PACKAGE', self.package), \
+             mock.patch.object(unittest.defaultTestLoader, 'loadTestsFromNames') as loader:
+            with self.assertRaisesRegex(CheckFailure, 'test_module_not_pinned'):
+                load_ha1_suite(manifest)
+            loader.assert_not_called()
+
+    def test_empty_requested_modules_refused(self):
+        manifest = {'source_files': self.pins, 'test_ids': []}
+        with mock.patch.object(run_ci, 'ROOT', self.root), \
+             mock.patch.object(run_ci, 'PACKAGE', self.package):
+            with self.assertRaisesRegex(CheckFailure, 'empty_test_inventory'):
+                load_ha1_suite(manifest)
+
+    def test_module_path_syntax_refused(self):
+        manifest = {'source_files': self.pins, 'test_ids': ['../test_known.C.test_a']}
+        with mock.patch.object(run_ci, 'ROOT', self.root), \
+             mock.patch.object(run_ci, 'PACKAGE', self.package):
+            with self.assertRaisesRegex(CheckFailure, 'test_module_name_invalid'):
+                load_ha1_suite(manifest)
 
 
 if __name__ == '__main__': unittest.main(verbosity=2)

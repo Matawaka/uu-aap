@@ -1,7 +1,7 @@
 {
   "schema": "matawaka.ha1.ci-manifest/v0.1",
   "source_checkpoint": "d294fe12ebf6b53820fc15816b379bcf26572189",
-  "profile": "R1_UNCHANGED_CODE_EXACT_TEST_INVENTORY",
+  "profile": "R1_REDUCER_UNCHANGED_CI_R2_IMPORT_BOUNDARY",
   "source_files": {
     "docs/design/harness-assurance/v0.1/DESIGN.md": "fbdd604246907e47909d277cd546a679fbdeb16280290cf10005c9ff9f6072c2",
     "docs/design/harness-assurance/v0.1/design-contract.json": "d7569d97f0b81361100652e40757f1d191dc1fc22554d83db03fb81c7ff3614f",
@@ -14,7 +14,9 @@
     "tools/harness_assurance/v0_1/frozen-cases.json": "4859cb0cfdd1746eb52a0cb645d7083a8c795084d80878efcbcc5796b5d51367",
     "tools/harness_assurance/v0_1/reducer.py": "209b645c4b98a6f636ad04832308da7b47efef050dd556d1432c018b3a23e3da",
     "tools/harness_assurance/v0_1/test_adversarial.py": "1c56f0cbedebcff8377683d9f51fa883b3ab78cc158f459c90f7f1104ae43c83",
-    "tools/harness_assurance/v0_1/test_reducer.py": "9e13be5ca30be0bec8b272c221daea29fe572cac33bf71ee5273359986a2c574"
+    "tools/harness_assurance/v0_1/test_reducer.py": "9e13be5ca30be0bec8b272c221daea29fe572cac33bf71ee5273359986a2c574",
+    "tools/harness_assurance/v0_1/ci/run_ci.py": "e850f38a6f147a508cc348177ee1946aafb1b2fc6c5f66834f061766911b8dd8",
+    "tools/harness_assurance/v0_1/ci/test_ci_gate.py": "ad848cde86f88d2c7f70a93ab3e6832a9c3039dfc4adf411d57fb4168e399f8f"
   },
   "test_ids": [
     "test_adversarial.LifecycleReview.test_benign_no_effect_workflow",
@@ -152,6 +154,21 @@
     "test_order_is_identity"
   ],
   "ci_test_ids": [
+    "test_ci_gate.ImportSurfaceChecks.test_cached_bytecode_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_documentation_is_not_an_import_entrypoint",
+    "test_ci_gate.ImportSurfaceChecks.test_empty_requested_modules_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_exact_python_namespace_passes",
+    "test_ci_gate.ImportSurfaceChecks.test_missing_python_source_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_module_path_syntax_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_native_extension_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_nested_unpinned_package_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_only_named_pinned_modules_are_loaded",
+    "test_ci_gate.ImportSurfaceChecks.test_rejection_happens_before_module_loader",
+    "test_ci_gate.ImportSurfaceChecks.test_shadow_module_in_ci_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_symlink_directory_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_symlink_source_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_unknown_requested_module_refused",
+    "test_ci_gate.ImportSurfaceChecks.test_zero_test_unpinned_module_refused",
     "test_ci_gate.InventoryChecks.test_duplicate_actual_fails",
     "test_ci_gate.InventoryChecks.test_duplicate_expected_fails",
     "test_ci_gate.InventoryChecks.test_empty_inventory_fails",

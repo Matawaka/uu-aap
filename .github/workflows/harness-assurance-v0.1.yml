@@ -50,7 +50,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python -B tools/harness_assurance/v0_1/ci/run_ci.py \
+          python -I -B tools/harness_assurance/v0_1/ci/run_ci.py \
             --expected-source "$EXPECTED_SOURCE_SHA" \
             --output "$RUNNER_TEMP/ha1-ci-${{ matrix.python }}"
       - name: Retain bounded execution evidence, including failure reports

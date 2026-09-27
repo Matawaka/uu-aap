@@ -1,3 +1,17 @@
+# Current CI checkpoint: import-boundary correction R2
+
+The current wrapper requires **`python -I -B`**. See [REVIEW-R2.md](REVIEW-R2.md)
+and [review-r2.json](review-r2.json). Fourteen source pins include the two CI Python
+files; 114 unchanged HA-1 methods plus 46 wrapper methods are required. Test source
+admission occurs before imports; only pinned named test modules are loaded.
+The exact new commit and hosted run are recorded in the PR after observation.
+Independent review remains pending. No merge or HA-2 advancement follows.
+
+## Historical pre-R2 integration checkpoint
+
+The remainder preserves the earlier 12-pin/31-wrapper-test result and commands;
+those non-isolated commands describe the predecessor, not the current runner.
+
 # HA-1 CI execution boundary (2026-09-27)
 
 **Change class:** separately scoped test integration, not another reducer revision.
