@@ -1,0 +1,63 @@
+name: Harness Assurance HA-1 exact-source tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tools/harness_assurance/**'
+      - 'docs/design/harness-assurance/**'
+      - 'docs/roadmaps/HARNESS-ASSURANCE-2026-09-26.md'
+      - '.github/workflows/harness-assurance-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/harness_assurance/**'
+      - 'docs/design/harness-assurance/**'
+      - 'docs/roadmaps/HARNESS-ASSURANCE-2026-09-26.md'
+      - '.github/workflows/harness-assurance-v0.1.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ha1-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ha1:
+    name: HA-1 / Python ${{ matrix.python }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.12', '3.13']
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONHASHSEED: '1'
+      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Checkout exact assessed source (not implicit PR merge)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4, resolved 2026-09-27
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python without dependency cache
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5, resolved 2026-09-27
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Execute exact HA-1 inventory and CI guard checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B tools/harness_assurance/v0_1/ci/run_ci.py \
+            --expected-source "$EXPECTED_SOURCE_SHA" \
+            --output "$RUNNER_TEMP/ha1-ci-${{ matrix.python }}"
+      - name: Retain bounded execution evidence, including failure reports
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4, resolved 2026-09-27
+        with:
+          name: ha1-ci-${{ github.run_id }}-${{ github.run_attempt }}-py${{ matrix.python }}
+          path: ${{ runner.temp }}/ha1-ci-${{ matrix.python }}/
+          if-no-files-found: error
+          retention-days: 14
