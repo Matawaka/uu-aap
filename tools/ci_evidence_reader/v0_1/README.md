@@ -1,3 +1,32 @@
+# Current development checkpoint — capture and comparison (2026-09-28)
+
+One bounded GET-only metadata collector and two-package comparison are added.
+The original manual capture remains supported with its original provenance label.
+No new workflow or changes to HA-1 are introduced. Local checks: 64 existing +
+55 new test methods passed; six CLI trials matched. This is not hosted CI or
+independent review. The current limits/results live in [CAPTURE-AND-COMPARE.md](CAPTURE-AND-COMPARE.md)
+and [capture-result.json](capture-result.json).
+
+```bash
+python -I -B tools/ci_evidence_reader/v0_1/test_reader.py
+python -I -B tools/ci_evidence_reader/v0_1/test_collection.py
+# Metadata only: public API, selected expectation, fresh output directory.
+python -I -B tools/ci_evidence_reader/v0_1/collector.py \
+  --expectation expectation.json --output /tmp/ci-capture-NEW
+# A package directory contains expectation.json, capture.json and retained
+# py312.zip / py313.zip. Missing archives remain missing, never fabricated.
+python -I -B tools/ci_evidence_reader/v0_1/compare.py \
+  --before /path/to/first-package --after /path/to/second-package --format html
+```
+
+For the bundled selected-field replay, add `--replay selected-responses.json
+--per-page 1` to the collector. This is replay, NOT a fresh live collection.
+The real network smoke in the current runtime was incomplete due to DNS;
+connector reads supplied the selected replay fields. No token or installation
+was requested. Artifact download remains outside this metadata-only collector.
+
+## Preserved initial reader checkpoint
+
 # Captured CI Evidence Reader v0.1
 
 **Status: DEVELOPMENT_CANDIDATE_CAPTURE_CHECKED.** Tracking #1012; separate from

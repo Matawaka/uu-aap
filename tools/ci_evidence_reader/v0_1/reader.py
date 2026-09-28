@@ -176,9 +176,24 @@ def assess(expectation: bytes, capture: bytes, archives: dict[str, bytes]) -> di
         c = parse(capture)
         result['input_hashes']['capture'] = sha(capture)
         require(c.get('schema') == 'matawaka.ci-reader.capture/v0.1', 'unsupported_capture')
-        require(c['provenance']['method'] == 'CONNECTOR_GET_SELECTED_FIELDS_MANUAL_PROJECTION', 'capture_provenance_unsupported')
-        require(c['provenance']['raw_http_bytes_retained'] is False, 'capture_provenance_unsupported')
-        result['capture_provenance'] = c['provenance']['method']
+        provenance = c['provenance']; require(type(provenance) is dict)
+        method = provenance['method']
+        if method == 'CONNECTOR_GET_SELECTED_FIELDS_MANUAL_PROJECTION':
+            require(provenance['raw_http_bytes_retained'] is False, 'capture_provenance_unsupported')
+        elif method == 'BOUNDED_GITHUB_GET_PROJECTION_V1':
+            origin = provenance.get('transport_origin')
+            require(origin in ('HTTP_RESPONSE_BODY','CONNECTOR_SELECTED_JSON_REPLAY','SYNTHETIC_REPLAY'), 'capture_provenance_unsupported')
+            require(provenance.get('raw_http_bytes_retained') is (origin == 'HTTP_RESPONSE_BODY'), 'capture_provenance_unsupported')
+            issues = provenance.get('issues'); require(type(issues) is list)
+            status = provenance.get('collection_status')
+            if status == 'COLLECTION_INCONSISTENT': add('MISMATCH','collection_inconsistent')
+            elif status != 'METADATA_CAPTURED' or issues: add('MISSING','collection_incomplete')
+            else: add('MATCHED','bounded_collection_reported')
+            # Collector metadata is a supplied observation, NOT independently verified transport.
+            result['capture_transport_origin'] = origin
+        else:
+            raise Invalid('capture_provenance_unsupported')
+        result['capture_provenance'] = method
         require(type(archives) is dict and set(archives) <= {'py312','py313'}, 'archive_slots_invalid')
         run = c['run']; require(type(run) is dict)
         for k, ek in [('id','run_id'),('attempt','attempt'),('source_sha','source_sha'),('repository_id','repository_id'),('workflow_path','workflow_path'),('event','event')]:
@@ -322,7 +337,7 @@ def render_html(report: dict) -> str:
     return '''<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <title>Matawaka · CI Evidence</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:1080px;margin:3rem auto;padding:0 24px}h1{font-size:2.4rem;line-height:1.2}h2{margin-top:2.3rem}small{font-size:.8em}code{overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:.88em}td,th{padding:12px;text-align:left;border-bottom:1px solid}section{padding:18px;border:1px solid;border-radius:8px}li{margin:.6rem 0}footer{margin:3rem 0}</style>
-<header><small>MATAWAKA / EXPERIMENTAL CI EVIDENCE READER</small><h1>'''+esc(names.get(report['status'],report['status']))+'''</h1><p>Импортированная проверка — не разрешение на действие.</p></header><section><strong>Источник:</strong> '''+esc(report.get('repository','—'))+'''<br><strong>Run / attempt:</strong> '''+esc(report.get('run_id','—'))+' / '+esc(report.get('attempt','—'))+'''<br><strong>SHA:</strong> <code>'''+esc(report.get('source_sha','—'))+'''</code></section><h2>Что подтверждают предоставленные отчёты</h2><table><thead><tr><th>Задание</th><th>Python</th><th>HA-1</th><th>CI-обвязка</th><th>Сверка</th></tr></thead><tbody>'''+cells+'''</tbody></table><p>Количество методов не суммируется между версиями Python. Сверены закреплённые источники, состав тестов, мутации, архивы и журналы. Это не повторный запуск тестов.</p><h2>Несоответствия или недостающие данные</h2><ul>'''+issues+'''</ul><h2>Чего CI не доказывает</h2><ul>'''+gaps+'''</ul><footer>Доверие: явно выбранная вызывающей стороной сохранённая выборка. Метаданные — проекция ответа коннектора, не подписанные HTTP-байты. Читатель не выполняет код из архивов, не вызывает сеть и не выдаёт permit. Разработка может продолжаться отдельно от приёмки.</footer></html>'''
+<header><small>MATAWAKA / EXPERIMENTAL CI EVIDENCE READER</small><h1>'''+esc(names.get(report['status'],report['status']))+'''</h1><p>Импортированная проверка — не разрешение на действие.</p></header><section><strong>Источник:</strong> '''+esc(report.get('repository','—'))+'''<br><strong>Run / attempt:</strong> '''+esc(report.get('run_id','—'))+' / '+esc(report.get('attempt','—'))+'''<br><strong>SHA:</strong> <code>'''+esc(report.get('source_sha','—'))+'''</code></section><h2>Что подтверждают предоставленные отчёты</h2><table><thead><tr><th>Задание</th><th>Python</th><th>HA-1</th><th>CI-обвязка</th><th>Сверка</th></tr></thead><tbody>'''+cells+'''</tbody></table><p>Количество методов не суммируется между версиями Python. Сверены закреплённые источники, состав тестов, мутации, архивы и журналы. Это не повторный запуск тестов.</p><h2>Несоответствия или недостающие данные</h2><ul>'''+issues+'''</ul><h2>Чего CI не доказывает</h2><ul>'''+gaps+'''</ul><footer>Доверие: явно выбранная вызывающей стороной сохранённая выборка. Метаданные — явно обозначенная проекция источника; способ сбора сам по себе не подтверждает аутентичность. Читатель не выполняет код из архивов, не вызывает сеть и не выдаёт permit. Разработка может продолжаться отдельно от приёмки.</footer></html>'''
 
 
 def main() -> int:

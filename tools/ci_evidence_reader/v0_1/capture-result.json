@@ -1,0 +1,88 @@
+{
+  "schema": "matawaka.ci-reader.capture-development/v0.1",
+  "status": "CAPTURE_REPLAY_AND_COMPARISON_CHECKED",
+  "predecessor": "1c1910b16dfeddfcee0d0b9dae260c27d3a51565",
+  "ha1_unchanged": "a57c8923552972a9dd2318d5ddbc4db2aba20ac7",
+  "checks": {
+    "original_reader_tests": 64,
+    "new_tests": 55,
+    "total_distinct_methods": 119,
+    "failures": 0,
+    "errors": 0,
+    "cli_trials": 6,
+    "captured_run": 36316768214,
+    "attempt": 1,
+    "capture_comparisons": 186,
+    "capture_result": "CAPTURE_MATCHED",
+    "replayed_requests": 6,
+    "same_run_comparison": "NO_OBSERVED_CHANGE",
+    "synthetic_missing_archive_comparison": "EVIDENCE_LOSS"
+  },
+  "source_files": [
+    {
+      "path": "tools/ci_evidence_reader/v0_1/collector.py",
+      "sha256": "efe90974d1fce8fb3e49c353f8be959ade7fb978d8d82931ea7255e13a5465d2"
+    },
+    {
+      "path": "tools/ci_evidence_reader/v0_1/compare.py",
+      "sha256": "43627b005c9512941b5316e32fb56977eeebaee8eed625ec96e50ad16b9e8475"
+    },
+    {
+      "path": "tools/ci_evidence_reader/v0_1/reader.py",
+      "sha256": "bf981d2fd922106f8f8843cc7953eeb2098ff2da202808bc31686009482f463e"
+    },
+    {
+      "path": "tools/ci_evidence_reader/v0_1/test_collection.py",
+      "sha256": "4da80f9645b22565489484c1b13c539df082f48a47cab4231c97796ae22eb55d"
+    },
+    {
+      "path": "tools/ci_evidence_reader/v0_1/test_reader.py",
+      "sha256": "fc85ad481f2d48b5b74fd619294fa25af0011b189c08846a0522880482722878"
+    },
+    {
+      "path": "tools/ci_evidence_reader/v0_1/CAPTURE-AND-COMPARE.md",
+      "sha256": "47defbac1f9d9891aab89624fc1f85c18f4bbdf4480f3c82f3e1a23b36cb50a3"
+    },
+    {
+      "path": "tools/ci_evidence_reader/v0_1/README.md",
+      "sha256": "a1cd86dd9f39a816ceb58d5f7600aaec17b2218193a4effeb95dbbb5bbcad947"
+    }
+  ],
+  "provenance": {
+    "transport_origin": "CONNECTOR_SELECTED_JSON_REPLAY",
+    "full_http_responses_retained": false,
+    "live_http_smoke": "INCOMPLETE_DNS_UNAVAILABLE",
+    "live_http_exit": 2,
+    "fresh_connected_github_reads": 6,
+    "new_hosted_test_run": false,
+    "same_assistant_work": true
+  },
+  "non_effects": {
+    "ha1_changed": false,
+    "main_changed": false,
+    "merge": false,
+    "deployment": false,
+    "reviewer_invoked": false,
+    "new_credentials": false,
+    "new_workflow": false,
+    "target_execution": false
+  },
+  "limits": {
+    "get_calls": 12,
+    "pages_per_family": 4,
+    "page_size": 100,
+    "response_bytes": 2000000,
+    "total_bytes": 8000000,
+    "cooperative_deadline_seconds": 30,
+    "socket_timeout_seconds": 10
+  },
+  "limitations": [
+    "No successful direct HTTP end-to-end execution in this runtime.",
+    "Selected connector-field replay is not an original HTTP transcript or authenticated origin.",
+    "HTTP transport is metadata-only; archive acquisition and expectation selection remain separate.",
+    "Stable run fences do not prove an atomic snapshot.",
+    "Timeout is cooperative/socket-level, not an OS-enforced aggregate time cap.",
+    "Repeated same-run observation is not a second distinct CI campaign.",
+    "No independent review, HA-1 acceptance or formal HA-2 qualification is claimed."
+  ]
+}
