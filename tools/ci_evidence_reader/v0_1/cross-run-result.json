@@ -1,0 +1,74 @@
+{
+  "schema": "matawaka.ci-reader.cross-run-development/v0.1",
+  "status": "LOCAL_CROSS_RUN_CHECKED_HOSTED_PENDING",
+  "parent": "58e4f440edcdb5486964e68cd2ad12d501f24e15",
+  "ha1_unchanged": "a57c8923552972a9dd2318d5ddbc4db2aba20ac7",
+  "review_class": "SAME_ASSISTANT",
+  "independent_review": false,
+  "checks": {
+    "reader_tests": 64,
+    "collection_tests": 55,
+    "cross_run_tests": 31,
+    "total_distinct_tests": 150,
+    "failures": 0,
+    "errors": 0,
+    "new_test_plan_initial": {
+      "methods": 27,
+      "failures": 12,
+      "errors": 6,
+      "meaning": "Mostly expected unsupported-feature failures; not 18 independent defects."
+    }
+  },
+  "retained_runs": {
+    "before": {
+      "run": 36291169014,
+      "attempt": 1,
+      "source": "3336c22cc9d4acec5bdc69b830e69dd473afe984",
+      "profile": "ha1-ci/pre-import-boundary-v0.1",
+      "matched_comparisons": 183
+    },
+    "after": {
+      "run": 36316768214,
+      "attempt": 1,
+      "source": "a57c8923552972a9dd2318d5ddbc4db2aba20ac7",
+      "profile": "ha1-ci/import-boundary-r2/v0.1",
+      "matched_comparisons": 186
+    },
+    "comparison": "OBSERVED_CHANGE",
+    "same_execution": false,
+    "unchanged_ha1_tests": 114,
+    "added_ci_test_ids": 15,
+    "removed_ci_test_ids": 0,
+    "rerun_of_ha1": false
+  },
+  "source_files": {
+    "tools/ci_evidence_reader/v0_1/reader.py": "8cd600cd8aa0dd6ca96d9cb9051bea57c6c0f21fb305558a37f85d351321d881",
+    "tools/ci_evidence_reader/v0_1/compare.py": "943f69b56770880fc69fc752f15548d178a5d30dd806a597e792ad5eeb19778f",
+    "tools/ci_evidence_reader/v0_1/test_cross_run.py": "42cb12c220abb76ab31f7fbace0b52a46cb3fcaf482635fac0e1eb59789bc0db",
+    "tools/ci_evidence_reader/v0_1/prepare_smoke.py": "8d4016a3461c3bcc314e5637f096b13661ac58f4dee6a154c9b56dd13d39deab",
+    ".github/workflows/ci-evidence-reader-v0.1.yml": "0e7c553b4c58fe6e1490f1d0aa8ad2ea519ad6e13520fd5aa0c248503ce2cdcf"
+  },
+  "local_http": {
+    "status": "COLLECTION_INCOMPLETE",
+    "exit": 2,
+    "requests_attempted": 1,
+    "response_bytes": 0,
+    "reason": "transport_unavailable",
+    "successful_http_claimed": false
+  },
+  "hosted_execution": "NOT_YET_OBSERVED",
+  "limitations": [
+    "R1 matching does not establish R2 import admission or isolated Python.",
+    "Both expectations remain caller-selected; matching is not authentication.",
+    "Existing historical archives are read, not executed.",
+    "New tests and corrections are not independent review.",
+    "No merge, deployment, permit, reviewer invocation or HA-1 change."
+  ],
+  "evidence_hashes": {
+    "evidence/collection.stderr": "e34ad22503cda72ea1f4ce1125de26dc2eaa26cad90730b914e35e65a463c783",
+    "evidence/reader.stderr": "2c2c5f7e711f623d5e9063152e71239f06040c35620812bb5422f6e9185ba9fc",
+    "evidence/tests-after.stderr": "05190c97125d7000116b30e5a3b6d36eb93f66163847dbfcd197f9b7048e85bf",
+    "evidence/tests-before.stderr": "8c1deae750060a3e3ca143b99b6b2b66a8e9cf3b857a2d0db3060a5d09447b5e",
+    "evidence/tests-final.stderr": "b8fdde2e6b91f2413881514ca0144e71668072d41ad1a1f6bfa71f12f1495cd3"
+  }
+}

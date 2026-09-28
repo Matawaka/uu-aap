@@ -1,0 +1,62 @@
+name: CI evidence reader tests and public metadata smoke
+
+on:
+  pull_request:
+    branches: [main, 'design/harness-assurance-*']
+    paths:
+      - 'tools/ci_evidence_reader/**'
+      - '.github/workflows/ci-evidence-reader-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  reader:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    env:
+      EXPECTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Test the consumer, not the captured HA-1 code
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=all)"
+          mkdir "$RUNNER_TEMP/ci-reader-result"
+          git rev-parse HEAD > "$RUNNER_TEMP/ci-reader-result/source-sha.txt"
+          git rev-parse 'HEAD^{tree}' > "$RUNNER_TEMP/ci-reader-result/source-tree.txt"
+          python -I -VV > "$RUNNER_TEMP/ci-reader-result/python.txt"
+          sha256sum tools/ci_evidence_reader/v0_1/*.py \
+            .github/workflows/ci-evidence-reader-v0.1.yml \
+            > "$RUNNER_TEMP/ci-reader-result/source-hashes.txt"
+          python -I -B tools/ci_evidence_reader/v0_1/test_reader.py 2>&1 | tee "$RUNNER_TEMP/ci-reader-result/reader-tests.log"
+          python -I -B tools/ci_evidence_reader/v0_1/test_collection.py 2>&1 | tee "$RUNNER_TEMP/ci-reader-result/collection-tests.log"
+          python -I -B tools/ci_evidence_reader/v0_1/test_cross_run.py 2>&1 | tee "$RUNNER_TEMP/ci-reader-result/cross-run-tests.log"
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: One bounded anonymous GET-only capture of an existing public run
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -I -B tools/ci_evidence_reader/v0_1/prepare_smoke.py > "$RUNNER_TEMP/ci-reader-result/smoke-expectation.json"
+          python -I -B tools/ci_evidence_reader/v0_1/collector.py \
+            --expectation "$RUNNER_TEMP/ci-reader-result/smoke-expectation.json" \
+            --per-page 1 --output "$RUNNER_TEMP/ci-reader-result/live" \
+            2>&1 | tee "$RUNNER_TEMP/ci-reader-result/live-smoke.log"
+          test -z "$(git status --porcelain --untracked-files=all)"
+      - name: Retain test and transport evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ci-reader-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-reader-result/
+          if-no-files-found: error
+          retention-days: 14

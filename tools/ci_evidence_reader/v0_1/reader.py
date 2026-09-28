@@ -85,7 +85,20 @@ def unique_strings(value, nonempty=True):
     return sorted(value)
 
 
+R1_PROFILE = 'ha1-ci/pre-import-boundary-v0.1'
+R2_PROFILE = 'ha1-ci/import-boundary-r2/v0.1'
+
+
+def selected_profile(e):
+    """Select only from the caller expectation, never by missing report fields."""
+    name = e.get('report_profile', R2_PROFILE)
+    require(type(name) is str and name in (R1_PROFILE, R2_PROFILE), 'unsupported_report_profile')
+    return name
+
+
 def valid_expectation(e):
+    profile = selected_profile(e)
+    old = profile == R1_PROFILE
     require(e.get('schema') == 'matawaka.ci-reader.expectation/v0.1', 'unsupported_expectation')
     for k in ('run_id', 'attempt', 'repository_id'):
         require(type(e[k]) is int and e[k] > 0)
@@ -93,13 +106,13 @@ def valid_expectation(e):
         require(type(e[k]) is str and re.fullmatch('[0-9a-f]{40}', e[k]) is not None)
     require(re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', e['repository']) is not None)
     require(e['event'] == 'pull_request' and e['workflow_path'] == '.github/workflows/harness-assurance-v0.1.yml', 'unsupported_profile')
-    for k, n in [('source_pins', 14), ('ci_source_hashes', 4)]:
+    for k, n in [('source_pins', 12 if old else 14), ('ci_source_hashes', 4)]:
         require(type(e[k]) is dict and len(e[k]) == n, 'source_inventory_invalid')
         for p, h in e[k].items():
             require(type(h) is str and re.fullmatch('[0-9a-f]{64}', h) is not None)
-    require(len(unique_strings(e['import_surface'])) == 8, 'import_inventory_invalid')
+    require(len(unique_strings(e['import_surface'], nonempty=not old)) == (0 if old else 8), 'import_inventory_invalid')
     require(set(e['test_ids']) == {'ha1_tests', 'ci_gate_tests'})
-    for k,n in [('ha1_tests',114),('ci_gate_tests',46)]:
+    for k,n in [('ha1_tests',114),('ci_gate_tests',31 if old else 46)]:
         require(len(unique_strings(e['test_ids'][k])) == n, 'test_inventory_invalid')
     require(set(e['mutants']) == {'original_mutants', 'review_mutants'})
     for k,n in [('original_mutants',7),('review_mutants',8)]:
@@ -171,6 +184,12 @@ def assess(expectation: bytes, capture: bytes, archives: dict[str, bytes]) -> di
               'warnings':warnings, 'input_hashes':{}}
     try:
         e = parse(expectation); valid_expectation(e)
+        profile = selected_profile(e)
+        old = profile == R1_PROFILE
+        result['report_profile'] = profile
+        result['profile_limits'] = (['historical_import_boundary_not_established'] if old else [])
+        if old:
+            warnings.append({'code':'historical_profile_not_r2_qualification','subject':'capture'})
         result.update(repository=e['repository'], run_id=e['run_id'], attempt=e['attempt'], source_sha=e['source_sha'])
         result['input_hashes']['expectation'] = sha(expectation)
         c = parse(capture)
@@ -253,9 +272,15 @@ def assess(expectation: bytes, capture: bytes, archives: dict[str, bytes]) -> di
                 # Identity before interpreting success. All output facts are conditional.
                 for k,v in [('source_sha',e['source_sha']),('source_tree',e['source_tree']),('run_id',str(e['run_id'])),('run_attempt',str(e['attempt']))]:
                     equal(report.get(k),v,'report_'+k,slot)
-                for k,v in [('source_pins',e['source_pins']),('ci_source_hashes',e['ci_source_hashes']),('source_checkpoint',e['source_checkpoint']),('non_effects',REPORT_NON_EFFECTS),('isolated_python',True),('hash_seed','RANDOMIZED_ISOLATED'),('platform','linux'),('scope','SYNTHETIC_TEST_EXECUTION_NOT_INDEPENDENT_REVIEW')]:
+                for k,v in [('source_pins',e['source_pins']),('ci_source_hashes',e['ci_source_hashes']),('source_checkpoint',e['source_checkpoint']),('non_effects',REPORT_NON_EFFECTS),('hash_seed','1' if old else 'RANDOMIZED_ISOLATED'),('platform','linux'),('scope','SYNTHETIC_TEST_EXECUTION_NOT_INDEPENDENT_REVIEW')]:
                     equal(report.get(k),v,'report_'+k,slot)
-                equal(unique_strings(report.get('import_surface',[])), sorted(e['import_surface']), 'import_surface',slot)
+                if old:
+                    # Historical schema did not record these facts. Never invent them.
+                    equal('isolated_python' in report or 'import_surface' in report, False,
+                          'historical_profile_field_conflict',slot)
+                else:
+                    equal(report.get('isolated_python'),True,'report_isolated_python',slot)
+                    equal(unique_strings(report.get('import_surface',[])), sorted(e['import_surface']), 'import_surface',slot)
                 py = report.get('python'); match = re.match(r'^(\d+\.\d+\.\d+)(?:\s|$)',py) if type(py) is str else None
                 if match and match[1].startswith(job['python_prefix']+'.'): summary['python'] = match[1]
                 else: add('MISMATCH','interpreter_mismatch',slot)
@@ -330,6 +355,10 @@ def render_html(report: dict) -> str:
     """Script-free, escaped presentation. No raw evidence or external dependencies."""
     esc = lambda v: html.escape(str(v),quote=True)
     names = {GOOD:'CI-пакет согласован',BAD:'Обнаружены несоответствия',GAP:'Недостаточно данных CI',FAIL:'В CI зафиксирован отказ'}
+    profile_note = ('<section><strong>Исторический профиль:</strong> соответствует старому составу CI, '
+                    'но не подтверждает введённую в R2 границу импорта и изолированный запуск. '
+                    'Согласованность старого отчёта не устраняет известное ограничение.</section>'
+                    if report.get('report_profile') == R1_PROFILE else '')
     cells = ''.join('<tr>'+''.join('<td>'+esc(j.get(k,'—') if j.get(k) is not None else '—')+'</td>' for k in ('slot','python','ha1_tests','ci_gate_tests','assessment'))+'</tr>' for j in report['jobs'])
     issues = ''.join('<li>'+esc(r['subject'])+' — '+esc(r['code'])+'</li>' for r in report['checks'] if r['status'] != 'MATCHED') or '<li>В пределах проверенного состава несоответствий не обнаружено.</li>'
     gap_text = {'independent_review':'Независимое ревью', 'test_first_execution':'Ожидаемый RED до реализации', 'design_and_contract_review':'Приёмка дизайна и контракта', 'owner_acceptance':'Решение владельца', 'merge_result':'Проверка результата merge', 'live_recorder_authentication':'Аутентификация живого регистратора', 'external_action_authority':'Полномочия на внешнее действие'}
@@ -337,7 +366,7 @@ def render_html(report: dict) -> str:
     return '''<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
 <title>Matawaka · CI Evidence</title><style>body{font:17px/1.6 system-ui,sans-serif;max-width:1080px;margin:3rem auto;padding:0 24px}h1{font-size:2.4rem;line-height:1.2}h2{margin-top:2.3rem}small{font-size:.8em}code{overflow-wrap:anywhere}table{border-collapse:collapse;width:100%;font-size:.88em}td,th{padding:12px;text-align:left;border-bottom:1px solid}section{padding:18px;border:1px solid;border-radius:8px}li{margin:.6rem 0}footer{margin:3rem 0}</style>
-<header><small>MATAWAKA / EXPERIMENTAL CI EVIDENCE READER</small><h1>'''+esc(names.get(report['status'],report['status']))+'''</h1><p>Импортированная проверка — не разрешение на действие.</p></header><section><strong>Источник:</strong> '''+esc(report.get('repository','—'))+'''<br><strong>Run / attempt:</strong> '''+esc(report.get('run_id','—'))+' / '+esc(report.get('attempt','—'))+'''<br><strong>SHA:</strong> <code>'''+esc(report.get('source_sha','—'))+'''</code></section><h2>Что подтверждают предоставленные отчёты</h2><table><thead><tr><th>Задание</th><th>Python</th><th>HA-1</th><th>CI-обвязка</th><th>Сверка</th></tr></thead><tbody>'''+cells+'''</tbody></table><p>Количество методов не суммируется между версиями Python. Сверены закреплённые источники, состав тестов, мутации, архивы и журналы. Это не повторный запуск тестов.</p><h2>Несоответствия или недостающие данные</h2><ul>'''+issues+'''</ul><h2>Чего CI не доказывает</h2><ul>'''+gaps+'''</ul><footer>Доверие: явно выбранная вызывающей стороной сохранённая выборка. Метаданные — явно обозначенная проекция источника; способ сбора сам по себе не подтверждает аутентичность. Читатель не выполняет код из архивов, не вызывает сеть и не выдаёт permit. Разработка может продолжаться отдельно от приёмки.</footer></html>'''
+<header><small>MATAWAKA / EXPERIMENTAL CI EVIDENCE READER</small><h1>'''+esc(names.get(report['status'],report['status']))+'''</h1><p>Импортированная проверка — не разрешение на действие.</p></header><section><strong>Источник:</strong> '''+esc(report.get('repository','—'))+'''<br><strong>Run / attempt:</strong> '''+esc(report.get('run_id','—'))+' / '+esc(report.get('attempt','—'))+'''<br><strong>SHA:</strong> <code>'''+esc(report.get('source_sha','—'))+'''</code></section>'''+profile_note+'''<h2>Что подтверждают предоставленные отчёты</h2><table><thead><tr><th>Задание</th><th>Python</th><th>HA-1</th><th>CI-обвязка</th><th>Сверка</th></tr></thead><tbody>'''+cells+'''</tbody></table><p>Количество методов не суммируется между версиями Python. Сверены закреплённые источники, состав тестов, мутации, архивы и журналы. Это не повторный запуск тестов.</p><h2>Несоответствия или недостающие данные</h2><ul>'''+issues+'''</ul><h2>Чего CI не доказывает</h2><ul>'''+gaps+'''</ul><footer>Доверие: явно выбранная вызывающей стороной сохранённая выборка. Метаданные — явно обозначенная проекция источника; способ сбора сам по себе не подтверждает аутентичность. Читатель не выполняет код из архивов, не вызывает сеть и не выдаёт permit. Разработка может продолжаться отдельно от приёмки.</footer></html>'''
 
 
 def main() -> int:

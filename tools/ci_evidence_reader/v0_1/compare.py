@@ -11,6 +11,23 @@ _spec = importlib.util.spec_from_file_location('comparison_reader',Path(__file__
 r=importlib.util.module_from_spec(_spec); _spec.loader.exec_module(r)
 
 
+def inventory_delta(ea, eb):
+    """Changes in explicitly selected expectations, not claims about code quality."""
+    def sets(left, right):
+        a,b=set(left),set(right)
+        return {'before_count':len(a),'after_count':len(b),
+                'added':sorted(b-a),'removed':sorted(a-b)}
+    def mapping(left, right):
+        out=sets(left,right)
+        out['changed']=[k for k in sorted(set(left)&set(right)) if not r.typed_equal(left[k],right[k])]
+        return out
+    return {'source_pins':mapping(ea['source_pins'],eb['source_pins']),
+            'ci_source_hashes':mapping(ea['ci_source_hashes'],eb['ci_source_hashes']),
+            'import_surface':sets(ea['import_surface'],eb['import_surface']),
+            'test_ids':{k:sets(ea['test_ids'][k],eb['test_ids'][k]) for k in ('ha1_tests','ci_gate_tests')},
+            'mutants':{k:sets(ea['mutants'][k],eb['mutants'][k]) for k in ('original_mutants','review_mutants')}}
+
+
 def compare_packages(before: tuple, after: tuple) -> dict:
     """Each tuple is (expectation bytes, capture bytes, archives dict).
 
@@ -18,7 +35,7 @@ def compare_packages(before: tuple, after: tuple) -> dict:
     A Python slot is only a logical pairing label, not physical execution identity.
     """
     out={'schema':'matawaka.ci-reader.comparison/v0.1','status':'COMPARISON_INCOMPLETE',
-         'scope':None,'changes':[],'jobs':[], 'non_effects':dict(r.NON_EFFECTS),
+         'scope':None,'proves_code_regression_or_fix':False,'changes':[],'jobs':[], 'non_effects':dict(r.NON_EFFECTS),
          'limitations':['Evidence changes are not proven code regressions.',
                         'Caller-selected snapshots do not establish chronology or live authentication.',
                         'Logical slots never establish identical physical execution.']}
@@ -44,6 +61,9 @@ def compare_packages(before: tuple, after: tuple) -> dict:
                     'mutants':{k:sorted(v) for k,v in e['mutants'].items()},'import_surface':sorted(e['import_surface'])}
         if not r.typed_equal(inventory(ea),inventory(eb)):
             out['changes'].append({'code':'expectation_inventory_changed','before':'BOUND_BEFORE','after':'BOUND_AFTER'})
+        change('report_profile',r.selected_profile(ea),r.selected_profile(eb))
+        out['inventory_delta']=inventory_delta(ea,eb)
+        out['profiles']={'before':r.selected_profile(ea),'after':r.selected_profile(eb)}
         change('capture_assessment',a['status'],b['status'])
         def signature(report):
             return sorted((v['subject'],v['code'],v['status']) for v in report['checks']
@@ -63,7 +83,11 @@ def compare_packages(before: tuple, after: tuple) -> dict:
                                 'before':left,'after':right})
             change('job_'+slot,left,right)
         # Missing or unparseable inputs must not produce a reassuring no-change verdict.
-        if any(x['status']!=r.GOOD for x in (a,b)):
+        if b['status']==r.FAIL and a['status'] in (r.GOOD,r.FAIL):
+            out['status']='RECORDED_CI_FAILURE'
+        elif a['status']==r.FAIL and b['status']==r.GOOD:
+            out['status']='RECORDED_CI_RECOVERY'
+        elif any(x['status']!=r.GOOD for x in (a,b)):
             out['status']='EVIDENCE_LOSS' if a['status']==r.GOOD and b['status']!=r.GOOD else 'COMPARISON_INCOMPLETE'
         else:out['status']='OBSERVED_CHANGE' if out['changes'] else 'NO_OBSERVED_CHANGE'
     except (r.Invalid,ValueError,TypeError,KeyError,StopIteration,UnicodeError):
@@ -74,11 +98,38 @@ def compare_packages(before: tuple, after: tuple) -> dict:
 def render_html(report):
     esc=lambda v:html.escape(str(v),quote=True)
     names={'NO_OBSERVED_CHANGE':'Подтверждённый состав не изменился','OBSERVED_CHANGE':'Обнаружено изменение',
-           'EVIDENCE_LOSS':'Во второй выборке потеряны свидетельства','COMPARISON_INCOMPLETE':'Сравнение неполно',
+           'EVIDENCE_LOSS':'Во второй выборке утрачено подтверждение',
+           'RECORDED_CI_FAILURE':'Во второй выборке зафиксирован отказ CI',
+           'RECORDED_CI_RECOVERY':'После отказа зафиксирован успешный CI','COMPARISON_INCOMPLETE':'Сравнение неполно',
            'NOT_COMPARABLE':'Выборки относятся к разным областям','INCONSISTENT_EXECUTION_IDENTITY':'Противоречивая идентичность запуска'}
     rows=''.join('<tr><td>'+esc(j['logical_slot'])+'</td><td>'+esc(j['before']['assessment'])+'</td><td>'+esc(j['after']['assessment'])+'</td><td>'+esc(j['same_execution_identity'])+'</td></tr>' for j in report['jobs'])
-    changes=''.join('<li>'+esc(c['code'])+'</li>' for c in report['changes']) or '<li>Изменений в проверяемом составе не выявлено.</li>'
-    return '''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>Matawaka · Сравнение CI</title><style>body{font:17px/1.6 system-ui;max-width:1050px;margin:3rem auto;padding:0 24px}h1{line-height:1.2}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:12px;border-bottom:1px solid;overflow-wrap:anywhere}code{overflow-wrap:anywhere}section{padding:16px;border:1px solid;border-radius:8px}footer{margin-top:3rem}</style></head><body><small>MATAWAKA / CI EVIDENCE COMPARISON</small><h1>'''+esc(names.get(report['status'],'Сравнение неполно'))+'''</h1><section>Область: <code>'''+esc(report['scope'])+'''</code><br>Это сравнение сохранённых свидетельств, не повторный запуск тестов.</section><h2>Логические пары заданий</h2><table><tr><th>Среда</th><th>До</th><th>После</th><th>Тот же запуск</th></tr>'''+rows+'''</table><h2>Изменения</h2><ul>'''+changes+'''</ul><footer>Потеря evidence не доказывает регрессию кода. Разные попытки не объединяются. Неизвестные результаты остаются неизвестными. Сравнение не выдаёт разрешений и не заменяет приёмку.</footer></body></html>'''
+    endpoints=[]
+    for key,label in [('before','До'),('after','После')]:
+        side=report.get('assessments',{}).get(key,{})
+        endpoints.append('<tr><td>'+label+'</td><td>'+esc(side.get('run_id','—'))+' / '+
+                         esc(side.get('attempt','—'))+'</td><td><code>'+esc(side.get('source_sha','—'))+
+                         '</code></td></tr>')
+    endpoint_html='<h2>Сравниваемые исполнения</h2><table><tr><th>Выборка</th><th>Run / попытка</th><th>Исходники</th></tr>'+''.join(endpoints)+'</table>'
+    deltas=report.get('inventory_delta',{})
+    details=[]
+    for title,item in [('Тесты HA-1',deltas.get('test_ids',{}).get('ha1_tests')),
+                       ('Тесты обвязки',deltas.get('test_ids',{}).get('ci_gate_tests')),
+                       ('Закреплённые исходники',deltas.get('source_pins')),
+                       ('Состав импорта',deltas.get('import_surface'))]:
+        if item is not None:
+            profiles=report.get('profiles',{})
+            before_count='не фиксировался' if title=='Состав импорта' and profiles.get('before')==r.R1_PROFILE else item['before_count']
+            after_count='не фиксировался' if title=='Состав импорта' and profiles.get('after')==r.R1_PROFILE else item['after_count']
+            details.append('<tr><td>'+esc(title)+'</td><td>'+esc(before_count)+
+                           '</td><td>'+esc(after_count)+'</td><td>+'+esc(len(item['added']))+
+                           ' / −'+esc(len(item['removed']))+'</td></tr>')
+    detail_html=('<h2>Изменение выбранных требований</h2><table><tr><th>Состав</th><th>До</th>'
+                 '<th>После</th><th>Добавлено / убрано</th></tr>'+''.join(details)+'</table>'
+                 '<p>Это изменение состава свидетельств и требований, не измерение качества кода. '
+                 'Исторический профиль с 31 тестом обвязки не подтверждает защиту импорта R2.</p>'
+                 if details else '')
+    changes=''.join('<li>'+esc(c['code'])+'</li>' for c in report['changes']) or ('<li>Изменений в проверяемом составе не выявлено.</li>' if report['status']=='NO_OBSERVED_CHANGE' else '<li>Данных недостаточно для перечисления подтверждённых изменений.</li>')
+    return '''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>Matawaka · Сравнение CI</title><style>body{font:17px/1.6 system-ui;max-width:1050px;margin:3rem auto;padding:0 24px}h1{line-height:1.2}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:12px;border-bottom:1px solid;overflow-wrap:anywhere}code{overflow-wrap:anywhere}section{padding:16px;border:1px solid;border-radius:8px}footer{margin-top:3rem}</style></head><body><small>MATAWAKA / CI EVIDENCE COMPARISON</small><h1>'''+esc(names.get(report['status'],'Сравнение неполно'))+'''</h1><section>Область: <code>'''+esc(report['scope'])+'''</code><br>Это сравнение сохранённых свидетельств, не повторный запуск тестов.</section>'''+endpoint_html+'''<h2>Логические пары заданий</h2><table><tr><th>Среда</th><th>До</th><th>После</th><th>Тот же запуск</th></tr>'''+rows+'''</table>'''+detail_html+'''<h2>Изменения</h2><ul>'''+changes+'''</ul><footer>Потеря evidence не доказывает регрессию кода. Разные попытки не объединяются. Неизвестные результаты остаются неизвестными. Сравнение не выдаёт разрешений и не заменяет приёмку.</footer></body></html>'''
 
 
 def read_package(folder):
