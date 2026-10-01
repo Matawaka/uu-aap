@@ -42,6 +42,37 @@ class Limits:
 class Response:
     status: int
     body: bytes
+    diagnostic_headers: dict[str, str] | None = None
+
+
+ERROR_HEADER_PATTERNS = {
+    'x-ratelimit-limit': r'[0-9]{1,10}',
+    'x-ratelimit-remaining': r'[0-9]{1,10}',
+    'x-ratelimit-reset': r'[0-9]{1,12}',
+    'x-ratelimit-used': r'[0-9]{1,10}',
+    'x-ratelimit-resource': r'[a-z_]{1,40}',
+    'retry-after': r'[0-9]{1,10}',
+}
+
+
+def safe_error_headers(headers):
+    """Bounded selected fields, not raw headers or an inferred error cause."""
+    result = {}
+    if headers is None:
+        return result
+    try:
+        for name, pattern in ERROR_HEADER_PATTERNS.items():
+            values = headers.get_all(name, []) if hasattr(headers, 'get_all') else [headers.get(name)]
+            if len(values) != 1:
+                continue  # Ambiguous duplicate headers are not diagnostic evidence.
+            value = values[0]
+            if type(value) is str and len(value) <= 64:
+                value = value.strip(' \t')
+                if re.fullmatch(pattern, value):
+                    result[name] = value
+    except (AttributeError, TypeError, ValueError):
+        return {}  # Missing diagnostics must not replace the observed HTTP status.
+    return result
 
 
 class NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -65,9 +96,12 @@ class PublicGitHub:
             with self.opener.open(req, timeout=min(timeout, 10)) as response:
                 return Response(response.status, response.read(max_bytes + 1))
         except urllib.error.HTTPError as error:
-            # Do not retain response error prose, headers, signed URLs or credentials.
-            error.close()
-            return Response(error.code, b'')
+            # Error prose, signed URLs and credentials remain unretained.
+            try:
+                diagnostics = safe_error_headers(error.headers)
+            finally:
+                error.close()
+            return Response(error.code, b'', diagnostics)
 
 
 class Replay:
@@ -111,6 +145,8 @@ def collect(expected: bytes, get, *, limits=Limits(), clock=time.monotonic) -> t
         response = get(path, min(10, remaining), min(limits.max_body, limits.max_total - used_bytes))
         r.require(type(response) is Response and type(response.status) is int, 'transport_shape')
         row['status'] = response.status
+        if response.status != 200:
+            row['diagnostic_headers'] = safe_error_headers(response.diagnostic_headers)
         r.require(type(response.body) is bytes, 'transport_body')
         r.require(len(response.body) <= limits.max_body, 'body_limit')
         used_bytes += len(response.body)

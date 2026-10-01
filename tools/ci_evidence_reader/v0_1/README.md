@@ -1,4 +1,36 @@
-# Current development checkpoint — capture and comparison (2026-09-28)
+# Portable snapshots and safe HTTP diagnostics (2026-10-01)
+
+`bundle.py` packages two explicitly selected snapshot directories into one data-only
+ZIP and re-assesses them offline for JSON or Russian HTML viewing. Stored reports
+are not accepted as evidence. Missing archives remain missing. The original archive
+bytes and selected expectations/captures are retained exactly. Bundle member hashes
+establish self-consistency; an optional separately retained whole-ZIP digest adds a
+caller pin. Neither establishes source authentication or permission to act.
+
+```bash
+python -I -B tools/ci_evidence_reader/v0_1/bundle.py pack \
+  --before r1-package --after r2-package --output evidence-NEW.zip
+python -I -B tools/ci_evidence_reader/v0_1/bundle.py view evidence-NEW.zip \
+  --sha256 <digest-printed-by-pack> --format html > comparison-NEW.html
+```
+
+No installation, server, automatic browser launch, network access or evidence-code
+execution is involved. `pack` refuses an existing output file. `view` reads the
+chosen ZIP in memory and writes its report only to stdout. Structural/hash refusal
+and incomplete evidence remain non-passing. Details: [BUNDLE.md](BUNDLE.md).
+
+The existing `test_collection.py` entrypoint includes the bundle tests, so the
+consumer workflow requires no changes. Local CPython 3.12.14 check: 64 reader,
+80 collection/comparison/diagnostic/bundle, 31 cross-run methods = 175 passed.
+This is development validation; formal HA-2 acceptance is unchanged.
+
+HTTP errors now retain only six bounded rate-limit diagnostic fields in
+`collection.json`. Error prose and body bytes are still unread and unretained;
+cookies, URLs and credential headers are excluded. Diagnostics do not classify
+the cause or change fail-closed collection. The 2026-09-28 HTTP 403 remains
+unexplained by its retained evidence; a future run is a separate observation.
+
+## Preserved capture/comparison checkpoint (2026-09-28)
 
 One bounded GET-only metadata collector and two-package comparison are added.
 The original manual capture remains supported with its original provenance label.
