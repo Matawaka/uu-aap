@@ -67,7 +67,20 @@ data, not an inferred error cause. The old 403 has no recoverable header/body da
 
 ## Validation and boundaries
 
-The existing three test entrypoints cover 182 methods locally on CPython 3.12.14:
+The separate `collection_view.py` increment reads only an explicitly selected
+current collector index; it does not change the bundle schema or reader verdict.
+It admits at most 12 sequential response rows, 16 typed issues and the existing
+strict JSON budgets. The fixed collector method, reported origins, call count,
+HTTP types and status/issue coherence are checked. A claimed complete index needs
+at least four HTTP 200 rows and no issues. Unknown issue codes are replaced by a
+fixed label. Only the existing six safe error headers are re-projected, and only
+on recorded non-200/non-null status. Missing/filtered headers are disclosed;
+no cause, authentication or CI qualification is inferred. Bodies, paths, files,
+body hashes and other provenance are not displayed or dereferenced. CLI exit 2
+remains for incomplete/inconsistent/refused input. Fourteen additional authored
+synthetic tests run inside the existing collection test entrypoint (196 total).
+
+The preceding bundle/comparison-view checkpoint covered 182 methods locally on CPython 3.12.14:
 150 preserved methods, 7 HTTP diagnostic methods, 18 bundle methods and 7 view
 methods. Tests
 cover exact roundtrip, deterministic bytes, external pin and coordinated rewrite,

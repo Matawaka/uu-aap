@@ -535,4 +535,10 @@ class ComparisonTests(unittest.TestCase):
         self.assertNotEqual(x.r.assess(dump(e),dump(cap),self.blobs)['status'],x.r.GOOD)
 
 
+def load_tests(loader, tests, pattern):
+    cases = load('bounded_collection_view_cases', HERE/'test_collection_view.py')
+    tests.addTests(loader.loadTestsFromModule(cases))
+    return tests
+
+
 if __name__=='__main__':unittest.main(verbosity=2)

@@ -1,4 +1,30 @@
-# Portable snapshots and safe HTTP diagnostics (2026-10-01)
+# Local collection diagnostics (2026-10-01)
+
+`collection_view.py` reads one explicitly selected `collection.json` and prints
+JSON or Russian HTML. It displays recorded HTTP status, fixed issue codes and only
+the existing six re-filtered diagnostic headers. It never reads response bodies,
+paths, sibling files or arbitrary provenance, and makes no requests. Old errors
+without diagnostic headers show `NOT_RECORDED`; empty/unsafe fields are disclosed
+as `EMPTY_OR_FILTERED`. HTTP-error cause remains `NOT_ESTABLISHED` even when
+rate-limit counters are present. Recorded source/status and input hashes do not
+authenticate the index. This is diagnostics, not a CI assessment or acceptance.
+
+```bash
+python -I -B tools/ci_evidence_reader/v0_1/collection_view.py \
+  retained/collection.json --format html > diagnostics-NEW.html
+```
+
+The input has no schema/version field. The viewer supports the current bounded
+collector index: fixed method/origins, at most 12 sequential response rows and
+16 typed issues, strict JSON limits and status/issue coherence. Unknown issue
+codes become `UNRECOGNIZED_ISSUE`; private values are not reflected. Claimed
+METADATA_CAPTURED with missing/non-200 status or fewer than four calls is refused.
+Exit 2 is preserved for incomplete/inconsistent/refused inputs; exit 0 means only
+that a consistent index recorded METADATA_CAPTURED, not authenticated live CI.
+The 14 synthetic view tests join the unchanged three workflow entrypoints.
+Local CPython 3.12.14: 64 + 94 + 38 = 196 methods passed.
+
+## Portable snapshots and safe HTTP diagnostics checkpoint
 
 `bundle.py` packages two explicitly selected snapshot directories into one data-only
 ZIP and re-assesses them offline for JSON or Russian HTML viewing. Stored reports
