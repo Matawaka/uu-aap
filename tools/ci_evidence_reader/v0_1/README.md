@@ -19,9 +19,16 @@ execution is involved. `pack` refuses an existing output file. `view` reads the
 chosen ZIP in memory and writes its report only to stdout. Structural/hash refusal
 and incomplete evidence remain non-passing. Details: [BUNDLE.md](BUNDLE.md).
 
+The local HTML comparison includes expandable exact added/removed test IDs,
+source/CI paths whose selected hashes changed, import and mutant inventories.
+These are changes to caller-selected requirements, not inferred code fixes.
+Separate per-snapshot panels expose nonmatching checks, profile warnings and all
+seven assurance gaps. Values remain escaped text; the view uses no script or link
+from evidence. This display increment leaves the JSON assessment unchanged.
+
 The existing `test_collection.py` entrypoint includes the bundle tests, so the
 consumer workflow requires no changes. Local CPython 3.12.14 check: 64 reader,
-80 collection/comparison/diagnostic/bundle, 31 cross-run methods = 175 passed.
+80 collection/comparison/diagnostic/bundle, 38 cross-run/view methods = 182 passed.
 This is development validation; formal HA-2 acceptance is unchanged.
 
 HTTP errors now retain only six bounded rate-limit diagnostic fields in

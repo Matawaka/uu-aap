@@ -2,6 +2,7 @@
 """Finite cross-version tests; all generated evidence here is synthetic."""
 from __future__ import annotations
 import copy
+import html
 import importlib.util
 import json
 import tempfile
@@ -160,5 +161,72 @@ class SmokeExpectationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             dest=Path(tmp)/smoke.PREFIX/'manifest.json';dest.parent.mkdir(parents=True);dest.write_bytes(b'{}')
             with self.assertRaisesRegex(ValueError,'historical_manifest_changed'):smoke.expectation(Path(tmp))
+
+class ComparisonViewTests(unittest.TestCase):
+    def comparison(self):
+        return x.compare_packages(pack(old_fixture()),pack(second_run(f.fixture())))
+    def test_selected_ids_and_changed_ci_paths_are_visible(self):
+        before=old_fixture();after=second_run(f.fixture())
+        removed=after[0]['test_ids']['ha1_tests'][1]
+        added='test_adversarial.Group.test_replacement'
+        after[0]['test_ids']['ha1_tests'][1]=added
+        after[0]['ci_source_hashes']['ci0.py']='0'*64
+        rewrite(after[0],after[1],after[2],lambda q:q.update(ci_source_hashes=after[0]['ci_source_hashes']))
+        rewrite(after[0],after[1],after[2],lambda q:q['checks']['ha1_tests'].update(executed_ids=after[0]['test_ids']['ha1_tests']))
+        out=x.compare_packages(pack(before),pack(after));self.assertEqual(out['status'],'OBSERVED_CHANGE')
+        page=x.render_html(out)
+        for name in out['inventory_delta']['test_ids']['ci_gate_tests']['added']:
+            self.assertIn('Добавлено: <code>'+name+'</code>',page)
+        self.assertIn('Добавлено: <code>'+added+'</code>',page)
+        self.assertIn('Убрано: <code>'+removed+'</code>',page)
+        self.assertIn('Изменён хеш: <code>ci0.py</code>',page)
+    def test_all_gaps_and_historical_profile_limits_survive(self):
+        page=x.render_html(self.comparison())
+        for code,text in r.GAPS.items():
+            self.assertEqual(page.count('<code>'+code+'</code>: '+html.escape(text,quote=True)),2)
+        self.assertEqual(page.count('INSUFFICIENT_EVIDENCE'),2)
+        self.assertIn('historical_import_boundary_not_established',page)
+        self.assertIn('не фиксировался',page)
+    def test_failure_and_missing_archive_both_visible(self):
+        before=f.fixture();after=second_run(before)
+        after[1]['run']['conclusion']='failure';after[2].pop('py313')
+        out=x.compare_packages(pack(before),pack(after));self.assertEqual(out['status'],'RECORDED_CI_FAILURE')
+        page=x.render_html(out)
+        self.assertIn('recorded_non_success',page);self.assertIn('archive_missing',page)
+        self.assertNotIn('Изменений в проверяемом составе не выявлено',page)
+    def test_invalid_input_never_claims_no_change(self):
+        before=pack(f.fixture())
+        out=x.compare_packages((before[0],b'{}',before[2]),pack(f.fixture()))
+        page=x.render_html(out)
+        self.assertIn('Сравнение неполно',page);self.assertIn('input_invalid',page)
+        self.assertNotIn('Изменений в проверяемом составе не выявлено',page)
+    def test_new_detail_fields_are_escaped_without_links(self):
+        out=self.comparison();value='<script>alert(1)</script><a href="https://example.test/">&'
+        out['inventory_delta']['test_ids']['ci_gate_tests']['added']=[value]
+        out['inventory_delta']['source_pins']['removed']=[value]
+        out['inventory_delta']['ci_source_hashes']['changed']=[value]
+        side=out['assessments']['after']
+        side['checks']=[{'subject':value,'code':value,'status':value}]
+        side['warnings']=[{'subject':value,'code':value}];side['profile_limits']=[value]
+        side['gaps']={value:value};side['workflow_assurance']=value
+        page=x.render_html(out)
+        self.assertNotIn(value,page);self.assertNotIn('<script',page);self.assertNotIn('<a ',page)
+        self.assertIn(html.escape(value,quote=True),page)
+        self.assertIn("default-src 'none'",page)
+    def test_render_is_offline_and_keeps_report_unchanged(self):
+        out=self.comparison();saved=copy.deepcopy(out)
+        with patch('builtins.open',side_effect=AssertionError('I/O')),patch('socket.socket',side_effect=AssertionError('network')):
+            x.render_html(out)
+        self.assertEqual(out,saved);self.assertTrue(all(v is False for v in out['non_effects'].values()))
+    def test_bundle_view_reuses_details_and_keeps_refusal_nonpassing(self):
+        bundle=load('bundle');data=bundle.pack(pack(old_fixture()),pack(second_run(f.fixture())))
+        page=bundle.render_html(bundle.view(data,r.sha(data)))
+        self.assertIn('PINNED_HASH_MATCHED',page)
+        self.assertIn('Добавлено: <code>test_ci_gate.Group.test_045</code>',page)
+        refused={'status':'BUNDLE_REFUSED','scope':None,'changes':[],'jobs':[],
+                 'bundle':{'integrity':'REFUSED','code':'bundle_pin_mismatch'}}
+        page=bundle.render_html(refused)
+        self.assertIn('оценка evidence не выполнена',page)
+        self.assertNotIn('Изменений в выбранном составе нет',page)
 
 if __name__ == '__main__':unittest.main(verbosity=2)

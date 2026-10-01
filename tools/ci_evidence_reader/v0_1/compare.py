@@ -112,24 +112,55 @@ def render_html(report):
     endpoint_html='<h2>Сравниваемые исполнения</h2><table><tr><th>Выборка</th><th>Run / попытка</th><th>Исходники</th></tr>'+''.join(endpoints)+'</table>'
     deltas=report.get('inventory_delta',{})
     details=[]
+    inventories=[]
     for title,item in [('Тесты HA-1',deltas.get('test_ids',{}).get('ha1_tests')),
                        ('Тесты обвязки',deltas.get('test_ids',{}).get('ci_gate_tests')),
                        ('Закреплённые исходники',deltas.get('source_pins')),
-                       ('Состав импорта',deltas.get('import_surface'))]:
+                       ('Хеши файлов CI',deltas.get('ci_source_hashes')),
+                       ('Состав импорта',deltas.get('import_surface')),
+                       ('Исходные мутанты',deltas.get('mutants',{}).get('original_mutants')),
+                       ('Мутанты review',deltas.get('mutants',{}).get('review_mutants'))]:
         if item is not None:
             profiles=report.get('profiles',{})
             before_count='не фиксировался' if title=='Состав импорта' and profiles.get('before')==r.R1_PROFILE else item['before_count']
             after_count='не фиксировался' if title=='Состав импорта' and profiles.get('after')==r.R1_PROFILE else item['after_count']
             details.append('<tr><td>'+esc(title)+'</td><td>'+esc(before_count)+
                            '</td><td>'+esc(after_count)+'</td><td>+'+esc(len(item['added']))+
-                           ' / −'+esc(len(item['removed']))+'</td></tr>')
+                           ' / −'+esc(len(item['removed']))+' / ≠'+esc(len(item.get('changed',[])))+'</td></tr>')
+            entries=''.join('<li>'+label+': <code>'+esc(name)+'</code></li>'
+                            for key,label in [('added','Добавлено'),('removed','Убрано'),('changed','Изменён хеш')]
+                            for name in item.get(key,[]))
+            inventories.append('<details><summary>'+esc(title)+'</summary><ul>'+
+                               (entries or '<li>Изменений в выбранном составе нет.</li>')+'</ul></details>')
     detail_html=('<h2>Изменение выбранных требований</h2><table><tr><th>Состав</th><th>До</th>'
-                 '<th>После</th><th>Добавлено / убрано</th></tr>'+''.join(details)+'</table>'
+                 '<th>После</th><th>Добавлено / убрано / изменён хеш</th></tr>'+''.join(details)+'</table>'
                  '<p>Это изменение состава свидетельств и требований, не измерение качества кода. '
                  'Исторический профиль с 31 тестом обвязки не подтверждает защиту импорта R2.</p>'
+                 +''.join(inventories)
                  if details else '')
+    assessment_details=[]
+    for key,label in [('before','До'),('after','После')]:
+        side=report.get('assessments',{}).get(key)
+        if side is None:continue
+        issues=''.join('<li><code>'+esc(v['subject'])+' / '+esc(v['code'])+' / '+esc(v['status'])+'</code></li>'
+                       for v in side['checks'] if v['status']!='MATCHED')
+        warnings=''.join('<li><code>'+esc(v['subject'])+' / '+esc(v['code'])+'</code></li>'
+                         for v in side.get('warnings',[]))
+        gaps=''.join('<li><code>'+esc(k)+'</code>: '+esc(v)+'</li>' for k,v in side.get('gaps',{}).items())
+        limits=''.join('<li><code>'+esc(v)+'</code></li>' for v in side.get('profile_limits',[]))
+        assessment_details.append('<section><h3>'+label+'</h3><p>Оценка: <code>'+esc(side['status'])+
+                                  '</code><br>Достаточность формата: <code>'+esc(side['workflow_assurance'])+
+                                  '</code></p><details><summary>Проверки, не подтвердившие совпадение</summary><ul>'+
+                                  (issues or '<li>В проверенном составе таких проверок нет.</li>')+
+                                  '</ul></details><details><summary>Предупреждения и ограничения профиля</summary><ul>'+
+                                  (warnings+limits or '<li>Дополнительных предупреждений профиля нет.</li>')+
+                                  '</ul></details><details><summary>Чего не устанавливает формат CI ('+esc(len(side.get('gaps',{})))+
+                                  ')</summary><ul>'+gaps+'</ul></details></section>')
+    assessment_html=('<h2>Границы и причины оценки</h2><p>Отсутствие подтверждения не означает, что событие не происходило. '
+                     'Совпадение evidence не заменяет приёмку.</p>'+''.join(assessment_details)
+                     if assessment_details else '')
     changes=''.join('<li>'+esc(c['code'])+'</li>' for c in report['changes']) or ('<li>Изменений в проверяемом составе не выявлено.</li>' if report['status']=='NO_OBSERVED_CHANGE' else '<li>Данных недостаточно для перечисления подтверждённых изменений.</li>')
-    return '''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>Matawaka · Сравнение CI</title><style>body{font:17px/1.6 system-ui;max-width:1050px;margin:3rem auto;padding:0 24px}h1{line-height:1.2}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:12px;border-bottom:1px solid;overflow-wrap:anywhere}code{overflow-wrap:anywhere}section{padding:16px;border:1px solid;border-radius:8px}footer{margin-top:3rem}</style></head><body><small>MATAWAKA / CI EVIDENCE COMPARISON</small><h1>'''+esc(names.get(report['status'],'Сравнение неполно'))+'''</h1><section>Область: <code>'''+esc(report['scope'])+'''</code><br>Это сравнение сохранённых свидетельств, не повторный запуск тестов.</section>'''+endpoint_html+'''<h2>Логические пары заданий</h2><table><tr><th>Среда</th><th>До</th><th>После</th><th>Тот же запуск</th></tr>'''+rows+'''</table>'''+detail_html+'''<h2>Изменения</h2><ul>'''+changes+'''</ul><footer>Потеря evidence не доказывает регрессию кода. Разные попытки не объединяются. Неизвестные результаты остаются неизвестными. Сравнение не выдаёт разрешений и не заменяет приёмку.</footer></body></html>'''
+    return '''<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'"><title>Matawaka · Сравнение CI</title><style>body{font:17px/1.6 system-ui;max-width:1050px;margin:3rem auto;padding:0 24px}h1{line-height:1.2}table{width:100%;border-collapse:collapse}td,th{text-align:left;padding:12px;border-bottom:1px solid;overflow-wrap:anywhere}code{overflow-wrap:anywhere}section{padding:16px;border:1px solid;border-radius:8px;margin:16px 0}details{margin:12px 0}summary{cursor:pointer}footer{margin-top:3rem}</style></head><body><small>MATAWAKA / CI EVIDENCE COMPARISON</small><h1>'''+esc(names.get(report['status'],'Сравнение неполно'))+'''</h1><section>Область: <code>'''+esc(report['scope'])+'''</code><br>Это сравнение сохранённых свидетельств, не повторный запуск тестов.</section>'''+endpoint_html+'''<h2>Логические пары заданий</h2><table><tr><th>Среда</th><th>До</th><th>После</th><th>Тот же запуск</th></tr>'''+rows+'''</table>'''+detail_html+'''<h2>Изменения</h2><ul>'''+changes+'''</ul>'''+assessment_html+'''<footer>Потеря evidence не доказывает регрессию кода. Разные попытки не объединяются. Неизвестные результаты остаются неизвестными. Сравнение не выдаёт разрешений и не заменяет приёмку.</footer></body></html>'''
 
 
 def read_package(folder):

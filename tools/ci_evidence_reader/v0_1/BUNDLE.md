@@ -40,6 +40,14 @@ Internal refusal has the explicit non-passing status `BUNDLE_REFUSED` and a fixe
 diagnostic code. The HTML view escapes text and reuses the script-free comparison
 renderer. A refused package does not claim an assessment was performed.
 
+The HTML comparison shows exact added/removed selected identities and the names
+of files with changed selected hashes, including the CI source inventory. Native
+`details` elements expose this information without scripts. Per-snapshot panels
+retain nonmatching checks, warnings, profile limits and all seven assurance gaps.
+Only the existing report is rendered; JSON data, verdicts and bundle bytes are
+unchanged. No stored body/log text is newly displayed. This is an author-led
+usability check on retained R1/R2 evidence, not user or independent acceptance.
+
 `pack` reads only explicitly selected snapshot directories and creates one new
 output file exclusively; it never overwrites. `view` reads one explicitly selected
 file and prints JSON or HTML. Neither calls the network, opens a server/browser,
@@ -59,12 +67,16 @@ data, not an inferred error cause. The old 403 has no recoverable header/body da
 
 ## Validation and boundaries
 
-The existing three test entrypoints cover 175 methods locally on CPython 3.12.14:
-150 preserved methods, 7 HTTP diagnostic methods, and 18 bundle methods. Tests
+The existing three test entrypoints cover 182 methods locally on CPython 3.12.14:
+150 preserved methods, 7 HTTP diagnostic methods, 18 bundle methods and 7 view
+methods. Tests
 cover exact roundtrip, deterministic bytes, external pin and coordinated rewrite,
 unknown/duplicate/nonregular members, input limits, manifest typing/inventory,
 unsupported compression, missing/corrupt nested evidence, offline purity,
 exclusive output, fixed refusal diagnostics and escaped HTML.
+View tests also cover exact inventory identities, all gaps, concurrent failure
+and missing evidence, incomplete/refused output, escaping of new fields, offline
+rendering, report immutability and reuse through the bundle viewer.
 
 The retained R1/R2 conversation package is separately re-read without executing
 historical code. Its original ZIP digest and all four nested archive digests are
