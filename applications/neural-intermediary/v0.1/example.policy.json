@@ -1,0 +1,44 @@
+{
+  "schema": "matawaka.intermediary.policy/v0.1",
+  "tenant": "demo-corporation",
+  "compartment": "external-research",
+  "purpose": "procurement-review",
+  "subject": "supplier-alpha",
+  "claim": "delivery-risk",
+  "evaluation_time": "2026-10-03T12:00:00Z",
+  "max_age_seconds": 3600,
+  "quorum": 2,
+  "max_observations": 32,
+  "max_per_sensor": 8,
+  "allowed_values": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "sensors": [
+    {
+      "id": "sensor-a",
+      "provider": "provider-a",
+      "operator": "operator-a",
+      "model_family": "model-a",
+      "source_root": "root-a",
+      "independence": "declared"
+    },
+    {
+      "id": "sensor-b",
+      "provider": "provider-b",
+      "operator": "operator-b",
+      "model_family": "model-b",
+      "source_root": "root-b",
+      "independence": "declared"
+    },
+    {
+      "id": "sensor-c",
+      "provider": "provider-c",
+      "operator": "operator-c",
+      "model_family": "model-c",
+      "source_root": "root-c",
+      "independence": "declared"
+    }
+  ]
+}
