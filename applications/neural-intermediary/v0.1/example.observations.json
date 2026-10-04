@@ -1,0 +1,41 @@
+[
+  {
+    "schema": "matawaka.intermediary.observation/v0.1",
+    "id": "obs-a",
+    "tenant": "demo-corporation",
+    "compartment": "external-research",
+    "purpose": "procurement-review",
+    "subject": "supplier-alpha",
+    "claim": "delivery-risk",
+    "sensor_id": "sensor-a",
+    "value": "low",
+    "observed_at": "2026-10-03T11:50:00Z",
+    "note": "Synthetic external observation; not a real supplier assessment."
+  },
+  {
+    "schema": "matawaka.intermediary.observation/v0.1",
+    "id": "obs-b",
+    "tenant": "demo-corporation",
+    "compartment": "external-research",
+    "purpose": "procurement-review",
+    "subject": "supplier-alpha",
+    "claim": "delivery-risk",
+    "sensor_id": "sensor-b",
+    "value": "low",
+    "observed_at": "2026-10-03T11:50:00Z",
+    "note": "Synthetic external observation; not a real supplier assessment."
+  },
+  {
+    "schema": "matawaka.intermediary.observation/v0.1",
+    "id": "obs-c",
+    "tenant": "demo-corporation",
+    "compartment": "external-research",
+    "purpose": "procurement-review",
+    "subject": "supplier-alpha",
+    "claim": "delivery-risk",
+    "sensor_id": "sensor-c",
+    "value": "low",
+    "observed_at": "2026-10-03T11:50:00Z",
+    "note": "Synthetic external observation; not a real supplier assessment."
+  }
+]
