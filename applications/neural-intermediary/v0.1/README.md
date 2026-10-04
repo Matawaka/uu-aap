@@ -18,6 +18,7 @@ python -I -B applications/neural-intermediary/v0.1/test_core.py
 python -I -B applications/neural-intermediary/v0.1/test_bundle.py
 python -I -B applications/neural-intermediary/v0.1/test_cli.py
 python -I -B applications/neural-intermediary/v0.1/test_mutations.py
+python -I -B applications/neural-intermediary/v0.1/test_workshop.py
 node applications/neural-intermediary/v0.1/test_projection.js
 node protocols/integration/rerc/v0.1/test-rerc.js
 ```
@@ -122,3 +123,33 @@ HA-1 acceptance, HA-2 completion, Workbench activation or provider authority fol
 
 Full Russian concept and business model:
 [`docs/architecture/NEURAL-INTERMEDIARY-2026-10.ru.md`](../../../docs/architecture/NEURAL-INTERMEDIARY-2026-10.ru.md).
+
+## Small custom fabrication workshop pilot
+
+The selected pilot is a small workshop producing custom composite constructions
+for building and advertising, with a milling machine, welding equipment, two or
+three employees, and one person coordinating most business processes.
+
+`workshop.py` adds an offline order-review profile: unresolved customer requirements,
+conflicting drawing revisions, incomplete internal costs, client-question drafts
+and a separate workshop handoff. It does not infer engineering suitability,
+machine capacity, dates, taxes or a sales price. Model agreement cannot confirm
+a customer requirement. Caller-declared confirmation is not authenticated approval.
+
+```sh
+python -I -B applications/neural-intermediary/v0.1/cli.py workshop applications/neural-intermediary/v0.1/workshop-example.json --audience owner --format html > /tmp/workshop-owner.html
+python -I -B applications/neural-intermediary/v0.1/cli.py workshop applications/neural-intermediary/v0.1/workshop-example.json --audience client
+python -I -B applications/neural-intermediary/v0.1/cli.py workshop applications/neural-intermediary/v0.1/workshop-example.json --audience workshop
+```
+
+Use `workshop-intake.json` as a blank local form. Keep real orders outside the
+public repository. `workshop-example.json` contains invented dimensions, dates
+and prices only. Amounts are integer hundredths of explicitly selected
+RUB/USD/EUR/KZT; no company currency or tax treatment is inferred. Missing costs
+are not zero and estimates are not a complete confirmed total. Technical text
+still needs a human disclosure review before handoff. Source references are local
+aliases, not verified evidence retrieval; this case format is not a `bundle.pack`
+input. Changing a drawing requires a new case revision and manual revalidation.
+
+Pilot procedure, flow boundaries, business metrics and open questions:
+[`WORKSHOP-PILOT-2026-10.ru.md`](../../../docs/architecture/WORKSHOP-PILOT-2026-10.ru.md).

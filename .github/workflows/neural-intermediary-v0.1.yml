@@ -5,6 +5,7 @@ on:
     paths:
       - 'applications/neural-intermediary/v0.1/**'
       - 'docs/architecture/NEURAL-INTERMEDIARY-2026-10.ru.md'
+      - 'docs/architecture/WORKSHOP-PILOT-2026-10.ru.md'
       - 'protocols/integration/rerc/v0.1/rerc.js'
       - '.github/workflows/neural-intermediary-v0.1.yml'
   push:
@@ -41,6 +42,7 @@ jobs:
           python -I -B applications/neural-intermediary/v0.1/test_bundle.py
           python -I -B applications/neural-intermediary/v0.1/test_cli.py
           python -I -B applications/neural-intermediary/v0.1/test_mutations.py
+          python -I -B applications/neural-intermediary/v0.1/test_workshop.py
           node applications/neural-intermediary/v0.1/test_projection.js
           node protocols/integration/rerc/v0.1/test-rerc.js
       - name: Exercise finite synthetic demo

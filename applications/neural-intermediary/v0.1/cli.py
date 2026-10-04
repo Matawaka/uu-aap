@@ -12,6 +12,7 @@ import core
 import check
 import bundle
 import fixtures
+import workshop
 
 
 LABELS = {
@@ -117,8 +118,16 @@ def main():
     v.add_argument("archive")
     v.add_argument("--policy-sha256", required=True)
     v.add_argument("--bundle-sha256")
+    w = sub.add_parser("workshop")
+    w.add_argument("case")
+    w.add_argument("--audience", choices=("owner", "client", "workshop"), default="owner")
+    w.add_argument("--format", choices=("json", "html"), default="json")
     args = parser.parse_args()
     try:
+        if args.command == "workshop":
+            view = workshop.build(core.parse(read(args.case)))[args.audience]
+            print(workshop.render(view) if args.format == "html" else json.dumps(view, ensure_ascii=False, indent=2))
+            return 0
         if args.command == "demo":
             result = demo()
             print(render_demo(result) if args.format == "html" else json.dumps(result, ensure_ascii=False, indent=2))
