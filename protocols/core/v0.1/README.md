@@ -217,10 +217,6 @@ The following remain profiles/extensions composed above Core:
 
 Core v0.1 does not import, activate, or mutate any KONTUR component.
 
-## Software description and implementation scope
-
-A Russian-language, implementation-checked description of the standalone Core v0.1 receipt-chain validator is available in [SOFTWARE-DESCRIPTION.ru.md](SOFTWARE-DESCRIPTION.ru.md). It distinguishes the current **fixed-fixture, local conformance harness** from a future general-purpose or production validator, documents exactly what the JavaScript code checks, and states the non-effects and licensing/commercialization boundaries. This descriptive document neither modifies the frozen Rospatent deposit nor changes normative Core semantics.
-
 ## Conformance fixture
 
 `end-to-end.fixture.json` demonstrates one complete chain:
