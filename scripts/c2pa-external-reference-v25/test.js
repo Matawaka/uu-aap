@@ -54,7 +54,7 @@ test('no charset canonicalization, whitespace normalization or JSON reserializat
 });
 test('invalid digest hex and unsupported algorithm fail closed', () => {
   expectReject('INVALID_SHA256_DIGEST', { ...input(), expectedHashHex: 'abc' });
-  expectReject('UNSUPPORTED_HASH_ALGORITHM', { ...input(), algorithm: 'sha512' });
+  expectReject('UNSUPPORTED_HASH_ALGORITHM', { ...input(), algorithm: 'sha3-256' });
 });
 test('forbidden 2.5 external labels blocked in this bounded candidate', () => {
   for (const label of ['c2pa.cloud-data', 'c2pa.hash.segment']) {
