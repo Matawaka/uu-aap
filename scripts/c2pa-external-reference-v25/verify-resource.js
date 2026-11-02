@@ -11,12 +11,14 @@ class RepresentationError extends Error {
     this.code = code;
   }
 }
-const DEFAULT_LIMITS = Object.freeze({ maxEncodedBytes: 1024 * 1024, maxDecodedBytes: 1024 * 1024 });
+const DEFAULT_LIMITS = Object.freeze({ maxEncodedBytes: 1024 * 1024, maxDecodedBytes: 1024 * 1024, maxEncodingLayers: 4 });
 const KNOWN_25_FORBIDDEN_EXTERNAL_LABELS = new Set(['c2pa.cloud-data', 'c2pa.hash.segment']);
 function fail(code) { throw new RepresentationError(code); }
 function mediaType(value) {
   if (typeof value !== 'string' || !value.trim()) fail('MEDIA_TYPE_MISSING');
-  return value.split(';', 1)[0].trim().toLowerCase();
+  const baseType = value.split(';', 1)[0].trim().toLowerCase();
+  if (!baseType) fail('MEDIA_TYPE_MISSING');
+  return baseType;
 }
 function decodeContentCoding(body, coding, ceiling) {
   try {
@@ -56,9 +58,13 @@ function verifyRetrievedRepresentation({
   if (!Number.isSafeInteger(declaredSize) || declaredSize < 0) fail('INVALID_DECLARED_SIZE');
   if (label !== null && (typeof label !== 'string' || !label)) fail('INVALID_LABEL');
   if (KNOWN_25_FORBIDDEN_EXTERNAL_LABELS.has(label)) fail('FORBIDDEN_EXTERNAL_ASSERTION_LABEL');
+  const maxEncodingLayers = limits.maxEncodingLayers === undefined ? DEFAULT_LIMITS.maxEncodingLayers : limits.maxEncodingLayers;
+  if (!Number.isSafeInteger(maxEncodingLayers) || maxEncodingLayers < 1) fail('INVALID_LIMITS');
+  if (typeof contentEncoding !== 'string' || contentEncoding.length > 256) fail('CONTENT_ENCODING_UNSUPPORTED');
   const codings = typeof contentEncoding === 'string'
     ? contentEncoding.toLowerCase().split(',').map(v => v.trim()) : [];
   if (codings.length === 0 || codings.some(v => v === '')) fail('CONTENT_ENCODING_UNSUPPORTED');
+  if (codings.filter(v => v !== 'identity').length > maxEncodingLayers) fail('CONTENT_ENCODING_DEPTH_EXCEEDED');
   let decoded = bodyAfterTransferDecoding;
   for (const coding of codings.reverse()) {
     if (coding !== 'identity') decoded = decodeContentCoding(decoded, coding, limits.maxDecodedBytes);
