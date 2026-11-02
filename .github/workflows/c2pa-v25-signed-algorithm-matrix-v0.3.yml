@@ -1,0 +1,80 @@
+name: C2PA 2.5 signed external-reference hash algorithm matrix v0.3
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/c2pa-external-reference-v25/build-signed-fixture.js'
+      - 'scripts/c2pa-external-reference-v25/verify-signed-fixture.js'
+      - 'scripts/c2pa-external-reference-v25/SIGNED-ASSET-MATRIX-v0.3.md'
+      - '.github/workflows/c2pa-v25-signed-algorithm-matrix-v0.3.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/c2pa-external-reference-v25/build-signed-fixture.js'
+      - 'scripts/c2pa-external-reference-v25/verify-signed-fixture.js'
+      - 'scripts/c2pa-external-reference-v25/SIGNED-ASSET-MATRIX-v0.3.md'
+      - '.github/workflows/c2pa-v25-signed-algorithm-matrix-v0.3.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  signed-algorithm-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      C2PATOOL_VERSION: '0.28.4'
+      C2PATOOL_ARCHIVE_SHA256: '097e9efaff765baf7738a40c640012419cad419ce3e1aa36cf68e0576309c971'
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Syntax gate
+        run: |
+          node --check scripts/c2pa-external-reference-v25/build-signed-fixture.js
+          node --check scripts/c2pa-external-reference-v25/verify-signed-fixture.js
+      - name: Download exact public c2patool 0.28.4 release and verify digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/contentauth/c2patool/releases/download/v${C2PATOOL_VERSION}/v${C2PATOOL_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --silent --show-error "$url" --output /tmp/c2patool.tar.gz
+          echo "${C2PATOOL_ARCHIVE_SHA256}  /tmp/c2patool.tar.gz" | sha256sum --check --strict
+          mkdir -p /tmp/c2patool
+          tar -xzf /tmp/c2patool.tar.gz -C /tmp/c2patool
+          bin="$(find /tmp/c2patool -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          "$bin" --version
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+      - name: Generate synthetic source PNG
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 --decode > /tmp/source.png
+          test -s /tmp/source.png
+      - name: Sign and re-read three distinct hash algorithms; mutate external bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          original=scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json
+          cp "$original" /tmp/modified-record.json
+          printf ' ' >> /tmp/modified-record.json
+          for alg in sha256 sha384 sha512; do
+            echo "::group::SIGNED_EXTERNAL_REFERENCE_${alg}"
+            node scripts/c2pa-external-reference-v25/build-signed-fixture.js "$alg" "$original" "/tmp/${alg}-manifest.json"
+            "$C2PA_BIN" /tmp/source.png --manifest "/tmp/${alg}-manifest.json" --create digitalCapture --output "/tmp/${alg}-signed.png" --force > "/tmp/${alg}-sign.json"
+            test -s "/tmp/${alg}-signed.png"
+            "$C2PA_BIN" "/tmp/${alg}-signed.png" > "/tmp/${alg}-read.json"
+            node scripts/c2pa-external-reference-v25/verify-signed-fixture.js "$alg" "/tmp/${alg}-read.json" "$original"
+            if node scripts/c2pa-external-reference-v25/verify-signed-fixture.js "$alg" "/tmp/${alg}-read.json" /tmp/modified-record.json; then
+              echo "FAIL: changed external record accepted for ${alg}" >&2
+              exit 1
+            fi
+            echo "EXPECTED_EXTERNAL_RECORD_TAMPER_REJECTED_${alg}"
+            echo "::endgroup::"
+          done
+      - name: Read-only source integrity gate
+        run: test -z "$(git status --porcelain)"
