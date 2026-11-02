@@ -92,3 +92,13 @@ test('oversized encoded payload fails before decoding', () => {
 test('missing/invalid limits cannot disable hard limits', () => {
   expectReject('INVALID_LIMITS', { ...input(), limits: { maxEncodedBytes: 0, maxDecodedBytes: 0 } });
 });
+
+test('stacked Content-Encoding nesting is bounded independently', () => {
+  expectReject('CONTENT_ENCODING_DEPTH_EXCEEDED', { ...input(), contentEncoding: 'gzip, gzip, gzip, gzip, gzip' });
+});
+test('malformed Content-Type cannot match an equally malformed declaration', () => {
+  expectReject('MEDIA_TYPE_MISSING', { ...input(), mediaTypeHeader: ';charset=UTF-8', declaredMediaType: ';charset=UTF-8' });
+});
+test('oversized encoding header is refused before decoding', () => {
+  expectReject('CONTENT_ENCODING_UNSUPPORTED', { ...input(), contentEncoding: 'identity'.repeat(100) });
+});
