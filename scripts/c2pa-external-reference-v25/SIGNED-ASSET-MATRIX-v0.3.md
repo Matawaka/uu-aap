@@ -19,6 +19,7 @@ Use one committed synthetic record `scripts/c2pa-external-reference/fixtures/ext
 3. Calls `assertLiveC2paReport` (existing semantic-boundary gate) to refuse invalid claim reports; it tolerates only explicitly declared development-signer trust limitations.
 4. Checks that exactly one standard `c2pa.external-reference` in the active manifest preserves the declared algorithm, URL, media type, exact-byte length and algorithm-specific digest bytes; no invented UU-AAP assertion label.
 5. Appends a byte to a *copy* of the external record and confirms the same signed asset's reference check fails closed for that algorithm.
+6. Applies five deliberately hostile **read-report** mutations, separately for each algorithm: `alg` substitution, hash-byte tampering, external URL drift, forbidden asserted JUMBF label, and an explicit `Invalid` validation state. The same verifier MUST reject all of them. These synthetic report mutations are not independent C2PA claim signatures or substitute interoperability vectors.
 
 ```text
                             pinned c2patool 0.28.4
@@ -27,7 +28,7 @@ same synthetic JSON     ->  signed PNG (SHA-384) -> readback -> match + tamper r
 same synthetic JSON     ->  signed PNG (SHA-512) -> readback -> match + tamper rejection
 ```
 
-**Note:** byte changes to the *external resource*, not to the signed C2PA asset, are the negative cases. No network URI is dereferenced. The reference URL is reserved for example data and does not grant an internet fetch, trust, permission or current lifecycle status.
+**Note:** the negative cases modify either the *external resource* or the JSON report returned by the reader, not the signed C2PA asset itself. The five hostile JSON report mutations are a verifier robustness check and do not demonstrate that C2PA verification rejects signature-level tampering. No network URI is dereferenced. The reference URL is reserved for example data and does not grant an internet fetch, trust, permission or current lifecycle status.
 
 ## Acceptance / limitations
 
