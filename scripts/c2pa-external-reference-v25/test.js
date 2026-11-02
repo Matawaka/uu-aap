@@ -102,3 +102,59 @@ test('malformed Content-Type cannot match an equally malformed declaration', () 
 test('oversized encoding header is refused before decoding', () => {
   expectReject('CONTENT_ENCODING_UNSUPPORTED', { ...input(), contentEncoding: 'identity'.repeat(100) });
 });
+
+test('SHA-384 and SHA-512 valid exact-byte digests', () => {
+  for (const algorithm of ['sha384', 'sha512']) {
+    const digest = crypto.createHash(algorithm).update(original).digest('hex');
+    const observed = verifyRetrievedRepresentation({
+      ...input(), algorithm, expectedHashHex: digest
+    });
+    assert.equal(observed.digestAlgorithm, algorithm);
+    assert.equal(observed.digestHex, digest);
+    assert.equal(observed.sha256, null); // cannot confuse non-256 result with a SHA-256 proof
+    assert.equal(observed.sdk25ConformanceEstablished, false);
+  }
+});
+test('digest byte length must match declared algorithm', () => {
+  expectReject('INVALID_DIGEST_FOR_ALGORITHM', {
+    ...input(), algorithm: 'sha384', expectedHashHex: sha256(original)
+  });
+  expectReject('INVALID_DIGEST_FOR_ALGORITHM', {
+    ...input(), algorithm: 'sha512', expectedHashHex: crypto.createHash('sha384').update(original).digest('hex')
+  });
+});
+test('SHA-384 and SHA-512 mismatches reject in constant-time comparison lane', () => {
+  for (const algorithm of ['sha384', 'sha512']) {
+    const mutated = Buffer.from(original);
+    mutated[0] ^= 0x01;
+    expectReject('HASH_MISMATCH', {
+      ...input(), algorithm,
+      expectedHashHex: crypto.createHash(algorithm).update(mutated).digest('hex')
+    });
+  }
+});
+test('gzip decoded representation is used with SHA-512 as well', () => {
+  const packed = zlib.gzipSync(original);
+  const digest = crypto.createHash('sha512').update(original).digest('hex');
+  assert.equal(verifyRetrievedRepresentation({
+    ...input(packed), contentEncoding: 'gzip',
+    algorithm: 'sha512', expectedHashHex: digest
+  }).digestHex, digest);
+});
+test('every prohibited standard 2.5 external assertion label fails closed', () => {
+  const { FORBIDDEN_25_EXTERNAL_LABELS } = require('./verify-resource');
+  assert.equal(FORBIDDEN_25_EXTERNAL_LABELS.length, 14);
+  assert.equal(new Set(FORBIDDEN_25_EXTERNAL_LABELS).size, FORBIDDEN_25_EXTERNAL_LABELS.length);
+  for (const label of FORBIDDEN_25_EXTERNAL_LABELS) {
+    expectReject('FORBIDDEN_EXTERNAL_ASSERTION_LABEL', { ...input(), label });
+  }
+});
+test('prefix-lookalike custom label never proves C2PA conformance', () => {
+  const result = verifyRetrievedRepresentation({ ...input(), label: 'c2pa.hash.segment.fixture' });
+  assert.equal(result.subjectConformant, false);
+  assert.equal(result.actionAuthorityGranted, false);
+});
+test('unrecognized or object-identity hash algorithm is not accepted', () => {
+  expectReject('UNSUPPORTED_HASH_ALGORITHM', { ...input(), algorithm: 'sha3-256' });
+  expectReject('UNSUPPORTED_HASH_ALGORITHM', { ...input(), algorithm: 'toString' });
+});
