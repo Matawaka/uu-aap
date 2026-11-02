@@ -67,3 +67,47 @@ jobs:
             exit 1
           fi
       - run: test -z "$(git status --porcelain)"
+
+  # Observes current public SDK handling of the SAME P0.2 fixture. This does NOT
+  # establish C2PA 2.5 conformance or full cross-SDK preservation.
+  pinned-28-sdk-successor-observation:
+    runs-on: ubuntu-latest
+    env:
+      C2PATOOL_VERSION: '0.28.4'
+      # GitHub Release API asset digest for contentauth/c2patool v0.28.4
+      C2PATOOL_ARCHIVE_SHA256: '097e9efaff765baf7738a40c640012419cad419ce3e1aa36cf68e0576309c971'
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Download and pin official c2patool successor binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://github.com/contentauth/c2patool/releases/download/v${C2PATOOL_VERSION}/v${C2PATOOL_VERSION}-x86_64-unknown-linux-gnu.tar.gz"
+          curl --fail --location --silent --show-error "$url" --output /tmp/c2patool-successor.tar.gz
+          echo "${C2PATOOL_ARCHIVE_SHA256}  /tmp/c2patool-successor.tar.gz" | sha256sum --check --strict
+          mkdir -p /tmp/c2patool-successor
+          tar -xzf /tmp/c2patool-successor.tar.gz -C /tmp/c2patool-successor
+          bin="$(find /tmp/c2patool-successor -type f -name c2patool -print -quit)"
+          test -n "$bin"
+          chmod +x "$bin"
+          "$bin" --version
+          echo "C2PA_BIN=$bin" >> "$GITHUB_ENV"
+      - name: Compare successor SDK sign/re-read/reference preservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '%s' 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=' | base64 --decode > /tmp/source.png
+          node scripts/c2pa-external-reference/build-config.js scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json /tmp/manifest.json
+          "$C2PA_BIN" /tmp/source.png --manifest /tmp/manifest.json --create digitalCapture --output /tmp/successor.png --force > /tmp/successor-sign.json
+          "$C2PA_BIN" /tmp/successor.png > /tmp/successor-read.json
+          node scripts/c2pa-external-reference/verify-reference.js /tmp/successor-read.json scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json
+          cp scripts/c2pa-external-reference/fixtures/external-uu-aap-record.json /tmp/tampered-successor.json
+          printf ' ' >> /tmp/tampered-successor.json
+          if node scripts/c2pa-external-reference/verify-reference.js /tmp/successor-read.json /tmp/tampered-successor.json; then
+            echo 'Unexpected acceptance of tampered record by successor SDK path' >&2
+            exit 1
+          fi
+      - run: test -z "$(git status --porcelain)"

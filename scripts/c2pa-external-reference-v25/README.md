@@ -1,4 +1,4 @@
-# C2PA 2.4 → 2.5 external-reference representation re-audit v0.1
+# C2PA 2.4 → 2.5 external-reference representation re-audit v0.2
 
 **Status:** bounded experimental candidate. **No** normative UV-02 profile change, C2PA 2.5 conformance claim, issuance, runtime gate or external fetch is implemented.
 
@@ -17,9 +17,9 @@ A source export may omit inline CDDL: official versioned HTML and linked schemas
 
 ## Exactly what this probe checks
 
-`verify-resource.js` accepts **caller-supplied bytes after HTTP transfer decoding** (e.g. after chunk framing is removed); it is *not* an HTTP client. It removes supported Content-Encoding codings (`gzip`, `deflate`, `br`, or identity, in inverse order), checks a bounded post-decoding size, and calculates SHA-256 on the resulting **exact bytes before** charset decoding, JSON parsing, whitespace normalization or reserialization.
+`verify-resource.js` accepts **caller-supplied bytes after HTTP transfer decoding** (e.g. after chunk framing is removed); it is *not* an HTTP client. It removes supported Content-Encoding codings (`gzip`, `deflate`, `br`, or identity, in inverse order), checks a bounded post-decoding size, and calculates the declared C2PA 2.5 SHA-256, SHA-384, or SHA-512 digest on the resulting **exact bytes before** charset decoding, JSON parsing, whitespace normalization or reserialization.
 
-A single bounded fixture verifies that the hash, `size` and base media type match the declared values. It rejects malformed SHA-256 digests, unrecognized content codings, decompression failure/limit overflow and two specifically identified newly forbidden external assertion labels (`c2pa.cloud-data`, `c2pa.hash.segment`). **This is not the exhaustive 2.5 assertion-label policy, nor a general HTTP or C2PA validator.** Unchecked labels never gain an `allowed` or conformant classification.
+A single bounded fixture verifies that the hash, `size` and base media type match the declared values. It rejects malformed algorithm-specific digest lengths, unsupported algorithms, unrecognized content codings, decompression failure/limit overflow, and the **14 explicitly forbidden external target labels** listed by C2PA 2.5 §16.4.2 / §14.10.4.2.2: `c2pa.actions`, `c2pa.actions.v2`, `c2pa.cloud-data`, `c2pa.external-reference`, `c2pa.hash.bmff.v2`, `c2pa.hash.bmff.v3`, `c2pa.hash.boxes`, `c2pa.hash.collection.data`, `c2pa.hash.data`, `c2pa.hash.multi-asset`, `c2pa.hash.segment`, `c2pa.ingredient`, `c2pa.ingredient.v2`, `c2pa.ingredient.v3`. This remains an **offline representation subset, not a general HTTP or C2PA validator**. A caller-supplied label outside this prohibition list is **not** certified as a valid JUMBF assertion, and no C2PA conformance or authority is granted.
 
 Default local encoded and decoded limits are each 1 MiB, with a maximum of four Content-Encoding decompression layers. Real deployments require separately reviewed URI allowlists, DNS/IP rebinding protection, credential stripping, redirects, response deadlines, response-type handling, decompression ratio and total budgets. No network retrieval is performed or authorized by this probe.
 
@@ -32,17 +32,18 @@ node --test scripts/c2pa-external-reference-v25/test.js
 
 The test suite includes positive cases and hostile counterexamples for raw bytes, gzip, brotli, deflate, stacked encodings, hash-of-compressed-body false positives, unexpected charset/JSON transforms, label refusal, digest and size constraints, byte limits, corrupted compression and unknown content codings. A `PASS` means only those test cases matched this local model.
 
-GitHub Actions also runs the **existing pinned 2.4 baseline** through `c2patool v0.27.16` (sign PNG, re-read, verify exact record hash, reject tampering), separately from the new 2.5 representation probe. A passing baseline SDK smoke is **not** a C2PA 2.5 compatibility result. Runs must be read back before claiming a CI PASS.
+GitHub Actions runs two **independent SDK observation lanes** using the same P0.2 SHA-256 external-reference fixture: historical `c2patool v0.27.16` pin and official `contentauth/c2patool v0.28.4` (published 2026-10-26; release Linux archive SHA-256 `097e9efaff765baf7738a40c640012419cad419ce3e1aa36cf68e0576309c971`). Both attempt sign PNG, re-read, verify exact record hash and reject tampering. The 0.28.4 binary is fetched from its exact official release and SHA-256-verified before execution. Observed CI run [41390995537](https://github.com/Matawaka/uu-aap/actions/runs/41390995537) passed the 24-case offline probe, historical v0.27.16 regression and v0.28.4 successor SDK smoke. This *successor SDK smoke* shows only path-specific fixture preservation, **not** C2PA 2.5 conformance, SDK-wide compatibility or any additional assertion status semantics. CI results must be read back before asserting PASS.
 
 ## Version / evidence matrix and next gates
 
 | Surface | Evidence classification | Next gate |
 | --- | --- | --- |
 | Standard hashed `c2pa.external-reference`, C2PA 2.4 | `SUPPORTED_BY_PUBLISHED_SPEC`, existing P0.2 test | Retain historical 2.4 pin and existing signer/authority separation |
-| 2.5 decoded representation, size, media type and SHA-256 | `SUPPORTED_BY_PUBLISHED_SPEC` / locally probed subset | Independent review of full 2.5 normative text, fixtures and decoder limits |
-| 2.5 external label exclusions | `SUPPORTED_BY_PUBLISHED_SPEC` / partial two-label probe | Complete label matrix, schema semantics and C2PA SDK observation |
+| 2.5 decoded representation, size, media type and SHA-256/384/512 | `SUPPORTED_BY_PUBLISHED_SPEC` / locally probed subset | Independent review of full 2.5 normative text, fixtures and decoder limits |
+| 2.5 external label exclusions | `SUPPORTED_BY_PUBLISHED_SPEC` / all 14 standard disallowed labels probed | JUMBF/claim-context checks and independent spec-profile review |
 | 2.5 HTTP retrieval policies | normative **MAY** protections, partial offline guards | Separate hardened network retrieval design and hostile request/redirect tests |
-| Swift/Android/C2PA SDK 2.5 preservation and signature validation | `SDK_EVIDENCE_MISSING` | Exact SDK versions, independent 2.5 signed asset vectors and cross-SDK roundtrips |
+| C2PATool 0.28.4 successor preservation | `SDK_EVIDENCE_PATH_SPECIFIC_PASS` (CI run [41390995537](https://github.com/Matawaka/uu-aap/actions/runs/41390995537), job `pinned-28-sdk-successor-observation`) | Independent 2.5-signed asset vectors and cross-SDK tests; no version-wide claim |
+| Swift/Android SDK 2.5 preservation and signature validation | `SDK_EVIDENCE_MISSING` | Independent 2.5 signed asset vectors and cross-SDK roundtrips |
 | Assertion retraction/status (`specifications#140`) | `PROPOSED_ONLY` | Normative mechanism, status-source authentication, nonresponse distinctions |
 | Live-video genesis/resync (`specifications#130` / proposed successor) | `OUT_OF_CURRENT_SCOPE` | Independent profile; no inferred genesis, sentinel predecessor or current blocker |
 
