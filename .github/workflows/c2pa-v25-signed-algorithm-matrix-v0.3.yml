@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/c2pa-external-reference-v25/build-signed-fixture.js'
       - 'scripts/c2pa-external-reference-v25/verify-signed-fixture.js'
+      - 'scripts/c2pa-external-reference-v25/mutate-read-report.js'
       - 'scripts/c2pa-external-reference-v25/SIGNED-ASSET-MATRIX-v0.3.md'
       - '.github/workflows/c2pa-v25-signed-algorithm-matrix-v0.3.yml'
   push:
@@ -12,6 +13,7 @@ on:
     paths:
       - 'scripts/c2pa-external-reference-v25/build-signed-fixture.js'
       - 'scripts/c2pa-external-reference-v25/verify-signed-fixture.js'
+      - 'scripts/c2pa-external-reference-v25/mutate-read-report.js'
       - 'scripts/c2pa-external-reference-v25/SIGNED-ASSET-MATRIX-v0.3.md'
       - '.github/workflows/c2pa-v25-signed-algorithm-matrix-v0.3.yml'
   workflow_dispatch:
@@ -35,6 +37,7 @@ jobs:
         run: |
           node --check scripts/c2pa-external-reference-v25/build-signed-fixture.js
           node --check scripts/c2pa-external-reference-v25/verify-signed-fixture.js
+          node --check scripts/c2pa-external-reference-v25/mutate-read-report.js
       - name: Download exact public c2patool 0.28.4 release and verify digest
         shell: bash
         run: |
@@ -74,6 +77,14 @@ jobs:
               exit 1
             fi
             echo "EXPECTED_EXTERNAL_RECORD_TAMPER_REJECTED_${alg}"
+            for kind in algorithm hash url label validation; do
+              node scripts/c2pa-external-reference-v25/mutate-read-report.js "$kind" "/tmp/${alg}-read.json" "/tmp/${alg}-${kind}-hostile.json"
+              if node scripts/c2pa-external-reference-v25/verify-signed-fixture.js "$alg" "/tmp/${alg}-${kind}-hostile.json" "$original"; then
+                echo "FAIL: hostile read-report mutation ${kind} accepted for ${alg}" >&2
+                exit 1
+              fi
+              echo "EXPECTED_HOSTILE_READ_REPORT_REJECTED_${alg}_${kind}"
+            done
             echo "::endgroup::"
           done
       - name: Read-only source integrity gate
