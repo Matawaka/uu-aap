@@ -21,7 +21,7 @@ A source export may omit inline CDDL: official versioned HTML and linked schemas
 
 A single bounded fixture verifies that the hash, `size` and base media type match the declared values. It rejects malformed SHA-256 digests, unrecognized content codings, decompression failure/limit overflow and two specifically identified newly forbidden external assertion labels (`c2pa.cloud-data`, `c2pa.hash.segment`). **This is not the exhaustive 2.5 assertion-label policy, nor a general HTTP or C2PA validator.** Unchecked labels never gain an `allowed` or conformant classification.
 
-Default local encoded and decoded limits are each 1 MiB. Real deployments require separately reviewed URI allowlists, DNS/IP rebinding protection, credential stripping, redirects, response deadlines, response-type handling, decompression ratio and total budgets. No network retrieval is performed or authorized by this probe.
+Default local encoded and decoded limits are each 1 MiB, with a maximum of four Content-Encoding decompression layers. Real deployments require separately reviewed URI allowlists, DNS/IP rebinding protection, credential stripping, redirects, response deadlines, response-type handling, decompression ratio and total budgets. No network retrieval is performed or authorized by this probe.
 
 ## Reproduce the offline experiment
 
