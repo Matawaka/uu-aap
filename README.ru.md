@@ -2,9 +2,29 @@
 
 **Статус:** пояснительный навигационный слой к каноническим материалам проекта.
 
-> Человеческая субъектность, а не «чистота от ИИ». Доказуемая причинность решений, а не тотальная запись действий.
+> Человеческая субъектность, а не «чистота от ИИ». Проверяемое происхождение решений, а не тотальная запись действий.
 
 UU-AAP описывает совместную работу людей, ИИ, программ и организаций так, чтобы не смешивать возможность, намерение, полномочия, действие, результат и ответственность. Proof of Available Intelligence (PoAI) добавляет вопрос: какой релевантный человеческий, машинный, институциональный или документальный интеллект действительно был доступен конкретному решению до того, как оно стало историей?
+
+`наблюдение и происхождение записи != доказательство причинности`
+
+## Усиленный Ум, значения UU и предложение UU VERIFIED
+
+**Усиленный Ум / Augmented Mind** — исходная идея: инструменты и ИИ расширяют понимание и выбор человека, не подменяя его субъектность и не скрывая делегирование.
+
+Три взаимодополняющих английских значения:
+
+- **Unified Understanding** — согласованное понимание при раздельных полномочиях и ответственности;
+- **Understanding Unlocked** — раскрытие возможностей понимания и осмысленного выбора;
+- **Universal Understanding** — открытая доступность и совместимость для людей и машиночитаемых платформ.
+
+Это не три уровня соответствия и не переименование исторической спецификации **Augmented Authorship & Accountability Protocol**.
+
+[Принципы Усиленного Ума P1–P12 на русском](PRINCIPLES.ru.md) объясняют исходные ограничения. [Концепция UU VERIFIED](proposals/uu-verified/v0.1/README.ru.md) предлагает отдельное, ограниченное версией и областью подтверждение соответствия реализации принципам и указанному профилю архитектуры UU-AAP. Публичная запись должна быть понятна человеку и проверяема машиной, содержать доказательства, ограничения, эмитента, статус и путь оспаривания.
+
+**Статус концепции: проект, не принятый профиль и не выданный знак.** [Машиночитаемый каталог](proposals/uu-verified/v0.1/concept.json) — описание требований, не удостоверение. [Бэклог #1000](https://github.com/Matawaka/uu-aap/issues/1000) отделяет документацию от будущих проверок, независимого ревью, выдачи и отзыва.
+
+`UU VERIFIED != истинность, авторские права, универсальная безопасность или ActionPermit`
 
 ## Важно о переводе
 
@@ -42,15 +62,15 @@ State / Evidence Anchor
 
 `доказательство возможности != доказательство намерения != доказательство действия != доказательство ответственности`
 
-## Что уже доказано практическими пилотами
+## Ограниченные результаты практических пилотов
 
 - **Core Pilot 001** — verified continuity capture and recovery;
-- **Core Pilot 002** — честный внешний contestable review остаётся открытой Availability-границей;
+- **Core Pilot 002** — Run 001 зафиксирован как `COMPLETED_ACCEPT_FOR_FOLLOWUP`; независимость и человеческая личность рецензента не установлены, более широкое внешнее ревью остаётся отдельной границей;
 - **Core Pilot 003** — bounded multi-agent delegation без authority amplification;
 - **Core Pilot 004** — один exact single-use external effect с precondition revalidation;
 - **Core Pilot 005** — `UNKNOWN → observe → CONFIRMED | ABSENT | CONFLICT`, без автоматического retry.
 
-Пилоты доказывают только свои конкретные bounded runs. Они не создают универсальную безопасность, новый permit или право автоматически продолжать.
+Пилоты доказывают только свои конкретные bounded runs. Они не создают универсальную безопасность, новый permit или право автоматически продолжать. Разделение исторических результатов и актуальных задач см. в [текущем маркере roadmap](docs/ROADMAP-CURRENT.md); один завершённый run не равен внешнему подтверждению всего проекта.
 
 ## Язык ИИ и транспорт
 
@@ -164,9 +184,11 @@ Human gates могут принять только consolidation candidate, refe
 
 ## Экосистема продуктов
 
-Актуальная русская карта портфеля и пересобранный путь развития:
+Русская карта портфеля и исторический путь развития:
 
 [`docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`](docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md)
+
+Для текущего маркера задач и внешних ограничений используйте [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md). Датированная карта не заменяет проверку точной версии конкретного продукта.
 
 В портфель входят:
 
@@ -356,9 +378,9 @@ Family contract не означает, что planned Game Companion runtime int
 
 ## Русский маршрут чтения
 
-1. Этот файл — текущая навигация.
-2. [`docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`](docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md) — состояние экосистемы и balanced roadmap.
-3. [`ROADMAP.md`](ROADMAP.md) — текущий portfolio-oriented roadmap.
+1. Этот файл — навигация; [PRINCIPLES.ru.md](PRINCIPLES.ru.md) — пояснение всех двенадцати принципов.
+2. [`docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md`](docs/ecosystem/ECOSYSTEM-STATE-2026-08.ru.md) — датированная карта экосистемы, не замена текущего статуса.
+3. [`docs/ROADMAP-CURRENT.md`](docs/ROADMAP-CURRENT.md) — текущий маркер roadmap; [`ROADMAP.md`](ROADMAP.md) — сохранённая история архитектурного и инструментального развития.
 4. [`schemas/product-contract/v0.1/`](schemas/product-contract/v0.1/) — reusable Product Contract, template, example и validator.
 5. [`products/marketer-pessimist/v0.1/`](products/marketer-pessimist/v0.1/) — Маркетолог Пессимиста Product Contract.
 6. [`products/freeshield/v0.1/`](products/freeshield/v0.1/) — FREESHIELD Protective Contract.
@@ -371,5 +393,6 @@ Family contract не означает, что planned Game Companion runtime int
 13. [`protocols/ial/v0.1/`](protocols/ial/v0.1/) — Intent/Action Language.
 14. [`protocols/integration/ai-gateway/`](protocols/integration/ai-gateway/) — AI Gateway and transport integration.
 15. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR implementation and pilots.
+16. [`proposals/uu-verified/v0.1/README.ru.md`](proposals/uu-verified/v0.1/README.ru.md) — UU, проект доказательного подтверждения UU VERIFIED и бэклог его разработки.
 
 Для нормативной и machine-readable проверки используйте канонические английские документы, schemas, validators и receipts, на которые ссылаются эти страницы.
