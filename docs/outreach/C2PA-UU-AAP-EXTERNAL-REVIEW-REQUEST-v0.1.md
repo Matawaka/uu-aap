@@ -15,7 +15,7 @@ Our minimal example uses a standard gathered, hashed `c2pa.external-reference` o
 
 Could you give **one specific technical counterexample** or independently reproduce the bounded case? In particular, are there SDK/report representations, gathered-vs-created handling, or external-resource validation limitations we have overlooked?
 
-Brief: [public draft PR to be linked after approval]. Replay guide: [public draft PR to be linked after approval]. Canonical repository: https://github.com/Matawaka/uu-aap . Base interop fixture: https://github.com/Matawaka/uu-aap/tree/main/scripts/c2pa-external-reference .
+Brief: https://github.com/Matawaka/uu-aap/blob/docs/independent-c2pa-review-kit-20261104/docs/outreach/C2PA-UU-AAP-INTEROPERABILITY-BRIEF-v0.1.md . Replay guide: https://github.com/Matawaka/uu-aap/blob/docs/independent-c2pa-review-kit-20261104/docs/outreach/C2PA-UU-AAP-REPLAY-GUIDE-v0.1.md . Draft review PR: https://github.com/Matawaka/uu-aap/pull/1020 . Canonical repository: https://github.com/Matawaka/uu-aap . Base interop fixture: https://github.com/Matawaka/uu-aap/tree/main/scripts/c2pa-external-reference .
 
 We do not claim C2PA conformance, endorsement, portable cross-SDK PASS, trusted issuer identity, or that provenance proves truth or action authority. Any review result remains reviewer-owned evidence.
 
