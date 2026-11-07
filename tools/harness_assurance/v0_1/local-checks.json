@@ -1,0 +1,434 @@
+{
+  "status": "LOCAL_CANDIDATE_40_CASES_CHECKED_REVIEW_PENDING",
+  "scope": "SAME_AUTHOR_LOCAL_SYNTHETIC_REDUCER_CHECKS_ONLY",
+  "design_head": "9c1f159dd2aee62ad7efb5da28e27f17a84b8526",
+  "recorded_at_local_utc": "2026-09-26T09:27:22.704484+00:00",
+  "clock_is_trusted": false,
+  "python": "3.13.5",
+  "unit_tests": {
+    "run": 77,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "named_cases": [
+    {
+      "id": "HA-P01",
+      "result": "BOUNDED_WORKFLOW_EVIDENCE_SATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:4c1e49811b40f6d34f5cc484625d7d279d5ff8c060627f1f26d89c1a9866f6f5"
+    },
+    {
+      "id": "HA-P02",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:4904ec7ba5bb951218a17d1cce39a0e50665cf39753ee5b02ef40402b3f4813e"
+    },
+    {
+      "id": "HA-P03",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:dab6fe6ef0b956e1a1ccdb4772adc75c759493fc20ffbfe792b35588ff6351f6"
+    },
+    {
+      "id": "HA-P04",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:e51b79e65f7b5ff07e63a9b5ec1e066afc5ff76244f44742f26d8e93cabf3744"
+    },
+    {
+      "id": "HA-P05",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:8ed94fe0d7371d9090daf265d41160e5c03a9a08fa7e2246519a735fac109a61"
+    },
+    {
+      "id": "HA-P06",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:ccc1278d536af8dbf3d51155135a572b9140c46ba208b4a64a0e1e1c032e9031"
+    },
+    {
+      "id": "HA-P07",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:0a0bed3e8cbb95002c2dbe4b17878afdefdbebe00420b7c61fb982a46f69c2d7"
+    },
+    {
+      "id": "HA-P08",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:a1be9350a7a20af3fb87a3e408ec59ee9467d48ab1f240ef0c017368ee2a87ba"
+    },
+    {
+      "id": "HA-P09",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:58a1b538e23f60df37f606a0c3332e125bd277dac41c74d8aaec4bdc438bbc93"
+    },
+    {
+      "id": "HA-P10",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:198018fd25e7f6a91a0b308963d898745bc4f5349b0d3ce407e00d491b9e39ec"
+    },
+    {
+      "id": "HA-P11",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:92cb76e3974de5b8d31af164bc929ae125c2ba4ee3f45bd8e83f04f6f4039222"
+    },
+    {
+      "id": "HA-P12",
+      "result": "BOUNDED_WORKFLOW_EVIDENCE_SATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:30f25fff166be0d59a9893d1793fba5d0a8760c3b243e6bf415a03af727b09e3"
+    },
+    {
+      "id": "HA-P13",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:a2953a1dcbaf7875a918e832fa453f689188f5ea95d87ea5fa98dbedcc0956c1"
+    },
+    {
+      "id": "HA-P14",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:3a11efc367dceb7cbc5cfcc49b0b5a9f2455555064679c1c59f1a770ad2d62f7"
+    },
+    {
+      "id": "HA-P15",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:93239357d1bed6458296615d50f13cf5acda81c5727339c4cc9e0fe7fac8988c"
+    },
+    {
+      "id": "HA-P16",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:8eb4c581765e0121f4f4c3d5d4ee4598df4cacaefacc81bfaa343742e0b7b882"
+    },
+    {
+      "id": "HA-P17",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:832693abdb5f8e842efbc8f518cd018530f933b5104af798cc4743215fcc22d8"
+    },
+    {
+      "id": "HA-P18",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:065088e205fbccc488a15b7b84f567192bd480d35206edf444bf75f846f35de5"
+    },
+    {
+      "id": "HA-P19",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:ac8d824bba5865a959f1986e2077969e990a5673ff366270dcf4a1051c6e7003"
+    },
+    {
+      "id": "HA-P20",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:140e82f299e8400ace990a10d72420b5f50615a4665337c8636e95700e7b1ba7"
+    },
+    {
+      "id": "HA-P21",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:42e3cda17541b96197e9f1e02b4b544cee957fe043c17d5dd1f19fbd6c48ae60"
+    },
+    {
+      "id": "HA-P22",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:e97cb4a71a310bbc24428fe1abeb9211bfa8eb217d8b210ce37b3c159b5f3393"
+    },
+    {
+      "id": "HA-P23",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:178358f4f348dc7346bc7beb9e2847559674beca5a566c482206833c02713148"
+    },
+    {
+      "id": "HA-P24",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:b8fbfa4e6b875739bba6319a2321d5434d8f4274782414912128b293755fc497"
+    },
+    {
+      "id": "HA-P25",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:7757ca7083c8bf9d172d549049d30419ff054f958b20fb29e94070ce3748da24"
+    },
+    {
+      "id": "HA-P26",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:34ece783d7975351486d62b34fcfce40c875f51c89598962d8f22a3df243b817"
+    },
+    {
+      "id": "HA-P27",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:523830a22d88e135813d17cb73628030a2e3fe5f2d1be220136dcee2fbb3d14c"
+    },
+    {
+      "id": "HA-P28",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:f048b2ae65df43639a953863a43e3a7aab29bf02c77b46ecc81ae7898460a75a"
+    },
+    {
+      "id": "HA-P29",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:4a86db51f3d67cc4889a9a6866fa1b8ffd6eff384cc913509976da5c9cc0beac"
+    },
+    {
+      "id": "HA-P30",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:08a32fa870a55616d1cf02a8b6f0a943987f0d6d2d8ce02f0ea251e623d7cd89"
+    },
+    {
+      "id": "HA-P31",
+      "result": "INSUFFICIENT_EVIDENCE",
+      "expected_reason_present": true,
+      "input_digest": "sha256:9da133d88ee6ad24d8ccd0bc0489ab48b1c37dd08f21801ac0161dee6094233f"
+    },
+    {
+      "id": "HA-P32",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:19bd6c4b14dd5174aa10aa41caf0cca8942acfed255bfb2475eef8088ec16c11"
+    },
+    {
+      "id": "HA-P33",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:11671bd50c3ce07147efb8a94c191c2f96b37c253041b8ffba28f95c3f8afc30"
+    },
+    {
+      "id": "HA-P34",
+      "result": "BOUNDED_WORKFLOW_EVIDENCE_SATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:0f463a3aa691df73271a1e21c837cfda80367311e2df3d319ca496b498b4ad01"
+    },
+    {
+      "id": "HA-P35",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:ea166843cefb48d055f1b0fa1804bfded41eb81391852746a41f089da5a1ed1d"
+    },
+    {
+      "id": "HA-P36",
+      "result": "BOUNDED_WORKFLOW_EVIDENCE_SATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:33424ebb51b11ce769edd5d3ca362410d9e99ad214e0887ef25cc765944fb267"
+    },
+    {
+      "id": "HA-P37",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:1b7ad011feab01ee4170cdddaa5cba3435fb59b65671d8912c1fcd621bac9c11"
+    },
+    {
+      "id": "HA-P38",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:8d7ca892620ad21c8b3655ad879b417775e6743f453c6aead313bdcedfd47318"
+    },
+    {
+      "id": "HA-P39",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:9fe5b90921c1ed2f570b2ce74f6519d62db2b0f71cc24591975c63f2edb9a3d5"
+    },
+    {
+      "id": "HA-P40",
+      "result": "WORKFLOW_REQUIREMENTS_UNSATISFIED",
+      "expected_reason_present": true,
+      "input_digest": "sha256:6dd6995af0b097cd5774e82b41b51871d5af5d8b113018804db65f72d9e88b88"
+    }
+  ],
+  "implementation_mutations": [
+    {
+      "mutation": "always_satisfied",
+      "killed": true,
+      "caught_by_cases": [
+        "HA-P02",
+        "HA-P03",
+        "HA-P04",
+        "HA-P05",
+        "HA-P06",
+        "HA-P07",
+        "HA-P08",
+        "HA-P09",
+        "HA-P10",
+        "HA-P11",
+        "HA-P13",
+        "HA-P14",
+        "HA-P15",
+        "HA-P16",
+        "HA-P17",
+        "HA-P18",
+        "HA-P19",
+        "HA-P20",
+        "HA-P21",
+        "HA-P22",
+        "HA-P23",
+        "HA-P24",
+        "HA-P25",
+        "HA-P26",
+        "HA-P27",
+        "HA-P28",
+        "HA-P29",
+        "HA-P30",
+        "HA-P31",
+        "HA-P32",
+        "HA-P33",
+        "HA-P35",
+        "HA-P37",
+        "HA-P38",
+        "HA-P39",
+        "HA-P40"
+      ]
+    },
+    {
+      "mutation": "accept_agent_declarations",
+      "killed": true,
+      "caught_by_cases": [
+        "HA-P03",
+        "HA-P10"
+      ]
+    },
+    {
+      "mutation": "ignore_record_trust",
+      "killed": true,
+      "caught_by_cases": [
+        "HA-P27"
+      ]
+    },
+    {
+      "mutation": "accept_wrong_red_cause",
+      "killed": true,
+      "caught_by_cases": [
+        "HA-P09"
+      ]
+    },
+    {
+      "mutation": "ignore_budget_exhaustion",
+      "killed": true,
+      "caught_by_cases": [
+        "HA-P18"
+      ]
+    },
+    {
+      "mutation": "ignore_final_subject",
+      "killed": true,
+      "caught_by_cases": [
+        "HA-P32"
+      ]
+    },
+    {
+      "mutation": "issue_permit",
+      "killed": true,
+      "caught_by_cases": [
+        "HA-P01",
+        "HA-P02",
+        "HA-P03",
+        "HA-P04",
+        "HA-P05",
+        "HA-P06",
+        "HA-P07",
+        "HA-P08",
+        "HA-P09",
+        "HA-P10",
+        "HA-P11",
+        "HA-P12",
+        "HA-P13",
+        "HA-P14",
+        "HA-P15",
+        "HA-P16",
+        "HA-P17",
+        "HA-P18",
+        "HA-P19",
+        "HA-P20",
+        "HA-P21",
+        "HA-P22",
+        "HA-P23",
+        "HA-P24",
+        "HA-P25",
+        "HA-P26",
+        "HA-P27",
+        "HA-P28",
+        "HA-P29",
+        "HA-P30",
+        "HA-P31",
+        "HA-P32",
+        "HA-P33",
+        "HA-P34",
+        "HA-P35",
+        "HA-P36",
+        "HA-P37",
+        "HA-P38",
+        "HA-P39",
+        "HA-P40"
+      ]
+    }
+  ],
+  "initial_regression_run": {
+    "tests_run": 68,
+    "failures": 5,
+    "snapshot_sha256": {
+      "IMPLEMENTATION.md": "2e739375f37d2ae7bc704350cb5dcbe909ea61f1425a12dbc6d43bef56885a09",
+      "fixtures.py": "872f357f1dec4324d5980a2ea6e9e7a36d4313d26d3022612593ce8ce1402275",
+      "initial-tests.stderr": "1e1b7a4dbf6781340e2b6b3e0570a4815e8aa9e88a489228f1703f06e43780b6",
+      "test_reducer.py": "7417edc22a85351fa18cbbb20782d87617bfa6eb4588fe680ab775f7c04caa31",
+      "frozen-cases.json": "e0bdc0df410b7f18e9d00fb5664a4b95f73a897e77a5e7f8135276c7738cafa7",
+      "reducer.py": "d9a0f262d66d578e1bbab5b3f963e80c1b49d6f772339c2f12339c54bb928cf3"
+    },
+    "meaning": "Actual local initial failure; NOT independent review or proof of historical TDD."
+  },
+  "files": [
+    {
+      "path": "reducer.py",
+      "sha256": "cc6b40c4ff8be025396350c03027bc1541415f5c09bf24dcb9ec0df9ef4ed6c8",
+      "git_blob_sha1": "e8647ad5754ce584da7a2cc5eaa968b8b3b58fcd"
+    },
+    {
+      "path": "fixtures.py",
+      "sha256": "d39e87db71ef81ed2b0a765edb75ccc403461259b28b295de03c35a535022c0e",
+      "git_blob_sha1": "7aad767558abd1163cacf72df41a5012b402eb23"
+    },
+    {
+      "path": "test_reducer.py",
+      "sha256": "9e13be5ca30be0bec8b272c221daea29fe572cac33bf71ee5273359986a2c574",
+      "git_blob_sha1": "04190cc90ddfed9afa85df31509059905e758bd2"
+    },
+    {
+      "path": "check_mutations.py",
+      "sha256": "5356a30548a97536369894496c94ca3255d9ddc0bd0d0c4a3aba97f1792f78d8",
+      "git_blob_sha1": "803650066ab0f1b406a7ee025d43d921da554996"
+    },
+    {
+      "path": "frozen-cases.json",
+      "sha256": "4859cb0cfdd1746eb52a0cb645d7083a8c795084d80878efcbcc5796b5d51367",
+      "git_blob_sha1": "a53477c12fef2a9c138838b1140017ad3002689d"
+    },
+    {
+      "path": "IMPLEMENTATION.md",
+      "sha256": "46ab11ed10afe1bf09dfec9d787c46d3cb0da683fb5a2727227251e5c5898583",
+      "git_blob_sha1": "65b050d79f79df041549a0d3fc01e8e7f85bea97"
+    }
+  ],
+  "external_target_controls_executed": 0,
+  "live_adapters_executed": 0,
+  "independent_review_performed": false,
+  "repo_wide_qualification_performed": false,
+  "authorizes_merge": false,
+  "issues_permits": false,
+  "next_gate": "Exact-candidate external review and reproduction; HA-2 remains not started."
+}
