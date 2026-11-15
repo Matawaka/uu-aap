@@ -305,6 +305,8 @@ def simulate(config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         signals.add("HARM_PRESSURE")
     if metrics["unmet_need_rate"] > thresholds["unmet_need_rate_max"]:
         signals.add("UNMET_NEED_PRESSURE")
+    if metrics["idle_capability_rate"] > thresholds["idle_capability_rate_max"]:
+        signals.add("IDLE_CAPABILITY_STRANDING")
     if (
         coalition_ratio is not None
         and coalition_ratio > thresholds["coalition_extraction_ratio_max"]
