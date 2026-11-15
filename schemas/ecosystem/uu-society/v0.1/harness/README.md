@@ -37,7 +37,8 @@ Generated receipts are local artifacts and are not canonical model state.
 - I-004 — unresolved conflicting evidence cannot be collapsed into an adverse verdict;
 - I-006 — open interaction does not imply unrestricted consequences;
 - I-013 — one failed continuity challenge does not by itself establish impersonation or justify actor-level exclusion;
-- I-014 — past/expired authority is not current authority; ARAE re-expansion after narrowing requires fresh positively bound evidence.
+- I-014 — past/expired authority is not current authority; ARAE re-expansion after narrowing requires fresh positively bound evidence;
+- I-015 — rule violation and harm are independent axes.
 
 The remaining manifest invariants are preserved as normative machine-readable requirements and should be promoted into executable checks incrementally rather than simulated with false precision.
 
@@ -54,3 +55,8 @@ S06-S10 add recovery-oriented checks:
 - expired authority cannot be replayed;
 - a failed continuity challenge may narrow consequences but not declare the person an impostor;
 - fresh independent continuity evidence may restore the PersonalAnchor, contextual TrustState and ARAE.
+
+
+## Harm / violation / repair layer
+
+S11-S15 add first-class `Harm` and `RuleViolation` entities. This makes the model able to represent harm without a formal rule violation, rule violation without observed harm, adversarial contribution, repair-driven recovery and rejection of permanent stigma.

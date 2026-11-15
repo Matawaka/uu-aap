@@ -141,6 +141,18 @@
       "label_en": "FailurePattern",
       "label_ru": "Паттерн сбоя",
       "schema_ref": "./uu-society-state.schema.json#/$defs/failurePattern"
+    },
+    {
+      "id": "Harm",
+      "label_en": "Harm",
+      "label_ru": "Вред",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/harm"
+    },
+    {
+      "id": "RuleViolation",
+      "label_en": "RuleViolation",
+      "label_ru": "Нарушение правила",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/ruleViolation"
     }
   ],
   "invariants": [
@@ -299,6 +311,30 @@
       ],
       "text_en": "Failure knowledge belongs to system learning and MUST NOT automatically become permanent personal stigma.",
       "text_ru": "Знание о сбое относится к обучению системы и НЕ ДОЛЖНО автоматически превращаться в постоянную стигму человека."
+    },
+    {
+      "id": "R-006",
+      "when": [
+        "Harm is observed or verified"
+      ],
+      "requires": [
+        "evaluate harm independently from rule violation",
+        "preserve evidence",
+        "offer repair path when applicable"
+      ],
+      "text_en": "Observed harm MUST NOT by itself establish a rule violation; harm containment and repair are separate from rule adjudication.",
+      "text_ru": "Наблюдаемый вред сам по себе НЕ ДОЛЖЕН устанавливать нарушение правила; локализация и восстановление вреда отделены от рассмотрения нарушения."
+    },
+    {
+      "id": "R-007",
+      "when": [
+        "RuleViolation is observed or verified"
+      ],
+      "requires": [
+        "evaluate actual harm independently"
+      ],
+      "text_en": "A rule violation MUST NOT by itself establish that harm occurred.",
+      "text_ru": "Нарушение правила само по себе НЕ ДОЛЖНО устанавливать факт причинения вреда."
     }
   ],
   "transition_catalog": {
@@ -934,6 +970,90 @@
       [
         "active",
         "retired"
+      ]
+    ],
+    "Harm": [
+      [
+        "suspected",
+        "observed"
+      ],
+      [
+        "observed",
+        "verified"
+      ],
+      [
+        "verified",
+        "repaired"
+      ],
+      [
+        "suspected",
+        "disputed"
+      ],
+      [
+        "observed",
+        "disputed"
+      ],
+      [
+        "verified",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "observed"
+      ],
+      [
+        "disputed",
+        "verified"
+      ],
+      [
+        "verified",
+        "superseded"
+      ],
+      [
+        "repaired",
+        "superseded"
+      ]
+    ],
+    "RuleViolation": [
+      [
+        "alleged",
+        "observed"
+      ],
+      [
+        "observed",
+        "verified"
+      ],
+      [
+        "verified",
+        "resolved"
+      ],
+      [
+        "alleged",
+        "disputed"
+      ],
+      [
+        "observed",
+        "disputed"
+      ],
+      [
+        "verified",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "observed"
+      ],
+      [
+        "disputed",
+        "verified"
+      ],
+      [
+        "verified",
+        "superseded"
+      ],
+      [
+        "resolved",
+        "superseded"
       ]
     ]
   },

@@ -1,0 +1,176 @@
+{
+  "scenario_id": "S14-repair-and-recovery",
+  "scenario_version": "0.1",
+  "title_en": "Repair-driven recovery",
+  "title_ru": "Восстановление через исправление вреда",
+  "purpose": "Verify that completed repair can change harm state, contextual trust and bounded reachability.",
+  "evaluation_time": "2026-11-15T09:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "repair_completed_with_fresh_evidence"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-repair-accepted",
+      "entity_type": "Repair",
+      "entity_ref": "urn:uu-aap:uu-society:repair:s14",
+      "from_state": "proposed",
+      "to_state": "accepted",
+      "occurred_at": "2026-11-15T09:05:00Z",
+      "reason": "Repair plan accepted.",
+      "evidence_refs": [],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-repair-start",
+      "entity_type": "Repair",
+      "entity_ref": "urn:uu-aap:uu-society:repair:s14",
+      "from_state": "accepted",
+      "to_state": "in_progress",
+      "occurred_at": "2026-11-15T09:06:00Z",
+      "reason": "Repair begins.",
+      "evidence_refs": [],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-repair-complete",
+      "entity_type": "Repair",
+      "entity_ref": "urn:uu-aap:uu-society:repair:s14",
+      "from_state": "in_progress",
+      "to_state": "completed",
+      "occurred_at": "2026-11-15T09:12:00Z",
+      "reason": "Repair completed.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-evidence-attested",
+      "entity_type": "EvidenceEvent",
+      "entity_ref": "urn:uu-aap:uu-society:evidence-event:s14-repair",
+      "from_state": "observed",
+      "to_state": "attested",
+      "occurred_at": "2026-11-15T09:13:00Z",
+      "reason": "Attest repair completion.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-harm-repaired",
+      "entity_type": "Harm",
+      "entity_ref": "urn:uu-aap:uu-society:harm:s14",
+      "from_state": "verified",
+      "to_state": "repaired",
+      "occurred_at": "2026-11-15T09:14:00Z",
+      "reason": "Mark the verified harm as repaired.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-trust-mixed",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s14",
+      "from_state": "adverse",
+      "to_state": "mixed",
+      "occurred_at": "2026-11-15T09:15:00Z",
+      "reason": "Repair changes the contextual evidence posture.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-trust-supporting",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s14",
+      "from_state": "mixed",
+      "to_state": "supporting",
+      "occurred_at": "2026-11-15T09:16:00Z",
+      "reason": "Fresh repair evidence supports restoration.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s14-arae-restore",
+      "entity_type": "ARAEState",
+      "entity_ref": "urn:uu-aap:uu-society:arae-state:s14",
+      "from_state": "narrowed",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T09:17:00Z",
+      "reason": "Restore bounded reachability using fresh attested repair evidence.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s14-repair"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "PASS",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s14": "active",
+      "urn:uu-aap:uu-society:actor:s14-affected": "active",
+      "urn:uu-aap:uu-society:repair:s14": "completed",
+      "urn:uu-aap:uu-society:evidence-event:s14-repair": "attested",
+      "urn:uu-aap:uu-society:harm:s14": "repaired",
+      "urn:uu-aap:uu-society:trust-state:s14": "supporting",
+      "urn:uu-aap:uu-society:arae-state:s14": "active"
+    },
+    "expected_violation_ids": [],
+    "required_invariants_preserved": [
+      "I-008",
+      "I-014",
+      "I-015"
+    ]
+  }
+}

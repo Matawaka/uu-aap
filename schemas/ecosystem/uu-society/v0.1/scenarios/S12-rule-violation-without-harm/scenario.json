@@ -1,0 +1,64 @@
+{
+  "scenario_id": "S12-rule-violation-without-harm",
+  "scenario_version": "0.1",
+  "title_en": "Rule violation without observed harm",
+  "title_ru": "Нарушение правила без наблюдаемого вреда",
+  "purpose": "Record a procedural violation while rejecting automatic inference that harm occurred.",
+  "evaluation_time": "2026-11-15T09:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "rule_violation_without_harm"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s12-rule-observed",
+      "entity_type": "RuleViolation",
+      "entity_ref": "urn:uu-aap:uu-society:rule-violation:s12",
+      "from_state": "alleged",
+      "to_state": "observed",
+      "occurred_at": "2026-11-15T09:05:00Z",
+      "reason": "Record the procedural violation.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s12-rule"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s12-rule-implies-harm",
+      "entity_type": "Harm",
+      "entity_ref": "urn:uu-aap:uu-society:harm:s12",
+      "from_state": "suspected",
+      "to_state": "observed",
+      "occurred_at": "2026-11-15T09:06:00Z",
+      "reason": "Attempt to infer actual harm solely from rule violation.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s12-rule"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s12": "active",
+      "urn:uu-aap:uu-society:rule-violation:s12": "observed",
+      "urn:uu-aap:uu-society:harm:s12": "suspected"
+    },
+    "expected_violation_ids": [
+      "I-015"
+    ],
+    "required_invariants_preserved": [
+      "I-015"
+    ]
+  }
+}

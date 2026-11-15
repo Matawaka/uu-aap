@@ -1,0 +1,85 @@
+{
+  "scenario_id": "S11-harm-without-rule-violation",
+  "scenario_version": "0.1",
+  "title_en": "Harm without rule violation",
+  "title_ru": "Вред без нарушения правила",
+  "purpose": "Represent factual harm and repair while rejecting automatic conversion of harm into rule violation.",
+  "evaluation_time": "2026-11-15T09:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "harm_without_rule_violation"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s11-harm-observed",
+      "entity_type": "Harm",
+      "entity_ref": "urn:uu-aap:uu-society:harm:s11",
+      "from_state": "suspected",
+      "to_state": "observed",
+      "occurred_at": "2026-11-15T09:05:00Z",
+      "reason": "Record factual harm independently from rule adjudication.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s11-harm"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s11-repair-accepted",
+      "entity_type": "Repair",
+      "entity_ref": "urn:uu-aap:uu-society:repair:s11",
+      "from_state": "proposed",
+      "to_state": "accepted",
+      "occurred_at": "2026-11-15T09:06:00Z",
+      "reason": "Open a repair path despite absence of established violation.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s11-harm"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s11-harm-implies-violation",
+      "entity_type": "RuleViolation",
+      "entity_ref": "urn:uu-aap:uu-society:rule-violation:s11",
+      "from_state": "alleged",
+      "to_state": "observed",
+      "occurred_at": "2026-11-15T09:07:00Z",
+      "reason": "Attempt to infer rule violation solely from observed harm.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s11-harm"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s11-source": "active",
+      "urn:uu-aap:uu-society:actor:s11-affected": "active",
+      "urn:uu-aap:uu-society:harm:s11": "observed",
+      "urn:uu-aap:uu-society:repair:s11": "accepted",
+      "urn:uu-aap:uu-society:rule-violation:s11": "alleged"
+    },
+    "expected_violation_ids": [
+      "I-015"
+    ],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-015"
+    ]
+  }
+}

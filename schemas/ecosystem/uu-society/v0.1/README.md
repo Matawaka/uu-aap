@@ -24,6 +24,7 @@ Actor
   -> ActionLease
   -> Action
   -> Outcome
+  -> Harm / RuleViolation (orthogonal)
   -> Receipt
   -> Contribution / Repair / Dispute
   -> FailurePattern / Learning
@@ -55,7 +56,7 @@ Actor
 - ARAE constrains reachable consequences, not human dignity.
 - Failure memory is system learning, not permanent personal stigma.
 - Contributions are non-fungible by default; v0.1 does not assign a universal exchange value.
-- Rule violation and harm are separate dimensions.
+- `Harm` and `RuleViolation` are first-class, orthogonal state entities: harm does not prove violation, and violation does not prove harm.
 - State transition validity requires fresh evidence/authority at the transition frontier.
 
 ## Machine-readable bilingual annotations

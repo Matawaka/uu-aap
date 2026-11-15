@@ -1,0 +1,141 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s11-harm-without-rule-violation",
+  "observed_at": "2026-11-15T09:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s11-source",
+      "state": "active",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    },
+    {
+      "id": "urn:uu-aap:uu-society:actor:s11-affected",
+      "state": "active",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s11-harm",
+      "state": "attested",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s11-source",
+        "urn:uu-aap:uu-society:actor:s11-affected"
+      ],
+      "event_type": "observed_unintended_harm",
+      "observed_at": "2026-11-15T09:02:00Z",
+      "claim": "A permitted action caused an unintended material loss without evidence that a rule was violated.",
+      "source_refs": [],
+      "privacy_scope": "counterparty",
+      "derived_from_refs": [],
+      "retention_until": null
+    }
+  ],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [
+    {
+      "id": "urn:uu-aap:uu-society:repair:s11",
+      "state": "proposed",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "responsible_actor_refs": [
+        "urn:uu-aap:uu-society:actor:s11-source"
+      ],
+      "affected_actor_refs": [
+        "urn:uu-aap:uu-society:actor:s11-affected"
+      ],
+      "harm_refs": [
+        "urn:uu-aap:uu-society:harm:s11"
+      ],
+      "repair_actions": [
+        "restore damaged resource",
+        "compensate directly attributable loss"
+      ]
+    }
+  ],
+  "disputes": [],
+  "failure_patterns": [],
+  "harms": [
+    {
+      "id": "urn:uu-aap:uu-society:harm:s11",
+      "state": "suspected",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "affected_actor_refs": [
+        "urn:uu-aap:uu-society:actor:s11-affected"
+      ],
+      "source_outcome_refs": [],
+      "harm_type": "material",
+      "description": "Unintended material loss caused by an otherwise permitted action.",
+      "severity_class": "moderate",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s11-harm"
+      ],
+      "repair_refs": [
+        "urn:uu-aap:uu-society:repair:s11"
+      ]
+    }
+  ],
+  "rule_violations": [
+    {
+      "id": "urn:uu-aap:uu-society:rule-violation:s11",
+      "state": "alleged",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s11-source",
+      "rule_identifier": "community:ordinary-care:v0.1",
+      "description": "Candidate inference that harm itself proves a rule violation.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s11-harm"
+      ],
+      "harm_refs": [
+        "urn:uu-aap:uu-society:harm:s11"
+      ]
+    }
+  ]
+}

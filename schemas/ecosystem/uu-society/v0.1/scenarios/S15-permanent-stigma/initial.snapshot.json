@@ -1,0 +1,159 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s15-permanent-stigma",
+  "observed_at": "2026-11-15T09:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s15",
+      "state": "active",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s15-repair",
+      "state": "attested",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s15"
+      ],
+      "event_type": "historical_failure_repaired",
+      "observed_at": "2026-11-15T08:30:00Z",
+      "claim": "Historical harm was repaired; the failure class remains in system memory for regression prevention.",
+      "source_refs": [],
+      "privacy_scope": "cell",
+      "derived_from_refs": [],
+      "retention_until": null
+    }
+  ],
+  "trust_states": [
+    {
+      "id": "urn:uu-aap:uu-society:trust-state:s15",
+      "state": "supporting",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:actor:s15",
+      "context": "post-repair bounded interaction",
+      "as_of": "2026-11-15T09:00:00Z",
+      "dimensions": [
+        {
+          "dimension": "repair",
+          "evidence_posture": "supporting",
+          "evidence_refs": [
+            "urn:uu-aap:uu-society:evidence-event:s15-repair"
+          ],
+          "scope": "post-repair interaction"
+        }
+      ],
+      "overall_numeric_score": null
+    }
+  ],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [
+    {
+      "id": "urn:uu-aap:uu-society:repair:s15",
+      "state": "completed",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "responsible_actor_refs": [
+        "urn:uu-aap:uu-society:actor:s15"
+      ],
+      "affected_actor_refs": [],
+      "harm_refs": [
+        "urn:uu-aap:uu-society:harm:s15"
+      ],
+      "repair_actions": [
+        "completed restoration"
+      ]
+    }
+  ],
+  "disputes": [],
+  "failure_patterns": [
+    {
+      "id": "urn:uu-aap:uu-society:failure-pattern:s15",
+      "state": "regression_covered",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "trigger": "historical failure",
+      "preconditions": [
+        "historical conditions"
+      ],
+      "exploit_path": [
+        "historical path"
+      ],
+      "observed_effect": "past harm",
+      "containment": [
+        "completed"
+      ],
+      "repair": [
+        "completed"
+      ],
+      "prevention": [
+        "regression test"
+      ],
+      "regression_test_refs": [
+        "urn:external:test:s15"
+      ],
+      "person_stigma_allowed": false
+    }
+  ],
+  "harms": [
+    {
+      "id": "urn:uu-aap:uu-society:harm:s15",
+      "state": "repaired",
+      "created_at": "2026-11-15T09:00:00Z",
+      "updated_at": "2026-11-15T09:00:00Z",
+      "provenance_refs": [],
+      "affected_actor_refs": [],
+      "source_outcome_refs": [],
+      "harm_type": "material",
+      "description": "Historical harm already repaired.",
+      "severity_class": "moderate",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s15-repair"
+      ],
+      "repair_refs": [
+        "urn:uu-aap:uu-society:repair:s15"
+      ]
+    }
+  ],
+  "rule_violations": []
+}

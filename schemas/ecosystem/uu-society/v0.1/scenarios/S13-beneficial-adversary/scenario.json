@@ -1,0 +1,119 @@
+{
+  "scenario_id": "S13-beneficial-adversary",
+  "scenario_version": "0.1",
+  "title_en": "Beneficial adversarial actor",
+  "title_ru": "Полезный состязательный участник",
+  "purpose": "Allow violation accountability and adversarial contribution to coexist without collapsing one into the other.",
+  "evaluation_time": "2026-11-15T09:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "bounded_adversarial_discovery",
+    "no_external_harm"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s13-violation-verified",
+      "entity_type": "RuleViolation",
+      "entity_ref": "urn:uu-aap:uu-society:rule-violation:s13",
+      "from_state": "observed",
+      "to_state": "verified",
+      "occurred_at": "2026-11-15T09:05:00Z",
+      "reason": "Verify the procedural violation independently of contribution value.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s13"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s13-failure-confirmed",
+      "entity_type": "FailurePattern",
+      "entity_ref": "urn:uu-aap:uu-society:failure-pattern:s13",
+      "from_state": "candidate",
+      "to_state": "confirmed",
+      "occurred_at": "2026-11-15T09:06:00Z",
+      "reason": "Confirm the discovered failure pattern.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s13"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s13-contribution-observed",
+      "entity_type": "Contribution",
+      "entity_ref": "urn:uu-aap:uu-society:contribution:s13",
+      "from_state": "proposed",
+      "to_state": "observed",
+      "occurred_at": "2026-11-15T09:07:00Z",
+      "reason": "Record the adversarial discovery as a contribution.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s13"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s13-contribution-verified",
+      "entity_type": "Contribution",
+      "entity_ref": "urn:uu-aap:uu-society:contribution:s13",
+      "from_state": "observed",
+      "to_state": "verified",
+      "occurred_at": "2026-11-15T09:08:00Z",
+      "reason": "Verify reproducibility of the discovered weakness.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s13"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s13-failure-mitigated",
+      "entity_type": "FailurePattern",
+      "entity_ref": "urn:uu-aap:uu-society:failure-pattern:s13",
+      "from_state": "confirmed",
+      "to_state": "mitigated",
+      "occurred_at": "2026-11-15T09:09:00Z",
+      "reason": "Mitigation closes the reproduced failure path.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s13"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "PASS",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s13": "active",
+      "urn:uu-aap:uu-society:rule-violation:s13": "verified",
+      "urn:uu-aap:uu-society:failure-pattern:s13": "mitigated",
+      "urn:uu-aap:uu-society:contribution:s13": "verified"
+    },
+    "expected_violation_ids": [],
+    "required_invariants_preserved": [
+      "I-008",
+      "I-015"
+    ]
+  }
+}

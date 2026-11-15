@@ -1,0 +1,48 @@
+{
+  "scenario_id": "S15-permanent-stigma",
+  "scenario_version": "0.1",
+  "title_en": "Permanent stigma attack",
+  "title_ru": "Попытка постоянной стигматизации",
+  "purpose": "Reject permanent person-level restriction based solely on a repaired historical failure retained for system learning.",
+  "evaluation_time": "2026-11-15T09:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "historical_failure_repaired"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s15-permanent-limit",
+      "entity_type": "Actor",
+      "entity_ref": "urn:uu-aap:uu-society:actor:s15",
+      "from_state": "active",
+      "to_state": "limited",
+      "occurred_at": "2026-11-15T09:05:00Z",
+      "reason": "Attempt to impose permanent person-level restriction solely because a repaired historical failure remains in system memory.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s15-repair"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s15": "active",
+      "urn:uu-aap:uu-society:harm:s15": "repaired",
+      "urn:uu-aap:uu-society:repair:s15": "completed",
+      "urn:uu-aap:uu-society:failure-pattern:s15": "regression_covered",
+      "urn:uu-aap:uu-society:trust-state:s15": "supporting"
+    },
+    "expected_violation_ids": [
+      "I-008"
+    ],
+    "required_invariants_preserved": [
+      "I-008"
+    ]
+  }
+}
