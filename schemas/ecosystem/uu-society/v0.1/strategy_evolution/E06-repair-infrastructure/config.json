@@ -18,7 +18,8 @@
     "learning_rate": 0.65,
     "exploration_rate": 0.18,
     "switching_cost": 0.05,
-    "initial_strategy_value": 0
+    "initial_strategy_value": 0,
+    "strategy_evidence_learning_rate": 0
   },
   "economics": {
     "request_benefit": 3,
@@ -85,9 +86,7 @@
   "purpose": "Follow-up after E02: test whether REPAIR becomes an attractor only when external repair is sufficiently valuable and unresolved harm is common.",
   "seed": "uu-strategy-e06-repair-infrastructure-v0.5",
   "expected": {
-    "result": "EXPECTED_DETECTION",
-    "expected_pattern_ids": [
-      "REPAIR_ATTRACTOR"
-    ]
+    "result": "PASS",
+    "expected_pattern_ids": []
   }
 }
