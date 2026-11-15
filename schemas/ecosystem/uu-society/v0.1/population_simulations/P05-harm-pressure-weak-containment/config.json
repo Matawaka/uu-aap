@@ -1,0 +1,52 @@
+{
+  "simulation_id": "P05-harm-pressure-weak-containment",
+  "simulation_version": "0.1",
+  "title_en": "Harm pressure under weak containment",
+  "title_ru": "Давление вреда при слабом containment",
+  "purpose": "Isolate elevated harm when harmful providers remain rapidly reachable because restriction windows are intentionally short.",
+  "seed": "uu-society-p05-harm-weak-containment-v0.1",
+  "actor_count": 100,
+  "interaction_count": 8000,
+  "categories": [
+    "transport",
+    "tool",
+    "access"
+  ],
+  "population": {
+    "adversarial_fraction": 0.35,
+    "coalition_fraction": 0,
+    "base_capability_probability": 0.9,
+    "base_willingness_probability": 0.95
+  },
+  "matching": {
+    "candidate_pool_size": 12,
+    "policy": "uniform_capable",
+    "feedback_strength": 0,
+    "coalition_request_bias": 0
+  },
+  "dynamics": {
+    "accidental_harm_rate": 0.01,
+    "adversarial_harm_rate": 0.7,
+    "ordinary_breach_rate": 0.01,
+    "adversarial_breach_rate": 0.1,
+    "repair_probability_cooperative": 0.85,
+    "repair_probability_adversarial": 0.02,
+    "restriction_duration_interactions": 2,
+    "restriction_renewal_limit": 20
+  },
+  "diagnostic_thresholds": {
+    "authority_top10_share_max": 0.25,
+    "access_gini_max": 0.25,
+    "restriction_actor_time_share_max": 0.05,
+    "harm_rate_max": 0.05,
+    "unmet_need_rate_max": 0.15,
+    "idle_capability_rate_max": 0.1,
+    "coalition_extraction_ratio_max": 2
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_signal_ids": [
+      "HARM_PRESSURE"
+    ]
+  }
+}
