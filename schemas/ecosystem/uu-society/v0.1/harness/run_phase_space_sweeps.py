@@ -281,6 +281,7 @@ def main() -> int:
             print("  boundary_edge_count:", receipt["boundary_edge_count"])
             print("  axis_transition_counts:", json.dumps(receipt["axis_transition_counts"], sort_keys=True))
             print("  pareto_frontier_size:", len(receipt["pareto_frontier_cell_ids"]))
+            print("  cells_digest:", receipt["cells_digest"])
 
         if args.write_artifacts and receipt:
             out = ROOT / "harness" / ".artifacts" / "phase-space" / sweep_id
