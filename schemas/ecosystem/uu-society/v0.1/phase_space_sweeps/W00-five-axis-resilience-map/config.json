@@ -16,13 +16,11 @@
   ],
   "fixed": {
     "population": {
-      "coalition_fraction": 0,
       "base_capability_probability": 0.6
     },
     "matching": {
       "candidate_pool_size": 8,
-      "policy": "context_evidence_weighted",
-      "coalition_request_bias": 0
+      "policy": "context_evidence_weighted"
     },
     "dynamics": {
       "accidental_harm_rate": 0.01,
@@ -67,6 +65,12 @@
       0.25,
       0.6,
       0.9
+    ],
+    "coalition_fraction": [
+      0
+    ],
+    "coalition_request_bias": [
+      0
     ]
   },
   "expected": {
