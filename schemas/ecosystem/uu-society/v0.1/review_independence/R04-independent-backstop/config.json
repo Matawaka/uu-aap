@@ -1,0 +1,34 @@
+{
+  "case_id": "R04-independent-backstop",
+  "description": "independent backstop",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "edges": [
+    {
+      "from": "sponsor",
+      "to": "a",
+      "kind": "funds"
+    },
+    {
+      "from": "sponsor",
+      "to": "b",
+      "kind": "funds"
+    }
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "expect_independent": true,
+  "expect_formal_quorum": true
+}
