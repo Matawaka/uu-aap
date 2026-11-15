@@ -1,0 +1,130 @@
+{
+  "experiment_id": "C03-captured-review",
+  "experiment_version": "0.7",
+  "title_en": "Captured review approval path",
+  "title_ru": "Траектория одобрения зависимым review",
+  "purpose": "Test whether a reviewer sharing the beneficiary's interest can approve a sequence that erodes its own independence.",
+  "seed": "uu-constitutional-C03-captured-review-v0.7",
+  "mode": "captured_review",
+  "cycle_count": 3,
+  "initial_state": {
+    "authority_scope": 0.3,
+    "review_independence": 0.9,
+    "rights_floor_strength": 0.9,
+    "amendment_friction": 0.8,
+    "transparency": 0.9,
+    "revocability": 0.9
+  },
+  "baseline_outcome": {
+    "fulfillment": 0.96,
+    "harm": 0.03,
+    "exit_share": 0.12,
+    "access_gini": 0.18,
+    "outsider_gap": 0.03
+  },
+  "rights_floor_proxy": {
+    "min_fulfillment": 0.85,
+    "max_harm": 0.15,
+    "max_exit_share": 0.4,
+    "max_access_gini": 0.35,
+    "max_outsider_gap": 0.15
+  },
+  "constitutional_limits": {
+    "max_authority_scope": 0.6,
+    "min_review_independence": 0.6,
+    "min_rights_floor_strength": 0.7,
+    "min_amendment_friction": 0.5,
+    "min_transparency": 0.6,
+    "min_revocability": 0.6,
+    "max_local_structural_step": 0.15,
+    "require_sunset_for_power_expansion": false
+  },
+  "proposals": [
+    {
+      "proposal_id": "p-review-appointment-integration",
+      "title_en": "Integrated reviewer appointment",
+      "title_ru": "Интеграция назначения review",
+      "stated_general_purpose": true,
+      "reviewer_conflict": true,
+      "restrictive": false,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0,
+        "review_independence": -0.15,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0.002,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    },
+    {
+      "proposal_id": "p-delegated-authority",
+      "title_en": "Delegated authority consolidation",
+      "title_ru": "Консолидация делегированных полномочий",
+      "stated_general_purpose": true,
+      "reviewer_conflict": true,
+      "restrictive": true,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0.15,
+        "review_independence": -0.1,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0,
+        "harm": -0.003,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    },
+    {
+      "proposal_id": "p-general-efficiency",
+      "title_en": "General administrative efficiency",
+      "title_ru": "Общая административная эффективность",
+      "stated_general_purpose": true,
+      "reviewer_conflict": true,
+      "restrictive": false,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0.1,
+        "review_independence": 0,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": -0.1,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0.003,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_WITHOUT_RIGHTS_FLOOR_BREACH",
+      "CONFLICTED_REVIEW_APPROVAL",
+      "CONSTITUTIONAL_ADAPTATION",
+      "GENERAL_PURPOSE_CAPTURE_PATH",
+      "LEGITIMATE_STEPS_ACCUMULATE_CAPTURE",
+      "REVIEW_INDEPENDENCE_ERODED"
+    ]
+  }
+}
