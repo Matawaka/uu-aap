@@ -1,0 +1,50 @@
+{
+  "scenario_id": "S19-agent-delegation-overflow",
+  "scenario_version": "0.1",
+  "title_en": "Agent delegation authority amplification",
+  "title_ru": "Расширение полномочий при делегировании агенту",
+  "purpose": "Reject a child delegation that exceeds its parent's effects, prohibitions, duration or redelegation depth.",
+  "evaluation_time": "2026-11-15T10:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "agent_delegation_chain"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s19-amplify",
+      "entity_type": "Delegation",
+      "entity_ref": "urn:uu-aap:uu-society:delegation:s19-child",
+      "from_state": "proposed",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T10:05:00Z",
+      "reason": "Attempt to delegate delete authority, remove a parent prohibition, extend duration and preserve depth.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s19"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s19"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s19-human": "active",
+      "urn:uu-aap:uu-society:actor:s19-agent-a": "active",
+      "urn:uu-aap:uu-society:actor:s19-agent-b": "active",
+      "urn:uu-aap:uu-society:delegation:s19-parent": "active",
+      "urn:uu-aap:uu-society:delegation:s19-child": "proposed"
+    },
+    "expected_violation_ids": [
+      "I-017"
+    ],
+    "required_invariants_preserved": [
+      "I-017"
+    ]
+  }
+}
