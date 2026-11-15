@@ -1,0 +1,70 @@
+{
+  "simulation_version": "0.4",
+  "actor_count": 100,
+  "interaction_count": 12000,
+  "epoch_count": 6,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool"
+  ],
+  "matching": {
+    "candidate_pool_size": 10,
+    "affinity_weight": 4,
+    "reciprocity_weight": 0
+  },
+  "dynamics": {
+    "ordinary_harm_rate": 0.01,
+    "adversarial_harm_rate": 0.01,
+    "ordinary_breach_rate": 0.015,
+    "adversarial_breach_rate": 0.015,
+    "repair_probability_cooperative": 0.85,
+    "repair_probability_adversarial": 0.2
+  },
+  "adaptation": {
+    "policy": "local_contextual",
+    "initial_affinity": 0.6,
+    "positive_step": 0.03,
+    "harm_penalty": 0.45,
+    "breach_penalty": 0.25,
+    "repair_restore": 0.3,
+    "forgetting_rate": 0.02,
+    "reciprocity_threshold": 1,
+    "reciprocity_penalty": 0.6,
+    "extractor_provider_multiplier": 0.05,
+    "contextual_contribution_enabled": true,
+    "contextual_contribution_threshold": 2,
+    "contextual_contribution_penalty": 0.2,
+    "protected_need_provider_multiplier": 0.1
+  },
+  "simulation_id": "A06-contextual-contribution",
+  "title_en": "Context-scoped contribution evidence",
+  "title_ru": "Контекстно ограниченное evidence вклада",
+  "purpose": "Test whether contribution evidence aggregated only within the same resource context can contain counterpart-rotation extraction without creating a universal person score.",
+  "seed": "uu-adapt-a04-extraction-open-v0.4",
+  "population": {
+    "adversarial_fraction": 0,
+    "extractor_fraction": 0.25,
+    "base_capability_probability": 0.75,
+    "base_willingness_probability": 0.88,
+    "protected_need_fraction": 0
+  },
+  "diagnostic_thresholds": {
+    "tail_harm_ratio_max": 0,
+    "tail_fulfillment_drop_max": 0.1,
+    "repeat_harm_share_max": 1,
+    "isolation_fraction_max": 1,
+    "relationship_recovery_rate_min": 1,
+    "extraction_imbalance_p95_max": 80,
+    "context_spillover_share_max": 1,
+    "protected_need_fulfillment_gap_max": 0.05
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CONTEXTUAL_CONTRIBUTION_CONTAINS_ROTATION",
+      "CONTRIBUTION_FRICTION_OVERCONSTRAINT"
+    ]
+  }
+}

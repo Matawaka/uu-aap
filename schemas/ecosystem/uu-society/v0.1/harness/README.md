@@ -122,3 +122,36 @@ Reference landscapes:
 - W01: 32 cells focused on coalition fraction × coalition request bias.
 
 Pinned cell digests make accidental changes to the synthetic landscape visible in CI.
+
+
+## Endogenous adaptation v0.4
+
+This layer lets synthetic actors change future interaction behavior from prior experience without creating a universal person score.
+
+Mechanisms:
+- local observer → subject → context affinity;
+- bilateral reciprocity balance;
+- local avoidance after harm/breach;
+- Repair-based relationship restoration;
+- bounded forgetting toward baseline;
+- deliberately bad `global_generalized` comparison policy.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_adaptive_simulations.py
+```
+
+Reference experiments A00-A05 compare static behavior, local avoidance, global spillover, Repair/recovery, extraction without reciprocity and bilateral contextual reciprocity.
+
+
+### v0.4 reference findings
+
+The first adaptive run exposed a failure mode rather than merely confirming the design:
+
+- A04 extractor imbalance p95 without reciprocity: **129**.
+- A05 bilateral reciprocity: **127** — almost unchanged because an extractor can rotate counterparties.
+- A06 context-scoped contribution evidence: extractor imbalance p95 falls to **28**, but fulfilled need rate falls to **0.671** and tail-epoch fulfillment to **0.565**. This is explicitly reported as `CONTRIBUTION_FRICTION_OVERCONSTRAINT`.
+- A07 protected-need actors remain at **0.982** fulfillment while ordinary actors are **0.845**. The experiment therefore keeps `LEGITIMATE_ASYMMETRY_PRESERVED` separate from extractor detection.
+
+This means bilateral reciprocity is insufficient against counterpart rotation, while broader context evidence can over-constrain the network. The model treats that trade-off as a result, not as a reason to lower thresholds.
