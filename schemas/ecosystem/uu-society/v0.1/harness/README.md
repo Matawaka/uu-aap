@@ -175,3 +175,17 @@ Run:
 ```bash
 python schemas/ecosystem/uu-society/v0.1/harness/run_strategy_evolution.py
 ```
+
+
+### v0.5 experimental findings
+
+The first strategy-evolution sequence produced several falsifications and follow-ups:
+
+- E01: extraction incentives did not create a pure extractor society. They produced a coupled **EXTRACT + EXIT** regime: tail shares ~0.433 EXTRACT and 0.500 EXIT, while fulfillment fell from ~0.995 to ~0.684.
+- E02/E04: high Repair value and coalition value alone did not create corresponding attractors.
+- E05/E06/E07: even stronger direct private rewards still left COOPERATE at 0.300, REPAIR at ~0.233 and COALITION at 0.375.
+- E08: anonymous aggregate StrategyOutcomeEvidence changed the result sharply: COOPERATE reached ~0.883 with tail fulfillment 1.000.
+- E09: the same evidence mechanism did **not** rescue Repair under high systemic risk; EXIT reached ~0.717. Making Repair lucrative is insufficient when participation itself is too dangerous.
+- E10: COALITION reached 0.850 under strategy-level evidence and strong internal network benefits, but the measured outsider fulfillment gap remained 0 in this synthetic configuration.
+
+StrategyOutcomeEvidence reports outcome evidence about a policy, not reputation about persons.
