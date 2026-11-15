@@ -16,13 +16,13 @@
   ],
   "fixed": {
     "population": {
-      "coalition_fraction": 0.05,
+      "coalition_fraction": 0,
       "base_capability_probability": 0.6
     },
     "matching": {
       "candidate_pool_size": 8,
       "policy": "context_evidence_weighted",
-      "coalition_request_bias": 0.25
+      "coalition_request_bias": 0
     },
     "dynamics": {
       "accidental_harm_rate": 0.01,
@@ -74,12 +74,11 @@
     "min_signature_count": 3,
     "min_boundary_edge_count": 10,
     "required_signal_coverage": [
-      "ACCESS_INEQUALITY",
+      "AUTHORITY_CONCENTRATION",
       "RESTRICTION_INERTIA",
       "HARM_PRESSURE",
       "UNMET_NEED_PRESSURE",
-      "IDLE_CAPABILITY_STRANDING",
-      "COALITION_EXTRACTION"
+      "IDLE_CAPABILITY_STRANDING"
     ]
   }
 }
