@@ -54,6 +54,8 @@ COLLECTION_BY_ENTITY_TYPE = {
     "Repair": "repairs",
     "Dispute": "disputes",
     "FailurePattern": "failure_patterns",
+    "Harm": "harms",
+    "RuleViolation": "rule_violations",
 }
 
 ADVERSE_TRUST_STATES = {"mixed", "adverse"}
@@ -277,6 +279,36 @@ def semantic_guard(
             and event["to_state"] in {"limited", "disputed", "withdrawn"}
         ):
             violations.append("I-013")
+
+    # I-015: rule violation and harm are independent axes.
+    if "harm_without_rule_violation" in facts:
+        if (
+            event["entity_type"] == "RuleViolation"
+            and event["to_state"] in {"observed", "verified"}
+        ):
+            violations.append("I-015")
+
+    if "rule_violation_without_harm" in facts:
+        if (
+            event["entity_type"] == "Harm"
+            and event["to_state"] in {"observed", "verified"}
+        ):
+            violations.append("I-015")
+
+    # I-008: completed repair and retained system learning must not be turned
+    # into permanent person-level exclusion solely because the failure exists
+    # in historical memory.
+    if "historical_failure_repaired" in facts:
+        if (
+            event["entity_type"] == "Actor"
+            and event["to_state"] in {"limited", "disputed", "withdrawn"}
+        ):
+            violations.append("I-008")
+        if (
+            event["entity_type"] == "TrustState"
+            and event["to_state"] == "adverse"
+        ):
+            violations.append("I-008")
 
     # I-014: widening a previously narrowed/suspended ARAE requires fresh,
     # positively bound evidence at the current transition frontier.
