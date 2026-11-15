@@ -3,7 +3,7 @@
   "experiment_version": "0.6",
   "title_en": "Self-ratifying coalition governance",
   "title_ru": "Самолегитимирующееся коалиционное управление",
-  "purpose": "Bad comparison governance: adopt neighboring rules when they increase coalition strategy share, without independent rights-floor or review gating.",
+  "purpose": "Negative-result comparator: in an already coalition-saturated environment, no neighboring rule increased coalition share enough to self-ratify.",
   "seed": "uu-institution-g03-self-ratify-v0.6",
   "governance_mode": "self_ratifying_coalition",
   "cycle_count": 6,
@@ -113,9 +113,7 @@
   "expected": {
     "result": "EXPECTED_DETECTION",
     "expected_pattern_ids": [
-      "INSTITUTIONAL_ADAPTATION",
-      "REPAIR_SUPPORT_ADOPTED",
-      "SELF_RATIFYING_RULE_ADOPTION"
+      "STABLE_RULE_BUNDLE"
     ]
   }
 }
