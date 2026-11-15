@@ -1,0 +1,108 @@
+{
+  "scenario_id": "S02-free-rider",
+  "scenario_version": "0.1",
+  "title_en": "Repeated free-riding with repair capacity",
+  "title_ru": "Повторный free-riding при наличии возможности восстановления",
+  "purpose": "Verify contextual narrowing without removal of rights or permanent exclusion.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "repeated_breach_with_capacity",
+    "repair_previously_refused",
+    "optional_scarce_resource"
+  ],
+  "events": [
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s02-breach",
+      "entity_type": "Commitment",
+      "entity_ref": "urn:uu-aap:uu-society:commitment:s02",
+      "from_state": "active",
+      "to_state": "breached",
+      "occurred_at": "2026-11-15T08:05:00Z",
+      "reason": "Observed repeated breach.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s02-breach-pattern"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s02-trust-mixed",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s02",
+      "from_state": "supporting",
+      "to_state": "mixed",
+      "occurred_at": "2026-11-15T08:06:00Z",
+      "reason": "Contextual stewardship evidence became mixed.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s02-breach-pattern"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s02-arae-narrow",
+      "entity_type": "ARAEState",
+      "entity_ref": "urn:uu-aap:uu-society:arae-state:s02",
+      "from_state": "active",
+      "to_state": "narrowed",
+      "occurred_at": "2026-11-15T08:07:00Z",
+      "reason": "Consequences narrowed for optional scarce-resource borrowing.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s02-breach-pattern"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s02-repair-accepted",
+      "entity_type": "Repair",
+      "entity_ref": "urn:uu-aap:uu-society:repair:s02",
+      "from_state": "proposed",
+      "to_state": "accepted",
+      "occurred_at": "2026-11-15T08:08:00Z",
+      "reason": "Repair path remains available.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s02-breach-pattern"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "PASS",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:commitment:s02": "breached",
+      "urn:uu-aap:uu-society:trust-state:s02": "mixed",
+      "urn:uu-aap:uu-society:arae-state:s02": "narrowed",
+      "urn:uu-aap:uu-society:repair:s02": "accepted",
+      "urn:uu-aap:uu-society:actor:s02": "active"
+    },
+    "expected_violation_ids": [],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-003",
+      "I-008"
+    ]
+  }
+}
