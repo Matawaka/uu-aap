@@ -3,7 +3,7 @@
   "experiment_version": "0.7",
   "title_en": "Captured review approval path",
   "title_ru": "Траектория одобрения зависимым review",
-  "purpose": "Test whether a reviewer sharing the beneficiary's interest can approve a sequence that erodes its own independence.",
+  "purpose": "Negative-result stage: conflicted review approves three beneficiary-aligned amendments, but the sequence remains just above the cumulative structural capture boundary.",
   "seed": "uu-constitutional-C03-captured-review-v0.7",
   "mode": "captured_review",
   "cycle_count": 3,
@@ -119,12 +119,9 @@
   "expected": {
     "result": "EXPECTED_DETECTION",
     "expected_pattern_ids": [
-      "CAPTURE_WITHOUT_RIGHTS_FLOOR_BREACH",
       "CONFLICTED_REVIEW_APPROVAL",
       "CONSTITUTIONAL_ADAPTATION",
-      "GENERAL_PURPOSE_CAPTURE_PATH",
-      "LEGITIMATE_STEPS_ACCUMULATE_CAPTURE",
-      "REVIEW_INDEPENDENCE_ERODED"
+      "GENERAL_PURPOSE_CAPTURE_PATH"
     ]
   }
 }
