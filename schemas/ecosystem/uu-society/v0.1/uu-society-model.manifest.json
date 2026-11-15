@@ -1349,5 +1349,46 @@
       "A07 protected-need actors retained ~0.982 fulfillment while ordinary actors were ~0.845 under the same contribution-friction regime",
       "Need without contribution is treated separately from synthetic extractor behavior"
     ]
+  },
+  "endogenous_strategy_evolution": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_STRATEGY_EVOLUTION",
+    "harness": "./harness/run_strategy_evolution.py",
+    "config_schema": "./strategy-evolution.config.schema.json",
+    "receipt_schema": "./strategy-evolution.receipt.schema.json",
+    "strategies": [
+      "COOPERATE",
+      "EXTRACT",
+      "REPAIR",
+      "EXIT",
+      "COALITION"
+    ],
+    "selection_model": "equal initial values + deterministic tie-break + bounded exploration + actor-local learned utility",
+    "mechanisms": [
+      "strategy-specific request activity",
+      "strategy-specific provider willingness",
+      "strategy-specific harm/breach/repair behavior",
+      "distributed external repair",
+      "coalition internal preference and maintenance cost",
+      "epoch utility learning and switching"
+    ],
+    "observables": [
+      "strategy share by epoch",
+      "strategy entropy",
+      "dominant strategy history",
+      "strategy transition counts",
+      "fulfillment and harm by epoch",
+      "coalition internal interaction share",
+      "coalition-outsider fulfillment gap",
+      "access/provision Gini",
+      "actor reward range"
+    ],
+    "non_effects": [
+      "Strategy != identity",
+      "Extract strategy != permanent actor label",
+      "Coalition strategy != prohibited association",
+      "Learned utility != moral worth",
+      "Strategy attractor != universal social law",
+      "Simulation conformance != social correctness"
+    ]
   }
 }
