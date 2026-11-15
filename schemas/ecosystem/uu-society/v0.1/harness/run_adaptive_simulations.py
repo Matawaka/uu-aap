@@ -31,6 +31,7 @@ class Actor:
     actor_id: int
     adversarial: bool = False
     extractor: bool = False
+    protected_need: bool = False
     capability: dict[str, bool] = field(default_factory=dict)
     base_willingness: dict[str, float] = field(default_factory=dict)
     provided: int = 0
@@ -70,14 +71,18 @@ def build_population(config: dict[str, Any]) -> list[Actor]:
 
     adv_count = round(n * pop["adversarial_fraction"])
     extractor_count = round(n * pop["extractor_fraction"])
+    protected_count = round(n * pop["protected_need_fraction"])
     adv_rank = sorted(range(n), key=lambda i: u64(seed, "adaptive-adv", i))
     ext_rank = sorted(range(n), key=lambda i: u64(seed, "adaptive-ext", i))
+    protected_rank = sorted(range(n), key=lambda i: u64(seed, "adaptive-protected", i))
     adversarial = set(adv_rank[:adv_count])
     extractors = set(ext_rank[:extractor_count])
+    protected_need = set(protected_rank[:protected_count])
 
     for actor in actors:
         actor.adversarial = actor.actor_id in adversarial
         actor.extractor = actor.actor_id in extractors
+        actor.protected_need = actor.actor_id in protected_need
         for category in config["categories"]:
             actor.capability[category] = (
                 unit(seed, "adaptive-cap", actor.actor_id, category)
@@ -203,6 +208,7 @@ def choose_provider(
     actors: list[Actor],
     memories: dict[tuple[int, int, str], EdgeMemory],
     balances: dict[tuple[int, int, str], int],
+    context_balance: dict[tuple[int, str], int],
     requester: Actor,
     category: str,
     step: int,
@@ -222,6 +228,8 @@ def choose_provider(
         base = provider.base_willingness[category]
         if provider.extractor:
             base *= adap["extractor_provider_multiplier"]
+        if provider.protected_need:
+            base *= adap["protected_need_provider_multiplier"]
 
         provider_memory = relationship(
             memories,
@@ -248,7 +256,20 @@ def choose_provider(
                 0.0, 1.0 - adap["reciprocity_penalty"] * excess
             )
 
-        willingness = base * provider_memory.affinity * reciprocity_factor
+        contribution_factor = 1.0
+        if adap["contextual_contribution_enabled"] and not requester.protected_need:
+            net = context_balance.get((requester.actor_id, category), 0)
+            debt = max(0, -net - adap["contextual_contribution_threshold"])
+            contribution_factor = max(
+                0.0, 1.0 - adap["contextual_contribution_penalty"] * debt
+            )
+
+        willingness = (
+            base
+            * provider_memory.affinity
+            * reciprocity_factor
+            * contribution_factor
+        )
         if unit(seed, "adaptive-willing", step, provider.actor_id, requester.actor_id, category) > willingness:
             continue
 
@@ -272,6 +293,7 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
     dyn = config["dynamics"]
     memories: dict[tuple[int, int, str], EdgeMemory] = {}
     balances: dict[tuple[int, int, str], int] = {}
+    context_balance: dict[tuple[int, str], int] = {}
     trace = hashlib.sha256()
 
     epoch_size = config["interaction_count"] // config["epoch_count"]
@@ -288,6 +310,8 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
     cross_context_updates = 0
     adverse_updates = 0
     fulfilled = 0
+    group_attempts = {"protected": 0, "extractor": 0, "ordinary": 0}
+    group_fulfilled = {"protected": 0, "extractor": 0, "ordinary": 0}
 
     for step in range(config["interaction_count"]):
         if step > 0 and step % epoch_size == 0 and len(epoch_summaries) < config["epoch_count"] - 1:
@@ -300,17 +324,25 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
 
         epoch["attempts"] += 1
         requester = requester_for(config, actors, step)
+        requester_group = (
+            "protected" if requester.protected_need
+            else "extractor" if requester.extractor
+            else "ordinary"
+        )
+        group_attempts[requester_group] += 1
         category = config["categories"][
             pick_index(seed, len(config["categories"]), "adaptive-category", step)
         ]
         provider = choose_provider(
-            config, actors, memories, balances, requester, category, step
+            config, actors, memories, balances, context_balance,
+            requester, category, step
         )
         if provider is None:
             trace.update(f"{step}|unmet|{requester.actor_id}|{category}\n".encode())
             continue
 
         fulfilled += 1
+        group_fulfilled[requester_group] += 1
         epoch["fulfilled"] += 1
         provider.provided += 1
         requester.received += 1
@@ -322,6 +354,12 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         )
         balances[(requester.actor_id, provider.actor_id, category)] = (
             balances.get((requester.actor_id, provider.actor_id, category), 0) - 1
+        )
+        context_balance[(provider.actor_id, category)] = (
+            context_balance.get((provider.actor_id, category), 0) + 1
+        )
+        context_balance[(requester.actor_id, category)] = (
+            context_balance.get((requester.actor_id, category), 0) - 1
         )
 
         harm_rate = (
@@ -458,9 +496,18 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         if outgoing[actor.actor_id] and max(outgoing[actor.actor_id]) < 0.25
     )
 
-    imbalance_values = []
-    for i in range(len(actors)):
-        imbalance_values.append(abs(actors[i].received - actors[i].provided))
+    imbalance_values = [
+        abs(actor.received - actor.provided) for actor in actors
+    ]
+    extractor_imbalance_values = [
+        abs(actor.received - actor.provided) for actor in actors if actor.extractor
+    ]
+    protected_rate = (
+        group_fulfilled["protected"] / max(1, group_attempts["protected"])
+    )
+    ordinary_rate = (
+        group_fulfilled["ordinary"] / max(1, group_attempts["ordinary"])
+    )
 
     metrics = {
         "fulfilled_need_rate": fulfilled / config["interaction_count"],
@@ -471,6 +518,10 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         "context_spillover_share": cross_context_updates / max(1, adverse_updates),
         "isolation_fraction": isolated / len(actors),
         "extraction_imbalance_p95": percentile95(imbalance_values),
+        "extractor_imbalance_p95": percentile95(extractor_imbalance_values),
+        "protected_need_fulfillment_rate": protected_rate,
+        "ordinary_fulfillment_rate": ordinary_rate,
+        "protected_need_fulfillment_gap": max(0.0, ordinary_rate - protected_rate),
         "access_gini": gini([a.received for a in actors]),
         "provision_gini": gini([a.provided for a in actors]),
         "tail_harm_ratio": tail_harm_ratio,
@@ -494,8 +545,30 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         patterns.add("GLOBAL_WITHDRAWAL_FRAGMENTATION")
     if metrics["relationship_recovery_rate"] >= th["relationship_recovery_rate_min"]:
         patterns.add("REPAIR_REOPENS_RELATIONSHIPS")
-    if metrics["extraction_imbalance_p95"] > th["extraction_imbalance_p95_max"]:
+    if (
+        config["population"]["extractor_fraction"] > 0
+        and metrics["extractor_imbalance_p95"] > th["extraction_imbalance_p95_max"]
+    ):
         patterns.add("EXTRACTION_IMBALANCE")
+    if (
+        config["population"]["extractor_fraction"] > 0
+        and adap["reciprocity_penalty"] > 0
+        and not adap["contextual_contribution_enabled"]
+        and metrics["extractor_imbalance_p95"] > th["extraction_imbalance_p95_max"]
+    ):
+        patterns.add("RECIPROCITY_EVASION_BY_ROTATION")
+    if (
+        config["population"]["extractor_fraction"] > 0
+        and adap["contextual_contribution_enabled"]
+        and metrics["extractor_imbalance_p95"] <= th["extraction_imbalance_p95_max"]
+    ):
+        patterns.add("CONTEXTUAL_CONTRIBUTION_CONTAINS_ROTATION")
+    if (
+        config["population"]["protected_need_fraction"] > 0
+        and metrics["protected_need_fulfillment_gap"]
+        <= th["protected_need_fulfillment_gap_max"]
+    ):
+        patterns.add("LEGITIMATE_ASYMMETRY_PRESERVED")
     if metrics["context_spillover_share"] > th["context_spillover_share_max"]:
         patterns.add("CONTEXT_SPILLOVER")
 
