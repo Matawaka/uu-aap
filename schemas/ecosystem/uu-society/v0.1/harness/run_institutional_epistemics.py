@@ -311,10 +311,10 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True):
         elif status == "CAPTURE_SIGNAL":
             capture_signal_cycles += 1
             if actual:
+                patterns.add("CAPTURE_SIGNAL_FALSE_POSITIVE")
+            else:
                 patterns.add("CAPTURE_EVIDENCE_CONFIRMED")
                 ever_capture_confirmed = True
-            else:
-                patterns.add("CAPTURE_SIGNAL_FALSE_POSITIVE")
         else:
             indeterminate_cycles += 1
 
