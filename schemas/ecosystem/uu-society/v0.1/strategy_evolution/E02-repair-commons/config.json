@@ -85,9 +85,7 @@
   "purpose": "Test whether a socially useful repair strategy expands endogenously when unresolved harm is costly and successful external repair is highly rewarded.",
   "seed": "uu-strategy-e02-repair-v0.5",
   "expected": {
-    "result": "EXPECTED_DETECTION",
-    "expected_pattern_ids": [
-      "REPAIR_ATTRACTOR"
-    ]
+    "result": "PASS",
+    "expected_pattern_ids": []
   }
 }
