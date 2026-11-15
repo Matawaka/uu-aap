@@ -1,0 +1,728 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "experiment_id",
+    "policy",
+    "scope",
+    "claim_valid_until_exclusive",
+    "pattern_ids",
+    "metrics",
+    "decisions",
+    "evidence_receipts",
+    "snapshots",
+    "trace_digest",
+    "config_digest",
+    "decision_authority_created",
+    "runtime_authority_created",
+    "oracle_evaluation",
+    "receipt_digest",
+    "search_lease_scope"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "1.1"
+    },
+    "experiment_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "policy": {
+      "enum": [
+        "passive",
+        "bounded_targeted",
+        "suspicion_expanding"
+      ]
+    },
+    "scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reviewer",
+          "dimension"
+        ],
+        "properties": {
+          "reviewer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dimension": {
+            "enum": [
+              "appoints",
+              "funds",
+              "controls_evidence",
+              "delegates"
+            ]
+          }
+        }
+      }
+    },
+    "claim_valid_until_exclusive": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "pattern_ids": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "verification_actions_used",
+        "policy_action_proposals",
+        "total_search_cost",
+        "intrusion_cost",
+        "nominal_evidence_gained",
+        "scope_expansions",
+        "blocked_scope_expansions",
+        "blocked_intrusive_actions",
+        "blocked_rights_actions",
+        "source_correlation_discoveries",
+        "negative_search_receipts",
+        "expired_responses",
+        "contradiction_rechecks",
+        "contradictions_resolved",
+        "final_cycle",
+        "evidence_freshness_at_decision",
+        "source_check_freshness_at_decision",
+        "verification_loop_length",
+        "independent_support_units_gained",
+        "contradiction_resolution_rate",
+        "redundant_evidence_ratio",
+        "final_epistemic_status",
+        "final_outcome",
+        "search_termination_reason",
+        "bounded_indeterminate",
+        "lease_state"
+      ],
+      "properties": {
+        "verification_actions_used": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "policy_action_proposals": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "total_search_cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "intrusion_cost": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "nominal_evidence_gained": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "scope_expansions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "blocked_scope_expansions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "blocked_intrusive_actions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "blocked_rights_actions": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "source_correlation_discoveries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "negative_search_receipts": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "expired_responses": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "contradiction_rechecks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "contradictions_resolved": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "final_cycle": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "evidence_freshness_at_decision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "source_check_freshness_at_decision": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "verification_loop_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "independent_support_units_gained": {
+          "type": "integer"
+        },
+        "contradiction_resolution_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "redundant_evidence_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "final_epistemic_status": {
+          "enum": [
+            "INDETERMINATE",
+            "INDETERMINATE_CONTRADICTION",
+            "CAPTURE_SIGNAL",
+            "PROVISIONAL_INDEPENDENCE"
+          ]
+        },
+        "final_outcome": {
+          "enum": [
+            "BOUNDED_INDETERMINATE",
+            "INDETERMINATE_CONTRADICTION",
+            "CAPTURE_SIGNAL",
+            "PROVISIONAL_INDEPENDENCE",
+            "NONTERMINATING_POLICY_DETECTED"
+          ]
+        },
+        "search_termination_reason": {
+          "enum": [
+            "PASSIVE",
+            "NO_CANDIDATES",
+            "CAPTURE_SIGNAL",
+            "PROVISIONAL_INDEPENDENCE",
+            "LEASE_EXPIRED",
+            "BUDGET_EXHAUSTED",
+            "AUTHORIZED_CORRIDOR_EXHAUSTED",
+            "HARNESS_WATCHDOG"
+          ]
+        },
+        "bounded_indeterminate": {
+          "type": "boolean"
+        },
+        "lease_state": {
+          "enum": [
+            "EXPIRED",
+            "CONSUMED",
+            "CLOSED"
+          ]
+        }
+      }
+    },
+    "decisions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step",
+          "cycle",
+          "view_digest",
+          "decision",
+          "gate_reason"
+        ],
+        "properties": {
+          "step": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "cycle": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "view_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "decision": {
+            "oneOf": [
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "reason"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "STOP"
+                  },
+                  "reason": {
+                    "enum": [
+                      "PASSIVE",
+                      "NO_CANDIDATES",
+                      "CAPTURE_SIGNAL",
+                      "PROVISIONAL_INDEPENDENCE",
+                      "LEASE_EXPIRED",
+                      "BUDGET_EXHAUSTED",
+                      "AUTHORIZED_CORRIDOR_EXHAUSTED",
+                      "HARNESS_WATCHDOG"
+                    ]
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "action_id"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "ACTION"
+                  },
+                  "action_id": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            ]
+          },
+          "gate_reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "evidence_receipts": {
+      "type": "array",
+      "minItems": 0,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "action_id",
+          "action_type",
+          "search_lease_id",
+          "scope",
+          "started_cycle",
+          "completed_cycle",
+          "cost",
+          "intrusion_cost",
+          "admitted",
+          "outcome",
+          "evidence_ids",
+          "retracted_evidence_ids",
+          "negative_search_valid_until",
+          "response_digest",
+          "decision_authority_created",
+          "receipt_digest"
+        ],
+        "properties": {
+          "action_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action_type": {
+            "enum": [
+              "REQUEST_FRESH_ATTESTATION",
+              "REQUEST_SECOND_SOURCE",
+              "CHECK_SOURCE_INDEPENDENCE",
+              "REVERIFY_CONTROL_EDGE",
+              "RESOLVE_CONTRADICTION",
+              "DISCOVER_SOURCE_CONTROL_ORIGIN",
+              "WAIT_FOR_FRESH_EVIDENCE"
+            ]
+          },
+          "search_lease_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "scope": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "reviewer",
+              "dimension"
+            ],
+            "properties": {
+              "reviewer": {
+                "type": "string",
+                "minLength": 1
+              },
+              "dimension": {
+                "enum": [
+                  "appoints",
+                  "funds",
+                  "controls_evidence",
+                  "delegates"
+                ]
+              }
+            }
+          },
+          "started_cycle": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "completed_cycle": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "cost": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "intrusion_cost": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "admitted": {
+            "type": "boolean"
+          },
+          "outcome": {
+            "enum": [
+              "EVIDENCE",
+              "NOT_FOUND",
+              "UNAVAILABLE",
+              "EXPIRED"
+            ]
+          },
+          "evidence_ids": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "retracted_evidence_ids": {
+            "type": "array",
+            "minItems": 0,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "negative_search_valid_until": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "response_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "decision_authority_created": {
+            "const": false
+          },
+          "receipt_digest": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "snapshots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cycle",
+          "assessment"
+        ],
+        "properties": {
+          "cycle": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 10000
+          },
+          "assessment": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "active_evidence_count",
+              "slot_count",
+              "covered_slot_fraction",
+              "verified_slot_fraction",
+              "any_evidence",
+              "raw_quorum_but_correlated",
+              "slots",
+              "nominal_active_evidence_count",
+              "unvetted_active_evidence_count",
+              "independent_support_units",
+              "freshness_remaining_cycles",
+              "source_check_remaining_cycles"
+            ],
+            "properties": {
+              "status": {
+                "enum": [
+                  "INDETERMINATE",
+                  "INDETERMINATE_CONTRADICTION",
+                  "CAPTURE_SIGNAL",
+                  "PROVISIONAL_INDEPENDENCE"
+                ]
+              },
+              "active_evidence_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "slot_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "covered_slot_fraction": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "verified_slot_fraction": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              },
+              "any_evidence": {
+                "type": "boolean"
+              },
+              "raw_quorum_but_correlated": {
+                "type": "boolean"
+              },
+              "slots": {
+                "type": "array",
+                "minItems": 0,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "reviewer",
+                    "dimension",
+                    "status",
+                    "negative_raw_sources",
+                    "negative_independent_clusters",
+                    "positive_raw_sources",
+                    "positive_independent_clusters"
+                  ],
+                  "properties": {
+                    "reviewer": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "dimension": {
+                      "enum": [
+                        "appoints",
+                        "funds",
+                        "controls_evidence",
+                        "delegates"
+                      ]
+                    },
+                    "status": {
+                      "enum": [
+                        "CONTRADICTED",
+                        "DEPENDENCY_SUPPORTED",
+                        "NO_DEPENDENCY_SUPPORTED",
+                        "INSUFFICIENT"
+                      ]
+                    },
+                    "negative_raw_sources": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "negative_independent_clusters": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "positive_raw_sources": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    },
+                    "positive_independent_clusters": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 10000
+                    }
+                  }
+                }
+              },
+              "nominal_active_evidence_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "unvetted_active_evidence_count": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "independent_support_units": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "freshness_remaining_cycles": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "source_check_remaining_cycles": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              }
+            }
+          }
+        }
+      }
+    },
+    "trace_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "decision_authority_created": {
+      "const": false
+    },
+    "runtime_authority_created": {
+      "const": false
+    },
+    "oracle_evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "false_assurance_observations",
+        "false_positive_capture_observations",
+        "captured_observations",
+        "capture_discovery_observations",
+        "observation_count",
+        "capture_discovery_rate",
+        "final_actual_independent",
+        "historical_capture"
+      ],
+      "properties": {
+        "false_assurance_observations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "false_positive_capture_observations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "captured_observations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "capture_discovery_observations": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "observation_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "capture_discovery_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "final_actual_independent": {
+          "type": "boolean"
+        },
+        "historical_capture": {
+          "type": "boolean"
+        }
+      }
+    },
+    "receipt_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "search_lease_scope": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reviewer",
+          "dimension"
+        ],
+        "properties": {
+          "reviewer": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dimension": {
+            "enum": [
+              "appoints",
+              "funds",
+              "controls_evidence",
+              "delegates"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/active-verification.receipt.schema.json",
+  "title": "UU Society Active Institutional Verification Receipt v1.1"
+}

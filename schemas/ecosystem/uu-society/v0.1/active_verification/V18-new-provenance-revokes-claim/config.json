@@ -1,0 +1,216 @@
+{
+  "experiment_id": "V18-new-provenance-revokes-claim",
+  "experiment_version": "1.1",
+  "title_en": "More evidence reveals shared control and revokes a claim",
+  "title_ru": "Новые сведения об общем контроле отзывают утверждение",
+  "purpose": "More evidence reveals shared control and revokes a claim",
+  "epistemic_scope": {
+    "nodes": [
+      "r1",
+      "beneficiary",
+      "origin",
+      "other"
+    ],
+    "reviewers": [
+      "r1"
+    ],
+    "beneficiary": "beneficiary",
+    "control_dimensions": [
+      "funds"
+    ],
+    "source_nodes": [
+      "s1",
+      "s2",
+      "s3"
+    ],
+    "review_quorum": 1,
+    "source_quorum": 2
+  },
+  "initial_evidence": [
+    {
+      "evidence_id": "e1",
+      "source": "s1",
+      "reviewer": "r1",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "e2",
+      "source": "s2",
+      "reviewer": "r1",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    }
+  ],
+  "initial_source_control_edges": [],
+  "initial_source_checks": [
+    {
+      "source": "s1",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s2",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s3",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    }
+  ],
+  "anomalies": [
+    {
+      "anomaly_id": "fresh-anomaly",
+      "reviewer": "r1",
+      "dimension": "funds",
+      "issued_cycle": 0,
+      "ttl_cycles": 4
+    }
+  ],
+  "search_lease": {
+    "lease_id": "search-V18",
+    "purpose": "EVIDENCE_SEARCH_ONLY",
+    "issued_cycle": 0,
+    "expires_cycle": 12,
+    "scope": [
+      {
+        "reviewer": "r1",
+        "dimension": "funds"
+      }
+    ],
+    "extension_scope": [],
+    "allowed_action_types": [
+      "REQUEST_FRESH_ATTESTATION",
+      "REQUEST_SECOND_SOURCE",
+      "CHECK_SOURCE_INDEPENDENCE",
+      "REVERIFY_CONTROL_EDGE",
+      "RESOLVE_CONTRADICTION",
+      "DISCOVER_SOURCE_CONTROL_ORIGIN",
+      "WAIT_FOR_FRESH_EVIDENCE"
+    ],
+    "authority_requirements": [
+      "READ_PUBLIC_EVIDENCE"
+    ],
+    "max_per_action_intrusion": 2
+  },
+  "budget": {
+    "max_actions": 3,
+    "max_total_cost": 6,
+    "max_intrusion_cost": 3,
+    "max_scope_expansions": 0,
+    "max_cycles": 10
+  },
+  "actions": [
+    {
+      "action_id": "a",
+      "type": "DISCOVER_SOURCE_CONTROL_ORIGIN",
+      "scope": {
+        "reviewer": "r1",
+        "dimension": "funds"
+      },
+      "source": "s2",
+      "expected_information_value": 800,
+      "availability_permille": 1000,
+      "cost": 1,
+      "intrusion_cost": 0,
+      "duration_cycles": 1,
+      "not_before_cycle": 0,
+      "expires_cycle": 30,
+      "authority_requirement": "READ_PUBLIC_EVIDENCE",
+      "can_reveal_hidden_dependency": true,
+      "rights_infringing": false,
+      "scope_extension_basis": "NONE",
+      "anomaly_ref": "fresh-anomaly"
+    }
+  ],
+  "response_tape": {
+    "a": [
+      {
+        "outcome": "EVIDENCE",
+        "evidence": [
+          {
+            "evidence_id": "fresh",
+            "source": "s3",
+            "reviewer": "r1",
+            "dimension": "funds",
+            "assertion": "NO_RELEVANT_DEPENDENCY",
+            "issued_cycle": 0,
+            "ttl_cycles": 6
+          }
+        ],
+        "source_edges": [
+          {
+            "edge_id": "o1",
+            "from": "origin",
+            "to": "s1",
+            "kind": "funds"
+          },
+          {
+            "edge_id": "o2",
+            "from": "origin",
+            "to": "s2",
+            "kind": "funds"
+          },
+          {
+            "edge_id": "o3",
+            "from": "origin",
+            "to": "s3",
+            "kind": "funds"
+          }
+        ],
+        "source_checks": [
+          {
+            "source": "s1",
+            "issued_cycle": 0,
+            "ttl_cycles": 20
+          },
+          {
+            "source": "s2",
+            "issued_cycle": 0,
+            "ttl_cycles": 20
+          },
+          {
+            "source": "s3",
+            "issued_cycle": 0,
+            "ttl_cycles": 20
+          }
+        ],
+        "retractions": [],
+        "negative_ttl_cycles": 2
+      }
+    ]
+  },
+  "oracle_only": {
+    "initial_control_edges": [],
+    "events": [],
+    "historical_capture": false
+  },
+  "watchdog_steps": 8,
+  "expected": {
+    "bounded_targeted": {
+      "metrics": {
+        "verification_actions_used": 1,
+        "final_outcome": "BOUNDED_INDETERMINATE",
+        "search_termination_reason": "AUTHORIZED_CORRIDOR_EXHAUSTED",
+        "nominal_evidence_gained": 1,
+        "independent_support_units_gained": -1,
+        "source_correlation_discoveries": 2
+      },
+      "required_patterns": [
+        "SOURCE_CORRELATION_DISCOVERED",
+        "PROVISIONAL_CLAIM_REVOKED",
+        "MORE_EVIDENCE_WITHOUT_MORE_INDEPENDENCE"
+      ],
+      "forbidden_patterns": [
+        "UNKNOWN_IS_CAPTURE",
+        "NEGATIVE_SEARCH_IS_CLEARANCE"
+      ]
+    }
+  }
+}

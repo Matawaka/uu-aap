@@ -1,0 +1,214 @@
+{
+  "experiment_id": "V16-short-ttl-unreachable-coverage",
+  "experiment_version": "1.1",
+  "title_en": "Short TTL prevents simultaneous scoped verification",
+  "title_ru": "Короткий TTL препятствует одновременной верификации",
+  "purpose": "Short TTL prevents simultaneous scoped verification",
+  "epistemic_scope": {
+    "nodes": [
+      "r1",
+      "beneficiary",
+      "origin",
+      "other"
+    ],
+    "reviewers": [
+      "r1"
+    ],
+    "beneficiary": "beneficiary",
+    "control_dimensions": [
+      "funds",
+      "delegates"
+    ],
+    "source_nodes": [
+      "s1",
+      "s2",
+      "s3"
+    ],
+    "review_quorum": 1,
+    "source_quorum": 2
+  },
+  "initial_evidence": [],
+  "initial_source_control_edges": [],
+  "initial_source_checks": [
+    {
+      "source": "s1",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s2",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s3",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    }
+  ],
+  "anomalies": [],
+  "search_lease": {
+    "lease_id": "search-V16",
+    "purpose": "EVIDENCE_SEARCH_ONLY",
+    "issued_cycle": 0,
+    "expires_cycle": 12,
+    "scope": [
+      {
+        "reviewer": "r1",
+        "dimension": "funds"
+      },
+      {
+        "reviewer": "r1",
+        "dimension": "delegates"
+      }
+    ],
+    "extension_scope": [],
+    "allowed_action_types": [
+      "REQUEST_FRESH_ATTESTATION",
+      "REQUEST_SECOND_SOURCE",
+      "CHECK_SOURCE_INDEPENDENCE",
+      "REVERIFY_CONTROL_EDGE",
+      "RESOLVE_CONTRADICTION",
+      "DISCOVER_SOURCE_CONTROL_ORIGIN",
+      "WAIT_FOR_FRESH_EVIDENCE"
+    ],
+    "authority_requirements": [
+      "READ_PUBLIC_EVIDENCE"
+    ],
+    "max_per_action_intrusion": 2
+  },
+  "budget": {
+    "max_actions": 3,
+    "max_total_cost": 6,
+    "max_intrusion_cost": 3,
+    "max_scope_expansions": 0,
+    "max_cycles": 10
+  },
+  "actions": [
+    {
+      "action_id": "a_f",
+      "type": "REQUEST_SECOND_SOURCE",
+      "scope": {
+        "reviewer": "r1",
+        "dimension": "funds"
+      },
+      "source": "s2",
+      "expected_information_value": 800,
+      "availability_permille": 1000,
+      "cost": 1,
+      "intrusion_cost": 0,
+      "duration_cycles": 1,
+      "not_before_cycle": 0,
+      "expires_cycle": 30,
+      "authority_requirement": "READ_PUBLIC_EVIDENCE",
+      "can_reveal_hidden_dependency": false,
+      "rights_infringing": false,
+      "scope_extension_basis": "NONE",
+      "anomaly_ref": ""
+    },
+    {
+      "action_id": "b_d",
+      "type": "REQUEST_SECOND_SOURCE",
+      "scope": {
+        "reviewer": "r1",
+        "dimension": "delegates"
+      },
+      "source": "s2",
+      "expected_information_value": 800,
+      "availability_permille": 1000,
+      "cost": 1,
+      "intrusion_cost": 0,
+      "duration_cycles": 1,
+      "not_before_cycle": 0,
+      "expires_cycle": 30,
+      "authority_requirement": "READ_PUBLIC_EVIDENCE",
+      "can_reveal_hidden_dependency": false,
+      "rights_infringing": false,
+      "scope_extension_basis": "NONE",
+      "anomaly_ref": ""
+    }
+  ],
+  "response_tape": {
+    "a_f": [
+      {
+        "outcome": "EVIDENCE",
+        "evidence": [
+          {
+            "evidence_id": "f1",
+            "source": "s1",
+            "reviewer": "r1",
+            "dimension": "funds",
+            "assertion": "NO_RELEVANT_DEPENDENCY",
+            "issued_cycle": 0,
+            "ttl_cycles": 1
+          },
+          {
+            "evidence_id": "f2",
+            "source": "s2",
+            "reviewer": "r1",
+            "dimension": "funds",
+            "assertion": "NO_RELEVANT_DEPENDENCY",
+            "issued_cycle": 0,
+            "ttl_cycles": 1
+          }
+        ],
+        "source_edges": [],
+        "source_checks": [],
+        "retractions": [],
+        "negative_ttl_cycles": 2
+      }
+    ],
+    "b_d": [
+      {
+        "outcome": "EVIDENCE",
+        "evidence": [
+          {
+            "evidence_id": "d1",
+            "source": "s1",
+            "reviewer": "r1",
+            "dimension": "delegates",
+            "assertion": "NO_RELEVANT_DEPENDENCY",
+            "issued_cycle": 0,
+            "ttl_cycles": 1
+          },
+          {
+            "evidence_id": "d2",
+            "source": "s2",
+            "reviewer": "r1",
+            "dimension": "delegates",
+            "assertion": "NO_RELEVANT_DEPENDENCY",
+            "issued_cycle": 0,
+            "ttl_cycles": 1
+          }
+        ],
+        "source_edges": [],
+        "source_checks": [],
+        "retractions": [],
+        "negative_ttl_cycles": 2
+      }
+    ]
+  },
+  "oracle_only": {
+    "initial_control_edges": [],
+    "events": [],
+    "historical_capture": false
+  },
+  "watchdog_steps": 8,
+  "expected": {
+    "bounded_targeted": {
+      "metrics": {
+        "verification_actions_used": 2,
+        "final_outcome": "BOUNDED_INDETERMINATE",
+        "search_termination_reason": "AUTHORIZED_CORRIDOR_EXHAUSTED",
+        "nominal_evidence_gained": 4
+      },
+      "required_patterns": [
+        "EVIDENCE_STALES_DURING_SEARCH"
+      ],
+      "forbidden_patterns": [
+        "UNKNOWN_IS_CAPTURE",
+        "NEGATIVE_SEARCH_IS_CLEARANCE"
+      ]
+    }
+  }
+}
