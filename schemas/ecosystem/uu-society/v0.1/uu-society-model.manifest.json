@@ -1243,5 +1243,37 @@
       "Aggregate metric != person score",
       "Meta conformance != social correctness"
     ]
+  },
+  "population_simulation": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_POPULATION_SIMULATION",
+    "harness": "./harness/run_population_simulations.py",
+    "config_schema": "./population-simulation.config.schema.json",
+    "receipt_schema": "./population-simulation.receipt.schema.json",
+    "observables": [
+      "fulfilled_need_rate",
+      "unmet_need_rate",
+      "idle_capability_rate",
+      "harm_rate",
+      "repair_completion_rate",
+      "recovery_rate",
+      "restriction_actor_time_share",
+      "authority_top10_share",
+      "access_gini",
+      "coalition_extraction_ratio"
+    ],
+    "diagnostic_signals": [
+      "AUTHORITY_CONCENTRATION",
+      "ACCESS_INEQUALITY",
+      "RESTRICTION_INERTIA",
+      "HARM_PRESSURE",
+      "UNMET_NEED_PRESSURE",
+      "COALITION_EXTRACTION"
+    ],
+    "non_effects": [
+      "Diagnostic threshold != moral verdict",
+      "Aggregate metric != person score",
+      "Simulation detection != runtime authority",
+      "Simulation conformance != social correctness"
+    ]
   }
 }
