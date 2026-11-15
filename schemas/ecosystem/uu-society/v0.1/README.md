@@ -125,3 +125,10 @@ This sharpens the design rule: **distributed reciprocity must see rotation witho
 The next experimental layer removes preassigned adversarial/extractor actor types. Actors begin with equal strategy values and learn from their own synthetic outcomes. Cooperation, extraction, repair, exit and coalition behavior can therefore expand or disappear as consequences of the simulated environment.
 
 Strategies are temporary behavioral policies, not identities or moral classifications.
+
+
+### Strategy-evolution findings
+
+The v0.5 experiments show a distinction between **private utility** and **social learnability**. Strong direct rewards alone did not make cooperation, Repair or coalition behavior dominate. Once anonymous aggregate evidence about strategy outcomes was available, cooperation reached an 88.3% tail share and coalition behavior 85%. Repair remained different: under a high-harm environment, evidence propagated EXIT instead, producing a 71.7% exit share.
+
+This suggests a design problem deeper than incentives: a useful social behavior may fail to spread if its benefits are not learnable across actors, while a dangerous environment can make withdrawal rational even when recovery work is highly rewarded.
