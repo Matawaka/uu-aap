@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/institutional-epistemics.receipt.schema.json",
+  "title": "UU Society Institutional Epistemics Receipt v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "experiment_id",
+    "experiment_version",
+    "result",
+    "pattern_ids",
+    "cycle_summaries",
+    "metrics",
+    "trace_digest",
+    "config_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "1.0"
+    },
+    "experiment_id": {
+      "type": "string"
+    },
+    "experiment_version": {
+      "const": "1.0"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "EXPECTED_DETECTION",
+        "FAIL"
+      ]
+    },
+    "pattern_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "cycle_summaries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "trace_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

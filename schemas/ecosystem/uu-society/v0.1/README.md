@@ -184,3 +184,23 @@ The resulting rule is: **Outcome Health != Constitutional Health; Local Legality
 The v0.9 experiments distinguish the institution's actual control graph from the graph visible to reviewers. This makes it possible to model capture that precedes disclosure, delayed detection, superficial reviewer rotation, independent backstops, capture/recovery oscillation, and apparent recovery while hidden control paths remain active.
 
 The central design lesson is that institutional independence is trajectory-dependent. Removing a visible dependency or changing reviewer identities is insufficient evidence of recovery unless the underlying control origins have changed.
+
+
+## Institutional Epistemics v1.0
+
+This layer asks not only whether an institution is independent, but what evidence justifies that belief. Synthetic ground truth is available only to the experiment oracle; the assessment engine cannot read it.
+
+The model therefore distinguishes actual independence from justified belief about independence. Evidence is scoped by reviewer and control dimension, expires by TTL, and independent corroboration is calculated from source-control origins rather than raw source count. Contradictory evidence withholds a verdict.
+
+This permits both false assurance and false-positive capture signals to exist in the model, preventing the system from silently equating confidence with truth.
+
+
+### v1.0 experimental findings
+
+All 14 reference scenarios conform. Three distinctions are now explicit:
+
+1. **Evidence confidence is not ground truth.** K05 produces false assurance; K11 produces a false-positive capture signal.
+2. **Source plurality is not source independence.** K02 collapses three nominal sources to one effective evidence cluster because they share a control origin.
+3. **Evidence has temporal direction in both ways.** K09 shows capture outrunning favorable evidence; K13 shows recovery outrunning adverse evidence.
+
+This prevents institutional memory from silently becoming either permanent trust or permanent stigma.

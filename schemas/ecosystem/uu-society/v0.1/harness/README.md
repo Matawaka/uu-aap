@@ -308,3 +308,33 @@ python schemas/ecosystem/uu-society/v0.1/harness/run_dynamic_review_capture.py
 ```
 
 Key boundaries: Observed Independence != Actual Independence; Reviewer Rotation != Control Rotation; Visible Dependency Removal != Actual Recovery. This remains an experimental structural proxy, not a legal verdict or action authorization.
+
+
+## Institutional Epistemics / Proof of Institutional Independence v1.0
+
+The v1.0 harness separates synthetic oracle ground truth from information available to the epistemic mechanism. The mechanism may use only scoped evidence with explicit source, reviewer, control dimension, issue cycle and TTL.
+
+A bounded provisional independence result requires sufficient evidence for every in-scope reviewer × control-dimension slot and an independent-source quorum after collapsing sources that share control origins. Positive dependency evidence produces a capture signal; independently supported evidence on both sides produces an indeterminate contradiction rather than an automatic adverse verdict.
+
+The experiments explicitly model false assurance, false-positive capture signals, evidence expiry, source correlation, source decoupling, real capture outrunning old evidence, and real recovery outrunning stale capture evidence.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_institutional_epistemics.py
+```
+
+A result is always scope-, time- and evidence-bound. It is not proof that no undiscovered dependency exists.
+
+
+### v1.0 reference findings
+
+The 14 deterministic scenarios conform. The strongest result is deliberately symmetric: K05 demonstrates **false assurance** (the evidence supports provisional independence while oracle-only ground truth is captured), while K11 demonstrates a **false-positive capture signal** (independently corroborated positive evidence while oracle-only ground truth is independent).
+
+K09/K10 demonstrate epistemic lag after real capture; K13 demonstrates the reverse lag after real recovery. Therefore evidence memory must be time-bounded in both directions: stale favorable evidence cannot preserve false trust, and stale adverse evidence cannot create permanent stigma.
+
+A bounded verification result can be summarized as:
+
+`Bounded Verification = Scope + Coverage + Freshness + Independent Corroboration`
+
+It is never equivalent to certainty about every undiscovered dependency.

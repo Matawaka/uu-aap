@@ -1570,5 +1570,81 @@
       "Dynamic conformance != social correctness",
       "Simulation result != authorization"
     ]
+  },
+  "institutional_epistemics": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_INSTITUTIONAL_EPISTEMICS",
+    "harness": "./harness/run_institutional_epistemics.py",
+    "config_schema": "./institutional-epistemics.config.schema.json",
+    "receipt_schema": "./institutional-epistemics.receipt.schema.json",
+    "cases": [
+      "K00",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05",
+      "K06",
+      "K07",
+      "K08",
+      "K09",
+      "K10",
+      "K11",
+      "K12",
+      "K13"
+    ],
+    "central_invariants": [
+      "Absence of Known Capture != Evidence of Independence",
+      "Evidence Source Count != Independent Corroboration",
+      "Contradiction != Guilt",
+      "Proof of Independence is Scope/Time/Evidence Bound",
+      "Past Capture Evidence != Current Capture",
+      "Oracle Ground Truth != Available Evidence"
+    ],
+    "statuses": [
+      "PROVISIONAL_INDEPENDENCE",
+      "CAPTURE_SIGNAL",
+      "INDETERMINATE",
+      "INDETERMINATE_CONTRADICTION"
+    ],
+    "model": "oracle-separated synthetic ground truth; epistemic assessment uses only scoped TTL-bound evidence and structural independence of evidence-source control origins",
+    "observables": [
+      "evidence coverage",
+      "verified slot fraction",
+      "independent source clusters",
+      "verification cycles",
+      "false assurance cycles",
+      "capture signal cycles",
+      "epistemic lag",
+      "source-correlation revocation",
+      "recovery outrunning stale evidence"
+    ],
+    "non_effects": [
+      "Provisional independence != proof of absence of all hidden dependencies",
+      "Capture signal != guilt or legal finding",
+      "Contradiction != adverse verdict",
+      "Evidence source != independent source by default",
+      "Expired evidence != false evidence",
+      "Historical capture evidence != permanent stigma",
+      "Epistemic conformance != social correctness",
+      "Simulation output != authorization"
+    ],
+    "reference_findings": [
+      "K00 no capture evidence remained INDETERMINATE: absence of known capture did not verify independence",
+      "K01 complete fresh evidence from two structurally independent sources produced bounded PROVISIONAL_INDEPENDENCE",
+      "K02 three nominal sources under one controller collapsed to one independent cluster and could not satisfy evidence quorum",
+      "K03 independently supported contradictory claims produced INDETERMINATE_CONTRADICTION rather than an adverse verdict",
+      "K04 independently corroborated capture evidence aligned with oracle-only captured ground truth",
+      "K05 complete independently corroborated no-dependency evidence still produced FALSE_ASSURANCE when oracle-only ground truth contained hidden capture",
+      "K06 TTL expiry revoked prior bounded verification and returned the result to INDETERMINATE",
+      "K07 adding a genuinely independent corroborating source restored bounded verification",
+      "K08 a new common control origin over evidence sources revoked previously valid source independence",
+      "K09 real capture changed faster than evidence and produced ACTUAL_CHANGE_OUTRUNS_EVIDENCE plus FALSE_ASSURANCE",
+      "K10 fresh capture evidence later resolved the epistemic lag after one false-assurance cycle",
+      "K11 independently corroborated positive evidence can still be a false-positive capture signal relative to oracle-only ground truth",
+      "K12 removing a real common-control link between evidence sources restored corroboration value",
+      "K13 actual institutional recovery outran still-fresh historical capture evidence, showing that past capture evidence must not become permanent stigma",
+      "Epistemic Confidence != Ground Truth",
+      "Bounded Verification = Scope + Coverage + Freshness + Independent Corroboration, not certainty about all hidden dependencies"
+    ]
   }
 }

@@ -1,0 +1,64 @@
+{
+  "experiment_id": "K11-false-positive-capture",
+  "experiment_version": "1.0",
+  "title_en": "False-positive capture signal",
+  "title_ru": "Ложноположительный сигнал захвата",
+  "purpose": "Even independently corroborated positive evidence remains evidence, not ground truth; a false-positive capture signal must be representable.",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c",
+    "controller"
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "review_quorum": 2,
+  "control_dimensions": [
+    "appoints",
+    "funds",
+    "controls_evidence",
+    "delegates"
+  ],
+  "source_nodes": [
+    "s1",
+    "s2",
+    "s3",
+    "s4"
+  ],
+  "source_quorum": 2,
+  "cycle_count": 3,
+  "initial_ground_truth_edges": [],
+  "initial_source_control_edges": [],
+  "initial_evidence": [
+    {
+      "evidence_id": "p-s1-a-funds",
+      "source": "s1",
+      "reviewer": "a",
+      "dimension": "funds",
+      "assertion": "DEPENDENCY_PRESENT",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "p-s2-a-funds",
+      "source": "s2",
+      "reviewer": "a",
+      "dimension": "funds",
+      "assertion": "DEPENDENCY_PRESENT",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    }
+  ],
+  "events": [],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_SIGNAL_FALSE_POSITIVE"
+    ]
+  }
+}

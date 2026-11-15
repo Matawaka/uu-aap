@@ -1,0 +1,46 @@
+{
+  "experiment_id": "K00-no-evidence",
+  "experiment_version": "1.0",
+  "title_en": "No evidence baseline",
+  "title_ru": "Базовый случай без evidence",
+  "purpose": "Show that absence of capture evidence is not proof of independence.",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c",
+    "controller"
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "review_quorum": 2,
+  "control_dimensions": [
+    "appoints",
+    "funds",
+    "controls_evidence",
+    "delegates"
+  ],
+  "source_nodes": [
+    "s1",
+    "s2",
+    "s3",
+    "s4"
+  ],
+  "source_quorum": 2,
+  "cycle_count": 3,
+  "initial_ground_truth_edges": [],
+  "initial_source_control_edges": [],
+  "initial_evidence": [],
+  "events": [],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "ABSENCE_OF_CAPTURE_NOT_PROOF",
+      "INDETERMINATE_DUE_TO_COVERAGE_GAP"
+    ]
+  }
+}
