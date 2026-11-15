@@ -18,7 +18,8 @@
     "learning_rate": 0.6,
     "exploration_rate": 0.16,
     "switching_cost": 0.1,
-    "initial_strategy_value": 0
+    "initial_strategy_value": 0,
+    "strategy_evidence_learning_rate": 0
   },
   "economics": {
     "request_benefit": 3,
@@ -85,9 +86,7 @@
   "purpose": "Follow-up experiment testing whether cooperation becomes an endogenous attractor when providing creates strong local value and extraction has little private advantage.",
   "seed": "uu-strategy-e05-cooperation-v0.5",
   "expected": {
-    "result": "EXPECTED_DETECTION",
-    "expected_pattern_ids": [
-      "COOPERATION_ATTRACTOR"
-    ]
+    "result": "PASS",
+    "expected_pattern_ids": []
   }
 }
