@@ -3,7 +3,7 @@
   "experiment_version": "0.6",
   "title_en": "Harm-only institutional ratchet",
   "title_ru": "Институциональный ratchet минимизации harm",
-  "purpose": "Bad comparison governance: optimize only lower harm. Observed result is institutional adaptation with proxy drift into non-containment rule axes, demonstrating single-objective Goodhart-like behavior.",
+  "purpose": "Negative-result comparator: harm-only governance did not reach the hypothesized strong-containment ratchet, but it changed unrelated rule axes while optimizing a single proxy, exposing single-objective proxy drift.",
   "seed": "uu-institution-g02-harm-ratchet-v0.6",
   "governance_mode": "harm_only",
   "cycle_count": 6,
