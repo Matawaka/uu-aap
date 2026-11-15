@@ -1,0 +1,157 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s08-expired-authority",
+  "observed_at": "2026-11-15T08:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s08",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [
+    {
+      "id": "urn:uu-aap:uu-society:intent:s08",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s08",
+      "purpose": "Perform one bounded operation",
+      "scope": "single operation",
+      "beneficiary_refs": [
+        "urn:uu-aap:uu-society:actor:s08"
+      ],
+      "constraints": [],
+      "privacy_boundary": "private"
+    }
+  ],
+  "needs": [],
+  "capabilities": [],
+  "resources": [
+    {
+      "id": "urn:uu-aap:uu-society:resource:s08",
+      "state": "available",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "steward_ref": "urn:uu-aap:uu-society:actor:s08",
+      "resource_type": "ACCESS",
+      "scarcity_class": "constrained",
+      "transfer_modes": [
+        "access"
+      ],
+      "capacity": 1,
+      "unit": "operation"
+    }
+  ],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s08-authority",
+      "state": "attested",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s08"
+      ],
+      "event_type": "scoped_authority",
+      "observed_at": "2026-11-15T07:30:00Z",
+      "claim": "Authority existed for the earlier bounded window.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": null
+    }
+  ],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [
+    {
+      "id": "urn:uu-aap:uu-society:arae-state:s08",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s08",
+      "intent_ref": "urn:uu-aap:uu-society:intent:s08",
+      "scope": "single operation",
+      "allowed_transition_types": [
+        "bounded_operation"
+      ],
+      "forbidden_transition_types": [],
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s08-authority"
+      ],
+      "valid_from": "2026-11-15T07:00:00Z",
+      "valid_until": "2026-11-15T09:00:00Z"
+    }
+  ],
+  "action_leases": [
+    {
+      "id": "urn:uu-aap:uu-society:action-lease:s08",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s08",
+      "action_type": "bounded_operation",
+      "target_refs": [
+        "urn:uu-aap:uu-society:resource:s08"
+      ],
+      "scope": "single operation",
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s08-authority"
+      ],
+      "granted_at": "2026-11-15T07:30:00Z",
+      "expires_at": "2026-11-15T08:10:00Z",
+      "revocable": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "urn:uu-aap:uu-society:action:s08",
+      "state": "planned",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s08",
+      "action_type": "bounded_operation",
+      "target_refs": [
+        "urn:uu-aap:uu-society:resource:s08"
+      ],
+      "lease_ref": "urn:uu-aap:uu-society:action-lease:s08",
+      "started_at": null,
+      "completed_at": null
+    }
+  ],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": []
+}

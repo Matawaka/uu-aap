@@ -1,0 +1,125 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s07-conflicting-evidence",
+  "observed_at": "2026-11-15T08:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s07",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s07-damaged",
+      "state": "attested",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s07"
+      ],
+      "event_type": "resource_damage_claim",
+      "observed_at": "2026-11-15T08:01:00Z",
+      "claim": "Resource was damaged after the actor's use.",
+      "source_refs": [],
+      "privacy_scope": "counterparty",
+      "derived_from_refs": [],
+      "retention_until": null
+    },
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s07-preexisting",
+      "state": "attested",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s07"
+      ],
+      "event_type": "preexisting_damage_claim",
+      "observed_at": "2026-11-15T08:02:00Z",
+      "claim": "Independent witness reports the same damage existed before use.",
+      "source_refs": [],
+      "privacy_scope": "counterparty",
+      "derived_from_refs": [],
+      "retention_until": null
+    }
+  ],
+  "trust_states": [
+    {
+      "id": "urn:uu-aap:uu-society:trust-state:s07",
+      "state": "mixed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:actor:s07",
+      "context": "resource stewardship",
+      "as_of": "2026-11-15T08:00:00Z",
+      "dimensions": [
+        {
+          "dimension": "stewardship",
+          "evidence_posture": "mixed",
+          "evidence_refs": [
+            "urn:uu-aap:uu-society:evidence-event:s07-damaged",
+            "urn:uu-aap:uu-society:evidence-event:s07-preexisting"
+          ],
+          "scope": "borrowed physical resources"
+        }
+      ],
+      "overall_numeric_score": null
+    }
+  ],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [
+    {
+      "id": "urn:uu-aap:uu-society:dispute:s07",
+      "state": "opened",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "challenger_ref": "urn:uu-aap:uu-society:actor:s07",
+      "subject_ref": "urn:uu-aap:uu-society:trust-state:s07",
+      "grounds": "Two attested evidence events support incompatible causal accounts.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s07-damaged",
+        "urn:uu-aap:uu-society:evidence-event:s07-preexisting"
+      ],
+      "review_route_refs": []
+    }
+  ],
+  "failure_patterns": []
+}

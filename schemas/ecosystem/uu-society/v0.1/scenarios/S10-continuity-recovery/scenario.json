@@ -1,0 +1,108 @@
+{
+  "scenario_id": "S10-continuity-recovery",
+  "scenario_version": "0.1",
+  "title_en": "Personal continuity recovery",
+  "title_ru": "Восстановление личностной непрерывности",
+  "purpose": "Verify that fresh independent evidence can restore PersonalAnchor, contextual trust and bounded ARAE.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "continuity_recovery_with_fresh_independent_evidence"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s10-recovery-attested",
+      "entity_type": "EvidenceEvent",
+      "entity_ref": "urn:uu-aap:uu-society:evidence-event:s10-recovery",
+      "from_state": "observed",
+      "to_state": "attested",
+      "occurred_at": "2026-11-15T08:13:00Z",
+      "reason": "Attest fresh independent continuity evidence.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s10-recovery"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s10-anchor-restore",
+      "entity_type": "PersonalAnchor",
+      "entity_ref": "urn:uu-aap:uu-society:personal-anchor:s10",
+      "from_state": "partial",
+      "to_state": "sufficient_for_declared_scope",
+      "occurred_at": "2026-11-15T08:14:00Z",
+      "reason": "Restore scoped personal-anchor sufficiency.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s10-recovery"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s10-recovery"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s10-trust-restore",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s10",
+      "from_state": "mixed",
+      "to_state": "supporting",
+      "occurred_at": "2026-11-15T08:15:00Z",
+      "reason": "Restore contextual continuity trust posture.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s10-recovery"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s10-recovery"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s10-arae-restore",
+      "entity_type": "ARAEState",
+      "entity_ref": "urn:uu-aap:uu-society:arae-state:s10",
+      "from_state": "narrowed",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T08:16:00Z",
+      "reason": "Re-expand bounded reachable actions using fresh attested evidence.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s10-recovery"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s10-recovery"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "PASS",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s10": "active",
+      "urn:uu-aap:uu-society:evidence-event:s10-recovery": "attested",
+      "urn:uu-aap:uu-society:personal-anchor:s10": "sufficient_for_declared_scope",
+      "urn:uu-aap:uu-society:trust-state:s10": "supporting",
+      "urn:uu-aap:uu-society:arae-state:s10": "active"
+    },
+    "expected_violation_ids": [],
+    "required_invariants_preserved": [
+      "I-008",
+      "I-013",
+      "I-014"
+    ]
+  }
+}

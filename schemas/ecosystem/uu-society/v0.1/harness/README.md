@@ -34,11 +34,23 @@ Generated receipts are local artifacts and are not canonical model state.
 
 - I-002 — dissent alone cannot degrade unrelated trust or narrow authority;
 - I-003 — legitimate need asymmetry alone cannot establish exploitation;
+- I-004 — unresolved conflicting evidence cannot be collapsed into an adverse verdict;
 - I-006 — open interaction does not imply unrestricted consequences;
-- I-014 — past/expired authority is not current authority.
+- I-013 — one failed continuity challenge does not by itself establish impersonation or justify actor-level exclusion;
+- I-014 — past/expired authority is not current authority; ARAE re-expansion after narrowing requires fresh positively bound evidence.
 
 The remaining manifest invariants are preserved as normative machine-readable requirements and should be promoted into executable checks incrementally rather than simulated with false precision.
 
 ## Scenario facts
 
 `semantic_facts` are explicit test assumptions. The harness does not infer them from prose or use an LLM classifier. A later evidence adapter may derive equivalent facts only through separately auditable rules.
+
+## Recovery layer
+
+S06-S10 add recovery-oriented checks:
+
+- false-positive restriction must remain contestable and may be reversed;
+- unresolved contradictory evidence preserves uncertainty;
+- expired authority cannot be replayed;
+- a failed continuity challenge may narrow consequences but not declare the person an impostor;
+- fresh independent continuity evidence may restore the PersonalAnchor, contextual TrustState and ARAE.

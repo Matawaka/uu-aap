@@ -1,0 +1,148 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s09-continuity-challenge-failure",
+  "observed_at": "2026-11-15T08:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s09",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": "urn:uu-aap:uu-society:personal-anchor:s09"
+    }
+  ],
+  "personal_anchors": [
+    {
+      "id": "urn:uu-aap:uu-society:personal-anchor:s09",
+      "state": "sufficient_for_declared_scope",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s09",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "current_control_evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "scope": "current interaction continuity",
+      "freshness_at": "2026-11-15T07:55:00Z"
+    }
+  ],
+  "intents": [
+    {
+      "id": "urn:uu-aap:uu-society:intent:s09",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s09",
+      "purpose": "Continue current interaction",
+      "scope": "current interaction",
+      "beneficiary_refs": [
+        "urn:uu-aap:uu-society:actor:s09"
+      ],
+      "constraints": [],
+      "privacy_boundary": "private"
+    }
+  ],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s09-challenge",
+      "state": "observed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s09"
+      ],
+      "event_type": "personal_continuity_challenge_failed",
+      "observed_at": "2026-11-15T08:02:00Z",
+      "claim": "One contextual continuity challenge was answered inconsistently.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T09:00:00Z"
+    }
+  ],
+  "trust_states": [
+    {
+      "id": "urn:uu-aap:uu-society:trust-state:s09",
+      "state": "supporting",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:actor:s09",
+      "context": "continuity of current interaction",
+      "as_of": "2026-11-15T08:00:00Z",
+      "dimensions": [
+        {
+          "dimension": "continuity",
+          "evidence_posture": "supporting",
+          "evidence_refs": [
+            "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+          ],
+          "scope": "current interaction"
+        }
+      ],
+      "overall_numeric_score": null
+    }
+  ],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [
+    {
+      "id": "urn:uu-aap:uu-society:arae-state:s09",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s09",
+      "intent_ref": "urn:uu-aap:uu-society:intent:s09",
+      "scope": "current interaction",
+      "allowed_transition_types": [
+        "read",
+        "prepare",
+        "bounded_edit"
+      ],
+      "forbidden_transition_types": [
+        "irreversible_transfer"
+      ],
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "valid_from": "2026-11-15T07:30:00Z",
+      "valid_until": "2026-11-15T09:00:00Z"
+    }
+  ],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": []
+}

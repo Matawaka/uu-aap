@@ -1,0 +1,49 @@
+{
+  "scenario_id": "S08-expired-authority",
+  "scenario_version": "0.1",
+  "title_en": "Expired authority replay",
+  "title_ru": "Повторное использование истёкшего полномочия",
+  "purpose": "Reject replay of an otherwise valid but expired ActionLease.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "expired_authority_replay"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s08-replay-expired",
+      "entity_type": "Action",
+      "entity_ref": "urn:uu-aap:uu-society:action:s08",
+      "from_state": "planned",
+      "to_state": "admitted",
+      "occurred_at": "2026-11-15T08:30:00Z",
+      "reason": "Attempt to admit an action using an expired lease.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s08-authority"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s08-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s08": "active",
+      "urn:uu-aap:uu-society:action-lease:s08": "active",
+      "urn:uu-aap:uu-society:action:s08": "planned",
+      "urn:uu-aap:uu-society:arae-state:s08": "active"
+    },
+    "expected_violation_ids": [
+      "I-014"
+    ],
+    "required_invariants_preserved": [
+      "I-014"
+    ]
+  }
+}
