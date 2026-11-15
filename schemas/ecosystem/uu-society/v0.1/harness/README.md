@@ -38,7 +38,10 @@ Generated receipts are local artifacts and are not canonical model state.
 - I-006 — open interaction does not imply unrestricted consequences;
 - I-013 — one failed continuity challenge does not by itself establish impersonation or justify actor-level exclusion;
 - I-014 — past/expired authority is not current authority; ARAE re-expansion after narrowing requires fresh positively bound evidence;
-- I-015 — rule violation and harm are independent axes.
+- I-015 — rule violation and harm are independent axes;
+- I-016 — trust is contextual and cannot be automatically ported across unrelated contexts;
+- I-017 — child delegation cannot amplify parent authority;
+- I-018 — local governance cannot override the constitutional Rights Floor.
 
 The remaining manifest invariants are preserved as normative machine-readable requirements and should be promoted into executable checks incrementally rather than simulated with false precision.
 
@@ -60,3 +63,8 @@ S06-S10 add recovery-oriented checks:
 ## Harm / violation / repair layer
 
 S11-S15 add first-class `Harm` and `RuleViolation` entities. This makes the model able to represent harm without a formal rule violation, rule violation without observed harm, adversarial contribution, repair-driven recovery and rejection of permanent stigma.
+
+
+## Governance / authority layer
+
+S16-S20 add first-class `Delegation` and `GovernanceRule` states. The layer checks Rights Floor attacks, cross-context trust leakage, stale evidence replay, agent authority amplification and local governance rules that conflict with constitutional protections.
