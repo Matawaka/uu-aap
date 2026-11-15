@@ -225,6 +225,13 @@ def run_sweep(config_path: Path) -> tuple[dict[str, Any], list[str], list[dict[s
             f"missing required signal coverage: {sorted(missing_coverage)}"
         )
 
+    cells_digest = digest(cells)
+    if cells_digest != expected["expected_cells_digest"]:
+        expected_errors.append(
+            "cells_digest expected="
+            f"{expected['expected_cells_digest']} actual={cells_digest}"
+        )
+
     receipt = {
         "receipt_version": "0.1",
         "sweep_id": sweep["sweep_id"],
@@ -240,7 +247,7 @@ def run_sweep(config_path: Path) -> tuple[dict[str, Any], list[str], list[dict[s
         "axis_transition_counts": axis_transition_counts,
         "result": "PASS" if not expected_errors else "FAIL",
         "config_digest": digest(sweep),
-        "cells_digest": digest(cells),
+        "cells_digest": cells_digest,
     }
     receipt_errors = format_errors(validator(receipt_schema).iter_errors(receipt))
     return receipt, [*expected_errors, *[f"receipt schema: {e}" for e in receipt_errors]], cells
