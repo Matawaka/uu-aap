@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/meta-scenario.schema.json",
+  "title": "UU Society Meta-Resilience Scenario v0.1",
+  "x-title-ru": "Сценарий мета-устойчивости UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "meta_scenario_id",
+    "scenario_version",
+    "title_en",
+    "title_ru",
+    "purpose",
+    "snapshot_files",
+    "checks",
+    "groups",
+    "proposed_actor_rankings",
+    "parameters",
+    "expected"
+  ],
+  "properties": {
+    "meta_scenario_id": {
+      "type": "string",
+      "pattern": "^M[0-9]{2}-[a-z0-9-]+$"
+    },
+    "scenario_version": {
+      "const": "0.1"
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title_ru": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_files": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "sybil_current_control_reuse",
+          "coalition_rotation_evidence_erasure",
+          "governance_self_ratification",
+          "restriction_inertia",
+          "universal_person_ranking"
+        ]
+      }
+    },
+    "groups": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group_id",
+          "role",
+          "member_refs"
+        ],
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "enum": [
+              "coalition_candidate",
+              "governance_capture_candidate",
+              "control_group"
+            ]
+          },
+          "member_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^urn:uu-aap:uu-society:actor:"
+            }
+          }
+        }
+      }
+    },
+    "proposed_actor_rankings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "actor_ref",
+          "score",
+          "trust_state_refs",
+          "purpose"
+        ],
+        "properties": {
+          "actor_ref": {
+            "type": "string",
+            "pattern": "^urn:uu-aap:uu-society:actor:"
+          },
+          "score": {
+            "type": "number"
+          },
+          "trust_state_refs": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^urn:uu-aap:uu-society:trust-state:"
+            }
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coalition_breach_threshold": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 3
+        },
+        "restriction_persistence_snapshots": {
+          "type": "integer",
+          "minimum": 2,
+          "default": 3
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "expected_violation_ids"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "PASS",
+            "EXPECTED_DETECTION"
+          ]
+        },
+        "expected_violation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^I-[0-9]{3}$"
+          }
+        }
+      }
+    }
+  }
+}
