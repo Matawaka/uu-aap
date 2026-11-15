@@ -18,7 +18,8 @@
     "learning_rate": 0.55,
     "exploration_rate": 0.08,
     "switching_cost": 0.15,
-    "initial_strategy_value": 0
+    "initial_strategy_value": 0,
+    "strategy_evidence_learning_rate": 0
   },
   "economics": {
     "request_benefit": 2,
