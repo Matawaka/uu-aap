@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/phase-space-sweep.receipt.schema.json",
+  "title": "UU Society Deterministic Phase-Space Sweep Receipt v0.1",
+  "x-title-ru": "Квитанция детерминированного исследования фазового пространства UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "sweep_id",
+    "sweep_version",
+    "model_commit_sha",
+    "cell_count",
+    "stable_cell_count",
+    "signature_count",
+    "signature_counts",
+    "signal_cell_counts",
+    "boundary_edge_count",
+    "pareto_frontier_cell_ids",
+    "axis_transition_counts",
+    "result",
+    "config_digest",
+    "cells_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.1"
+    },
+    "sweep_id": {
+      "type": "string"
+    },
+    "sweep_version": {
+      "const": "0.1"
+    },
+    "model_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|uncommitted)$"
+    },
+    "cell_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "stable_cell_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "signature_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "signature_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 1
+      }
+    },
+    "signal_cell_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "boundary_edge_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pareto_frontier_cell_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "axis_transition_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "FAIL"
+      ]
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "cells_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
