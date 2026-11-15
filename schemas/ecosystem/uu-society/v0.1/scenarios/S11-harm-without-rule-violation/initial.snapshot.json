@@ -71,27 +71,7 @@
   "arae_states": [],
   "action_leases": [],
   "actions": [],
-  "outcomes": [
-    {
-      "id": "urn:uu-aap:uu-society:outcome:s11",
-      "state": "observed",
-      "created_at": "2026-11-15T09:00:00Z",
-      "updated_at": "2026-11-15T09:00:00Z",
-      "provenance_refs": [],
-      "action_ref": "urn:external:action:s11",
-      "observed_state": "permitted action completed with unintended material loss",
-      "affected_actor_refs": [
-        "urn:uu-aap:uu-society:actor:s11-affected"
-      ],
-      "evidence_refs": [
-        "urn:uu-aap:uu-society:evidence-event:s11-harm"
-      ],
-      "harm_refs": [
-        "urn:uu-aap:uu-society:harm:s11"
-      ],
-      "benefit_refs": []
-    }
-  ],
+  "outcomes": [],
   "receipts": [],
   "contributions": [],
   "repairs": [
@@ -128,9 +108,7 @@
       "affected_actor_refs": [
         "urn:uu-aap:uu-society:actor:s11-affected"
       ],
-      "source_outcome_refs": [
-        "urn:uu-aap:uu-society:outcome:s11"
-      ],
+      "source_outcome_refs": [],
       "harm_type": "material",
       "description": "Unintended material loss caused by an otherwise permitted action.",
       "severity_class": "moderate",
