@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/institution-evolution.receipt.schema.json",
+  "title": "UU Society Institution Evolution Receipt v0.6",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "experiment_id",
+    "experiment_version",
+    "model_commit_sha",
+    "seed",
+    "governance_mode",
+    "result",
+    "pattern_ids",
+    "final_rules",
+    "cycle_summaries",
+    "adoption_count",
+    "rejection_counts",
+    "trace_digest",
+    "config_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.6"
+    },
+    "experiment_id": {
+      "type": "string"
+    },
+    "experiment_version": {
+      "const": "0.6"
+    },
+    "model_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|uncommitted)$"
+    },
+    "seed": {
+      "type": "string"
+    },
+    "governance_mode": {
+      "type": "string"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "EXPECTED_DETECTION",
+        "FAIL"
+      ]
+    },
+    "pattern_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "final_rules": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "cycle_summaries": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "adoption_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rejection_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "trace_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
