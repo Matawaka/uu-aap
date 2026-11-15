@@ -1570,5 +1570,63 @@
       "Dynamic conformance != social correctness",
       "Simulation result != authorization"
     ]
+  },
+  "institutional_epistemics": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_INSTITUTIONAL_EPISTEMICS",
+    "harness": "./harness/run_institutional_epistemics.py",
+    "config_schema": "./institutional-epistemics.config.schema.json",
+    "receipt_schema": "./institutional-epistemics.receipt.schema.json",
+    "cases": [
+      "K00",
+      "K01",
+      "K02",
+      "K03",
+      "K04",
+      "K05",
+      "K06",
+      "K07",
+      "K08",
+      "K09",
+      "K10",
+      "K11",
+      "K12",
+      "K13"
+    ],
+    "central_invariants": [
+      "Absence of Known Capture != Evidence of Independence",
+      "Evidence Source Count != Independent Corroboration",
+      "Contradiction != Guilt",
+      "Proof of Independence is Scope/Time/Evidence Bound",
+      "Past Capture Evidence != Current Capture",
+      "Oracle Ground Truth != Available Evidence"
+    ],
+    "statuses": [
+      "PROVISIONAL_INDEPENDENCE",
+      "CAPTURE_SIGNAL",
+      "INDETERMINATE",
+      "INDETERMINATE_CONTRADICTION"
+    ],
+    "model": "oracle-separated synthetic ground truth; epistemic assessment uses only scoped TTL-bound evidence and structural independence of evidence-source control origins",
+    "observables": [
+      "evidence coverage",
+      "verified slot fraction",
+      "independent source clusters",
+      "verification cycles",
+      "false assurance cycles",
+      "capture signal cycles",
+      "epistemic lag",
+      "source-correlation revocation",
+      "recovery outrunning stale evidence"
+    ],
+    "non_effects": [
+      "Provisional independence != proof of absence of all hidden dependencies",
+      "Capture signal != guilt or legal finding",
+      "Contradiction != adverse verdict",
+      "Evidence source != independent source by default",
+      "Expired evidence != false evidence",
+      "Historical capture evidence != permanent stigma",
+      "Epistemic conformance != social correctness",
+      "Simulation output != authorization"
+    ]
   }
 }
