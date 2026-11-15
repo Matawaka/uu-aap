@@ -146,6 +146,19 @@ def choose_provider(
     if policy == "uniform_capable":
         return available[pick_index(seed, len(available), "provider", step, category)], True
 
+    if policy == "winner_reinforcing_context":
+        # Deterministic positive-feedback stressor: prefer the currently most
+        # evidenced provider in the same context. Ties are broken by a stable
+        # hash so the result remains fully reproducible.
+        ranked = sorted(
+            available,
+            key=lambda a: (
+                -a.context_success[category],
+                u64(seed, "winner-tie", step, category, a.actor_id),
+            ),
+        )
+        return ranked[0], True
+
     strength = config["matching"]["feedback_strength"]
     weights = [
         1.0 + strength * math.log1p(a.context_success[category])
