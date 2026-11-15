@@ -76,15 +76,9 @@
           "type": "object",
           "additionalProperties": false,
           "required": [
-            "coalition_fraction",
             "base_capability_probability"
           ],
           "properties": {
-            "coalition_fraction": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 0.3
-            },
             "base_capability_probability": {
               "type": "number",
               "minimum": 0,
@@ -97,8 +91,7 @@
           "additionalProperties": false,
           "required": [
             "candidate_pool_size",
-            "policy",
-            "coalition_request_bias"
+            "policy"
           ],
           "properties": {
             "candidate_pool_size": {
@@ -108,11 +101,6 @@
             },
             "policy": {
               "const": "context_evidence_weighted"
-            },
-            "coalition_request_bias": {
-              "type": "number",
-              "minimum": 0,
-              "maximum": 0.9
             }
           }
         },
@@ -219,12 +207,14 @@
         "repair_probability_adversarial",
         "restriction_duration_interactions",
         "feedback_strength",
-        "base_willingness_probability"
+        "base_willingness_probability",
+        "coalition_fraction",
+        "coalition_request_bias"
       ],
       "properties": {
         "adversarial_fraction": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "number",
@@ -234,7 +224,7 @@
         },
         "repair_probability_adversarial": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "number",
@@ -244,7 +234,7 @@
         },
         "restriction_duration_interactions": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "integer",
@@ -254,7 +244,7 @@
         },
         "feedback_strength": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "number",
@@ -264,12 +254,32 @@
         },
         "base_willingness_probability": {
           "type": "array",
-          "minItems": 2,
+          "minItems": 1,
           "uniqueItems": true,
           "items": {
             "type": "number",
             "minimum": 0,
             "maximum": 1
+          }
+        },
+        "coalition_fraction": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.3
+          }
+        },
+        "coalition_request_bias": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.9
           }
         }
       }
