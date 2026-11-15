@@ -34,7 +34,9 @@
     "contributions",
     "repairs",
     "disputes",
-    "failure_patterns"
+    "failure_patterns",
+    "harms",
+    "rule_violations"
   ],
   "properties": {
     "schema_version": {
@@ -181,6 +183,18 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/failurePattern"
+      }
+    },
+    "harms": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/harm"
+      }
+    },
+    "rule_violations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/ruleViolation"
       }
     }
   },
@@ -1522,6 +1536,130 @@
             },
             "person_stigma_allowed": {
               "const": false
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "harm": {
+      "type": "object",
+      "x-title-en": "Harm",
+      "x-title-ru": "Вред",
+      "allOf": [
+        {
+          "$ref": "#/$defs/entityHeader"
+        },
+        {
+          "type": "object",
+          "required": [
+            "affected_actor_refs",
+            "source_outcome_refs",
+            "harm_type",
+            "description",
+            "severity_class",
+            "evidence_refs",
+            "repair_refs"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "suspected",
+                "observed",
+                "verified",
+                "repaired",
+                "disputed",
+                "superseded"
+              ]
+            },
+            "affected_actor_refs": {
+              "$ref": "#/$defs/refList"
+            },
+            "source_outcome_refs": {
+              "$ref": "#/$defs/refList"
+            },
+            "harm_type": {
+              "enum": [
+                "physical",
+                "material",
+                "privacy",
+                "autonomy",
+                "informational",
+                "opportunity",
+                "social",
+                "systemic",
+                "other"
+              ]
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "severity_class": {
+              "enum": [
+                "unknown",
+                "low",
+                "moderate",
+                "high",
+                "critical"
+              ]
+            },
+            "evidence_refs": {
+              "$ref": "#/$defs/refList"
+            },
+            "repair_refs": {
+              "$ref": "#/$defs/refList"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "ruleViolation": {
+      "type": "object",
+      "x-title-en": "RuleViolation",
+      "x-title-ru": "Нарушение правила",
+      "allOf": [
+        {
+          "$ref": "#/$defs/entityHeader"
+        },
+        {
+          "type": "object",
+          "required": [
+            "actor_ref",
+            "rule_identifier",
+            "description",
+            "evidence_refs",
+            "harm_refs"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "alleged",
+                "observed",
+                "verified",
+                "resolved",
+                "disputed",
+                "superseded"
+              ]
+            },
+            "actor_ref": {
+              "type": "string",
+              "pattern": "^urn:uu-aap:uu-society:actor:"
+            },
+            "rule_identifier": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1
+            },
+            "evidence_refs": {
+              "$ref": "#/$defs/refList"
+            },
+            "harm_refs": {
+              "$ref": "#/$defs/refList"
             }
           }
         }
