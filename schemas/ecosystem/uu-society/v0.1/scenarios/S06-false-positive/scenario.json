@@ -1,0 +1,142 @@
+{
+  "scenario_id": "S06-false-positive",
+  "scenario_version": "0.1",
+  "title_en": "False positive and restoration",
+  "title_ru": "Ложное срабатывание и восстановление",
+  "purpose": "Verify contestability and evidence-bound restoration after a mistaken restriction.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "false_positive_restriction",
+    "fresh_independent_exonerating_evidence"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s06-arae-narrow",
+      "entity_type": "ARAEState",
+      "entity_ref": "urn:uu-aap:uu-society:arae-state:s06",
+      "from_state": "active",
+      "to_state": "narrowed",
+      "occurred_at": "2026-11-15T08:05:00Z",
+      "reason": "Temporarily narrow consequences while anomaly is reviewed.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-suspicion"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s06-dispute-review",
+      "entity_type": "Dispute",
+      "entity_ref": "urn:uu-aap:uu-society:dispute:s06",
+      "from_state": "opened",
+      "to_state": "under_review",
+      "occurred_at": "2026-11-15T08:06:00Z",
+      "reason": "Open independent review.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-suspicion"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s06-suspicion-disputed",
+      "entity_type": "EvidenceEvent",
+      "entity_ref": "urn:uu-aap:uu-society:evidence-event:s06-suspicion",
+      "from_state": "observed",
+      "to_state": "disputed",
+      "occurred_at": "2026-11-15T08:07:00Z",
+      "reason": "Original anomaly claim is contested.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-suspicion"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s06-exoneration-attested",
+      "entity_type": "EvidenceEvent",
+      "entity_ref": "urn:uu-aap:uu-society:evidence-event:s06-exonerating",
+      "from_state": "observed",
+      "to_state": "attested",
+      "occurred_at": "2026-11-15T08:08:00Z",
+      "reason": "Independent evidence is attested.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-exonerating"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s06-dispute-resolved",
+      "entity_type": "Dispute",
+      "entity_ref": "urn:uu-aap:uu-society:dispute:s06",
+      "from_state": "under_review",
+      "to_state": "resolved",
+      "occurred_at": "2026-11-15T08:09:00Z",
+      "reason": "Review resolves the restriction as a false positive.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-exonerating"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s06-arae-restore",
+      "entity_type": "ARAEState",
+      "entity_ref": "urn:uu-aap:uu-society:arae-state:s06",
+      "from_state": "narrowed",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T08:10:00Z",
+      "reason": "Restore bounded reachability using fresh exonerating evidence.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-exonerating"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-exonerating"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "PASS",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s06": "active",
+      "urn:uu-aap:uu-society:evidence-event:s06-suspicion": "disputed",
+      "urn:uu-aap:uu-society:evidence-event:s06-exonerating": "attested",
+      "urn:uu-aap:uu-society:dispute:s06": "resolved",
+      "urn:uu-aap:uu-society:arae-state:s06": "active"
+    },
+    "expected_violation_ids": [],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-004",
+      "I-008",
+      "I-014"
+    ]
+  }
+}
