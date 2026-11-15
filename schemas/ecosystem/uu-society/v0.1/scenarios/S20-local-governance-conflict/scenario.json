@@ -1,0 +1,45 @@
+{
+  "scenario_id": "S20-local-governance-conflict",
+  "scenario_version": "0.1",
+  "title_en": "Local governance conflict with Rights Floor",
+  "title_ru": "Конфликт локального управления с Rights Floor",
+  "purpose": "Reject a local GovernanceCell rule that attempts to override the constitutional Rights Floor.",
+  "evaluation_time": "2026-11-15T10:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "local_governance_rule"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s20-local-rule",
+      "entity_type": "GovernanceRule",
+      "entity_ref": "urn:uu-aap:uu-society:governance-rule:s20",
+      "from_state": "proposed",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T10:05:00Z",
+      "reason": "Attempt to activate a local rule that overrides a constitutional protected capability.",
+      "evidence_refs": [],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:governance-cell:s20": "active",
+      "urn:uu-aap:uu-society:governance-rule:s20": "proposed"
+    },
+    "expected_violation_ids": [
+      "I-001",
+      "I-018"
+    ],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-018"
+    ]
+  }
+}
