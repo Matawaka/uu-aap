@@ -170,10 +170,11 @@ def evaluate_bundle(
     cycle: int,
     role: str,
 ) -> tuple[dict[str, Any], dict[str, float]]:
-    # Common cycle prefix makes institutional alternatives comparable without
-    # adding candidate/incumbent role noise. The rule key still gives each
-    # deterministic policy environment its own replayable trace.
-    seed = f"{config['seed']}|cycle={cycle}|rules={rule_key(rules)}"
+    # Every institutional alternative in the same governance cycle must face
+    # the same deterministic event tape. Otherwise random differences can be
+    # mistaken for policy effects (e.g. a review-path-only change appearing to
+    # improve population outcomes).
+    seed = f"{config['seed']}|cycle={cycle}"
     probe = apply_rules(
         config["base_strategy_environment"],
         rules,
