@@ -372,7 +372,7 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True):
         ):
             patterns.add("RECOVERY_OUTRUNS_EVIDENCE")
 
-        if ever_false_assurance and status == "CAPTURE_SIGNAL" and actual:
+        if ever_false_assurance and status == "CAPTURE_SIGNAL" and not actual:
             patterns.add("EPISTEMIC_LAG_RESOLVED")
 
         summary = {
