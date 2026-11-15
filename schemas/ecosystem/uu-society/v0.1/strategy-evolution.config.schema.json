@@ -98,7 +98,8 @@
         "learning_rate",
         "exploration_rate",
         "switching_cost",
-        "initial_strategy_value"
+        "initial_strategy_value",
+        "strategy_evidence_learning_rate"
       ],
       "properties": {
         "learning_rate": {
@@ -120,6 +121,11 @@
           "type": "number",
           "minimum": -100,
           "maximum": 100
+        },
+        "strategy_evidence_learning_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     },
