@@ -1,0 +1,77 @@
+{
+  "experiment_id": "D08-reviewer-rotation-same-control",
+  "experiment_version": "0.9",
+  "title_en": "Reviewer rotation under the same control origin",
+  "title_ru": "Ротация проверяющих при неизменном источнике контроля",
+  "purpose": "Changing reviewer identities must not count as institutional recovery when the replacement remains controlled by the same origin.",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 5,
+  "initial_edges": [
+    {
+      "edge_id": "f-a",
+      "from": "sponsor",
+      "to": "a",
+      "kind": "funds",
+      "disclosed": true
+    },
+    {
+      "edge_id": "f-b",
+      "from": "sponsor",
+      "to": "b",
+      "kind": "funds",
+      "disclosed": true
+    },
+    {
+      "edge_id": "f-c",
+      "from": "sponsor",
+      "to": "c",
+      "kind": "funds",
+      "disclosed": true
+    }
+  ],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "remove_reviewer",
+      "reviewer": "a"
+    },
+    {
+      "cycle": 1,
+      "type": "add_reviewer",
+      "reviewer": "d"
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-d",
+        "from": "sponsor",
+        "to": "d",
+        "kind": "funds",
+        "disclosed": true
+      }
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "INITIAL_CAPTURE",
+      "REVIEWER_ROTATION_WITHOUT_CONTROL_RECOVERY"
+    ]
+  }
+}
