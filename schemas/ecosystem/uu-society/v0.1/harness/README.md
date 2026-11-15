@@ -325,3 +325,16 @@ python schemas/ecosystem/uu-society/v0.1/harness/run_institutional_epistemics.py
 ```
 
 A result is always scope-, time- and evidence-bound. It is not proof that no undiscovered dependency exists.
+
+
+### v1.0 reference findings
+
+The 14 deterministic scenarios conform. The strongest result is deliberately symmetric: K05 demonstrates **false assurance** (the evidence supports provisional independence while oracle-only ground truth is captured), while K11 demonstrates a **false-positive capture signal** (independently corroborated positive evidence while oracle-only ground truth is independent).
+
+K09/K10 demonstrate epistemic lag after real capture; K13 demonstrates the reverse lag after real recovery. Therefore evidence memory must be time-bounded in both directions: stale favorable evidence cannot preserve false trust, and stale adverse evidence cannot create permanent stigma.
+
+A bounded verification result can be summarized as:
+
+`Bounded Verification = Scope + Coverage + Freshness + Independent Corroboration`
+
+It is never equivalent to certainty about every undiscovered dependency.
