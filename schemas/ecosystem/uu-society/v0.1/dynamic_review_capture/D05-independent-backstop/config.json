@@ -1,0 +1,73 @@
+{
+  "experiment_id": "D05-independent-backstop",
+  "experiment_version": "0.9",
+  "title_en": "Independent backstop recovery",
+  "title_ru": "Восстановление независимым резервным контролем",
+  "purpose": "Adding a genuinely independent reviewer should restore effective quorum even while the original reviewer cluster remains correlated.",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c",
+    "d"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 6,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-a",
+        "from": "sponsor",
+        "to": "a",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-b",
+        "from": "sponsor",
+        "to": "b",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-c",
+        "from": "sponsor",
+        "to": "c",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 3,
+      "type": "add_reviewer",
+      "reviewer": "d"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "INDEPENDENT_BACKSTOP_RESTORES_QUORUM",
+      "RECOVERY_RESTORED"
+    ]
+  }
+}

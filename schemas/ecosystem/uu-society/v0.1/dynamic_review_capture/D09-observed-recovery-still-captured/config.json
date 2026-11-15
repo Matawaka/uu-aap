@@ -1,0 +1,149 @@
+{
+  "experiment_id": "D09-observed-recovery-still-captured",
+  "experiment_version": "0.9",
+  "title_en": "Observed recovery while hidden control persists",
+  "title_ru": "Наблюдаемое восстановление при сохраняющемся скрытом контроле",
+  "purpose": "Removing visible funding should not count as actual recovery when a hidden delegation chain preserves the same control origin.",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "proxy",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 6,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "vf-a",
+        "from": "sponsor",
+        "to": "a",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "vf-b",
+        "from": "sponsor",
+        "to": "b",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "vf-c",
+        "from": "sponsor",
+        "to": "c",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "hp",
+        "from": "sponsor",
+        "to": "proxy",
+        "kind": "delegates",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "hp-a",
+        "from": "proxy",
+        "to": "a",
+        "kind": "delegates",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "hp-b",
+        "from": "proxy",
+        "to": "b",
+        "kind": "delegates",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "hp-c",
+        "from": "proxy",
+        "to": "c",
+        "kind": "delegates",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 3,
+      "type": "remove_edge",
+      "edge_id": "vf-a"
+    },
+    {
+      "cycle": 3,
+      "type": "remove_edge",
+      "edge_id": "vf-b"
+    },
+    {
+      "cycle": 3,
+      "type": "remove_edge",
+      "edge_id": "vf-c"
+    },
+    {
+      "cycle": 4,
+      "type": "disclose_edge",
+      "edge_id": "hp"
+    },
+    {
+      "cycle": 4,
+      "type": "disclose_edge",
+      "edge_id": "hp-a"
+    },
+    {
+      "cycle": 4,
+      "type": "disclose_edge",
+      "edge_id": "hp-b"
+    },
+    {
+      "cycle": 4,
+      "type": "disclose_edge",
+      "edge_id": "hp-c"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "DISCLOSURE_CORRECTS_OBSERVATION",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "HIDDEN_CAPTURE",
+      "OBSERVED_RECOVERY_WITHOUT_ACTUAL_RECOVERY",
+      "PARTIAL_REPAIR_WITHOUT_RECOVERY"
+    ]
+  }
+}

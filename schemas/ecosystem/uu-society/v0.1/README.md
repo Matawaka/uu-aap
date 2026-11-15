@@ -177,3 +177,10 @@ The v0.7 experiments demonstrate that healthy observed outcomes do not imply hea
 Conversely, C02 shows that a cumulative guard can permit several legitimate adaptations and still stop the step that crosses the structural boundary; C04 shows automatic sunset reversion; and C07 shows constitutional recovery from inherited capture.
 
 The resulting rule is: **Outcome Health != Constitutional Health; Local Legality != Cumulative Legitimacy.**
+
+
+## Dynamic institutional capture and recovery v0.9
+
+The v0.9 experiments distinguish the institution's actual control graph from the graph visible to reviewers. This makes it possible to model capture that precedes disclosure, delayed detection, superficial reviewer rotation, independent backstops, capture/recovery oscillation, and apparent recovery while hidden control paths remain active.
+
+The central design lesson is that institutional independence is trajectory-dependent. Removing a visible dependency or changing reviewer identities is insufficient evidence of recovery unless the underlying control origins have changed.

@@ -1,0 +1,29 @@
+{
+  "experiment_id": "D00-stable-independent",
+  "experiment_version": "0.9",
+  "title_en": "Stable independent review",
+  "title_ru": "Стабильно независимый контроль",
+  "purpose": "Control case: independent reviewers remain structurally independent across the horizon.",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 5,
+  "initial_edges": [],
+  "events": [],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "STABLE_INDEPENDENCE"
+    ]
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "experiment_id": "D06-capture-oscillation",
+  "experiment_version": "0.9",
+  "title_en": "Capture and recovery oscillation",
+  "title_ru": "Колебание захвата и восстановления",
+  "purpose": "Repeated dependency creation and removal should expose oscillating institutional independence rather than one-time recovery.",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 6,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-a",
+        "from": "sponsor",
+        "to": "a",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-b",
+        "from": "sponsor",
+        "to": "b",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-c",
+        "from": "sponsor",
+        "to": "c",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 2,
+      "type": "remove_edge",
+      "edge_id": "f-a"
+    },
+    {
+      "cycle": 2,
+      "type": "remove_edge",
+      "edge_id": "f-b"
+    },
+    {
+      "cycle": 2,
+      "type": "remove_edge",
+      "edge_id": "f-c"
+    },
+    {
+      "cycle": 3,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-a",
+        "from": "sponsor",
+        "to": "a",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 3,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-b",
+        "from": "sponsor",
+        "to": "b",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 3,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-c",
+        "from": "sponsor",
+        "to": "c",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 4,
+      "type": "remove_edge",
+      "edge_id": "f-a"
+    },
+    {
+      "cycle": 4,
+      "type": "remove_edge",
+      "edge_id": "f-b"
+    },
+    {
+      "cycle": 4,
+      "type": "remove_edge",
+      "edge_id": "f-c"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "CAPTURE_OSCILLATION",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "RECOVERY_RESTORED"
+    ]
+  }
+}

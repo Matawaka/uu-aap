@@ -1527,5 +1527,48 @@
       "Graph quorum != complete constitutional legitimacy",
       "Simulation conformance != social correctness"
     ]
+  },
+  "dynamic_review_capture": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_DYNAMIC_REVIEW_CAPTURE",
+    "harness": "./harness/run_dynamic_review_capture.py",
+    "config_schema": "./dynamic-review-capture.config.schema.json",
+    "receipt_schema": "./dynamic-review-capture.receipt.schema.json",
+    "cases": [
+      "D00",
+      "D01",
+      "D02",
+      "D03",
+      "D04",
+      "D05",
+      "D06",
+      "D07",
+      "D08",
+      "D09"
+    ],
+    "central_invariants": [
+      "Observed Independence != Actual Independence",
+      "Reviewer Rotation != Control Rotation",
+      "Visible Dependency Removal != Actual Recovery",
+      "Formal Quorum != Effective Independent Quorum"
+    ],
+    "model": "time-indexed actual/observed control graphs with edge disclosure, reviewer rotation, capture onset, detection lag, and recovery",
+    "observables": [
+      "actual independent quorum by cycle",
+      "observed independent quorum by cycle",
+      "capture onset",
+      "capture detection lag",
+      "hidden capture cycles",
+      "recovery count",
+      "false recovery cycles",
+      "formal quorum during capture"
+    ],
+    "non_effects": [
+      "Hidden dependency signal != guilt",
+      "Observed graph != complete reality",
+      "Structural recovery proxy != legal rehabilitation",
+      "Reviewer identity change != authority reset",
+      "Dynamic conformance != social correctness",
+      "Simulation result != authorization"
+    ]
   }
 }

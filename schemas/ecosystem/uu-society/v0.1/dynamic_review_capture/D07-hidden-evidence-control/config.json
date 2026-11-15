@@ -1,0 +1,99 @@
+{
+  "experiment_id": "D07-hidden-evidence-control",
+  "experiment_version": "0.9",
+  "title_en": "Hidden evidence-control capture",
+  "title_ru": "Скрытый захват канала доказательств",
+  "purpose": "A beneficiary-controlled evidence intermediary should compromise reviewers before the dependency is disclosed; removing the chain should restore independence.",
+  "nodes": [
+    "beneficiary",
+    "evidence",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 6,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "d-e",
+        "from": "beneficiary",
+        "to": "evidence",
+        "kind": "delegates",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "e-a",
+        "from": "evidence",
+        "to": "a",
+        "kind": "controls_evidence",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "e-b",
+        "from": "evidence",
+        "to": "b",
+        "kind": "controls_evidence",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 2,
+      "type": "disclose_edge",
+      "edge_id": "d-e"
+    },
+    {
+      "cycle": 2,
+      "type": "disclose_edge",
+      "edge_id": "e-a"
+    },
+    {
+      "cycle": 2,
+      "type": "disclose_edge",
+      "edge_id": "e-b"
+    },
+    {
+      "cycle": 4,
+      "type": "remove_edge",
+      "edge_id": "d-e"
+    },
+    {
+      "cycle": 4,
+      "type": "remove_edge",
+      "edge_id": "e-a"
+    },
+    {
+      "cycle": 4,
+      "type": "remove_edge",
+      "edge_id": "e-b"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "DELAYED_CAPTURE_DETECTION",
+      "DISCLOSURE_CORRECTS_OBSERVATION",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "HIDDEN_CAPTURE",
+      "RECOVERY_RESTORED"
+    ]
+  }
+}

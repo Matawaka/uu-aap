@@ -1,0 +1,83 @@
+{
+  "experiment_id": "D02-hidden-common-funder",
+  "experiment_version": "0.9",
+  "title_en": "Hidden common-funder capture",
+  "title_ru": "Скрытый захват через общее финансирование",
+  "purpose": "Actual capture begins before the funding dependency becomes observable; later disclosure should correct the diagnosis.",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 6,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-a",
+        "from": "sponsor",
+        "to": "a",
+        "kind": "funds",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-b",
+        "from": "sponsor",
+        "to": "b",
+        "kind": "funds",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-c",
+        "from": "sponsor",
+        "to": "c",
+        "kind": "funds",
+        "disclosed": false
+      }
+    },
+    {
+      "cycle": 3,
+      "type": "disclose_edge",
+      "edge_id": "f-a"
+    },
+    {
+      "cycle": 3,
+      "type": "disclose_edge",
+      "edge_id": "f-b"
+    },
+    {
+      "cycle": 3,
+      "type": "disclose_edge",
+      "edge_id": "f-c"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "DELAYED_CAPTURE_DETECTION",
+      "DISCLOSURE_CORRECTS_OBSERVATION",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "HIDDEN_CAPTURE"
+    ]
+  }
+}
