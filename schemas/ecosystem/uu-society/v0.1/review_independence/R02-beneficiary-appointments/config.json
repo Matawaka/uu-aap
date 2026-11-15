@@ -1,0 +1,31 @@
+{
+  "case_id": "R02-beneficiary-appointments",
+  "description": "beneficiary appoints reviewers",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c"
+  ],
+  "edges": [
+    {
+      "from": "beneficiary",
+      "to": "a",
+      "kind": "appoints"
+    },
+    {
+      "from": "beneficiary",
+      "to": "b",
+      "kind": "appoints"
+    }
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "expect_independent": false,
+  "expect_formal_quorum": true
+}

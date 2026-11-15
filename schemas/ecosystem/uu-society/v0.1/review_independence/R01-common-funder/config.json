@@ -1,0 +1,37 @@
+{
+  "case_id": "R01-common-funder",
+  "description": "common funder",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c"
+  ],
+  "edges": [
+    {
+      "from": "sponsor",
+      "to": "a",
+      "kind": "funds"
+    },
+    {
+      "from": "sponsor",
+      "to": "b",
+      "kind": "funds"
+    },
+    {
+      "from": "sponsor",
+      "to": "c",
+      "kind": "funds"
+    }
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "expect_independent": false,
+  "expect_formal_quorum": true
+}

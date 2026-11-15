@@ -284,3 +284,12 @@ Reference experiments C00-C09 cover frozen control, locally lawful cumulative ca
 - C07 demonstrates the reverse trajectory: an inherited captured state can be repaired through bounded constitutional amendments.
 
 The key experimental distinction is **Outcome Health != Constitutional Health**.
+
+
+## Review independence v0.8
+
+Structural graph test of effective review independence: reviewer IDs are not sufficient evidence of independent control. Transitive appointment, funding, evidence-control and delegation edges identify shared control origins. Reviewer-only `reviews` links are not treated as control. Reviewers sharing a control origin count as one conservative independent cluster; reviewers sharing an origin with the beneficiary are conflicted and excluded from the effective quorum.
+
+Run: `python schemas/ecosystem/uu-society/v0.1/harness/run_review_independence.py`.
+
+Eight synthetic cases R00–R07 cover independent baseline, common funder, beneficiary appointments, evidence capture, independent backstop, delegation chain, benign review links, and cyclic dependencies. This graph is a diagnostic proxy, not a legal independence determination or authorization to act.

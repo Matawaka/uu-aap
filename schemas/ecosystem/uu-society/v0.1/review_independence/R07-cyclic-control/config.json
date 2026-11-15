@@ -1,0 +1,31 @@
+{
+  "case_id": "R07-cyclic-control",
+  "description": "cyclic institutional control",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c"
+  ],
+  "edges": [
+    {
+      "from": "a",
+      "to": "b",
+      "kind": "appoints"
+    },
+    {
+      "from": "b",
+      "to": "a",
+      "kind": "funds"
+    }
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "expect_independent": true,
+  "expect_formal_quorum": true
+}
