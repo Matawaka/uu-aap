@@ -32,7 +32,11 @@
     "forgetting_rate": 0.02,
     "reciprocity_threshold": 2,
     "reciprocity_penalty": 0.25,
-    "extractor_provider_multiplier": 0.2
+    "extractor_provider_multiplier": 0.2,
+    "contextual_contribution_enabled": false,
+    "contextual_contribution_threshold": 2,
+    "contextual_contribution_penalty": 0.35,
+    "protected_need_provider_multiplier": 0.1
   },
   "simulation_id": "A02-global-generalization",
   "title_en": "Global negative generalization",
@@ -43,7 +47,8 @@
     "adversarial_fraction": 0.2,
     "extractor_fraction": 0,
     "base_capability_probability": 0.75,
-    "base_willingness_probability": 0.88
+    "base_willingness_probability": 0.88,
+    "protected_need_fraction": 0
   },
   "diagnostic_thresholds": {
     "tail_harm_ratio_max": 0,
@@ -52,7 +57,8 @@
     "isolation_fraction_max": 1,
     "relationship_recovery_rate_min": 1,
     "extraction_imbalance_p95_max": 1000,
-    "context_spillover_share_max": 0.1
+    "context_spillover_share_max": 0.1,
+    "protected_need_fulfillment_gap_max": 0.05
   },
   "expected": {
     "result": "EXPECTED_DETECTION",
