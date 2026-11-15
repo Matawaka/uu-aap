@@ -72,7 +72,7 @@
       "transition_id": "urn:uu-aap:uu-society:transition:s07-adverse-verdict",
       "entity_type": "TrustState",
       "entity_ref": "urn:uu-aap:uu-society:trust-state:s07",
-      "from_state": "supporting",
+      "from_state": "mixed",
       "to_state": "adverse",
       "occurred_at": "2026-11-15T08:08:00Z",
       "reason": "Attempt to collapse unresolved evidence into an adverse verdict.",
@@ -94,7 +94,7 @@
       "urn:uu-aap:uu-society:evidence-event:s07-damaged": "disputed",
       "urn:uu-aap:uu-society:evidence-event:s07-preexisting": "disputed",
       "urn:uu-aap:uu-society:dispute:s07": "under_review",
-      "urn:uu-aap:uu-society:trust-state:s07": "supporting"
+      "urn:uu-aap:uu-society:trust-state:s07": "mixed"
     },
     "expected_violation_ids": [
       "I-004"
