@@ -170,7 +170,10 @@ def evaluate_bundle(
     cycle: int,
     role: str,
 ) -> tuple[dict[str, Any], dict[str, float]]:
-    seed = f"{config['seed']}|cycle={cycle}|role={role}|rules={rule_key(rules)}"
+    # Common cycle prefix makes institutional alternatives comparable without
+    # adding candidate/incumbent role noise. The rule key still gives each
+    # deterministic policy environment its own replayable trace.
+    seed = f"{config['seed']}|cycle={cycle}|rules={rule_key(rules)}"
     probe = apply_rules(
         config["base_strategy_environment"],
         rules,
