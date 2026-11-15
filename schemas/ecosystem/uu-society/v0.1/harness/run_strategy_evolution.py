@@ -257,23 +257,49 @@ def update_strategy_values_and_switch(
     actors: list[Actor],
     epoch_index: int,
     transitions: Counter[str],
-) -> None:
+) -> dict[str, float]:
     learn = config["learning"]
     economics = config["economics"]
+
+    observed_by_actor: dict[int, float] = {}
+    by_strategy: dict[str, list[float]] = {s: [] for s in STRATEGIES}
     for actor in actors:
         observed = (
             actor.epoch_reward / actor.epoch_exposures
             if actor.epoch_exposures
             else 0.0
         )
+        observed_by_actor[actor.actor_id] = observed
+        by_strategy[actor.strategy].append(observed)
+
+    strategy_evidence = {
+        strategy: (
+            sum(values) / len(values)
+            if values else config["learning"]["initial_strategy_value"]
+        )
+        for strategy, values in by_strategy.items()
+    }
+
+    # StrategyOutcomeEvidence is aggregate evidence about a behavioral policy,
+    # never a person score. It lets useful strategies diffuse without exposing
+    # or ranking individual actors.
+    peer_rate = learn["strategy_evidence_learning_rate"]
+
+    for actor in actors:
+        observed = observed_by_actor[actor.actor_id]
         current = actor.strategy
         actor.values[current] = (
             (1.0 - learn["learning_rate"]) * actor.values[current]
             + learn["learning_rate"] * observed
         )
 
-        # Exit has a small safety value when recent experienced utility is
-        # negative; this lets withdrawal emerge rather than being assigned.
+        if peer_rate > 0:
+            for strategy in STRATEGIES:
+                actor.values[strategy] = (
+                    (1.0 - peer_rate) * actor.values[strategy]
+                    + peer_rate * strategy_evidence[strategy]
+                )
+
         if observed < 0:
             actor.values["EXIT"] = max(
                 actor.values["EXIT"],
@@ -320,6 +346,7 @@ def update_strategy_values_and_switch(
         actor.epoch_reward = 0.0
         actor.epoch_exposures = 0
 
+    return strategy_evidence
 
 def strategy_shares(actors: list[Actor]) -> dict[str, float]:
     counts = Counter(actor.strategy for actor in actors)
@@ -383,9 +410,10 @@ def simulate(
             "outsider_fulfillment_rate":outsider_rate,
             "coalition_outsider_gap":max(0.0, coalition_rate - outsider_rate),
         })
-        update_strategy_values_and_switch(
+        strategy_evidence = update_strategy_values_and_switch(
             config, actors, epoch_index, transitions
         )
+        epoch_summaries[-1]["strategy_outcome_evidence"] = strategy_evidence
         for key in epoch_stats:
             epoch_stats[key] = 0
 
