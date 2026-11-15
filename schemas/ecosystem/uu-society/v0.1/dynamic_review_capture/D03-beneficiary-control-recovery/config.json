@@ -1,0 +1,64 @@
+{
+  "experiment_id": "D03-beneficiary-control-recovery",
+  "experiment_version": "0.9",
+  "title_en": "Beneficiary appointment capture and recovery",
+  "title_ru": "Захват назначениями и восстановление",
+  "purpose": "Beneficiary appointment control should destroy effective quorum and full removal of the control paths should restore it.",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 6,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "ap-a",
+        "from": "beneficiary",
+        "to": "a",
+        "kind": "appoints",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "ap-b",
+        "from": "beneficiary",
+        "to": "b",
+        "kind": "appoints",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 3,
+      "type": "remove_edge",
+      "edge_id": "ap-a"
+    },
+    {
+      "cycle": 3,
+      "type": "remove_edge",
+      "edge_id": "ap-b"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "RECOVERY_RESTORED"
+    ]
+  }
+}
