@@ -269,3 +269,18 @@ The harness separates:
 - sunset/reversion of temporary power.
 
 Reference experiments C00-C09 cover frozen control, locally lawful cumulative capture, cumulative guard, captured review, sunset reversion, revocability erosion, capture without immediate rights-floor breach, constitutional recovery, unsunset emergency delegation, and rights-floor erosion.
+
+
+### v0.7 reference findings
+
+- C01: six individually bounded amendments reduced review independence from **0.90 to 0.55** while the reference rights-floor outcome proxy remained healthy.
+- C02: the cumulative guard accepted five steps and rejected the sixth at the structural boundary.
+- C04: temporary emergency authority with a sunset reverted automatically to the initial state.
+- C05: revocability fell from **0.90 to 0.50** through individually small changes.
+- C06: authority scope rose from **0.30 to 0.75** with no immediate change in fulfillment, harm, exit, access inequality or outsider gap.
+- C09: rights-floor strength fell from **0.90 to 0.60** while observed outcome proxies remained healthy.
+- C10: one additional conflicted-review amendment was sufficient to cross the review-independence boundary.
+- C11: amendment friction fell from **0.80 to 0.35** through three locally bounded procedural simplifications.
+- C07 demonstrates the reverse trajectory: an inherited captured state can be repaired through bounded constitutional amendments.
+
+The key experimental distinction is **Outcome Health != Constitutional Health**.
