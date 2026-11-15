@@ -78,7 +78,8 @@
         "adversarial_fraction",
         "extractor_fraction",
         "base_capability_probability",
-        "base_willingness_probability"
+        "base_willingness_probability",
+        "protected_need_fraction"
       ],
       "properties": {
         "adversarial_fraction": {
@@ -100,6 +101,11 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "protected_need_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5
         }
       }
     },
@@ -186,7 +192,11 @@
         "forgetting_rate",
         "reciprocity_threshold",
         "reciprocity_penalty",
-        "extractor_provider_multiplier"
+        "extractor_provider_multiplier",
+        "contextual_contribution_enabled",
+        "contextual_contribution_threshold",
+        "contextual_contribution_penalty",
+        "protected_need_provider_multiplier"
       ],
       "properties": {
         "policy": {
@@ -240,6 +250,24 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "contextual_contribution_enabled": {
+          "type": "boolean"
+        },
+        "contextual_contribution_threshold": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "contextual_contribution_penalty": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "protected_need_provider_multiplier": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     },
@@ -253,7 +281,8 @@
         "isolation_fraction_max",
         "relationship_recovery_rate_min",
         "extraction_imbalance_p95_max",
-        "context_spillover_share_max"
+        "context_spillover_share_max",
+        "protected_need_fulfillment_gap_max"
       ],
       "properties": {
         "tail_harm_ratio_max": {
@@ -288,6 +317,11 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1
+        },
+        "protected_need_fulfillment_gap_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     },
@@ -315,7 +349,10 @@
               "GLOBAL_WITHDRAWAL_FRAGMENTATION",
               "REPAIR_REOPENS_RELATIONSHIPS",
               "EXTRACTION_IMBALANCE",
-              "CONTEXT_SPILLOVER"
+              "CONTEXT_SPILLOVER",
+              "RECIPROCITY_EVASION_BY_ROTATION",
+              "CONTEXTUAL_CONTRIBUTION_CONTAINS_ROTATION",
+              "LEGITIMATE_ASYMMETRY_PRESERVED"
             ]
           }
         }
