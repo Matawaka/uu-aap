@@ -293,3 +293,18 @@ Structural graph test of effective review independence: reviewer IDs are not suf
 Run: `python schemas/ecosystem/uu-society/v0.1/harness/run_review_independence.py`.
 
 Eight synthetic cases R00–R07 cover independent baseline, common funder, beneficiary appointments, evidence capture, independent backstop, delegation chain, benign review links, and cyclic dependencies. This graph is a diagnostic proxy, not a legal independence determination or authorization to act.
+
+
+## Dynamic review capture v0.9
+
+This layer evolves review dependencies through time rather than inspecting one static graph. It keeps separate **actual** and **observed** control graphs, so an undisclosed appointment, funding, delegation, or evidence-control edge can produce real structural capture before the diagnostic can see it.
+
+The suite measures capture onset, detection lag, hidden-capture duration, recovery, oscillation, reviewer rotation under unchanged control, and false recovery where disclosed dependencies disappear but a hidden control path remains.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_dynamic_review_capture.py
+```
+
+Key boundaries: Observed Independence != Actual Independence; Reviewer Rotation != Control Rotation; Visible Dependency Removal != Actual Recovery. This remains an experimental structural proxy, not a legal verdict or action authorization.
