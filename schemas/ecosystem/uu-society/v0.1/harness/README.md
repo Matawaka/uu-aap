@@ -104,3 +104,16 @@ python schemas/ecosystem/uu-society/v0.1/harness/run_population_simulations.py
 The simulator reports independent observables rather than one society score: fulfilled/unmet need, idle capability, harm, repair/recovery, restriction persistence, authority concentration, access inequality and coalition extraction.
 
 Threshold crossings are diagnostic signals only. They do not identify guilty persons, create authority, or rank actors.
+
+
+## Phase-space exploration
+
+The sweep layer constructs a Cartesian parameter grid and runs the deterministic population simulator in every cell. Each cell is represented by an independent diagnostic signature (or `STABLE`), not by a scalar society score.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_phase_space_sweeps.py
+```
+
+The analyzer reports neighboring **boundary edges** where a one-step parameter change alters the diagnostic signature, transition counts by axis, and a Pareto frontier over independent loss dimensions. The Pareto frontier is not treated as a single optimum.
