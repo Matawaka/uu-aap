@@ -193,3 +193,14 @@ This layer asks not only whether an institution is independent, but what evidenc
 The model therefore distinguishes actual independence from justified belief about independence. Evidence is scoped by reviewer and control dimension, expires by TTL, and independent corroboration is calculated from source-control origins rather than raw source count. Contradictory evidence withholds a verdict.
 
 This permits both false assurance and false-positive capture signals to exist in the model, preventing the system from silently equating confidence with truth.
+
+
+### v1.0 experimental findings
+
+All 14 reference scenarios conform. Three distinctions are now explicit:
+
+1. **Evidence confidence is not ground truth.** K05 produces false assurance; K11 produces a false-positive capture signal.
+2. **Source plurality is not source independence.** K02 collapses three nominal sources to one effective evidence cluster because they share a control origin.
+3. **Evidence has temporal direction in both ways.** K09 shows capture outrunning favorable evidence; K13 shows recovery outrunning adverse evidence.
+
+This prevents institutional memory from silently becoming either permanent trust or permanent stigma.
