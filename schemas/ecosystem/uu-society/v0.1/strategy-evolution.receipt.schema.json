@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/strategy-evolution.receipt.schema.json",
+  "title": "UU Society Endogenous Strategy Evolution Receipt v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "experiment_id",
+    "experiment_version",
+    "model_commit_sha",
+    "seed",
+    "actor_count",
+    "interaction_count",
+    "epoch_count",
+    "result",
+    "pattern_ids",
+    "metrics",
+    "epoch_summaries",
+    "strategy_transition_counts",
+    "trace_digest",
+    "config_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.5"
+    },
+    "experiment_id": {
+      "type": "string"
+    },
+    "experiment_version": {
+      "const": "0.5"
+    },
+    "model_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|uncommitted)$"
+    },
+    "seed": {
+      "type": "string"
+    },
+    "actor_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "interaction_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "epoch_count": {
+      "type": "integer",
+      "minimum": 4
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "EXPECTED_DETECTION",
+        "FAIL"
+      ]
+    },
+    "pattern_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "epoch_summaries": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "strategy_transition_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "trace_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
