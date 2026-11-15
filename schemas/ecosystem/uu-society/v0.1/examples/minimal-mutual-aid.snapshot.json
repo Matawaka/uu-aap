@@ -1,0 +1,147 @@
+{
+  "$schema": "../uu-society-state.schema.json",
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:example-mutual-aid-001",
+  "observed_at": "2026-11-15T07:30:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:example-001",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:anna",
+      "state": "active",
+      "created_at": "2026-11-15T07:00:00Z",
+      "updated_at": "2026-11-15T07:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    },
+    {
+      "id": "urn:uu-aap:uu-society:actor:boris",
+      "state": "active",
+      "created_at": "2026-11-15T07:00:00Z",
+      "updated_at": "2026-11-15T07:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [
+    {
+      "id": "urn:uu-aap:uu-society:intent:anna-hole",
+      "state": "active",
+      "created_at": "2026-11-15T07:05:00Z",
+      "updated_at": "2026-11-15T07:05:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:anna",
+      "purpose": "Create a safe 6 mm wall hole for mounting a shelf",
+      "scope": "single household task",
+      "beneficiary_refs": [
+        "urn:uu-aap:uu-society:actor:anna"
+      ],
+      "constraints": [
+        "avoid unnecessary purchase of a drill"
+      ],
+      "privacy_boundary": "counterparty"
+    }
+  ],
+  "needs": [
+    {
+      "id": "urn:uu-aap:uu-society:need:anna-hole",
+      "state": "matched",
+      "created_at": "2026-11-15T07:06:00Z",
+      "updated_at": "2026-11-15T07:10:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:anna",
+      "desired_state": "6 mm wall hole exists safely at declared location",
+      "rights_floor_relevant": false,
+      "deadline": null,
+      "acceptable_solution_classes": [
+        "borrow_drill",
+        "skilled_person_performs_task"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "urn:uu-aap:uu-society:capability:boris-drill",
+      "state": "available",
+      "created_at": "2026-11-15T07:07:00Z",
+      "updated_at": "2026-11-15T07:07:00Z",
+      "provenance_refs": [],
+      "provider_ref": "urn:uu-aap:uu-society:actor:boris",
+      "transformation": "safe drilling of a 6 mm wall hole",
+      "conditions": [
+        "wall material compatible",
+        "location confirmed"
+      ],
+      "evidence_refs": []
+    }
+  ],
+  "resources": [
+    {
+      "id": "urn:uu-aap:uu-society:resource:boris-drill",
+      "state": "available",
+      "created_at": "2026-11-15T07:07:00Z",
+      "updated_at": "2026-11-15T07:07:00Z",
+      "provenance_refs": [],
+      "steward_ref": "urn:uu-aap:uu-society:actor:boris",
+      "resource_type": "PHYSICAL_OBJECT",
+      "scarcity_class": "constrained",
+      "transfer_modes": [
+        "use",
+        "borrow"
+      ],
+      "capacity": 1,
+      "unit": "drill"
+    }
+  ],
+  "evidence_events": [],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [
+    {
+      "id": "urn:uu-aap:uu-society:match:anna-boris-001",
+      "state": "accepted",
+      "created_at": "2026-11-15T07:10:00Z",
+      "updated_at": "2026-11-15T07:12:00Z",
+      "provenance_refs": [],
+      "need_ref": "urn:uu-aap:uu-society:need:anna-hole",
+      "capability_refs": [
+        "urn:uu-aap:uu-society:capability:boris-drill"
+      ],
+      "resource_refs": [
+        "urn:uu-aap:uu-society:resource:boris-drill"
+      ],
+      "participant_refs": [
+        "urn:uu-aap:uu-society:actor:anna",
+        "urn:uu-aap:uu-society:actor:boris"
+      ]
+    }
+  ],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": []
+}
