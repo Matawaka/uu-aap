@@ -1,0 +1,262 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/population-simulation.config.schema.json",
+  "title": "UU Society Deterministic Population Simulation Config v0.1",
+  "x-title-ru": "Конфигурация детерминированной популяционной симуляции UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "simulation_id",
+    "simulation_version",
+    "title_en",
+    "title_ru",
+    "purpose",
+    "seed",
+    "actor_count",
+    "interaction_count",
+    "categories",
+    "population",
+    "matching",
+    "dynamics",
+    "diagnostic_thresholds",
+    "expected"
+  ],
+  "properties": {
+    "simulation_id": {
+      "type": "string",
+      "pattern": "^P[0-9]{2}-[a-z0-9-]+$"
+    },
+    "simulation_version": {
+      "const": "0.1"
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title_ru": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_count": {
+      "type": "integer",
+      "minimum": 20,
+      "maximum": 10000
+    },
+    "interaction_count": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 1000000
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "population": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adversarial_fraction",
+        "coalition_fraction",
+        "base_capability_probability",
+        "base_willingness_probability"
+      ],
+      "properties": {
+        "adversarial_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.5
+        },
+        "coalition_fraction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.3
+        },
+        "base_capability_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "base_willingness_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "matching": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_pool_size",
+        "policy",
+        "feedback_strength",
+        "coalition_request_bias"
+      ],
+      "properties": {
+        "candidate_pool_size": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 50
+        },
+        "policy": {
+          "enum": [
+            "uniform_capable",
+            "context_evidence_weighted"
+          ]
+        },
+        "feedback_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "coalition_request_bias": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 0.9
+        }
+      }
+    },
+    "dynamics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "accidental_harm_rate",
+        "adversarial_harm_rate",
+        "ordinary_breach_rate",
+        "adversarial_breach_rate",
+        "repair_probability_cooperative",
+        "repair_probability_adversarial",
+        "restriction_duration_interactions",
+        "restriction_renewal_limit"
+      ],
+      "properties": {
+        "accidental_harm_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "adversarial_harm_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "ordinary_breach_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "adversarial_breach_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "repair_probability_cooperative": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "repair_probability_adversarial": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "restriction_duration_interactions": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "restriction_renewal_limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        }
+      }
+    },
+    "diagnostic_thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_top10_share_max",
+        "access_gini_max",
+        "restriction_actor_time_share_max",
+        "harm_rate_max",
+        "unmet_need_rate_max",
+        "coalition_extraction_ratio_max"
+      ],
+      "properties": {
+        "authority_top10_share_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "access_gini_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "restriction_actor_time_share_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "harm_rate_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unmet_need_rate_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "coalition_extraction_ratio_max": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "expected_signal_ids"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "PASS",
+            "EXPECTED_DETECTION"
+          ]
+        },
+        "expected_signal_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "AUTHORITY_CONCENTRATION",
+              "ACCESS_INEQUALITY",
+              "RESTRICTION_INERTIA",
+              "HARM_PRESSURE",
+              "UNMET_NEED_PRESSURE",
+              "COALITION_EXTRACTION"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
