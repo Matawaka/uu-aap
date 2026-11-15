@@ -1,0 +1,22 @@
+{
+  "meta_scenario_id": "M01-sybil-current-control",
+  "scenario_version": "0.1",
+  "title_en": "Sybil current-control evidence reuse",
+  "title_ru": "Sybil-повторное использование evidence текущего контроля",
+  "purpose": "Detect one current-control evidence item being used to establish independent current agency for multiple PERSON actors.",
+  "snapshot_files": [
+    "snapshot.json"
+  ],
+  "checks": [
+    "sybil_current_control_reuse"
+  ],
+  "groups": [],
+  "proposed_actor_rankings": [],
+  "parameters": {},
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_violation_ids": [
+      "I-019"
+    ]
+  }
+}

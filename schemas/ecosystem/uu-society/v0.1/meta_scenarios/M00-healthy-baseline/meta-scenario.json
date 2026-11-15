@@ -1,0 +1,27 @@
+{
+  "meta_scenario_id": "M00-healthy-baseline",
+  "scenario_version": "0.1",
+  "title_en": "Healthy population baseline",
+  "title_ru": "Здоровая базовая конфигурация",
+  "purpose": "Verify that meta analyzers do not report violations for unique current-control evidence, no coalition extraction, no governance capture, no persistent restriction and no ranking.",
+  "snapshot_files": [
+    "snapshot.json"
+  ],
+  "checks": [
+    "sybil_current_control_reuse",
+    "coalition_rotation_evidence_erasure",
+    "governance_self_ratification",
+    "restriction_inertia",
+    "universal_person_ranking"
+  ],
+  "groups": [],
+  "proposed_actor_rankings": [],
+  "parameters": {
+    "coalition_breach_threshold": 3,
+    "restriction_persistence_snapshots": 3
+  },
+  "expected": {
+    "result": "PASS",
+    "expected_violation_ids": []
+  }
+}

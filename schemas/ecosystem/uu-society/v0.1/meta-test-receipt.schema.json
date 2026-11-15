@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/meta-test-receipt.schema.json",
+  "title": "UU Society Meta-Resilience Test Receipt v0.1",
+  "x-title-ru": "Квитанция мета-теста устойчивости UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "run_id",
+    "meta_scenario_id",
+    "scenario_version",
+    "model_version",
+    "model_commit_sha",
+    "result",
+    "snapshot_count",
+    "violation_ids",
+    "observations",
+    "digests"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:uu-society:meta-test-run:"
+    },
+    "meta_scenario_id": {
+      "type": "string"
+    },
+    "scenario_version": {
+      "const": "0.1"
+    },
+    "model_version": {
+      "const": "0.1"
+    },
+    "model_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|uncommitted)$"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "EXPECTED_DETECTION",
+        "FAIL"
+      ]
+    },
+    "snapshot_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "violation_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "observations": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_sha256",
+        "state_schema_sha256",
+        "meta_scenario_sha256",
+        "snapshot_sha256"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "state_schema_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "meta_scenario_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "snapshot_sha256": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    }
+  }
+}

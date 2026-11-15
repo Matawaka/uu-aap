@@ -1,0 +1,33 @@
+{
+  "meta_scenario_id": "M05-social-score-drift",
+  "scenario_version": "0.1",
+  "title_en": "Universal social-score drift",
+  "title_ru": "Дрейф к универсальному социальному рейтингу",
+  "purpose": "Detect an attempt to collapse context-specific TrustState values into one fungible person ranking.",
+  "snapshot_files": [
+    "snapshot.json"
+  ],
+  "checks": [
+    "universal_person_ranking"
+  ],
+  "groups": [],
+  "proposed_actor_rankings": [
+    {
+      "actor_ref": "urn:uu-aap:uu-society:actor:m05",
+      "score": 91.7,
+      "trust_state_refs": [
+        "urn:uu-aap:uu-society:trust-state:m05-stewardship",
+        "urn:uu-aap:uu-society:trust-state:m05-competence"
+      ],
+      "purpose": "universal eligibility ranking"
+    }
+  ],
+  "parameters": {},
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_violation_ids": [
+      "I-005",
+      "I-023"
+    ]
+  }
+}

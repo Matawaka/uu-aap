@@ -1,0 +1,34 @@
+{
+  "meta_scenario_id": "M02-coalition-rotation",
+  "scenario_version": "0.1",
+  "title_en": "Coalition rotation erases per-actor counters",
+  "title_ru": "Ротация коалиции обходит индивидуальные счётчики",
+  "purpose": "Detect a recurring cross-actor extraction pattern that disappears when each actor is evaluated only in isolation.",
+  "snapshot_files": [
+    "snapshot.json"
+  ],
+  "checks": [
+    "coalition_rotation_evidence_erasure"
+  ],
+  "groups": [
+    {
+      "group_id": "m02-coalition",
+      "role": "coalition_candidate",
+      "member_refs": [
+        "urn:uu-aap:uu-society:actor:m02-a",
+        "urn:uu-aap:uu-society:actor:m02-b",
+        "urn:uu-aap:uu-society:actor:m02-c"
+      ]
+    }
+  ],
+  "proposed_actor_rankings": [],
+  "parameters": {
+    "coalition_breach_threshold": 3
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_violation_ids": [
+      "I-020"
+    ]
+  }
+}

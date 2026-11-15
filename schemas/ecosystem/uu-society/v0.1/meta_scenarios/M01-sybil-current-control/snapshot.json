@@ -1,0 +1,117 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:m01-sybil-current-control",
+  "observed_at": "2026-11-15T11:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:m01-a",
+      "state": "active",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": "urn:uu-aap:uu-society:personal-anchor:m01-a"
+    },
+    {
+      "id": "urn:uu-aap:uu-society:actor:m01-b",
+      "state": "active",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": "urn:uu-aap:uu-society:personal-anchor:m01-b"
+    }
+  ],
+  "personal_anchors": [
+    {
+      "id": "urn:uu-aap:uu-society:personal-anchor:m01-a",
+      "state": "sufficient_for_declared_scope",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:m01-a",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m01-shared"
+      ],
+      "current_control_evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m01-shared"
+      ],
+      "scope": "independent current person agency",
+      "freshness_at": "2026-11-15T10:58:00Z"
+    },
+    {
+      "id": "urn:uu-aap:uu-society:personal-anchor:m01-b",
+      "state": "sufficient_for_declared_scope",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:m01-b",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m01-shared"
+      ],
+      "current_control_evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m01-shared"
+      ],
+      "scope": "independent current person agency",
+      "freshness_at": "2026-11-15T10:58:00Z"
+    }
+  ],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:m01-shared",
+      "state": "attested",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:m01-a",
+        "urn:uu-aap:uu-society:actor:m01-b"
+      ],
+      "event_type": "current_control_claim",
+      "observed_at": "2026-11-15T10:58:00Z",
+      "claim": "One current-control evidence item is replayed across two claimed PERSON identities.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T12:00:00Z"
+    }
+  ],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": [],
+  "harms": [],
+  "rule_violations": [],
+  "delegations": [],
+  "governance_rules": []
+}

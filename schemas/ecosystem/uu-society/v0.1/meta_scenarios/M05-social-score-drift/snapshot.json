@@ -1,0 +1,133 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:m05-social-score-drift",
+  "observed_at": "2026-11-15T11:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:m05",
+      "state": "active",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:m05-a",
+      "state": "attested",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:m05"
+      ],
+      "event_type": "stewardship_history",
+      "observed_at": "2026-11-15T10:40:00Z",
+      "claim": "Supporting evidence for resource stewardship.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T12:00:00Z"
+    },
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:m05-b",
+      "state": "attested",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:m05"
+      ],
+      "event_type": "competence_history",
+      "observed_at": "2026-11-15T10:41:00Z",
+      "claim": "Mixed evidence for a specific competence domain.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T12:00:00Z"
+    }
+  ],
+  "trust_states": [
+    {
+      "id": "urn:uu-aap:uu-society:trust-state:m05-stewardship",
+      "state": "supporting",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:actor:m05",
+      "context": "resource stewardship",
+      "as_of": "2026-11-15T11:00:00Z",
+      "dimensions": [
+        {
+          "dimension": "stewardship",
+          "evidence_posture": "supporting",
+          "evidence_refs": [
+            "urn:uu-aap:uu-society:evidence-event:m05-a"
+          ],
+          "scope": "borrowed tools"
+        }
+      ],
+      "overall_numeric_score": null
+    },
+    {
+      "id": "urn:uu-aap:uu-society:trust-state:m05-competence",
+      "state": "mixed",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:actor:m05",
+      "context": "specific technical competence",
+      "as_of": "2026-11-15T11:00:00Z",
+      "dimensions": [
+        {
+          "dimension": "competence",
+          "evidence_posture": "mixed",
+          "evidence_refs": [
+            "urn:uu-aap:uu-society:evidence-event:m05-b"
+          ],
+          "scope": "technical task"
+        }
+      ],
+      "overall_numeric_score": null
+    }
+  ],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": [],
+  "harms": [],
+  "rule_violations": [],
+  "delegations": [],
+  "governance_rules": []
+}

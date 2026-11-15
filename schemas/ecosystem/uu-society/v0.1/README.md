@@ -69,3 +69,16 @@ The JSON Schema uses English standard fields and `x-title-ru` / `x-description-r
 ## Boundary
 
 Schema validity means only that an artifact conforms structurally to this experimental model. It does not establish factual truth, sufficient evidence, current authority, consent, fairness, legal effect or social legitimacy.
+
+
+## Meta-resilience analysis
+
+The executable model also contains a population/timeline meta-resilience suite. It does not assign a single "society health score". Instead it checks independent structural failure modes:
+
+- reuse of the same current-control evidence as a multiplier for multiple PERSON identities;
+- coordinated actor rotation that erases a recurring cross-actor extraction pattern;
+- governance self-ratification inside a closed coalition without independent review;
+- long-running restrictions that persist by inertia without fresh evidence or a recovery path;
+- attempts to collapse contextual trust into a universal person ranking.
+
+Meta detection is a reason for review, not proof of individual guilt.

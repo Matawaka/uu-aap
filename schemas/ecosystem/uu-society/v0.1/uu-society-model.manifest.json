@@ -275,6 +275,36 @@
       "key": "LOCAL_GOVERNANCE_BELOW_RIGHTS_FLOOR",
       "text_en": "A local GovernanceCell rule MUST NOT override or condition away the constitutional Rights Floor.",
       "text_ru": "Локальное правило GovernanceCell НЕ ДОЛЖНО отменять или ставить под условие конституционный Rights Floor."
+    },
+    {
+      "id": "I-019",
+      "key": "CURRENT_CONTROL_EVIDENCE_NOT_SYBIL_MULTIPLIER",
+      "text_en": "The same current-control evidence MUST NOT independently establish current agency for multiple PERSON actors without an explicit disambiguating relationship model.",
+      "text_ru": "Одно и то же evidence текущего контроля НЕ ДОЛЖНО независимо устанавливать текущую агентность нескольких PERSON без явной модели различения связей."
+    },
+    {
+      "id": "I-020",
+      "key": "ACTOR_ROTATION_NOT_EVIDENCE_ERASURE",
+      "text_en": "Rotating coordinated actors MUST NOT erase evidence of a recurring cross-actor extraction pattern; pattern detection itself MUST NOT establish individual guilt.",
+      "text_ru": "Ротация координированных участников НЕ ДОЛЖНА стирать evidence повторяющегося межсубъектного паттерна извлечения; обнаружение паттерна само по себе НЕ устанавливает индивидуальную виновность."
+    },
+    {
+      "id": "I-021",
+      "key": "GOVERNANCE_NOT_SELF_RATIFYING",
+      "text_en": "A governance coalition MUST NOT use only mutually dependent internal attestations as the sole basis for expanding or sustaining authority over others without an independent review path.",
+      "text_ru": "Коалиция управления НЕ ДОЛЖНА использовать только взаимозависимые внутренние аттестации как единственное основание расширения или удержания власти над другими без независимого пути пересмотра."
+    },
+    {
+      "id": "I-022",
+      "key": "RESTRICTION_NOT_PERMANENT_BY_INERTIA",
+      "text_en": "A non-rights restriction MUST NOT persist indefinitely by inertia without fresh adverse evidence, expiry/review, dispute, repair or another recovery path.",
+      "text_ru": "Ограничение, не относящееся к базовым правам, НЕ ДОЛЖНО сохраняться неопределённо по инерции без свежего неблагоприятного evidence, срока/пересмотра, спора, repair или иного пути восстановления."
+    },
+    {
+      "id": "I-023",
+      "key": "AGGREGATE_METRICS_NOT_PERSON_RANKING",
+      "text_en": "Aggregate coordination metrics MUST NOT be collapsed into a universal actor ranking or fungible social score.",
+      "text_ru": "Агрегированные показатели координации НЕ ДОЛЖНЫ сводиться к универсальному ранжированию людей или взаимозаменяемому социальному баллу."
     }
   ],
   "interaction_rules": [
@@ -1194,5 +1224,24 @@
     "This model does not authorize surveillance or universal personal dossiers.",
     "This model does not establish legal identity or legal responsibility.",
     "This model does not create Stable Core membership or implementation authority."
-  ]
+  ],
+  "meta_resilience": {
+    "status": "EXPERIMENTAL_META_ANALYSIS",
+    "harness": "./harness/run_meta_scenarios.py",
+    "scenario_schema": "./meta-scenario.schema.json",
+    "receipt_schema": "./meta-test-receipt.schema.json",
+    "checks": [
+      "sybil_current_control_reuse",
+      "coalition_rotation_evidence_erasure",
+      "governance_self_ratification",
+      "restriction_inertia",
+      "universal_person_ranking"
+    ],
+    "non_effects": [
+      "Meta detection != guilt",
+      "Population pattern != individual verdict",
+      "Aggregate metric != person score",
+      "Meta conformance != social correctness"
+    ]
+  }
 }
