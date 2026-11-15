@@ -249,3 +249,23 @@ The rights-floor proxy is not presented as a complete theory of human rights. It
 - **G06:** in a less-saturated coalition environment, self-ratifying governance adopted `strategy_outcome` evidence because it increased coalition share. Capture therefore need not look like an explicit coalition privilege; a general-purpose rule can be selected for coalition self-interest.
 
 The experiment distinguishes the content of a rule from the authority basis used to select it.
+
+
+## Constitutional resilience v0.7
+
+This layer tests constitutional trajectories rather than isolated governance rules.
+
+Central invariant:
+
+```
+Legitimate Rule Change != Legitimate Accumulation of Power
+```
+
+The harness separates:
+- local legality of one amendment;
+- an immutable reference rights-floor observation;
+- cumulative structural limits on authority scope, review independence, rights-floor strength, amendment friction, transparency and revocability;
+- reviewer-conflict checks;
+- sunset/reversion of temporary power.
+
+Reference experiments C00-C09 cover frozen control, locally lawful cumulative capture, cumulative guard, captured review, sunset reversion, revocability erosion, capture without immediate rights-floor breach, constitutional recovery, unsunset emergency delegation, and rights-floor erosion.
