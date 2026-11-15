@@ -249,3 +249,38 @@ The rights-floor proxy is not presented as a complete theory of human rights. It
 - **G06:** in a less-saturated coalition environment, self-ratifying governance adopted `strategy_outcome` evidence because it increased coalition share. Capture therefore need not look like an explicit coalition privilege; a general-purpose rule can be selected for coalition self-interest.
 
 The experiment distinguishes the content of a rule from the authority basis used to select it.
+
+
+## Constitutional resilience v0.7
+
+This layer tests constitutional trajectories rather than isolated governance rules.
+
+Central invariant:
+
+```
+Legitimate Rule Change != Legitimate Accumulation of Power
+```
+
+The harness separates:
+- local legality of one amendment;
+- an immutable reference rights-floor observation;
+- cumulative structural limits on authority scope, review independence, rights-floor strength, amendment friction, transparency and revocability;
+- reviewer-conflict checks;
+- sunset/reversion of temporary power.
+
+Reference experiments C00-C09 cover frozen control, locally lawful cumulative capture, cumulative guard, captured review, sunset reversion, revocability erosion, capture without immediate rights-floor breach, constitutional recovery, unsunset emergency delegation, and rights-floor erosion.
+
+
+### v0.7 reference findings
+
+- C01: six individually bounded amendments reduced review independence from **0.90 to 0.55** while the reference rights-floor outcome proxy remained healthy.
+- C02: the cumulative guard accepted five steps and rejected the sixth at the structural boundary.
+- C04: temporary emergency authority with a sunset reverted automatically to the initial state.
+- C05: revocability fell from **0.90 to 0.50** through individually small changes.
+- C06: authority scope rose from **0.30 to 0.75** with no immediate change in fulfillment, harm, exit, access inequality or outsider gap.
+- C09: rights-floor strength fell from **0.90 to 0.60** while observed outcome proxies remained healthy.
+- C10: one additional conflicted-review amendment was sufficient to cross the review-independence boundary.
+- C11: amendment friction fell from **0.80 to 0.35** through three locally bounded procedural simplifications.
+- C07 demonstrates the reverse trajectory: an inherited captured state can be repaired through bounded constitutional amendments.
+
+The key experimental distinction is **Outcome Health != Constitutional Health**.

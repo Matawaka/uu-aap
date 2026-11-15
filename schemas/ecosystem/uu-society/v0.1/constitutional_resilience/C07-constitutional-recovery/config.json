@@ -1,0 +1,126 @@
+{
+  "experiment_id": "C07-constitutional-recovery",
+  "experiment_version": "0.7",
+  "title_en": "Constitutional recovery from inherited capture",
+  "title_ru": "Конституционное восстановление после унаследованного захвата",
+  "purpose": "Test whether bounded amendments can restore review, rights-floor strength, amendment friction, transparency and revocability after inherited capture.",
+  "seed": "uu-constitutional-C07-constitutional-recovery-v0.7",
+  "mode": "local_legality_only",
+  "cycle_count": 3,
+  "initial_state": {
+    "authority_scope": 0.75,
+    "review_independence": 0.45,
+    "rights_floor_strength": 0.65,
+    "amendment_friction": 0.45,
+    "transparency": 0.55,
+    "revocability": 0.5
+  },
+  "baseline_outcome": {
+    "fulfillment": 0.96,
+    "harm": 0.03,
+    "exit_share": 0.12,
+    "access_gini": 0.18,
+    "outsider_gap": 0.03
+  },
+  "rights_floor_proxy": {
+    "min_fulfillment": 0.85,
+    "max_harm": 0.15,
+    "max_exit_share": 0.4,
+    "max_access_gini": 0.35,
+    "max_outsider_gap": 0.15
+  },
+  "constitutional_limits": {
+    "max_authority_scope": 0.6,
+    "min_review_independence": 0.6,
+    "min_rights_floor_strength": 0.7,
+    "min_amendment_friction": 0.5,
+    "min_transparency": 0.6,
+    "min_revocability": 0.6,
+    "max_local_structural_step": 0.15,
+    "require_sunset_for_power_expansion": false
+  },
+  "proposals": [
+    {
+      "proposal_id": "p-scope-and-review-repair",
+      "title_en": "Scope and review repair",
+      "title_ru": "Восстановление scope и review",
+      "stated_general_purpose": false,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.2,
+      "structural_delta": {
+        "authority_scope": -0.15,
+        "review_independence": 0.15,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0.001,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    },
+    {
+      "proposal_id": "p-rights-and-amendment-repair",
+      "title_en": "Rights and amendment repair",
+      "title_ru": "Восстановление rights и amendment",
+      "stated_general_purpose": false,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.2,
+      "structural_delta": {
+        "authority_scope": 0,
+        "review_independence": 0,
+        "rights_floor_strength": 0.1,
+        "amendment_friction": 0.1,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    },
+    {
+      "proposal_id": "p-transparency-and-revocability-repair",
+      "title_en": "Transparency and revocability repair",
+      "title_ru": "Восстановление прозрачности и обратимости",
+      "stated_general_purpose": false,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.2,
+      "structural_delta": {
+        "authority_scope": 0,
+        "review_independence": 0,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0.1,
+        "revocability": 0.1
+      },
+      "outcome_delta": {
+        "fulfillment": 0,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CONSTITUTIONAL_ADAPTATION",
+      "CONSTITUTIONAL_RECOVERY"
+    ]
+  }
+}

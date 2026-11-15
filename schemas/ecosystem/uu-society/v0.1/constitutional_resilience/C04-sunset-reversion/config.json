@@ -1,0 +1,76 @@
+{
+  "experiment_id": "C04-sunset-reversion",
+  "experiment_version": "0.7",
+  "title_en": "Sunset-bound emergency delegation",
+  "title_ru": "Чрезвычайное делегирование с sunset",
+  "purpose": "Test whether a temporary power expansion automatically reverses instead of becoming a ratchet.",
+  "seed": "uu-constitutional-C04-sunset-reversion-v0.7",
+  "mode": "sunset_guard",
+  "cycle_count": 4,
+  "initial_state": {
+    "authority_scope": 0.3,
+    "review_independence": 0.9,
+    "rights_floor_strength": 0.9,
+    "amendment_friction": 0.8,
+    "transparency": 0.9,
+    "revocability": 0.9
+  },
+  "baseline_outcome": {
+    "fulfillment": 0.96,
+    "harm": 0.03,
+    "exit_share": 0.12,
+    "access_gini": 0.18,
+    "outsider_gap": 0.03
+  },
+  "rights_floor_proxy": {
+    "min_fulfillment": 0.85,
+    "max_harm": 0.15,
+    "max_exit_share": 0.4,
+    "max_access_gini": 0.35,
+    "max_outsider_gap": 0.15
+  },
+  "constitutional_limits": {
+    "max_authority_scope": 0.6,
+    "min_review_independence": 0.6,
+    "min_rights_floor_strength": 0.7,
+    "min_amendment_friction": 0.5,
+    "min_transparency": 0.6,
+    "min_revocability": 0.6,
+    "max_local_structural_step": 0.15,
+    "require_sunset_for_power_expansion": true
+  },
+  "proposals": [
+    {
+      "proposal_id": "p-temporary-emergency-scope",
+      "title_en": "Temporary emergency scope",
+      "title_ru": "Временное чрезвычайное расширение полномочий",
+      "stated_general_purpose": true,
+      "reviewer_conflict": false,
+      "restrictive": true,
+      "beneficiary_alignment": 0.5,
+      "structural_delta": {
+        "authority_scope": 0.15,
+        "review_independence": -0.05,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0,
+        "harm": -0.01,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": 2
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CONSTITUTIONAL_ADAPTATION",
+      "SUNSET_REVERSED_POWER"
+    ]
+  }
+}

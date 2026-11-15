@@ -1,0 +1,128 @@
+{
+  "experiment_id": "C06-capture-without-rights-breach",
+  "experiment_version": "0.7",
+  "title_en": "Capture without immediate rights breach",
+  "title_ru": "Захват без немедленного нарушения rights floor",
+  "purpose": "Demonstrate that authority can concentrate structurally while all observed social outcome proxies remain within the reference rights floor.",
+  "seed": "uu-constitutional-C06-capture-without-rights-breach-v0.7",
+  "mode": "local_legality_only",
+  "cycle_count": 3,
+  "initial_state": {
+    "authority_scope": 0.3,
+    "review_independence": 0.9,
+    "rights_floor_strength": 0.9,
+    "amendment_friction": 0.8,
+    "transparency": 0.9,
+    "revocability": 0.9
+  },
+  "baseline_outcome": {
+    "fulfillment": 0.96,
+    "harm": 0.03,
+    "exit_share": 0.12,
+    "access_gini": 0.18,
+    "outsider_gap": 0.03
+  },
+  "rights_floor_proxy": {
+    "min_fulfillment": 0.85,
+    "max_harm": 0.15,
+    "max_exit_share": 0.4,
+    "max_access_gini": 0.35,
+    "max_outsider_gap": 0.15
+  },
+  "constitutional_limits": {
+    "max_authority_scope": 0.6,
+    "min_review_independence": 0.6,
+    "min_rights_floor_strength": 0.7,
+    "min_amendment_friction": 0.5,
+    "min_transparency": 0.6,
+    "min_revocability": 0.6,
+    "max_local_structural_step": 0.15,
+    "require_sunset_for_power_expansion": false
+  },
+  "proposals": [
+    {
+      "proposal_id": "p-coordination-scope-1",
+      "title_en": "Coordination scope I",
+      "title_ru": "Координационный scope I",
+      "stated_general_purpose": true,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0.15,
+        "review_independence": 0,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    },
+    {
+      "proposal_id": "p-coordination-scope-2",
+      "title_en": "Coordination scope II",
+      "title_ru": "Координационный scope II",
+      "stated_general_purpose": true,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0.15,
+        "review_independence": 0,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    },
+    {
+      "proposal_id": "p-coordination-scope-3",
+      "title_en": "Coordination scope III",
+      "title_ru": "Координационный scope III",
+      "stated_general_purpose": true,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0.15,
+        "review_independence": 0,
+        "rights_floor_strength": 0,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_WITHOUT_RIGHTS_FLOOR_BREACH",
+      "CONSTITUTIONAL_ADAPTATION",
+      "GENERAL_PURPOSE_CAPTURE_PATH",
+      "LEGITIMATE_STEPS_ACCUMULATE_CAPTURE"
+    ]
+  }
+}

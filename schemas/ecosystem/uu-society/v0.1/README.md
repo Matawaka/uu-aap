@@ -157,3 +157,23 @@ v0.6 shows that institutional resilience depends on **how rules are selected**, 
 The self-ratifying experiments are especially important: in G06 coalition-self-interest governance adopted a generally useful evidence-sharing rule because that rule increased coalition share. Institutional capture therefore does not require an openly discriminatory rule.
 
 **Rule content != authority basis for rule adoption.**
+
+
+## Constitutional resilience v0.7
+
+Institutional evolution is now followed by a constitutional meta-layer. A sequence of individually lawful amendments can be unsafe even when each step is small and observed social outcomes remain inside the rights-floor proxy.
+
+The model therefore keeps **local legality** separate from **cumulative legitimacy**. It tracks authority scope, review independence, rights-floor strength, amendment friction, transparency and revocability, and can automatically reverse temporary power through sunset clauses.
+
+The central invariant is:
+
+**Legitimate Rule Change != Legitimate Accumulation of Power.**
+
+
+### Constitutional-resilience findings
+
+The v0.7 experiments demonstrate that healthy observed outcomes do not imply healthy constitutional structure. In C06, authority scope increased from 0.30 to 0.75 while the modeled fulfillment, harm, exit, access-Gini and outsider-gap values did not deteriorate at all. C09 similarly weakened rights-floor strength from 0.90 to 0.60 without an immediate rights-floor outcome breach, and C11 reduced amendment friction from 0.80 to 0.35.
+
+Conversely, C02 shows that a cumulative guard can permit several legitimate adaptations and still stop the step that crosses the structural boundary; C04 shows automatic sunset reversion; and C07 shows constitutional recovery from inherited capture.
+
+The resulting rule is: **Outcome Health != Constitutional Health; Local Legality != Cumulative Legitimacy.**

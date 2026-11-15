@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/constitutional-resilience.receipt.schema.json",
+  "title": "UU Society Constitutional Resilience Receipt v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "experiment_id",
+    "experiment_version",
+    "model_commit_sha",
+    "seed",
+    "mode",
+    "result",
+    "pattern_ids",
+    "final_state",
+    "final_outcome",
+    "cycle_summaries",
+    "adoption_count",
+    "rejection_counts",
+    "sunset_reversal_count",
+    "trace_digest",
+    "config_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.7"
+    },
+    "experiment_id": {
+      "type": "string"
+    },
+    "experiment_version": {
+      "const": "0.7"
+    },
+    "model_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|uncommitted)$"
+    },
+    "seed": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "EXPECTED_DETECTION",
+        "FAIL"
+      ]
+    },
+    "pattern_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "final_state": {
+      "$ref": "#/$defs/constitutionalState"
+    },
+    "final_outcome": {
+      "$ref": "#/$defs/outcome"
+    },
+    "cycle_summaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "adoption_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "rejection_counts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "sunset_reversal_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "trace_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "constitutionalState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_scope",
+        "review_independence",
+        "rights_floor_strength",
+        "amendment_friction",
+        "transparency",
+        "revocability"
+      ],
+      "properties": {
+        "authority_scope": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "review_independence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rights_floor_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "amendment_friction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "transparency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "revocability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fulfillment",
+        "harm",
+        "exit_share",
+        "access_gini",
+        "outsider_gap"
+      ],
+      "properties": {
+        "fulfillment": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "harm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "exit_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "access_gini": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "outsider_gap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}
