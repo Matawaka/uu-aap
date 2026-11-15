@@ -168,3 +168,12 @@ The model therefore keeps **local legality** separate from **cumulative legitima
 The central invariant is:
 
 **Legitimate Rule Change != Legitimate Accumulation of Power.**
+
+
+### Constitutional-resilience findings
+
+The v0.7 experiments demonstrate that healthy observed outcomes do not imply healthy constitutional structure. In C06, authority scope increased from 0.30 to 0.75 while the modeled fulfillment, harm, exit, access-Gini and outsider-gap values did not deteriorate at all. C09 similarly weakened rights-floor strength from 0.90 to 0.60 without an immediate rights-floor outcome breach, and C11 reduced amendment friction from 0.80 to 0.35.
+
+Conversely, C02 shows that a cumulative guard can permit several legitimate adaptations and still stop the step that crosses the structural boundary; C04 shows automatic sunset reversion; and C07 shows constitutional recovery from inherited capture.
+
+The resulting rule is: **Outcome Health != Constitutional Health; Local Legality != Cumulative Legitimacy.**
