@@ -36,7 +36,8 @@ Actor
 - `uu-society-model.manifest.json` — agent-readable entity catalog, invariants, interaction rules and transition catalog;
 - `README.md` — English guide;
 - `README.ru.md` — Russian guide;
-- `examples/minimal-mutual-aid.snapshot.json` — minimal mutual-aid example.
+- `examples/minimal-mutual-aid.snapshot.json` — minimal mutual-aid state example;
+- `examples/minimal-mutual-aid.transition.json` — minimal allowed transition example.
 
 ## Agent reading order
 
