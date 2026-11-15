@@ -98,3 +98,10 @@ Reference fixtures isolate different failure modes rather than combining them in
 - P05 — high harm pressure under weak containment.
 
 The simulator emits multiple independent aggregate observables. Diagnostic threshold crossings are reasons for architectural review, not judgments about individual people.
+
+
+## Phase-space exploration
+
+UU Society v0.1 now includes deterministic Cartesian sweeps over population parameters. The first reference sweep W00 varies adversarial fraction, adversarial repair probability, containment duration, matching-feedback strength and willingness/coordination friction.
+
+A cell is classified only by the set of independent diagnostic signals it triggers. Neighboring cells with different signal sets form empirical boundary edges. This creates a first map of model regime changes without collapsing the society into one score or declaring one parameter combination universally optimal.
