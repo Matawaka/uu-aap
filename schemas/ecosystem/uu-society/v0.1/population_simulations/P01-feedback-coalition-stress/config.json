@@ -1,0 +1,57 @@
+{
+  "simulation_id": "P01-feedback-coalition-stress",
+  "simulation_version": "0.1",
+  "title_en": "Feedback concentration and coalition stress",
+  "title_ru": "Стресс концентрации обратной связи и коалиционного извлечения",
+  "purpose": "Stress the population with trust-like feedback in provider selection, a coordinated requesting coalition, elevated adversarial harm/breach rates and weak repair behavior.",
+  "seed": "uu-society-p01-feedback-coalition-v0.1",
+  "actor_count": 120,
+  "interaction_count": 8000,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool",
+    "compute"
+  ],
+  "population": {
+    "adversarial_fraction": 0.2,
+    "coalition_fraction": 0.1,
+    "base_capability_probability": 0.65,
+    "base_willingness_probability": 0.78
+  },
+  "matching": {
+    "candidate_pool_size": 8,
+    "policy": "context_evidence_weighted",
+    "feedback_strength": 8,
+    "coalition_request_bias": 0.55
+  },
+  "dynamics": {
+    "accidental_harm_rate": 0.015,
+    "adversarial_harm_rate": 0.24,
+    "ordinary_breach_rate": 0.02,
+    "adversarial_breach_rate": 0.38,
+    "repair_probability_cooperative": 0.8,
+    "repair_probability_adversarial": 0.1,
+    "restriction_duration_interactions": 40,
+    "restriction_renewal_limit": 2
+  },
+  "diagnostic_thresholds": {
+    "authority_top10_share_max": 0.25,
+    "access_gini_max": 0.25,
+    "restriction_actor_time_share_max": 0.05,
+    "harm_rate_max": 0.05,
+    "unmet_need_rate_max": 0.15,
+    "coalition_extraction_ratio_max": 2
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_signal_ids": [
+      "AUTHORITY_CONCENTRATION",
+      "ACCESS_INEQUALITY",
+      "RESTRICTION_INERTIA",
+      "HARM_PRESSURE",
+      "COALITION_EXTRACTION"
+    ]
+  }
+}
