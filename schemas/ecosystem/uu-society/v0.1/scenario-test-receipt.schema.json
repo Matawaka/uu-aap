@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/scenario-test-receipt.schema.json",
+  "title": "UU Society Scenario Test Receipt v0.1",
+  "x-title-ru": "Квитанция прогона сценария UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "run_id",
+    "scenario_id",
+    "scenario_version",
+    "model_version",
+    "model_commit_sha",
+    "evaluation_time",
+    "result",
+    "event_count",
+    "applied_event_count",
+    "violation_ids",
+    "digests",
+    "final_snapshot_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:uu-society:test-run:"
+    },
+    "scenario_id": {
+      "type": "string"
+    },
+    "scenario_version": {
+      "const": "0.1"
+    },
+    "model_version": {
+      "const": "0.1"
+    },
+    "model_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|uncommitted)$"
+    },
+    "evaluation_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "EXPECTED_REJECTION",
+        "FAIL",
+        "UNRESOLVED"
+      ]
+    },
+    "event_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "applied_event_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "violation_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "digests": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_sha256",
+        "state_schema_sha256",
+        "transition_schema_sha256",
+        "scenario_sha256",
+        "initial_snapshot_sha256"
+      ],
+      "properties": {
+        "manifest_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "state_schema_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "transition_schema_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "scenario_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "initial_snapshot_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "final_snapshot_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}
