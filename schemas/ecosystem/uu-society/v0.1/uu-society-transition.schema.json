@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/uu-society-transition.schema.json",
+  "title": "UU Society State Transition v0.1",
+  "x-title-ru": "Переход состояния UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "transition_id",
+    "entity_type",
+    "entity_ref",
+    "from_state",
+    "to_state",
+    "occurred_at",
+    "reason",
+    "evidence_refs",
+    "authority_refs",
+    "reversible",
+    "receipt_ref"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "0.1"
+    },
+    "transition_id": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:uu-society:transition:"
+    },
+    "entity_type": {
+      "enum": [
+        "GovernanceCell",
+        "Actor",
+        "PersonalAnchor",
+        "Intent",
+        "Need",
+        "Capability",
+        "Resource",
+        "EvidenceEvent",
+        "TrustState",
+        "RiskHarmEnvelope",
+        "Match",
+        "Commitment",
+        "ARAEState",
+        "ActionLease",
+        "Action",
+        "Outcome",
+        "Receipt",
+        "Contribution",
+        "Repair",
+        "Dispute",
+        "FailurePattern"
+      ]
+    },
+    "entity_ref": {
+      "type": "string",
+      "pattern": "^urn:uu-aap:uu-society:"
+    },
+    "from_state": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "to_state": {
+      "type": "string",
+      "minLength": 1
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "authority_refs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "reversible": {
+      "type": "boolean"
+    },
+    "receipt_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "previous_transition_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "contestable": {
+      "const": true
+    }
+  }
+}
