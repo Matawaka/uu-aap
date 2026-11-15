@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/scenario.schema.json",
+  "title": "UU Society Conflict Scenario v0.1",
+  "x-title-ru": "Конфликтный сценарий UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "scenario_id",
+    "scenario_version",
+    "title_en",
+    "title_ru",
+    "purpose",
+    "evaluation_time",
+    "initial_snapshot",
+    "semantic_facts",
+    "events",
+    "expected"
+  ],
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "pattern": "^S[0-9]{2}-[a-z0-9-]+$"
+    },
+    "scenario_version": {
+      "const": "0.1"
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title_ru": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluation_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "initial_snapshot": {
+      "type": "string",
+      "minLength": 1
+    },
+    "semantic_facts": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "./uu-society-transition.schema.json"
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_result",
+        "expected_final_states",
+        "expected_violation_ids",
+        "required_invariants_preserved"
+      ],
+      "properties": {
+        "scenario_result": {
+          "enum": [
+            "PASS",
+            "EXPECTED_REJECTION"
+          ]
+        },
+        "expected_final_states": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "expected_violation_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^I-[0-9]{3}$"
+          }
+        },
+        "required_invariants_preserved": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^I-[0-9]{3}$"
+          }
+        }
+      }
+    }
+  }
+}
