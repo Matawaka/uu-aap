@@ -12,7 +12,6 @@
   ],
   "events": [
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s05-arae-narrow",
       "entity_type": "ARAEState",
@@ -31,7 +30,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s05-lease-revoke",
       "entity_type": "ActionLease",
@@ -52,7 +50,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s05-action-contained",
       "entity_type": "Action",
@@ -73,7 +70,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s05-evidence-attested",
       "entity_type": "EvidenceEvent",
