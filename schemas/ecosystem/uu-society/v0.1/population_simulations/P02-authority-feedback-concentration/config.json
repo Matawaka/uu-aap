@@ -19,8 +19,8 @@
   },
   "matching": {
     "candidate_pool_size": 50,
-    "policy": "context_evidence_weighted",
-    "feedback_strength": 10,
+    "policy": "winner_reinforcing_context",
+    "feedback_strength": 0,
     "coalition_request_bias": 0
   },
   "dynamics": {
