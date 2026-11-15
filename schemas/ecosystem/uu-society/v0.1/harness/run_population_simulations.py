@@ -375,6 +375,9 @@ def main() -> int:
         sim_id = load_json(path)["simulation_id"]
         if errors:
             print(f"{sim_id}: FAIL")
+            if receipt:
+                print("  metrics:", json.dumps(receipt["metrics"], sort_keys=True))
+                print("  signals:", ",".join(receipt["signal_ids"]) or "<none>")
             for error in errors:
                 print(f"  - {error}")
             failures.extend(f"{sim_id}: {e}" for e in errors)
