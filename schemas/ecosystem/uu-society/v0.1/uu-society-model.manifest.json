@@ -1315,7 +1315,9 @@
       "bilateral contextual reciprocity",
       "repair-based relationship restoration",
       "bounded forgetting toward baseline",
-      "comparison policy with global negative generalization"
+      "comparison policy with global negative generalization",
+      "context-scoped contribution evidence across counterpart rotation",
+      "explicit protected-need exemption from contribution friction"
     ],
     "observables": [
       "fulfilled_need_rate",
@@ -1336,7 +1338,16 @@
       "Bilateral reciprocity != universal reputation",
       "Adaptation pattern != guilt",
       "Repair recovery != erasure of evidence",
-      "Adaptive conformance != social correctness"
+      "Adaptive conformance != social correctness",
+      "Context-scoped contribution evidence != universal social credit",
+      "Protected need != extraction"
+    ],
+    "reference_findings": [
+      "A01 local contextual avoidance reduced tail harm ratio to ~0.756 while static control remained ~0.993",
+      "A05 bilateral reciprocity alone did not materially reduce rotating extractor imbalance (p95 127 vs 129 without reciprocity)",
+      "A06 context-scoped contribution evidence reduced extractor imbalance p95 to 28 but reduced overall fulfillment to ~0.671 and tail fulfillment to ~0.565",
+      "A07 protected-need actors retained ~0.982 fulfillment while ordinary actors were ~0.845 under the same contribution-friction regime",
+      "Need without contribution is treated separately from synthetic extractor behavior"
     ]
   }
 }
