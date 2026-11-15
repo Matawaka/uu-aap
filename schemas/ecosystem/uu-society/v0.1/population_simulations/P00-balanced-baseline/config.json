@@ -42,7 +42,8 @@
     "restriction_actor_time_share_max": 0.05,
     "harm_rate_max": 0.05,
     "unmet_need_rate_max": 0.15,
-    "coalition_extraction_ratio_max": 2
+    "coalition_extraction_ratio_max": 2,
+    "idle_capability_rate_max": 0.1
   },
   "expected": {
     "result": "PASS",
