@@ -197,6 +197,32 @@ def active_arae_supports_action(
     return False
 
 
+def fresh_supporting_evidence(
+    snapshot: dict[str, Any],
+    evidence_refs: list[str],
+    evaluation_time: str,
+) -> bool:
+    """Return true when at least one referenced evidence event is current enough
+    and positively bound for an authority-expanding transition.
+    """
+    for ref in evidence_refs:
+        evidence = find_by_id(snapshot, ref)
+        if evidence is None or not ref.startswith(
+            "urn:uu-aap:uu-society:evidence-event:"
+        ):
+            continue
+        if evidence.get("state") not in {"attested", "cryptographically_bound"}:
+            continue
+        observed_at = evidence.get("observed_at")
+        retention_until = evidence.get("retention_until")
+        if not observed_at or observed_at > evaluation_time:
+            continue
+        if retention_until is not None and evaluation_time > retention_until:
+            continue
+        return True
+    return False
+
+
 def semantic_guard(
     snapshot: dict[str, Any],
     event: dict[str, Any],
@@ -232,6 +258,37 @@ def semantic_guard(
             and event["to_state"] in RESTRICTIVE_ARAE_STATES
         ):
             violations.append("I-003")
+
+    # I-004: unresolved contradictory evidence cannot be collapsed into
+    # an adverse verdict about the person.
+    if "unresolved_conflicting_evidence" in facts:
+        if (
+            event["entity_type"] == "TrustState"
+            and event["to_state"] == "adverse"
+        ):
+            violations.append("I-004")
+
+    # I-013: one failed continuity challenge may narrow reachable consequences,
+    # but it does not by itself establish an impostor or justify actor-level
+    # exclusion.
+    if "failed_continuity_challenge_only" in facts:
+        if (
+            event["entity_type"] == "Actor"
+            and event["to_state"] in {"limited", "disputed", "withdrawn"}
+        ):
+            violations.append("I-013")
+
+    # I-014: widening a previously narrowed/suspended ARAE requires fresh,
+    # positively bound evidence at the current transition frontier.
+    if (
+        event["entity_type"] == "ARAEState"
+        and event["from_state"] in {"narrowed", "suspended"}
+        and event["to_state"] == "active"
+        and not fresh_supporting_evidence(
+            snapshot, event.get("evidence_refs", []), evaluation_time
+        )
+    ):
+        violations.append("I-014")
 
     # I-014 + interaction rule R-002: action admission needs current lease.
     if event["entity_type"] == "Action" and event["to_state"] in {
