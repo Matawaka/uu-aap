@@ -1,0 +1,98 @@
+V00-frozen-no-active-search: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=NO_CANDIDATES
+V01-fresh-evidence-closes-gap: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: PROVISIONAL_INDEPENDENCE; actions=1; cost=1; intrusion=0; stop=PROVISIONAL_INDEPENDENCE
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V02-correlated-second-source: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=2; cost=2; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V03-targeted-contradiction-resolution: CONFORM
+  passive: INDETERMINATE_CONTRADICTION; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: PROVISIONAL_INDEPENDENCE; actions=1; cost=1; intrusion=0; stop=PROVISIONAL_INDEPENDENCE
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V04-unresolved-contradiction: CONFORM
+  passive: INDETERMINATE_CONTRADICTION; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: INDETERMINATE_CONTRADICTION; actions=1; cost=1; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V05-search-budget-exhausted: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=BUDGET_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=0; cost=0; intrusion=0; stop=HARNESS_WATCHDOG
+V06-privacy-bound-misses-capture: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=0; cost=0; intrusion=0; stop=HARNESS_WATCHDOG
+V07-uncertainty-scope-expansion: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=0; cost=0; intrusion=0; stop=HARNESS_WATCHDOG
+V08-hidden-capture-discovered: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: CAPTURE_SIGNAL; actions=1; cost=1; intrusion=0; stop=CAPTURE_SIGNAL
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V09-hidden-capture-not-discovered: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=1; cost=1; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V10-repeated-dependent-source: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=3; cost=3; intrusion=0; stop=BUDGET_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V11-stale-during-search: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=1; cost=1; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V12-historical-capture-recovered: CONFORM
+  passive: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PROVISIONAL_INDEPENDENCE
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V13-fresh-anomaly-targeted-recheck: CONFORM
+  passive: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: PROVISIONAL_INDEPENDENCE; actions=1; cost=1; intrusion=0; stop=PROVISIONAL_INDEPENDENCE
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V14-paranoia-loop-watchdog: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=0; cost=0; intrusion=0; stop=HARNESS_WATCHDOG
+V15-proper-provisional-stop: CONFORM
+  passive: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PROVISIONAL_INDEPENDENCE
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V16-short-ttl-unreachable-coverage: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=2; cost=2; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V17-long-ttl-false-assurance: CONFORM
+  passive: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PROVISIONAL_INDEPENDENCE
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V18-new-provenance-revokes-claim: CONFORM
+  passive: PROVISIONAL_INDEPENDENCE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=1; cost=1; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=3; cost=3; intrusion=0; stop=HARNESS_WATCHDOG
+V19-lease-expires-in-flight: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=1; cost=1; intrusion=0; stop=LEASE_EXPIRED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=1; cost=1; intrusion=0; stop=HARNESS_WATCHDOG
+V20-protected-rights-floor: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=0; cost=0; intrusion=0; stop=HARNESS_WATCHDOG
+V21-cost-budget-gate: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=BUDGET_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=0; cost=0; intrusion=0; stop=HARNESS_WATCHDOG
+V22-explicit-anomaly-extension: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: PROVISIONAL_INDEPENDENCE; actions=1; cost=1; intrusion=0; stop=PROVISIONAL_INDEPENDENCE
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=1; cost=1; intrusion=0; stop=HARNESS_WATCHDOG
+V23-missing-search-authority: CONFORM
+  passive: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=PASSIVE
+  bounded_targeted: BOUNDED_INDETERMINATE; actions=0; cost=0; intrusion=0; stop=AUTHORIZED_CORRIDOR_EXHAUSTED
+  suspicion_expanding: NONTERMINATING_POLICY_DETECTED; actions=0; cost=0; intrusion=0; stop=HARNESS_WATCHDOG
+
+UU Society active verification v1.1: 24/24 experiments conform

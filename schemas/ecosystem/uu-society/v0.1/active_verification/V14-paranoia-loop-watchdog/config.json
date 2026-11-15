@@ -1,0 +1,156 @@
+{
+  "experiment_id": "V14-paranoia-loop-watchdog",
+  "experiment_version": "1.1",
+  "title_en": "Suspicion-expanding policy lacks a legitimate stop",
+  "title_ru": "Расширяющая подозрение policy не имеет надлежащей остановки",
+  "purpose": "Suspicion-expanding policy lacks a legitimate stop",
+  "epistemic_scope": {
+    "nodes": [
+      "r1",
+      "beneficiary",
+      "origin",
+      "other"
+    ],
+    "reviewers": [
+      "r1"
+    ],
+    "beneficiary": "beneficiary",
+    "control_dimensions": [
+      "funds",
+      "delegates"
+    ],
+    "source_nodes": [
+      "s1",
+      "s2",
+      "s3"
+    ],
+    "review_quorum": 1,
+    "source_quorum": 2
+  },
+  "initial_evidence": [],
+  "initial_source_control_edges": [],
+  "initial_source_checks": [
+    {
+      "source": "s1",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s2",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s3",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    }
+  ],
+  "anomalies": [],
+  "search_lease": {
+    "lease_id": "search-V14",
+    "purpose": "EVIDENCE_SEARCH_ONLY",
+    "issued_cycle": 0,
+    "expires_cycle": 12,
+    "scope": [
+      {
+        "reviewer": "r1",
+        "dimension": "funds"
+      }
+    ],
+    "extension_scope": [],
+    "allowed_action_types": [
+      "REQUEST_FRESH_ATTESTATION",
+      "REQUEST_SECOND_SOURCE",
+      "CHECK_SOURCE_INDEPENDENCE",
+      "REVERIFY_CONTROL_EDGE",
+      "RESOLVE_CONTRADICTION",
+      "DISCOVER_SOURCE_CONTROL_ORIGIN",
+      "WAIT_FOR_FRESH_EVIDENCE"
+    ],
+    "authority_requirements": [
+      "READ_PUBLIC_EVIDENCE"
+    ],
+    "max_per_action_intrusion": 2
+  },
+  "budget": {
+    "max_actions": 3,
+    "max_total_cost": 6,
+    "max_intrusion_cost": 3,
+    "max_scope_expansions": 0,
+    "max_cycles": 10
+  },
+  "actions": [
+    {
+      "action_id": "a",
+      "type": "REQUEST_SECOND_SOURCE",
+      "scope": {
+        "reviewer": "r1",
+        "dimension": "delegates"
+      },
+      "source": "s2",
+      "expected_information_value": 800,
+      "availability_permille": 1000,
+      "cost": 1,
+      "intrusion_cost": 0,
+      "duration_cycles": 1,
+      "not_before_cycle": 0,
+      "expires_cycle": 30,
+      "authority_requirement": "READ_PUBLIC_EVIDENCE",
+      "can_reveal_hidden_dependency": false,
+      "rights_infringing": false,
+      "scope_extension_basis": "UNCERTAINTY",
+      "anomaly_ref": ""
+    }
+  ],
+  "response_tape": {
+    "a": [
+      {
+        "outcome": "NOT_FOUND",
+        "evidence": [],
+        "source_edges": [],
+        "source_checks": [],
+        "retractions": [],
+        "negative_ttl_cycles": 2
+      }
+    ]
+  },
+  "oracle_only": {
+    "initial_control_edges": [],
+    "events": [],
+    "historical_capture": false
+  },
+  "watchdog_steps": 8,
+  "expected": {
+    "bounded_targeted": {
+      "metrics": {
+        "verification_actions_used": 0,
+        "final_outcome": "BOUNDED_INDETERMINATE",
+        "search_termination_reason": "AUTHORIZED_CORRIDOR_EXHAUSTED",
+        "blocked_scope_expansions": 1
+      },
+      "required_patterns": [],
+      "forbidden_patterns": [
+        "UNKNOWN_IS_CAPTURE",
+        "NEGATIVE_SEARCH_IS_CLEARANCE"
+      ]
+    },
+    "suspicion_expanding": {
+      "metrics": {
+        "verification_actions_used": 0,
+        "final_outcome": "NONTERMINATING_POLICY_DETECTED",
+        "search_termination_reason": "HARNESS_WATCHDOG",
+        "policy_action_proposals": 8,
+        "scope_expansions": 0
+      },
+      "required_patterns": [
+        "UNBOUNDED_VERIFICATION_LOOP",
+        "HARNESS_TERMINATED_NONSTOPPING_POLICY"
+      ],
+      "forbidden_patterns": [
+        "UNKNOWN_IS_CAPTURE",
+        "NEGATIVE_SEARCH_IS_CLEARANCE"
+      ]
+    }
+  }
+}

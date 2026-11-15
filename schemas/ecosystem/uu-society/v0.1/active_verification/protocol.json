@@ -1,0 +1,109 @@
+{
+  "experiment_version": "1.1",
+  "title": "Active Institutional Verification / Bounded Evidence Search",
+  "base_main_sha": "f4fa22813f316f89748f7fd5e5f6dd71f8364a1d",
+  "predecessor_pr": 1038,
+  "predecessor_suite": "K00-K13: 14/14 conform on pinned source",
+  "policies": [
+    "passive",
+    "bounded_targeted",
+    "suspicion_expanding"
+  ],
+  "scenario_ids": [
+    "V00-frozen-no-active-search",
+    "V01-fresh-evidence-closes-gap",
+    "V02-correlated-second-source",
+    "V03-targeted-contradiction-resolution",
+    "V04-unresolved-contradiction",
+    "V05-search-budget-exhausted",
+    "V06-privacy-bound-misses-capture",
+    "V07-uncertainty-scope-expansion",
+    "V08-hidden-capture-discovered",
+    "V09-hidden-capture-not-discovered",
+    "V10-repeated-dependent-source",
+    "V11-stale-during-search",
+    "V12-historical-capture-recovered",
+    "V13-fresh-anomaly-targeted-recheck",
+    "V14-paranoia-loop-watchdog",
+    "V15-proper-provisional-stop",
+    "V16-short-ttl-unreachable-coverage",
+    "V17-long-ttl-false-assurance",
+    "V18-new-provenance-revokes-claim",
+    "V19-lease-expires-in-flight",
+    "V20-protected-rights-floor",
+    "V21-cost-budget-gate",
+    "V22-explicit-anomaly-extension",
+    "V23-missing-search-authority"
+  ],
+  "freeze_rule": "Scenario expectations and hypotheses were declared before the first execution. Substantive refutations remain findings. A semantic defect may be fixed with its original run retained; no thresholds are adjusted to make conformance green.",
+  "hypotheses": [
+    {
+      "id": "H1",
+      "claim": "A targeted fresh query can close a simple evidence gap",
+      "test": "V01",
+      "expected_research_result": "supported in this fixture"
+    },
+    {
+      "id": "H2",
+      "claim": "More nominal evidence always increases independent corroboration",
+      "test": "V02,V10,V18",
+      "expected_research_result": "refuted in these fixtures"
+    },
+    {
+      "id": "H3",
+      "claim": "Bounded targeted verification guarantees hidden capture discovery",
+      "test": "V06,V09",
+      "expected_research_result": "refuted under privacy or availability bounds"
+    },
+    {
+      "id": "H4",
+      "claim": "A source-provenance disclosure can reduce an existing independence claim",
+      "test": "V18",
+      "expected_research_result": "supported; preserve the negative evidence-value result"
+    },
+    {
+      "id": "H5",
+      "claim": "Short TTL can prevent simultaneous evidence coverage",
+      "test": "V11,V16",
+      "expected_research_result": "supported in sequential one-shot search"
+    },
+    {
+      "id": "H6",
+      "claim": "A policy without stop obligations can keep proposing surveillance after denial",
+      "test": "V14",
+      "expected_research_result": "supported by finite recurrence witness, not proof of mathematical divergence"
+    },
+    {
+      "id": "H7",
+      "claim": "Past capture alone grants indefinite search authority",
+      "test": "V12",
+      "expected_research_result": "rejected by the architecture"
+    },
+    {
+      "id": "H8",
+      "claim": "Long-lived apparently independent favorable evidence prevents false assurance",
+      "test": "V17",
+      "expected_research_result": "refuted; no claim of calibrated optimum TTL"
+    }
+  ],
+  "method": "Deterministic response tapes are shared across policies. Policy ranking uses declared public EIV and availability only. Response outcomes and oracle truth are absent from the policy view. No moral oracle. No aggregate institutional score.",
+  "metric_units": "Costs and cycles are synthetic integer units. Oracle error counts refer to recorded decision/completion observations, not equal-duration calendar cycles. Independent support change is a signed net change in fresh source clusters per slot/assertion.",
+  "protected_invariants": [
+    "Unknown != Suspicious",
+    "Failure to Discover != Proof of Absence",
+    "Search Authority != Decision Authority",
+    "Uncertainty != Permission to Expand Scope",
+    "More Evidence != More Truth",
+    "Evidence Quantity != Evidence Independence",
+    "Verification Must Be Bounded",
+    "Contradiction -> Targeted Re-check, not Unlimited Search",
+    "Negative Search Result != Permanent Clearance",
+    "Historical Capture != Permanent Suspicion",
+    "Protected Rights != Optimization Variable",
+    "Capability != Authorization",
+    "Search Lease != Action Lease",
+    "Search Lease != Permission to Punish",
+    "Search Lease Expiry -> Stop or Reauthorize",
+    "Search Lease Scope Cannot Self-Expand"
+  ]
+}

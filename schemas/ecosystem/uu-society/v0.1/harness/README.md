@@ -338,3 +338,21 @@ A bounded verification result can be summarized as:
 `Bounded Verification = Scope + Coverage + Freshness + Independent Corroboration`
 
 It is never equivalent to certainty about every undiscovered dependency.
+
+
+## Active Institutional Verification / Bounded Evidence Search v1.1
+
+The runner reuses the v1.0 assessment and adds an immutable experimental Epistemic Search Lease, hard authority/privacy/scope gates, independent-source provenance checks and explicit stop rules. It evaluates passive, bounded_targeted and suspicion_expanding on the same deterministic tapes. Synthetic oracle scoring occurs only after each complete execution.
+
+Run from the repository root:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_active_verification.py --check-reference
+python -m unittest discover -s schemas/ecosystem/uu-society/v0.1/harness -p test_active_verification.py -v
+```
+
+Use --experiment V01-fresh-evidence-closes-gap to select a case and --output-dir PATH to save full receipts. The dedicated active-institutional-verification CI job schema-validates and replays all 96 receipts, checks oracle mutations, and runs the 13 hostile/metamorphic test methods.
+
+The original 24-case run, hypotheses and configuration digests are retained; eight boundary follow-ups were separately declared. Conformance includes substantive negative results and watchdog termination of a bad comparator. It is not proof that institutions are independent or that surveillance is authorized.
+
+See [full experimental findings and limits](../active_verification/README.md) and [RU](../active_verification/README.ru.md).

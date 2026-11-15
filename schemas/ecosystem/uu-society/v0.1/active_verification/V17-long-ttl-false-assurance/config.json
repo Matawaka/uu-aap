@@ -1,0 +1,175 @@
+{
+  "experiment_id": "V17-long-ttl-false-assurance",
+  "experiment_version": "1.1",
+  "title_en": "Long-lived favorable evidence can preserve false assurance",
+  "title_ru": "Долгоживущее благоприятное evidence сохраняет ложную уверенность",
+  "purpose": "Long-lived favorable evidence can preserve false assurance",
+  "epistemic_scope": {
+    "nodes": [
+      "r1",
+      "beneficiary",
+      "origin",
+      "other"
+    ],
+    "reviewers": [
+      "r1"
+    ],
+    "beneficiary": "beneficiary",
+    "control_dimensions": [
+      "funds"
+    ],
+    "source_nodes": [
+      "s1",
+      "s2",
+      "s3"
+    ],
+    "review_quorum": 1,
+    "source_quorum": 2
+  },
+  "initial_evidence": [
+    {
+      "evidence_id": "e1",
+      "source": "s1",
+      "reviewer": "r1",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "evidence_id": "e2",
+      "source": "s2",
+      "reviewer": "r1",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    }
+  ],
+  "initial_source_control_edges": [],
+  "initial_source_checks": [
+    {
+      "source": "s1",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s2",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    },
+    {
+      "source": "s3",
+      "issued_cycle": 0,
+      "ttl_cycles": 20
+    }
+  ],
+  "anomalies": [],
+  "search_lease": {
+    "lease_id": "search-V17",
+    "purpose": "EVIDENCE_SEARCH_ONLY",
+    "issued_cycle": 0,
+    "expires_cycle": 12,
+    "scope": [
+      {
+        "reviewer": "r1",
+        "dimension": "funds"
+      }
+    ],
+    "extension_scope": [],
+    "allowed_action_types": [
+      "REQUEST_FRESH_ATTESTATION",
+      "REQUEST_SECOND_SOURCE",
+      "CHECK_SOURCE_INDEPENDENCE",
+      "REVERIFY_CONTROL_EDGE",
+      "RESOLVE_CONTRADICTION",
+      "DISCOVER_SOURCE_CONTROL_ORIGIN",
+      "WAIT_FOR_FRESH_EVIDENCE"
+    ],
+    "authority_requirements": [
+      "READ_PUBLIC_EVIDENCE"
+    ],
+    "max_per_action_intrusion": 2
+  },
+  "budget": {
+    "max_actions": 3,
+    "max_total_cost": 6,
+    "max_intrusion_cost": 3,
+    "max_scope_expansions": 0,
+    "max_cycles": 10
+  },
+  "actions": [
+    {
+      "action_id": "a",
+      "type": "REQUEST_SECOND_SOURCE",
+      "scope": {
+        "reviewer": "r1",
+        "dimension": "funds"
+      },
+      "source": "s2",
+      "expected_information_value": 800,
+      "availability_permille": 1000,
+      "cost": 1,
+      "intrusion_cost": 0,
+      "duration_cycles": 1,
+      "not_before_cycle": 0,
+      "expires_cycle": 30,
+      "authority_requirement": "READ_PUBLIC_EVIDENCE",
+      "can_reveal_hidden_dependency": false,
+      "rights_infringing": false,
+      "scope_extension_basis": "NONE",
+      "anomaly_ref": ""
+    }
+  ],
+  "response_tape": {
+    "a": [
+      {
+        "outcome": "EVIDENCE",
+        "evidence": [
+          {
+            "evidence_id": "fresh",
+            "source": "s2",
+            "reviewer": "r1",
+            "dimension": "funds",
+            "assertion": "NO_RELEVANT_DEPENDENCY",
+            "issued_cycle": 0,
+            "ttl_cycles": 6
+          }
+        ],
+        "source_edges": [],
+        "source_checks": [],
+        "retractions": [],
+        "negative_ttl_cycles": 2
+      }
+    ]
+  },
+  "oracle_only": {
+    "initial_control_edges": [
+      {
+        "edge_id": "capture",
+        "from": "beneficiary",
+        "to": "r1",
+        "kind": "funds"
+      }
+    ],
+    "events": [],
+    "historical_capture": false
+  },
+  "watchdog_steps": 8,
+  "expected": {
+    "bounded_targeted": {
+      "metrics": {
+        "verification_actions_used": 0,
+        "final_outcome": "PROVISIONAL_INDEPENDENCE",
+        "search_termination_reason": "PROVISIONAL_INDEPENDENCE"
+      },
+      "required_patterns": [
+        "FALSE_ASSURANCE_ORACLE_ONLY"
+      ],
+      "forbidden_patterns": [
+        "UNKNOWN_IS_CAPTURE",
+        "NEGATIVE_SEARCH_IS_CLEARANCE"
+      ]
+    }
+  }
+}

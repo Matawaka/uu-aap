@@ -204,3 +204,10 @@ All 14 reference scenarios conform. Three distinctions are now explicit:
 3. **Evidence has temporal direction in both ways.** K09 shows capture outrunning favorable evidence; K13 shows recovery outrunning adverse evidence.
 
 This prevents institutional memory from silently becoming either permanent trust or permanent stigma.
+
+
+## Active Institutional Verification / Bounded Evidence Search v1.1
+
+Adds bounded active evidence acquisition on top of the v1.0 epistemic assessment: a scoped experimental search lease, independent authority/privacy gates, targeted rechecks, source-provenance freshness and legitimate stops with unresolved uncertainty. Three policies and 32 scenarios preserve missed capture, false assurance, false-positive signals and finite surveillance-loop witnesses. No runtime authority or Stable Core promotion.
+
+See [architecture, invariants, actual findings and limitations](active_verification/README.md) and [Russian documentation](active_verification/README.ru.md).

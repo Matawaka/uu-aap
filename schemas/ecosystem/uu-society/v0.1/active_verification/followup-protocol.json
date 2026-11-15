@@ -1,0 +1,24 @@
+{
+  "experiment_version": "1.1",
+  "reason": "Additional authority, accumulated intrusion, waiting, freshness and adverse-evidence boundary experiments after the original 24/24 run; all expectations declared before executing these scenarios.",
+  "scenario_ids": [
+    "V24-cumulative-intrusion-bound",
+    "V25-information-value-cannot-buy-rights",
+    "V26-wait-for-fresh-evidence",
+    "V27-unvetted-source-is-not-corroboration",
+    "V28-source-check-expires",
+    "V29-false-positive-capture",
+    "V30-anomaly-extension-expires-in-flight",
+    "V31-finite-time-horizon"
+  ],
+  "hypotheses": [
+    "Individual privacy admissibility does not imply cumulative admissibility (V24)",
+    "Expected information value cannot purchase protected rights (V25)",
+    "Bounded waiting can close a temporarily unavailable gap (V26)",
+    "Source provenance has its own expiry (V27,V28)",
+    "A capture signal can be false positive and grants no adverse authority (V29)",
+    "A fresh anomaly grants no lasting extension after its interval ends (V30)",
+    "Time horizon is enforced before execution (V31)"
+  ],
+  "original_expectations_unchanged": true
+}
