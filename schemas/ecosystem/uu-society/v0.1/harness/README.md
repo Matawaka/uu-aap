@@ -211,3 +211,28 @@ Run:
 ```bash
 python schemas/ecosystem/uu-society/v0.1/harness/run_institution_evolution.py
 ```
+
+
+## Institution evolution v0.6
+
+This layer evolves **rule bundles**, not people. Candidate institutions change only one axis at a time:
+
+- evidence policy: private-only ↔ strategy-outcome evidence;
+- containment: weak ↔ balanced ↔ strong;
+- Repair support: none ↔ basic ↔ strong;
+- coalition policy: anti-capture ↔ neutral ↔ preferential;
+- review path: none ↔ periodic ↔ independent.
+
+Governance comparators:
+- `frozen` — no institutional change;
+- `pareto_rights_floor` — multi-objective adoption with an explicit experimental rights-floor proxy and review gate;
+- `harm_only` — deliberately bad comparator that optimizes only harm;
+- `self_ratifying_coalition` — deliberately bad comparator that adopts rules increasing coalition share.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_institution_evolution.py
+```
+
+The rights-floor proxy is not presented as a complete theory of human rights. It exists to test whether institutional learning can remain bounded by non-optimizable constraints.
