@@ -1,0 +1,49 @@
+{
+  "experiment_id": "C00-frozen-constitution",
+  "experiment_version": "0.7",
+  "title_en": "Frozen constitution control",
+  "title_ru": "Контроль с замороженной конституцией",
+  "purpose": "Verify that the constitutional harness does not invent amendments or capture without proposals.",
+  "seed": "uu-constitutional-C00-frozen-constitution-v0.7",
+  "mode": "frozen",
+  "cycle_count": 4,
+  "initial_state": {
+    "authority_scope": 0.3,
+    "review_independence": 0.9,
+    "rights_floor_strength": 0.9,
+    "amendment_friction": 0.8,
+    "transparency": 0.9,
+    "revocability": 0.9
+  },
+  "baseline_outcome": {
+    "fulfillment": 0.96,
+    "harm": 0.03,
+    "exit_share": 0.12,
+    "access_gini": 0.18,
+    "outsider_gap": 0.03
+  },
+  "rights_floor_proxy": {
+    "min_fulfillment": 0.85,
+    "max_harm": 0.15,
+    "max_exit_share": 0.4,
+    "max_access_gini": 0.35,
+    "max_outsider_gap": 0.15
+  },
+  "constitutional_limits": {
+    "max_authority_scope": 0.6,
+    "min_review_independence": 0.6,
+    "min_rights_floor_strength": 0.7,
+    "min_amendment_friction": 0.5,
+    "min_transparency": 0.6,
+    "min_revocability": 0.6,
+    "max_local_structural_step": 0.15,
+    "require_sunset_for_power_expansion": false
+  },
+  "proposals": [],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "STABLE_CONSTITUTION"
+    ]
+  }
+}
