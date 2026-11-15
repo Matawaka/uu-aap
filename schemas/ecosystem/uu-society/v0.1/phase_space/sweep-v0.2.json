@@ -1,0 +1,26 @@
+{
+  "version": "0.2",
+  "purpose": "Bounded factorial experiment testing synthetic phase transitions in harm, unmet needs and restriction pressure; not a social validity claim.",
+  "interaction_count": 1200,
+  "axes": {
+    "population.adversarial_fraction": [
+      0.05,
+      0.2,
+      0.35
+    ],
+    "population.base_willingness_probability": [
+      0.25,
+      0.65,
+      0.9
+    ],
+    "dynamics.restriction_duration_interactions": [
+      2,
+      25,
+      150
+    ]
+  },
+  "replicate_seeds": [
+    "uu-phase-r0",
+    "uu-phase-r1"
+  ]
+}
