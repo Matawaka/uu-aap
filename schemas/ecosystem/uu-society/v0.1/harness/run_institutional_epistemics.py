@@ -348,6 +348,13 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True):
             patterns.add("INDEPENDENT_CORROBORATION_RESTORES_VERIFICATION")
 
         if (
+            previous_status in ("INDETERMINATE", "INDETERMINATE_CONTRADICTION")
+            and status == "PROVISIONAL_INDEPENDENCE"
+            and had_source_change
+        ):
+            patterns.add("SOURCE_DECOUPLING_RESTORES_VERIFICATION")
+
+        if (
             previous_actual is True
             and actual is False
             and previous_status == "PROVISIONAL_INDEPENDENCE"
