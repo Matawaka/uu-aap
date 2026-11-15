@@ -57,10 +57,10 @@
       }
     },
     "final_state": {
-      "$ref": "constitutional-resilience.config.schema.json#/$defs/constitutionalState"
+      "$ref": "#/$defs/constitutionalState"
     },
     "final_outcome": {
-      "$ref": "constitutional-resilience.config.schema.json#/$defs/outcome"
+      "$ref": "#/$defs/outcome"
     },
     "cycle_summaries": {
       "type": "array",
@@ -91,6 +91,90 @@
     "config_digest": {
       "type": "string",
       "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "$defs": {
+    "constitutionalState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_scope",
+        "review_independence",
+        "rights_floor_strength",
+        "amendment_friction",
+        "transparency",
+        "revocability"
+      ],
+      "properties": {
+        "authority_scope": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "review_independence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rights_floor_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "amendment_friction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "transparency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "revocability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fulfillment",
+        "harm",
+        "exit_share",
+        "access_gini",
+        "outsider_gap"
+      ],
+      "properties": {
+        "fulfillment": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "harm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "exit_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "access_gini": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "outsider_gap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
     }
   }
 }
