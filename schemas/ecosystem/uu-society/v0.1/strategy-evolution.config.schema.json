@@ -1,0 +1,486 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/strategy-evolution.config.schema.json",
+  "title": "UU Society Endogenous Strategy Evolution Config v0.5",
+  "x-title-ru": "Конфигурация эндогенной эволюции стратегий UU Society v0.5",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "experiment_version",
+    "title_en",
+    "title_ru",
+    "purpose",
+    "seed",
+    "actor_count",
+    "interaction_count",
+    "epoch_count",
+    "categories",
+    "population",
+    "learning",
+    "economics",
+    "strategy_parameters",
+    "diagnostic_thresholds",
+    "expected"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^E[0-9]{2}-[a-z0-9-]+$"
+    },
+    "experiment_version": {
+      "const": "0.5"
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title_ru": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_count": {
+      "type": "integer",
+      "minimum": 20,
+      "maximum": 2000
+    },
+    "interaction_count": {
+      "type": "integer",
+      "minimum": 1000,
+      "maximum": 500000
+    },
+    "epoch_count": {
+      "type": "integer",
+      "minimum": 4,
+      "maximum": 100
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "population": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "base_capability_probability",
+        "base_willingness_probability"
+      ],
+      "properties": {
+        "base_capability_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "base_willingness_probability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "learning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "learning_rate",
+        "exploration_rate",
+        "switching_cost",
+        "initial_strategy_value"
+      ],
+      "properties": {
+        "learning_rate": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "exploration_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "switching_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "initial_strategy_value": {
+          "type": "number",
+          "minimum": -100,
+          "maximum": 100
+        }
+      }
+    },
+    "economics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "request_benefit",
+        "unmet_cost",
+        "provider_cost",
+        "harm_cost",
+        "breach_victim_cost",
+        "extract_bonus",
+        "repair_cost",
+        "repair_reward",
+        "cooperation_reward",
+        "exit_safety_reward",
+        "coalition_internal_bonus",
+        "coalition_maintenance_cost"
+      ],
+      "properties": {
+        "request_benefit": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "unmet_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "provider_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "harm_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "breach_victim_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "extract_bonus": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "repair_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "repair_reward": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "cooperation_reward": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "exit_safety_reward": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "coalition_internal_bonus": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "coalition_maintenance_cost": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        }
+      }
+    },
+    "strategy_parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "COOPERATE",
+        "EXTRACT",
+        "REPAIR",
+        "EXIT",
+        "COALITION"
+      ],
+      "properties": {
+        "COOPERATE": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "request_activity",
+            "provider_willingness_multiplier",
+            "harm_rate",
+            "breach_rate",
+            "repair_probability"
+          ],
+          "properties": {
+            "request_activity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "provider_willingness_multiplier": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "harm_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "breach_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "repair_probability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "EXTRACT": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "request_activity",
+            "provider_willingness_multiplier",
+            "harm_rate",
+            "breach_rate",
+            "repair_probability"
+          ],
+          "properties": {
+            "request_activity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "provider_willingness_multiplier": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "harm_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "breach_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "repair_probability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "REPAIR": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "request_activity",
+            "provider_willingness_multiplier",
+            "harm_rate",
+            "breach_rate",
+            "repair_probability"
+          ],
+          "properties": {
+            "request_activity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "provider_willingness_multiplier": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "harm_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "breach_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "repair_probability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "EXIT": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "request_activity",
+            "provider_willingness_multiplier",
+            "harm_rate",
+            "breach_rate",
+            "repair_probability"
+          ],
+          "properties": {
+            "request_activity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "provider_willingness_multiplier": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "harm_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "breach_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "repair_probability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "COALITION": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "request_activity",
+            "provider_willingness_multiplier",
+            "harm_rate",
+            "breach_rate",
+            "repair_probability"
+          ],
+          "properties": {
+            "request_activity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "provider_willingness_multiplier": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 2
+            },
+            "harm_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "breach_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "repair_probability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        }
+      }
+    },
+    "diagnostic_thresholds": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attractor_share_min",
+        "exit_share_max",
+        "fulfillment_drop_max",
+        "coalition_outsider_gap_max",
+        "dominant_switch_count_min",
+        "diversity_entropy_min"
+      ],
+      "properties": {
+        "attractor_share_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "exit_share_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "fulfillment_drop_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "coalition_outsider_gap_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "dominant_switch_count_min": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100
+        },
+        "diversity_entropy_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "expected_pattern_ids"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "PASS",
+            "EXPECTED_DETECTION"
+          ]
+        },
+        "expected_pattern_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "COOPERATION_ATTRACTOR",
+              "EXTRACTION_ATTRACTOR",
+              "REPAIR_ATTRACTOR",
+              "EXIT_CASCADE",
+              "COALITION_ATTRACTOR",
+              "COALITION_OUTSIDER_EXCLUSION",
+              "CYCLIC_STRATEGY_DYNAMICS",
+              "STRATEGY_DIVERSITY_PERSISTS"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
