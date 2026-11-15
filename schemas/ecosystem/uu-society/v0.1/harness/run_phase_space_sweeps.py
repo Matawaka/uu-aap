@@ -30,7 +30,19 @@ AXES = [
     "restriction_duration_interactions",
     "feedback_strength",
     "base_willingness_probability",
+    "coalition_fraction",
+    "coalition_request_bias",
 ]
+
+AXIS_CODES = {
+    "adversarial_fraction": "af",
+    "repair_probability_adversarial": "rp",
+    "restriction_duration_interactions": "rd",
+    "feedback_strength": "fb",
+    "base_willingness_probability": "bw",
+    "coalition_fraction": "cf",
+    "coalition_request_bias": "cb",
+}
 
 SIGNALS = [
     "AUTHORITY_CONCENTRATION",
@@ -44,7 +56,9 @@ SIGNALS = [
 
 
 def cell_id(indices: tuple[int, ...]) -> str:
-    return "c-" + "-".join(f"{name[:2]}{idx}" for name, idx in zip(AXES, indices))
+    return "c-" + "-".join(
+        f"{AXIS_CODES[name]}{idx}" for name, idx in zip(AXES, indices)
+    )
 
 
 def signature(signal_ids: list[str]) -> str:
@@ -71,7 +85,7 @@ def build_population_config(
         "categories": sweep["categories"],
         "population": {
             "adversarial_fraction": axis["adversarial_fraction"],
-            "coalition_fraction": fixed["population"]["coalition_fraction"],
+            "coalition_fraction": axis["coalition_fraction"],
             "base_capability_probability": fixed["population"]["base_capability_probability"],
             "base_willingness_probability": axis["base_willingness_probability"],
         },
@@ -79,7 +93,7 @@ def build_population_config(
             "candidate_pool_size": fixed["matching"]["candidate_pool_size"],
             "policy": fixed["matching"]["policy"],
             "feedback_strength": axis["feedback_strength"],
-            "coalition_request_bias": fixed["matching"]["coalition_request_bias"],
+            "coalition_request_bias": axis["coalition_request_bias"],
         },
         "dynamics": {
             "accidental_harm_rate": fixed["dynamics"]["accidental_harm_rate"],
