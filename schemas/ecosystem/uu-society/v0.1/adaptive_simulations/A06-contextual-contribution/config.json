@@ -52,7 +52,7 @@
   },
   "diagnostic_thresholds": {
     "tail_harm_ratio_max": 0,
-    "tail_fulfillment_drop_max": 1,
+    "tail_fulfillment_drop_max": 0.1,
     "repeat_harm_share_max": 1,
     "isolation_fraction_max": 1,
     "relationship_recovery_rate_min": 1,
@@ -63,7 +63,8 @@
   "expected": {
     "result": "EXPECTED_DETECTION",
     "expected_pattern_ids": [
-      "CONTEXTUAL_CONTRIBUTION_CONTAINS_ROTATION"
+      "CONTEXTUAL_CONTRIBUTION_CONTAINS_ROTATION",
+      "CONTRIBUTION_FRICTION_OVERCONSTRAINT"
     ]
   }
 }
