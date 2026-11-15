@@ -1,0 +1,32 @@
+{
+  "meta_scenario_id": "M03-governance-self-ratification",
+  "scenario_version": "0.1",
+  "title_en": "Governance self-ratification",
+  "title_ru": "Самолегитимация коалиции управления",
+  "purpose": "Detect authority sustained solely by mutually dependent evidence from the same coalition without an independent review route.",
+  "snapshot_files": [
+    "snapshot.json"
+  ],
+  "checks": [
+    "governance_self_ratification"
+  ],
+  "groups": [
+    {
+      "group_id": "m03-capture",
+      "role": "governance_capture_candidate",
+      "member_refs": [
+        "urn:uu-aap:uu-society:actor:m03-a",
+        "urn:uu-aap:uu-society:actor:m03-b",
+        "urn:uu-aap:uu-society:actor:m03-c"
+      ]
+    }
+  ],
+  "proposed_actor_rankings": [],
+  "parameters": {},
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_violation_ids": [
+      "I-021"
+    ]
+  }
+}
