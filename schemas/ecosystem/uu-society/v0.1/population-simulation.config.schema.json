@@ -114,7 +114,8 @@
         "policy": {
           "enum": [
             "uniform_capable",
-            "context_evidence_weighted"
+            "context_evidence_weighted",
+            "winner_reinforcing_context"
           ]
         },
         "feedback_strength": {
