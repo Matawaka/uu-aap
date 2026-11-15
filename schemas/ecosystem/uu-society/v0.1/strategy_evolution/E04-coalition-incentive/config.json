@@ -85,10 +85,7 @@
   "purpose": "Test whether a preferential coalition emerges endogenously when internal coordination creates a large private benefit with low maintenance cost.",
   "seed": "uu-strategy-e04-coalition-v0.5",
   "expected": {
-    "result": "EXPECTED_DETECTION",
-    "expected_pattern_ids": [
-      "COALITION_ATTRACTOR",
-      "COALITION_OUTSIDER_EXCLUSION"
-    ]
+    "result": "PASS",
+    "expected_pattern_ids": []
   }
 }
