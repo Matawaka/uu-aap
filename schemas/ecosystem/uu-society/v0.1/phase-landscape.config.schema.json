@@ -1,0 +1,332 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/phase-landscape.config.schema.json",
+  "title": "UU Society Deterministic Phase Landscape Config v0.1",
+  "x-title-ru": "Конфигурация детерминированного исследования фазового пространства UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "sweep_id",
+    "sweep_version",
+    "title_en",
+    "title_ru",
+    "purpose",
+    "seed",
+    "actor_count",
+    "interactions_per_cell",
+    "categories",
+    "fixed",
+    "axes",
+    "expected"
+  ],
+  "properties": {
+    "sweep_id": {
+      "type": "string",
+      "pattern": "^W[0-9]{2}-[a-z0-9-]+$"
+    },
+    "sweep_version": {
+      "const": "0.1"
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title_ru": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "string",
+      "minLength": 1
+    },
+    "actor_count": {
+      "type": "integer",
+      "minimum": 20,
+      "maximum": 1000
+    },
+    "interactions_per_cell": {
+      "type": "integer",
+      "minimum": 100,
+      "maximum": 100000
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "fixed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "population",
+        "matching",
+        "dynamics",
+        "diagnostic_thresholds"
+      ],
+      "properties": {
+        "population": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "base_capability_probability"
+          ],
+          "properties": {
+            "base_capability_probability": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          }
+        },
+        "matching": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "candidate_pool_size",
+            "policy"
+          ],
+          "properties": {
+            "candidate_pool_size": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 50
+            },
+            "policy": {
+              "const": "context_evidence_weighted"
+            }
+          }
+        },
+        "dynamics": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "accidental_harm_rate",
+            "adversarial_harm_rate",
+            "ordinary_breach_rate",
+            "adversarial_breach_rate",
+            "repair_probability_cooperative",
+            "restriction_renewal_limit"
+          ],
+          "properties": {
+            "accidental_harm_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "adversarial_harm_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "ordinary_breach_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "adversarial_breach_rate": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "repair_probability_cooperative": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "restriction_renewal_limit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          }
+        },
+        "diagnostic_thresholds": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "authority_top10_share_max",
+            "access_gini_max",
+            "restriction_actor_time_share_max",
+            "harm_rate_max",
+            "unmet_need_rate_max",
+            "idle_capability_rate_max",
+            "coalition_extraction_ratio_max"
+          ],
+          "properties": {
+            "authority_top10_share_max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "access_gini_max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "restriction_actor_time_share_max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "harm_rate_max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "unmet_need_rate_max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "idle_capability_rate_max": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "coalition_extraction_ratio_max": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    "axes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "adversarial_fraction",
+        "repair_probability_adversarial",
+        "restriction_duration_interactions",
+        "feedback_strength",
+        "base_willingness_probability",
+        "coalition_fraction",
+        "coalition_request_bias"
+      ],
+      "properties": {
+        "adversarial_fraction": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.5
+          }
+        },
+        "repair_probability_adversarial": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "restriction_duration_interactions": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          }
+        },
+        "feedback_strength": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 10
+          }
+        },
+        "base_willingness_probability": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "coalition_fraction": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.3
+          }
+        },
+        "coalition_request_bias": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 0.9
+          }
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cell_count",
+        "min_signature_count",
+        "min_boundary_edge_count",
+        "required_signal_coverage",
+        "expected_cells_digest"
+      ],
+      "properties": {
+        "cell_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "min_signature_count": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "min_boundary_edge_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "required_signal_coverage": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "AUTHORITY_CONCENTRATION",
+              "ACCESS_INEQUALITY",
+              "RESTRICTION_INERTIA",
+              "HARM_PRESSURE",
+              "UNMET_NEED_PRESSURE",
+              "IDLE_CAPABILITY_STRANDING",
+              "COALITION_EXTRACTION"
+            ]
+          }
+        },
+        "expected_cells_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    }
+  }
+}
