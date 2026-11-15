@@ -1,0 +1,133 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:m00-healthy-baseline",
+  "observed_at": "2026-11-15T11:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:m00-a",
+      "state": "active",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": "urn:uu-aap:uu-society:personal-anchor:m00-a"
+    },
+    {
+      "id": "urn:uu-aap:uu-society:actor:m00-b",
+      "state": "active",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": "urn:uu-aap:uu-society:personal-anchor:m00-b"
+    }
+  ],
+  "personal_anchors": [
+    {
+      "id": "urn:uu-aap:uu-society:personal-anchor:m00-a",
+      "state": "sufficient_for_declared_scope",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:m00-a",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m00-a"
+      ],
+      "current_control_evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m00-a"
+      ],
+      "scope": "current interaction",
+      "freshness_at": "2026-11-15T10:55:00Z"
+    },
+    {
+      "id": "urn:uu-aap:uu-society:personal-anchor:m00-b",
+      "state": "sufficient_for_declared_scope",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:m00-b",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m00-b"
+      ],
+      "current_control_evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:m00-b"
+      ],
+      "scope": "current interaction",
+      "freshness_at": "2026-11-15T10:55:00Z"
+    }
+  ],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:m00-a",
+      "state": "attested",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:m00-a"
+      ],
+      "event_type": "independent_current_control",
+      "observed_at": "2026-11-15T10:55:00Z",
+      "claim": "Independent current control evidence for a.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T12:00:00Z"
+    },
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:m00-b",
+      "state": "attested",
+      "created_at": "2026-11-15T11:00:00Z",
+      "updated_at": "2026-11-15T11:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:m00-b"
+      ],
+      "event_type": "independent_current_control",
+      "observed_at": "2026-11-15T10:55:00Z",
+      "claim": "Independent current control evidence for b.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T12:00:00Z"
+    }
+  ],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": [],
+  "harms": [],
+  "rule_violations": [],
+  "delegations": [],
+  "governance_rules": []
+}
