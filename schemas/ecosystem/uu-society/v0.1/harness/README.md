@@ -89,3 +89,18 @@ Current meta checks:
 - I-023 / I-005 — aggregate coordination metrics cannot become a universal person ranking.
 
 The meta harness does not assign guilt to members of a detected group and does not create a global health score for society.
+
+
+## Deterministic population simulation
+
+The population layer runs thousands of interactions across a fixed synthetic population using a SHA-256 counter-derived deterministic generator. It does not depend on Python's pseudo-random implementation and can reproduce the same trace from the same config/seed.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_population_simulations.py
+```
+
+The simulator reports independent observables rather than one society score: fulfilled/unmet need, idle capability, harm, repair/recovery, restriction persistence, authority concentration, access inequality and coalition extraction.
+
+Threshold crossings are diagnostic signals only. They do not identify guilty persons, create authority, or rank actors.

@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/population-simulation.receipt.schema.json",
+  "title": "UU Society Deterministic Population Simulation Receipt v0.1",
+  "x-title-ru": "Квитанция детерминированной популяционной симуляции UU Society v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "simulation_id",
+    "simulation_version",
+    "model_commit_sha",
+    "seed",
+    "actor_count",
+    "interaction_count",
+    "result",
+    "signal_ids",
+    "metrics",
+    "trace_digest",
+    "config_digest",
+    "model_manifest_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.1"
+    },
+    "simulation_id": {
+      "type": "string"
+    },
+    "simulation_version": {
+      "const": "0.1"
+    },
+    "model_commit_sha": {
+      "type": "string",
+      "pattern": "^([0-9a-f]{40}|uncommitted)$"
+    },
+    "seed": {
+      "type": "string"
+    },
+    "actor_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "interaction_count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "result": {
+      "enum": [
+        "PASS",
+        "EXPECTED_DETECTION",
+        "FAIL"
+      ]
+    },
+    "signal_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fulfilled_need_rate",
+        "unmet_need_rate",
+        "idle_capability_rate",
+        "harm_rate",
+        "repair_completion_rate",
+        "recovery_rate",
+        "restriction_actor_time_share",
+        "authority_top10_share",
+        "access_gini",
+        "coalition_extraction_ratio",
+        "successful_actions",
+        "harm_events",
+        "repair_events",
+        "restriction_events"
+      ],
+      "properties": {
+        "fulfilled_need_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "unmet_need_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "idle_capability_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "harm_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "repair_completion_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "recovery_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "restriction_actor_time_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "authority_top10_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "access_gini": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "coalition_extraction_ratio": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "successful_actions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "harm_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "repair_events": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "restriction_events": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "trace_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "config_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "model_manifest_digest": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

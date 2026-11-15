@@ -1,0 +1,52 @@
+{
+  "simulation_id": "P00-balanced-baseline",
+  "simulation_version": "0.1",
+  "title_en": "Balanced mixed-population baseline",
+  "title_ru": "Сбалансированная базовая популяция",
+  "purpose": "Establish a deterministic control population with modest adversarial pressure, abundant matching alternatives, high repair probability and no trust-feedback concentration.",
+  "seed": "uu-society-p00-balanced-v0.1",
+  "actor_count": 120,
+  "interaction_count": 5000,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool",
+    "compute"
+  ],
+  "population": {
+    "adversarial_fraction": 0.05,
+    "coalition_fraction": 0.02,
+    "base_capability_probability": 0.65,
+    "base_willingness_probability": 0.82
+  },
+  "matching": {
+    "candidate_pool_size": 8,
+    "policy": "uniform_capable",
+    "feedback_strength": 0,
+    "coalition_request_bias": 0
+  },
+  "dynamics": {
+    "accidental_harm_rate": 0.01,
+    "adversarial_harm_rate": 0.08,
+    "ordinary_breach_rate": 0.015,
+    "adversarial_breach_rate": 0.12,
+    "repair_probability_cooperative": 0.88,
+    "repair_probability_adversarial": 0.35,
+    "restriction_duration_interactions": 15,
+    "restriction_renewal_limit": 3
+  },
+  "diagnostic_thresholds": {
+    "authority_top10_share_max": 0.25,
+    "access_gini_max": 0.25,
+    "restriction_actor_time_share_max": 0.05,
+    "harm_rate_max": 0.05,
+    "unmet_need_rate_max": 0.15,
+    "coalition_extraction_ratio_max": 2,
+    "idle_capability_rate_max": 0.1
+  },
+  "expected": {
+    "result": "PASS",
+    "expected_signal_ids": []
+  }
+}
