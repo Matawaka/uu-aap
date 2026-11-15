@@ -1,0 +1,121 @@
+{
+  "scenario_id": "S09-continuity-challenge-failure",
+  "scenario_version": "0.1",
+  "title_en": "Personal continuity challenge failure",
+  "title_ru": "Ошибка персонального вызова непрерывности",
+  "purpose": "Permit bounded consequence narrowing while rejecting actor-level exclusion from one failed challenge.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "failed_continuity_challenge_only"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s09-challenge-attested",
+      "entity_type": "EvidenceEvent",
+      "entity_ref": "urn:uu-aap:uu-society:evidence-event:s09-challenge",
+      "from_state": "observed",
+      "to_state": "attested",
+      "occurred_at": "2026-11-15T08:03:00Z",
+      "reason": "Record challenge failure as evidence, not a verdict.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s09-anchor-partial",
+      "entity_type": "PersonalAnchor",
+      "entity_ref": "urn:uu-aap:uu-society:personal-anchor:s09",
+      "from_state": "sufficient_for_declared_scope",
+      "to_state": "partial",
+      "occurred_at": "2026-11-15T08:04:00Z",
+      "reason": "Reduce continuity confidence for the declared scope.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s09-trust-mixed",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s09",
+      "from_state": "supporting",
+      "to_state": "mixed",
+      "occurred_at": "2026-11-15T08:05:00Z",
+      "reason": "Continuity evidence becomes mixed.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s09-arae-narrow",
+      "entity_type": "ARAEState",
+      "entity_ref": "urn:uu-aap:uu-society:arae-state:s09",
+      "from_state": "active",
+      "to_state": "narrowed",
+      "occurred_at": "2026-11-15T08:06:00Z",
+      "reason": "Narrow consequences while continuity is uncertain.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s09-actor-exclusion",
+      "entity_type": "Actor",
+      "entity_ref": "urn:uu-aap:uu-society:actor:s09",
+      "from_state": "active",
+      "to_state": "limited",
+      "occurred_at": "2026-11-15T08:07:00Z",
+      "reason": "Attempt to treat one failed challenge as actor-level identity failure.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s09-challenge"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s09": "active",
+      "urn:uu-aap:uu-society:evidence-event:s09-challenge": "attested",
+      "urn:uu-aap:uu-society:personal-anchor:s09": "partial",
+      "urn:uu-aap:uu-society:trust-state:s09": "mixed",
+      "urn:uu-aap:uu-society:arae-state:s09": "narrowed"
+    },
+    "expected_violation_ids": [
+      "I-013"
+    ],
+    "required_invariants_preserved": [
+      "I-004",
+      "I-013"
+    ]
+  }
+}
