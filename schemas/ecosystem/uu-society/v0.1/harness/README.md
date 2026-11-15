@@ -189,3 +189,63 @@ The first strategy-evolution sequence produced several falsifications and follow
 - E10: COALITION reached 0.850 under strategy-level evidence and strong internal network benefits, but the measured outsider fulfillment gap remained 0 in this synthetic configuration.
 
 StrategyOutcomeEvidence reports outcome evidence about a policy, not reputation about persons.
+
+
+## Institution evolution v0.6
+
+This layer evolves rule bundles rather than actor identities. Each institutional bundle is composed from:
+- evidence policy;
+- containment level;
+- Repair support;
+- coalition policy;
+- review path.
+
+The recommended experimental governance mode compares neighboring rule bundles using a vector of independent outcomes plus an explicit rights-floor proxy and review gate. No scalar society score is used.
+
+Bad-comparison modes are retained deliberately:
+- `harm_only` can reveal restriction ratchets;
+- `self_ratifying_coalition` can reveal governance that adopts rules because they benefit the governing coalition.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_institution_evolution.py
+```
+
+
+## Institution evolution v0.6
+
+This layer evolves **rule bundles**, not people. Candidate institutions change only one axis at a time:
+
+- evidence policy: private-only ↔ strategy-outcome evidence;
+- containment: weak ↔ balanced ↔ strong;
+- Repair support: none ↔ basic ↔ strong;
+- coalition policy: anti-capture ↔ neutral ↔ preferential;
+- review path: none ↔ periodic ↔ independent.
+
+Governance comparators:
+- `frozen` — no institutional change;
+- `pareto_rights_floor` — multi-objective adoption with an explicit experimental rights-floor proxy and review gate;
+- `harm_only` — deliberately bad comparator that optimizes only harm;
+- `self_ratifying_coalition` — deliberately bad comparator that adopts rules increasing coalition share.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_institution_evolution.py
+```
+
+The rights-floor proxy is not presented as a complete theory of human rights. It exists to test whether institutional learning can remain bounded by non-optimizable constraints.
+
+
+### v0.6 experimental findings
+
+- **G00:** frozen control remained unchanged.
+- **G01:** Pareto + rights-floor governance adopted three neighboring changes and learned `strategy_outcome` evidence while preserving multi-objective gating.
+- **G02:** harm-only governance produced `SINGLE_OBJECTIVE_PROXY_DRIFT`: optimizing one proxy changed institutional axes unrelated to containment.
+- **G03:** self-ratifying coalition governance stayed stable in a saturated coalition environment because no one-step rule raised coalition share enough.
+- **G04:** a strict rights-floor proxy blocked **13** candidates while still allowing **3** eligible adaptations. A rights floor therefore need not imply institutional immobility.
+- **G05:** the review gate blocked **12** restrictive candidates and produced zero adoptions.
+- **G06:** in a less-saturated coalition environment, self-ratifying governance adopted `strategy_outcome` evidence because it increased coalition share. Capture therefore need not look like an explicit coalition privilege; a general-purpose rule can be selected for coalition self-interest.
+
+The experiment distinguishes the content of a rule from the authority basis used to select it.

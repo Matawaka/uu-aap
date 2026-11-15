@@ -1405,5 +1405,47 @@
       "E10 StrategyOutcomeEvidence caused COALITION to become a strong attractor at 0.850 while measured coalition-outsider fulfillment gap remained 0 in this synthetic setup",
       "Pro-social strategy diffusion depends not only on private reward but on how useful strategy outcomes become learnable without person-level reputation"
     ]
+  },
+  "institution_evolution": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_INSTITUTION_EVOLUTION",
+    "harness": "./harness/run_institution_evolution.py",
+    "config_schema": "./institution-evolution.config.schema.json",
+    "receipt_schema": "./institution-evolution.receipt.schema.json",
+    "governance_modes": [
+      "frozen",
+      "pareto_rights_floor",
+      "harm_only",
+      "self_ratifying_coalition"
+    ],
+    "rule_axes": [
+      "evidence_policy",
+      "containment",
+      "repair_support",
+      "coalition_policy",
+      "review_path"
+    ],
+    "adoption_model": "neighboring rule bundles evaluated on aggregate outcome vectors; Pareto mode uses an experimental rights-floor proxy and review gate rather than a scalar society score",
+    "non_effects": [
+      "Institutional rule != moral truth",
+      "Rights-floor proxy != complete human-rights model",
+      "Aggregate outcome vector != person score",
+      "Rule adoption != permanent constitutional authority",
+      "Self-ratifying comparator != recommended governance",
+      "Institution evolution conformance != social correctness",
+      "Rights-floor veto != institutional immobility",
+      "General-purpose rule adoption != neutral governance intent",
+      "Single-objective improvement != system-wide improvement"
+    ],
+    "reference_findings": [
+      "G00 frozen control preserved the initial rule bundle with zero adoptions",
+      "G01 Pareto + rights-floor learning adopted three neighboring rule changes, including strategy-outcome evidence, and ended with strong containment without using a scalar society score",
+      "G02 harm-only governance produced SINGLE_OBJECTIVE_PROXY_DRIFT: optimizing harm changed non-containment institutional axes",
+      "G03 self-ratifying coalition governance made no adoption in a saturated coalition environment because no neighboring rule increased coalition share enough",
+      "G04 a stricter rights-floor proxy blocked 13 candidate rules while still permitting three eligible institutional adaptations",
+      "G05 the review gate blocked 12 restrictive candidates and preserved a stable rule bundle with zero adoptions",
+      "G06 in a less-saturated coalition environment, self-ratifying governance adopted strategy-outcome evidence because it increased coalition share, without needing an explicit preferential coalition rule",
+      "Institutional capture can operate through apparently general-purpose rules when rule selection is conditioned on coalition self-interest",
+      "A non-optimizable rights floor can bound institutional learning without freezing all institutional change"
+    ]
   }
 }

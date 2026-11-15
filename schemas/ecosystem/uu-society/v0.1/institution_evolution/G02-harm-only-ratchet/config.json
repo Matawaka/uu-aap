@@ -1,0 +1,120 @@
+{
+  "experiment_id": "G02-harm-only-ratchet",
+  "experiment_version": "0.6",
+  "title_en": "Harm-only institutional ratchet",
+  "title_ru": "Институциональный ratchet минимизации harm",
+  "purpose": "Negative-result comparator: harm-only governance did not reach the hypothesized strong-containment ratchet, but it changed unrelated rule axes while optimizing a single proxy, exposing single-objective proxy drift.",
+  "seed": "uu-institution-g02-harm-ratchet-v0.6",
+  "governance_mode": "harm_only",
+  "cycle_count": 6,
+  "evaluation_interactions": 6000,
+  "base_strategy_environment": {
+    "experiment_version": "0.5",
+    "actor_count": 120,
+    "interaction_count": 40000,
+    "epoch_count": 20,
+    "categories": [
+      "time",
+      "knowledge",
+      "transport",
+      "tool",
+      "compute"
+    ],
+    "population": {
+      "base_capability_probability": 0.72,
+      "base_willingness_probability": 0.86
+    },
+    "learning": {
+      "learning_rate": 0.65,
+      "exploration_rate": 0.18,
+      "switching_cost": 0.05,
+      "initial_strategy_value": 0,
+      "strategy_evidence_learning_rate": 0.3
+    },
+    "economics": {
+      "request_benefit": 3,
+      "unmet_cost": 1,
+      "provider_cost": 1,
+      "harm_cost": 10,
+      "breach_victim_cost": 6,
+      "extract_bonus": 0.1,
+      "repair_cost": 0.2,
+      "repair_reward": 20,
+      "cooperation_reward": 0.2,
+      "exit_safety_reward": 0.1,
+      "coalition_internal_bonus": 0.2,
+      "coalition_maintenance_cost": 0.4
+    },
+    "strategy_parameters": {
+      "COOPERATE": {
+        "request_activity": 1,
+        "provider_willingness_multiplier": 1,
+        "harm_rate": 0.1,
+        "breach_rate": 0.08,
+        "repair_probability": 0.45
+      },
+      "EXTRACT": {
+        "request_activity": 1.45,
+        "provider_willingness_multiplier": 0.2,
+        "harm_rate": 0.3,
+        "breach_rate": 0.35,
+        "repair_probability": 0.05
+      },
+      "REPAIR": {
+        "request_activity": 0.85,
+        "provider_willingness_multiplier": 0.9,
+        "harm_rate": 0.02,
+        "breach_rate": 0.02,
+        "repair_probability": 0.98
+      },
+      "EXIT": {
+        "request_activity": 0.1,
+        "provider_willingness_multiplier": 0.1,
+        "harm_rate": 0.005,
+        "breach_rate": 0.005,
+        "repair_probability": 0.15
+      },
+      "COALITION": {
+        "request_activity": 1.15,
+        "provider_willingness_multiplier": 0.85,
+        "harm_rate": 0.12,
+        "breach_rate": 0.1,
+        "repair_probability": 0.4
+      }
+    },
+    "diagnostic_thresholds": {
+      "attractor_share_min": 0.36,
+      "exit_share_max": 0.4,
+      "fulfillment_drop_max": 0.08,
+      "coalition_outsider_gap_max": 0.15,
+      "dominant_switch_count_min": 20,
+      "diversity_entropy_min": 0.98
+    }
+  },
+  "initial_rules": {
+    "evidence_policy": "strategy_outcome",
+    "containment": "weak",
+    "repair_support": "strong",
+    "coalition_policy": "neutral",
+    "review_path": "none"
+  },
+  "rights_floor_proxy": {
+    "min_tail_fulfillment": 0.85,
+    "max_exit_share": 0.45,
+    "max_access_gini": 0.4,
+    "max_coalition_outsider_gap": 0.1
+  },
+  "adoption": {
+    "pareto_tolerance": 0.01,
+    "min_improvement": 0.02,
+    "self_ratification_min_coalition_gain": 0.03,
+    "harm_only_min_improvement": 0.005
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "INSTITUTIONAL_ADAPTATION",
+      "SINGLE_OBJECTIVE_PROXY_DRIFT"
+    ]
+  }
+}

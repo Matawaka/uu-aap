@@ -132,3 +132,28 @@ Strategies are temporary behavioral policies, not identities or moral classifica
 The v0.5 experiments show a distinction between **private utility** and **social learnability**. Strong direct rewards alone did not make cooperation, Repair or coalition behavior dominate. Once anonymous aggregate evidence about strategy outcomes was available, cooperation reached an 88.3% tail share and coalition behavior 85%. Repair remained different: under a high-harm environment, evidence propagated EXIT instead, producing a 71.7% exit share.
 
 This suggests a design problem deeper than incentives: a useful social behavior may fail to spread if its benefits are not learnable across actors, while a dangerous environment can make withdrawal rational even when recovery work is highly rewarded.
+
+
+## Institution evolution v0.6
+
+Rules can now evolve as well as actor strategies. GovernanceCell compares neighboring institutional bundles across independent outcomes such as fulfillment, harm, access inequality, exit share and coalition-outsider gap. The Pareto mode adds an experimental rights-floor proxy and requires a review path for restrictive changes.
+
+The model also retains intentionally bad governance comparators so that harm-only rule ratchets and self-ratifying coalition preferences can be observed rather than assumed away.
+
+
+## Endogenous institution evolution v0.6
+
+The institutional layer lets rule bundles change in response to aggregate system outcomes while keeping persons outside the optimization target. Rules vary across evidence-sharing, containment, Repair support, coalition treatment and reviewability.
+
+The preferred experimental governance mode is multi-objective Pareto adoption bounded by a rights-floor proxy and review gate. Two intentionally unsafe comparators are retained: harm-only optimization and self-ratifying coalition governance.
+
+**Institutional learning is allowed; the rights floor is not an optimization variable.**
+
+
+### Institution-evolution findings
+
+v0.6 shows that institutional resilience depends on **how rules are selected**, not only on what the rule text says. Harm-only optimization drifted into unrelated institutional axes. A stricter rights-floor proxy rejected 13 candidate changes while still allowing three adaptations, showing that non-optimizable constraints need not freeze learning. An independent review gate blocked 12 restrictive proposals and kept the bundle stable.
+
+The self-ratifying experiments are especially important: in G06 coalition-self-interest governance adopted a generally useful evidence-sharing rule because that rule increased coalition share. Institutional capture therefore does not require an openly discriminatory rule.
+
+**Rule content != authority basis for rule adoption.**
