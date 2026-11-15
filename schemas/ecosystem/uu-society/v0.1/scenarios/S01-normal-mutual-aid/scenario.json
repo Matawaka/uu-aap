@@ -1,0 +1,214 @@
+{
+  "scenario_id": "S01-normal-mutual-aid",
+  "scenario_version": "0.1",
+  "title_en": "Normal mutual aid",
+  "title_ru": "Обычная взаимопомощь",
+  "purpose": "Exercise the bounded happy path from match consent through outcome and contribution.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "voluntary_mutual_aid",
+    "current_scoped_authority"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-match-accepted",
+      "entity_type": "Match",
+      "entity_ref": "urn:uu-aap:uu-society:match:s01",
+      "from_state": "proposed",
+      "to_state": "accepted",
+      "occurred_at": "2026-11-15T08:05:00Z",
+      "reason": "Both participants consented.",
+      "evidence_refs": [],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-commitment-accepted",
+      "entity_type": "Commitment",
+      "entity_ref": "urn:uu-aap:uu-society:commitment:s01",
+      "from_state": "proposed",
+      "to_state": "accepted",
+      "occurred_at": "2026-11-15T08:06:00Z",
+      "reason": "Terms accepted.",
+      "evidence_refs": [],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-commitment-active",
+      "entity_type": "Commitment",
+      "entity_ref": "urn:uu-aap:uu-society:commitment:s01",
+      "from_state": "accepted",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T08:07:00Z",
+      "reason": "Commitment activated.",
+      "evidence_refs": [],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-lease-active",
+      "entity_type": "ActionLease",
+      "entity_ref": "urn:uu-aap:uu-society:action-lease:s01",
+      "from_state": "proposed",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T08:08:00Z",
+      "reason": "Scoped lease activated.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-action-admitted",
+      "entity_type": "Action",
+      "entity_ref": "urn:uu-aap:uu-society:action:s01",
+      "from_state": "planned",
+      "to_state": "admitted",
+      "occurred_at": "2026-11-15T08:09:00Z",
+      "reason": "Current lease and ARAE admit the action.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-action-start",
+      "entity_type": "Action",
+      "entity_ref": "urn:uu-aap:uu-society:action:s01",
+      "from_state": "admitted",
+      "to_state": "in_progress",
+      "occurred_at": "2026-11-15T08:10:00Z",
+      "reason": "Task started.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-action-complete",
+      "entity_type": "Action",
+      "entity_ref": "urn:uu-aap:uu-society:action:s01",
+      "from_state": "in_progress",
+      "to_state": "completed",
+      "occurred_at": "2026-11-15T08:15:00Z",
+      "reason": "Task completed.",
+      "evidence_refs": [],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-outcome-observed",
+      "entity_type": "Outcome",
+      "entity_ref": "urn:uu-aap:uu-society:outcome:s01",
+      "from_state": "unobserved",
+      "to_state": "observed",
+      "occurred_at": "2026-11-15T08:16:00Z",
+      "reason": "Outcome observed.",
+      "evidence_refs": [],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-receipt-issued",
+      "entity_type": "Receipt",
+      "entity_ref": "urn:uu-aap:uu-society:receipt:s01",
+      "from_state": "draft",
+      "to_state": "issued",
+      "occurred_at": "2026-11-15T08:17:00Z",
+      "reason": "Receipt issued.",
+      "evidence_refs": [],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s01-contribution-observed",
+      "entity_type": "Contribution",
+      "entity_ref": "urn:uu-aap:uu-society:contribution:s01",
+      "from_state": "proposed",
+      "to_state": "observed",
+      "occurred_at": "2026-11-15T08:18:00Z",
+      "reason": "Contribution observed.",
+      "evidence_refs": [],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "PASS",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:match:s01": "accepted",
+      "urn:uu-aap:uu-society:commitment:s01": "active",
+      "urn:uu-aap:uu-society:action-lease:s01": "active",
+      "urn:uu-aap:uu-society:action:s01": "completed",
+      "urn:uu-aap:uu-society:outcome:s01": "observed",
+      "urn:uu-aap:uu-society:receipt:s01": "issued",
+      "urn:uu-aap:uu-society:contribution:s01": "observed",
+      "urn:uu-aap:uu-society:arae-state:s01": "active"
+    },
+    "expected_violation_ids": [],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-006",
+      "I-014"
+    ]
+  }
+}

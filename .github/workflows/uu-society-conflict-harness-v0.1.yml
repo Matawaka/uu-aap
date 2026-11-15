@@ -1,0 +1,28 @@
+name: UU Society conflict harness v0.1
+
+on:
+  pull_request:
+    paths:
+      - "schemas/ecosystem/uu-society/v0.1/**"
+      - ".github/workflows/uu-society-conflict-harness-v0.1.yml"
+  push:
+    branches: [main]
+    paths:
+      - "schemas/ecosystem/uu-society/v0.1/**"
+      - ".github/workflows/uu-society-conflict-harness-v0.1.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  deterministic-conflict-scenarios:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned validator
+        run: python -m pip install jsonschema==4.23.0
+      - name: Run UU Society v0.1 conflict scenarios
+        run: python schemas/ecosystem/uu-society/v0.1/harness/run_scenarios.py

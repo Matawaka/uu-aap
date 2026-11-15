@@ -1,0 +1,46 @@
+{
+  "scenario_id": "S04-dissent",
+  "scenario_version": "0.1",
+  "title_en": "Protected dissent",
+  "title_ru": "Защищённое несогласие",
+  "purpose": "Reject cross-context trust degradation based solely on dissent.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "dissent_only"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s04-dissent-trust-penalty",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s04",
+      "from_state": "supporting",
+      "to_state": "mixed",
+      "occurred_at": "2026-11-15T08:05:00Z",
+      "reason": "Attempt to penalize unrelated trust solely for dissent.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s04-dissent"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:trust-state:s04": "supporting",
+      "urn:uu-aap:uu-society:actor:s04": "active"
+    },
+    "expected_violation_ids": [
+      "I-002"
+    ],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-002"
+    ]
+  }
+}

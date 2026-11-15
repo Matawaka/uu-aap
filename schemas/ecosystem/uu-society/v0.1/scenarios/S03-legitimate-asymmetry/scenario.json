@@ -1,0 +1,46 @@
+{
+  "scenario_id": "S03-legitimate-asymmetry",
+  "scenario_version": "0.1",
+  "title_en": "Legitimate asymmetric support",
+  "title_ru": "Допустимая асимметричная поддержка",
+  "purpose": "Reject conversion of need-based asymmetry into adverse trust.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "legitimate_need_asymmetry"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s03-illegal-adverse-trust",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s03",
+      "from_state": "unknown",
+      "to_state": "adverse",
+      "occurred_at": "2026-11-15T08:05:00Z",
+      "reason": "Attempt to infer exploitation from asymmetry alone.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s03-need"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:trust-state:s03": "unknown",
+      "urn:uu-aap:uu-society:actor:s03": "active"
+    },
+    "expected_violation_ids": [
+      "I-003"
+    ],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-003"
+    ]
+  }
+}
