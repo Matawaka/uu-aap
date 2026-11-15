@@ -157,3 +157,14 @@ v0.6 shows that institutional resilience depends on **how rules are selected**, 
 The self-ratifying experiments are especially important: in G06 coalition-self-interest governance adopted a generally useful evidence-sharing rule because that rule increased coalition share. Institutional capture therefore does not require an openly discriminatory rule.
 
 **Rule content != authority basis for rule adoption.**
+
+
+## Constitutional resilience v0.7
+
+Institutional evolution is now followed by a constitutional meta-layer. A sequence of individually lawful amendments can be unsafe even when each step is small and observed social outcomes remain inside the rights-floor proxy.
+
+The model therefore keeps **local legality** separate from **cumulative legitimacy**. It tracks authority scope, review independence, rights-floor strength, amendment friction, transparency and revocability, and can automatically reverse temporary power through sunset clauses.
+
+The central invariant is:
+
+**Legitimate Rule Change != Legitimate Accumulation of Power.**
