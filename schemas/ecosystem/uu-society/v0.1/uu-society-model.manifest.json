@@ -1276,5 +1276,33 @@
       "Simulation detection != runtime authority",
       "Simulation conformance != social correctness"
     ]
+  },
+  "phase_landscape_exploration": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_PHASE_LANDSCAPE",
+    "relation_to_phase_space_v0_2": "phase-space v0.2 remains bounded replicate/replay control; v0.3 adds larger deterministic landscapes and neighboring regime-boundary analysis",
+    "harness": "./harness/run_phase_landscapes.py",
+    "config_schema": "./phase-landscape.config.schema.json",
+    "receipt_schema": "./phase-landscape.receipt.schema.json",
+    "reference_landscapes": [
+      "./phase_landscapes/W00-five-axis-resilience-map/config.json",
+      "./phase_landscapes/W01-coalition-capture-plane/config.json"
+    ],
+    "outputs": [
+      "diagnostic signature per cell",
+      "stable-cell count",
+      "signature frequencies",
+      "signal cell counts",
+      "neighboring boundary edges",
+      "axis transition counts",
+      "Pareto-nondominated cell ids",
+      "pinned deterministic cells digest"
+    ],
+    "non_effects": [
+      "Phase signature != moral category",
+      "Boundary edge != universal law",
+      "Pareto frontier != single optimum",
+      "Landscape threshold != person verdict",
+      "Landscape conformance != social correctness"
+    ]
   }
 }

@@ -98,3 +98,9 @@ Reference fixtures isolate different failure modes rather than combining them in
 - P05 — high harm pressure under weak containment.
 
 The simulator emits multiple independent aggregate observables. Diagnostic threshold crossings are reasons for architectural review, not judgments about individual people.
+
+
+## Phase landscape v0.3
+
+Beyond the bounded v0.2 replay sweep, UU Society includes larger deterministic landscape maps.
+W00 maps five interacting resilience axes and W01 isolates coalition capture. The analyzer records neighboring phase-boundary edges and a Pareto frontier over independent loss dimensions. A frontier cell is not declared socially optimal; it is only nondominated under the explicitly listed metrics.
