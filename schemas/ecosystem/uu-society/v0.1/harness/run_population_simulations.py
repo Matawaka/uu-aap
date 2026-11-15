@@ -182,6 +182,7 @@ def simulate(config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     harm_events = 0
     repair_events = 0
     restriction_events = 0
+    repair_opportunities = 0
     recovery_events = 0
     restriction_actor_ticks = 0
     trace = hashlib.sha256()
@@ -219,6 +220,7 @@ def simulate(config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
 
         repaired = False
         if harm or breach:
+            repair_opportunities += 1
             if harm:
                 harm_events += 1
                 provider.harms += 1
@@ -274,9 +276,7 @@ def simulate(config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
         "unmet_need_rate": unmet / interactions,
         "idle_capability_rate": idle_capability / interactions,
         "harm_rate": harm_events / max(1, successful_actions),
-        "repair_completion_rate": repair_events / max(1, harm_events + sum(
-            1 for a in actors if a.restrictions > a.harms
-        )),
+        "repair_completion_rate": repair_events / max(1, repair_opportunities),
         "recovery_rate": recovery_events / max(1, restriction_events),
         "restriction_actor_time_share": (
             restriction_actor_ticks / (interactions * len(actors))
