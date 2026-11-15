@@ -36,7 +36,8 @@ Actor
 - `uu-society-model.manifest.json` — машиночитаемый каталог сущностей, инвариантов, правил взаимодействия и разрешённых переходов;
 - `README.md` — английское описание;
 - `README.ru.md` — русское описание;
-- `examples/minimal-mutual-aid.snapshot.json` — минимальный пример взаимопомощи.
+- `examples/minimal-mutual-aid.snapshot.json` — минимальный пример состояния взаимопомощи;
+- `examples/minimal-mutual-aid.transition.json` — минимальный пример допустимого перехода.
 
 ## Порядок чтения агентом
 
