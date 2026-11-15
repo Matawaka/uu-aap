@@ -183,7 +183,7 @@ def tick_restrictions(actors: list[Actor]) -> int:
     return restricted
 
 
-def simulate(config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
+def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dict[str, Any], list[str]]:
     seed = config["seed"]
     actors = build_population(config)
     categories = config["categories"]
@@ -329,14 +329,15 @@ def simulate(config: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     actual_result = "EXPECTED_DETECTION" if signals else "PASS"
     expected_signals = set(config["expected"]["expected_signal_ids"])
     errors = []
-    if actual_result != config["expected"]["result"]:
-        errors.append(
-            f"result expected={config['expected']['result']} actual={actual_result}"
-        )
-    if signals != expected_signals:
-        errors.append(
-            f"signals expected={sorted(expected_signals)} actual={sorted(signals)}"
-        )
+    if enforce_expected:
+        if actual_result != config["expected"]["result"]:
+            errors.append(
+                f"result expected={config['expected']['result']} actual={actual_result}"
+            )
+        if signals != expected_signals:
+            errors.append(
+                f"signals expected={sorted(expected_signals)} actual={sorted(signals)}"
+            )
 
     receipt = {
         "receipt_version":"0.1",
