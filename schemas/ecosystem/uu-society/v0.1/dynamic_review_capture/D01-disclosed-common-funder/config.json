@@ -1,0 +1,65 @@
+{
+  "experiment_id": "D01-disclosed-common-funder",
+  "experiment_version": "0.9",
+  "title_en": "Disclosed common-funder capture",
+  "title_ru": "Захват через раскрытого общего финансиста",
+  "purpose": "A disclosed common funding origin should collapse three formal reviewers into one effective control cluster.",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "cycle_count": 5,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-a",
+        "from": "sponsor",
+        "to": "a",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-b",
+        "from": "sponsor",
+        "to": "b",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-c",
+        "from": "sponsor",
+        "to": "c",
+        "kind": "funds",
+        "disclosed": true
+      }
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE"
+    ]
+  }
+}
