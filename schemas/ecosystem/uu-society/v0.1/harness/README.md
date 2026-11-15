@@ -122,3 +122,24 @@ Reference landscapes:
 - W01: 32 cells focused on coalition fraction × coalition request bias.
 
 Pinned cell digests make accidental changes to the synthetic landscape visible in CI.
+
+
+## Endogenous adaptation v0.4
+
+This layer lets synthetic actors change future interaction behavior from prior experience without creating a universal person score.
+
+Mechanisms:
+- local observer → subject → context affinity;
+- bilateral reciprocity balance;
+- local avoidance after harm/breach;
+- Repair-based relationship restoration;
+- bounded forgetting toward baseline;
+- deliberately bad `global_generalized` comparison policy.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_adaptive_simulations.py
+```
+
+Reference experiments A00-A05 compare static behavior, local avoidance, global spillover, Repair/recovery, extraction without reciprocity and bilateral contextual reciprocity.
