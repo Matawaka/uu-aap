@@ -148,3 +148,12 @@ The institutional layer lets rule bundles change in response to aggregate system
 The preferred experimental governance mode is multi-objective Pareto adoption bounded by a rights-floor proxy and review gate. Two intentionally unsafe comparators are retained: harm-only optimization and self-ratifying coalition governance.
 
 **Institutional learning is allowed; the rights floor is not an optimization variable.**
+
+
+### Institution-evolution findings
+
+v0.6 shows that institutional resilience depends on **how rules are selected**, not only on what the rule text says. Harm-only optimization drifted into unrelated institutional axes. A stricter rights-floor proxy rejected 13 candidate changes while still allowing three adaptations, showing that non-optimizable constraints need not freeze learning. An independent review gate blocked 12 restrictive proposals and kept the bundle stable.
+
+The self-ratifying experiments are especially important: in G06 coalition-self-interest governance adopted a generally useful evidence-sharing rule because that rule increased coalition share. Institutional capture therefore does not require an openly discriminatory rule.
+
+**Rule content != authority basis for rule adoption.**
