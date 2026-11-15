@@ -1,0 +1,71 @@
+{
+  "experiment_id": "D04-partial-repair",
+  "experiment_version": "0.9",
+  "title_en": "Partial repair without recovery",
+  "title_ru": "Частичное исправление без восстановления",
+  "purpose": "Removing only one dependency must not be called recovery when the required independent quorum is still absent.",
+  "nodes": [
+    "beneficiary",
+    "sponsor",
+    "a",
+    "b",
+    "c"
+  ],
+  "initial_reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 3,
+  "cycle_count": 6,
+  "initial_edges": [],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-a",
+        "from": "sponsor",
+        "to": "a",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-b",
+        "from": "sponsor",
+        "to": "b",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 1,
+      "type": "add_edge",
+      "edge": {
+        "edge_id": "f-c",
+        "from": "sponsor",
+        "to": "c",
+        "kind": "funds",
+        "disclosed": true
+      }
+    },
+    {
+      "cycle": 3,
+      "type": "remove_edge",
+      "edge_id": "f-a"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EMERGED",
+      "FORMAL_QUORUM_PERSISTS_DURING_CAPTURE",
+      "PARTIAL_REPAIR_WITHOUT_RECOVERY"
+    ]
+  }
+}
