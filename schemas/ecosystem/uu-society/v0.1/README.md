@@ -211,3 +211,10 @@ This prevents institutional memory from silently becoming either permanent trust
 Adds bounded active evidence acquisition on top of the v1.0 epistemic assessment: a scoped experimental search lease, independent authority/privacy gates, targeted rechecks, source-provenance freshness and legitimate stops with unresolved uncertainty. Three policies and 32 scenarios preserve missed capture, false assurance, false-positive signals and finite surveillance-loop witnesses. No runtime authority or Stable Core promotion.
 
 See [architecture, invariants, actual findings and limitations](active_verification/README.md) and [Russian documentation](active_verification/README.ru.md).
+
+
+## Paired Temporal Verification / Independent Search Reauthorization v1.2
+
+Adds matched-calendar experiments on immutable source publication tapes: TTL 1/3/6, inherited targeted selection, deadline-aware scheduling and independently reauthorized search. Sixteen scenarios yield 144 receipts, including five refuted claims. Renewals preserve lifetime budgets, privacy floors and scope; they can improve discovery while increasing false assurance. No runtime authority or Stable Core promotion.
+
+See [controlled design, actual findings and limitations](temporal_verification/README.md) and [RU](temporal_verification/README.ru.md).

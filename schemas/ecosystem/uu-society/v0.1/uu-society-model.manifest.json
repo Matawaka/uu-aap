@@ -1765,5 +1765,108 @@
     ],
     "epistemic_claim_en": "Institutional Independence is not a binary fact available to the system. It is a bounded, revisable epistemic claim supported by evidence acquired under limited authority.",
     "epistemic_claim_ru": "Институциональная независимость для системы — не доступный ей абсолютный бинарный факт, а ограниченное и пересматриваемое утверждение, поддерживаемое доказательствами, полученными в пределах ограниченного полномочия на проверку."
+  },
+  "paired_temporal_verification": {
+    "experiment_version": "1.2",
+    "status": "EXPERIMENTAL_DETERMINISTIC_PAIRED_TEMPORAL_VERIFICATION",
+    "harness": "./harness/run_temporal_verification.py",
+    "boundary_tests": "./harness/test_temporal_verification.py",
+    "config_schema": "./temporal-verification.config.schema.json",
+    "receipt_schema": "./temporal-verification.receipt.schema.json",
+    "experiment_directory": "./temporal_verification",
+    "readme_en": "./temporal_verification/README.md",
+    "readme_ru": "./temporal_verification/README.ru.md",
+    "protocol": "./temporal_verification/protocol.json",
+    "reference_results": "./temporal_verification/reference-results.json",
+    "initial_run_results": "./temporal_verification/initial-run-summary.json",
+    "cases": [
+      "T00",
+      "T01",
+      "T02",
+      "T03",
+      "T04",
+      "T05",
+      "T06",
+      "T07",
+      "T08",
+      "T09",
+      "T10",
+      "T11",
+      "T12",
+      "T13",
+      "T14",
+      "T15"
+    ],
+    "policies": [
+      "bounded_targeted",
+      "deadline_aware",
+      "deadline_aware_reauthorized"
+    ],
+    "evaluation_ttl_arms": [
+      1,
+      3,
+      6
+    ],
+    "matched_calendar_cycles": 10,
+    "arm_count": 144,
+    "central_invariants": [
+      "Acquisition Time != Source Issue Time",
+      "Re-fetch != Evidence Refresh",
+      "Evaluation TTL Cannot Extend Source Validity",
+      "Forecast != Guarantee",
+      "Search Stop != Permanent Clearance",
+      "Independent Reauthorization != Epistemic Truth",
+      "Renewal != Budget Reset",
+      "New Lease != Broader Scope",
+      "Independent Actor != Unbounded Authority",
+      "Search Lease != Action Lease",
+      "Search Lease != Permission to Punish",
+      "Protected Rights != Optimization Variable"
+    ],
+    "architecture_chain": [
+      "Source Publication",
+      "Immutable Source Issue / Validity Clock",
+      "Scoped Search Lease Gate",
+      "Deadline Forecast",
+      "Actual Latency",
+      "Admission / Cancellation",
+      "Epistemic Assessment",
+      "Stop / Passive Reassessment"
+    ],
+    "reauthorization_chain": [
+      "Unfinished Scoped Gap",
+      "Immutable Request Receipt",
+      "Independent Issuer / Current Need / Review Delay",
+      "Same or Narrower Lease / Denial",
+      "Preserved Lifetime Budgets"
+    ],
+    "model": "Identical source publication tapes, latency, oracle trajectories and lifetime budgets across TTL/policy arms; immutable source clocks; v1.0 assessment and v1.1 gate/selector reused; independent bounded search renewal; equal-duration post-stop observation",
+    "stable_core_promotion_authorized": false,
+    "implementation_authority_created": false,
+    "reference_findings": [
+      "16/16 scenarios conform; 144 arms; 20 temporal hostile/metamorphic test methods; original first-run data unchanged",
+      "52 scenario-level claims supported and 5 refuted; claim refutation is research output, separate from architectural conformance",
+      "Targeted / deadline-aware / reauthorized actions: 39 / 15 / 28; canceled queries: 27 / 3 / 3",
+      "T01 TTL 3: equal-cost two-query baseline stays indeterminate; deadline ordering verifies at cycle 4; TTL 1 defeats both",
+      "T02 publication issued at cycle 0 stays stale when fetched at cycle 3 under TTL 1/3; no fetch-time laundering",
+      "T06 same evidence and zero-query schedule: TTL 1/3/6 produces 0/1/4 false-assurance cycles after capture onset at cycle 2",
+      "T07 independent renewal increases false assurance from zero to 2/3 cycles at TTL 3/6",
+      "T08 independent renewal discovers fresh capture in all TTL arms, without adverse-decision power",
+      "T09/T10/T13 deny shared-control issuer, self-issuance and issuer scope inflation",
+      "T11/T12 preserve lifetime budgets and privacy; a new lease cannot reset or override them",
+      "T14/T15 show review delay and useless finite grant chains as costs of a new authority layer",
+      "Reauthorized aggregate: 12 grants, 15 denials, 27 review-cost units, 10 capture-discovery and 10 false-assurance calendar cycles"
+    ],
+    "non_effects": [
+      "No optimal universal TTL or optimal policy claim",
+      "Observed issuer separation != absolute issuer independence",
+      "Forecast != latency oracle",
+      "Same evidence acquired lawfully != true evidence",
+      "Evidence expiry != raw-data erasure or retention permission",
+      "Model cancellation != real external cancellation",
+      "No legal verdict, person ranking, moral oracle, runtime authority or Stable Core promotion"
+    ],
+    "epistemic_claim_en": "Institutional Independence is not a binary fact available to the system. It is a bounded, revisable epistemic claim supported by evidence acquired under limited authority.",
+    "epistemic_claim_ru": "Институциональная независимость для системы — не доступный ей абсолютный бинарный факт, а ограниченное и пересматриваемое утверждение, поддерживаемое доказательствами, полученными в пределах ограниченного полномочия на проверку."
   }
 }

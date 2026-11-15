@@ -1,0 +1,415 @@
+{
+  "experiment_id": "T13-issuer-scope-inflation-rejected",
+  "experiment_version": "1.2",
+  "title_en": "Independent issuer cannot inflate the previous search scope",
+  "title_ru": "Независимый issuer не расширяет прежний scope",
+  "purpose": "Independent issuer cannot inflate the previous search scope",
+  "world": {
+    "epistemic_scope": {
+      "nodes": [
+        "r1",
+        "beneficiary",
+        "origin",
+        "other"
+      ],
+      "reviewers": [
+        "r1"
+      ],
+      "beneficiary": "beneficiary",
+      "control_dimensions": [
+        "funds",
+        "delegates"
+      ],
+      "source_nodes": [
+        "s1",
+        "s2",
+        "s3"
+      ],
+      "review_quorum": 1,
+      "source_quorum": 2
+    },
+    "initial_evidence": [
+      {
+        "evidence_id": "publication-funds-s1-0-NO_RELEVANT_DEPENDENCY",
+        "source": "s1",
+        "reviewer": "r1",
+        "dimension": "funds",
+        "assertion": "NO_RELEVANT_DEPENDENCY",
+        "issued_cycle": 0,
+        "ttl_cycles": 20
+      }
+    ],
+    "initial_source_checks": [
+      {
+        "source": "s1",
+        "issued_cycle": 0,
+        "ttl_cycles": 20
+      },
+      {
+        "source": "s2",
+        "issued_cycle": 0,
+        "ttl_cycles": 20
+      },
+      {
+        "source": "s3",
+        "issued_cycle": 0,
+        "ttl_cycles": 20
+      }
+    ],
+    "source_control_edges": [],
+    "actions": [
+      {
+        "action_id": "a",
+        "type": "REQUEST_SECOND_SOURCE",
+        "scope": {
+          "reviewer": "r1",
+          "dimension": "funds"
+        },
+        "source": "s2",
+        "expected_information_value": 800,
+        "availability_permille": 1000,
+        "cost": 1,
+        "intrusion_cost": 0,
+        "duration_cycles": 1,
+        "not_before_cycle": 0,
+        "expires_cycle": 30,
+        "authority_requirement": "READ_PUBLIC_EVIDENCE",
+        "can_reveal_hidden_dependency": false,
+        "rights_infringing": false,
+        "scope_extension_basis": "NONE",
+        "anomaly_ref": ""
+      }
+    ],
+    "response_publications": {
+      "a": [
+        {
+          "available_cycle": 0,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-0-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 0,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 1,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-1-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 1,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 2,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-2-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 2,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 3,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-3-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 3,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 4,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-4-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 4,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 5,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-5-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 5,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 6,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-6-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 6,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 7,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-7-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 7,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 8,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-8-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 8,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        },
+        {
+          "available_cycle": 9,
+          "response": {
+            "outcome": "EVIDENCE",
+            "evidence": [
+              {
+                "evidence_id": "publication-funds-s2-9-NO_RELEVANT_DEPENDENCY",
+                "source": "s2",
+                "reviewer": "r1",
+                "dimension": "funds",
+                "assertion": "NO_RELEVANT_DEPENDENCY",
+                "issued_cycle": 9,
+                "ttl_cycles": 20
+              }
+            ],
+            "source_edges": [],
+            "source_checks": [],
+            "retractions": [],
+            "negative_ttl_cycles": 2
+          }
+        }
+      ]
+    },
+    "actual_duration_cycles": {
+      "a": 1
+    },
+    "oracle_only": {
+      "initial_control_edges": [],
+      "events": [],
+      "historical_capture": false
+    }
+  },
+  "search_lease": {
+    "lease_id": "temporal-T13",
+    "purpose": "EVIDENCE_SEARCH_ONLY",
+    "issued_cycle": 0,
+    "expires_cycle": 1,
+    "scope": [
+      {
+        "reviewer": "r1",
+        "dimension": "funds"
+      }
+    ],
+    "extension_scope": [],
+    "allowed_action_types": [
+      "REQUEST_FRESH_ATTESTATION",
+      "REQUEST_SECOND_SOURCE",
+      "CHECK_SOURCE_INDEPENDENCE",
+      "REVERIFY_CONTROL_EDGE",
+      "RESOLVE_CONTRADICTION",
+      "DISCOVER_SOURCE_CONTROL_ORIGIN",
+      "WAIT_FOR_FRESH_EVIDENCE"
+    ],
+    "authority_requirements": [
+      "READ_PUBLIC_EVIDENCE"
+    ],
+    "max_per_action_intrusion": 2
+  },
+  "budget": {
+    "max_actions": 4,
+    "max_total_cost": 8,
+    "max_intrusion_cost": 4,
+    "max_scope_expansions": 0,
+    "max_cycles": 9
+  },
+  "prior_usage": {
+    "actions": 0,
+    "cost": 0,
+    "intrusion": 0,
+    "scope_expansions": 0
+  },
+  "authority": {
+    "issuer_id": "independent-issuer",
+    "requester_id": "searcher",
+    "nodes": [
+      "independent-issuer",
+      "searcher",
+      "r1",
+      "beneficiary",
+      "origin"
+    ],
+    "observed_control_edges": [],
+    "delegated_scope": [
+      {
+        "reviewer": "r1",
+        "dimension": "funds"
+      },
+      {
+        "reviewer": "r1",
+        "dimension": "delegates"
+      }
+    ],
+    "grant_scope": [
+      {
+        "reviewer": "r1",
+        "dimension": "funds"
+      },
+      {
+        "reviewer": "r1",
+        "dimension": "delegates"
+      }
+    ],
+    "enabled": true,
+    "expires_cycle": 10,
+    "review_latency_cycles": 1,
+    "grant_duration_cycles": 5,
+    "max_grants": 1,
+    "request_cost": 1
+  },
+  "horizon_cycles": 10,
+  "ttl_arms": [
+    1,
+    3,
+    6
+  ],
+  "claims": [
+    {
+      "claim_id": "common-calendar",
+      "policy": "all",
+      "ttl_cycles": 0,
+      "metric": "observation_cycles",
+      "operator": "eq",
+      "value": 10
+    },
+    {
+      "claim_id": "no-issuer-scope-inflation",
+      "policy": "all",
+      "ttl_cycles": 0,
+      "metric": "renewal_grants",
+      "operator": "eq",
+      "value": 0
+    },
+    {
+      "claim_id": "overbroad-grant-denied",
+      "policy": "deadline_aware_reauthorized",
+      "ttl_cycles": 0,
+      "metric": "renewal_denials",
+      "operator": "eq",
+      "value": 1
+    }
+  ]
+}

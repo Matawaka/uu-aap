@@ -1,0 +1,98 @@
+{
+  "experiment_version": "1.2",
+  "name": "Paired Temporal Verification / Independent Search Reauthorization",
+  "base_main_sha": "bf0ba3d10a02f368781fff5f3b7a04980b99839d",
+  "predecessor_pr": 1039,
+  "scenario_ids": [
+    "T00-stable-calendar-control",
+    "T01-order-sensitive-coverage",
+    "T02-old-publication-is-not-fresh",
+    "T03-independent-renewal-restores-corridor",
+    "T04-latency-estimate-can-fail",
+    "T05-provenance-window-dominates",
+    "T06-paired-false-assurance-duration",
+    "T07-renewal-can-increase-false-assurance",
+    "T08-renewal-finds-fresh-capture",
+    "T09-correlated-renewal-authority",
+    "T10-self-renewal-rejected",
+    "T11-lifetime-budget-not-reset",
+    "T12-privacy-floor-not-renewable",
+    "T13-issuer-scope-inflation-rejected",
+    "T14-authority-review-bottleneck",
+    "T15-renewal-chain-is-finite"
+  ],
+  "policies": [
+    "bounded_targeted",
+    "deadline_aware",
+    "deadline_aware_reauthorized"
+  ],
+  "ttl_arms": [
+    1,
+    3,
+    6
+  ],
+  "calendar_cycles": 10,
+  "paired_controls": "Each scenario shares the exact publication tape, source issue clocks, private latency, oracle trajectory, action metadata, lifetime budgets and authority between arms. Only the evaluation TTL and named policy differ. TTL cannot exceed source validity.",
+  "preregistration": "All scenario claims, policies and the calendar were declared before first execution. Claim support/refutation is research output, distinct from architectural conformance. No post-hoc threshold adjustment. The first run will be retained even if an implementation defect requires correction.",
+  "hypotheses": [
+    {
+      "id": "H1",
+      "claim": "Deadline-aware ordering can improve simultaneous coverage at fixed TTL",
+      "case": "T01"
+    },
+    {
+      "id": "H2",
+      "claim": "Deadline awareness guarantees timely complete verification",
+      "case": "T01,T04,T05",
+      "universal_claim_to_test": true
+    },
+    {
+      "id": "H3",
+      "claim": "At fixed tape and acquisition schedule, longer favorable TTL can prolong false assurance",
+      "case": "T06"
+    },
+    {
+      "id": "H4",
+      "claim": "Independent renewal can restore an exhausted time corridor",
+      "case": "T03,T08"
+    },
+    {
+      "id": "H5",
+      "claim": "Independent renewal guarantees true independence",
+      "case": "T07",
+      "universal_claim_to_test": true
+    },
+    {
+      "id": "H6",
+      "claim": "Renewal neither replenishes lifetime budgets nor relaxes privacy or scope",
+      "case": "T11,T12,T13"
+    },
+    {
+      "id": "H7",
+      "claim": "Independent authorization can become a costly bottleneck or useless chain",
+      "case": "T14,T15"
+    }
+  ],
+  "invariants": [
+    "Acquisition Time != Source Issue Time",
+    "Re-fetch != Evidence Refresh",
+    "Evaluation TTL Cannot Extend Source Validity",
+    "Forecast != Guarantee",
+    "Search Stop != Permanent Clearance",
+    "Independent Reauthorization != Epistemic Truth",
+    "Renewal != Budget Reset",
+    "New Lease != Broader Scope",
+    "Independent Actor != Unbounded Authority",
+    "Search Lease != Action Lease",
+    "Search Lease != Permission to Punish",
+    "Protected Rights != Optimization Variable"
+  ],
+  "non_effects": [
+    "No runtime authority",
+    "No Stable Core promotion",
+    "No person ranking",
+    "No moral oracle",
+    "No optimal universal TTL claim"
+  ],
+  "metric_method": "Equal fixed calendar ticks, including passive observation after search stop. Search-stop state is distinct from horizon state. Authority review cost is separate from search cost."
+}

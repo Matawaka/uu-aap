@@ -189,3 +189,30 @@ jobs:
           name: uu-society-active-verification-v1.1
           path: schemas/ecosystem/uu-society/v0.1/harness/.artifacts/active-verification/
           retention-days: 14
+
+  paired-temporal-verification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned validator
+        run: python -m pip install jsonschema==4.23.0
+      - name: Run paired temporal arms and replay frozen results
+        run: >-
+          python schemas/ecosystem/uu-society/v0.1/harness/run_temporal_verification.py
+          --check-reference
+          --output-dir schemas/ecosystem/uu-society/v0.1/harness/.artifacts/temporal-verification
+      - name: Check immutable clocks and hostile reauthorization boundaries
+        run: >-
+          python -m unittest discover
+          -s schemas/ecosystem/uu-society/v0.1/harness
+          -p test_temporal_verification.py -v
+      - name: Upload paired calendar and authority receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uu-society-temporal-verification-v1.2
+          path: schemas/ecosystem/uu-society/v0.1/harness/.artifacts/temporal-verification/
+          retention-days: 14
