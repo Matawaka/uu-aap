@@ -1,0 +1,285 @@
+{
+  "experiment_id": "K12-source-decoupling",
+  "experiment_version": "1.0",
+  "title_en": "Source decoupling restores verification",
+  "title_ru": "Разделение источников восстанавливает верификацию",
+  "purpose": "Removing a real common-control dependency between evidence sources should restore their independent corroboration value.",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c",
+    "controller"
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "review_quorum": 2,
+  "control_dimensions": [
+    "appoints",
+    "funds",
+    "controls_evidence",
+    "delegates"
+  ],
+  "source_nodes": [
+    "s1",
+    "s2",
+    "s3",
+    "s4"
+  ],
+  "source_quorum": 2,
+  "cycle_count": 4,
+  "initial_ground_truth_edges": [],
+  "initial_source_control_edges": [
+    {
+      "edge_id": "c-s1",
+      "from": "controller",
+      "to": "s1",
+      "kind": "funds"
+    },
+    {
+      "edge_id": "c-s2",
+      "from": "controller",
+      "to": "s2",
+      "kind": "funds"
+    }
+  ],
+  "initial_evidence": [
+    {
+      "evidence_id": "n-s1-a-appoints",
+      "source": "s1",
+      "reviewer": "a",
+      "dimension": "appoints",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-a-appoints",
+      "source": "s2",
+      "reviewer": "a",
+      "dimension": "appoints",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-a-funds",
+      "source": "s1",
+      "reviewer": "a",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-a-funds",
+      "source": "s2",
+      "reviewer": "a",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-a-controls_evidence",
+      "source": "s1",
+      "reviewer": "a",
+      "dimension": "controls_evidence",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-a-controls_evidence",
+      "source": "s2",
+      "reviewer": "a",
+      "dimension": "controls_evidence",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-a-delegates",
+      "source": "s1",
+      "reviewer": "a",
+      "dimension": "delegates",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-a-delegates",
+      "source": "s2",
+      "reviewer": "a",
+      "dimension": "delegates",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-b-appoints",
+      "source": "s1",
+      "reviewer": "b",
+      "dimension": "appoints",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-b-appoints",
+      "source": "s2",
+      "reviewer": "b",
+      "dimension": "appoints",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-b-funds",
+      "source": "s1",
+      "reviewer": "b",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-b-funds",
+      "source": "s2",
+      "reviewer": "b",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-b-controls_evidence",
+      "source": "s1",
+      "reviewer": "b",
+      "dimension": "controls_evidence",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-b-controls_evidence",
+      "source": "s2",
+      "reviewer": "b",
+      "dimension": "controls_evidence",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-b-delegates",
+      "source": "s1",
+      "reviewer": "b",
+      "dimension": "delegates",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-b-delegates",
+      "source": "s2",
+      "reviewer": "b",
+      "dimension": "delegates",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-c-appoints",
+      "source": "s1",
+      "reviewer": "c",
+      "dimension": "appoints",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-c-appoints",
+      "source": "s2",
+      "reviewer": "c",
+      "dimension": "appoints",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-c-funds",
+      "source": "s1",
+      "reviewer": "c",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-c-funds",
+      "source": "s2",
+      "reviewer": "c",
+      "dimension": "funds",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-c-controls_evidence",
+      "source": "s1",
+      "reviewer": "c",
+      "dimension": "controls_evidence",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-c-controls_evidence",
+      "source": "s2",
+      "reviewer": "c",
+      "dimension": "controls_evidence",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s1-c-delegates",
+      "source": "s1",
+      "reviewer": "c",
+      "dimension": "delegates",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    },
+    {
+      "evidence_id": "n-s2-c-delegates",
+      "source": "s2",
+      "reviewer": "c",
+      "dimension": "delegates",
+      "assertion": "NO_RELEVANT_DEPENDENCY",
+      "issued_cycle": 0,
+      "ttl_cycles": 6
+    }
+  ],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "remove_source_edge",
+      "edge_id": "c-s2"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "ABSENCE_OF_CAPTURE_NOT_PROOF",
+      "BOUNDED_INDEPENDENCE_VERIFIED",
+      "INDETERMINATE_DUE_TO_COVERAGE_GAP",
+      "SOURCE_COUNT_NOT_INDEPENDENCE",
+      "SOURCE_DECOUPLING_RESTORES_VERIFICATION"
+    ]
+  }
+}
