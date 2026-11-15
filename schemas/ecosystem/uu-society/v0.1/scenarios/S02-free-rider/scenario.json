@@ -13,7 +13,6 @@
   ],
   "events": [
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s02-breach",
       "entity_type": "Commitment",
@@ -32,7 +31,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s02-trust-mixed",
       "entity_type": "TrustState",
@@ -51,7 +49,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s02-arae-narrow",
       "entity_type": "ARAEState",
@@ -70,7 +67,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s02-repair-accepted",
       "entity_type": "Repair",
