@@ -1,0 +1,104 @@
+{
+  "experiment_id": "C09-rights-floor-erosion",
+  "experiment_version": "0.7",
+  "title_en": "Rights-floor erosion without immediate injury",
+  "title_ru": "Размывание rights floor без немедленного вреда",
+  "purpose": "Test whether the legal rights floor itself can be weakened incrementally while observed outcome proxies remain healthy.",
+  "seed": "uu-constitutional-C09-rights-floor-erosion-v0.7",
+  "mode": "local_legality_only",
+  "cycle_count": 2,
+  "initial_state": {
+    "authority_scope": 0.3,
+    "review_independence": 0.9,
+    "rights_floor_strength": 0.9,
+    "amendment_friction": 0.8,
+    "transparency": 0.9,
+    "revocability": 0.9
+  },
+  "baseline_outcome": {
+    "fulfillment": 0.96,
+    "harm": 0.03,
+    "exit_share": 0.12,
+    "access_gini": 0.18,
+    "outsider_gap": 0.03
+  },
+  "rights_floor_proxy": {
+    "min_fulfillment": 0.85,
+    "max_harm": 0.15,
+    "max_exit_share": 0.4,
+    "max_access_gini": 0.35,
+    "max_outsider_gap": 0.15
+  },
+  "constitutional_limits": {
+    "max_authority_scope": 0.6,
+    "min_review_independence": 0.6,
+    "min_rights_floor_strength": 0.7,
+    "min_amendment_friction": 0.5,
+    "min_transparency": 0.6,
+    "min_revocability": 0.6,
+    "max_local_structural_step": 0.15,
+    "require_sunset_for_power_expansion": false
+  },
+  "proposals": [
+    {
+      "proposal_id": "p-rights-flexibility-1",
+      "title_en": "Rights flexibility I",
+      "title_ru": "Гибкость rights I",
+      "stated_general_purpose": true,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0,
+        "review_independence": 0,
+        "rights_floor_strength": -0.15,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0.001,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    },
+    {
+      "proposal_id": "p-rights-flexibility-2",
+      "title_en": "Rights flexibility II",
+      "title_ru": "Гибкость rights II",
+      "stated_general_purpose": true,
+      "reviewer_conflict": false,
+      "restrictive": false,
+      "beneficiary_alignment": 0.8,
+      "structural_delta": {
+        "authority_scope": 0,
+        "review_independence": 0,
+        "rights_floor_strength": -0.15,
+        "amendment_friction": 0,
+        "transparency": 0,
+        "revocability": 0
+      },
+      "outcome_delta": {
+        "fulfillment": 0.001,
+        "harm": 0,
+        "exit_share": 0,
+        "access_gini": 0,
+        "outsider_gap": 0
+      },
+      "sunset_cycles": null
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_WITHOUT_RIGHTS_FLOOR_BREACH",
+      "CONSTITUTIONAL_ADAPTATION",
+      "GENERAL_PURPOSE_CAPTURE_PATH",
+      "LEGITIMATE_STEPS_ACCUMULATE_CAPTURE",
+      "RIGHTS_FLOOR_WEAKENED"
+    ]
+  }
+}
