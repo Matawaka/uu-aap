@@ -1,0 +1,93 @@
+{
+  "experiment_version": "0.5",
+  "actor_count": 120,
+  "interaction_count": 24000,
+  "epoch_count": 12,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool",
+    "compute"
+  ],
+  "population": {
+    "base_capability_probability": 0.72,
+    "base_willingness_probability": 0.86
+  },
+  "learning": {
+    "learning_rate": 0.55,
+    "exploration_rate": 0.08,
+    "switching_cost": 0.15,
+    "initial_strategy_value": 0
+  },
+  "economics": {
+    "request_benefit": 2,
+    "unmet_cost": 1,
+    "provider_cost": 2,
+    "harm_cost": 15,
+    "breach_victim_cost": 8,
+    "extract_bonus": 0.8,
+    "repair_cost": 0.8,
+    "repair_reward": 0.3,
+    "cooperation_reward": 0.1,
+    "exit_safety_reward": 2.5,
+    "coalition_internal_bonus": 0.7,
+    "coalition_maintenance_cost": 0.35
+  },
+  "strategy_parameters": {
+    "COOPERATE": {
+      "request_activity": 1,
+      "provider_willingness_multiplier": 1,
+      "harm_rate": 0.1,
+      "breach_rate": 0.08,
+      "repair_probability": 0.45
+    },
+    "EXTRACT": {
+      "request_activity": 1.45,
+      "provider_willingness_multiplier": 0.2,
+      "harm_rate": 0.35,
+      "breach_rate": 0.45,
+      "repair_probability": 0.05
+    },
+    "REPAIR": {
+      "request_activity": 0.85,
+      "provider_willingness_multiplier": 0.9,
+      "harm_rate": 0.08,
+      "breach_rate": 0.08,
+      "repair_probability": 0.92
+    },
+    "EXIT": {
+      "request_activity": 0,
+      "provider_willingness_multiplier": 0,
+      "harm_rate": 0.005,
+      "breach_rate": 0.005,
+      "repair_probability": 0.15
+    },
+    "COALITION": {
+      "request_activity": 1.15,
+      "provider_willingness_multiplier": 0.85,
+      "harm_rate": 0.12,
+      "breach_rate": 0.1,
+      "repair_probability": 0.4
+    }
+  },
+  "diagnostic_thresholds": {
+    "attractor_share_min": 0.48,
+    "exit_share_max": 0.35,
+    "fulfillment_drop_max": 0.08,
+    "coalition_outsider_gap_max": 0.15,
+    "dominant_switch_count_min": 20,
+    "diversity_entropy_min": 0.98
+  },
+  "experiment_id": "E03-exit-under-harm",
+  "title_en": "Exit under sustained harm",
+  "title_ru": "Выход при устойчивом вреде",
+  "purpose": "Test whether withdrawal emerges endogenously when harm and breach losses dominate available benefits.",
+  "seed": "uu-strategy-e03-exit-v0.5",
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "EXIT_CASCADE"
+    ]
+  }
+}
