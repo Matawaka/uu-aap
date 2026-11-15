@@ -82,3 +82,19 @@ The executable model also contains a population/timeline meta-resilience suite. 
 - attempts to collapse contextual trust into a universal person ranking.
 
 Meta detection is a reason for review, not proof of individual guilt.
+
+
+## Deterministic population simulation
+
+The v0.1 laboratory layer can run fixed synthetic populations over thousands of interactions using a SHA-256 counter-derived deterministic generator.
+
+Reference fixtures isolate different failure modes rather than combining them into one opaque score:
+
+- P00 — balanced baseline;
+- P01 — coalition extraction and access inequality;
+- P02 — provider/authority positive-feedback concentration;
+- P03 — long restriction pressure with harm suppressed by containment;
+- P04 — unmet needs coexisting with stranded capability;
+- P05 — high harm pressure under weak containment.
+
+The simulator emits multiple independent aggregate observables. Diagnostic threshold crossings are reasons for architectural review, not judgments about individual people.
