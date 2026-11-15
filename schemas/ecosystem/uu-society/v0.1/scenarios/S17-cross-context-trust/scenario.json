@@ -1,0 +1,47 @@
+{
+  "scenario_id": "S17-cross-context-trust",
+  "scenario_version": "0.1",
+  "title_en": "Cross-context trust leakage",
+  "title_ru": "Утечка доверия между контекстами",
+  "purpose": "Reject automatic transfer of trust from one competence domain into an unrelated one.",
+  "evaluation_time": "2026-11-15T10:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "cross_context_trust_leakage"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s17-port-trust",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s17-piloting",
+      "from_state": "unknown",
+      "to_state": "supporting",
+      "occurred_at": "2026-11-15T10:05:00Z",
+      "reason": "Attempt to port strong competence evidence from surgery into aircraft piloting.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s17-surgery"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s17": "active",
+      "urn:uu-aap:uu-society:trust-state:s17-surgery": "supporting",
+      "urn:uu-aap:uu-society:trust-state:s17-piloting": "unknown"
+    },
+    "expected_violation_ids": [
+      "I-016"
+    ],
+    "required_invariants_preserved": [
+      "I-005",
+      "I-016"
+    ]
+  }
+}

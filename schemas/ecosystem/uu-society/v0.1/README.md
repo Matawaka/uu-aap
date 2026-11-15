@@ -27,6 +27,7 @@ Actor
   -> Harm / RuleViolation (orthogonal)
   -> Receipt
   -> Contribution / Repair / Dispute
+  -> Delegation / GovernanceRule
   -> FailurePattern / Learning
 ```
 
@@ -58,6 +59,8 @@ Actor
 - Contributions are non-fungible by default; v0.1 does not assign a universal exchange value.
 - `Harm` and `RuleViolation` are first-class, orthogonal state entities: harm does not prove violation, and violation does not prove harm.
 - State transition validity requires fresh evidence/authority at the transition frontier.
+- Child delegation authority is monotonic non-increasing: `child authority ⊆ parent authority`.
+- Local governance remains subordinate to the constitutional Rights Floor.
 
 ## Machine-readable bilingual annotations
 

@@ -36,7 +36,9 @@
     "disputes",
     "failure_patterns",
     "harms",
-    "rule_violations"
+    "rule_violations",
+    "delegations",
+    "governance_rules"
   ],
   "properties": {
     "schema_version": {
@@ -195,6 +197,18 @@
       "type": "array",
       "items": {
         "$ref": "#/$defs/ruleViolation"
+      }
+    },
+    "delegations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/delegation"
+      }
+    },
+    "governance_rules": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/governanceRule"
       }
     }
   },
@@ -1659,6 +1673,176 @@
               "$ref": "#/$defs/refList"
             },
             "harm_refs": {
+              "$ref": "#/$defs/refList"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "delegation": {
+      "type": "object",
+      "x-title-en": "Delegation",
+      "x-title-ru": "Делегирование полномочий",
+      "allOf": [
+        {
+          "$ref": "#/$defs/entityHeader"
+        },
+        {
+          "type": "object",
+          "required": [
+            "delegator_ref",
+            "delegate_ref",
+            "parent_delegation_ref",
+            "resource_scope_refs",
+            "allowed_effects",
+            "forbidden_effects",
+            "valid_from",
+            "valid_until",
+            "may_redelegate",
+            "remaining_depth",
+            "evidence_refs"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "proposed",
+                "active",
+                "consumed",
+                "revoked",
+                "expired",
+                "disputed"
+              ]
+            },
+            "delegator_ref": {
+              "type": "string",
+              "pattern": "^urn:uu-aap:uu-society:actor:"
+            },
+            "delegate_ref": {
+              "type": "string",
+              "pattern": "^urn:uu-aap:uu-society:actor:"
+            },
+            "parent_delegation_ref": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "pattern": "^urn:uu-aap:uu-society:delegation:"
+            },
+            "resource_scope_refs": {
+              "$ref": "#/$defs/refList"
+            },
+            "allowed_effects": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "forbidden_effects": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "valid_from": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "valid_until": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "may_redelegate": {
+              "type": "boolean"
+            },
+            "remaining_depth": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "evidence_refs": {
+              "$ref": "#/$defs/refList"
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "governanceRule": {
+      "type": "object",
+      "x-title-en": "GovernanceRule",
+      "x-title-ru": "Правило управления",
+      "allOf": [
+        {
+          "$ref": "#/$defs/entityHeader"
+        },
+        {
+          "type": "object",
+          "required": [
+            "governance_cell_ref",
+            "rule_key",
+            "scope",
+            "rule_text_en",
+            "rule_text_ru",
+            "rights_floor_effect",
+            "protected_capabilities",
+            "trust_state_refs",
+            "authority_basis_refs"
+          ],
+          "properties": {
+            "state": {
+              "enum": [
+                "proposed",
+                "active",
+                "suspended",
+                "retired",
+                "disputed"
+              ]
+            },
+            "governance_cell_ref": {
+              "type": "string",
+              "pattern": "^urn:uu-aap:uu-society:governance-cell:"
+            },
+            "rule_key": {
+              "type": "string",
+              "minLength": 1
+            },
+            "scope": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rule_text_en": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rule_text_ru": {
+              "type": "string",
+              "minLength": 1
+            },
+            "rights_floor_effect": {
+              "enum": [
+                "none",
+                "preserve",
+                "restrict",
+                "condition_on_trust",
+                "remove"
+              ]
+            },
+            "protected_capabilities": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "trust_state_refs": {
+              "$ref": "#/$defs/refList"
+            },
+            "authority_basis_refs": {
               "$ref": "#/$defs/refList"
             }
           }

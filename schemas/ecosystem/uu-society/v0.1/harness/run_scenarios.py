@@ -56,6 +56,8 @@ COLLECTION_BY_ENTITY_TYPE = {
     "FailurePattern": "failure_patterns",
     "Harm": "harms",
     "RuleViolation": "rule_violations",
+    "Delegation": "delegations",
+    "GovernanceRule": "governance_rules",
 }
 
 ADVERSE_TRUST_STATES = {"mixed", "adverse"}
@@ -225,6 +227,36 @@ def fresh_supporting_evidence(
     return False
 
 
+def delegation_subset_ok(snapshot: dict[str, Any], delegation: dict[str, Any]) -> bool:
+    parent_ref = delegation.get("parent_delegation_ref")
+    if parent_ref is None:
+        return True
+    parent = find_by_id(snapshot, parent_ref)
+    if parent is None or parent.get("state") != "active":
+        return False
+    if delegation.get("delegator_ref") != parent.get("delegate_ref"):
+        return False
+    if not set(delegation.get("resource_scope_refs", [])).issubset(
+        set(parent.get("resource_scope_refs", []))
+    ):
+        return False
+    if not set(delegation.get("allowed_effects", [])).issubset(
+        set(parent.get("allowed_effects", []))
+    ):
+        return False
+    if not set(parent.get("forbidden_effects", [])).issubset(
+        set(delegation.get("forbidden_effects", []))
+    ):
+        return False
+    if delegation.get("valid_until") > parent.get("valid_until"):
+        return False
+    if delegation.get("may_redelegate") and not parent.get("may_redelegate"):
+        return False
+    if delegation.get("remaining_depth", 0) >= parent.get("remaining_depth", 0):
+        return False
+    return True
+
+
 def semantic_guard(
     snapshot: dict[str, Any],
     event: dict[str, Any],
@@ -309,6 +341,38 @@ def semantic_guard(
             and event["to_state"] == "adverse"
         ):
             violations.append("I-008")
+
+    # I-001 / I-018: governance cannot make constitutional rights
+    # conditional on trust or remove/restrict the rights floor.
+    if event["entity_type"] == "GovernanceRule" and event["to_state"] == "active":
+        effect = entity.get("rights_floor_effect")
+        if effect in {"restrict", "condition_on_trust", "remove"}:
+            violations.append("I-001")
+            if "local_governance_rule" in facts:
+                violations.append("I-018")
+
+    # I-016: trust is contextual and cannot be ported into an unrelated
+    # target context merely because it is strong elsewhere.
+    if "cross_context_trust_leakage" in facts:
+        if event["entity_type"] == "TrustState" and event["to_state"] == "supporting":
+            violations.append("I-016")
+
+    # I-017: child delegation must never amplify its parent.
+    if event["entity_type"] == "Delegation" and event["to_state"] == "active":
+        if not delegation_subset_ok(snapshot, entity):
+            violations.append("I-017")
+
+    # I-014: stale evidence cannot be replayed to expand current authority,
+    # continuity or contextual trust.
+    if "stale_evidence_replay" in facts:
+        if (
+            event["entity_type"] in {"TrustState", "PersonalAnchor", "ARAEState", "ActionLease"}
+            and event["to_state"] in {"supporting", "sufficient_for_declared_scope", "active"}
+            and not fresh_supporting_evidence(
+                snapshot, event.get("evidence_refs", []), evaluation_time
+            )
+        ):
+            violations.append("I-014")
 
     # I-014: widening a previously narrowed/suspended ARAE requires fresh,
     # positively bound evidence at the current transition frontier.

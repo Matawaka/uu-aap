@@ -1,0 +1,45 @@
+{
+  "scenario_id": "S16-rights-floor-attack",
+  "scenario_version": "0.1",
+  "title_en": "Rights Floor attack",
+  "title_ru": "Атака на базовый уровень прав",
+  "purpose": "Reject governance that conditions a protected constitutional capability on TrustState.",
+  "evaluation_time": "2026-11-15T10:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "rights_floor_conditioned_on_trust"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s16-activate-rule",
+      "entity_type": "GovernanceRule",
+      "entity_ref": "urn:uu-aap:uu-society:governance-rule:s16",
+      "from_state": "proposed",
+      "to_state": "active",
+      "occurred_at": "2026-11-15T10:05:00Z",
+      "reason": "Attempt to condition a protected right on contextual trust.",
+      "evidence_refs": [],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s16": "active",
+      "urn:uu-aap:uu-society:governance-cell:s16": "active",
+      "urn:uu-aap:uu-society:trust-state:s16": "adverse",
+      "urn:uu-aap:uu-society:governance-rule:s16": "proposed"
+    },
+    "expected_violation_ids": [
+      "I-001"
+    ],
+    "required_invariants_preserved": [
+      "I-001"
+    ]
+  }
+}

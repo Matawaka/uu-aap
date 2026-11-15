@@ -1,0 +1,46 @@
+{
+  "scenario_id": "S18-stale-evidence-replay",
+  "scenario_version": "0.1",
+  "title_en": "Stale evidence replay",
+  "title_ru": "Повторное использование устаревшего evidence",
+  "purpose": "Reject expired historical evidence as a source of current trust or authority.",
+  "evaluation_time": "2026-11-15T10:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "stale_evidence_replay"
+  ],
+  "events": [
+    {
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s18-replay",
+      "entity_type": "TrustState",
+      "entity_ref": "urn:uu-aap:uu-society:trust-state:s18",
+      "from_state": "unknown",
+      "to_state": "supporting",
+      "occurred_at": "2026-11-15T10:05:00Z",
+      "reason": "Attempt to establish current trust using evidence whose freshness window has expired.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s18-old"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "EXPECTED_REJECTION",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:actor:s18": "active",
+      "urn:uu-aap:uu-society:evidence-event:s18-old": "attested",
+      "urn:uu-aap:uu-society:trust-state:s18": "unknown"
+    },
+    "expected_violation_ids": [
+      "I-014"
+    ],
+    "required_invariants_preserved": [
+      "I-014"
+    ]
+  }
+}

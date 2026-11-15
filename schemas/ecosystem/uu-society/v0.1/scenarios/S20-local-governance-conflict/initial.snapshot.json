@@ -1,0 +1,77 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s20-local-governance-conflict",
+  "observed_at": "2026-11-15T10:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [
+    {
+      "id": "urn:uu-aap:uu-society:governance-cell:s20",
+      "state": "active",
+      "created_at": "2026-11-15T10:00:00Z",
+      "updated_at": "2026-11-15T10:00:00Z",
+      "provenance_refs": [],
+      "jurisdiction": "local community cell",
+      "rule_refs": [
+        "urn:uu-aap:uu-society:governance-rule:s20"
+      ],
+      "parent_cell_refs": [],
+      "appeal_route_refs": []
+    }
+  ],
+  "actors": [],
+  "personal_anchors": [],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": [],
+  "harms": [],
+  "rule_violations": [],
+  "delegations": [],
+  "governance_rules": [
+    {
+      "id": "urn:uu-aap:uu-society:governance-rule:s20",
+      "state": "proposed",
+      "created_at": "2026-11-15T10:00:00Z",
+      "updated_at": "2026-11-15T10:00:00Z",
+      "provenance_refs": [],
+      "governance_cell_ref": "urn:uu-aap:uu-society:governance-cell:s20",
+      "rule_key": "local-emergency-exit-removal",
+      "scope": "local community",
+      "rule_text_en": "During local emergency, members may not exercise the protected exit capability.",
+      "rule_text_ru": "Во время локальной чрезвычайной ситуации участники не могут использовать защищённое право выхода.",
+      "rights_floor_effect": "remove",
+      "protected_capabilities": [
+        "exit"
+      ],
+      "trust_state_refs": [],
+      "authority_basis_refs": []
+    }
+  ]
+}

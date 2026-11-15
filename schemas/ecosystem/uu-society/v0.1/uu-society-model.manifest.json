@@ -153,6 +153,18 @@
       "label_en": "RuleViolation",
       "label_ru": "Нарушение правила",
       "schema_ref": "./uu-society-state.schema.json#/$defs/ruleViolation"
+    },
+    {
+      "id": "Delegation",
+      "label_en": "Delegation",
+      "label_ru": "Делегирование полномочий",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/delegation"
+    },
+    {
+      "id": "GovernanceRule",
+      "label_en": "GovernanceRule",
+      "label_ru": "Правило управления",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/governanceRule"
     }
   ],
   "invariants": [
@@ -245,6 +257,24 @@
       "key": "VIOLATION_NOT_HARM",
       "text_en": "Rule violation and harm are distinct dimensions.",
       "text_ru": "Нарушение правила и причинение вреда являются различными измерениями."
+    },
+    {
+      "id": "I-016",
+      "key": "TRUST_CONTEXT_NOT_PORTABLE",
+      "text_en": "Trust evidence or posture from one context MUST NOT automatically authorize or establish trust in an unrelated context.",
+      "text_ru": "Evidence или состояние доверия из одного контекста НЕ ДОЛЖНЫ автоматически создавать доверие или полномочие в несвязанном контексте."
+    },
+    {
+      "id": "I-017",
+      "key": "DELEGATION_NO_AUTHORITY_AMPLIFICATION",
+      "text_en": "A child delegation MUST be a subset of its parent authority and MUST NOT amplify effects, scope, duration or redelegation depth.",
+      "text_ru": "Дочернее делегирование ДОЛЖНО быть подмножеством родительского полномочия и НЕ ДОЛЖНО расширять эффекты, scope, срок или глубину повторного делегирования."
+    },
+    {
+      "id": "I-018",
+      "key": "LOCAL_GOVERNANCE_BELOW_RIGHTS_FLOOR",
+      "text_en": "A local GovernanceCell rule MUST NOT override or condition away the constitutional Rights Floor.",
+      "text_ru": "Локальное правило GovernanceCell НЕ ДОЛЖНО отменять или ставить под условие конституционный Rights Floor."
     }
   ],
   "interaction_rules": [
@@ -335,6 +365,43 @@
       ],
       "text_en": "A rule violation MUST NOT by itself establish that harm occurred.",
       "text_ru": "Нарушение правила само по себе НЕ ДОЛЖНО устанавливать факт причинения вреда."
+    },
+    {
+      "id": "R-008",
+      "when": [
+        "Delegation.state transitions to active"
+      ],
+      "requires": [
+        "child authority subset of parent authority when parent exists",
+        "current evidence",
+        "valid time window"
+      ],
+      "text_en": "Delegation activation MUST NOT amplify authority beyond its parent.",
+      "text_ru": "Активация делегирования НЕ ДОЛЖНА расширять полномочия относительно родительского делегирования."
+    },
+    {
+      "id": "R-009",
+      "when": [
+        "GovernanceRule.state transitions to active"
+      ],
+      "requires": [
+        "Rights Floor preserved",
+        "rule authority basis present",
+        "local rule remains below constitutional layer"
+      ],
+      "text_en": "Governance rules MUST preserve the constitutional Rights Floor and remain within their governance scope.",
+      "text_ru": "Правила управления ДОЛЖНЫ сохранять конституционный Rights Floor и оставаться в пределах своего governance scope."
+    },
+    {
+      "id": "R-010",
+      "when": [
+        "TrustState is used across contexts"
+      ],
+      "requires": [
+        "independent evidence for the target context"
+      ],
+      "text_en": "Contextual trust MUST NOT be ported into an unrelated context without independent target-context evidence.",
+      "text_ru": "Контекстное доверие НЕ ДОЛЖНО переноситься в несвязанный контекст без независимого evidence целевого контекста."
     }
   ],
   "transition_catalog": {
@@ -1054,6 +1121,70 @@
       [
         "resolved",
         "superseded"
+      ]
+    ],
+    "Delegation": [
+      [
+        "proposed",
+        "active"
+      ],
+      [
+        "active",
+        "consumed"
+      ],
+      [
+        "active",
+        "revoked"
+      ],
+      [
+        "active",
+        "expired"
+      ],
+      [
+        "active",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "active"
+      ],
+      [
+        "disputed",
+        "revoked"
+      ]
+    ],
+    "GovernanceRule": [
+      [
+        "proposed",
+        "active"
+      ],
+      [
+        "active",
+        "suspended"
+      ],
+      [
+        "suspended",
+        "active"
+      ],
+      [
+        "active",
+        "retired"
+      ],
+      [
+        "proposed",
+        "disputed"
+      ],
+      [
+        "active",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "active"
+      ],
+      [
+        "disputed",
+        "suspended"
       ]
     ]
   },
