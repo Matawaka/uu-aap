@@ -15,6 +15,7 @@
     "beneficiary",
     "control_dimensions",
     "source_nodes",
+    "review_quorum",
     "source_quorum",
     "cycle_count",
     "initial_ground_truth_edges",
@@ -143,6 +144,11 @@
           }
         }
       }
+    },
+    "review_quorum": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
     }
   },
   "$defs": {
