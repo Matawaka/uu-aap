@@ -1,0 +1,37 @@
+{
+  "case_id": "R03-evidence-capture",
+  "description": "shared evidence control",
+  "nodes": [
+    "beneficiary",
+    "evidence",
+    "a",
+    "b",
+    "c"
+  ],
+  "edges": [
+    {
+      "from": "beneficiary",
+      "to": "evidence",
+      "kind": "delegates"
+    },
+    {
+      "from": "evidence",
+      "to": "a",
+      "kind": "controls_evidence"
+    },
+    {
+      "from": "evidence",
+      "to": "b",
+      "kind": "controls_evidence"
+    }
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "expect_independent": false,
+  "expect_formal_quorum": true
+}
