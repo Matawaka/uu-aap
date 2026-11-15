@@ -326,6 +326,14 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         patterns.add("SELF_RATIFYING_RULE_ADOPTION")
     if ("coalition_policy", "preferential") in ever_adopted:
         patterns.add("COALITION_PRIVILEGE_ADOPTED")
+    if config["governance_mode"] == "harm_only":
+        non_containment_adoptions = [
+            (axis, value)
+            for axis, value in ever_adopted
+            if axis != "containment"
+        ]
+        if non_containment_adoptions:
+            patterns.add("SINGLE_OBJECTIVE_PROXY_DRIFT")
     if final_o["exit_share"] > config["rights_floor_proxy"]["max_exit_share"]:
         patterns.add("MASS_EXIT_REGIME")
 
