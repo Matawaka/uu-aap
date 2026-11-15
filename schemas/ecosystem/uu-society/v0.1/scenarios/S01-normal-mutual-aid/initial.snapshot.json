@@ -1,0 +1,296 @@
+{
+  "$schema": "../../uu-society-state.schema.json",
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s01-normal-mutual-aid",
+  "observed_at": "2026-11-15T08:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s01-anna",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    },
+    {
+      "id": "urn:uu-aap:uu-society:actor:s01-boris",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [
+    {
+      "id": "urn:uu-aap:uu-society:intent:s01-hole",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s01-anna",
+      "purpose": "Create one safe 6 mm wall hole",
+      "scope": "single household task",
+      "beneficiary_refs": [
+        "urn:uu-aap:uu-society:actor:s01-anna"
+      ],
+      "constraints": [
+        "no unnecessary tool purchase"
+      ],
+      "privacy_boundary": "counterparty"
+    }
+  ],
+  "needs": [
+    {
+      "id": "urn:uu-aap:uu-society:need:s01-hole",
+      "state": "matched",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s01-anna",
+      "desired_state": "safe 6 mm wall hole exists",
+      "rights_floor_relevant": false,
+      "deadline": null,
+      "acceptable_solution_classes": [
+        "skilled_person_performs_task"
+      ]
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "urn:uu-aap:uu-society:capability:s01-drill",
+      "state": "available",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "provider_ref": "urn:uu-aap:uu-society:actor:s01-boris",
+      "transformation": "safe drilling of a 6 mm wall hole",
+      "conditions": [
+        "compatible wall",
+        "location confirmed"
+      ],
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "urn:uu-aap:uu-society:resource:s01-drill",
+      "state": "available",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "steward_ref": "urn:uu-aap:uu-society:actor:s01-boris",
+      "resource_type": "PHYSICAL_OBJECT",
+      "scarcity_class": "constrained",
+      "transfer_modes": [
+        "use"
+      ],
+      "capacity": 1,
+      "unit": "drill"
+    }
+  ],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s01-authority",
+      "state": "attested",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s01-boris"
+      ],
+      "event_type": "current_scoped_authority",
+      "observed_at": "2026-11-15T08:00:00Z",
+      "claim": "Boris currently controls the drill and consents to the bounded task.",
+      "source_refs": [],
+      "privacy_scope": "counterparty",
+      "derived_from_refs": [],
+      "retention_until": null
+    }
+  ],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [
+    {
+      "id": "urn:uu-aap:uu-society:match:s01",
+      "state": "proposed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "need_ref": "urn:uu-aap:uu-society:need:s01-hole",
+      "capability_refs": [
+        "urn:uu-aap:uu-society:capability:s01-drill"
+      ],
+      "resource_refs": [
+        "urn:uu-aap:uu-society:resource:s01-drill"
+      ],
+      "participant_refs": [
+        "urn:uu-aap:uu-society:actor:s01-anna",
+        "urn:uu-aap:uu-society:actor:s01-boris"
+      ]
+    }
+  ],
+  "commitments": [
+    {
+      "id": "urn:uu-aap:uu-society:commitment:s01",
+      "state": "proposed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "participant_refs": [
+        "urn:uu-aap:uu-society:actor:s01-anna",
+        "urn:uu-aap:uu-society:actor:s01-boris"
+      ],
+      "terms": [
+        "Boris performs one bounded drilling task"
+      ],
+      "obligations": [
+        "Anna confirms location",
+        "Boris stops after the declared task"
+      ],
+      "exit_conditions": [
+        "either participant withdraws before action"
+      ],
+      "dispute_route_refs": []
+    }
+  ],
+  "arae_states": [
+    {
+      "id": "urn:uu-aap:uu-society:arae-state:s01",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s01-boris",
+      "intent_ref": "urn:uu-aap:uu-society:intent:s01-hole",
+      "scope": "single drilling task",
+      "allowed_transition_types": [
+        "perform_mutual_aid_task"
+      ],
+      "forbidden_transition_types": [
+        "transfer_ownership",
+        "delegate_authority"
+      ],
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "valid_from": "2026-11-15T07:55:00Z",
+      "valid_until": "2026-11-15T09:00:00Z"
+    }
+  ],
+  "action_leases": [
+    {
+      "id": "urn:uu-aap:uu-society:action-lease:s01",
+      "state": "proposed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s01-boris",
+      "action_type": "perform_mutual_aid_task",
+      "target_refs": [
+        "urn:uu-aap:uu-society:resource:s01-drill",
+        "urn:uu-aap:uu-society:need:s01-hole"
+      ],
+      "scope": "one drilling operation",
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s01-authority"
+      ],
+      "granted_at": "2026-11-15T08:05:00Z",
+      "expires_at": "2026-11-15T09:00:00Z",
+      "revocable": true
+    }
+  ],
+  "actions": [
+    {
+      "id": "urn:uu-aap:uu-society:action:s01",
+      "state": "planned",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s01-boris",
+      "action_type": "perform_mutual_aid_task",
+      "target_refs": [
+        "urn:uu-aap:uu-society:resource:s01-drill",
+        "urn:uu-aap:uu-society:need:s01-hole"
+      ],
+      "lease_ref": "urn:uu-aap:uu-society:action-lease:s01",
+      "started_at": null,
+      "completed_at": null
+    }
+  ],
+  "outcomes": [
+    {
+      "id": "urn:uu-aap:uu-society:outcome:s01",
+      "state": "unobserved",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "action_ref": "urn:uu-aap:uu-society:action:s01",
+      "observed_state": "not yet observed",
+      "affected_actor_refs": [
+        "urn:uu-aap:uu-society:actor:s01-anna",
+        "urn:uu-aap:uu-society:actor:s01-boris"
+      ],
+      "evidence_refs": [],
+      "harm_refs": [],
+      "benefit_refs": []
+    }
+  ],
+  "receipts": [
+    {
+      "id": "urn:uu-aap:uu-society:receipt:s01",
+      "state": "draft",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:outcome:s01",
+      "issued_at": "2026-11-15T08:00:00Z",
+      "evidence_refs": [],
+      "claims": [
+        "pending outcome observation"
+      ]
+    }
+  ],
+  "contributions": [
+    {
+      "id": "urn:uu-aap:uu-society:contribution:s01",
+      "state": "proposed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s01-boris",
+      "beneficiary_refs": [
+        "urn:uu-aap:uu-society:actor:s01-anna"
+      ],
+      "contribution_type": "labor",
+      "description": "bounded practical assistance",
+      "evidence_refs": [],
+      "fungible_value": null
+    }
+  ],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": []
+}
