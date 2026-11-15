@@ -189,3 +189,25 @@ The first strategy-evolution sequence produced several falsifications and follow
 - E10: COALITION reached 0.850 under strategy-level evidence and strong internal network benefits, but the measured outsider fulfillment gap remained 0 in this synthetic configuration.
 
 StrategyOutcomeEvidence reports outcome evidence about a policy, not reputation about persons.
+
+
+## Institution evolution v0.6
+
+This layer evolves rule bundles rather than actor identities. Each institutional bundle is composed from:
+- evidence policy;
+- containment level;
+- Repair support;
+- coalition policy;
+- review path.
+
+The recommended experimental governance mode compares neighboring rule bundles using a vector of independent outcomes plus an explicit rights-floor proxy and review gate. No scalar society score is used.
+
+Bad-comparison modes are retained deliberately:
+- `harm_only` can reveal restriction ratchets;
+- `self_ratifying_coalition` can reveal governance that adopts rules because they benefit the governing coalition.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_institution_evolution.py
+```
