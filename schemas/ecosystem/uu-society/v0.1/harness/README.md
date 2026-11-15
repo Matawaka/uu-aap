@@ -104,3 +104,21 @@ python schemas/ecosystem/uu-society/v0.1/harness/run_population_simulations.py
 The simulator reports independent observables rather than one society score: fulfilled/unmet need, idle capability, harm, repair/recovery, restriction persistence, authority concentration, access inequality and coalition extraction.
 
 Threshold crossings are diagnostic signals only. They do not identify guilty persons, create authority, or rank actors.
+
+
+## Phase landscape v0.3
+
+The existing v0.2 phase-space job remains the bounded 54-run replicate/replay control.
+The landscape layer runs larger pinned Cartesian maps and reports neighboring regime changes and Pareto-nondominated cells without collapsing them into one score.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_phase_landscapes.py
+```
+
+Reference landscapes:
+- W00: 243 cells across adversarial fraction, adversarial repair, containment duration, provider feedback and willingness;
+- W01: 32 cells focused on coalition fraction × coalition request bias.
+
+Pinned cell digests make accidental changes to the synthetic landscape visible in CI.
