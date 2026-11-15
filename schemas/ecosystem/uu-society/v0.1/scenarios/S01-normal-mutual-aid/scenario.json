@@ -12,7 +12,6 @@
   ],
   "events": [
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-match-accepted",
       "entity_type": "Match",
@@ -31,7 +30,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-commitment-accepted",
       "entity_type": "Commitment",
@@ -50,7 +48,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-commitment-active",
       "entity_type": "Commitment",
@@ -69,7 +66,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-lease-active",
       "entity_type": "ActionLease",
@@ -90,7 +86,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-action-admitted",
       "entity_type": "Action",
@@ -111,7 +106,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-action-start",
       "entity_type": "Action",
@@ -132,7 +126,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-action-complete",
       "entity_type": "Action",
@@ -151,7 +144,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-outcome-observed",
       "entity_type": "Outcome",
@@ -168,7 +160,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-receipt-issued",
       "entity_type": "Receipt",
@@ -185,7 +176,6 @@
       "contestable": true
     },
     {
-      "$schema": "../../uu-society-transition.schema.json",
       "schema_version": "0.1",
       "transition_id": "urn:uu-aap:uu-society:transition:s01-contribution-observed",
       "entity_type": "Contribution",
