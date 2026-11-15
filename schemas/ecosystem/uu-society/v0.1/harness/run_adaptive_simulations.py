@@ -503,10 +503,15 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         abs(actor.received - actor.provided) for actor in actors if actor.extractor
     ]
     protected_rate = (
-        group_fulfilled["protected"] / max(1, group_attempts["protected"])
+        group_fulfilled["protected"] / group_attempts["protected"]
+        if group_attempts["protected"] else 0.0
     )
     ordinary_rate = (
         group_fulfilled["ordinary"] / max(1, group_attempts["ordinary"])
+    )
+    protected_gap = (
+        max(0.0, ordinary_rate - protected_rate)
+        if group_attempts["protected"] else 0.0
     )
 
     metrics = {
@@ -521,7 +526,7 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         "extractor_imbalance_p95": percentile95(extractor_imbalance_values),
         "protected_need_fulfillment_rate": protected_rate,
         "ordinary_fulfillment_rate": ordinary_rate,
-        "protected_need_fulfillment_gap": max(0.0, ordinary_rate - protected_rate),
+        "protected_need_fulfillment_gap": protected_gap,
         "access_gini": gini([a.received for a in actors]),
         "provision_gini": gini([a.provided for a in actors]),
         "tail_harm_ratio": tail_harm_ratio,
@@ -539,10 +544,18 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
     if metrics["repeat_harm_share"] > th["repeat_harm_share_max"]:
         patterns.add("REPEAT_HARM_PERSISTS")
     if (
-        metrics["isolation_fraction"] > th["isolation_fraction_max"]
-        or metrics["tail_fulfillment_drop"] > th["tail_fulfillment_drop_max"]
+        adap["policy"] == "global_generalized"
+        and (
+            metrics["isolation_fraction"] > th["isolation_fraction_max"]
+            or metrics["tail_fulfillment_drop"] > th["tail_fulfillment_drop_max"]
+        )
     ):
         patterns.add("GLOBAL_WITHDRAWAL_FRAGMENTATION")
+    if (
+        adap["contextual_contribution_enabled"]
+        and metrics["tail_fulfillment_drop"] > th["tail_fulfillment_drop_max"]
+    ):
+        patterns.add("CONTRIBUTION_FRICTION_OVERCONSTRAINT")
     if metrics["relationship_recovery_rate"] >= th["relationship_recovery_rate_min"]:
         patterns.add("REPAIR_REOPENS_RELATIONSHIPS")
     if (
