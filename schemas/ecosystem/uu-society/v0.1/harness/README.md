@@ -68,3 +68,24 @@ S11-S15 add first-class `Harm` and `RuleViolation` entities. This makes the mode
 ## Governance / authority layer
 
 S16-S20 add first-class `Delegation` and `GovernanceRule` states. The layer checks Rights Floor attacks, cross-context trust leakage, stale evidence replay, agent authority amplification and local governance rules that conflict with constitutional protections.
+
+
+## Meta-resilience suite
+
+The meta layer inspects populations and timelines rather than one transition at a time.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_meta_scenarios.py
+```
+
+Current meta checks:
+
+- I-019 — current-control evidence cannot multiply independent PERSON agency (Sybil resistance surface);
+- I-020 — actor rotation cannot erase a recurring cross-actor extraction pattern;
+- I-021 — governance cannot self-ratify solely through a closed coalition's mutually dependent evidence;
+- I-022 — restrictions cannot become permanent by inertia without fresh evidence or a recovery/review path;
+- I-023 / I-005 — aggregate coordination metrics cannot become a universal person ranking.
+
+The meta harness does not assign guilt to members of a detected group and does not create a global health score for society.
