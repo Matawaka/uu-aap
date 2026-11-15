@@ -363,6 +363,15 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True):
         ):
             patterns.add("ACTUAL_CHANGE_OUTRUNS_EVIDENCE")
 
+        if (
+            previous_actual is False
+            and actual is True
+            and previous_status == "CAPTURE_SIGNAL"
+            and status == "CAPTURE_SIGNAL"
+            and had_truth_change
+        ):
+            patterns.add("RECOVERY_OUTRUNS_EVIDENCE")
+
         if ever_false_assurance and status == "CAPTURE_SIGNAL" and actual:
             patterns.add("EPISTEMIC_LAG_RESOLVED")
 
