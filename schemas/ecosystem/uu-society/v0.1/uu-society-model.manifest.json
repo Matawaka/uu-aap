@@ -1447,5 +1447,36 @@
       "Institutional capture can operate through apparently general-purpose rules when rule selection is conditioned on coalition self-interest",
       "A non-optimizable rights floor can bound institutional learning without freezing all institutional change"
     ]
+  },
+  "constitutional_resilience": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_CONSTITUTIONAL_RESILIENCE",
+    "harness": "./harness/run_constitutional_resilience.py",
+    "config_schema": "./constitutional-resilience.config.schema.json",
+    "receipt_schema": "./constitutional-resilience.receipt.schema.json",
+    "modes": [
+      "frozen",
+      "local_legality_only",
+      "cumulative_guard",
+      "captured_review",
+      "sunset_guard"
+    ],
+    "constitutional_dimensions": [
+      "authority_scope",
+      "review_independence",
+      "rights_floor_strength",
+      "amendment_friction",
+      "transparency",
+      "revocability"
+    ],
+    "central_invariant": "Legitimate Rule Change != Legitimate Accumulation of Power",
+    "evaluation_model": "separate local amendment legality, immutable reference rights-floor observation, cumulative structural limits, reviewer-conflict checks, and sunset/reversion",
+    "non_effects": [
+      "Constitutional limit proxy != complete constitutional theory",
+      "Rights-floor proxy != complete human-rights model",
+      "Authority scope metric != person score",
+      "Reviewer conflict signal != guilt",
+      "Temporary emergency authority != permanent authority",
+      "Constitutional conformance != social correctness"
+    ]
   }
 }
