@@ -1,0 +1,53 @@
+{
+  "simulation_id": "P03-harm-restriction-pressure",
+  "simulation_version": "0.1",
+  "title_en": "Harm and restriction pressure",
+  "title_ru": "Давление вреда и длительных ограничений",
+  "purpose": "Isolate elevated harmful/breaching behavior with weak repair to test harm pressure and accumulated restriction actor-time.",
+  "seed": "uu-society-p03-harm-restriction-v0.1",
+  "actor_count": 100,
+  "interaction_count": 8000,
+  "categories": [
+    "transport",
+    "tool",
+    "access"
+  ],
+  "population": {
+    "adversarial_fraction": 0.35,
+    "coalition_fraction": 0,
+    "base_capability_probability": 0.8,
+    "base_willingness_probability": 0.9
+  },
+  "matching": {
+    "candidate_pool_size": 10,
+    "policy": "uniform_capable",
+    "feedback_strength": 0,
+    "coalition_request_bias": 0
+  },
+  "dynamics": {
+    "accidental_harm_rate": 0.02,
+    "adversarial_harm_rate": 0.7,
+    "ordinary_breach_rate": 0.03,
+    "adversarial_breach_rate": 0.65,
+    "repair_probability_cooperative": 0.75,
+    "repair_probability_adversarial": 0.02,
+    "restriction_duration_interactions": 600,
+    "restriction_renewal_limit": 1
+  },
+  "diagnostic_thresholds": {
+    "authority_top10_share_max": 0.25,
+    "access_gini_max": 0.25,
+    "restriction_actor_time_share_max": 0.05,
+    "harm_rate_max": 0.05,
+    "unmet_need_rate_max": 0.15,
+    "idle_capability_rate_max": 0.1,
+    "coalition_extraction_ratio_max": 2
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_signal_ids": [
+      "HARM_PRESSURE",
+      "RESTRICTION_INERTIA"
+    ]
+  }
+}
