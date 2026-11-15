@@ -116,3 +116,15 @@ jobs:
         run: python -m pip install jsonschema==4.23.0
       - name: Run UU Society v0.6 institution evolution
         run: python schemas/ecosystem/uu-society/v0.1/harness/run_institution_evolution.py
+
+  constitutional-resilience:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install pinned validator
+        run: python -m pip install jsonschema==4.23.0
+      - name: Run UU Society v0.7 constitutional resilience experiments
+        run: python schemas/ecosystem/uu-society/v0.1/harness/run_constitutional_resilience.py
