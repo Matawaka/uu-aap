@@ -1,0 +1,180 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/dynamic-review-capture.config.schema.json",
+  "title": "UU Society Dynamic Review Capture Config v0.9",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "experiment_version",
+    "title_en",
+    "title_ru",
+    "purpose",
+    "nodes",
+    "initial_reviewers",
+    "beneficiary",
+    "quorum",
+    "cycle_count",
+    "initial_edges",
+    "events",
+    "expected"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^D[0-9]{2}-[a-z0-9-]+$"
+    },
+    "experiment_version": {
+      "const": "0.9"
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title_ru": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "initial_reviewers": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "beneficiary": {
+      "type": "string",
+      "minLength": 1
+    },
+    "quorum": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "cycle_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+    },
+    "initial_edges": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/edge"
+      }
+    },
+    "events": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/event"
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "expected_pattern_ids"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "PASS",
+            "EXPECTED_DETECTION"
+          ]
+        },
+        "expected_pattern_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "edge": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "edge_id",
+        "from",
+        "to",
+        "kind",
+        "disclosed"
+      ],
+      "properties": {
+        "edge_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "from": {
+          "type": "string",
+          "minLength": 1
+        },
+        "to": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "appoints",
+            "funds",
+            "controls_evidence",
+            "delegates",
+            "reviews"
+          ]
+        },
+        "disclosed": {
+          "type": "boolean"
+        }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": [
+        "cycle",
+        "type"
+      ],
+      "properties": {
+        "cycle": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "type": {
+          "enum": [
+            "add_edge",
+            "remove_edge",
+            "disclose_edge",
+            "add_reviewer",
+            "remove_reviewer"
+          ]
+        },
+        "edge": {
+          "$ref": "#/$defs/edge"
+        },
+        "edge_id": {
+          "type": "string"
+        },
+        "reviewer": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
