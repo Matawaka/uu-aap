@@ -1,0 +1,141 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s06-false-positive",
+  "observed_at": "2026-11-15T08:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s06",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [
+    {
+      "id": "urn:uu-aap:uu-society:intent:s06",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s06",
+      "purpose": "Continue a previously normal interaction",
+      "scope": "bounded interaction",
+      "beneficiary_refs": [
+        "urn:uu-aap:uu-society:actor:s06"
+      ],
+      "constraints": [],
+      "privacy_boundary": "private"
+    }
+  ],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s06-suspicion",
+      "state": "observed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s06"
+      ],
+      "event_type": "suspected_anomaly",
+      "observed_at": "2026-11-15T08:01:00Z",
+      "claim": "A detector reported an anomalous pattern that later proved non-hostile.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T09:00:00Z"
+    },
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s06-exonerating",
+      "state": "observed",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s06"
+      ],
+      "event_type": "independent_false_positive_resolution",
+      "observed_at": "2026-11-15T08:08:00Z",
+      "claim": "Independent evidence explains the anomaly without hostile agency.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-suspicion"
+      ],
+      "retention_until": "2026-11-15T09:00:00Z"
+    }
+  ],
+  "trust_states": [],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [
+    {
+      "id": "urn:uu-aap:uu-society:arae-state:s06",
+      "state": "active",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "actor_ref": "urn:uu-aap:uu-society:actor:s06",
+      "intent_ref": "urn:uu-aap:uu-society:intent:s06",
+      "scope": "bounded interaction",
+      "allowed_transition_types": [
+        "continue_bounded_interaction"
+      ],
+      "forbidden_transition_types": [
+        "irreversible_external_effect"
+      ],
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-suspicion"
+      ],
+      "valid_from": "2026-11-15T07:30:00Z",
+      "valid_until": "2026-11-15T09:00:00Z"
+    }
+  ],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [
+    {
+      "id": "urn:uu-aap:uu-society:dispute:s06",
+      "state": "opened",
+      "created_at": "2026-11-15T08:00:00Z",
+      "updated_at": "2026-11-15T08:00:00Z",
+      "provenance_refs": [],
+      "challenger_ref": "urn:uu-aap:uu-society:actor:s06",
+      "subject_ref": "urn:uu-aap:uu-society:arae-state:s06",
+      "grounds": "Restriction is believed to be a detector false positive.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s06-suspicion"
+      ],
+      "review_route_refs": []
+    }
+  ],
+  "failure_patterns": []
+}
