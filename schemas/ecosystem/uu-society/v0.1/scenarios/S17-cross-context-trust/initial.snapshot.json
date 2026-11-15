@@ -1,0 +1,114 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "snapshot_id": "urn:uu-aap:uu-society:snapshot:s17-cross-context-trust",
+  "observed_at": "2026-11-15T10:00:00Z",
+  "status": "experimental_formal_model",
+  "constitutional_floor": {
+    "rights_floor_id": "urn:uu-aap:uu-society:rights-floor:baseline-v0.1",
+    "trust_independent": true,
+    "protected_capabilities": [
+      "physical_safety",
+      "basic_due_process",
+      "appeal",
+      "dissent",
+      "exit"
+    ],
+    "appeal_required_for_adverse_restriction": true
+  },
+  "governance_cells": [],
+  "actors": [
+    {
+      "id": "urn:uu-aap:uu-society:actor:s17",
+      "state": "active",
+      "created_at": "2026-11-15T10:00:00Z",
+      "updated_at": "2026-11-15T10:00:00Z",
+      "provenance_refs": [],
+      "actor_type": "PERSON",
+      "governance_cell_refs": [],
+      "personal_anchor_ref": null
+    }
+  ],
+  "personal_anchors": [],
+  "intents": [],
+  "needs": [],
+  "capabilities": [],
+  "resources": [],
+  "evidence_events": [
+    {
+      "id": "urn:uu-aap:uu-society:evidence-event:s17-surgery",
+      "state": "attested",
+      "created_at": "2026-11-15T10:00:00Z",
+      "updated_at": "2026-11-15T10:00:00Z",
+      "provenance_refs": [],
+      "subject_refs": [
+        "urn:uu-aap:uu-society:actor:s17"
+      ],
+      "event_type": "professional_competence_evidence",
+      "observed_at": "2026-11-15T10:02:00Z",
+      "claim": "Actor has strong evidence of competence in surgery.",
+      "source_refs": [],
+      "privacy_scope": "private",
+      "derived_from_refs": [],
+      "retention_until": "2026-11-15T11:00:00Z"
+    }
+  ],
+  "trust_states": [
+    {
+      "id": "urn:uu-aap:uu-society:trust-state:s17-surgery",
+      "state": "supporting",
+      "created_at": "2026-11-15T10:00:00Z",
+      "updated_at": "2026-11-15T10:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:actor:s17",
+      "context": "surgical competence",
+      "as_of": "2026-11-15T10:00:00Z",
+      "dimensions": [
+        {
+          "dimension": "competence",
+          "evidence_posture": "supporting",
+          "evidence_refs": [
+            "urn:uu-aap:uu-society:evidence-event:s17-surgery"
+          ],
+          "scope": "surgery"
+        }
+      ],
+      "overall_numeric_score": null
+    },
+    {
+      "id": "urn:uu-aap:uu-society:trust-state:s17-piloting",
+      "state": "unknown",
+      "created_at": "2026-11-15T10:00:00Z",
+      "updated_at": "2026-11-15T10:00:00Z",
+      "provenance_refs": [],
+      "subject_ref": "urn:uu-aap:uu-society:actor:s17",
+      "context": "aircraft piloting competence",
+      "as_of": "2026-11-15T10:00:00Z",
+      "dimensions": [
+        {
+          "dimension": "competence",
+          "evidence_posture": "unknown",
+          "evidence_refs": [],
+          "scope": "aircraft piloting"
+        }
+      ],
+      "overall_numeric_score": null
+    }
+  ],
+  "risk_harm_envelopes": [],
+  "matches": [],
+  "commitments": [],
+  "arae_states": [],
+  "action_leases": [],
+  "actions": [],
+  "outcomes": [],
+  "receipts": [],
+  "contributions": [],
+  "repairs": [],
+  "disputes": [],
+  "failure_patterns": [],
+  "harms": [],
+  "rule_violations": [],
+  "delegations": [],
+  "governance_rules": []
+}
