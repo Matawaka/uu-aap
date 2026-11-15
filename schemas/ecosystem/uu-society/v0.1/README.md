@@ -104,3 +104,10 @@ The simulator emits multiple independent aggregate observables. Diagnostic thres
 
 Beyond the bounded v0.2 replay sweep, UU Society includes larger deterministic landscape maps.
 W00 maps five interacting resilience axes and W01 isolates coalition capture. The analyzer records neighboring phase-boundary edges and a Pareto frontier over independent loss dimensions. A frontier cell is not declared socially optimal; it is only nondominated under the explicitly listed metrics.
+
+
+## Endogenous adaptation v0.4
+
+Actors can now adapt future interaction choices from lived synthetic history. Adaptation is stored on contextual relationship edges rather than in one global person score. Successful interaction can strengthen a local edge, harm/breach can narrow that edge, Repair can restore it, and bilateral reciprocity can introduce friction against repeated one-way extraction.
+
+A deliberately bad global-generalization policy is retained only as a comparison experiment.
