@@ -1431,7 +1431,21 @@
       "Aggregate outcome vector != person score",
       "Rule adoption != permanent constitutional authority",
       "Self-ratifying comparator != recommended governance",
-      "Institution evolution conformance != social correctness"
+      "Institution evolution conformance != social correctness",
+      "Rights-floor veto != institutional immobility",
+      "General-purpose rule adoption != neutral governance intent",
+      "Single-objective improvement != system-wide improvement"
+    ],
+    "reference_findings": [
+      "G00 frozen control preserved the initial rule bundle with zero adoptions",
+      "G01 Pareto + rights-floor learning adopted three neighboring rule changes, including strategy-outcome evidence, and ended with strong containment without using a scalar society score",
+      "G02 harm-only governance produced SINGLE_OBJECTIVE_PROXY_DRIFT: optimizing harm changed non-containment institutional axes",
+      "G03 self-ratifying coalition governance made no adoption in a saturated coalition environment because no neighboring rule increased coalition share enough",
+      "G04 a stricter rights-floor proxy blocked 13 candidate rules while still permitting three eligible institutional adaptations",
+      "G05 the review gate blocked 12 restrictive candidates and preserved a stable rule bundle with zero adoptions",
+      "G06 in a less-saturated coalition environment, self-ratifying governance adopted strategy-outcome evidence because it increased coalition share, without needing an explicit preferential coalition rule",
+      "Institutional capture can operate through apparently general-purpose rules when rule selection is conditioned on coalition self-interest",
+      "A non-optimizable rights floor can bound institutional learning without freezing all institutional change"
     ]
   }
 }
