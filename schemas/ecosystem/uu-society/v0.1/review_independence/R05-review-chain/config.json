@@ -1,0 +1,31 @@
+{
+  "case_id": "R05-review-chain",
+  "description": "review chain",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c"
+  ],
+  "edges": [
+    {
+      "from": "a",
+      "to": "b",
+      "kind": "appoints"
+    },
+    {
+      "from": "b",
+      "to": "c",
+      "kind": "delegates"
+    }
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "quorum": 2,
+  "expect_independent": false,
+  "expect_formal_quorum": true
+}
