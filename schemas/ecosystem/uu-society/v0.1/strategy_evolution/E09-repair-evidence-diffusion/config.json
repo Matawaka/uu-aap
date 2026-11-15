@@ -83,12 +83,12 @@
   "experiment_id": "E09-repair-evidence-diffusion",
   "title_en": "Repair with anonymous strategy-outcome evidence",
   "title_ru": "Repair с анонимным evidence результата стратегии",
-  "purpose": "Test whether distributed Repair can diffuse when its aggregate outcome evidence is visible without person-level reputation.",
+  "purpose": "Negative-result follow-up: test whether distributed Repair can diffuse from anonymous strategy evidence in a high-harm environment; observed result is exit dominance rather than a Repair attractor.",
   "seed": "uu-strategy-e09-repair-evidence-v0.5",
   "expected": {
     "result": "EXPECTED_DETECTION",
     "expected_pattern_ids": [
-      "REPAIR_ATTRACTOR"
+      "EXIT_CASCADE"
     ]
   }
 }
