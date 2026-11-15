@@ -155,3 +155,23 @@ The first adaptive run exposed a failure mode rather than merely confirming the 
 - A07 protected-need actors remain at **0.982** fulfillment while ordinary actors are **0.845**. The experiment therefore keeps `LEGITIMATE_ASYMMETRY_PRESERVED` separate from extractor detection.
 
 This means bilateral reciprocity is insufficient against counterpart rotation, while broader context evidence can over-constrain the network. The model treats that trade-off as a result, not as a reason to lower thresholds.
+
+
+## Endogenous strategy evolution v0.5
+
+No actor is assigned a permanent adversarial or extractor type. Each actor learns the observed utility of behavioral strategies and may switch at epoch boundaries with bounded exploration.
+
+Strategies:
+- COOPERATE
+- EXTRACT
+- REPAIR
+- EXIT
+- COALITION
+
+The REPAIR strategy can perform distributed repair for harm caused by another actor. COALITION is a reversible coordination strategy, not an identity class.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_strategy_evolution.py
+```
