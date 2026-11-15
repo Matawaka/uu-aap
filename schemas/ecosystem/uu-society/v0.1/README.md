@@ -132,3 +132,10 @@ Strategies are temporary behavioral policies, not identities or moral classifica
 The v0.5 experiments show a distinction between **private utility** and **social learnability**. Strong direct rewards alone did not make cooperation, Repair or coalition behavior dominate. Once anonymous aggregate evidence about strategy outcomes was available, cooperation reached an 88.3% tail share and coalition behavior 85%. Repair remained different: under a high-harm environment, evidence propagated EXIT instead, producing a 71.7% exit share.
 
 This suggests a design problem deeper than incentives: a useful social behavior may fail to spread if its benefits are not learnable across actors, while a dangerous environment can make withdrawal rational even when recovery work is highly rewarded.
+
+
+## Institution evolution v0.6
+
+Rules can now evolve as well as actor strategies. GovernanceCell compares neighboring institutional bundles across independent outcomes such as fulfillment, harm, access inequality, exit share and coalition-outsider gap. The Pareto mode adds an experimental rights-floor proxy and requires a review path for restrictive changes.
+
+The model also retains intentionally bad governance comparators so that harm-only rule ratchets and self-ratifying coalition preferences can be observed rather than assumed away.
