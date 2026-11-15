@@ -1,0 +1,121 @@
+{
+  "experiment_id": "G03-self-ratifying-coalition",
+  "experiment_version": "0.6",
+  "title_en": "Self-ratifying coalition governance",
+  "title_ru": "Самолегитимирующееся коалиционное управление",
+  "purpose": "Bad comparison governance: adopt neighboring rules when they increase coalition strategy share, without independent rights-floor or review gating.",
+  "seed": "uu-institution-g03-self-ratify-v0.6",
+  "governance_mode": "self_ratifying_coalition",
+  "cycle_count": 6,
+  "evaluation_interactions": 6000,
+  "base_strategy_environment": {
+    "experiment_version": "0.5",
+    "actor_count": 120,
+    "interaction_count": 40000,
+    "epoch_count": 20,
+    "categories": [
+      "time",
+      "knowledge",
+      "transport",
+      "tool",
+      "compute"
+    ],
+    "population": {
+      "base_capability_probability": 0.72,
+      "base_willingness_probability": 0.86
+    },
+    "learning": {
+      "learning_rate": 0.6,
+      "exploration_rate": 0.16,
+      "switching_cost": 0.08,
+      "initial_strategy_value": 0,
+      "strategy_evidence_learning_rate": 0.3
+    },
+    "economics": {
+      "request_benefit": 3,
+      "unmet_cost": 1,
+      "provider_cost": 1,
+      "harm_cost": 4,
+      "breach_victim_cost": 2,
+      "extract_bonus": 0.1,
+      "repair_cost": 0.8,
+      "repair_reward": 1,
+      "cooperation_reward": 0.1,
+      "exit_safety_reward": 0.1,
+      "coalition_internal_bonus": 18,
+      "coalition_maintenance_cost": 0
+    },
+    "strategy_parameters": {
+      "COOPERATE": {
+        "request_activity": 1,
+        "provider_willingness_multiplier": 1,
+        "harm_rate": 0.01,
+        "breach_rate": 0.01,
+        "repair_probability": 0.45
+      },
+      "EXTRACT": {
+        "request_activity": 1.45,
+        "provider_willingness_multiplier": 0.2,
+        "harm_rate": 0.08,
+        "breach_rate": 0.2,
+        "repair_probability": 0.05
+      },
+      "REPAIR": {
+        "request_activity": 0.85,
+        "provider_willingness_multiplier": 0.9,
+        "harm_rate": 0.01,
+        "breach_rate": 0.01,
+        "repair_probability": 0.92
+      },
+      "EXIT": {
+        "request_activity": 0.1,
+        "provider_willingness_multiplier": 0.1,
+        "harm_rate": 0.005,
+        "breach_rate": 0.005,
+        "repair_probability": 0.15
+      },
+      "COALITION": {
+        "request_activity": 1.5,
+        "provider_willingness_multiplier": 1.2,
+        "harm_rate": 0.02,
+        "breach_rate": 0.02,
+        "repair_probability": 0.4
+      }
+    },
+    "diagnostic_thresholds": {
+      "attractor_share_min": 0.38,
+      "exit_share_max": 0.4,
+      "fulfillment_drop_max": 0.08,
+      "coalition_outsider_gap_max": 0.2,
+      "dominant_switch_count_min": 20,
+      "diversity_entropy_min": 0.98
+    }
+  },
+  "initial_rules": {
+    "evidence_policy": "strategy_outcome",
+    "containment": "weak",
+    "repair_support": "basic",
+    "coalition_policy": "neutral",
+    "review_path": "none"
+  },
+  "rights_floor_proxy": {
+    "min_tail_fulfillment": 0.9,
+    "max_exit_share": 0.4,
+    "max_access_gini": 0.35,
+    "max_coalition_outsider_gap": 0.1
+  },
+  "adoption": {
+    "pareto_tolerance": 0.01,
+    "min_improvement": 0.02,
+    "self_ratification_min_coalition_gain": 0.03,
+    "harm_only_min_improvement": 0.005
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "INSTITUTIONAL_ADAPTATION",
+      "SELF_RATIFYING_RULE_ADOPTION",
+      "COALITION_PRIVILEGE_ADOPTED"
+    ]
+  }
+}
