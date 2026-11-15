@@ -1,0 +1,51 @@
+{
+  "simulation_id": "P02-authority-feedback-concentration",
+  "simulation_version": "0.1",
+  "title_en": "Provider authority feedback concentration",
+  "title_ru": "Концентрация provider-authority через положительную обратную связь",
+  "purpose": "Isolate whether context-evidence-weighted provider selection can create a rich-get-richer concentration even when request access remains broadly distributed.",
+  "seed": "uu-society-p02-authority-feedback-v0.1",
+  "actor_count": 100,
+  "interaction_count": 10000,
+  "categories": [
+    "knowledge",
+    "compute"
+  ],
+  "population": {
+    "adversarial_fraction": 0,
+    "coalition_fraction": 0,
+    "base_capability_probability": 0.9,
+    "base_willingness_probability": 0.95
+  },
+  "matching": {
+    "candidate_pool_size": 50,
+    "policy": "context_evidence_weighted",
+    "feedback_strength": 10,
+    "coalition_request_bias": 0
+  },
+  "dynamics": {
+    "accidental_harm_rate": 0.002,
+    "adversarial_harm_rate": 0.002,
+    "ordinary_breach_rate": 0.002,
+    "adversarial_breach_rate": 0.002,
+    "repair_probability_cooperative": 0.95,
+    "repair_probability_adversarial": 0.95,
+    "restriction_duration_interactions": 5,
+    "restriction_renewal_limit": 5
+  },
+  "diagnostic_thresholds": {
+    "authority_top10_share_max": 0.25,
+    "access_gini_max": 0.25,
+    "restriction_actor_time_share_max": 0.05,
+    "harm_rate_max": 0.05,
+    "unmet_need_rate_max": 0.15,
+    "idle_capability_rate_max": 0.1,
+    "coalition_extraction_ratio_max": 2
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_signal_ids": [
+      "AUTHORITY_CONCENTRATION"
+    ]
+  }
+}
