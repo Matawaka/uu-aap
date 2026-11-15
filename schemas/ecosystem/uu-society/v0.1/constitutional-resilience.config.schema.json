@@ -1,0 +1,427 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/Matawaka/uu-aap/main/schemas/ecosystem/uu-society/v0.1/constitutional-resilience.config.schema.json",
+  "title": "UU Society Constitutional Resilience Config v0.7",
+  "x-title-ru": "Конфигурация конституционной устойчивости UU Society v0.7",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id",
+    "experiment_version",
+    "title_en",
+    "title_ru",
+    "purpose",
+    "seed",
+    "mode",
+    "cycle_count",
+    "initial_state",
+    "baseline_outcome",
+    "rights_floor_proxy",
+    "constitutional_limits",
+    "proposals",
+    "expected"
+  ],
+  "properties": {
+    "experiment_id": {
+      "type": "string",
+      "pattern": "^C[0-9]{2}-[a-z0-9-]+$"
+    },
+    "experiment_version": {
+      "const": "0.7"
+    },
+    "title_en": {
+      "type": "string",
+      "minLength": 1
+    },
+    "title_ru": {
+      "type": "string",
+      "minLength": 1
+    },
+    "purpose": {
+      "type": "string",
+      "minLength": 1
+    },
+    "seed": {
+      "type": "string",
+      "minLength": 1
+    },
+    "mode": {
+      "enum": [
+        "frozen",
+        "local_legality_only",
+        "cumulative_guard",
+        "captured_review",
+        "sunset_guard"
+      ]
+    },
+    "cycle_count": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+    },
+    "initial_state": {
+      "$ref": "#/$defs/constitutionalState"
+    },
+    "baseline_outcome": {
+      "$ref": "#/$defs/outcome"
+    },
+    "rights_floor_proxy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "min_fulfillment",
+        "max_harm",
+        "max_exit_share",
+        "max_access_gini",
+        "max_outsider_gap"
+      ],
+      "properties": {
+        "min_fulfillment": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_harm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_exit_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_access_gini": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_outsider_gap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "constitutional_limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_authority_scope",
+        "min_review_independence",
+        "min_rights_floor_strength",
+        "min_amendment_friction",
+        "min_transparency",
+        "min_revocability",
+        "max_local_structural_step",
+        "require_sunset_for_power_expansion"
+      ],
+      "properties": {
+        "max_authority_scope": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_review_independence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_rights_floor_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_amendment_friction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_transparency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "min_revocability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "max_local_structural_step": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "require_sunset_for_power_expansion": {
+          "type": "boolean"
+        }
+      }
+    },
+    "proposals": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "proposal_id",
+          "title_en",
+          "title_ru",
+          "stated_general_purpose",
+          "reviewer_conflict",
+          "restrictive",
+          "beneficiary_alignment",
+          "structural_delta",
+          "outcome_delta",
+          "sunset_cycles"
+        ],
+        "properties": {
+          "proposal_id": {
+            "type": "string",
+            "pattern": "^p-[a-z0-9-]+$"
+          },
+          "title_en": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title_ru": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stated_general_purpose": {
+            "type": "boolean"
+          },
+          "reviewer_conflict": {
+            "type": "boolean"
+          },
+          "restrictive": {
+            "type": "boolean"
+          },
+          "beneficiary_alignment": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "structural_delta": {
+            "$ref": "#/$defs/constitutionalDelta"
+          },
+          "outcome_delta": {
+            "$ref": "#/$defs/outcomeDelta"
+          },
+          "sunset_cycles": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 20
+          }
+        }
+      }
+    },
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result",
+        "expected_pattern_ids"
+      ],
+      "properties": {
+        "result": {
+          "enum": [
+            "PASS",
+            "EXPECTED_DETECTION"
+          ]
+        },
+        "expected_pattern_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "STABLE_CONSTITUTION",
+              "CONSTITUTIONAL_ADAPTATION",
+              "LEGITIMATE_STEPS_ACCUMULATE_CAPTURE",
+              "REVIEW_INDEPENDENCE_ERODED",
+              "RIGHTS_FLOOR_WEAKENED",
+              "AMENDMENT_RATCHET",
+              "REVOCABILITY_ERODED",
+              "CONFLICTED_REVIEW_APPROVAL",
+              "CUMULATIVE_GUARD_BLOCKED_AMENDMENT",
+              "SUNSET_REVERSED_POWER",
+              "CAPTURE_WITHOUT_RIGHTS_FLOOR_BREACH",
+              "GENERAL_PURPOSE_CAPTURE_PATH",
+              "CONSTITUTIONAL_RECOVERY"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "constitutionalState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_scope",
+        "review_independence",
+        "rights_floor_strength",
+        "amendment_friction",
+        "transparency",
+        "revocability"
+      ],
+      "properties": {
+        "authority_scope": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "review_independence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "rights_floor_strength": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "amendment_friction": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "transparency": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "revocability": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "constitutionalDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority_scope",
+        "review_independence",
+        "rights_floor_strength",
+        "amendment_friction",
+        "transparency",
+        "revocability"
+      ],
+      "properties": {
+        "authority_scope": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "review_independence": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "rights_floor_strength": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "amendment_friction": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "transparency": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "revocability": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      }
+    },
+    "outcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fulfillment",
+        "harm",
+        "exit_share",
+        "access_gini",
+        "outsider_gap"
+      ],
+      "properties": {
+        "fulfillment": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "harm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "exit_share": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "access_gini": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "outsider_gap": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "outcomeDelta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fulfillment",
+        "harm",
+        "exit_share",
+        "access_gini",
+        "outsider_gap"
+      ],
+      "properties": {
+        "fulfillment": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "harm": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "exit_share": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "access_gini": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        },
+        "outsider_gap": {
+          "type": "number",
+          "minimum": -1,
+          "maximum": 1
+        }
+      }
+    }
+  }
+}
