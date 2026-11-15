@@ -291,7 +291,8 @@
         "cell_count",
         "min_signature_count",
         "min_boundary_edge_count",
-        "required_signal_coverage"
+        "required_signal_coverage",
+        "expected_cells_digest"
       ],
       "properties": {
         "cell_count": {
@@ -320,6 +321,10 @@
               "COALITION_EXTRACTION"
             ]
           }
+        },
+        "expected_cells_digest": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
         }
       }
     }
