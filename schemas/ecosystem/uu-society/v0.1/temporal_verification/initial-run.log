@@ -1,0 +1,123 @@
+T00-stable-calendar-control: CONFORM
+  TTL 1: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=0, grants=0
+  TTL 3: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=0, grants=0
+  TTL 6: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  initial-proof-needs-no-query: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  ttl-1-window: SUPPORTED [1, 1, 1]
+  ttl-3-window: SUPPORTED [3, 3, 3]
+  ttl-6-window: SUPPORTED [6, 6, 6]
+T01-order-sensitive-coverage: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=2, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=2, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=2, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=2, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=2, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=2, grants=0
+  TTL 6: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=2, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=2, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=2, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  baseline-medium-ttl-gap: SUPPORTED ['BOUNDED_INDETERMINATE']
+  deadline-medium-ttl-success: SUPPORTED ['PROVISIONAL_INDEPENDENCE']
+  deadline-always-verifies: REFUTED ['BOUNDED_INDETERMINATE', 'PROVISIONAL_INDEPENDENCE', 'PROVISIONAL_INDEPENDENCE']
+T02-old-publication-is-not-fresh: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  TTL 6: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=1, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=1, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=1, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  ttl-3-stale-receipt: SUPPORTED [1, 1, 1]
+  ttl-6-backlog-still-valid: SUPPORTED ['PROVISIONAL_INDEPENDENCE', 'PROVISIONAL_INDEPENDENCE', 'PROVISIONAL_INDEPENDENCE']
+T03-independent-renewal-restores-corridor: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=2, grants=1
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=2, grants=1
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=1, grants=1
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  deadline-avoids-known-futile-query: SUPPORTED [0, 0, 0]
+  independent-renewal-is-bounded: SUPPORTED [1, 1, 1]
+  renewed-medium-ttl-success: SUPPORTED ['PROVISIONAL_INDEPENDENCE']
+  renewal-always-verifies: REFUTED ['BOUNDED_INDETERMINATE', 'PROVISIONAL_INDEPENDENCE', 'PROVISIONAL_INDEPENDENCE']
+T04-latency-estimate-can-fail: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  deadlines-prevent-all-cancellations: REFUTED [1, 1, 1]
+  late-reply-is-cancelled: SUPPORTED [1, 1, 1, 1, 1, 1, 1, 1, 1]
+T05-provenance-window-dominates: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=1, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  long-ttl-cannot-repair-provenance: SUPPORTED ['BOUNDED_INDETERMINATE', 'BOUNDED_INDETERMINATE', 'BOUNDED_INDETERMINATE']
+T06-paired-false-assurance-duration: CONFORM
+  TTL 1: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=0, grants=0
+  TTL 3: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=0, grants=0
+  TTL 6: bounded_targeted=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware=PROVISIONAL_INDEPENDENCE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  short-ttl-false-assurance: SUPPORTED [0, 0, 0]
+  medium-ttl-false-assurance: SUPPORTED [1, 1, 1]
+  long-ttl-false-assurance: SUPPORTED [4, 4, 4]
+  provisional-claim-is-always-true: REFUTED [0, 0, 0, 1, 1, 1, 4, 4, 4]
+T07-renewal-can-increase-false-assurance: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=2, grants=1
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=2, grants=1
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=PROVISIONAL_INDEPENDENCE, actions=1, grants=1
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  renewed-evidence-guarantees-truth: REFUTED [0, 2, 3]
+  renewed-medium-ttl-false-assurance: SUPPORTED [2]
+  renewed-long-ttl-false-assurance: SUPPORTED [3]
+T08-renewal-finds-fresh-capture: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=CAPTURE_SIGNAL, actions=1, grants=1
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=CAPTURE_SIGNAL, actions=1, grants=1
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=CAPTURE_SIGNAL, actions=1, grants=1
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  renewed-adverse-signal: SUPPORTED ['CAPTURE_SIGNAL', 'CAPTURE_SIGNAL', 'CAPTURE_SIGNAL']
+  unrenewed-no-query: SUPPORTED [0, 0, 0]
+T09-correlated-renewal-authority: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  correlated-issuer-denied: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  one-denied-request: SUPPORTED [1, 1, 1]
+T10-self-renewal-rejected: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  no-self-grant: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  self-request-denied: SUPPORTED [1, 1, 1]
+T11-lifetime-budget-not-reset: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  no-budget-laundering: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  no-useless-renewal-request: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  lifetime-consumption-preserved: SUPPORTED [2, 2, 2, 2, 2, 2, 2, 2, 2]
+T12-privacy-floor-not-renewable: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  privacy-gate-precedes-renewal: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  privacy-not-time-gap: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+T13-issuer-scope-inflation-rejected: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  no-issuer-scope-inflation: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  overbroad-grant-denied: SUPPORTED [1, 1, 1]
+T14-authority-review-bottleneck: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=0
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  review-cannot-cross-horizon: SUPPORTED [0, 0, 0, 0, 0, 0, 0, 0, 0]
+  review-exhaustion-explicit: SUPPORTED [1, 1, 1]
+T15-renewal-chain-is-finite: CONFORM
+  TTL 1: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=1
+  TTL 3: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=1
+  TTL 6: bounded_targeted=BOUNDED_INDETERMINATE, actions=1, grants=0 | deadline_aware=BOUNDED_INDETERMINATE, actions=0, grants=0 | deadline_aware_reauthorized=BOUNDED_INDETERMINATE, actions=0, grants=1
+  common-calendar: SUPPORTED [10, 10, 10, 10, 10, 10, 10, 10, 10]
+  one-grant-is-the-limit: SUPPORTED [1, 1, 1]
+  second-request-denied: SUPPORTED [1, 1, 1]
+  grant-does-not-imply-useful-query: SUPPORTED [0, 0, 0]
+
+UU Society temporal verification v1.2: 16/16 experiments conform

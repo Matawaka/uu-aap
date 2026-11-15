@@ -211,3 +211,10 @@ Evidence ограничено конкретными проверяющими, �
 Поверх оценки v1.0 добавлен ограниченный поиск evidence: scoped experimental search lease, независимые authority/privacy gates, адресные перепроверки, свежесть происхождения источников и допустимая остановка при оставшейся неопределённости. Три policy и 32 сценария сохраняют пропуски capture, ложную уверенность, ложноположительные сигналы и конечные свидетельства зацикливания поиска. Runtime authority и Stable Core promotion не создаются.
 
 [Архитектура, инварианты, фактические результаты и ограничения](active_verification/README.ru.md); [English documentation](active_verification/README.md).
+
+
+## Парная временная верификация / Независимое возобновление поиска v1.2
+
+Добавлены общий календарь и неизменяемые publication tapes: TTL 1/3/6, прежний targeted selector, deadline-aware расписание и независимо возобновляемый поиск. Шестнадцать сценариев дают 144 receipts и пять опровергнутых claims. Renewal сохраняет общий бюджет, privacy floor и scope; он способен повысить и обнаружение capture, и ложную уверенность. Runtime authority и Stable Core promotion не создаются.
+
+[Контролируемый дизайн, результаты и ограничения](temporal_verification/README.ru.md); [EN](temporal_verification/README.md).

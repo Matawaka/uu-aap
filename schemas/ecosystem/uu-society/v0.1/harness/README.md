@@ -356,3 +356,17 @@ Use --experiment V01-fresh-evidence-closes-gap to select a case and --output-dir
 The original 24-case run, hypotheses and configuration digests are retained; eight boundary follow-ups were separately declared. Conformance includes substantive negative results and watchdog termination of a bad comparator. It is not proof that institutions are independent or that surveillance is authorized.
 
 See [full experimental findings and limits](../active_verification/README.md) and [RU](../active_verification/README.ru.md).
+
+
+## Paired Temporal Verification / Independent Search Reauthorization v1.2
+
+The temporal runner reuses v1.0 assessment and v1.1 gates/selection, while giving all policy/TTL arms identical publication tapes, source clocks, private latency and ten observation ticks. Acquisition never refreshes source issuance. Search-stop state is separated from later passive reassessment. Independent renewal preserves original request binding and lifetime limits.
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_temporal_verification.py --check-reference
+python -m unittest discover -s schemas/ecosystem/uu-society/v0.1/harness -p test_temporal_verification.py -v
+```
+
+The paired-temporal-verification CI job replays all 144 schema-validated receipts, checks oracle/claim mutation invariance and runs 20 hostile/metamorphic methods. --output-dir PATH writes full calendar/query/authority receipts; --experiment T06-paired-false-assurance-duration selects one case. The frozen first run includes five refuted claims; refutation is research output, not a conformance failure.
+
+See [EN design and findings](../temporal_verification/README.md) and [RU](../temporal_verification/README.ru.md).
