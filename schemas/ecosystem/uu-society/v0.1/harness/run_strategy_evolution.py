@@ -198,6 +198,54 @@ def choose_provider(
     return scored[0][1]
 
 
+
+def choose_external_repairer(
+    config: dict[str, Any],
+    actors: list[Actor],
+    requester: Actor,
+    provider: Actor,
+    category: str,
+    step: int,
+) -> Actor | None:
+    candidates = [
+        actor
+        for actor in actors
+        if actor.actor_id not in {requester.actor_id, provider.actor_id}
+        and actor.strategy == "REPAIR"
+        and actor.capability[category]
+    ]
+    if not candidates:
+        return None
+    ranked = sorted(
+        candidates,
+        key=lambda actor: (
+            -actor.base_willingness[category],
+            u64(
+                config["seed"],
+                "external-repair-rank",
+                step,
+                actor.actor_id,
+                requester.actor_id,
+                provider.actor_id,
+            ),
+        ),
+    )
+    candidate = ranked[0]
+    probability = config["strategy_parameters"]["REPAIR"]["repair_probability"]
+    if (
+        unit(
+            config["seed"],
+            "external-repair",
+            step,
+            candidate.actor_id,
+            requester.actor_id,
+            provider.actor_id,
+        )
+        < probability
+    ):
+        return candidate
+    return None
+
 def reward(actor: Actor, value: float) -> None:
     actor.epoch_reward += value
     actor.total_reward += value
@@ -431,6 +479,7 @@ def simulate(
             if provider.strategy == "EXTRACT":
                 reward(provider, econ["extract_bonus"] * 0.5)
 
+        external_repairer = None
         if harm or breach:
             if (
                 unit(
@@ -447,6 +496,19 @@ def simulate(
                 provider.repaired += 1
                 reward(provider, -econ["repair_cost"] + econ["repair_reward"])
                 reward(requester, econ["repair_reward"] * 0.5)
+            else:
+                external_repairer = choose_external_repairer(
+                    config, actors, requester, provider, category, step
+                )
+                if external_repairer is not None:
+                    repaired = True
+                    epoch_stats["repairs"] += 1
+                    external_repairer.repaired += 1
+                    reward(
+                        external_repairer,
+                        -econ["repair_cost"] + econ["repair_reward"],
+                    )
+                    reward(requester, econ["repair_reward"] * 0.5)
 
         # Coalition maintenance is paid by coalition actors whenever they take
         # part in an interaction, allowing coalitions to dissolve when benefits
@@ -460,7 +522,8 @@ def simulate(
             (
                 f"{step}|ok|req={requester.actor_id}:{requester.strategy}|"
                 f"prov={provider.actor_id}:{provider.strategy}|cat={category}|"
-                f"harm={int(harm)}|breach={int(breach)}|repair={int(repaired)}\n"
+                f"harm={int(harm)}|breach={int(breach)}|repair={int(repaired)}|"
+                f"external_repairer={external_repairer.actor_id if external_repairer else 'none'}\n"
             ).encode()
         )
 
