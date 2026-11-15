@@ -1,0 +1,26 @@
+{
+  "meta_scenario_id": "M04-restriction-inertia",
+  "scenario_version": "0.1",
+  "title_en": "Long-run restriction inertia",
+  "title_ru": "Долговременная стратификация по инерции ограничения",
+  "purpose": "Detect a non-rights restriction persisting across a timeline without fresh adverse evidence or any dispute/repair/recovery path.",
+  "snapshot_files": [
+    "t0.snapshot.json",
+    "t1.snapshot.json",
+    "t2.snapshot.json"
+  ],
+  "checks": [
+    "restriction_inertia"
+  ],
+  "groups": [],
+  "proposed_actor_rankings": [],
+  "parameters": {
+    "restriction_persistence_snapshots": 3
+  },
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_violation_ids": [
+      "I-022"
+    ]
+  }
+}
