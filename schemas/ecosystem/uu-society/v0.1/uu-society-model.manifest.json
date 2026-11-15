@@ -1276,5 +1276,26 @@
       "Simulation detection != runtime authority",
       "Simulation conformance != social correctness"
     ]
+  },
+  "phase_space_exploration": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_PHASE_SPACE_EXPLORATION",
+    "harness": "./harness/run_phase_space_sweeps.py",
+    "config_schema": "./phase-space-sweep.config.schema.json",
+    "receipt_schema": "./phase-space-sweep.receipt.schema.json",
+    "outputs": [
+      "phase signature per cell",
+      "signature counts",
+      "signal cell counts",
+      "neighboring boundary edges",
+      "axis transition counts",
+      "Pareto-nondominated cell ids"
+    ],
+    "non_effects": [
+      "Phase signature != moral category",
+      "Boundary edge != universal law",
+      "Pareto frontier != single optimum",
+      "Sweep threshold != person verdict",
+      "Phase-space conformance != social correctness"
+    ]
   }
 }
