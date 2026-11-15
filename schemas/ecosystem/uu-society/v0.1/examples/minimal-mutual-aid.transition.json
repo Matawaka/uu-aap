@@ -1,0 +1,17 @@
+{
+  "$schema": "../uu-society-transition.schema.json",
+  "schema_version": "0.1",
+  "transition_id": "urn:uu-aap:uu-society:transition:match-anna-boris-accepted-001",
+  "entity_type": "Match",
+  "entity_ref": "urn:uu-aap:uu-society:match:anna-boris-001",
+  "from_state": "proposed",
+  "to_state": "accepted",
+  "occurred_at": "2026-11-15T07:12:00Z",
+  "reason": "Both participants accepted the bounded mutual-aid match.",
+  "evidence_refs": [],
+  "authority_refs": [],
+  "reversible": true,
+  "receipt_ref": null,
+  "previous_transition_ref": null,
+  "contestable": true
+}
