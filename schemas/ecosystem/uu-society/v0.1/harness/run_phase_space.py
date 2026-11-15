@@ -168,7 +168,7 @@ def main():
         if replay != summary or replay_rows != rows:
             raise AssertionError("deterministic replay mismatch")
     print("UU Society phase-space v0.2")
-    print("runs:", summary["runs"], "cells:", summary["cells"])
+    print("runs:", summary["runs"], "cells:", len(summary["cells"]))
     print("signal run counts:", json.dumps(summary["signal_run_counts"], sort_keys=True))
     print("cells with signals:", summary["cells_with_any_signal"])
     print("variable-signal cells:", summary["cells_with_variable_signals"])
