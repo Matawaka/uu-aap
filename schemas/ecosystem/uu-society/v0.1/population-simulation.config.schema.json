@@ -194,7 +194,8 @@
         "restriction_actor_time_share_max",
         "harm_rate_max",
         "unmet_need_rate_max",
-        "coalition_extraction_ratio_max"
+        "coalition_extraction_ratio_max",
+        "idle_capability_rate_max"
       ],
       "properties": {
         "authority_top10_share_max": {
@@ -225,6 +226,11 @@
         "coalition_extraction_ratio_max": {
           "type": "number",
           "minimum": 0
+        },
+        "idle_capability_rate_max": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
         }
       }
     },
@@ -252,7 +258,8 @@
               "RESTRICTION_INERTIA",
               "HARM_PRESSURE",
               "UNMET_NEED_PRESSURE",
-              "COALITION_EXTRACTION"
+              "COALITION_EXTRACTION",
+              "IDLE_CAPABILITY_STRANDING"
             ]
           }
         }
