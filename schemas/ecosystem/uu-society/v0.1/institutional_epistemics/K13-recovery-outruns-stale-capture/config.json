@@ -1,0 +1,90 @@
+{
+  "experiment_id": "K13-recovery-outruns-stale-capture",
+  "experiment_version": "1.0",
+  "title_en": "Recovery outruns stale capture evidence",
+  "title_ru": "Восстановление опережает устаревшее evidence захвата",
+  "purpose": "After actual control paths are removed, still-fresh historical capture evidence may temporarily overstate present capture; past capture evidence must not become permanent stigma.",
+  "nodes": [
+    "beneficiary",
+    "a",
+    "b",
+    "c",
+    "controller"
+  ],
+  "reviewers": [
+    "a",
+    "b",
+    "c"
+  ],
+  "beneficiary": "beneficiary",
+  "review_quorum": 2,
+  "control_dimensions": [
+    "appoints",
+    "funds",
+    "controls_evidence",
+    "delegates"
+  ],
+  "source_nodes": [
+    "s1",
+    "s2",
+    "s3",
+    "s4"
+  ],
+  "source_quorum": 2,
+  "cycle_count": 4,
+  "initial_ground_truth_edges": [
+    {
+      "edge_id": "b-a",
+      "from": "beneficiary",
+      "to": "a",
+      "kind": "appoints"
+    },
+    {
+      "edge_id": "b-b",
+      "from": "beneficiary",
+      "to": "b",
+      "kind": "appoints"
+    }
+  ],
+  "initial_source_control_edges": [],
+  "initial_evidence": [
+    {
+      "evidence_id": "p-s1-a-appoints",
+      "source": "s1",
+      "reviewer": "a",
+      "dimension": "appoints",
+      "assertion": "DEPENDENCY_PRESENT",
+      "issued_cycle": 0,
+      "ttl_cycles": 8
+    },
+    {
+      "evidence_id": "p-s2-a-appoints",
+      "source": "s2",
+      "reviewer": "a",
+      "dimension": "appoints",
+      "assertion": "DEPENDENCY_PRESENT",
+      "issued_cycle": 0,
+      "ttl_cycles": 8
+    }
+  ],
+  "events": [
+    {
+      "cycle": 1,
+      "type": "remove_truth_edge",
+      "edge_id": "b-a"
+    },
+    {
+      "cycle": 1,
+      "type": "remove_truth_edge",
+      "edge_id": "b-b"
+    }
+  ],
+  "expected": {
+    "result": "EXPECTED_DETECTION",
+    "expected_pattern_ids": [
+      "CAPTURE_EVIDENCE_CONFIRMED",
+      "CAPTURE_SIGNAL_FALSE_POSITIVE",
+      "RECOVERY_OUTRUNS_EVIDENCE"
+    ]
+  }
+}
