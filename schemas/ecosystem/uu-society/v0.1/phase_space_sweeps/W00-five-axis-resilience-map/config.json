@@ -1,0 +1,85 @@
+{
+  "sweep_id": "W00-five-axis-resilience-map",
+  "sweep_version": "0.1",
+  "title_en": "Five-axis UU Society resilience map",
+  "title_ru": "Пятиосевая карта устойчивости UU Society",
+  "purpose": "Map regime signatures and neighboring phase boundaries across adversarial pressure, adversarial repair, containment duration, provider feedback and willingness/coordination friction.",
+  "seed": "uu-society-w00-phase-space-v0.1",
+  "actor_count": 80,
+  "interactions_per_cell": 1200,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool",
+    "compute"
+  ],
+  "fixed": {
+    "population": {
+      "coalition_fraction": 0.05,
+      "base_capability_probability": 0.6
+    },
+    "matching": {
+      "candidate_pool_size": 8,
+      "policy": "context_evidence_weighted",
+      "coalition_request_bias": 0.25
+    },
+    "dynamics": {
+      "accidental_harm_rate": 0.01,
+      "adversarial_harm_rate": 0.45,
+      "ordinary_breach_rate": 0.015,
+      "adversarial_breach_rate": 0.3,
+      "repair_probability_cooperative": 0.85,
+      "restriction_renewal_limit": 2
+    },
+    "diagnostic_thresholds": {
+      "authority_top10_share_max": 0.25,
+      "access_gini_max": 0.25,
+      "restriction_actor_time_share_max": 0.05,
+      "harm_rate_max": 0.05,
+      "unmet_need_rate_max": 0.15,
+      "idle_capability_rate_max": 0.1,
+      "coalition_extraction_ratio_max": 2
+    }
+  },
+  "axes": {
+    "adversarial_fraction": [
+      0.02,
+      0.12,
+      0.3
+    ],
+    "repair_probability_adversarial": [
+      0.05,
+      0.35,
+      0.75
+    ],
+    "restriction_duration_interactions": [
+      2,
+      50,
+      300
+    ],
+    "feedback_strength": [
+      0,
+      3,
+      8
+    ],
+    "base_willingness_probability": [
+      0.25,
+      0.6,
+      0.9
+    ]
+  },
+  "expected": {
+    "cell_count": 243,
+    "min_signature_count": 3,
+    "min_boundary_edge_count": 10,
+    "required_signal_coverage": [
+      "ACCESS_INEQUALITY",
+      "RESTRICTION_INERTIA",
+      "HARM_PRESSURE",
+      "UNMET_NEED_PRESSURE",
+      "IDLE_CAPABILITY_STRANDING",
+      "COALITION_EXTRACTION"
+    ]
+  }
+}
