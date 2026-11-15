@@ -204,6 +204,8 @@ def validate_semantics(config: dict[str, Any]) -> None:
         raise ValueError("beneficiary not in nodes")
     if not reviewers <= nodes:
         raise ValueError("unknown reviewer")
+    if config["review_quorum"] > len(reviewers):
+        raise ValueError("review quorum exceeds reviewer count")
     if config["source_quorum"] > len(sources):
         raise ValueError("source quorum exceeds source count")
     for edge in config["initial_ground_truth_edges"]:
@@ -293,7 +295,7 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True):
         actual = actual_independence(
             config["reviewers"],
             config["beneficiary"],
-            min(len(config["reviewers"]), config["source_quorum"]),
+            config["review_quorum"],
             list(truth_edges.values()),
         )
 
