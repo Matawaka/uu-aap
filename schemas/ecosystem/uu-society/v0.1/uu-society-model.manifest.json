@@ -1,0 +1,947 @@
+{
+  "schema_version": "0.1",
+  "model_id": "urn:uu-aap:uu-society:model:0.1",
+  "status": "EXPERIMENTAL_FORMAL_MODEL",
+  "normative_effect": false,
+  "stable_core_promotion_authorized": false,
+  "implementation_authority_created": false,
+  "languages": [
+    "en",
+    "ru"
+  ],
+  "canonical_artifacts": {
+    "state_schema": "./uu-society-state.schema.json",
+    "transition_schema": "./uu-society-transition.schema.json",
+    "english_guide": "./README.md",
+    "russian_guide": "./README.ru.md"
+  },
+  "entities": [
+    {
+      "id": "GovernanceCell",
+      "label_en": "GovernanceCell",
+      "label_ru": "Ячейка управления",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/governanceCell"
+    },
+    {
+      "id": "Actor",
+      "label_en": "Actor",
+      "label_ru": "Субъект",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/actor"
+    },
+    {
+      "id": "PersonalAnchor",
+      "label_en": "PersonalAnchor",
+      "label_ru": "Личностный якорь",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/personalAnchor"
+    },
+    {
+      "id": "Intent",
+      "label_en": "Intent",
+      "label_ru": "Намерение",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/intent"
+    },
+    {
+      "id": "Need",
+      "label_en": "Need",
+      "label_ru": "Потребность",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/need"
+    },
+    {
+      "id": "Capability",
+      "label_en": "Capability",
+      "label_ru": "Способность",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/capability"
+    },
+    {
+      "id": "Resource",
+      "label_en": "Resource",
+      "label_ru": "Ресурс",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/resource"
+    },
+    {
+      "id": "EvidenceEvent",
+      "label_en": "EvidenceEvent",
+      "label_ru": "Доказательное событие",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/evidenceEvent"
+    },
+    {
+      "id": "TrustState",
+      "label_en": "TrustState",
+      "label_ru": "Состояние доверия",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/trustState"
+    },
+    {
+      "id": "RiskHarmEnvelope",
+      "label_en": "RiskHarmEnvelope",
+      "label_ru": "Конверт риска и вреда",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/riskHarmEnvelope"
+    },
+    {
+      "id": "Match",
+      "label_en": "Match",
+      "label_ru": "Сопоставление",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/match"
+    },
+    {
+      "id": "Commitment",
+      "label_en": "Commitment",
+      "label_ru": "Обязательство",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/commitment"
+    },
+    {
+      "id": "ARAEState",
+      "label_en": "ARAEState",
+      "label_ru": "Состояние ARAE",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/aRAEState"
+    },
+    {
+      "id": "ActionLease",
+      "label_en": "ActionLease",
+      "label_ru": "Временное полномочие",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/actionLease"
+    },
+    {
+      "id": "Action",
+      "label_en": "Action",
+      "label_ru": "Действие",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/action"
+    },
+    {
+      "id": "Outcome",
+      "label_en": "Outcome",
+      "label_ru": "Результат",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/outcome"
+    },
+    {
+      "id": "Receipt",
+      "label_en": "Receipt",
+      "label_ru": "Доказательная квитанция",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/receipt"
+    },
+    {
+      "id": "Contribution",
+      "label_en": "Contribution",
+      "label_ru": "Вклад",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/contribution"
+    },
+    {
+      "id": "Repair",
+      "label_en": "Repair",
+      "label_ru": "Восстановление",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/repair"
+    },
+    {
+      "id": "Dispute",
+      "label_en": "Dispute",
+      "label_ru": "Спор",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/dispute"
+    },
+    {
+      "id": "FailurePattern",
+      "label_en": "FailurePattern",
+      "label_ru": "Паттерн сбоя",
+      "schema_ref": "./uu-society-state.schema.json#/$defs/failurePattern"
+    }
+  ],
+  "invariants": [
+    {
+      "id": "I-001",
+      "key": "HUMAN_RIGHTS_NOT_EARNED_TRUST",
+      "text_en": "Rights-floor access MUST NOT depend on TrustState or Contribution.",
+      "text_ru": "Доступ к базовому уровню прав НЕ ДОЛЖЕН зависеть от TrustState или Contribution."
+    },
+    {
+      "id": "I-002",
+      "key": "DISSENT_NOT_MALICE",
+      "text_en": "Dissent MUST NOT by itself be evidence of malicious intent.",
+      "text_ru": "Несогласие само по себе НЕ ДОЛЖНО считаться доказательством злого намерения."
+    },
+    {
+      "id": "I-003",
+      "key": "ASYMMETRY_NOT_PARASITISM",
+      "text_en": "Receiving more than one contributes MUST NOT alone establish exploitation.",
+      "text_ru": "Получение большего, чем человек отдаёт, само по себе НЕ ДОКАЗЫВАЕТ паразитизм."
+    },
+    {
+      "id": "I-004",
+      "key": "EVIDENCE_NOT_VERDICT",
+      "text_en": "Evidence changes uncertainty; it is not an automatic verdict.",
+      "text_ru": "Evidence изменяет неопределённость, но не является автоматическим приговором."
+    },
+    {
+      "id": "I-005",
+      "key": "TRUST_NOT_UNIVERSAL_SCORE",
+      "text_en": "Trust MUST remain contextual and MUST NOT collapse into a universal numeric social score.",
+      "text_ru": "Доверие ДОЛЖНО оставаться контекстным и НЕ ДОЛЖНО сводиться к универсальному числовому социальному рейтингу."
+    },
+    {
+      "id": "I-006",
+      "key": "OPEN_INTERACTION_NOT_UNRESTRICTED_CONSEQUENCES",
+      "text_en": "Open interaction does not imply unrestricted consequences.",
+      "text_ru": "Открытое взаимодействие не означает неограниченные последствия."
+    },
+    {
+      "id": "I-007",
+      "key": "REVERSIBILITY_FIRST",
+      "text_en": "Where comparable, reversible action SHOULD be preferred over irreversible action.",
+      "text_ru": "При сопоставимых условиях СЛЕДУЕТ предпочитать обратимое действие необратимому."
+    },
+    {
+      "id": "I-008",
+      "key": "FAILURE_MEMORY_NOT_PERMANENT_STIGMA",
+      "text_en": "System failure memory MUST NOT imply permanent stigma for a person.",
+      "text_ru": "Память системы об ошибке НЕ ДОЛЖНА означать пожизненную стигму человека."
+    },
+    {
+      "id": "I-009",
+      "key": "MINIMUM_NECESSARY_KNOWLEDGE",
+      "text_en": "Interactions SHOULD disclose only evidence necessary for the current purpose and scope.",
+      "text_ru": "Взаимодействие ДОЛЖНО по возможности раскрывать только evidence, необходимое для текущей цели и scope."
+    },
+    {
+      "id": "I-010",
+      "key": "NO_SINGLE_INTERPRETER",
+      "text_en": "No single actor SHOULD control identity, trust, value, normality and authority interpretation at once.",
+      "text_ru": "Ни один субъект НЕ ДОЛЖЕН единолично контролировать интерпретацию идентичности, доверия, ценности, нормы и полномочий одновременно."
+    },
+    {
+      "id": "I-011",
+      "key": "CAPABILITY_NOT_OBLIGATION",
+      "text_en": "Capability does not create an obligation to provide it.",
+      "text_ru": "Наличие способности не создаёт обязанности её предоставлять."
+    },
+    {
+      "id": "I-012",
+      "key": "KNOWN_HISTORY_NOT_IDENTITY",
+      "text_en": "Knowledge of historical personal data does not establish current agency.",
+      "text_ru": "Знание исторических персональных данных не доказывает текущую агентность человека."
+    },
+    {
+      "id": "I-013",
+      "key": "FAILED_CHALLENGE_NOT_IMPOSTOR",
+      "text_en": "A failed continuity challenge does not by itself establish impersonation or guilt.",
+      "text_ru": "Неудачный continuity challenge сам по себе не доказывает подмену личности или виновность."
+    },
+    {
+      "id": "I-014",
+      "key": "PAST_AUTHORIZATION_NOT_CURRENT_AUTHORIZATION",
+      "text_en": "Past authorization does not establish current authorization.",
+      "text_ru": "Прошлое полномочие не доказывает наличие текущего полномочия."
+    },
+    {
+      "id": "I-015",
+      "key": "VIOLATION_NOT_HARM",
+      "text_en": "Rule violation and harm are distinct dimensions.",
+      "text_ru": "Нарушение правила и причинение вреда являются различными измерениями."
+    }
+  ],
+  "interaction_rules": [
+    {
+      "id": "R-001",
+      "when": [
+        "Need.state=declared",
+        "Match.state=proposed"
+      ],
+      "requires": [
+        "participant consent before Commitment.state=accepted"
+      ],
+      "text_en": "A proposed match MUST NOT become an accepted commitment without participant consent.",
+      "text_ru": "Предложенное сопоставление НЕ ДОЛЖНО становиться принятым обязательством без согласия участников."
+    },
+    {
+      "id": "R-002",
+      "when": [
+        "Action.state transitions to admitted or in_progress"
+      ],
+      "requires": [
+        "ActionLease.state=active",
+        "current authority evidence",
+        "current scope fit"
+      ],
+      "text_en": "Normal actions require a current active lease and scope-consistent authority evidence.",
+      "text_ru": "Обычное действие требует текущего активного lease и evidence полномочия, соответствующего scope."
+    },
+    {
+      "id": "R-003",
+      "when": [
+        "new adverse evidence appears"
+      ],
+      "requires": [
+        "re-evaluate TrustState",
+        "re-evaluate ARAE",
+        "preserve constitutional_floor"
+      ],
+      "text_en": "Adverse evidence MAY narrow consequences but MUST NOT remove the constitutional rights floor.",
+      "text_ru": "Неблагоприятное evidence МОЖЕТ сузить последствия, но НЕ ДОЛЖНО отменять конституционный уровень базовых прав."
+    },
+    {
+      "id": "R-004",
+      "when": [
+        "harm is observed"
+      ],
+      "requires": [
+        "contain harm",
+        "protect affected actors",
+        "record evidence",
+        "offer dispute/repair path"
+      ],
+      "text_en": "Containment, evidence, repair and reintegration are distinct stages.",
+      "text_ru": "Локализация вреда, evidence, восстановление и реинтеграция являются отдельными стадиями."
+    },
+    {
+      "id": "R-005",
+      "when": [
+        "FailurePattern is created"
+      ],
+      "requires": [
+        "person_stigma_allowed=false",
+        "system-learning fields present"
+      ],
+      "text_en": "Failure knowledge belongs to system learning and MUST NOT automatically become permanent personal stigma.",
+      "text_ru": "Знание о сбое относится к обучению системы и НЕ ДОЛЖНО автоматически превращаться в постоянную стигму человека."
+    }
+  ],
+  "transition_catalog": {
+    "Actor": [
+      [
+        "active",
+        "limited"
+      ],
+      [
+        "limited",
+        "active"
+      ],
+      [
+        "active",
+        "dormant"
+      ],
+      [
+        "dormant",
+        "active"
+      ],
+      [
+        "active",
+        "withdrawn"
+      ],
+      [
+        "limited",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "active"
+      ],
+      [
+        "disputed",
+        "limited"
+      ]
+    ],
+    "PersonalAnchor": [
+      [
+        "insufficient",
+        "partial"
+      ],
+      [
+        "partial",
+        "sufficient_for_declared_scope"
+      ],
+      [
+        "sufficient_for_declared_scope",
+        "partial"
+      ],
+      [
+        "partial",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "partial"
+      ],
+      [
+        "sufficient_for_declared_scope",
+        "dormant"
+      ],
+      [
+        "dormant",
+        "partial"
+      ]
+    ],
+    "Intent": [
+      [
+        "declared",
+        "active"
+      ],
+      [
+        "active",
+        "satisfied"
+      ],
+      [
+        "active",
+        "withdrawn"
+      ],
+      [
+        "active",
+        "expired"
+      ],
+      [
+        "active",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "active"
+      ]
+    ],
+    "Need": [
+      [
+        "declared",
+        "matched"
+      ],
+      [
+        "matched",
+        "partially_satisfied"
+      ],
+      [
+        "matched",
+        "satisfied"
+      ],
+      [
+        "partially_satisfied",
+        "satisfied"
+      ],
+      [
+        "declared",
+        "withdrawn"
+      ],
+      [
+        "declared",
+        "expired"
+      ]
+    ],
+    "Capability": [
+      [
+        "declared",
+        "available"
+      ],
+      [
+        "available",
+        "reserved"
+      ],
+      [
+        "reserved",
+        "available"
+      ],
+      [
+        "available",
+        "unavailable"
+      ],
+      [
+        "unavailable",
+        "available"
+      ],
+      [
+        "available",
+        "withdrawn"
+      ],
+      [
+        "available",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "available"
+      ]
+    ],
+    "Resource": [
+      [
+        "available",
+        "reserved"
+      ],
+      [
+        "reserved",
+        "in_use"
+      ],
+      [
+        "in_use",
+        "available"
+      ],
+      [
+        "in_use",
+        "depleted"
+      ],
+      [
+        "available",
+        "unavailable"
+      ],
+      [
+        "unavailable",
+        "available"
+      ],
+      [
+        "available",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "available"
+      ]
+    ],
+    "EvidenceEvent": [
+      [
+        "unverified",
+        "observed"
+      ],
+      [
+        "observed",
+        "attested"
+      ],
+      [
+        "attested",
+        "cryptographically_bound"
+      ],
+      [
+        "observed",
+        "disputed"
+      ],
+      [
+        "attested",
+        "disputed"
+      ],
+      [
+        "cryptographically_bound",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "superseded"
+      ]
+    ],
+    "TrustState": [
+      [
+        "unknown",
+        "supporting"
+      ],
+      [
+        "unknown",
+        "mixed"
+      ],
+      [
+        "unknown",
+        "adverse"
+      ],
+      [
+        "supporting",
+        "mixed"
+      ],
+      [
+        "mixed",
+        "supporting"
+      ],
+      [
+        "mixed",
+        "adverse"
+      ],
+      [
+        "adverse",
+        "mixed"
+      ],
+      [
+        "supporting",
+        "disputed"
+      ],
+      [
+        "mixed",
+        "disputed"
+      ],
+      [
+        "adverse",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "mixed"
+      ]
+    ],
+    "RiskHarmEnvelope": [
+      [
+        "draft",
+        "assessed"
+      ],
+      [
+        "assessed",
+        "mitigated"
+      ],
+      [
+        "assessed",
+        "accepted"
+      ],
+      [
+        "mitigated",
+        "accepted"
+      ],
+      [
+        "assessed",
+        "rejected"
+      ],
+      [
+        "accepted",
+        "expired"
+      ],
+      [
+        "assessed",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "assessed"
+      ]
+    ],
+    "Match": [
+      [
+        "proposed",
+        "accepted"
+      ],
+      [
+        "proposed",
+        "rejected"
+      ],
+      [
+        "proposed",
+        "expired"
+      ],
+      [
+        "accepted",
+        "executed"
+      ],
+      [
+        "accepted",
+        "cancelled"
+      ]
+    ],
+    "Commitment": [
+      [
+        "proposed",
+        "accepted"
+      ],
+      [
+        "accepted",
+        "active"
+      ],
+      [
+        "active",
+        "fulfilled"
+      ],
+      [
+        "active",
+        "breached"
+      ],
+      [
+        "active",
+        "withdrawn"
+      ],
+      [
+        "active",
+        "expired"
+      ],
+      [
+        "active",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "active"
+      ],
+      [
+        "disputed",
+        "breached"
+      ]
+    ],
+    "ARAEState": [
+      [
+        "draft",
+        "active"
+      ],
+      [
+        "active",
+        "narrowed"
+      ],
+      [
+        "narrowed",
+        "active"
+      ],
+      [
+        "active",
+        "suspended"
+      ],
+      [
+        "suspended",
+        "active"
+      ],
+      [
+        "active",
+        "expired"
+      ],
+      [
+        "active",
+        "superseded"
+      ],
+      [
+        "active",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "narrowed"
+      ],
+      [
+        "disputed",
+        "active"
+      ]
+    ],
+    "ActionLease": [
+      [
+        "proposed",
+        "active"
+      ],
+      [
+        "active",
+        "consumed"
+      ],
+      [
+        "active",
+        "revoked"
+      ],
+      [
+        "active",
+        "expired"
+      ],
+      [
+        "active",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "revoked"
+      ],
+      [
+        "disputed",
+        "active"
+      ]
+    ],
+    "Action": [
+      [
+        "planned",
+        "admitted"
+      ],
+      [
+        "admitted",
+        "in_progress"
+      ],
+      [
+        "in_progress",
+        "completed"
+      ],
+      [
+        "in_progress",
+        "failed"
+      ],
+      [
+        "planned",
+        "cancelled"
+      ],
+      [
+        "admitted",
+        "cancelled"
+      ],
+      [
+        "in_progress",
+        "contained"
+      ],
+      [
+        "completed",
+        "disputed"
+      ],
+      [
+        "failed",
+        "disputed"
+      ]
+    ],
+    "Outcome": [
+      [
+        "unobserved",
+        "observed"
+      ],
+      [
+        "observed",
+        "partially_verified"
+      ],
+      [
+        "partially_verified",
+        "verified"
+      ],
+      [
+        "observed",
+        "disputed"
+      ],
+      [
+        "partially_verified",
+        "disputed"
+      ],
+      [
+        "verified",
+        "disputed"
+      ]
+    ],
+    "Receipt": [
+      [
+        "draft",
+        "issued"
+      ],
+      [
+        "issued",
+        "superseded"
+      ],
+      [
+        "issued",
+        "disputed"
+      ]
+    ],
+    "Contribution": [
+      [
+        "proposed",
+        "observed"
+      ],
+      [
+        "observed",
+        "verified"
+      ],
+      [
+        "observed",
+        "disputed"
+      ],
+      [
+        "verified",
+        "disputed"
+      ],
+      [
+        "verified",
+        "superseded"
+      ]
+    ],
+    "Repair": [
+      [
+        "proposed",
+        "accepted"
+      ],
+      [
+        "accepted",
+        "in_progress"
+      ],
+      [
+        "in_progress",
+        "completed"
+      ],
+      [
+        "in_progress",
+        "failed"
+      ],
+      [
+        "proposed",
+        "waived"
+      ],
+      [
+        "accepted",
+        "disputed"
+      ],
+      [
+        "in_progress",
+        "disputed"
+      ]
+    ],
+    "Dispute": [
+      [
+        "opened",
+        "under_review"
+      ],
+      [
+        "under_review",
+        "resolved"
+      ],
+      [
+        "under_review",
+        "rejected"
+      ],
+      [
+        "opened",
+        "withdrawn"
+      ],
+      [
+        "under_review",
+        "escalated"
+      ],
+      [
+        "escalated",
+        "under_review"
+      ]
+    ],
+    "FailurePattern": [
+      [
+        "candidate",
+        "confirmed"
+      ],
+      [
+        "confirmed",
+        "mitigated"
+      ],
+      [
+        "mitigated",
+        "regression_covered"
+      ],
+      [
+        "regression_covered",
+        "retired"
+      ],
+      [
+        "candidate",
+        "disputed"
+      ],
+      [
+        "confirmed",
+        "disputed"
+      ],
+      [
+        "disputed",
+        "candidate"
+      ],
+      [
+        "disputed",
+        "confirmed"
+      ]
+    ],
+    "GovernanceCell": [
+      [
+        "proposed",
+        "active"
+      ],
+      [
+        "active",
+        "suspended"
+      ],
+      [
+        "suspended",
+        "active"
+      ],
+      [
+        "active",
+        "retired"
+      ]
+    ]
+  },
+  "non_claims": [
+    "This model does not abolish money, property, law or government.",
+    "This model does not establish a universal justice function.",
+    "This model does not authorize surveillance or universal personal dossiers.",
+    "This model does not establish legal identity or legal responsibility.",
+    "This model does not create Stable Core membership or implementation authority."
+  ]
+}
