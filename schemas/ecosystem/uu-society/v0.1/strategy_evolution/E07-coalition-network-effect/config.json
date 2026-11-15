@@ -1,0 +1,92 @@
+{
+  "experiment_version": "0.5",
+  "actor_count": 120,
+  "interaction_count": 24000,
+  "epoch_count": 12,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool",
+    "compute"
+  ],
+  "population": {
+    "base_capability_probability": 0.72,
+    "base_willingness_probability": 0.86
+  },
+  "learning": {
+    "learning_rate": 0.6,
+    "exploration_rate": 0.16,
+    "switching_cost": 0.08,
+    "initial_strategy_value": 0,
+    "strategy_evidence_learning_rate": 0
+  },
+  "economics": {
+    "request_benefit": 3,
+    "unmet_cost": 1,
+    "provider_cost": 1,
+    "harm_cost": 4,
+    "breach_victim_cost": 2,
+    "extract_bonus": 0.1,
+    "repair_cost": 0.8,
+    "repair_reward": 1,
+    "cooperation_reward": 0.1,
+    "exit_safety_reward": 0.1,
+    "coalition_internal_bonus": 18,
+    "coalition_maintenance_cost": 0
+  },
+  "strategy_parameters": {
+    "COOPERATE": {
+      "request_activity": 1,
+      "provider_willingness_multiplier": 1,
+      "harm_rate": 0.01,
+      "breach_rate": 0.01,
+      "repair_probability": 0.45
+    },
+    "EXTRACT": {
+      "request_activity": 1.45,
+      "provider_willingness_multiplier": 0.2,
+      "harm_rate": 0.08,
+      "breach_rate": 0.2,
+      "repair_probability": 0.05
+    },
+    "REPAIR": {
+      "request_activity": 0.85,
+      "provider_willingness_multiplier": 0.9,
+      "harm_rate": 0.01,
+      "breach_rate": 0.01,
+      "repair_probability": 0.92
+    },
+    "EXIT": {
+      "request_activity": 0.1,
+      "provider_willingness_multiplier": 0.1,
+      "harm_rate": 0.005,
+      "breach_rate": 0.005,
+      "repair_probability": 0.15
+    },
+    "COALITION": {
+      "request_activity": 1.5,
+      "provider_willingness_multiplier": 1.2,
+      "harm_rate": 0.02,
+      "breach_rate": 0.02,
+      "repair_probability": 0.4
+    }
+  },
+  "diagnostic_thresholds": {
+    "attractor_share_min": 0.38,
+    "exit_share_max": 0.4,
+    "fulfillment_drop_max": 0.08,
+    "coalition_outsider_gap_max": 0.2,
+    "dominant_switch_count_min": 20,
+    "diversity_entropy_min": 0.98
+  },
+  "experiment_id": "E07-coalition-network-effect",
+  "title_en": "Coalition network-effect environment",
+  "title_ru": "Среда сетевого эффекта коалиции",
+  "purpose": "Follow-up after E04: test whether coalition becomes an attractor only after internal network benefits substantially exceed maintenance cost.",
+  "seed": "uu-strategy-e07-coalition-network-v0.5",
+  "expected": {
+    "result": "PASS",
+    "expected_pattern_ids": []
+  }
+}

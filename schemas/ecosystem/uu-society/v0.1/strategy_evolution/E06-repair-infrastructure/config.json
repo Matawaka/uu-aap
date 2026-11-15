@@ -1,0 +1,92 @@
+{
+  "experiment_version": "0.5",
+  "actor_count": 120,
+  "interaction_count": 24000,
+  "epoch_count": 12,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool",
+    "compute"
+  ],
+  "population": {
+    "base_capability_probability": 0.72,
+    "base_willingness_probability": 0.86
+  },
+  "learning": {
+    "learning_rate": 0.65,
+    "exploration_rate": 0.18,
+    "switching_cost": 0.05,
+    "initial_strategy_value": 0,
+    "strategy_evidence_learning_rate": 0
+  },
+  "economics": {
+    "request_benefit": 3,
+    "unmet_cost": 1,
+    "provider_cost": 1,
+    "harm_cost": 10,
+    "breach_victim_cost": 6,
+    "extract_bonus": 0.1,
+    "repair_cost": 0.2,
+    "repair_reward": 20,
+    "cooperation_reward": 0.2,
+    "exit_safety_reward": 0.1,
+    "coalition_internal_bonus": 0.2,
+    "coalition_maintenance_cost": 0.4
+  },
+  "strategy_parameters": {
+    "COOPERATE": {
+      "request_activity": 1,
+      "provider_willingness_multiplier": 1,
+      "harm_rate": 0.1,
+      "breach_rate": 0.08,
+      "repair_probability": 0.45
+    },
+    "EXTRACT": {
+      "request_activity": 1.45,
+      "provider_willingness_multiplier": 0.2,
+      "harm_rate": 0.3,
+      "breach_rate": 0.35,
+      "repair_probability": 0.05
+    },
+    "REPAIR": {
+      "request_activity": 0.85,
+      "provider_willingness_multiplier": 0.9,
+      "harm_rate": 0.02,
+      "breach_rate": 0.02,
+      "repair_probability": 0.98
+    },
+    "EXIT": {
+      "request_activity": 0.1,
+      "provider_willingness_multiplier": 0.1,
+      "harm_rate": 0.005,
+      "breach_rate": 0.005,
+      "repair_probability": 0.15
+    },
+    "COALITION": {
+      "request_activity": 1.15,
+      "provider_willingness_multiplier": 0.85,
+      "harm_rate": 0.12,
+      "breach_rate": 0.1,
+      "repair_probability": 0.4
+    }
+  },
+  "diagnostic_thresholds": {
+    "attractor_share_min": 0.36,
+    "exit_share_max": 0.4,
+    "fulfillment_drop_max": 0.08,
+    "coalition_outsider_gap_max": 0.15,
+    "dominant_switch_count_min": 20,
+    "diversity_entropy_min": 0.98
+  },
+  "experiment_id": "E06-repair-infrastructure",
+  "title_en": "High-value distributed repair infrastructure",
+  "title_ru": "Высокоценная распределённая инфраструктура Repair",
+  "purpose": "Follow-up after E02: test whether REPAIR becomes an attractor only when external repair is sufficiently valuable and unresolved harm is common.",
+  "seed": "uu-strategy-e06-repair-infrastructure-v0.5",
+  "expected": {
+    "result": "PASS",
+    "expected_pattern_ids": []
+  }
+}

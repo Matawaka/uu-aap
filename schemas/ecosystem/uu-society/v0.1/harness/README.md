@@ -155,3 +155,37 @@ The first adaptive run exposed a failure mode rather than merely confirming the 
 - A07 protected-need actors remain at **0.982** fulfillment while ordinary actors are **0.845**. The experiment therefore keeps `LEGITIMATE_ASYMMETRY_PRESERVED` separate from extractor detection.
 
 This means bilateral reciprocity is insufficient against counterpart rotation, while broader context evidence can over-constrain the network. The model treats that trade-off as a result, not as a reason to lower thresholds.
+
+
+## Endogenous strategy evolution v0.5
+
+No actor is assigned a permanent adversarial or extractor type. Each actor learns the observed utility of behavioral strategies and may switch at epoch boundaries with bounded exploration.
+
+Strategies:
+- COOPERATE
+- EXTRACT
+- REPAIR
+- EXIT
+- COALITION
+
+The REPAIR strategy can perform distributed repair for harm caused by another actor. COALITION is a reversible coordination strategy, not an identity class.
+
+Run:
+
+```bash
+python schemas/ecosystem/uu-society/v0.1/harness/run_strategy_evolution.py
+```
+
+
+### v0.5 experimental findings
+
+The first strategy-evolution sequence produced several falsifications and follow-ups:
+
+- E01: extraction incentives did not create a pure extractor society. They produced a coupled **EXTRACT + EXIT** regime: tail shares ~0.433 EXTRACT and 0.500 EXIT, while fulfillment fell from ~0.995 to ~0.684.
+- E02/E04: high Repair value and coalition value alone did not create corresponding attractors.
+- E05/E06/E07: even stronger direct private rewards still left COOPERATE at 0.300, REPAIR at ~0.233 and COALITION at 0.375.
+- E08: anonymous aggregate StrategyOutcomeEvidence changed the result sharply: COOPERATE reached ~0.883 with tail fulfillment 1.000.
+- E09: the same evidence mechanism did **not** rescue Repair under high systemic risk; EXIT reached ~0.717. Making Repair lucrative is insufficient when participation itself is too dangerous.
+- E10: COALITION reached 0.850 under strategy-level evidence and strong internal network benefits, but the measured outsider fulfillment gap remained 0 in this synthetic configuration.
+
+StrategyOutcomeEvidence reports outcome evidence about a policy, not reputation about persons.

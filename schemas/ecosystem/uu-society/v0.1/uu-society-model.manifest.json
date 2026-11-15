@@ -1349,5 +1349,61 @@
       "A07 protected-need actors retained ~0.982 fulfillment while ordinary actors were ~0.845 under the same contribution-friction regime",
       "Need without contribution is treated separately from synthetic extractor behavior"
     ]
+  },
+  "endogenous_strategy_evolution": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_STRATEGY_EVOLUTION",
+    "harness": "./harness/run_strategy_evolution.py",
+    "config_schema": "./strategy-evolution.config.schema.json",
+    "receipt_schema": "./strategy-evolution.receipt.schema.json",
+    "strategies": [
+      "COOPERATE",
+      "EXTRACT",
+      "REPAIR",
+      "EXIT",
+      "COALITION"
+    ],
+    "selection_model": "equal initial values + deterministic tie-break + bounded exploration + actor-local learned utility",
+    "mechanisms": [
+      "strategy-specific request activity",
+      "strategy-specific provider willingness",
+      "strategy-specific harm/breach/repair behavior",
+      "distributed external repair",
+      "coalition internal preference and maintenance cost",
+      "epoch utility learning and switching",
+      "anonymous aggregate StrategyOutcomeEvidence for policy-level social learning"
+    ],
+    "observables": [
+      "strategy share by epoch",
+      "strategy entropy",
+      "dominant strategy history",
+      "strategy transition counts",
+      "fulfillment and harm by epoch",
+      "coalition internal interaction share",
+      "coalition-outsider fulfillment gap",
+      "access/provision Gini",
+      "actor reward range"
+    ],
+    "non_effects": [
+      "Strategy != identity",
+      "Extract strategy != permanent actor label",
+      "Coalition strategy != prohibited association",
+      "Learned utility != moral worth",
+      "Strategy attractor != universal social law",
+      "Simulation conformance != social correctness",
+      "StrategyOutcomeEvidence != person reputation",
+      "Aggregate strategy utility != universal person score"
+    ],
+    "reference_findings": [
+      "E01 extraction incentives produced a coupled EXTRACT + EXIT regime: tail EXTRACT share ~0.433 and EXIT share 0.500, with fulfillment falling from ~0.995 to ~0.684",
+      "E02 high-value Repair without strategy-level evidence did not produce a REPAIR attractor",
+      "E04 strong coalition incentive without strategy-level evidence did not produce a COALITION attractor",
+      "E05 cooperation-rich private utility alone raised COOPERATE only to 0.300",
+      "E06 very high Repair reward alone raised REPAIR only to ~0.233",
+      "E07 very high coalition network benefit alone raised COALITION only to 0.375",
+      "E08 anonymous StrategyOutcomeEvidence caused COOPERATE to become a strong attractor at ~0.883 while fulfillment remained 1.000",
+      "E09 in a high-harm Repair environment, StrategyOutcomeEvidence propagated EXIT rather than REPAIR: tail EXIT share ~0.717 and fulfillment fell to ~0.837",
+      "E10 StrategyOutcomeEvidence caused COALITION to become a strong attractor at 0.850 while measured coalition-outsider fulfillment gap remained 0 in this synthetic setup",
+      "Pro-social strategy diffusion depends not only on private reward but on how useful strategy outcomes become learnable without person-level reputation"
+    ]
   }
 }

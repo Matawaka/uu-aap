@@ -1,0 +1,92 @@
+{
+  "experiment_version": "0.5",
+  "actor_count": 120,
+  "interaction_count": 24000,
+  "epoch_count": 12,
+  "categories": [
+    "time",
+    "knowledge",
+    "transport",
+    "tool",
+    "compute"
+  ],
+  "population": {
+    "base_capability_probability": 0.72,
+    "base_willingness_probability": 0.86
+  },
+  "learning": {
+    "learning_rate": 0.6,
+    "exploration_rate": 0.16,
+    "switching_cost": 0.1,
+    "initial_strategy_value": 0,
+    "strategy_evidence_learning_rate": 0
+  },
+  "economics": {
+    "request_benefit": 3,
+    "unmet_cost": 1,
+    "provider_cost": 0.5,
+    "harm_cost": 6,
+    "breach_victim_cost": 4,
+    "extract_bonus": 0,
+    "repair_cost": 0.8,
+    "repair_reward": 1.2,
+    "cooperation_reward": 7,
+    "exit_safety_reward": 0.1,
+    "coalition_internal_bonus": 0.3,
+    "coalition_maintenance_cost": 0.5
+  },
+  "strategy_parameters": {
+    "COOPERATE": {
+      "request_activity": 1,
+      "provider_willingness_multiplier": 1,
+      "harm_rate": 0.01,
+      "breach_rate": 0.01,
+      "repair_probability": 0.45
+    },
+    "EXTRACT": {
+      "request_activity": 1.45,
+      "provider_willingness_multiplier": 0.2,
+      "harm_rate": 0.08,
+      "breach_rate": 0.2,
+      "repair_probability": 0.05
+    },
+    "REPAIR": {
+      "request_activity": 0.85,
+      "provider_willingness_multiplier": 0.9,
+      "harm_rate": 0.01,
+      "breach_rate": 0.01,
+      "repair_probability": 0.92
+    },
+    "EXIT": {
+      "request_activity": 0.1,
+      "provider_willingness_multiplier": 0.1,
+      "harm_rate": 0.005,
+      "breach_rate": 0.005,
+      "repair_probability": 0.15
+    },
+    "COALITION": {
+      "request_activity": 1.15,
+      "provider_willingness_multiplier": 0.85,
+      "harm_rate": 0.02,
+      "breach_rate": 0.02,
+      "repair_probability": 0.4
+    }
+  },
+  "diagnostic_thresholds": {
+    "attractor_share_min": 0.4,
+    "exit_share_max": 0.4,
+    "fulfillment_drop_max": 0.08,
+    "coalition_outsider_gap_max": 0.15,
+    "dominant_switch_count_min": 20,
+    "diversity_entropy_min": 0.98
+  },
+  "experiment_id": "E05-cooperation-rich",
+  "title_en": "Cooperation-rich environment",
+  "title_ru": "Среда с высокой ценностью сотрудничества",
+  "purpose": "Follow-up experiment testing whether cooperation becomes an endogenous attractor when providing creates strong local value and extraction has little private advantage.",
+  "seed": "uu-strategy-e05-cooperation-v0.5",
+  "expected": {
+    "result": "PASS",
+    "expected_pattern_ids": []
+  }
+}
