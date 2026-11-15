@@ -1,0 +1,111 @@
+{
+  "scenario_id": "S05-malicious-action-attempt",
+  "scenario_version": "0.1",
+  "title_en": "Malicious irreversible action attempt",
+  "title_ru": "Попытка злонамеренного необратимого действия",
+  "purpose": "Verify consequence narrowing, lease revocation and containment without removing the actor's rights floor.",
+  "evaluation_time": "2026-11-15T08:30:00Z",
+  "initial_snapshot": "initial.snapshot.json",
+  "semantic_facts": [
+    "malicious_irreversible_action_attempt",
+    "containment_required"
+  ],
+  "events": [
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s05-arae-narrow",
+      "entity_type": "ARAEState",
+      "entity_ref": "urn:uu-aap:uu-society:arae-state:s05",
+      "from_state": "active",
+      "to_state": "narrowed",
+      "occurred_at": "2026-11-15T08:05:00Z",
+      "reason": "Narrow reachable consequences after hostile divergence.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s05-anomaly"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s05-lease-revoke",
+      "entity_type": "ActionLease",
+      "entity_ref": "urn:uu-aap:uu-society:action-lease:s05",
+      "from_state": "active",
+      "to_state": "revoked",
+      "occurred_at": "2026-11-15T08:06:00Z",
+      "reason": "Revoke current action lease.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s05-anomaly"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s05-anomaly"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s05-action-contained",
+      "entity_type": "Action",
+      "entity_ref": "urn:uu-aap:uu-society:action:s05",
+      "from_state": "in_progress",
+      "to_state": "contained",
+      "occurred_at": "2026-11-15T08:07:00Z",
+      "reason": "Contain the in-progress action before irreversible effect.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s05-anomaly"
+      ],
+      "authority_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s05-anomaly"
+      ],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    },
+    {
+      "$schema": "../../uu-society-transition.schema.json",
+      "schema_version": "0.1",
+      "transition_id": "urn:uu-aap:uu-society:transition:s05-evidence-attested",
+      "entity_type": "EvidenceEvent",
+      "entity_ref": "urn:uu-aap:uu-society:evidence-event:s05-anomaly",
+      "from_state": "observed",
+      "to_state": "attested",
+      "occurred_at": "2026-11-15T08:08:00Z",
+      "reason": "Bind the observed hostile divergence as attested evidence.",
+      "evidence_refs": [
+        "urn:uu-aap:uu-society:evidence-event:s05-anomaly"
+      ],
+      "authority_refs": [],
+      "reversible": true,
+      "receipt_ref": null,
+      "previous_transition_ref": null,
+      "contestable": true
+    }
+  ],
+  "expected": {
+    "scenario_result": "PASS",
+    "expected_final_states": {
+      "urn:uu-aap:uu-society:arae-state:s05": "narrowed",
+      "urn:uu-aap:uu-society:action-lease:s05": "revoked",
+      "urn:uu-aap:uu-society:action:s05": "contained",
+      "urn:uu-aap:uu-society:evidence-event:s05-anomaly": "attested",
+      "urn:uu-aap:uu-society:actor:s05": "active"
+    },
+    "expected_violation_ids": [],
+    "required_invariants_preserved": [
+      "I-001",
+      "I-006",
+      "I-014"
+    ]
+  }
+}
