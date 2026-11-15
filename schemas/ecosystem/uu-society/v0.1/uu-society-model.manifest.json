@@ -1495,5 +1495,37 @@
       "Local legality != cumulative legitimacy",
       "Legitimate Rule Change != Legitimate Accumulation of Power"
     ]
+  },
+  "review_independence": {
+    "status": "EXPERIMENTAL_DETERMINISTIC_STRUCTURAL_REVIEW_INDEPENDENCE",
+    "harness": "./harness/run_review_independence.py",
+    "cases": [
+      "R00",
+      "R01",
+      "R02",
+      "R03",
+      "R04",
+      "R05",
+      "R06",
+      "R07"
+    ],
+    "dependency_edges": [
+      "appoints",
+      "funds",
+      "controls_evidence",
+      "delegates"
+    ],
+    "non_control_edges": [
+      "reviews"
+    ],
+    "central_invariant": "Formal Independence != Effective Independence",
+    "model": "transitive control-origin graph, beneficiary conflict exclusion, conservative independent-component quorum",
+    "non_effects": [
+      "Control dependency proxy != actual legal control",
+      "Structural conflict != misconduct",
+      "Independence proxy != authorization",
+      "Graph quorum != complete constitutional legitimacy",
+      "Simulation conformance != social correctness"
+    ]
   }
 }
