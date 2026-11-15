@@ -194,7 +194,8 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
     cycles = []
     adoption_count = 0
     sunset_reversal_count = 0
-    ever_capture = captured_structurally(config, state)
+    initial_capture = captured_structurally(config, state)
+    ever_capture = initial_capture
     ever_reference_rights_ok = reference_rights_floor_ok(config, outcome)
     saw_general_capture_path = False
     saw_conflicted_approval = False
@@ -306,7 +307,11 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         patterns.add("CONSTITUTIONAL_ADAPTATION")
 
     final_capture = captured_structurally(config, state)
-    if ever_capture and config["mode"] in ("local_legality_only", "captured_review"):
+    if (
+        ever_capture
+        and not initial_capture
+        and config["mode"] in ("local_legality_only", "captured_review")
+    ):
         patterns.add("LEGITIMATE_STEPS_ACCUMULATE_CAPTURE")
     if state["review_independence"] < limits["min_review_independence"]:
         patterns.add("REVIEW_INDEPENDENCE_ERODED")
@@ -330,7 +335,6 @@ def simulate(config: dict[str, Any], enforce_expected: bool = True) -> tuple[dic
         patterns.add("CAPTURE_WITHOUT_RIGHTS_FLOOR_BREACH")
     if saw_general_capture_path:
         patterns.add("GENERAL_PURPOSE_CAPTURE_PATH")
-    initial_capture = captured_structurally(config, initial_state)
     if initial_capture and saw_recovery_action and not final_capture:
         patterns.add("CONSTITUTIONAL_RECOVERY")
 
