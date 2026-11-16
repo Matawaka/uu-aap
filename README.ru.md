@@ -326,6 +326,10 @@ responsibility_accepted = false
 
 Family contract не означает, что planned Game Companion runtime interfaces уже реализованы, что KONTUR активирован или что полевая проверка доказывает production readiness.
 
+## Исследовательские отчёты
+
+- [Matawaka / UU-AAP: итог работы и исследование рынка — 16 ноября 2026](research/market/2026-11-16/README.md): PDF и Markdown на русском языке, результаты UU Society v1.0–v1.2, сравнение 18 решений и компонентов, первичные источники, ограничения и план сравнительного пилота. Это датированный исследовательский срез; он не подтверждает коммерческую уникальность и не меняет conformance протокола.
+
 ## IP-граница
 
 Заявитель сообщил о подаче заявки на выбранный программный объект Core. Публичный репозиторий пока не связывает фактическую квитанцию подачи и не утверждает государственную регистрацию.
@@ -373,3 +377,4 @@ Family contract не означает, что planned Game Companion runtime int
 15. [`server/kontur/v0.1/`](server/kontur/v0.1/) и [`pilots/kontur-game-companion/`](pilots/kontur-game-companion/) — KONTUR implementation and pilots.
 
 Для нормативной и machine-readable проверки используйте канонические английские документы, schemas, validators и receipts, на которые ссылаются эти страницы.
+
