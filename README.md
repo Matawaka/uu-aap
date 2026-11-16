@@ -73,6 +73,10 @@ UU-AAP adds that layer.
 
 The pilot intentionally does **not** claim profile V yet: no canonical PDF/EPUB artifact has been selected and cryptographically bound. This makes the example useful for testing whether the protocol can represent incomplete but honest provenance rather than forcing a false appearance of completeness.
 
+## Research reports
+
+- [Matawaka / UU-AAP: research closeout and market review — 16 November 2026](research/market/2026-11-16/README.md): Russian-language PDF and Markdown report covering the UU Society v1.0–v1.2 results, 18 related products/components, primary sources, limitations and a proposed comparative pilot. This dated research report does not establish commercial uniqueness or change protocol conformance.
+
 ## Research proposals
 
 ### Proof of Available Intelligence (PoAI) — Genesis
@@ -155,3 +159,4 @@ For a short concrete review, use [Core Pilot 002 Issue #422](https://github.com/
 
 **Initial proposer/editor:** [Matawaka](https://github.com/Matawaka)  
 This attribution identifies the initial public proposer; it does not grant unilateral authority over future protocol meaning.
+
