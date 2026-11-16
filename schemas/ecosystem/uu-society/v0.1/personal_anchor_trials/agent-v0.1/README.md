@@ -1,7 +1,9 @@
 # Agent interface for Personal Anchor trials v0.1
 
-Tracking #1047. This candidate is stacked on PR #1046 at exact engine source
-`0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b`; that PR is not assumed merged.
+Tracking #1047. PR #1046 was integrated into main at
+`d6981d76671bef191d4a49696472c10fbe40402b`. Engine pins retain the original reviewed
+source `0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b`; its tree matches the merged
+predecessor. This interface candidate targets main.
 The interface provides a JSON CLI and a local MCP stdio server over the same
 unchanged offline lifecycle experiment. [Русская версия](README.ru.md).
 
