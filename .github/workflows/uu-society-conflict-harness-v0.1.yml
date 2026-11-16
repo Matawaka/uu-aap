@@ -4,17 +4,41 @@ on:
   pull_request:
     paths:
       - "schemas/ecosystem/uu-society/v0.1/**"
+      - "protocols/integration/execute-revalidation/v0.1/**"
+      - "protocols/integration/pre-action-authorize-admission/v0.1/**"
       - ".github/workflows/uu-society-conflict-harness-v0.1.yml"
   push:
     branches: [main]
     paths:
       - "schemas/ecosystem/uu-society/v0.1/**"
+      - "protocols/integration/execute-revalidation/v0.1/**"
+      - "protocols/integration/pre-action-authorize-admission/v0.1/**"
       - ".github/workflows/uu-society-conflict-harness-v0.1.yml"
 
 permissions:
   contents: read
 
 jobs:
+  personal-anchor-adversarial-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install pinned validator
+        run: python -m pip install jsonschema==4.23.0
+      - name: Check Personal Anchor response and authority separation
+        run: >-
+          python -m unittest discover
+          -s schemas/ecosystem/uu-society/v0.1/harness
+          -p test_personal_anchor_trials.py -v
+      - name: Check retained expiry and current admission bindings
+        run: node --test schemas/ecosystem/uu-society/v0.1/harness/test_personal_anchor_authority.js
+
   deterministic-conflict-scenarios:
     runs-on: ubuntu-latest
     steps:
