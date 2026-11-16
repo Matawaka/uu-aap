@@ -1,0 +1,90 @@
+{
+  "type": "object",
+  "properties": {
+    "status": {
+      "const": "NOT_EXECUTED"
+    },
+    "participant_status": {
+      "const": "NOT_RECRUITED"
+    },
+    "baseline_status": {
+      "const": "REQUIRES_PARTICIPANT_SELECTION"
+    },
+    "baseline_product": {
+      "const": null
+    },
+    "baseline_version": {
+      "const": null
+    },
+    "baseline_config_digest": {
+      "const": null
+    },
+    "criteria_status": {
+      "const": "REQUIRES_PREREGISTRATION_BEFORE_EXTERNAL_MEASUREMENT"
+    },
+    "thresholds": {
+      "const": null
+    },
+    "trial_design": {
+      "const": {
+        "target": "One exact GitHub merge in participant-controlled sandbox",
+        "arms": [
+          "participant_existing_stack",
+          "same_stack_plus_matawaka_evidence_export"
+        ],
+        "controls": [
+          "same_target",
+          "same_permissions",
+          "same_evidence",
+          "same_allowed_and_denied_cases",
+          "order_counterbalanced"
+        ],
+        "metrics": [
+          "setup_hours",
+          "reconstruction_seconds",
+          "manual_log_lookups",
+          "false_allows",
+          "false_blocks",
+          "processing_p50_ms",
+          "processing_p95_ms",
+          "sensitive_bytes_retained",
+          "offline_replay_completed"
+        ],
+        "human_waiting_separated": true,
+        "missing_measurement_is_null": true
+      }
+    },
+    "results": {
+      "const": {
+        "setup_hours": null,
+        "reconstruction_seconds": null,
+        "processing_p50_ms": null,
+        "processing_p95_ms": null,
+        "willingness_to_pay": null
+      }
+    },
+    "non_effects": {
+      "const": {
+        "outreach_sent": false,
+        "live_execution_authorized": false,
+        "independence_established": false,
+        "commercial_advantage_established": false
+      }
+    }
+  },
+  "required": [
+    "status",
+    "participant_status",
+    "baseline_status",
+    "baseline_product",
+    "baseline_version",
+    "baseline_config_digest",
+    "criteria_status",
+    "thresholds",
+    "trial_design",
+    "results",
+    "non_effects"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

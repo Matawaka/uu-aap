@@ -1,0 +1,121 @@
+{
+  "artifact_type": "PortableReplayImplementationReceipt",
+  "version": "0.1",
+  "source_frontier": "25202fb9cc936729cebfe3c93d6936f85b847624",
+  "local_validation_scope": "TARGETED_SOURCE_SNAPSHOT_WITH_FOUR_EXACT_MAIN_SOURCE_PINS",
+  "runtime": {
+    "python": "3.12.14",
+    "node": "v24.22.1",
+    "jsonschema": "4.26.0"
+  },
+  "local_results": {
+    "cases_conform": 17,
+    "cases_total": 17,
+    "test_methods_passed": 38,
+    "historical_harness_validation": "PASS",
+    "external_operator": "NOT_EXECUTED",
+    "vendor_execution": "NOT_EXECUTED",
+    "customer_validation": "NOT_EXECUTED"
+  },
+  "trace_digest": "sha256:1f369a4bfda9e8fe37d2480f2d36b5abc1efa0d86030128b9a2079a8ac4143dc",
+  "github_ci_evaluated_by_this_receipt": false,
+  "experiment_runtime_external_effects": false,
+  "artifacts": [
+    {
+      "path": "README.md",
+      "sha256": "b74de6131d063312ad96de1c1aa7c76de940dd7f6265967cf940759184476dbe"
+    },
+    {
+      "path": "README.ru.md",
+      "sha256": "cd9e2c88f99efe4766bb2069e17043826c825575d9380c4d827593f5ccafa34e"
+    },
+    {
+      "path": "comparison-plan.json",
+      "sha256": "e163a63b3292d786c1aaf96e06bbc7c5cb9d78f5d3aa1ced61664cd0e15176a5"
+    },
+    {
+      "path": "comparison-plan.schema.json",
+      "sha256": "7d8478ce9aeace58630eef4887201f13515f4c5bee6f5c5c9fbeb8f272655cdc"
+    },
+    {
+      "path": "evidence/defect-followups.json",
+      "sha256": "663dde3f9997b6c69eb2e84f9577f5ec83caa5b43aa55827e221cadd87bfb402"
+    },
+    {
+      "path": "evidence/first-hostile.log",
+      "sha256": "bc6dddcab0d3e96095c82c318ddf33f255816ca5e3134791576907dd58f44d19"
+    },
+    {
+      "path": "evidence/first-results.json",
+      "sha256": "d2bb210f9ef9eb6a9c48a370be41a5c99cae17e2b5acb77d46dd75ba04b0c8ce"
+    },
+    {
+      "path": "evidence/prototype-evidence-pack.schema.json",
+      "sha256": "263d2f3a0d8497daed7ce9859298a45041eaabc4a9cc6bf6592b458f3914a395"
+    },
+    {
+      "path": "evidence/prototype-verifier.py.txt",
+      "sha256": "d77932c19b6ccd3fbce09fc09ebfdb7e8bd6cfd5bdf4760cda3a802ebd1c961b"
+    },
+    {
+      "path": "evidence/reference-correction.json",
+      "sha256": "a518cfba1a8bf01cbfae0b8ea9bec3e07e510558e3d6ca952e5d262d0f5c1609"
+    },
+    {
+      "path": "evidence/second-hostile.log",
+      "sha256": "cb3d0d7ca1dab812d06141beef2fb3e377132a4c3aa64e91dc8f5ee62f1adf8a"
+    },
+    {
+      "path": "evidence-pack.schema.json",
+      "sha256": "c643310c2851d2096ac05b14f13ae661b396f21b54b039525512c0929da5343e"
+    },
+    {
+      "path": "manifest.json",
+      "sha256": "339f83cf1538db326c9733a8019b4f9bb996e1a0fa3d10b3aaa78a488f7f6356"
+    },
+    {
+      "path": "protocol.json",
+      "sha256": "7bffbf4583923fc3b1323901272629d3ae11f43ead4138df37156a33a9a13cd1"
+    },
+    {
+      "path": "reference-results.json",
+      "sha256": "8816be706b50eeb3f191506492be83df2cb031eb787f7dfb3020962a1595ea19"
+    },
+    {
+      "path": "replay-pilot.config.schema.json",
+      "sha256": "3a7391ec91d080b63e2a01b4d458756d0acefbb59cfcc69360b3c09bca210ba0"
+    },
+    {
+      "path": "replay-result.schema.json",
+      "sha256": "361938cc76b5279920ea3d37f615338050a6fdccaa55a2fc328cc877accc39eb"
+    },
+    {
+      "path": "requirements.txt",
+      "sha256": "756cc9e506ae4ee1a6f6c0507088b5cfc0dc8ba350fb2d2d46f1ffa72033adb6"
+    },
+    {
+      "path": "run_replay_pilot.py",
+      "sha256": "97a078a4ac6492e8a9bad076540a33f42dcc8c3970978767f545ed8dd7eef4c3"
+    },
+    {
+      "path": "source-bindings.json",
+      "sha256": "532e12bf9103e24eafba5c77320543abcaf8c5d222d0b4fe8dfe7622a3b023c0"
+    },
+    {
+      "path": "test_replay_pilot.py",
+      "sha256": "193991d6de005cfcbd5234ccda065203e0f4200537697afc82c422756024957e"
+    },
+    {
+      "path": "validate_package.py",
+      "sha256": "bbe4c3e195c79db49683fe995f21dd5f79bbcb8b21e8c0a1e8d2833673052373"
+    },
+    {
+      "path": "verification-receipt.schema.json",
+      "sha256": "d5fbdb0a4d220609f3edaa685a7c15db32f02d6eed1de8fa44db94068e956a3b"
+    },
+    {
+      "path": "verify_evidence.py",
+      "sha256": "6cfa0251f808a6efb7de19f04330f6fa5561eeb8b9f06c71aab10873ed7dc661"
+    }
+  ]
+}

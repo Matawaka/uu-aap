@@ -1,0 +1,780 @@
+{
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "UU-AAP-PORTABLE-ACTION-EVIDENCE"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "evidence_class": {
+      "const": "SYNTHETIC_REPLAY"
+    },
+    "case_id": {
+      "type": "string",
+      "pattern": "^P[0-9]{2}$",
+      "minLength": 3,
+      "maxLength": 3
+    },
+    "claim_stage": {
+      "enum": [
+        "PLAN",
+        "OBSERVATION_RECORD"
+      ]
+    },
+    "decision_time": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+      "minLength": 20,
+      "maxLength": 20
+    },
+    "target": {
+      "$ref": "#/$defs/target"
+    },
+    "approval": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/approval"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "permit": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/permit"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "mode": {
+          "const": "dry_run"
+        },
+        "live_execution_enabled": {
+          "const": false
+        },
+        "transport": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "enum": [
+                "mcp",
+                "function_call",
+                "json_rpc",
+                "native_tool",
+                "other"
+              ]
+            },
+            "tool_name": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "transport_defines_authority": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "type",
+            "tool_name",
+            "transport_defines_authority"
+          ],
+          "additionalProperties": false
+        },
+        "authorized": {
+          "type": "object",
+          "properties": {
+            "decision": {
+              "enum": [
+                "admissible",
+                "approval_required",
+                "denied"
+              ]
+            },
+            "decision_hash": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "minLength": 71,
+              "maxLength": 71
+            },
+            "frontier": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "minLength": 71,
+              "maxLength": 71
+            },
+            "action_permit_hash": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "minLength": 71,
+              "maxLength": 71
+            },
+            "approval_reference": {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "minLength": 71,
+              "maxLength": 71
+            },
+            "repository": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "operation": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "pr_number": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "expected_head_sha": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$",
+              "minLength": 40,
+              "maxLength": 40
+            },
+            "expected_base_sha": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$",
+              "minLength": 40,
+              "maxLength": 40
+            },
+            "merge_method": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "authority_scope": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "expected_effects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "maxItems": 32,
+              "uniqueItems": true
+            },
+            "explicit_non_effects": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512
+              },
+              "maxItems": 32,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "decision",
+            "decision_hash",
+            "frontier",
+            "repository",
+            "operation",
+            "pr_number",
+            "expected_head_sha",
+            "expected_base_sha",
+            "merge_method",
+            "authority_scope",
+            "expected_effects",
+            "explicit_non_effects"
+          ],
+          "additionalProperties": false
+        },
+        "current_state": {
+          "type": "object",
+          "properties": {
+            "repository": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            "pr_number": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "head_sha": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$",
+              "minLength": 40,
+              "maxLength": 40
+            },
+            "base_sha": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$",
+              "minLength": 40,
+              "maxLength": 40
+            }
+          },
+          "required": [
+            "repository",
+            "pr_number",
+            "head_sha",
+            "base_sha"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "scenario_id",
+        "mode",
+        "live_execution_enabled",
+        "transport",
+        "authorized",
+        "current_state"
+      ],
+      "additionalProperties": false
+    },
+    "harness_report": {
+      "type": "object",
+      "properties": {
+        "protocol": {
+          "const": "UU-AAP-AI-GATEWAY-REFERENCE-HARNESS"
+        },
+        "version": {
+          "const": "0.1"
+        },
+        "artifact_type": {
+          "const": "HarnessReport"
+        },
+        "scenario_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "mode": {
+          "const": "dry_run"
+        },
+        "decision": {
+          "enum": [
+            "allow_plan",
+            "deny"
+          ]
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512
+          },
+          "maxItems": 32,
+          "uniqueItems": true
+        },
+        "actuator_call_emitted": {
+          "const": false
+        },
+        "planned_call": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "transport": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "tool_name": {
+                  "const": "uu_aap.github.actuate"
+                },
+                "arguments": {
+                  "type": "object",
+                  "properties": {
+                    "provider": {
+                      "const": "github"
+                    },
+                    "repository": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "operation": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "pr_number": {
+                      "type": "integer",
+                      "minimum": 1
+                    },
+                    "expected_head_sha": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{40}$",
+                      "minLength": 40,
+                      "maxLength": 40
+                    },
+                    "expected_base_sha": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{40}$",
+                      "minLength": 40,
+                      "maxLength": 40
+                    },
+                    "merge_method": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 512
+                    },
+                    "gateway_decision_hash": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "minLength": 71,
+                      "maxLength": 71
+                    },
+                    "action_permit_hash": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "minLength": 71,
+                      "maxLength": 71
+                    },
+                    "approval_reference": {
+                      "type": "string",
+                      "pattern": "^sha256:[0-9a-f]{64}$",
+                      "minLength": 71,
+                      "maxLength": 71
+                    }
+                  },
+                  "required": [
+                    "provider",
+                    "repository",
+                    "operation",
+                    "pr_number",
+                    "expected_head_sha",
+                    "expected_base_sha",
+                    "merge_method",
+                    "gateway_decision_hash",
+                    "action_permit_hash",
+                    "approval_reference"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "transport",
+                "tool_name",
+                "arguments"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "non_effects": {
+          "type": "object",
+          "properties": {
+            "network_accessed": {
+              "const": false
+            },
+            "credentials_read": {
+              "const": false
+            },
+            "github_mutation_performed": {
+              "const": false
+            },
+            "intent_created": {
+              "const": false
+            },
+            "authority_created": {
+              "const": false
+            },
+            "authority_expanded": {
+              "const": false
+            },
+            "action_permit_created": {
+              "const": false
+            },
+            "action_performed": {
+              "const": false
+            },
+            "causality_proven": {
+              "const": false
+            },
+            "truth_certified": {
+              "const": false
+            },
+            "liability_established": {
+              "const": false
+            }
+          },
+          "required": [
+            "network_accessed",
+            "credentials_read",
+            "github_mutation_performed",
+            "intent_created",
+            "authority_created",
+            "authority_expanded",
+            "action_permit_created",
+            "action_performed",
+            "causality_proven",
+            "truth_certified",
+            "liability_established"
+          ],
+          "additionalProperties": false
+        },
+        "content_hash": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "protocol",
+        "version",
+        "artifact_type",
+        "scenario_id",
+        "mode",
+        "decision",
+        "reasons",
+        "actuator_call_emitted",
+        "planned_call",
+        "non_effects",
+        "content_hash"
+      ],
+      "additionalProperties": false
+    },
+    "attempts": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/attempt"
+      },
+      "maxItems": 32
+    },
+    "observation": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/observation"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "source_bindings_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "minLength": 71,
+      "maxLength": 71
+    },
+    "pack_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "minLength": 71,
+      "maxLength": 71
+    }
+  },
+  "required": [
+    "protocol",
+    "version",
+    "evidence_class",
+    "case_id",
+    "claim_stage",
+    "decision_time",
+    "target",
+    "approval",
+    "permit",
+    "scenario",
+    "harness_report",
+    "attempts",
+    "observation",
+    "source_bindings_digest",
+    "pack_digest"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "target": {
+      "type": "object",
+      "properties": {
+        "repository": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$",
+          "maxLength": 256,
+          "not": {
+            "pattern": "[\\r\\n]"
+          }
+        },
+        "pr_number": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "head_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$",
+          "minLength": 40,
+          "maxLength": 40
+        },
+        "base_sha": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$",
+          "minLength": 40,
+          "maxLength": 40
+        },
+        "merge_method": {
+          "enum": [
+            "squash",
+            "merge",
+            "rebase"
+          ]
+        }
+      },
+      "required": [
+        "repository",
+        "pr_number",
+        "head_sha",
+        "base_sha",
+        "merge_method"
+      ],
+      "additionalProperties": false
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "approval_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "issued_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+          "minLength": 20,
+          "maxLength": 20
+        },
+        "expires_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+          "minLength": 20,
+          "maxLength": 20
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        }
+      },
+      "required": [
+        "approval_id",
+        "target",
+        "issued_at",
+        "expires_at",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "permit": {
+      "type": "object",
+      "properties": {
+        "permit_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "approval_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "issued_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+          "minLength": 20,
+          "maxLength": 20
+        },
+        "expires_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+          "minLength": 20,
+          "maxLength": 20
+        },
+        "single_use": {
+          "const": true
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        }
+      },
+      "required": [
+        "permit_id",
+        "target",
+        "approval_digest",
+        "issued_at",
+        "expires_at",
+        "single_use",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "attempt": {
+      "type": "object",
+      "properties": {
+        "attempt_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "permit_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "started_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+          "minLength": 20,
+          "maxLength": 20
+        },
+        "frontier": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{40}$",
+          "minLength": 40,
+          "maxLength": 40
+        },
+        "disposition": {
+          "enum": [
+            "PLANNED",
+            "REPORTED_MERGED",
+            "UNKNOWN"
+          ]
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        }
+      },
+      "required": [
+        "attempt_id",
+        "permit_digest",
+        "target",
+        "started_at",
+        "frontier",
+        "disposition",
+        "digest"
+      ],
+      "additionalProperties": false
+    },
+    "observation": {
+      "type": "object",
+      "properties": {
+        "observation_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "attempt_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        "permit_digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "observed_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$",
+          "minLength": 20,
+          "maxLength": 20
+        },
+        "status": {
+          "enum": [
+            "MERGED",
+            "NOT_MERGED",
+            "UNKNOWN"
+          ]
+        },
+        "successor_commit": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$",
+              "minLength": 40,
+              "maxLength": 40
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "successor_parent": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{40}$",
+              "minLength": 40,
+              "maxLength": 40
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "origin": {
+          "const": "LOCAL_SYNTHETIC"
+        },
+        "digest": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "minLength": 71,
+          "maxLength": 71
+        }
+      },
+      "required": [
+        "observation_id",
+        "attempt_id",
+        "permit_digest",
+        "target",
+        "observed_at",
+        "status",
+        "successor_commit",
+        "successor_parent",
+        "origin",
+        "digest"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

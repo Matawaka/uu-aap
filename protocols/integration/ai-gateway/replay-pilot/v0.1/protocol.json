@@ -1,0 +1,110 @@
+{
+  "protocol": "UU-AAP-PORTABLE-REPLAY-PILOT",
+  "version": "0.1",
+  "status": "PREREGISTERED_INTERNAL_REPLAY",
+  "base_sha": "25202fb9cc936729cebfe3c93d6936f85b847624",
+  "clock": "2026-11-16T00:00:00Z",
+  "max_input_bytes": 1048576,
+  "cases": [
+    {
+      "case_id": "P00",
+      "name": "exact-plan",
+      "expected_status": "CONSISTENT_PLAN"
+    },
+    {
+      "case_id": "P01",
+      "name": "stale-head",
+      "expected_status": "REPLAY_DENIED"
+    },
+    {
+      "case_id": "P02",
+      "name": "repository-substitution",
+      "expected_status": "REPLAY_DENIED"
+    },
+    {
+      "case_id": "P03",
+      "name": "missing-approval-reference",
+      "expected_status": "REPLAY_DENIED"
+    },
+    {
+      "case_id": "P04",
+      "name": "approval-expired",
+      "expected_status": "REPLAY_DENIED"
+    },
+    {
+      "case_id": "P05",
+      "name": "permit-expired",
+      "expected_status": "REPLAY_DENIED"
+    },
+    {
+      "case_id": "P06",
+      "name": "missing-outcome",
+      "expected_status": "EVIDENCE_INDETERMINATE"
+    },
+    {
+      "case_id": "P07",
+      "name": "consistent-synthetic-observation",
+      "expected_status": "CONSISTENT_OBSERVATION_RECORD"
+    },
+    {
+      "case_id": "P08",
+      "name": "unrehashed-tamper",
+      "expected_status": "INVALID_EVIDENCE"
+    },
+    {
+      "case_id": "P09",
+      "name": "rehashed-target-substitution",
+      "expected_status": "REPLAY_DENIED"
+    },
+    {
+      "case_id": "P10",
+      "name": "sequential-permit-reuse",
+      "expected_status": "EVIDENCE_CONFLICT"
+    },
+    {
+      "case_id": "P11",
+      "name": "overlapping-attempt-records",
+      "expected_status": "EVIDENCE_CONFLICT"
+    },
+    {
+      "case_id": "P12",
+      "name": "ambiguous-outcome",
+      "expected_status": "EVIDENCE_INDETERMINATE"
+    },
+    {
+      "case_id": "P13",
+      "name": "wrong-outcome-permit",
+      "expected_status": "INVALID_EVIDENCE"
+    },
+    {
+      "case_id": "P14",
+      "name": "action-frontier-relabeled",
+      "expected_status": "INVALID_EVIDENCE"
+    },
+    {
+      "case_id": "P15",
+      "name": "self-consistent-untrusted-rewrite",
+      "expected_status": "CONSISTENT_OBSERVATION_RECORD"
+    },
+    {
+      "case_id": "P16",
+      "name": "approval-redacted",
+      "expected_status": "EVIDENCE_INDETERMINATE"
+    }
+  ],
+  "packaging_profiles": [
+    "PORTABLE_SINGLE_FILE",
+    "LOCAL_REFERENCE_COMPOSITION"
+  ],
+  "comparison_semantics": "SAME_CHECKER_SAME_EVIDENCE_NO_DETECTION_ADVANTAGE_EXPECTED",
+  "vendor_execution": "NOT_EXECUTED",
+  "external_operator": "NOT_EXECUTED",
+  "customer_validation": "NOT_EXECUTED",
+  "threshold_policy": "NO_POST_RESULT_THRESHOLD_CHANGES",
+  "non_effects": {
+    "live_execution": false,
+    "authority_issuance": false,
+    "stable_core_promotion": false,
+    "independent_review_claim": false
+  }
+}

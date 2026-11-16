@@ -1,0 +1,854 @@
+{
+  "protocol": "UU-AAP-PORTABLE-REPLAY-PILOT-RESULT",
+  "version": "0.1",
+  "protocol_digest": "sha256:75dbbc968b1dee7d2d5f11665f9c66865bef650a04fab993a7cd5825655aba98",
+  "source_bindings_digest": "sha256:ac4e6ce49c5f2df8d976a2c66b83dc6947a41000f02eeb50ec07785e8f8f61b4",
+  "evidence_level": "INTERNAL_SYNTHETIC_REPLAY",
+  "cases": [
+    {
+      "case_id": "P00",
+      "name": "exact-plan",
+      "expected_status": "CONSISTENT_PLAN",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P00",
+        "input_digest": "sha256:3fefd3e6cf8c2849aa2662ffa07305e6a8d03dda5d7cadc7d7555b847ace3478",
+        "status": "CONSISTENT_PLAN",
+        "reasons": [
+          "CONSISTENCY_ONLY_NOT_AUTHENTICATION"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:fbb3cddab519fba91eb12a7eb92b5831add723fdf0cf396313db02eb7591236e"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P00",
+        "input_digest": "sha256:3fefd3e6cf8c2849aa2662ffa07305e6a8d03dda5d7cadc7d7555b847ace3478",
+        "status": "CONSISTENT_PLAN",
+        "reasons": [
+          "CONSISTENCY_ONLY_NOT_AUTHENTICATION"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:fbb3cddab519fba91eb12a7eb92b5831add723fdf0cf396313db02eb7591236e"
+      },
+      "conform": true,
+      "single_file_bytes": 4791,
+      "dispersed_bytes": 4719
+    },
+    {
+      "case_id": "P01",
+      "name": "stale-head",
+      "expected_status": "REPLAY_DENIED",
+      "harness_decision": "deny",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P01",
+        "input_digest": "sha256:f9c4ba7cddc2bfb650c7ce0d7991d78784a76681d9bcd358ffedd8617710e2d9",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "HARNESS:stale_or_mismatched_head"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:fe8618f403296e292a9a532b2b0aa898f30826900a1836c039ae99ddb1766672"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P01",
+        "input_digest": "sha256:f9c4ba7cddc2bfb650c7ce0d7991d78784a76681d9bcd358ffedd8617710e2d9",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "HARNESS:stale_or_mismatched_head"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:fe8618f403296e292a9a532b2b0aa898f30826900a1836c039ae99ddb1766672"
+      },
+      "conform": true,
+      "single_file_bytes": 4094,
+      "dispersed_bytes": 4048
+    },
+    {
+      "case_id": "P02",
+      "name": "repository-substitution",
+      "expected_status": "REPLAY_DENIED",
+      "harness_decision": "deny",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P02",
+        "input_digest": "sha256:201cf8bfc6d5e425e978f460641b187d680e585d5c9cc7281b20e62f9db82e39",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "HARNESS:repository_mismatch"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:77e5183ccee59731ff19fb47dace9a60dbeab1468e2eb041953e1cbbc66a8b38"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P02",
+        "input_digest": "sha256:201cf8bfc6d5e425e978f460641b187d680e585d5c9cc7281b20e62f9db82e39",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "HARNESS:repository_mismatch"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:77e5183ccee59731ff19fb47dace9a60dbeab1468e2eb041953e1cbbc66a8b38"
+      },
+      "conform": true,
+      "single_file_bytes": 4090,
+      "dispersed_bytes": 4044
+    },
+    {
+      "case_id": "P03",
+      "name": "missing-approval-reference",
+      "expected_status": "REPLAY_DENIED",
+      "harness_decision": "deny",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P03",
+        "input_digest": "sha256:e560f18c92be094a01e4e23d5afd0a86b6a65ed6b43d4636bab5c2637e6e7d34",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "HARNESS:missing_explicit_approval"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:e1eeef892b44d10a19481fc95085ebb86068469503ddb2386f09454192eecd42"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P03",
+        "input_digest": "sha256:e560f18c92be094a01e4e23d5afd0a86b6a65ed6b43d4636bab5c2637e6e7d34",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "HARNESS:missing_explicit_approval"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:e1eeef892b44d10a19481fc95085ebb86068469503ddb2386f09454192eecd42"
+      },
+      "conform": true,
+      "single_file_bytes": 3992,
+      "dispersed_bytes": 3948
+    },
+    {
+      "case_id": "P04",
+      "name": "approval-expired",
+      "expected_status": "REPLAY_DENIED",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P04",
+        "input_digest": "sha256:625e0f1215ad77f45f0300472983261afce2815a461132818ffe25f84cbb0989",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "APPROVAL_OUTSIDE_WINDOW",
+          "PERMIT_OUTSIDE_APPROVAL_CORRIDOR"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:5e07e5bf0fe16c94e45bf4762907aba48e19d35b6c17b992508f9b5da4c85498"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P04",
+        "input_digest": "sha256:625e0f1215ad77f45f0300472983261afce2815a461132818ffe25f84cbb0989",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "APPROVAL_OUTSIDE_WINDOW",
+          "PERMIT_OUTSIDE_APPROVAL_CORRIDOR"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:5e07e5bf0fe16c94e45bf4762907aba48e19d35b6c17b992508f9b5da4c85498"
+      },
+      "conform": true,
+      "single_file_bytes": 4791,
+      "dispersed_bytes": 4719
+    },
+    {
+      "case_id": "P05",
+      "name": "permit-expired",
+      "expected_status": "REPLAY_DENIED",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P05",
+        "input_digest": "sha256:319e2c126b6e81e98d3763a4d800d5f399ff4e3a7fa122b050e70608532d1715",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "PERMIT_OUTSIDE_WINDOW"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:14b564bdf1f894d58d07b4a146b4baad7b71a0bf1d12325e515ddff539b3a000"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P05",
+        "input_digest": "sha256:319e2c126b6e81e98d3763a4d800d5f399ff4e3a7fa122b050e70608532d1715",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "PERMIT_OUTSIDE_WINDOW"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:14b564bdf1f894d58d07b4a146b4baad7b71a0bf1d12325e515ddff539b3a000"
+      },
+      "conform": true,
+      "single_file_bytes": 4791,
+      "dispersed_bytes": 4719
+    },
+    {
+      "case_id": "P06",
+      "name": "missing-outcome",
+      "expected_status": "EVIDENCE_INDETERMINATE",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P06",
+        "input_digest": "sha256:5d71b25e5cde7ab93bd80c1fc8ebb5d295f64cd7ae50dd7020beb0e3ec5f92bc",
+        "status": "EVIDENCE_INDETERMINATE",
+        "reasons": [
+          "OUTCOME_RECORD_MISSING"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:329c9ab11cce7aa4299f932df23476e97f8cb4d2e99f9a3a1ffe76bfebb7f373"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P06",
+        "input_digest": "sha256:5d71b25e5cde7ab93bd80c1fc8ebb5d295f64cd7ae50dd7020beb0e3ec5f92bc",
+        "status": "EVIDENCE_INDETERMINATE",
+        "reasons": [
+          "OUTCOME_RECORD_MISSING"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:329c9ab11cce7aa4299f932df23476e97f8cb4d2e99f9a3a1ffe76bfebb7f373"
+      },
+      "conform": true,
+      "single_file_bytes": 4805,
+      "dispersed_bytes": 4733
+    },
+    {
+      "case_id": "P07",
+      "name": "consistent-synthetic-observation",
+      "expected_status": "CONSISTENT_OBSERVATION_RECORD",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P07",
+        "input_digest": "sha256:06dad05aee1d3f7458ec2220a35ec17f32b3068809ea6a09aad9916b850d0c69",
+        "status": "CONSISTENT_OBSERVATION_RECORD",
+        "reasons": [
+          "CONSISTENCY_ONLY_NOT_AUTHENTICATION"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:88ed50b4e87a18b5a34a03c678f96ad1cbd63b36110373753e9b799f6159c969"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P07",
+        "input_digest": "sha256:06dad05aee1d3f7458ec2220a35ec17f32b3068809ea6a09aad9916b850d0c69",
+        "status": "CONSISTENT_OBSERVATION_RECORD",
+        "reasons": [
+          "CONSISTENCY_ONLY_NOT_AUTHENTICATION"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:88ed50b4e87a18b5a34a03c678f96ad1cbd63b36110373753e9b799f6159c969"
+      },
+      "conform": true,
+      "single_file_bytes": 6182,
+      "dispersed_bytes": 6044
+    },
+    {
+      "case_id": "P08",
+      "name": "unrehashed-tamper",
+      "expected_status": "INVALID_EVIDENCE",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P08",
+        "input_digest": "sha256:af21e5abefb725dcaed6b89181ebda600aabdb9c68e2d48c5d9d9cd0ff0a68f0",
+        "status": "INVALID_EVIDENCE",
+        "reasons": [
+          "PACK_DIGEST_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:8721aec30c392347da87ac9b017ce7f4ea96a2d7cda5d0401536c83869702ea1"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P08",
+        "input_digest": "sha256:af21e5abefb725dcaed6b89181ebda600aabdb9c68e2d48c5d9d9cd0ff0a68f0",
+        "status": "INVALID_EVIDENCE",
+        "reasons": [
+          "PACK_DIGEST_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:8721aec30c392347da87ac9b017ce7f4ea96a2d7cda5d0401536c83869702ea1"
+      },
+      "conform": true,
+      "single_file_bytes": 4790,
+      "dispersed_bytes": 4718
+    },
+    {
+      "case_id": "P09",
+      "name": "rehashed-target-substitution",
+      "expected_status": "REPLAY_DENIED",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P09",
+        "input_digest": "sha256:cc762d93295c16b80ddb2575fccd4b1e9c3a1e571728d6ddf8582b03a51dca80",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "APPROVAL_TARGET_MISMATCH",
+          "AUTHORITY_SCOPE_TARGET_MISMATCH",
+          "PERMIT_TARGET_MISMATCH",
+          "SCENARIO_TARGET_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:1f8b4847e02ab7605aa45483699be86490c2cc2cc60473dc97f7fff8b323dbd6"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P09",
+        "input_digest": "sha256:cc762d93295c16b80ddb2575fccd4b1e9c3a1e571728d6ddf8582b03a51dca80",
+        "status": "REPLAY_DENIED",
+        "reasons": [
+          "APPROVAL_TARGET_MISMATCH",
+          "AUTHORITY_SCOPE_TARGET_MISMATCH",
+          "PERMIT_TARGET_MISMATCH",
+          "SCENARIO_TARGET_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:1f8b4847e02ab7605aa45483699be86490c2cc2cc60473dc97f7fff8b323dbd6"
+      },
+      "conform": true,
+      "single_file_bytes": 4797,
+      "dispersed_bytes": 4725
+    },
+    {
+      "case_id": "P10",
+      "name": "sequential-permit-reuse",
+      "expected_status": "EVIDENCE_CONFLICT",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P10",
+        "input_digest": "sha256:5f0db1748925c5c63bb2e4707b2c009c0251ae7ab874135a5f22c6a3dd9ef354",
+        "status": "EVIDENCE_CONFLICT",
+        "reasons": [
+          "MULTIPLE_ATTEMPTS_FOR_SINGLE_USE_REFERENCE"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:79a25c41a5ca7f992612d3fa41522e29d5ad5154473023c44bfc61b12b926632"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P10",
+        "input_digest": "sha256:5f0db1748925c5c63bb2e4707b2c009c0251ae7ab874135a5f22c6a3dd9ef354",
+        "status": "EVIDENCE_CONFLICT",
+        "reasons": [
+          "MULTIPLE_ATTEMPTS_FOR_SINGLE_USE_REFERENCE"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:79a25c41a5ca7f992612d3fa41522e29d5ad5154473023c44bfc61b12b926632"
+      },
+      "conform": true,
+      "single_file_bytes": 6817,
+      "dispersed_bytes": 6649
+    },
+    {
+      "case_id": "P11",
+      "name": "overlapping-attempt-records",
+      "expected_status": "EVIDENCE_CONFLICT",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P11",
+        "input_digest": "sha256:f54c5ee583d7a995907b288fac8c3e814062d7d1b435547f1510513335a912e2",
+        "status": "EVIDENCE_CONFLICT",
+        "reasons": [
+          "MULTIPLE_ATTEMPTS_FOR_SINGLE_USE_REFERENCE"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:1bcfec00e485c4276ca397e5f376ae9075f0b4c42cde59e538cb87d56be70239"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P11",
+        "input_digest": "sha256:f54c5ee583d7a995907b288fac8c3e814062d7d1b435547f1510513335a912e2",
+        "status": "EVIDENCE_CONFLICT",
+        "reasons": [
+          "MULTIPLE_ATTEMPTS_FOR_SINGLE_USE_REFERENCE"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:1bcfec00e485c4276ca397e5f376ae9075f0b4c42cde59e538cb87d56be70239"
+      },
+      "conform": true,
+      "single_file_bytes": 6817,
+      "dispersed_bytes": 6649
+    },
+    {
+      "case_id": "P12",
+      "name": "ambiguous-outcome",
+      "expected_status": "EVIDENCE_INDETERMINATE",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P12",
+        "input_digest": "sha256:177e2c4d0d3351a827aa34bc7fb95e934b6abb2f8f5df4521ca69e94b2b382a2",
+        "status": "EVIDENCE_INDETERMINATE",
+        "reasons": [
+          "OUTCOME_UNKNOWN_NO_RETRY_AUTHORITY"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:eb41939e97fef324e33738dec3ca4a272b125fc0675dae99b91f196eca9da737"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P12",
+        "input_digest": "sha256:177e2c4d0d3351a827aa34bc7fb95e934b6abb2f8f5df4521ca69e94b2b382a2",
+        "status": "EVIDENCE_INDETERMINATE",
+        "reasons": [
+          "OUTCOME_UNKNOWN_NO_RETRY_AUTHORITY"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:eb41939e97fef324e33738dec3ca4a272b125fc0675dae99b91f196eca9da737"
+      },
+      "conform": true,
+      "single_file_bytes": 6099,
+      "dispersed_bytes": 5961
+    },
+    {
+      "case_id": "P13",
+      "name": "wrong-outcome-permit",
+      "expected_status": "INVALID_EVIDENCE",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P13",
+        "input_digest": "sha256:fef9fee1c55e86e8e7abcc62eb051901465d623223d5b61d18c5548f833596c7",
+        "status": "INVALID_EVIDENCE",
+        "reasons": [
+          "OUTCOME_PERMIT_BINDING_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:37a0099406e2c96968adf1625065e839183059296bbdb8a66efb18aa2fbe49ff"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P13",
+        "input_digest": "sha256:fef9fee1c55e86e8e7abcc62eb051901465d623223d5b61d18c5548f833596c7",
+        "status": "INVALID_EVIDENCE",
+        "reasons": [
+          "OUTCOME_PERMIT_BINDING_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:37a0099406e2c96968adf1625065e839183059296bbdb8a66efb18aa2fbe49ff"
+      },
+      "conform": true,
+      "single_file_bytes": 6182,
+      "dispersed_bytes": 6044
+    },
+    {
+      "case_id": "P14",
+      "name": "action-frontier-relabeled",
+      "expected_status": "INVALID_EVIDENCE",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P14",
+        "input_digest": "sha256:b7595d2580dad8ab23cc2280b62cf436a3e4ac5835321e4f128b5abb45c16729",
+        "status": "INVALID_EVIDENCE",
+        "reasons": [
+          "ACTION_PREDECESSOR_FRONTIER_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:f3ff1029ece0755fdebb86dde1e1faa584f831aa2d3466616ba9411aca55d150"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P14",
+        "input_digest": "sha256:b7595d2580dad8ab23cc2280b62cf436a3e4ac5835321e4f128b5abb45c16729",
+        "status": "INVALID_EVIDENCE",
+        "reasons": [
+          "ACTION_PREDECESSOR_FRONTIER_MISMATCH"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:f3ff1029ece0755fdebb86dde1e1faa584f831aa2d3466616ba9411aca55d150"
+      },
+      "conform": true,
+      "single_file_bytes": 6182,
+      "dispersed_bytes": 6044
+    },
+    {
+      "case_id": "P15",
+      "name": "self-consistent-untrusted-rewrite",
+      "expected_status": "CONSISTENT_OBSERVATION_RECORD",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P15",
+        "input_digest": "sha256:499ebb7995898d6887ca7c468ff203c1e7037df5156b3856a52637ecae49a0ff",
+        "status": "CONSISTENT_OBSERVATION_RECORD",
+        "reasons": [
+          "CONSISTENCY_ONLY_NOT_AUTHENTICATION"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:bdc78b1373f3306c4bd38144738ecf9fab1f7a1f1eeafd42607335adc8508d32"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P15",
+        "input_digest": "sha256:499ebb7995898d6887ca7c468ff203c1e7037df5156b3856a52637ecae49a0ff",
+        "status": "CONSISTENT_OBSERVATION_RECORD",
+        "reasons": [
+          "CONSISTENCY_ONLY_NOT_AUTHENTICATION"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:bdc78b1373f3306c4bd38144738ecf9fab1f7a1f1eeafd42607335adc8508d32"
+      },
+      "conform": true,
+      "single_file_bytes": 6218,
+      "dispersed_bytes": 6080
+    },
+    {
+      "case_id": "P16",
+      "name": "approval-redacted",
+      "expected_status": "EVIDENCE_INDETERMINATE",
+      "harness_decision": "allow_plan",
+      "portable": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P16",
+        "input_digest": "sha256:51f150f8225f92ebc64087d3cf03a6223a8640f3073965bbebcde249a5911b23",
+        "status": "EVIDENCE_INDETERMINATE",
+        "reasons": [
+          "APPROVAL_RECORD_MISSING"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:d6d0341cbf4f3325fdcc019652b446796940cb02ab92001a35e9fc247ad8e16a"
+      },
+      "composition": {
+        "protocol": "UU-AAP-PORTABLE-EVIDENCE-CHECK",
+        "version": "0.1",
+        "case_id": "P16",
+        "input_digest": "sha256:51f150f8225f92ebc64087d3cf03a6223a8640f3073965bbebcde249a5911b23",
+        "status": "EVIDENCE_INDETERMINATE",
+        "reasons": [
+          "APPROVAL_RECORD_MISSING"
+        ],
+        "assurance": {
+          "issuer_authenticated": false,
+          "live_state_checked": false,
+          "atomic_consumption_proven": false,
+          "actual_effect_proven": false,
+          "execution_authorized": false,
+          "independent_review_verified": false
+        },
+        "digest": "sha256:d6d0341cbf4f3325fdcc019652b446796940cb02ab92001a35e9fc247ad8e16a"
+      },
+      "conform": true,
+      "single_file_bytes": 4337,
+      "dispersed_bytes": 4289
+    }
+  ],
+  "metrics": {
+    "cases": 17,
+    "conform": 17,
+    "status_counts": {
+      "CONSISTENT_OBSERVATION_RECORD": 2,
+      "CONSISTENT_PLAN": 1,
+      "EVIDENCE_CONFLICT": 2,
+      "EVIDENCE_INDETERMINATE": 3,
+      "INVALID_EVIDENCE": 3,
+      "REPLAY_DENIED": 6
+    },
+    "harness_decisions": {
+      "allow_plan": 14,
+      "deny": 3
+    },
+    "packaging_verdict_differences": 0,
+    "data_files_per_portable_case": 1,
+    "data_files_per_composition_case": 8,
+    "single_file_total_bytes": 89775,
+    "dispersed_total_bytes": 88133
+  },
+  "external_evaluation": {
+    "vendor_execution": "NOT_EXECUTED",
+    "independent_operator": "NOT_EXECUTED",
+    "customer_validation": "NOT_EXECUTED",
+    "reconstruction_seconds": null,
+    "processing_p50_ms": null,
+    "processing_p95_ms": null,
+    "willingness_to_pay": null
+  },
+  "non_effects": {
+    "network_accessed": false,
+    "live_action_performed": false,
+    "authority_created": false,
+    "independence_established": false,
+    "commercial_advantage_established": false
+  },
+  "trace_digest": "sha256:1f369a4bfda9e8fe37d2480f2d36b5abc1efa0d86030128b9a2079a8ac4143dc"
+}

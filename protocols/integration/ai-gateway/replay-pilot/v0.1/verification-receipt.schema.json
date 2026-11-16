@@ -1,0 +1,95 @@
+{
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "UU-AAP-PORTABLE-EVIDENCE-CHECK"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "case_id": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "input_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "status": {
+      "enum": [
+        "CONSISTENT_PLAN",
+        "CONSISTENT_OBSERVATION_RECORD",
+        "REPLAY_DENIED",
+        "EVIDENCE_INDETERMINATE",
+        "EVIDENCE_CONFLICT",
+        "INVALID_EVIDENCE"
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 512
+      },
+      "maxItems": 32,
+      "uniqueItems": true
+    },
+    "assurance": {
+      "type": "object",
+      "properties": {
+        "issuer_authenticated": {
+          "const": false
+        },
+        "live_state_checked": {
+          "const": false
+        },
+        "atomic_consumption_proven": {
+          "const": false
+        },
+        "actual_effect_proven": {
+          "const": false
+        },
+        "execution_authorized": {
+          "const": false
+        },
+        "independent_review_verified": {
+          "const": false
+        }
+      },
+      "required": [
+        "issuer_authenticated",
+        "live_state_checked",
+        "atomic_consumption_proven",
+        "actual_effect_proven",
+        "execution_authorized",
+        "independent_review_verified"
+      ],
+      "additionalProperties": false
+    },
+    "digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  },
+  "required": [
+    "protocol",
+    "version",
+    "case_id",
+    "input_digest",
+    "status",
+    "reasons",
+    "assurance",
+    "digest"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

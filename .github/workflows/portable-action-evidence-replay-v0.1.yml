@@ -1,0 +1,56 @@
+name: Portable Action Evidence Replay v0.1
+on:
+  pull_request:
+    paths:
+      - 'protocols/integration/ai-gateway/replay-pilot/v0.1/**'
+      - 'protocols/integration/ai-gateway/harness/v0.1/**'
+      - 'experiments/ai-gateway-live-executor-v0.1/audit/full-acceptance.record.json'
+      - '.github/workflows/portable-action-evidence-replay-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'protocols/integration/ai-gateway/replay-pilot/v0.1/**'
+      - 'protocols/integration/ai-gateway/harness/v0.1/**'
+      - 'experiments/ai-gateway-live-executor-v0.1/audit/full-acceptance.record.json'
+      - '.github/workflows/portable-action-evidence-replay-v0.1.yml'
+permissions:
+  contents: read
+jobs:
+  replay:
+    name: Portable replay Python ${{ matrix.python }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.11', '3.13']
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install offline-checker dependency
+        run: python -m pip install -r protocols/integration/ai-gateway/replay-pilot/v0.1/requirements.txt
+      - name: Revalidate unchanged historical harness
+        run: node protocols/integration/ai-gateway/harness/v0.1/validate-harness.js
+      - name: Validate source pins, schemas and evidence boundaries
+        run: python -B protocols/integration/ai-gateway/replay-pilot/v0.1/validate_package.py
+      - name: Hostile inputs, preserved defects and repository-free verification
+        run: python -B -m unittest discover -s protocols/integration/ai-gateway/replay-pilot/v0.1 -p 'test_*.py' -v
+      - name: Replay both packaging profiles against frozen results
+        run: python -B protocols/integration/ai-gateway/replay-pilot/v0.1/run_replay_pilot.py suite --output "$RUNNER_TEMP/portable-replay" --check-reference
+      - name: Require clean source tree
+        run: test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: portable-replay-python-${{ matrix.python }}
+          path: ${{ runner.temp }}/portable-replay
+          if-no-files-found: warn
+          retention-days: 14

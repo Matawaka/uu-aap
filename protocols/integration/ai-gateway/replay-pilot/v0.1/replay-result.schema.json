@@ -1,0 +1,440 @@
+{
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "UU-AAP-PORTABLE-REPLAY-PILOT-RESULT"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "protocol_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "minLength": 71,
+      "maxLength": 71
+    },
+    "source_bindings_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "minLength": 71,
+      "maxLength": 71
+    },
+    "evidence_level": {
+      "const": "INTERNAL_SYNTHETIC_REPLAY"
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 17,
+      "maxItems": 17,
+      "items": {
+        "type": "object",
+        "properties": {
+          "case_id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "expected_status": {
+            "enum": [
+              "CONSISTENT_PLAN",
+              "CONSISTENT_OBSERVATION_RECORD",
+              "REPLAY_DENIED",
+              "EVIDENCE_INDETERMINATE",
+              "EVIDENCE_CONFLICT",
+              "INVALID_EVIDENCE"
+            ]
+          },
+          "harness_decision": {
+            "enum": [
+              "allow_plan",
+              "deny"
+            ]
+          },
+          "portable": {
+            "type": "object",
+            "properties": {
+              "protocol": {
+                "const": "UU-AAP-PORTABLE-EVIDENCE-CHECK"
+              },
+              "version": {
+                "const": "0.1"
+              },
+              "case_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "input_digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "status": {
+                "enum": [
+                  "CONSISTENT_PLAN",
+                  "CONSISTENT_OBSERVATION_RECORD",
+                  "REPLAY_DENIED",
+                  "EVIDENCE_INDETERMINATE",
+                  "EVIDENCE_CONFLICT",
+                  "INVALID_EVIDENCE"
+                ]
+              },
+              "reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "maxItems": 32,
+                "uniqueItems": true
+              },
+              "assurance": {
+                "type": "object",
+                "properties": {
+                  "issuer_authenticated": {
+                    "const": false
+                  },
+                  "live_state_checked": {
+                    "const": false
+                  },
+                  "atomic_consumption_proven": {
+                    "const": false
+                  },
+                  "actual_effect_proven": {
+                    "const": false
+                  },
+                  "execution_authorized": {
+                    "const": false
+                  },
+                  "independent_review_verified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "issuer_authenticated",
+                  "live_state_checked",
+                  "atomic_consumption_proven",
+                  "actual_effect_proven",
+                  "execution_authorized",
+                  "independent_review_verified"
+                ],
+                "additionalProperties": false
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "protocol",
+              "version",
+              "case_id",
+              "input_digest",
+              "status",
+              "reasons",
+              "assurance",
+              "digest"
+            ],
+            "additionalProperties": false
+          },
+          "composition": {
+            "type": "object",
+            "properties": {
+              "protocol": {
+                "const": "UU-AAP-PORTABLE-EVIDENCE-CHECK"
+              },
+              "version": {
+                "const": "0.1"
+              },
+              "case_id": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 512
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "input_digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              },
+              "status": {
+                "enum": [
+                  "CONSISTENT_PLAN",
+                  "CONSISTENT_OBSERVATION_RECORD",
+                  "REPLAY_DENIED",
+                  "EVIDENCE_INDETERMINATE",
+                  "EVIDENCE_CONFLICT",
+                  "INVALID_EVIDENCE"
+                ]
+              },
+              "reasons": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 512
+                },
+                "maxItems": 32,
+                "uniqueItems": true
+              },
+              "assurance": {
+                "type": "object",
+                "properties": {
+                  "issuer_authenticated": {
+                    "const": false
+                  },
+                  "live_state_checked": {
+                    "const": false
+                  },
+                  "atomic_consumption_proven": {
+                    "const": false
+                  },
+                  "actual_effect_proven": {
+                    "const": false
+                  },
+                  "execution_authorized": {
+                    "const": false
+                  },
+                  "independent_review_verified": {
+                    "const": false
+                  }
+                },
+                "required": [
+                  "issuer_authenticated",
+                  "live_state_checked",
+                  "atomic_consumption_proven",
+                  "actual_effect_proven",
+                  "execution_authorized",
+                  "independent_review_verified"
+                ],
+                "additionalProperties": false
+              },
+              "digest": {
+                "type": "string",
+                "pattern": "^sha256:[0-9a-f]{64}$"
+              }
+            },
+            "required": [
+              "protocol",
+              "version",
+              "case_id",
+              "input_digest",
+              "status",
+              "reasons",
+              "assurance",
+              "digest"
+            ],
+            "additionalProperties": false
+          },
+          "conform": {
+            "type": "boolean"
+          },
+          "single_file_bytes": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "dispersed_bytes": {
+            "type": "integer",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "case_id",
+          "name",
+          "expected_status",
+          "harness_decision",
+          "portable",
+          "composition",
+          "conform",
+          "single_file_bytes",
+          "dispersed_bytes"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "cases": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "conform": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "status_counts": {
+          "type": "object",
+          "properties": {
+            "CONSISTENT_PLAN": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "CONSISTENT_OBSERVATION_RECORD": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "REPLAY_DENIED": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "EVIDENCE_INDETERMINATE": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "EVIDENCE_CONFLICT": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "INVALID_EVIDENCE": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "harness_decisions": {
+          "type": "object",
+          "properties": {
+            "allow_plan": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "deny": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        },
+        "packaging_verdict_differences": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "data_files_per_portable_case": {
+          "const": 1
+        },
+        "data_files_per_composition_case": {
+          "const": 8
+        },
+        "single_file_total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dispersed_total_bytes": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "cases",
+        "conform",
+        "status_counts",
+        "harness_decisions",
+        "packaging_verdict_differences",
+        "data_files_per_portable_case",
+        "data_files_per_composition_case",
+        "single_file_total_bytes",
+        "dispersed_total_bytes"
+      ],
+      "additionalProperties": false
+    },
+    "external_evaluation": {
+      "type": "object",
+      "properties": {
+        "vendor_execution": {
+          "const": "NOT_EXECUTED"
+        },
+        "independent_operator": {
+          "const": "NOT_EXECUTED"
+        },
+        "customer_validation": {
+          "const": "NOT_EXECUTED"
+        },
+        "reconstruction_seconds": {
+          "const": null
+        },
+        "processing_p50_ms": {
+          "const": null
+        },
+        "processing_p95_ms": {
+          "const": null
+        },
+        "willingness_to_pay": {
+          "const": null
+        }
+      },
+      "required": [
+        "vendor_execution",
+        "independent_operator",
+        "customer_validation",
+        "reconstruction_seconds",
+        "processing_p50_ms",
+        "processing_p95_ms",
+        "willingness_to_pay"
+      ],
+      "additionalProperties": false
+    },
+    "non_effects": {
+      "type": "object",
+      "properties": {
+        "network_accessed": {
+          "const": false
+        },
+        "live_action_performed": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "independence_established": {
+          "const": false
+        },
+        "commercial_advantage_established": {
+          "const": false
+        }
+      },
+      "required": [
+        "network_accessed",
+        "live_action_performed",
+        "authority_created",
+        "independence_established",
+        "commercial_advantage_established"
+      ],
+      "additionalProperties": false
+    },
+    "trace_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "minLength": 71,
+      "maxLength": 71
+    }
+  },
+  "required": [
+    "protocol",
+    "version",
+    "protocol_digest",
+    "source_bindings_digest",
+    "evidence_level",
+    "cases",
+    "metrics",
+    "external_evaluation",
+    "non_effects",
+    "trace_digest"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

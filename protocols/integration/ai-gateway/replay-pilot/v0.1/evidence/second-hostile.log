@@ -1,0 +1,62 @@
+test_all_receipts_have_closed_assurance (test_replay_pilot.ReplayPilotTests.test_all_receipts_have_closed_assurance) ... ok
+test_approval_expiry_is_exclusive (test_replay_pilot.ReplayPilotTests.test_approval_expiry_is_exclusive) ... ok
+test_bad_case_id_still_emits_valid_receipt (test_replay_pilot.ReplayPilotTests.test_bad_case_id_still_emits_valid_receipt) ... ok
+test_boolean_is_not_pr_number (test_replay_pilot.ReplayPilotTests.test_boolean_is_not_pr_number) ... ok
+test_both_packaging_forms_replay_identically (test_replay_pilot.ReplayPilotTests.test_both_packaging_forms_replay_identically) ... ok
+test_case_label_does_not_select_verdict (test_replay_pilot.ReplayPilotTests.test_case_label_does_not_select_verdict) ... ok
+test_cli_malformed_input_is_safe (test_replay_pilot.ReplayPilotTests.test_cli_malformed_input_is_safe) ... ok
+test_cli_verifies_exported_pack_offline (test_replay_pilot.ReplayPilotTests.test_cli_verifies_exported_pack_offline) ... ok
+test_dispersed_extra_file_rejected (test_replay_pilot.ReplayPilotTests.test_dispersed_extra_file_rejected) ... ok
+test_dispersed_path_traversal_rejected (test_replay_pilot.ReplayPilotTests.test_dispersed_path_traversal_rejected) ... ok
+test_dispersed_symlink_rejected (test_replay_pilot.ReplayPilotTests.test_dispersed_symlink_rejected) ... ok
+test_duplicate_attempt_ids (test_replay_pilot.ReplayPilotTests.test_duplicate_attempt_ids) ... ok
+test_invalid_calendar_date (test_replay_pilot.ReplayPilotTests.test_invalid_calendar_date) ... ok
+test_json_duplicate_keys_rejected (test_replay_pilot.ReplayPilotTests.test_json_duplicate_keys_rejected) ... ok
+test_json_nonfinite_and_float_rejected (test_replay_pilot.ReplayPilotTests.test_json_nonfinite_and_float_rejected) ... ok
+test_large_integer_rejected (test_replay_pilot.ReplayPilotTests.test_large_integer_rejected) ... ok
+test_nested_digest_tamper_is_not_hidden_by_outer_rehash (test_replay_pilot.ReplayPilotTests.test_nested_digest_tamper_is_not_hidden_by_outer_rehash) ... ok
+test_no_retry_permission_for_unknown_effect (test_replay_pilot.ReplayPilotTests.test_no_retry_permission_for_unknown_effect) ... ok
+test_nonmerge_conflicts_with_reported_merge (test_replay_pilot.ReplayPilotTests.test_nonmerge_conflicts_with_reported_merge) ... ok
+test_oversized_input_rejected (test_replay_pilot.ReplayPilotTests.test_oversized_input_rejected) ... ok
+test_permit_expiry_is_checked_at_attempt_time (test_replay_pilot.ReplayPilotTests.test_permit_expiry_is_checked_at_attempt_time) ... ok
+test_preregistered_cases (test_replay_pilot.ReplayPilotTests.test_preregistered_cases) ... ok
+test_redaction_withholds_consistency_claim (test_replay_pilot.ReplayPilotTests.test_redaction_withholds_consistency_claim) ... ok
+test_schemas_are_valid (test_replay_pilot.ReplayPilotTests.test_schemas_are_valid) ... ok
+test_scope_string_must_match_exact_target (test_replay_pilot.ReplayPilotTests.test_scope_string_must_match_exact_target) ... FAIL
+test_self_consistent_untrusted_rewrite_remains_untrusted (test_replay_pilot.ReplayPilotTests.test_self_consistent_untrusted_rewrite_remains_untrusted) ... ok
+test_source_binding_digest_is_checked (test_replay_pilot.ReplayPilotTests.test_source_binding_digest_is_checked) ... ok
+test_source_drift_refuses_replay (test_replay_pilot.ReplayPilotTests.test_source_drift_refuses_replay) ... ok
+test_symlink_input_rejected (test_replay_pilot.ReplayPilotTests.test_symlink_input_rejected) ... ok
+test_target_trailing_newline_is_invalid (test_replay_pilot.ReplayPilotTests.test_target_trailing_newline_is_invalid) ... FAIL
+test_unknown_extra_field_is_rejected (test_replay_pilot.ReplayPilotTests.test_unknown_extra_field_is_rejected) ... ok
+test_unknown_outcome_cannot_carry_known_successor (test_replay_pilot.ReplayPilotTests.test_unknown_outcome_cannot_carry_known_successor) ... ok
+test_verifier_does_not_invoke_node_or_network (test_replay_pilot.ReplayPilotTests.test_verifier_does_not_invoke_node_or_network) ... ok
+test_writer_refuses_overwrite (test_replay_pilot.ReplayPilotTests.test_writer_refuses_overwrite) ... ok
+test_wrong_report_rehash_is_not_harness_replay (test_replay_pilot.ReplayPilotTests.test_wrong_report_rehash_is_not_harness_replay) ... ok
+
+======================================================================
+FAIL: test_scope_string_must_match_exact_target (test_replay_pilot.ReplayPilotTests.test_scope_string_must_match_exact_target)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b31f99360f82/pilot-worktree/protocols/integration/ai-gateway/replay-pilot/v0.1/test_replay_pilot.py", line 104, in test_scope_string_must_match_exact_target
+    self.assertEqual(self.status(p), 'REPLAY_DENIED')
+AssertionError: 'CONSISTENT_PLAN' != 'REPLAY_DENIED'
+- CONSISTENT_PLAN
++ REPLAY_DENIED
+
+
+======================================================================
+FAIL: test_target_trailing_newline_is_invalid (test_replay_pilot.ReplayPilotTests.test_target_trailing_newline_is_invalid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b31f99360f82/pilot-worktree/protocols/integration/ai-gateway/replay-pilot/v0.1/test_replay_pilot.py", line 116, in test_target_trailing_newline_is_invalid
+    self.assertEqual(self.status(p), 'INVALID_EVIDENCE')
+AssertionError: 'CONSISTENT_PLAN' != 'INVALID_EVIDENCE'
+- CONSISTENT_PLAN
++ INVALID_EVIDENCE
+
+
+----------------------------------------------------------------------
+Ran 35 tests in 1.413s
+
+FAILED (failures=2)

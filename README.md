@@ -77,6 +77,8 @@ The pilot intentionally does **not** claim profile V yet: no canonical PDF/EPUB 
 
 - [Matawaka / UU-AAP: research closeout and market review — 16 November 2026](research/market/2026-11-16/README.md): Russian-language PDF and Markdown report covering the UU Society v1.0–v1.2 results, 18 related products/components, primary sources, limitations and a proposed comparative pilot. This dated research report does not establish commercial uniqueness or change protocol conformance.
 
+- [Portable Action Evidence / Comparative Replay Pilot v0.1](protocols/integration/ai-gateway/replay-pilot/v0.1/README.md): executable synthetic evidence export and offline replay, preserved negative controls and a preregistered comparison plan. Internal replay is ready; external operator/vendor/customer evidence is pending.
+
 ## Research proposals
 
 ### Proof of Available Intelligence (PoAI) — Genesis

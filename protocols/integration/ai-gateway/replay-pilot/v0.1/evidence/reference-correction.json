@@ -1,0 +1,31 @@
+{
+  "classification": "SEMANTIC_VERIFIER_FIX",
+  "unchanged": [
+    "protocol.json",
+    "all_17_expected_statuses",
+    "all_17_observed_statuses",
+    "all_metrics",
+    "all_generated_input_packs"
+  ],
+  "original_trace_digest": "sha256:b9c51595365f7538bd0250c68caf8aff32eb999ef4a196bd33e05a740041f5b8",
+  "corrected_trace_digest": "sha256:1f369a4bfda9e8fe37d2480f2d36b5abc1efa0d86030128b9a2079a8ac4143dc",
+  "delta": [
+    {
+      "case_id": "P09",
+      "before_status": "REPLAY_DENIED",
+      "after_status": "REPLAY_DENIED",
+      "before_reasons": [
+        "APPROVAL_TARGET_MISMATCH",
+        "PERMIT_TARGET_MISMATCH",
+        "SCENARIO_TARGET_MISMATCH"
+      ],
+      "after_reasons": [
+        "APPROVAL_TARGET_MISMATCH",
+        "AUTHORITY_SCOPE_TARGET_MISMATCH",
+        "PERMIT_TARGET_MISMATCH",
+        "SCENARIO_TARGET_MISMATCH"
+      ]
+    }
+  ],
+  "reason": "F04 explicitly checks authority_scope against the target. The original result and raw failures remain preserved."
+}
