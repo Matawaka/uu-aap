@@ -1,0 +1,282 @@
+#!/usr/bin/env python3
+"""Offline evidence consistency, never action admission or issuer authentication."""
+import argparse
+import hashlib
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+
+from jsonschema import Draft202012Validator
+
+HERE = Path(__file__).resolve().parent
+MAX_BYTES = 1048576
+ROLES = {
+    'target': 'target.json', 'approval': 'approval.json', 'permit': 'permit.json',
+    'scenario': 'scenario.json', 'harness_report': 'harness-report.json',
+    'attempts': 'attempts.json', 'observation': 'observation.json',
+}
+ASSURANCE = dict.fromkeys([
+    'issuer_authenticated', 'live_state_checked', 'atomic_consumption_proven',
+    'actual_effect_proven', 'execution_authorized', 'independent_review_verified',
+], False)
+
+
+class EvidenceError(ValueError):
+    pass
+
+
+def _pairs(items):
+    obj = {}
+    for key, value in items:
+        if key in obj:
+            raise EvidenceError('DUPLICATE_JSON_KEY')
+        obj[key] = value
+    return obj
+
+
+def _no_float(_):
+    raise EvidenceError('NON_INTEGER_JSON_NUMBER')
+
+
+def _integer(value):
+    number = int(value)
+    if abs(number) > 9007199254740991:
+        raise EvidenceError('JSON_INTEGER_OUT_OF_RANGE')
+    return number
+
+
+def read_json(path):
+    path = Path(path)
+    if path.is_symlink() or not path.is_file():
+        raise EvidenceError('INPUT_NOT_REGULAR_FILE')
+    with path.open('rb') as stream:
+        data = stream.read(MAX_BYTES + 1)
+    if len(data) > MAX_BYTES:
+        raise EvidenceError('INPUT_TOO_LARGE')
+    try:
+        return json.loads(data.decode('utf-8'), object_pairs_hook=_pairs,
+                          parse_float=_no_float, parse_constant=_no_float,
+                          parse_int=_integer)
+    except (UnicodeError, json.JSONDecodeError, RecursionError) as exc:
+        raise EvidenceError('INVALID_JSON') from exc
+
+
+def canonical(value):
+    # This profile admits integer numbers only; it is not a claim of RFC 8785.
+    return json.dumps(value, ensure_ascii=False, sort_keys=True,
+                      separators=(',', ':'), allow_nan=False).encode('utf-8')
+
+
+def digest(value):
+    return 'sha256:' + hashlib.sha256(canonical(value)).hexdigest()
+
+
+def without(value, key):
+    return {k: v for k, v in value.items() if k != key}
+
+
+def stamp(value):
+    try:
+        return datetime.strptime(value, '%Y-%m-%dT%H:%M:%SZ').replace(tzinfo=timezone.utc)
+    except (ValueError, TypeError) as exc:
+        raise EvidenceError('INVALID_CALENDAR_TIME') from exc
+
+
+def load_dispersed(directory):
+    directory = Path(directory)
+    if directory.is_symlink() or not directory.is_dir():
+        raise EvidenceError('INVALID_DISPERSED_DIRECTORY')
+    expected = {'index.json', *ROLES.values()}
+    entries = list(directory.iterdir())
+    if {p.name for p in entries} != expected:
+        raise EvidenceError('DISPERSED_FILE_SET_MISMATCH')
+    if any(p.is_symlink() or not p.is_file() for p in entries):
+        raise EvidenceError('DISPERSED_NON_REGULAR_FILE')
+    if sum(p.stat().st_size for p in entries) > MAX_BYTES:
+        raise EvidenceError('INPUT_TOO_LARGE')
+    index = read_json(directory / 'index.json')
+    if not isinstance(index, dict) or index.get('files') != ROLES:
+        raise EvidenceError('DISPERSED_ROLE_MAP_MISMATCH')
+    if any(key in index for key in ROLES):
+        raise EvidenceError('DISPERSED_DUPLICATE_ROLE')
+    pack = {k: v for k, v in index.items() if k != 'files'}
+    for role, name in ROLES.items():
+        pack[role] = read_json(directory / name)
+    return pack
+
+
+def _receipt(pack, status, reasons):
+    out = {'protocol': 'UU-AAP-PORTABLE-EVIDENCE-CHECK', 'version': '0.1',
+           'case_id': pack.get('case_id') if isinstance(pack, dict) else None,
+           'input_digest': digest(pack), 'status': status,
+           'reasons': sorted(set(reasons))[:32], 'assurance': ASSURANCE.copy()}
+    out['digest'] = digest(out)
+    return out
+
+
+def _expected_harness(s):
+    """Separate replay of the frozen planner semantics; no Node or network."""
+    a, c, t = s['authorized'], s['current_state'], s['transport']
+    checks = [
+        (s['mode'] != 'dry_run', 'mode_not_dry_run'),
+        (s['live_execution_enabled'] is not False, 'live_execution_must_be_false'),
+        (a['decision'] != 'admissible', 'gateway_decision_not_admissible'),
+        (not a.get('action_permit_hash'), 'missing_action_permit'),
+        (not a.get('approval_reference'), 'missing_explicit_approval'),
+        (a['operation'] != 'merge_pr', 'operation_not_merge_pr'),
+        (t['transport_defines_authority'] is not False, 'transport_defines_authority'),
+        (t['tool_name'] != 'uu_aap.github.actuate', 'unexpected_tool_name'),
+        (c['repository'] != a['repository'], 'repository_mismatch'),
+        (c['pr_number'] != a['pr_number'], 'pr_number_mismatch'),
+        (c['head_sha'] != a['expected_head_sha'], 'stale_or_mismatched_head'),
+        (c['base_sha'] != a['expected_base_sha'], 'stale_or_mismatched_base'),
+        (a['merge_method'] not in ['squash', 'merge', 'rebase'], 'unsupported_merge_method'),
+        (bool(set(a['expected_effects']) & set(a['explicit_non_effects'])), 'effect_non_effect_overlap'),
+    ]
+    reasons = [reason for condition, reason in checks if condition]
+    plan = None
+    if not reasons:
+        plan = {'transport': t['type'], 'tool_name': 'uu_aap.github.actuate', 'arguments': {
+            'provider': 'github', 'repository': a['repository'], 'operation': a['operation'],
+            'pr_number': a['pr_number'], 'expected_head_sha': a['expected_head_sha'],
+            'expected_base_sha': a['expected_base_sha'], 'merge_method': a['merge_method'],
+            'gateway_decision_hash': a['decision_hash'], 'action_permit_hash': a['action_permit_hash'],
+            'approval_reference': a['approval_reference']}}
+    return ('deny' if reasons else 'allow_plan'), reasons, plan
+
+
+def verify(pack):
+    schema = read_json(HERE / 'evidence-pack.schema.json')
+    errors = list(Draft202012Validator(schema).iter_errors(pack))
+    if errors:
+        return _receipt(pack, 'INVALID_EVIDENCE', [
+            'SCHEMA:' + '/'.join(map(str, e.absolute_path)) + ':' + e.validator
+            for e in errors])
+    invalid, denied, missing, conflict = [], [], [], []
+    if pack['pack_digest'] != digest(without(pack, 'pack_digest')):
+        invalid.append('PACK_DIGEST_MISMATCH')
+    bindings = read_json(HERE / 'source-bindings.json')
+    if pack['source_bindings_digest'] != digest(bindings):
+        invalid.append('SOURCE_BINDING_DIGEST_MISMATCH')
+    try:
+        now = stamp(pack['decision_time'])
+        for role in ['approval', 'permit']:
+            record = pack[role]
+            if record is None:
+                missing.append(role.upper() + '_RECORD_MISSING')
+                continue
+            if record['digest'] != digest(without(record, 'digest')):
+                invalid.append(role.upper() + '_DIGEST_MISMATCH')
+            if record['target'] != pack['target']:
+                denied.append(role.upper() + '_TARGET_MISMATCH')
+            start, end = stamp(record['issued_at']), stamp(record['expires_at'])
+            if start >= end or not start <= now < end:
+                denied.append(role.upper() + '_OUTSIDE_WINDOW')
+        a, p, s, report = pack['approval'], pack['permit'], pack['scenario'], pack['harness_report']
+        if a and p:
+            if p['approval_digest'] != a['digest']:
+                invalid.append('PERMIT_APPROVAL_BINDING_MISMATCH')
+            if stamp(p['issued_at']) < stamp(a['issued_at']) or stamp(p['expires_at']) > stamp(a['expires_at']):
+                denied.append('PERMIT_OUTSIDE_APPROVAL_CORRIDOR')
+        authorized = s['authorized']
+        scenario_target = {'repository': authorized['repository'], 'pr_number': authorized['pr_number'],
+                           'head_sha': authorized['expected_head_sha'], 'base_sha': authorized['expected_base_sha'],
+                           'merge_method': authorized['merge_method']}
+        if scenario_target != pack['target']:
+            denied.append('SCENARIO_TARGET_MISMATCH')
+        if a and authorized.get('approval_reference') and authorized['approval_reference'] != a['digest']:
+            invalid.append('APPROVAL_REFERENCE_MISMATCH')
+        if p and authorized.get('action_permit_hash') and authorized['action_permit_hash'] != p['digest']:
+            invalid.append('PERMIT_REFERENCE_MISMATCH')
+        expected = _expected_harness(s)
+        if (report['decision'], report['reasons'], report['planned_call']) != expected:
+            invalid.append('HARNESS_REPLAY_MISMATCH')
+        if report['scenario_id'] != s['scenario_id']:
+            invalid.append('HARNESS_SCENARIO_ID_MISMATCH')
+        if report['content_hash'] != digest(without(report, 'content_hash')).removeprefix('sha256:'):
+            invalid.append('HARNESS_DIGEST_MISMATCH')
+        if report['decision'] == 'deny':
+            denied.extend('HARNESS:' + x for x in report['reasons'])
+        ids = set()
+        for attempt in pack['attempts']:
+            if attempt['attempt_id'] in ids:
+                invalid.append('DUPLICATE_ATTEMPT_ID')
+            ids.add(attempt['attempt_id'])
+            if attempt['digest'] != digest(without(attempt, 'digest')):
+                invalid.append('ATTEMPT_DIGEST_MISMATCH')
+            if not p or attempt['permit_digest'] != p['digest']:
+                invalid.append('ATTEMPT_PERMIT_BINDING_MISMATCH')
+            if attempt['target'] != pack['target']:
+                invalid.append('ATTEMPT_TARGET_MISMATCH')
+            if attempt['frontier'] != pack['target']['base_sha']:
+                invalid.append('ACTION_PREDECESSOR_FRONTIER_MISMATCH')
+            when = stamp(attempt['started_at'])
+            if when < now:
+                invalid.append('ATTEMPT_BEFORE_DECISION')
+            for role in ['approval', 'permit']:
+                r = pack[role]
+                if r and not stamp(r['issued_at']) <= when < stamp(r['expires_at']):
+                    denied.append(role.upper() + '_EXPIRED_AT_ATTEMPT')
+        if p and p['single_use'] and len(pack['attempts']) > 1:
+            conflict.append('MULTIPLE_ATTEMPTS_FOR_SINGLE_USE_REFERENCE')
+        observation = pack['observation']
+        if pack['claim_stage'] == 'PLAN':
+            if observation or pack['attempts']:
+                invalid.append('PLAN_CONTAINS_EXECUTION_RECORD')
+        elif observation is None:
+            missing.append('OUTCOME_RECORD_MISSING')
+        if observation:
+            if observation['digest'] != digest(without(observation, 'digest')):
+                invalid.append('OBSERVATION_DIGEST_MISMATCH')
+            if not p or observation['permit_digest'] != p['digest']:
+                invalid.append('OUTCOME_PERMIT_BINDING_MISMATCH')
+            if observation['target'] != pack['target']:
+                invalid.append('OUTCOME_TARGET_MISMATCH')
+            attempt = next((x for x in pack['attempts'] if x['attempt_id'] == observation['attempt_id']), None)
+            if attempt is None:
+                invalid.append('OUTCOME_ATTEMPT_MISSING')
+            elif stamp(observation['observed_at']) < stamp(attempt['started_at']):
+                invalid.append('OUTCOME_BEFORE_ATTEMPT')
+            if observation['status'] == 'UNKNOWN':
+                missing.append('OUTCOME_UNKNOWN_NO_RETRY_AUTHORITY')
+            elif observation['status'] == 'MERGED':
+                if observation['successor_commit'] is None or observation['successor_parent'] != pack['target']['base_sha']:
+                    invalid.append('SUCCESSOR_FRONTIER_MISMATCH')
+                if attempt and attempt['disposition'] != 'REPORTED_MERGED':
+                    conflict.append('ATTEMPT_OUTCOME_DISAGREEMENT')
+            elif observation['successor_commit'] is not None or observation['successor_parent'] is not None:
+                invalid.append('NON_MERGE_HAS_SUCCESSOR')
+    except EvidenceError as exc:
+        invalid.append(str(exc))
+    if invalid:
+        return _receipt(pack, 'INVALID_EVIDENCE', invalid)
+    if conflict:
+        return _receipt(pack, 'EVIDENCE_CONFLICT', conflict)
+    if denied:
+        return _receipt(pack, 'REPLAY_DENIED', denied)
+    if missing:
+        return _receipt(pack, 'EVIDENCE_INDETERMINATE', missing)
+    status = 'CONSISTENT_PLAN' if pack['claim_stage'] == 'PLAN' else 'CONSISTENT_OBSERVATION_RECORD'
+    return _receipt(pack, status, ['CONSISTENCY_ONLY_NOT_AUTHENTICATION'])
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--pack', type=Path)
+    group.add_argument('--dispersed', type=Path)
+    args = parser.parse_args()
+    try:
+        pack = read_json(args.pack) if args.pack else load_dispersed(args.dispersed)
+        receipt = verify(pack)
+        print(json.dumps(receipt, ensure_ascii=False, indent=2))
+        return 0 if receipt['status'].startswith('CONSISTENT_') else 1
+    except (EvidenceError, OSError, ValueError, RecursionError) as exc:
+        # Never echo caller payloads or credentials in diagnostics.
+        code = str(exc) if isinstance(exc, EvidenceError) else 'INPUT_READ_OR_PARSE_ERROR'
+        print(json.dumps({'status':'INVALID_INPUT','reason':code}))
+        return 2
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

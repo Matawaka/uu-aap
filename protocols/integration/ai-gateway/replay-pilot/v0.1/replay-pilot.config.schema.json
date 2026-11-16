@@ -1,0 +1,109 @@
+{
+  "type": "object",
+  "properties": {
+    "protocol": {
+      "const": "UU-AAP-PORTABLE-REPLAY-PILOT"
+    },
+    "version": {
+      "const": "0.1"
+    },
+    "status": {
+      "const": "PREREGISTERED_INTERNAL_REPLAY"
+    },
+    "base_sha": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$",
+      "minLength": 40,
+      "maxLength": 40
+    },
+    "clock": {
+      "type": "string"
+    },
+    "max_input_bytes": {
+      "const": 1048576
+    },
+    "cases": {
+      "type": "array",
+      "minItems": 17,
+      "maxItems": 17,
+      "items": {
+        "type": "object",
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^P[0-9]{2}$",
+            "minLength": 3,
+            "maxLength": 3
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "expected_status": {
+            "enum": [
+              "CONSISTENT_PLAN",
+              "CONSISTENT_OBSERVATION_RECORD",
+              "REPLAY_DENIED",
+              "EVIDENCE_INDETERMINATE",
+              "EVIDENCE_CONFLICT",
+              "INVALID_EVIDENCE"
+            ]
+          }
+        },
+        "required": [
+          "case_id",
+          "name",
+          "expected_status"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "packaging_profiles": {
+      "const": [
+        "PORTABLE_SINGLE_FILE",
+        "LOCAL_REFERENCE_COMPOSITION"
+      ]
+    },
+    "comparison_semantics": {
+      "const": "SAME_CHECKER_SAME_EVIDENCE_NO_DETECTION_ADVANTAGE_EXPECTED"
+    },
+    "vendor_execution": {
+      "const": "NOT_EXECUTED"
+    },
+    "external_operator": {
+      "const": "NOT_EXECUTED"
+    },
+    "customer_validation": {
+      "const": "NOT_EXECUTED"
+    },
+    "threshold_policy": {
+      "const": "NO_POST_RESULT_THRESHOLD_CHANGES"
+    },
+    "non_effects": {
+      "const": {
+        "live_execution": false,
+        "authority_issuance": false,
+        "stable_core_promotion": false,
+        "independent_review_claim": false
+      }
+    }
+  },
+  "required": [
+    "protocol",
+    "version",
+    "status",
+    "base_sha",
+    "clock",
+    "max_input_bytes",
+    "cases",
+    "packaging_profiles",
+    "comparison_semantics",
+    "vendor_execution",
+    "external_operator",
+    "customer_validation",
+    "threshold_policy",
+    "non_effects"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

@@ -1,0 +1,50 @@
+{
+  "status": "NOT_EXECUTED",
+  "participant_status": "NOT_RECRUITED",
+  "baseline_status": "REQUIRES_PARTICIPANT_SELECTION",
+  "baseline_product": null,
+  "baseline_version": null,
+  "baseline_config_digest": null,
+  "criteria_status": "REQUIRES_PREREGISTRATION_BEFORE_EXTERNAL_MEASUREMENT",
+  "thresholds": null,
+  "trial_design": {
+    "target": "One exact GitHub merge in participant-controlled sandbox",
+    "arms": [
+      "participant_existing_stack",
+      "same_stack_plus_matawaka_evidence_export"
+    ],
+    "controls": [
+      "same_target",
+      "same_permissions",
+      "same_evidence",
+      "same_allowed_and_denied_cases",
+      "order_counterbalanced"
+    ],
+    "metrics": [
+      "setup_hours",
+      "reconstruction_seconds",
+      "manual_log_lookups",
+      "false_allows",
+      "false_blocks",
+      "processing_p50_ms",
+      "processing_p95_ms",
+      "sensitive_bytes_retained",
+      "offline_replay_completed"
+    ],
+    "human_waiting_separated": true,
+    "missing_measurement_is_null": true
+  },
+  "results": {
+    "setup_hours": null,
+    "reconstruction_seconds": null,
+    "processing_p50_ms": null,
+    "processing_p95_ms": null,
+    "willingness_to_pay": null
+  },
+  "non_effects": {
+    "outreach_sent": false,
+    "live_execution_authorized": false,
+    "independence_established": false,
+    "commercial_advantage_established": false
+  }
+}

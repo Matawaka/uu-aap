@@ -1,0 +1,43 @@
+{
+  "classification": "VERIFIER_DEFECTS_NOT_NEGATIVE_RESEARCH_FINDINGS",
+  "original_protocol_sha256": "7bffbf4583923fc3b1323901272629d3ae11f43ead4138df37156a33a9a13cd1",
+  "original_reference_trace": "sha256:b9c51595365f7538bd0250c68caf8aff32eb999ef4a196bd33e05a740041f5b8",
+  "prototype_sha256": "d77932c19b6ccd3fbce09fc09ebfdb7e8bd6cfd5bdf4760cda3a802ebd1c961b",
+  "initial_methods": 33,
+  "initial_failures": 3,
+  "followups": [
+    {
+      "id": "F01",
+      "test": "test_bad_case_id_still_emits_valid_receipt",
+      "before": "INVALID_EVIDENCE receipt copied numeric case_id",
+      "required": "INVALID_EVIDENCE receipt with null case_id"
+    },
+    {
+      "id": "F02",
+      "test": "test_nonmerge_conflicts_with_reported_merge",
+      "before": "CONSISTENT_OBSERVATION_RECORD",
+      "required": "EVIDENCE_CONFLICT"
+    },
+    {
+      "id": "F03",
+      "test": "test_unknown_outcome_cannot_carry_known_successor",
+      "before": "EVIDENCE_INDETERMINATE",
+      "required": "INVALID_EVIDENCE"
+    },
+    {
+      "id": "F04",
+      "test": "test_scope_string_must_match_exact_target",
+      "before": "CONSISTENT_PLAN with unrelated authority_scope",
+      "required": "REPLAY_DENIED"
+    },
+    {
+      "id": "F05",
+      "test": "test_target_trailing_newline_is_invalid",
+      "before": "CONSISTENT_PLAN with repository trailing newline",
+      "required": "INVALID_EVIDENCE"
+    }
+  ],
+  "policy": "Preserve original 17-case protocol, reference results, negative controls and raw initial failures; correct only the verifier defects.",
+  "second_methods": 35,
+  "second_failures": 2
+}

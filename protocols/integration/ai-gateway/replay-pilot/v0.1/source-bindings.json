@@ -1,0 +1,25 @@
+{
+  "base_sha": "25202fb9cc936729cebfe3c93d6936f85b847624",
+  "sources": [
+    {
+      "path": "protocols/integration/ai-gateway/harness/v0.1/run-harness.js",
+      "sha256": "253a50426776d09510e7d7b1b1bd27679d4f5f0fe40ad521ca731aa7f4a090ef",
+      "role": "REPLAY_DEPENDENCY"
+    },
+    {
+      "path": "protocols/integration/ai-gateway/harness/v0.1/scenarios.fixture.json",
+      "sha256": "a7354d714357c7211e63db1c5c90b1caa7a94fd61fd796dbd36117736bfcbdc6",
+      "role": "REPLAY_DEPENDENCY"
+    },
+    {
+      "path": "protocols/integration/ai-gateway/harness/v0.1/validate-harness.js",
+      "sha256": "e856592288758f74187a10351b102dcb87d2b8619ff32ac214974aaefe74642a",
+      "role": "REPLAY_DEPENDENCY"
+    },
+    {
+      "path": "experiments/ai-gateway-live-executor-v0.1/audit/full-acceptance.record.json",
+      "sha256": "97682f5997ba7e56febad12006cba61ee0e576166462c360bd60925c02014de6",
+      "role": "HISTORICAL_REFERENCE_ONLY"
+    }
+  ]
+}
