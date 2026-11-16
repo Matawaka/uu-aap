@@ -53,6 +53,12 @@ Neither status is an end-to-end security PASS.
 
 ## Required end-to-end setup
 
+The [agent interface](agent-v0.1/README.md) ([Russian](agent-v0.1/README.ru.md))
+provides closed JSON contracts, a catalogue, run/compare/replay operations, a
+single-request JSON CLI and local MCP stdio access to the synthetic lifecycle
+experiment. Its receipts establish bounded local reproduction, not identity,
+authority or independent review. Real end-to-end statuses below remain unchanged.
+
 An additive [stateful lifecycle experiment](lifecycle-v0.1/README.md) now executes
 16 event tapes / 32 fresh/cached arms against the pinned existing validator.
 It adds modeled queue retention, current-source/clock observations, control

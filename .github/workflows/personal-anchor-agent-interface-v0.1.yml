@@ -1,0 +1,45 @@
+name: Personal Anchor agent interface v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/**'
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/personal-anchor-agent-interface-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/**'
+      - 'protocols/integration/execute-revalidation/v0.1/**'
+      - 'protocols/integration/pre-action-authorize-admission/v0.1/**'
+      - '.github/workflows/personal-anchor-agent-interface-v0.1.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  agent-interface:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: ['22', '24']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install exact lockfile without lifecycle scripts
+        working-directory: schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate closed contracts and independent JSON/MCP processes
+        working-directory: schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1
+        run: npm test
+      - name: Run documented agent consumer example
+        run: node schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/examples/mcp-client.js
+      - name: Preserve frozen lifecycle reference
+        run: node schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/lifecycle-v0.1/run-lifecycle-trials.js --check-reference
+      - name: Validate reusable Component Manifest
+        run: node tooling/component-manifest/v0.1/validate-component-manifest.js schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/component-manifest.json
+      - name: Confirm tests did not rewrite tracked evidence
+        run: git diff --exit-code

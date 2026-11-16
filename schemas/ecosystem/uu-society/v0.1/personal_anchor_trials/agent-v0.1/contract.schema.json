@@ -1,0 +1,1400 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:uu-aap:personal-anchor-agent-contract:0.1",
+  "$ref": "#/$defs/request",
+  "$defs": {
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "experiment_frontier": {
+          "const": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b"
+        },
+        "experiment_source_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "interface_source_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "canonicalization": {
+          "const": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+        }
+      },
+      "required": [
+        "experiment_frontier",
+        "experiment_source_hash",
+        "interface_source_hash",
+        "canonicalization"
+      ]
+    },
+    "responseOverrides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "nonce": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "session_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "intent_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "target_hash": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
+        },
+        "control_epoch": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "assessment": {
+          "enum": [
+            "consistent",
+            "inconsistent",
+            "unknown"
+          ]
+        },
+        "confidence": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "response_commitment": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "claimed_at": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        }
+      },
+      "required": []
+    },
+    "event": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "issue"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,48}$"
+            },
+            "ttl_ms": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 120000
+            }
+          },
+          "required": [
+            "type",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "backlog"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 63
+            }
+          },
+          "required": [
+            "type",
+            "count"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "advance"
+            },
+            "ms": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3600000
+            }
+          },
+          "required": [
+            "type",
+            "ms"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "complete"
+            },
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{1,48}$"
+            },
+            "response": {
+              "$ref": "#/$defs/responseOverrides"
+            }
+          },
+          "required": [
+            "type",
+            "id"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "revoke"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "rotate"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "change_intent"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "change_target"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "source_unavailable"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        }
+      ]
+    },
+    "scenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,48}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 160
+        },
+        "events": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/event"
+          },
+          "minItems": 1,
+          "maxItems": 128
+        }
+      },
+      "required": [
+        "id",
+        "events"
+      ]
+    },
+    "selector": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^L(?:0[0-9]|1[0-5])$"
+        },
+        "scenario": {
+          "$ref": "#/$defs/scenario"
+        }
+      },
+      "required": [],
+      "oneOf": [
+        {
+          "required": [
+            "scenario_id"
+          ],
+          "properties": {
+            "scenario_id": {}
+          }
+        },
+        {
+          "required": [
+            "scenario"
+          ],
+          "properties": {
+            "scenario": {}
+          }
+        }
+      ]
+    },
+    "describeArgs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {},
+      "required": []
+    },
+    "runArgs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^L(?:0[0-9]|1[0-5])$"
+        },
+        "scenario": {
+          "$ref": "#/$defs/scenario"
+        },
+        "arm": {
+          "enum": [
+            "fresh_boundary",
+            "cached_boundary"
+          ]
+        },
+        "hypothesis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "arm"
+      ],
+      "oneOf": [
+        {
+          "required": [
+            "scenario_id"
+          ],
+          "properties": {
+            "scenario_id": {}
+          }
+        },
+        {
+          "required": [
+            "scenario"
+          ],
+          "properties": {
+            "scenario": {}
+          }
+        }
+      ]
+    },
+    "compareArgs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^L(?:0[0-9]|1[0-5])$"
+        },
+        "scenario": {
+          "$ref": "#/$defs/scenario"
+        },
+        "hypothesis": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [],
+      "oneOf": [
+        {
+          "required": [
+            "scenario_id"
+          ],
+          "properties": {
+            "scenario_id": {}
+          }
+        },
+        {
+          "required": [
+            "scenario"
+          ],
+          "properties": {
+            "scenario": {}
+          }
+        }
+      ]
+    },
+    "receiptRow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "request_id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 48
+        },
+        "actual_model_clock_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3600000
+        },
+        "boundary_clock_ms": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 3600000
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "response_status": {
+          "enum": [
+            "UNKNOWN_REQUEST",
+            "LOCAL_REPLAY_REJECTED",
+            "CURRENT_SOURCE_UNAVAILABLE",
+            "RESPONSE_BINDING_MISMATCH",
+            "RESPONSE_EXPIRED",
+            "CURRENT_CONTEXT_CHANGED",
+            "RECORDED_EVIDENCE_ONLY"
+          ]
+        },
+        "response_assessment": {
+          "enum": [
+            "consistent",
+            "inconsistent",
+            "unknown"
+          ]
+        },
+        "evidence_commitment": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "contract_status": {
+          "enum": [
+            "NOT_EVALUATED",
+            "READY",
+            "REJECTED"
+          ]
+        },
+        "contract_reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "EXPIRED_SOURCE_BOUND",
+                "CURRENT_ADMISSION_DENIED",
+                "CURRENT_ADMISSION_CHANGED",
+                "CURRENT_FRESHNESS_BINDING_CHANGED",
+                "CURRENT_ACTION_BINDING_CHANGED",
+                "OTHER_CONTRACT_REJECTION"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_hash_observed": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^sha256:[0-9a-f]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_status_observed": {
+          "anyOf": [
+            {
+              "enum": [
+                "admissible",
+                "denied"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "input_time_ignored": {
+          "const": true
+        },
+        "identity_established": {
+          "const": false
+        },
+        "causal_continuity_proven": {
+          "const": false
+        },
+        "guilt_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "live_permit_consumed": {
+          "const": false
+        },
+        "action_performed": {
+          "const": false
+        },
+        "biometric_model_executed": {
+          "const": false
+        },
+        "receipt_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "request_id",
+        "actual_model_clock_ms",
+        "boundary_clock_ms",
+        "response_status",
+        "response_assessment",
+        "evidence_commitment",
+        "contract_status",
+        "contract_reason",
+        "source_hash_observed",
+        "source_status_observed",
+        "input_time_ignored",
+        "identity_established",
+        "causal_continuity_proven",
+        "guilt_established",
+        "authority_created",
+        "live_permit_consumed",
+        "action_performed",
+        "biometric_model_executed",
+        "receipt_hash"
+      ]
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9_-]{1,48}$"
+        },
+        "arm": {
+          "enum": [
+            "fresh_boundary",
+            "cached_boundary"
+          ]
+        },
+        "scenario_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "retained_request_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 64
+        },
+        "receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/receiptRow"
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "identity_established": {
+          "const": false
+        },
+        "causal_continuity_proven": {
+          "const": false
+        },
+        "guilt_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "live_permit_consumed": {
+          "const": false
+        },
+        "action_performed": {
+          "const": false
+        },
+        "biometric_model_executed": {
+          "const": false
+        }
+      },
+      "required": [
+        "scenario_id",
+        "arm",
+        "scenario_hash",
+        "retained_request_count",
+        "receipts",
+        "identity_established",
+        "causal_continuity_proven",
+        "guilt_established",
+        "authority_created",
+        "live_permit_consumed",
+        "action_performed",
+        "biometric_model_executed"
+      ]
+    },
+    "projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "response_status": {
+          "enum": [
+            "UNKNOWN_REQUEST",
+            "LOCAL_REPLAY_REJECTED",
+            "CURRENT_SOURCE_UNAVAILABLE",
+            "RESPONSE_BINDING_MISMATCH",
+            "RESPONSE_EXPIRED",
+            "CURRENT_CONTEXT_CHANGED",
+            "RECORDED_EVIDENCE_ONLY"
+          ]
+        },
+        "contract_status": {
+          "enum": [
+            "NOT_EVALUATED",
+            "READY",
+            "REJECTED"
+          ]
+        },
+        "contract_reason": {
+          "anyOf": [
+            {
+              "enum": [
+                "EXPIRED_SOURCE_BOUND",
+                "CURRENT_ADMISSION_DENIED",
+                "CURRENT_ADMISSION_CHANGED",
+                "CURRENT_FRESHNESS_BINDING_CHANGED",
+                "CURRENT_ACTION_BINDING_CHANGED",
+                "OTHER_CONTRACT_REJECTION"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "response_status",
+        "contract_status",
+        "contract_reason"
+      ]
+    },
+    "difference": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "fresh_boundary": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/projection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cached_boundary": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/projection"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "index",
+        "fresh_boundary",
+        "cached_boundary"
+      ]
+    },
+    "expectation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "arm": {
+          "enum": [
+            "fresh_boundary",
+            "cached_boundary"
+          ]
+        },
+        "status": {
+          "enum": [
+            "REFERENCE_EXPECTATION_MATCHED",
+            "REFERENCE_EXPECTATION_MISMATCH",
+            "NO_TRUSTED_EXPECTATION"
+          ]
+        }
+      },
+      "required": [
+        "arm",
+        "status"
+      ]
+    },
+    "receiptPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "operation": {
+          "enum": [
+            "experiment.run",
+            "experiment.compare"
+          ]
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "input": {
+          "$ref": "#/$defs/selector"
+        },
+        "hypothesis": {
+          "anyOf": [
+            {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "hypothesis_authority": {
+          "const": "UNASSESSED_CALLER_STATEMENT"
+        },
+        "arms": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "fresh_boundary",
+              "cached_boundary"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "observations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/observation"
+          },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "reference_expectations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/expectation"
+          },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "comparison": {
+          "anyOf": [
+            {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/difference"
+              },
+              "minItems": 0,
+              "maxItems": 256
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "operation",
+        "source",
+        "input",
+        "hypothesis",
+        "hypothesis_authority",
+        "arms",
+        "observations",
+        "reference_expectations",
+        "comparison"
+      ]
+    },
+    "receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "receipt_type": {
+          "const": "PersonalAnchorAgentExperimentReceipt"
+        },
+        "interface_version": {
+          "const": "0.1"
+        },
+        "scope": {
+          "const": "OFFLINE_SYNTHETIC_LIFECYCLE"
+        },
+        "assurance": {
+          "const": "LOCAL_REPRODUCTION_ONLY"
+        },
+        "payload": {
+          "$ref": "#/$defs/receiptPayload"
+        },
+        "identity_established": {
+          "const": false
+        },
+        "causal_continuity_proven": {
+          "const": false
+        },
+        "guilt_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "live_permit_consumed": {
+          "const": false
+        },
+        "action_performed": {
+          "const": false
+        },
+        "biometric_model_executed": {
+          "const": false
+        },
+        "receipt_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "receipt_type",
+        "interface_version",
+        "scope",
+        "assurance",
+        "payload",
+        "identity_established",
+        "causal_continuity_proven",
+        "guilt_established",
+        "authority_created",
+        "live_permit_consumed",
+        "action_performed",
+        "biometric_model_executed",
+        "receipt_hash"
+      ]
+    },
+    "replayArgs": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "receipt": {
+          "$ref": "#/$defs/receipt"
+        }
+      },
+      "required": [
+        "receipt"
+      ]
+    },
+    "jsonSchema": {
+      "type": "object",
+      "minProperties": 1
+    },
+    "toolDescription": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "enum": [
+            "experiment.describe",
+            "experiment.run",
+            "experiment.compare",
+            "experiment.replay"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 800
+        },
+        "arguments_schema": {
+          "$ref": "#/$defs/jsonSchema"
+        }
+      },
+      "required": [
+        "name",
+        "description",
+        "arguments_schema"
+      ]
+    },
+    "describeResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "manifest": {
+          "$ref": "#/$defs/jsonSchema"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/toolDescription"
+          },
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "response_schema": {
+          "$ref": "#/$defs/jsonSchema"
+        },
+        "catalogue": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9_-]{1,48}$"
+              },
+              "title": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 160
+              }
+            },
+            "required": [
+              "id",
+              "title"
+            ]
+          },
+          "minItems": 16,
+          "maxItems": 16
+        },
+        "end_to_end_status": {
+          "const": "NOT_EXECUTED"
+        }
+      },
+      "required": [
+        "manifest",
+        "source",
+        "tools",
+        "response_schema",
+        "catalogue",
+        "end_to_end_status"
+      ]
+    },
+    "runResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "receipt": {
+          "$ref": "#/$defs/receipt"
+        }
+      },
+      "required": [
+        "receipt"
+      ]
+    },
+    "replayResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "replay_matched": {
+          "const": true
+        },
+        "verified_receipt_hash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "verification_scope": {
+          "const": "LOCAL_SAME_SOURCE_REPRODUCTION"
+        },
+        "issuer_authenticity_established": {
+          "const": false
+        },
+        "independent_review_performed": {
+          "const": false
+        }
+      },
+      "required": [
+        "replay_matched",
+        "verified_receipt_hash",
+        "verification_scope",
+        "issuer_authenticity_established",
+        "independent_review_performed"
+      ]
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "INVALID_JSON",
+            "REQUEST_LIMIT",
+            "INVALID_REQUEST",
+            "UNSUPPORTED_OPERATION",
+            "MODEL_EXECUTION_ERROR",
+            "SOURCE_MISMATCH",
+            "RECEIPT_DIGEST_MISMATCH",
+            "REPLAY_RESULT_MISMATCH",
+            "INTERNAL_ERROR"
+          ]
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 512
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ]
+    },
+    "errorEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interface_version": {
+          "const": "0.1"
+        },
+        "operation": {
+          "anyOf": [
+            {
+              "enum": [
+                "experiment.describe",
+                "experiment.run",
+                "experiment.compare",
+                "experiment.replay"
+              ]
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "execution_status": {
+          "const": "ERROR"
+        },
+        "scope": {
+          "const": "OFFLINE_SYNTHETIC_LIFECYCLE"
+        },
+        "identity_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "external_effects_performed": {
+          "const": false
+        },
+        "result": {
+          "type": "null"
+        },
+        "error": {
+          "$ref": "#/$defs/error"
+        }
+      },
+      "required": [
+        "interface_version",
+        "operation",
+        "execution_status",
+        "scope",
+        "identity_established",
+        "authority_created",
+        "external_effects_performed",
+        "result",
+        "error"
+      ]
+    },
+    "describeEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interface_version": {
+          "const": "0.1"
+        },
+        "operation": {
+          "const": "experiment.describe"
+        },
+        "execution_status": {
+          "const": "COMPLETED"
+        },
+        "scope": {
+          "const": "OFFLINE_SYNTHETIC_LIFECYCLE"
+        },
+        "identity_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "external_effects_performed": {
+          "const": false
+        },
+        "result": {
+          "$ref": "#/$defs/describeResult"
+        },
+        "error": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "interface_version",
+        "operation",
+        "execution_status",
+        "scope",
+        "identity_established",
+        "authority_created",
+        "external_effects_performed",
+        "result",
+        "error"
+      ]
+    },
+    "describeOutput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/describeEnvelope"
+        },
+        {
+          "$ref": "#/$defs/errorEnvelope"
+        }
+      ]
+    },
+    "runEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interface_version": {
+          "const": "0.1"
+        },
+        "operation": {
+          "const": "experiment.run"
+        },
+        "execution_status": {
+          "const": "COMPLETED"
+        },
+        "scope": {
+          "const": "OFFLINE_SYNTHETIC_LIFECYCLE"
+        },
+        "identity_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "external_effects_performed": {
+          "const": false
+        },
+        "result": {
+          "$ref": "#/$defs/runResult"
+        },
+        "error": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "interface_version",
+        "operation",
+        "execution_status",
+        "scope",
+        "identity_established",
+        "authority_created",
+        "external_effects_performed",
+        "result",
+        "error"
+      ]
+    },
+    "runOutput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/runEnvelope"
+        },
+        {
+          "$ref": "#/$defs/errorEnvelope"
+        }
+      ]
+    },
+    "compareEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interface_version": {
+          "const": "0.1"
+        },
+        "operation": {
+          "const": "experiment.compare"
+        },
+        "execution_status": {
+          "const": "COMPLETED"
+        },
+        "scope": {
+          "const": "OFFLINE_SYNTHETIC_LIFECYCLE"
+        },
+        "identity_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "external_effects_performed": {
+          "const": false
+        },
+        "result": {
+          "$ref": "#/$defs/runResult"
+        },
+        "error": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "interface_version",
+        "operation",
+        "execution_status",
+        "scope",
+        "identity_established",
+        "authority_created",
+        "external_effects_performed",
+        "result",
+        "error"
+      ]
+    },
+    "compareOutput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/compareEnvelope"
+        },
+        {
+          "$ref": "#/$defs/errorEnvelope"
+        }
+      ]
+    },
+    "replayEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "interface_version": {
+          "const": "0.1"
+        },
+        "operation": {
+          "const": "experiment.replay"
+        },
+        "execution_status": {
+          "const": "COMPLETED"
+        },
+        "scope": {
+          "const": "OFFLINE_SYNTHETIC_LIFECYCLE"
+        },
+        "identity_established": {
+          "const": false
+        },
+        "authority_created": {
+          "const": false
+        },
+        "external_effects_performed": {
+          "const": false
+        },
+        "result": {
+          "$ref": "#/$defs/replayResult"
+        },
+        "error": {
+          "type": "null"
+        }
+      },
+      "required": [
+        "interface_version",
+        "operation",
+        "execution_status",
+        "scope",
+        "identity_established",
+        "authority_created",
+        "external_effects_performed",
+        "result",
+        "error"
+      ]
+    },
+    "replayOutput": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/replayEnvelope"
+        },
+        {
+          "$ref": "#/$defs/errorEnvelope"
+        }
+      ]
+    },
+    "response": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/describeEnvelope"
+        },
+        {
+          "$ref": "#/$defs/runEnvelope"
+        },
+        {
+          "$ref": "#/$defs/compareEnvelope"
+        },
+        {
+          "$ref": "#/$defs/replayEnvelope"
+        },
+        {
+          "$ref": "#/$defs/errorEnvelope"
+        }
+      ]
+    },
+    "request": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "interface_version": {
+              "const": "0.1"
+            },
+            "operation": {
+              "const": "experiment.describe"
+            },
+            "arguments": {
+              "$ref": "#/$defs/describeArgs"
+            }
+          },
+          "required": [
+            "interface_version",
+            "operation",
+            "arguments"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "interface_version": {
+              "const": "0.1"
+            },
+            "operation": {
+              "const": "experiment.run"
+            },
+            "arguments": {
+              "$ref": "#/$defs/runArgs"
+            }
+          },
+          "required": [
+            "interface_version",
+            "operation",
+            "arguments"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "interface_version": {
+              "const": "0.1"
+            },
+            "operation": {
+              "const": "experiment.compare"
+            },
+            "arguments": {
+              "$ref": "#/$defs/compareArgs"
+            }
+          },
+          "required": [
+            "interface_version",
+            "operation",
+            "arguments"
+          ]
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "interface_version": {
+              "const": "0.1"
+            },
+            "operation": {
+              "const": "experiment.replay"
+            },
+            "arguments": {
+              "$ref": "#/$defs/replayArgs"
+            }
+          },
+          "required": [
+            "interface_version",
+            "operation",
+            "arguments"
+          ]
+        }
+      ]
+    }
+  }
+}

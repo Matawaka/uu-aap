@@ -1,0 +1,28 @@
+{
+  "interface_version": "0.1",
+  "operation": "experiment.compare",
+  "arguments": {
+    "scenario": {
+      "id": "agent-revocation",
+      "title": "Caller-authored synthetic revocation test",
+      "events": [
+        {
+          "type": "issue",
+          "id": "a"
+        },
+        {
+          "type": "advance",
+          "ms": 1000
+        },
+        {
+          "type": "revoke"
+        },
+        {
+          "type": "complete",
+          "id": "a"
+        }
+      ]
+    },
+    "hypothesis": "A current denial should prevent the old admission from being treated as ready."
+  }
+}
