@@ -53,7 +53,16 @@ Neither status is an end-to-end security PASS.
 
 ## Required end-to-end setup
 
-Before a trial can acquire results, identify an actual PCC/authenticator adapter,
+An additive [stateful lifecycle experiment](lifecycle-v0.1/README.md) now executes
+16 event tapes / 32 fresh/cached arms against the pinned existing validator.
+It adds modeled queue retention, current-source/clock observations, control
+epochs and local response replay checks. Its synthetic public-history and
+confidence inputs do not execute a continuity classifier. This is additional
+laboratory lifecycle coverage for PA-01/02/03/04/06/09/10; **every real end-to-end
+status in the table remains NOT_EXECUTED**. The recorded 11 arm differences are
+variants of a caching failure class, not product vulnerability findings.
+
+Before a real end-to-end trial can acquire results, identify an actual PCC/authenticator adapter,
 exact verifier/model commit and weights digest, challenge generation and expiry
 policy, clock semantics, authority/revocation provider, key-epoch binding and
 replay-store behavior. Record which component supplies a fresh trusted current

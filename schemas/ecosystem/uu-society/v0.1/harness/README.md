@@ -39,6 +39,12 @@ outputs. New Node/Python contract regressions call the existing validators;
 real PCC, biometric and full-history-compromise experiments remain NOT_EXECUTED.
 Passing those regressions does not establish end-to-end identity assurance.
 
+The additive [stateful lifecycle experiment](../personal_anchor_trials/lifecycle-v0.1/README.md)
+executes 16 synthetic event tapes in fresh/cached arms. It retains a minimized
+reference trace, checks local replay and current-source/clock behavior, and
+detects four authored implementation faults. This remains an offline model;
+the real PCC/biometric and full-history-compromise trials remain NOT_EXECUTED.
+
 ```bash
 python -m unittest discover -s schemas/ecosystem/uu-society/v0.1/harness -p test_personal_anchor_trials.py -v
 node --test schemas/ecosystem/uu-society/v0.1/harness/test_personal_anchor_authority.js
