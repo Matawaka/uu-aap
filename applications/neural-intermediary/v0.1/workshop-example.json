@@ -1,0 +1,108 @@
+{
+  "schema": "matawaka.intermediary.workshop-case/v0.1",
+  "tenant": "synthetic-workshop",
+  "order_id": "synthetic-sign-001",
+  "revision": 1,
+  "currency": "RUB",
+  "requirements": {
+    "product": {
+      "state": "confirmed",
+      "value": "СИНТЕТИЧЕСКИЙ ПРИМЕР: декоративная рекламная панель с отдельным каркасом",
+      "source_refs": [
+        "synthetic-client-brief-r1"
+      ]
+    },
+    "quantity": {
+      "state": "confirmed",
+      "value": 1,
+      "source_refs": [
+        "synthetic-client-brief-r1"
+      ]
+    },
+    "dimensions_mm": {
+      "state": "conflict",
+      "value": {
+        "width": 2400,
+        "height": 1200,
+        "depth": 80
+      },
+      "source_refs": [
+        "synthetic-message-r1",
+        "synthetic-sketch-r2"
+      ]
+    },
+    "material": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "finish": {
+      "state": "candidate",
+      "value": "Цвет и фактура по образцу, который ещё предстоит согласовать",
+      "source_refs": [
+        "synthetic-client-brief-r1"
+      ]
+    },
+    "drawing_revision": {
+      "state": "candidate",
+      "value": "synthetic-sketch-r2",
+      "source_refs": [
+        "synthetic-client-brief-r1"
+      ]
+    },
+    "installation": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "requested_date": {
+      "state": "candidate",
+      "value": "2026-10-20",
+      "source_refs": [
+        "synthetic-client-brief-r1"
+      ]
+    },
+    "acceptance": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    }
+  },
+  "costs": {
+    "materials": {
+      "state": "estimate",
+      "amount_minor": 1850000,
+      "basis_ref": "synthetic-price-note"
+    },
+    "outside_services": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "labor": {
+      "state": "estimate",
+      "amount_minor": 1200000,
+      "basis_ref": "synthetic-labor-note"
+    },
+    "machine": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "delivery_installation": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "overhead": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "contingency": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    }
+  }
+}

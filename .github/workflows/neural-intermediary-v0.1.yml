@@ -1,0 +1,78 @@
+name: Neural intermediary offline concept v0.1
+
+on:
+  pull_request:
+    paths:
+      - 'applications/neural-intermediary/v0.1/**'
+      - 'docs/architecture/NEURAL-INTERMEDIARY-2026-10.ru.md'
+      - 'docs/architecture/WORKSHOP-PILOT-2026-10.ru.md'
+      - 'protocols/integration/rerc/v0.1/rerc.js'
+      - '.github/workflows/neural-intermediary-v0.1.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'applications/neural-intermediary/v0.1/**'
+      - 'protocols/integration/rerc/v0.1/rerc.js'
+      - '.github/workflows/neural-intermediary-v0.1.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify accepted RERC dependency bytes
+        run: |
+          test "$(git hash-object protocols/integration/rerc/v0.1/rerc.js)" = d2aae21a2e2375477c6349eae5f236ea60cd7151
+      - name: Run named offline suites
+        run: |
+          python -I -B applications/neural-intermediary/v0.1/test_core.py
+          python -I -B applications/neural-intermediary/v0.1/test_bundle.py
+          python -I -B applications/neural-intermediary/v0.1/test_cli.py
+          python -I -B applications/neural-intermediary/v0.1/test_mutations.py
+          python -I -B applications/neural-intermediary/v0.1/test_workshop.py
+          node applications/neural-intermediary/v0.1/test_projection.js
+          node protocols/integration/rerc/v0.1/test-rerc.js
+      - name: Exercise finite synthetic demo
+        run: python -I -B applications/neural-intermediary/v0.1/cli.py demo
+      - name: Confirm source tree unchanged
+        run: test -z "$(git status --porcelain)"
+
+  isolation-observation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Observe fixed isolation profile without fallback or installation
+        shell: bash
+        run: |
+          set +e
+          python3 -I -B applications/neural-intermediary/v0.1/isolation.py > "$RUNNER_TEMP/isolation.json"
+          observed_exit=$?
+          set -e
+          cat "$RUNNER_TEMP/isolation.json"
+          python3 - "$RUNNER_TEMP/isolation.json" "$observed_exit" <<'PY'
+          import json, sys
+          with open(sys.argv[1]) as stream:
+              result = json.load(stream)
+          status = result['status']
+          assert result['production_isolation_established'] is False
+          assert result['no_unisolated_fallback'] is True
+          assert (status, int(sys.argv[2])) in [('PROBE_PASS_BOUNDED', 0), ('UNAVAILABLE', 2)]
+          if status == 'UNAVAILABLE':
+              print('::notice::Isolation unavailable; no isolation qualification is claimed. Offline checks remain separate.')
+          PY
