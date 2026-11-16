@@ -38,6 +38,10 @@ jobs:
           -p test_personal_anchor_trials.py -v
       - name: Check retained expiry and current admission bindings
         run: node --test schemas/ecosystem/uu-society/v0.1/harness/test_personal_anchor_authority.js
+      - name: Replay stateful response lifecycle and cached-boundary controls
+        run: node schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/lifecycle-v0.1/run-lifecycle-trials.js --check-reference
+      - name: Check lifecycle bindings, local replay and authored faults
+        run: node --test schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/lifecycle-v0.1/test-lifecycle-trials.js
 
   deterministic-conflict-scenarios:
     runs-on: ubuntu-latest

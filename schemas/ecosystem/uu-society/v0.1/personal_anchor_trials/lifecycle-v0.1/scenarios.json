@@ -1,0 +1,656 @@
+[
+  {
+    "id": "L00",
+    "title": "Valid bounded completion",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "advance",
+        "ms": 1000
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": false
+  },
+  {
+    "id": "L01",
+    "title": "Uncollected backlog and late response",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "backlog",
+        "count": 32
+      },
+      {
+        "type": "advance",
+        "ms": 65000
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RESPONSE_EXPIRED",
+          "contract_status": "REJECTED",
+          "contract_reason": "EXPIRED_SOURCE_BOUND"
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L02",
+    "title": "Revocation while response is pending",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "advance",
+        "ms": 1000
+      },
+      {
+        "type": "revoke"
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "REJECTED",
+          "contract_reason": "CURRENT_ADMISSION_DENIED"
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L03",
+    "title": "Control epoch and approval/permit changed",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "advance",
+        "ms": 1000
+      },
+      {
+        "type": "rotate"
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "CURRENT_CONTEXT_CHANGED",
+          "contract_status": "REJECTED",
+          "contract_reason": "CURRENT_FRESHNESS_BINDING_CHANGED"
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L04",
+    "title": "Current admission unavailable",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "source_unavailable"
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "CURRENT_SOURCE_UNAVAILABLE",
+          "contract_status": "NOT_EVALUATED",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L05",
+    "title": "Target changed while response is pending",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "change_target"
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "CURRENT_CONTEXT_CHANGED",
+          "contract_status": "REJECTED",
+          "contract_reason": "CURRENT_ACTION_BINDING_CHANGED"
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L06",
+    "title": "Intent context changed independently of operation",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "change_intent"
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "CURRENT_CONTEXT_CHANGED",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L07",
+    "title": "Challenge lifetime shorter than current source lifetime",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "advance",
+        "ms": 30001
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RESPONSE_EXPIRED",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L08",
+    "title": "Mismatched response does not consume the real request",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "complete",
+        "id": "a",
+        "response": {
+          "nonce": "copied-response-for-another-nonce"
+        }
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RESPONSE_BINDING_MISMATCH",
+          "contract_status": "READY",
+          "contract_reason": null
+        },
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        },
+        {
+          "response_status": "LOCAL_REPLAY_REJECTED",
+          "contract_status": "NOT_EVALUATED",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RESPONSE_BINDING_MISMATCH",
+          "contract_status": "READY",
+          "contract_reason": null
+        },
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        },
+        {
+          "response_status": "LOCAL_REPLAY_REJECTED",
+          "contract_status": "NOT_EVALUATED",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": false
+  },
+  {
+    "id": "L09",
+    "title": "Client timestamp cannot move the model clock backwards",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "advance",
+        "ms": 65000
+      },
+      {
+        "type": "complete",
+        "id": "a",
+        "response": {
+          "claimed_at": "2026-11-16T12:00:00.000Z"
+        }
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RESPONSE_EXPIRED",
+          "contract_status": "REJECTED",
+          "contract_reason": "EXPIRED_SOURCE_BOUND"
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L10",
+    "title": "Public correct-history metadata does not grant authority",
+    "events": [
+      {
+        "type": "revoke"
+      },
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "complete",
+        "id": "a",
+        "response": {
+          "confidence": 1.0
+        }
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "REJECTED",
+          "contract_reason": "CURRENT_ADMISSION_DENIED"
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "REJECTED",
+          "contract_reason": "CURRENT_ADMISSION_DENIED"
+        }
+      ]
+    },
+    "expected_differential": false
+  },
+  {
+    "id": "L11",
+    "title": "Confident synthetic false acceptance cannot revive authority",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "revoke"
+      },
+      {
+        "type": "complete",
+        "id": "a",
+        "response": {
+          "assessment": "consistent",
+          "confidence": 0.999999
+        }
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "REJECTED",
+          "contract_reason": "CURRENT_ADMISSION_DENIED"
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L12",
+    "title": "Inconsistent response remains evidence without a guilt verdict",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "complete",
+        "id": "a",
+        "response": {
+          "assessment": "inconsistent",
+          "confidence": 0.99
+        }
+      },
+      {
+        "type": "issue",
+        "id": "b",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "complete",
+        "id": "b"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        },
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        },
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": false
+  },
+  {
+    "id": "L13",
+    "title": "A new request can use current bindings after rotation",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "rotate"
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      },
+      {
+        "type": "issue",
+        "id": "b",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "complete",
+        "id": "b"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "CURRENT_CONTEXT_CHANGED",
+          "contract_status": "REJECTED",
+          "contract_reason": "CURRENT_FRESHNESS_BINDING_CHANGED"
+        },
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        },
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  },
+  {
+    "id": "L14",
+    "title": "Public metadata alone remains observationally reproducible",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "complete",
+        "id": "a",
+        "response": {
+          "confidence": 1.0
+        }
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": false
+  },
+  {
+    "id": "L15",
+    "title": "Synthetic challenge expiry is half-open at the boundary",
+    "events": [
+      {
+        "type": "issue",
+        "id": "a",
+        "ttl_ms": 30000
+      },
+      {
+        "type": "advance",
+        "ms": 30000
+      },
+      {
+        "type": "complete",
+        "id": "a"
+      }
+    ],
+    "expected": {
+      "fresh_boundary": [
+        {
+          "response_status": "RESPONSE_EXPIRED",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ],
+      "cached_boundary": [
+        {
+          "response_status": "RECORDED_EVIDENCE_ONLY",
+          "contract_status": "READY",
+          "contract_reason": null
+        }
+      ]
+    },
+    "expected_differential": true
+  }
+]
