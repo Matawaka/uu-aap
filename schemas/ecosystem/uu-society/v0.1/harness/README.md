@@ -30,6 +30,20 @@ python schemas/ecosystem/uu-society/v0.1/harness/run_scenarios.py --write-receip
 
 Generated receipts are local artifacts and are not canonical model state.
 
+## Personal Anchor adversarial trials
+
+The [trial matrix](../personal_anchor_trials/README.md) ([Russian](../personal_anchor_trials/README.ru.md))
+registers retained/expired challenges, revocation, rotation, full-history
+compromise, replay/re-recording, unseen synthesis and confidently wrong model
+outputs. New Node/Python contract regressions call the existing validators;
+real PCC, biometric and full-history-compromise experiments remain NOT_EXECUTED.
+Passing those regressions does not establish end-to-end identity assurance.
+
+```bash
+python -m unittest discover -s schemas/ecosystem/uu-society/v0.1/harness -p test_personal_anchor_trials.py -v
+node --test schemas/ecosystem/uu-society/v0.1/harness/test_personal_anchor_authority.js
+```
+
 ## Current executable invariants
 
 - I-002 — dissent alone cannot degrade unrelated trust or narrow authority;
