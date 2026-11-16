@@ -5,6 +5,10 @@ Tracking #1047. This candidate is stacked on PR #1046 at exact engine source
 The interface provides a JSON CLI and a local MCP stdio server over the same
 unchanged offline lifecycle experiment. [Русская версия](README.ru.md).
 
+The reusable [Component Manifest](component-manifest.json) binds actual
+implementation commit `ce55816ab7d9be50626af2c75d576d971b6c21e0`. It is additive
+engineering metadata; its validation does not run or attest the component.
+
 ## Run from a checked-out repository
 
 Requires Node.js 22 or newer. From the repository root:
