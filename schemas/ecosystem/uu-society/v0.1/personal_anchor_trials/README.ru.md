@@ -28,6 +28,10 @@ PCC/голосовым детектором.
 
 Запуск:
 
+[Интерфейс для ИИ-агентов](agent-v0.1/README.ru.md) добавляет каталог, строгий JSON,
+запуск, сравнение и replay через CLI и MCP stdio. Это доступ к синтетической
+лаборатории; все реальные сквозные статусы остаются NOT_EXECUTED.
+
 ```bash
 python -m unittest discover -s schemas/ecosystem/uu-society/v0.1/harness -p test_personal_anchor_trials.py -v
 node --test schemas/ecosystem/uu-society/v0.1/harness/test_personal_anchor_authority.js

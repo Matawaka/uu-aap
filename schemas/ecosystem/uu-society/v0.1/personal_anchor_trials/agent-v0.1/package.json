@@ -1,0 +1,20 @@
+{
+  "name": "@uuaap/personal-anchor-trials-agent",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "type": "commonjs",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test test-agent-core.js test-agent-cli.js test-agent-mcp.js",
+    "cli": "node agent-cli.js",
+    "mcp": "node mcp-server.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "ajv": "8.20.0"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0"
+  }
+}

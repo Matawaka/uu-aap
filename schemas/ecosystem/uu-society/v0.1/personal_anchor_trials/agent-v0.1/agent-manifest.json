@@ -1,0 +1,49 @@
+{
+  "interface_version": "0.1",
+  "experiment_id": "personal-anchor-synthetic-lifecycle-v0.1",
+  "maturity": "experimental",
+  "engine_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+  "dependency_pr": 1046,
+  "source_binding": "FILE_DIGEST_SET",
+  "operations": [
+    "experiment.describe",
+    "experiment.run",
+    "experiment.compare",
+    "experiment.replay"
+  ],
+  "entrypoints": {
+    "json_cli": "agent-cli.js",
+    "mcp_stdio": "mcp-server.js"
+  },
+  "node_minimum": 22,
+  "mcp_sdk_version": "2.4.0",
+  "schema": "contract.schema.json",
+  "limits": {
+    "max_request_bytes": 524288,
+    "max_scenario_bytes": 65536,
+    "max_receipt_bytes": 393216,
+    "max_output_bytes": 1048576,
+    "max_events": 128,
+    "max_pending_requests": 64,
+    "max_model_receipts": 256,
+    "max_depth": 32,
+    "max_nodes": 20000
+  },
+  "end_to_end_status": "NOT_EXECUTED",
+  "external_effects_performed": false,
+  "authority_created": false,
+  "identity_established": false,
+  "arms": [
+    {
+      "name": "fresh_boundary",
+      "role": "CURRENT_MODEL_BOUNDARY"
+    },
+    {
+      "name": "cached_boundary",
+      "role": "DELIBERATELY_UNSAFE_COMPARATOR"
+    }
+  ],
+  "receipt_assurance": "LOCAL_REPRODUCTION_ONLY",
+  "mcp_transport": "stdio",
+  "max_mcp_frame_bytes": 1048576
+}

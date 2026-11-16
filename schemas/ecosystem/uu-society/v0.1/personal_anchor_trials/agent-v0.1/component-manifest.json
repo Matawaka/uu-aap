@@ -1,0 +1,93 @@
+{
+  "artifact_type": "UU-AAP-Component-Manifest",
+  "manifest_version": "0.1",
+  "component": {
+    "id": "Personal-Anchor-Trials-Agent",
+    "version": "0.1",
+    "kind": "TOOLING",
+    "status": "experimental",
+    "path": "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1"
+  },
+  "source_frontier": {
+    "repository": "Matawaka/uu-aap",
+    "revision": "ce55816ab7d9be50626af2c75d576d971b6c21e0"
+  },
+  "exports": {
+    "interfaces": [
+      "PersonalAnchorTrialsAgentJSON",
+      "PersonalAnchorTrialsAgentMCP"
+    ],
+    "receipt_types": [
+      "PersonalAnchorAgentExperimentReceipt"
+    ],
+    "schemas": [
+      "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/contract.schema.json"
+    ],
+    "runtime_entrypoints": [
+      "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/agent-cli.js",
+      "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/mcp-server.js"
+    ]
+  },
+  "dependencies": [
+    {
+      "component_id": "Personal-Anchor-Lifecycle-Trial",
+      "edge_kind": "RUNTIME_IMPORT",
+      "required": true,
+      "interface": "runScenario",
+      "notes": "Exact experimental engine frontier 0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b and six file digests are pinned by engine-pins.json."
+    },
+    {
+      "component_id": "MCP-TypeScript-SDK-server-2.4.0",
+      "edge_kind": "TRANSPORT",
+      "required": true,
+      "interface": "local stdio",
+      "notes": "Official SDK is pinned with npm integrity records; compatibility is scoped to tested clients."
+    },
+    {
+      "component_id": "AJV-8.20.0",
+      "edge_kind": "SCHEMA",
+      "required": true,
+      "interface": "JSON Schema 2020-12",
+      "notes": "Closed input/output validation, without coercion or default injection."
+    }
+  ],
+  "conformance": {
+    "commands": [
+      {
+        "executable": "node",
+        "args": [
+          "--test",
+          "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/test-agent-core.js",
+          "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/test-agent-cli.js",
+          "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/test-agent-mcp.js"
+        ]
+      },
+      {
+        "executable": "node",
+        "args": [
+          "schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/examples/mcp-client.js"
+        ]
+      }
+    ]
+  },
+  "effect_ceiling": {
+    "external_effect_emission": false,
+    "runtime_activation": false,
+    "execution_admission": false,
+    "creates_authority": false,
+    "accepts_responsibility": false
+  },
+  "canonicalization": {
+    "mode": "component_local",
+    "profile_ref": null
+  },
+  "evolution_ref": null,
+  "non_effects": [
+    "declared_interface_does_not_prove_compatibility",
+    "dependency_edge_does_not_transfer_authority",
+    "manifest_presence_does_not_activate_runtime",
+    "manifest_presence_does_not_publish_or_release",
+    "manifest_validation_does_not_attest_runtime_behavior"
+  ],
+  "content_hash": "sha256:13d1c476c38ddfdbb0109bf873b61c8e6ef64a6255dc6421068de6ffc66b208a"
+}
