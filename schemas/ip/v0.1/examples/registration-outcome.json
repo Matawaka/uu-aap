@@ -1,0 +1,70 @@
+{
+  "receipt_version": "0.1",
+  "receipt_type": "REGISTRATION_OUTCOME",
+  "receipt_id": "urn:uu-aap:ip:registration-outcome:2026691650",
+  "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
+  "predecessor": {
+    "record_ref": "schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json",
+    "record_id": "urn:uu-aap:ip:registration:uu-aap-core:wave-1",
+    "recorded_state": "PATENT_SCREEN"
+  },
+  "successor_state": "REGISTERED",
+  "transition_basis": "EXTERNAL_OUTCOME_RECONCILIATION",
+  "recorded_on": "2026-11-17",
+  "actor": {
+    "ref": "private-party:wave1-declarant-01",
+    "authority": "APPLICANT_REPORTED_OUTCOME"
+  },
+  "registration": {
+    "authority": "ROSPATENT",
+    "jurisdiction": "RU",
+    "registration_number": "2026691650",
+    "object_title_en": "UU-AAP Core v0.1 Receipt Chain Validator",
+    "registration_date": null,
+    "decision_date": null,
+    "application_number": null,
+    "filing_date": null,
+    "public_record_url": "https://www1.fips.ru/registers-doc-view/fips_servlet?DB=EVM&DocNumber=2026691650&TypeFile=html"
+  },
+  "evidence": {
+    "basis": "APPLICANT_SUPPLIED_REGISTRATION_REVIEW",
+    "independent_registry_verification": "UNAVAILABLE_IN_RECORDING_SESSION",
+    "certificate_copy_digest": null,
+    "review_ref": "docs/legal/ROSPATENT-REGISTRATION-2026691650.md"
+  },
+  "deposit_binding": {
+    "manifest_ref": "schemas/ip/v0.1/examples/uu-aap-core-deposit-freeze.json",
+    "freeze_frontier": "8aec7684a54e2570c285720a22d30d99f958131a",
+    "package_digest": "sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8",
+    "source_path": "protocols/core/v0.1/validate-core.js",
+    "source_size_bytes": 15144,
+    "source_sha256": "4315bc0661698de4946a0f24478c8f98dcdfadca7289178a04e436232acd5fd7",
+    "relation": "CANDIDATE_FROZEN_VERSION",
+    "exact_deposit_match": "NOT_VERIFIED",
+    "submitted_materials_digest": null
+  },
+  "author_publication": {
+    "decision_ref": "schemas/ip/v0.1/examples/uu-aap-core-applicant-decision-checkpoint.json",
+    "intended_mode": "PSEUDONYM",
+    "intended_pseudonym": "MATAWAKA",
+    "reported_result": "LEGAL_NAME_PUBLISHED",
+    "discrepancy_status": "OPEN",
+    "legal_name_republished": false
+  },
+  "evidence_gaps": [
+    "OFFICIAL_DATES_AND_APPLICATION_REFERENCE",
+    "INDEPENDENT_REGISTRY_RETRIEVAL",
+    "PRIVATE_SUBMISSION_RECEIPT_AND_PACKET_DIGEST",
+    "EXACT_DEPOSIT_BYTE_COMPARISON"
+  ],
+  "non_effects": [
+    "NO_RETROACTIVE_FILING_READINESS_ASSERTION",
+    "NO_CONCLUSIVE_AUTHORSHIP_OR_OWNERSHIP_ADJUDICATION",
+    "NO_PATENT_GRANT_OR_PATENT_TRACK_CLOSURE",
+    "NO_LICENSE_CHANGE",
+    "NO_REGISTRATION_OF_ABSTRACT_ARCHITECTURE_OR_OTHER_APPLICATIONS",
+    "NO_PRIVATE_DOCUMENT_PUBLICATION"
+  ],
+  "canonicalization": "UU-AAP-REGISTRATION-OUTCOME-SORTED-JSON-v0.1",
+  "receipt_digest": "sha256:487fc21286e13b0975cacc1678f1b77da8f93391d846c031e16deb780c9050bb"
+}

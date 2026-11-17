@@ -57,6 +57,13 @@ Open reuse does not transfer canonical project status or endorsement.
 
 The first public draft remains anchored by tag `v0.1`. Later repository-scoped protection and licensing checkpoints are preserved as separate tags rather than silently redefining the release.
 
+
+**Software registration:** UU-AAP Core v0.1 Receipt Chain Validator — Rospatent
+**2026691650**, recorded as an applicant-reported outcome. See the
+[registration evidence and limits](docs/legal/ROSPATENT-REGISTRATION-2026691650.md)
+and [machine-readable receipt](schemas/ip/v0.1/examples/registration-outcome.json).
+Exact deposited-byte identity remains unverified; the existing licenses apply.
+
 ## Why this exists
 
 Content provenance standards can bind declarations to digital artifacts. Publishing policies can require AI disclosure. Neither alone describes the **governance of meaning**: who set the intent, selected among alternatives, validated claims, accepted uncertainty, and authorized publication.
