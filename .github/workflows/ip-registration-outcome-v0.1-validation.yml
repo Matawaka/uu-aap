@@ -1,0 +1,83 @@
+name: IP registration outcome v0.1 validation
+
+on:
+  pull_request:
+    paths:
+      - 'README.md'
+      - 'NOTICE.md'
+      - 'docs/legal/**'
+      - 'schemas/ip/v0.1/**'
+      - '.github/workflows/ip-registration-outcome-v0.1-validation.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'README.md'
+      - 'NOTICE.md'
+      - 'docs/legal/**'
+      - 'schemas/ip/v0.1/**'
+      - '.github/workflows/ip-registration-outcome-v0.1-validation.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned existing JSON Schema dependency
+        run: python -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Validate closed outcome contract independently
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root = Path('schemas/ip/v0.1')
+          schema = json.loads((root / 'registration-outcome.schema.json').read_text())
+          record = json.loads((root / 'examples/registration-outcome.json').read_text())
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(record)
+          print('PASS Draft 2020-12 registration outcome contract')
+          PY
+      - name: Verify provenance, historical Git bytes, public disclosure and links
+        run: node schemas/ip/v0.1/check-registration-outcome.js
+      - name: Exercise negative evidence and disclosure controls
+        run: node --test schemas/ip/v0.1/tests/test-registration-outcome.js
+      - name: Preserve original fail-closed registration-plan semantics
+        run: |
+          python schemas/ip/v0.1/ip_registration_validator.py schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json
+          python schemas/ip/v0.1/tests/test_ip_registration_v01.py
+      - name: Confirm checks did not rewrite tracked files
+        run: git diff --exit-code
+      - name: Retain tested commit checkpoint
+        env:
+          CHECKPOINT_PATH: ${{ runner.temp }}/registration-checkpoint.json
+        run: |
+          node - <<'JS'
+          const fs = require('node:fs');
+          const receipt = JSON.parse(fs.readFileSync('schemas/ip/v0.1/examples/registration-outcome.json', 'utf8'));
+          fs.writeFileSync(process.env.CHECKPOINT_PATH, JSON.stringify({
+            registration_number: receipt.registration.registration_number,
+            receipt_digest: receipt.receipt_digest,
+            tested_commit: process.env.GITHUB_SHA,
+            git_ref: process.env.GITHUB_REF,
+            event_name: process.env.GITHUB_EVENT_NAME,
+            exact_deposit_match: receipt.deposit_binding.exact_deposit_match
+          }, null, 2) + '\n');
+          JS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registration-2026691650-${{ github.sha }}
+          path: ${{ runner.temp }}/registration-checkpoint.json
+          retention-days: 90

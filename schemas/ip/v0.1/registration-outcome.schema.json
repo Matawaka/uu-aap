@@ -1,0 +1,254 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/ip/v0.1/registration-outcome.schema.json",
+  "title": "UU-AAP Wave 1 registration outcome receipt v0.1",
+  "description": "Bounded public receipt under IP Rights Registration Protocol section 13. Later verification adds a successor receipt instead of rewriting this reported observation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "receipt_type",
+    "receipt_id",
+    "object_id",
+    "predecessor",
+    "successor_state",
+    "transition_basis",
+    "recorded_on",
+    "actor",
+    "registration",
+    "evidence",
+    "deposit_binding",
+    "author_publication",
+    "evidence_gaps",
+    "non_effects",
+    "canonicalization",
+    "receipt_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.1"
+    },
+    "receipt_type": {
+      "const": "REGISTRATION_OUTCOME"
+    },
+    "receipt_id": {
+      "const": "urn:uu-aap:ip:registration-outcome:2026691650"
+    },
+    "object_id": {
+      "const": "urn:uu-aap:software:core-receipt-chain-validator:v0.1"
+    },
+    "predecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_ref",
+        "record_id",
+        "recorded_state"
+      ],
+      "properties": {
+        "record_ref": {
+          "const": "schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json"
+        },
+        "record_id": {
+          "const": "urn:uu-aap:ip:registration:uu-aap-core:wave-1"
+        },
+        "recorded_state": {
+          "const": "PATENT_SCREEN"
+        }
+      }
+    },
+    "successor_state": {
+      "const": "REGISTERED"
+    },
+    "transition_basis": {
+      "const": "EXTERNAL_OUTCOME_RECONCILIATION"
+    },
+    "recorded_on": {
+      "const": "2026-11-17"
+    },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "ref",
+        "authority"
+      ],
+      "properties": {
+        "ref": {
+          "const": "private-party:wave1-declarant-01"
+        },
+        "authority": {
+          "const": "APPLICANT_REPORTED_OUTCOME"
+        }
+      }
+    },
+    "registration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "authority",
+        "jurisdiction",
+        "registration_number",
+        "object_title_en",
+        "registration_date",
+        "decision_date",
+        "application_number",
+        "filing_date",
+        "public_record_url"
+      ],
+      "properties": {
+        "authority": {
+          "const": "ROSPATENT"
+        },
+        "jurisdiction": {
+          "const": "RU"
+        },
+        "registration_number": {
+          "const": "2026691650"
+        },
+        "object_title_en": {
+          "const": "UU-AAP Core v0.1 Receipt Chain Validator"
+        },
+        "registration_date": {
+          "type": "null"
+        },
+        "decision_date": {
+          "type": "null"
+        },
+        "application_number": {
+          "type": "null"
+        },
+        "filing_date": {
+          "type": "null"
+        },
+        "public_record_url": {
+          "const": "https://www1.fips.ru/registers-doc-view/fips_servlet?DB=EVM&DocNumber=2026691650&TypeFile=html"
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "basis",
+        "independent_registry_verification",
+        "certificate_copy_digest",
+        "review_ref"
+      ],
+      "properties": {
+        "basis": {
+          "const": "APPLICANT_SUPPLIED_REGISTRATION_REVIEW"
+        },
+        "independent_registry_verification": {
+          "const": "UNAVAILABLE_IN_RECORDING_SESSION"
+        },
+        "certificate_copy_digest": {
+          "type": "null"
+        },
+        "review_ref": {
+          "const": "docs/legal/ROSPATENT-REGISTRATION-2026691650.md"
+        }
+      }
+    },
+    "deposit_binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifest_ref",
+        "freeze_frontier",
+        "package_digest",
+        "source_path",
+        "source_size_bytes",
+        "source_sha256",
+        "relation",
+        "exact_deposit_match",
+        "submitted_materials_digest"
+      ],
+      "properties": {
+        "manifest_ref": {
+          "const": "schemas/ip/v0.1/examples/uu-aap-core-deposit-freeze.json"
+        },
+        "freeze_frontier": {
+          "const": "8aec7684a54e2570c285720a22d30d99f958131a"
+        },
+        "package_digest": {
+          "const": "sha256:228e5d5f142fecb6ed8bfa0010f07b562fdb28db4ba15ae5e1ceb723fa8a8de8"
+        },
+        "source_path": {
+          "const": "protocols/core/v0.1/validate-core.js"
+        },
+        "source_size_bytes": {
+          "const": 15144
+        },
+        "source_sha256": {
+          "const": "4315bc0661698de4946a0f24478c8f98dcdfadca7289178a04e436232acd5fd7"
+        },
+        "relation": {
+          "const": "CANDIDATE_FROZEN_VERSION"
+        },
+        "exact_deposit_match": {
+          "const": "NOT_VERIFIED"
+        },
+        "submitted_materials_digest": {
+          "type": "null"
+        }
+      }
+    },
+    "author_publication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_ref",
+        "intended_mode",
+        "intended_pseudonym",
+        "reported_result",
+        "discrepancy_status",
+        "legal_name_republished"
+      ],
+      "properties": {
+        "decision_ref": {
+          "const": "schemas/ip/v0.1/examples/uu-aap-core-applicant-decision-checkpoint.json"
+        },
+        "intended_mode": {
+          "const": "PSEUDONYM"
+        },
+        "intended_pseudonym": {
+          "const": "MATAWAKA"
+        },
+        "reported_result": {
+          "const": "LEGAL_NAME_PUBLISHED"
+        },
+        "discrepancy_status": {
+          "const": "OPEN"
+        },
+        "legal_name_republished": {
+          "const": false
+        }
+      }
+    },
+    "evidence_gaps": {
+      "const": [
+        "OFFICIAL_DATES_AND_APPLICATION_REFERENCE",
+        "INDEPENDENT_REGISTRY_RETRIEVAL",
+        "PRIVATE_SUBMISSION_RECEIPT_AND_PACKET_DIGEST",
+        "EXACT_DEPOSIT_BYTE_COMPARISON"
+      ]
+    },
+    "non_effects": {
+      "const": [
+        "NO_RETROACTIVE_FILING_READINESS_ASSERTION",
+        "NO_CONCLUSIVE_AUTHORSHIP_OR_OWNERSHIP_ADJUDICATION",
+        "NO_PATENT_GRANT_OR_PATENT_TRACK_CLOSURE",
+        "NO_LICENSE_CHANGE",
+        "NO_REGISTRATION_OF_ABSTRACT_ARCHITECTURE_OR_OTHER_APPLICATIONS",
+        "NO_PRIVATE_DOCUMENT_PUBLICATION"
+      ]
+    },
+    "canonicalization": {
+      "const": "UU-AAP-REGISTRATION-OUTCOME-SORTED-JSON-v0.1"
+    },
+    "receipt_digest": {
+      "const": "sha256:487fc21286e13b0975cacc1678f1b77da8f93391d846c031e16deb780c9050bb"
+    }
+  }
+}

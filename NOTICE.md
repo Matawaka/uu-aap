@@ -12,6 +12,18 @@ Repository history, public issues, pull requests, tagged checkpoints and cryptog
 
 For the current repository-state map and exact release/checkpoint tag bindings, see [`docs/CANONICAL-STATE.md`](docs/CANONICAL-STATE.md).
 
+
+## Registered Wave 1 software
+
+Rospatent software registration **2026691650** is recorded for **UU-AAP Core v0.1
+Receipt Chain Validator** based on the applicant-supplied registration review.
+The [outcome record](docs/legal/ROSPATENT-REGISTRATION-2026691650.md) and
+[machine-readable receipt](schemas/ip/v0.1/examples/registration-outcome.json)
+bind the reported registration to the existing frozen evidence and preserve the
+open deposited-byte comparison and author-publication discrepancy.
+Registration does not change the licenses below, establish a patent grant, or
+extend the registered object to the abstract architecture or other applications.
+
 ## Canonical lineage
 
 At the time this notice was introduced, the protection hardening branch was created from canonical `main` commit:
