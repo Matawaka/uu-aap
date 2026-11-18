@@ -1,0 +1,53 @@
+{
+  "receipt_version": "0.1",
+  "receipt_type": "REGISTRATION_PRIMARY_DOCUMENT_REVIEW",
+  "receipt_id": "urn:uu-aap:ip:registration-primary-document-review:2026691650:2026-11-18",
+  "object_id": "urn:uu-aap:software:core-receipt-chain-validator:v0.1",
+  "predecessor": {
+    "ref": "schemas/ip/v0.1/examples/registration-outcome.json",
+    "receipt_id": "urn:uu-aap:ip:registration-outcome:2026691650",
+    "receipt_digest": "sha256:487fc21286e13b0975cacc1678f1b77da8f93391d846c031e16deb780c9050bb"
+  },
+  "reviewed_on": "2026-11-18",
+  "evidence_source": "APPLICANT_SUPPLIED_OFFICIAL_DOCUMENT_COPIES",
+  "document_sha256": {
+    "certificate_pdf": "bf16ef27882c907f76cfd9e70da3e81dc137df8d7bd24c5ded1b35f095e00865",
+    "notice_and_conclusion_pdf": "b53f42ba7e9251e6d3ca6e5891f157f4fe3c815af98f16cd41a14bb0c78d30f5"
+  },
+  "registration": {
+    "authority": "ROSPATENT",
+    "jurisdiction": "RU",
+    "registration_number": "2026691650",
+    "program_title_ru": "Валидатор цепочек квитанций UU-AAP Core v0.1",
+    "certificate_application_number": "2026691663",
+    "notification_application_number": "2026691663/69",
+    "application_received_date": "2026-08-26",
+    "registration_date": "2026-10-14",
+    "decision_date": null
+  },
+  "assessment": {
+    "two_documents_essential_fields_match": true,
+    "pdf_cryptographic_signature_verification": "NOT_PERFORMED",
+    "independent_public_registry_retrieval": "NOT_CONFIRMED",
+    "exact_submitted_bytes_match": "NOT_VERIFIED",
+    "author_pseudonym_publication_discrepancy": "OPEN",
+    "state": "REGISTERED_EVIDENCE_SUPPLEMENT"
+  },
+  "remaining_gaps": [
+    "INDEPENDENT_PUBLIC_REGISTRY_RETRIEVAL",
+    "PRIVATE_SUBMISSION_RECEIPT_AND_PACKET_DIGEST",
+    "EXACT_DEPOSIT_BYTE_COMPARISON",
+    "AUTHOR_PUBLICATION_DISCREPANCY",
+    "CRYPTOGRAPHIC_AUTHENTICITY_OF_PDF_COPIES"
+  ],
+  "non_effects": [
+    "NO_REWRITE_OF_ORIGINAL_OUTCOME_RECEIPT",
+    "NO_INFERRED_DECISION_DATE",
+    "NO_RETROACTIVE_READY_TO_FILE_OR_FILED_CLAIM",
+    "NO_INDEPENDENT_REGISTRY_AUTHENTICITY_CLAIM",
+    "NO_PRIVATE_PDF_PUBLICATION",
+    "NO_PATENT_OR_LICENSE_CHANGE"
+  ],
+  "canonicalization": "UU-AAP-REGISTRATION-PRIMARY-DOCUMENT-REVIEW-SORTED-JSON-v0.1",
+  "receipt_digest": "sha256:3c96339aab825f979842f50616b613befa2678030fca3f3bba883460efc78e0e"
+}
