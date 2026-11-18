@@ -35,6 +35,11 @@ jobs:
       - name: Validate closed contracts and independent JSON/MCP processes
         working-directory: schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1
         run: npm test
+      - name: Check consumer conclusions and cross-interface adversarial trials
+        working-directory: schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/consumer-v0.1
+        run: |
+          node --test test-consumer.js
+          node run-consumer-trials.js --check-reference
       - name: Run documented agent consumer example
         run: node schemas/ecosystem/uu-society/v0.1/personal_anchor_trials/agent-v0.1/examples/mcp-client.js
       - name: Preserve frozen lifecycle reference
