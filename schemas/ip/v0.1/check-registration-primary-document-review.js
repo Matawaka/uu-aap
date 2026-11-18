@@ -50,7 +50,7 @@ function validate(receipt = load(RECEIPT)) {
   assert(doc.includes(receipt.document_sha256.certificate_pdf));
   assert(doc.includes(receipt.document_sha256.notice_and_conclusion_pdf));
   for (const f of ['README.md']) assert(fs.readFileSync(path.join(ROOT, f), 'utf8').includes(DOC));
-  assert(!/[\\w.+-]+@[\\w.-]+\\.[A-Za-z]{2,}/.test(doc), 'Unexpected email address in public supplement');
+  assert(!/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/.test(doc), 'Unexpected email address in public supplement');
   return true;
 }
 if (require.main === module) {
