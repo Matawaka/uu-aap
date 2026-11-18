@@ -51,6 +51,15 @@ Neither status is an end-to-end security PASS.
 | PA-10 False rejection/recovery | Legitimate behavioral change or a wrong answer may narrow consequences but cannot alone declare impostor/guilt; preserve recovery | Python S09/S10 composition; source independence is supplied, not proven | NOT_EXECUTED |
 | PA-11 Minimal disclosure | Test selective evidence and unavailable optional history; no total telemetry, universal dossier or automatic cross-context correlation | Registered protocol only | NOT_EXECUTED |
 
+## Cross-interface consumer trials
+
+The additive [consumer trials](consumer-v0.1/README.md) ([Russian](consumer-v0.1/README.ru.md))
+exercise 14 predeclared custom cases through CLI and modern/legacy MCP subprocesses,
+with a separate structured-conclusion checker and cross-route replay. This is a
+deterministic repository-authored consumer, not an autonomous-agent or independent
+review result. Recovery, token exchange and final external effects remain absent.
+All real end-to-end statuses in the matrix remain NOT_EXECUTED.
+
 ## Required end-to-end setup
 
 The [agent interface](agent-v0.1/README.md) ([Russian](agent-v0.1/README.ru.md))

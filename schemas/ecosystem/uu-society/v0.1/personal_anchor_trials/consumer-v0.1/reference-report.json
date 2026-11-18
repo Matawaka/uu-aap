@@ -1,0 +1,4707 @@
+{
+  "schema": "uuaap.personal-anchor.consumer-trials/v0.1",
+  "scope": "DETERMINISTIC_SUBPROCESS_CONSUMER_NOT_AUTONOMOUS_AGENT",
+  "source": {
+    "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+    "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+    "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+    "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+  },
+  "consumer_source_sha256": {
+    "cases.json": "f79b16afaab7db906a9c945c8fd9437ca18c8f544b487a647aa432d7bfe3f52b",
+    "interface-pins.json": "858f76a39712e2ba97634dfa350eff35952111918b9589f2005b9850fc3e736b",
+    "check-consumer.js": "79930dd0b49e23234ef9ef1183d1b2d06ac5754f4ea7d9d8d3dacced732381a0",
+    "run-consumer-trials.js": "5ffdf2f0ee47cd4be9bad0e31a4d0687b4194f79cf4e921c2126522d91e9eaf8",
+    "test-consumer.js": "e007111eb2ea64c5e8bb1971f0518cc6e92c3e89fe6013e25d1fd6d3f0b1dc46"
+  },
+  "routes": [
+    {
+      "name": "json-cli",
+      "protocol_version": null
+    },
+    {
+      "name": "mcp-modern",
+      "protocol_version": "2026-07-28"
+    },
+    {
+      "name": "mcp-legacy",
+      "protocol_version": "2025-11-25"
+    }
+  ],
+  "summary": {
+    "cases": 14,
+    "route_case_comparisons": 42,
+    "run_receipts_replayed": 84,
+    "comparison_receipts_replayed": 42,
+    "ordered_cross_route_replays": 84,
+    "corrected_hash_tamper_rejections": 3,
+    "refused_operations_per_route": 4,
+    "differential_cases": 10
+  },
+  "preserved_limits": {
+    "autonomous_agent_trial": "NOT_EXECUTED",
+    "recovery_endpoint": "NOT_IMPLEMENTED",
+    "token_exchange_endpoint": "NOT_IMPLEMENTED",
+    "final_effect_boundary": "NOT_IMPLEMENTED",
+    "real_person_continuity": "NOT_EXECUTED",
+    "audio_trials": "NOT_EXECUTED",
+    "independent_verification": false,
+    "identity_established": false,
+    "authority_created": false,
+    "external_effects_performed": false
+  },
+  "refusals": [
+    {
+      "route": "json-cli",
+      "observations": [
+        {
+          "operation": "experiment.recover",
+          "rejection": "UNSUPPORTED_OPERATION"
+        },
+        {
+          "operation": "experiment.exchange_token",
+          "rejection": "UNSUPPORTED_OPERATION"
+        },
+        {
+          "operation": "experiment.run",
+          "rejection": "INVALID_REQUEST"
+        },
+        {
+          "operation": "experiment.run",
+          "rejection": "INVALID_REQUEST"
+        }
+      ]
+    },
+    {
+      "route": "mcp-modern",
+      "observations": [
+        {
+          "operation": "experiment.recover",
+          "rejection": "MCP_TOOL_NOT_FOUND",
+          "protocol_error_code": -32602
+        },
+        {
+          "operation": "experiment.exchange_token",
+          "rejection": "MCP_TOOL_NOT_FOUND",
+          "protocol_error_code": -32602
+        },
+        {
+          "operation": "experiment.run",
+          "rejection": "INPUT_SCHEMA_REJECTED"
+        },
+        {
+          "operation": "experiment.run",
+          "rejection": "INPUT_SCHEMA_REJECTED"
+        }
+      ]
+    },
+    {
+      "route": "mcp-legacy",
+      "observations": [
+        {
+          "operation": "experiment.recover",
+          "rejection": "MCP_TOOL_NOT_FOUND",
+          "protocol_error_code": -32602
+        },
+        {
+          "operation": "experiment.exchange_token",
+          "rejection": "MCP_TOOL_NOT_FOUND",
+          "protocol_error_code": -32602
+        },
+        {
+          "operation": "experiment.run",
+          "rejection": "INPUT_SCHEMA_REJECTED"
+        },
+        {
+          "operation": "experiment.run",
+          "rejection": "INPUT_SCHEMA_REJECTED"
+        }
+      ]
+    }
+  ],
+  "results": [
+    {
+      "case_id": "P00",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P00",
+              "title": "Current bounded evidence control",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P00",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:7a898d852b94865d7711ac9440557e7e7633b6b11c12f73fa365ab35de2a505d",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P00",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:7a898d852b94865d7711ac9440557e7e7633b6b11c12f73fa365ab35de2a505d",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": []
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:de6f849ac11319ca1617bfb6dd768ff377213dfedf1a15e59274dfd101436410"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:de6f849ac11319ca1617bfb6dd768ff377213dfedf1a15e59274dfd101436410",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:6807de1939118f0bfe5738bb6654431f774df56b009b7034e64fca86030748a5",
+            "cached_boundary": "sha256:d5e4455b89c0b2651386cafddf846ebd799363dfbd2182e181dc32a69cc45812"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:de6f849ac11319ca1617bfb6dd768ff377213dfedf1a15e59274dfd101436410",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:de6f849ac11319ca1617bfb6dd768ff377213dfedf1a15e59274dfd101436410",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:6807de1939118f0bfe5738bb6654431f774df56b009b7034e64fca86030748a5",
+            "cached_boundary": "sha256:d5e4455b89c0b2651386cafddf846ebd799363dfbd2182e181dc32a69cc45812"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:de6f849ac11319ca1617bfb6dd768ff377213dfedf1a15e59274dfd101436410",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:de6f849ac11319ca1617bfb6dd768ff377213dfedf1a15e59274dfd101436410",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:6807de1939118f0bfe5738bb6654431f774df56b009b7034e64fca86030748a5",
+            "cached_boundary": "sha256:d5e4455b89c0b2651386cafddf846ebd799363dfbd2182e181dc32a69cc45812"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:de6f849ac11319ca1617bfb6dd768ff377213dfedf1a15e59274dfd101436410",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P01",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P01",
+              "title": "Already denied authority with a perfect synthetic answer",
+              "events": [
+                {
+                  "type": "revoke"
+                },
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "a",
+                  "response": {
+                    "confidence": 1
+                  }
+                }
+              ]
+            }
+          },
+          "hypothesis": "Perfect public-history recall proves the person and authorizes this action.",
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P01",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:9fa174a87cd6354751049d4a09f116d6035938d8805d03ff28b0ee92e4fef080",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:3fbdd0daf7f8c0b87dee99c2cda9c1c83765eb9dd443f3449cc0ce67944832a4",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ADMISSION_DENIED",
+                  "source_hash_observed": "sha256:6c55fe4f5bc7ebd7c3f1a8a993dc10c4fb2cdea393d6c77647d8c0a2a62c5dda",
+                  "source_status_observed": "denied",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:7b652b7071054733e1ac2044bc8b0b9401e42c63e74b86e6d08b81cedc74653a"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P01",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:9fa174a87cd6354751049d4a09f116d6035938d8805d03ff28b0ee92e4fef080",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:3fbdd0daf7f8c0b87dee99c2cda9c1c83765eb9dd443f3449cc0ce67944832a4",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ADMISSION_DENIED",
+                  "source_hash_observed": "sha256:6c55fe4f5bc7ebd7c3f1a8a993dc10c4fb2cdea393d6c77647d8c0a2a62c5dda",
+                  "source_status_observed": "denied",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:7b652b7071054733e1ac2044bc8b0b9401e42c63e74b86e6d08b81cedc74653a"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": []
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:bfe2146ffb27addef779d3567a97ae22b93736af73d1563bd84c5048f84f6385"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:bfe2146ffb27addef779d3567a97ae22b93736af73d1563bd84c5048f84f6385",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:f3ad4f038257ceefaeb648ca5fec81a84d8154b81bc797a7624cc6d26321aea1",
+            "cached_boundary": "sha256:209b40f75c841b8ff6ec58eb000b439626fc4ddc2788825455e5c641d5e196d1"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:bfe2146ffb27addef779d3567a97ae22b93736af73d1563bd84c5048f84f6385",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:bfe2146ffb27addef779d3567a97ae22b93736af73d1563bd84c5048f84f6385",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:f3ad4f038257ceefaeb648ca5fec81a84d8154b81bc797a7624cc6d26321aea1",
+            "cached_boundary": "sha256:209b40f75c841b8ff6ec58eb000b439626fc4ddc2788825455e5c641d5e196d1"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:bfe2146ffb27addef779d3567a97ae22b93736af73d1563bd84c5048f84f6385",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:bfe2146ffb27addef779d3567a97ae22b93736af73d1563bd84c5048f84f6385",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:f3ad4f038257ceefaeb648ca5fec81a84d8154b81bc797a7624cc6d26321aea1",
+            "cached_boundary": "sha256:209b40f75c841b8ff6ec58eb000b439626fc4ddc2788825455e5c641d5e196d1"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:bfe2146ffb27addef779d3567a97ae22b93736af73d1563bd84c5048f84f6385",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P02",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P02",
+              "title": "Revocation during the pending response",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "revoke"
+                },
+                {
+                  "type": "complete",
+                  "id": "a",
+                  "response": {
+                    "confidence": 1
+                  }
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P02",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:97c7e68f0bf15816e061d290c3ba2e3b98d0906b2f7548428f01f6f498a20b75",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:3fbdd0daf7f8c0b87dee99c2cda9c1c83765eb9dd443f3449cc0ce67944832a4",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ADMISSION_DENIED",
+                  "source_hash_observed": "sha256:6c55fe4f5bc7ebd7c3f1a8a993dc10c4fb2cdea393d6c77647d8c0a2a62c5dda",
+                  "source_status_observed": "denied",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:7b652b7071054733e1ac2044bc8b0b9401e42c63e74b86e6d08b81cedc74653a"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P02",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:97c7e68f0bf15816e061d290c3ba2e3b98d0906b2f7548428f01f6f498a20b75",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:3fbdd0daf7f8c0b87dee99c2cda9c1c83765eb9dd443f3449cc0ce67944832a4",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:cf24cd7fe45e88deddc074589c0310b02d72590dbb95860e2c2e6f3c342042cc"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "contract_reason": "CURRENT_ADMISSION_DENIED"
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:f9c2198407b8cff3b7ed4472b4d7d77ab103d423a0895a786f7d2b86bd2faac6"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:f9c2198407b8cff3b7ed4472b4d7d77ab103d423a0895a786f7d2b86bd2faac6",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:bd80544f4f51bbb1416ab54884c7fc0d32739adbaed97d0c1eff9900cd3b8389",
+            "cached_boundary": "sha256:f19b71db31a408c9d0ef408018cf004330c7c29dbc99246175d953cdd63d1255"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:f9c2198407b8cff3b7ed4472b4d7d77ab103d423a0895a786f7d2b86bd2faac6",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:f9c2198407b8cff3b7ed4472b4d7d77ab103d423a0895a786f7d2b86bd2faac6",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:bd80544f4f51bbb1416ab54884c7fc0d32739adbaed97d0c1eff9900cd3b8389",
+            "cached_boundary": "sha256:f19b71db31a408c9d0ef408018cf004330c7c29dbc99246175d953cdd63d1255"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:f9c2198407b8cff3b7ed4472b4d7d77ab103d423a0895a786f7d2b86bd2faac6",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:f9c2198407b8cff3b7ed4472b4d7d77ab103d423a0895a786f7d2b86bd2faac6",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:bd80544f4f51bbb1416ab54884c7fc0d32739adbaed97d0c1eff9900cd3b8389",
+            "cached_boundary": "sha256:f19b71db31a408c9d0ef408018cf004330c7c29dbc99246175d953cdd63d1255"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:f9c2198407b8cff3b7ed4472b4d7d77ab103d423a0895a786f7d2b86bd2faac6",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P03",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P03",
+              "title": "Challenge expires exactly at its half-open boundary",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "advance",
+                  "ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P03",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:ebe209a4dabab1d8a8910837f2d5bd6910c7618c9aec645356a7126b984fba78",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 30000,
+                  "boundary_clock_ms": 30000,
+                  "response_status": "RESPONSE_EXPIRED",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:38a70fd3e8308cad1fb53a2cc16d630ca1e534f52ca44f92c0b805d087df8118"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P03",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:ebe209a4dabab1d8a8910837f2d5bd6910c7618c9aec645356a7126b984fba78",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 30000,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:07cc1e4ab824f5c655fdc2d75324427ccbd4b406948c8de1e3f465b7d901898c"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "RESPONSE_EXPIRED",
+                "contract_status": "READY",
+                "contract_reason": null
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:691a2d1b38eb7e3f9f50c53da1649c4a9fab3667328f89ed03f655e8d0c4a6e7"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:691a2d1b38eb7e3f9f50c53da1649c4a9fab3667328f89ed03f655e8d0c4a6e7",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:86ed96529038a915d3a02bfa33af842a881f22006eab40958ac386455a8f7fb5",
+            "cached_boundary": "sha256:e61f42fb1e463e0c30ff3d968be2feeed45ef0a3cc7ccc34cb4d9964cdde8b38"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:691a2d1b38eb7e3f9f50c53da1649c4a9fab3667328f89ed03f655e8d0c4a6e7",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_EXPIRED",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:691a2d1b38eb7e3f9f50c53da1649c4a9fab3667328f89ed03f655e8d0c4a6e7",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:86ed96529038a915d3a02bfa33af842a881f22006eab40958ac386455a8f7fb5",
+            "cached_boundary": "sha256:e61f42fb1e463e0c30ff3d968be2feeed45ef0a3cc7ccc34cb4d9964cdde8b38"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:691a2d1b38eb7e3f9f50c53da1649c4a9fab3667328f89ed03f655e8d0c4a6e7",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_EXPIRED",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:691a2d1b38eb7e3f9f50c53da1649c4a9fab3667328f89ed03f655e8d0c4a6e7",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:86ed96529038a915d3a02bfa33af842a881f22006eab40958ac386455a8f7fb5",
+            "cached_boundary": "sha256:e61f42fb1e463e0c30ff3d968be2feeed45ef0a3cc7ccc34cb4d9964cdde8b38"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:691a2d1b38eb7e3f9f50c53da1649c4a9fab3667328f89ed03f655e8d0c4a6e7",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_EXPIRED",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P04",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P04",
+              "title": "Authority expires before a still-live challenge",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 120000
+                },
+                {
+                  "type": "advance",
+                  "ms": 60001
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P04",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:70884fb9eea0e03b7a9d5ff7e1964f43f1e1f64de28584fb037e803c303ee193",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 60001,
+                  "boundary_clock_ms": 60001,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "EXPIRED_SOURCE_BOUND",
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:24965a09a662d604815f513360d7b1c058f4a61670fbf15e107bf8112fa57982"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P04",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:70884fb9eea0e03b7a9d5ff7e1964f43f1e1f64de28584fb037e803c303ee193",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 60001,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:2f20a70fd3e852586a0ecd2f7f0413af253a82a6748bd42c1301b86213809085"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "contract_reason": "EXPIRED_SOURCE_BOUND"
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:a56f4cd739b3eeeaa926ba3014a5372ba620a487d3ad7557cabfdec7d97fc450"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:a56f4cd739b3eeeaa926ba3014a5372ba620a487d3ad7557cabfdec7d97fc450",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:3cf8027b8c0fb9eb81f10cd1058c631fbd31608aaf3f910191227e9dabf9da0c",
+            "cached_boundary": "sha256:c95e9134fd66f49b69a48a34431cf96806e5d675bfdf80c97806447fe428b1fb"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:a56f4cd739b3eeeaa926ba3014a5372ba620a487d3ad7557cabfdec7d97fc450",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:a56f4cd739b3eeeaa926ba3014a5372ba620a487d3ad7557cabfdec7d97fc450",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:3cf8027b8c0fb9eb81f10cd1058c631fbd31608aaf3f910191227e9dabf9da0c",
+            "cached_boundary": "sha256:c95e9134fd66f49b69a48a34431cf96806e5d675bfdf80c97806447fe428b1fb"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:a56f4cd739b3eeeaa926ba3014a5372ba620a487d3ad7557cabfdec7d97fc450",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:a56f4cd739b3eeeaa926ba3014a5372ba620a487d3ad7557cabfdec7d97fc450",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:3cf8027b8c0fb9eb81f10cd1058c631fbd31608aaf3f910191227e9dabf9da0c",
+            "cached_boundary": "sha256:c95e9134fd66f49b69a48a34431cf96806e5d675bfdf80c97806447fe428b1fb"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:a56f4cd739b3eeeaa926ba3014a5372ba620a487d3ad7557cabfdec7d97fc450",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P05",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P05",
+              "title": "Approval and control epoch rotate during the pending response",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "rotate"
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P05",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:20f6ffdf45313077f06e03bb3fd94d46ceb79da44a5372f00585500db7825008",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "CURRENT_CONTEXT_CHANGED",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_FRESHNESS_BINDING_CHANGED",
+                  "source_hash_observed": "sha256:b7fe5266b2bdc6360c5392e0cf728e1b98a7e739ab3dfd2b6d32fa4d9cd46b23",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:bd48a1ecbd787044c3a42678d1b6a4aab91ba871cd0516cf920ae5933cadc709"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P05",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:20f6ffdf45313077f06e03bb3fd94d46ceb79da44a5372f00585500db7825008",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "contract_reason": "CURRENT_FRESHNESS_BINDING_CHANGED"
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:4c2670907b365460176f77eeddd5f6a79168a4d4309f91642dad2f3865342f22"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:4c2670907b365460176f77eeddd5f6a79168a4d4309f91642dad2f3865342f22",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:af835073c189def8c24319fdc8ec483b57a8db430d819ab2bcfd8a96663fb196",
+            "cached_boundary": "sha256:12804dd9af4dc777e3369bca23b46ab9ba436797d7f1c94db8c6590258a74cb3"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:4c2670907b365460176f77eeddd5f6a79168a4d4309f91642dad2f3865342f22",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:4c2670907b365460176f77eeddd5f6a79168a4d4309f91642dad2f3865342f22",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:af835073c189def8c24319fdc8ec483b57a8db430d819ab2bcfd8a96663fb196",
+            "cached_boundary": "sha256:12804dd9af4dc777e3369bca23b46ab9ba436797d7f1c94db8c6590258a74cb3"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:4c2670907b365460176f77eeddd5f6a79168a4d4309f91642dad2f3865342f22",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:4c2670907b365460176f77eeddd5f6a79168a4d4309f91642dad2f3865342f22",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:af835073c189def8c24319fdc8ec483b57a8db430d819ab2bcfd8a96663fb196",
+            "cached_boundary": "sha256:12804dd9af4dc777e3369bca23b46ab9ba436797d7f1c94db8c6590258a74cb3"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:4c2670907b365460176f77eeddd5f6a79168a4d4309f91642dad2f3865342f22",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P06",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P06",
+              "title": "Intent changes while operation binding stays constant",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "change_intent"
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P06",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:5d8bb8c16ff99c26911847cfcfabaa3855c9b2d60eeb26dcae3b277b506db041",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "CURRENT_CONTEXT_CHANGED",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:c82472e87263fae1c296eaf408f65e503ee3860c597d44ddb33256c6a3ccbd0c"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P06",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:5d8bb8c16ff99c26911847cfcfabaa3855c9b2d60eeb26dcae3b277b506db041",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "READY",
+                "contract_reason": null
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:1a21ca4c139f785f0de7bd52e83a4727e4a728bfdd62be181cd7bd6d49ff238d"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:1a21ca4c139f785f0de7bd52e83a4727e4a728bfdd62be181cd7bd6d49ff238d",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:2470b931bc7eee9316127ba1d49d47852cf4d3368bd18dc971d6bfb1bcb03ffb",
+            "cached_boundary": "sha256:ccd5fb7bd213067d7af7e15dad45bf8515f20114e9214e863cef1d59dc047ad4"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1a21ca4c139f785f0de7bd52e83a4727e4a728bfdd62be181cd7bd6d49ff238d",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:1a21ca4c139f785f0de7bd52e83a4727e4a728bfdd62be181cd7bd6d49ff238d",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:2470b931bc7eee9316127ba1d49d47852cf4d3368bd18dc971d6bfb1bcb03ffb",
+            "cached_boundary": "sha256:ccd5fb7bd213067d7af7e15dad45bf8515f20114e9214e863cef1d59dc047ad4"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1a21ca4c139f785f0de7bd52e83a4727e4a728bfdd62be181cd7bd6d49ff238d",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:1a21ca4c139f785f0de7bd52e83a4727e4a728bfdd62be181cd7bd6d49ff238d",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:2470b931bc7eee9316127ba1d49d47852cf4d3368bd18dc971d6bfb1bcb03ffb",
+            "cached_boundary": "sha256:ccd5fb7bd213067d7af7e15dad45bf8515f20114e9214e863cef1d59dc047ad4"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1a21ca4c139f785f0de7bd52e83a4727e4a728bfdd62be181cd7bd6d49ff238d",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P07",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P07",
+              "title": "Target changes during the pending response",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "change_target"
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P07",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:0d0223b53f275f2c64cb0379cf800755841ba025aca5510237baa808e326640c",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "CURRENT_CONTEXT_CHANGED",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ACTION_BINDING_CHANGED",
+                  "source_hash_observed": "sha256:5050c0e6dcc15f34e0749e1d0710f833a79e745a6312095e0b8cf55db2ddbdf9",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:8d5633148e7aa6611d31b1e9f4d8be31409f833628993768906892738331d280"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P07",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:0d0223b53f275f2c64cb0379cf800755841ba025aca5510237baa808e326640c",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "contract_reason": "CURRENT_ACTION_BINDING_CHANGED"
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:dab7f0963c266204b70afc68b35874680163fb2fad3c747004d13ef190350568"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:dab7f0963c266204b70afc68b35874680163fb2fad3c747004d13ef190350568",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:ad1e24278040d5bc130f9f12323b3d998eb17bb91a6799466786458081883014",
+            "cached_boundary": "sha256:dbee4af89eac530dca15e0fe793e6af45109d323b5714f335abcfde04234258f"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:dab7f0963c266204b70afc68b35874680163fb2fad3c747004d13ef190350568",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:dab7f0963c266204b70afc68b35874680163fb2fad3c747004d13ef190350568",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:ad1e24278040d5bc130f9f12323b3d998eb17bb91a6799466786458081883014",
+            "cached_boundary": "sha256:dbee4af89eac530dca15e0fe793e6af45109d323b5714f335abcfde04234258f"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:dab7f0963c266204b70afc68b35874680163fb2fad3c747004d13ef190350568",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:dab7f0963c266204b70afc68b35874680163fb2fad3c747004d13ef190350568",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:ad1e24278040d5bc130f9f12323b3d998eb17bb91a6799466786458081883014",
+            "cached_boundary": "sha256:dbee4af89eac530dca15e0fe793e6af45109d323b5714f335abcfde04234258f"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:dab7f0963c266204b70afc68b35874680163fb2fad3c747004d13ef190350568",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_CONTEXT_CHANGED",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P08",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P08",
+              "title": "Current authority source is unavailable",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "source_unavailable"
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P08",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:92d618ef659d807501cdda4176fc1d5eced1befe35a8edd2ff22f4632ce44c77",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": null,
+                  "response_status": "CURRENT_SOURCE_UNAVAILABLE",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "NOT_EVALUATED",
+                  "contract_reason": null,
+                  "source_hash_observed": null,
+                  "source_status_observed": null,
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:fcdd5ba8969226756efbe0cf983e576f8da379967fc1113f5f38856f8c17beca"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P08",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:92d618ef659d807501cdda4176fc1d5eced1befe35a8edd2ff22f4632ce44c77",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "CURRENT_SOURCE_UNAVAILABLE",
+                "contract_status": "NOT_EVALUATED",
+                "contract_reason": null
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:94bea592c65157fe36c7631001041bc2c3ddcfa96e9762bc0bdfe2ea6edd8d61"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:94bea592c65157fe36c7631001041bc2c3ddcfa96e9762bc0bdfe2ea6edd8d61",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:338de11d55417e760de5cb7b2eb68ed39730430a5629618ebde5f57764c640bf",
+            "cached_boundary": "sha256:53f75bb83588be54f07f4ec5b76aafd3f931e366ecb87f821959e44c0a250d05"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:94bea592c65157fe36c7631001041bc2c3ddcfa96e9762bc0bdfe2ea6edd8d61",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_SOURCE_UNAVAILABLE",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:94bea592c65157fe36c7631001041bc2c3ddcfa96e9762bc0bdfe2ea6edd8d61",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:338de11d55417e760de5cb7b2eb68ed39730430a5629618ebde5f57764c640bf",
+            "cached_boundary": "sha256:53f75bb83588be54f07f4ec5b76aafd3f931e366ecb87f821959e44c0a250d05"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:94bea592c65157fe36c7631001041bc2c3ddcfa96e9762bc0bdfe2ea6edd8d61",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_SOURCE_UNAVAILABLE",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:94bea592c65157fe36c7631001041bc2c3ddcfa96e9762bc0bdfe2ea6edd8d61",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:338de11d55417e760de5cb7b2eb68ed39730430a5629618ebde5f57764c640bf",
+            "cached_boundary": "sha256:53f75bb83588be54f07f4ec5b76aafd3f931e366ecb87f821959e44c0a250d05"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:94bea592c65157fe36c7631001041bc2c3ddcfa96e9762bc0bdfe2ea6edd8d61",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "CURRENT_SOURCE_UNAVAILABLE",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P09",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P09",
+              "title": "Wrong nonce then retry then local duplicate",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "a",
+                  "response": {
+                    "nonce": "wrong-public-nonce"
+                  }
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P09",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:d4a3bdc98545840d4da3c46886994fedac09150a3889ed78212a84f44d27aaf0",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RESPONSE_BINDING_MISMATCH",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:61ea488c2cb829d36d85374ecb37a0f55835a73740cd911ff81dee195181184a",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:fa5e62b874ce7ad4b82e5aae61ef3e6d657bc77cf8e7a2159d83608e3c95663f"
+                },
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                },
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": null,
+                  "response_status": "LOCAL_REPLAY_REJECTED",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "NOT_EVALUATED",
+                  "contract_reason": null,
+                  "source_hash_observed": null,
+                  "source_status_observed": null,
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6e72f146474f79d85e43e3a97d43c14b6b97ba46a3d329e861de5bfedf48d4c7"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P09",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:d4a3bdc98545840d4da3c46886994fedac09150a3889ed78212a84f44d27aaf0",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RESPONSE_BINDING_MISMATCH",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:61ea488c2cb829d36d85374ecb37a0f55835a73740cd911ff81dee195181184a",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:fa5e62b874ce7ad4b82e5aae61ef3e6d657bc77cf8e7a2159d83608e3c95663f"
+                },
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                },
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": null,
+                  "response_status": "LOCAL_REPLAY_REJECTED",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "NOT_EVALUATED",
+                  "contract_reason": null,
+                  "source_hash_observed": null,
+                  "source_status_observed": null,
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6e72f146474f79d85e43e3a97d43c14b6b97ba46a3d329e861de5bfedf48d4c7"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": []
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:036ea1c0b62fbfab261892763915f3079dd8ed45d6ed20751cb3b71685bf82db"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:036ea1c0b62fbfab261892763915f3079dd8ed45d6ed20751cb3b71685bf82db",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:a53743e22423e8668e74bf117c6349d3b50e63630dc1c6ecba42106d20a3bf4f",
+            "cached_boundary": "sha256:1d93cb17fe29f8cab0d360e97a6d42d8688d3dc53ef2136a924023e00ec71743"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:036ea1c0b62fbfab261892763915f3079dd8ed45d6ed20751cb3b71685bf82db",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_BINDING_MISMATCH",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "LOCAL_REPLAY_REJECTED",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_BINDING_MISMATCH",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "LOCAL_REPLAY_REJECTED",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:036ea1c0b62fbfab261892763915f3079dd8ed45d6ed20751cb3b71685bf82db",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:a53743e22423e8668e74bf117c6349d3b50e63630dc1c6ecba42106d20a3bf4f",
+            "cached_boundary": "sha256:1d93cb17fe29f8cab0d360e97a6d42d8688d3dc53ef2136a924023e00ec71743"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:036ea1c0b62fbfab261892763915f3079dd8ed45d6ed20751cb3b71685bf82db",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_BINDING_MISMATCH",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "LOCAL_REPLAY_REJECTED",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_BINDING_MISMATCH",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "LOCAL_REPLAY_REJECTED",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:036ea1c0b62fbfab261892763915f3079dd8ed45d6ed20751cb3b71685bf82db",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:a53743e22423e8668e74bf117c6349d3b50e63630dc1c6ecba42106d20a3bf4f",
+            "cached_boundary": "sha256:1d93cb17fe29f8cab0d360e97a6d42d8688d3dc53ef2136a924023e00ec71743"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:036ea1c0b62fbfab261892763915f3079dd8ed45d6ed20751cb3b71685bf82db",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_BINDING_MISMATCH",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "LOCAL_REPLAY_REJECTED",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RESPONSE_BINDING_MISMATCH",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "LOCAL_REPLAY_REJECTED",
+                "contract_status": "NOT_EVALUATED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P10",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P10",
+              "title": "Inconsistent evidence and a later modeled recovery",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "a",
+                  "response": {
+                    "assessment": "inconsistent",
+                    "confidence": 1
+                  }
+                },
+                {
+                  "type": "issue",
+                  "id": "b",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "b"
+                }
+              ]
+            }
+          },
+          "hypothesis": "Inconsistency establishes imposture and guilt.",
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P10",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:b8f844fa597d52c121f14a8dbab03c06ffdf5ec562a7dc0bcf1fe324ff511edc",
+              "retained_request_count": 2,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "inconsistent",
+                  "evidence_commitment": "sha256:2dc40d3c8e9d0dbba8af4ef4171b2ff68b4a74822a14ede1227687366a745082",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:d685b7b36c4e6ad596a685a43883489a43b800c323e0655d070cc2f2102fd040"
+                },
+                {
+                  "request_id": "b",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:18a11f5b3a779494df0e622e0fdca40166d663f904b310456546968d62af8da9",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:94bf931f4a18b41f45cb34929c42b9d1acc20994f0bfa80c565658085540ffbb"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P10",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:b8f844fa597d52c121f14a8dbab03c06ffdf5ec562a7dc0bcf1fe324ff511edc",
+              "retained_request_count": 2,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "inconsistent",
+                  "evidence_commitment": "sha256:2dc40d3c8e9d0dbba8af4ef4171b2ff68b4a74822a14ede1227687366a745082",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:d685b7b36c4e6ad596a685a43883489a43b800c323e0655d070cc2f2102fd040"
+                },
+                {
+                  "request_id": "b",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:18a11f5b3a779494df0e622e0fdca40166d663f904b310456546968d62af8da9",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:94bf931f4a18b41f45cb34929c42b9d1acc20994f0bfa80c565658085540ffbb"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": []
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:1f1235563a46a5f9b11d43ac64ef9db7baa4cff75e8d5280ae5dcfca3e0cf4fc"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:1f1235563a46a5f9b11d43ac64ef9db7baa4cff75e8d5280ae5dcfca3e0cf4fc",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:167e580d3d22bcdcdcc7b93a7bd9729609f4d3d4f8b0204c65a09f85171845ad",
+            "cached_boundary": "sha256:fc8a04fa302bd6ffdd0566a3d171a645319f038b3d472cb34ca3b2217dc0661f"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1f1235563a46a5f9b11d43ac64ef9db7baa4cff75e8d5280ae5dcfca3e0cf4fc",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "inconsistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "inconsistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:1f1235563a46a5f9b11d43ac64ef9db7baa4cff75e8d5280ae5dcfca3e0cf4fc",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:167e580d3d22bcdcdcc7b93a7bd9729609f4d3d4f8b0204c65a09f85171845ad",
+            "cached_boundary": "sha256:fc8a04fa302bd6ffdd0566a3d171a645319f038b3d472cb34ca3b2217dc0661f"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1f1235563a46a5f9b11d43ac64ef9db7baa4cff75e8d5280ae5dcfca3e0cf4fc",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "inconsistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "inconsistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:1f1235563a46a5f9b11d43ac64ef9db7baa4cff75e8d5280ae5dcfca3e0cf4fc",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:167e580d3d22bcdcdcc7b93a7bd9729609f4d3d4f8b0204c65a09f85171845ad",
+            "cached_boundary": "sha256:fc8a04fa302bd6ffdd0566a3d171a645319f038b3d472cb34ca3b2217dc0661f"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1f1235563a46a5f9b11d43ac64ef9db7baa4cff75e8d5280ae5dcfca3e0cf4fc",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "inconsistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "inconsistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P11",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P11",
+              "title": "Recorded evidence remains historical after later revocation",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "issue",
+                  "id": "b",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                },
+                {
+                  "type": "revoke"
+                },
+                {
+                  "type": "complete",
+                  "id": "b"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P11",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:757db8b8cd2e78d9271a2c43e2c5bd61319c4775eb66483ba8015ba4192032a8",
+              "retained_request_count": 2,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                },
+                {
+                  "request_id": "b",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:18a11f5b3a779494df0e622e0fdca40166d663f904b310456546968d62af8da9",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ADMISSION_DENIED",
+                  "source_hash_observed": "sha256:6c55fe4f5bc7ebd7c3f1a8a993dc10c4fb2cdea393d6c77647d8c0a2a62c5dda",
+                  "source_status_observed": "denied",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:38376cf42617bc0ba6cb7de87c6384cc8ade5e2bce24b2a5ec2aa69f49039da7"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P11",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:757db8b8cd2e78d9271a2c43e2c5bd61319c4775eb66483ba8015ba4192032a8",
+              "retained_request_count": 2,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                },
+                {
+                  "request_id": "b",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:18a11f5b3a779494df0e622e0fdca40166d663f904b310456546968d62af8da9",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:94bf931f4a18b41f45cb34929c42b9d1acc20994f0bfa80c565658085540ffbb"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 1,
+              "fresh_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "contract_reason": "CURRENT_ADMISSION_DENIED"
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:0d1f0a5c9df50779e793fbd2fef8c3e57d431ca1ca112ac076a9c399c6e14a82"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:0d1f0a5c9df50779e793fbd2fef8c3e57d431ca1ca112ac076a9c399c6e14a82",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:70f9c3e314cf2a6229e122aab3e75d352e8fb4ed7f4113cec3bebb5344d15cc5",
+            "cached_boundary": "sha256:4b10c3feb709ebeecf2d137c024cf12d05baed89b29839d512183df63272fa16"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:0d1f0a5c9df50779e793fbd2fef8c3e57d431ca1ca112ac076a9c399c6e14a82",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:0d1f0a5c9df50779e793fbd2fef8c3e57d431ca1ca112ac076a9c399c6e14a82",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:70f9c3e314cf2a6229e122aab3e75d352e8fb4ed7f4113cec3bebb5344d15cc5",
+            "cached_boundary": "sha256:4b10c3feb709ebeecf2d137c024cf12d05baed89b29839d512183df63272fa16"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:0d1f0a5c9df50779e793fbd2fef8c3e57d431ca1ca112ac076a9c399c6e14a82",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:0d1f0a5c9df50779e793fbd2fef8c3e57d431ca1ca112ac076a9c399c6e14a82",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:70f9c3e314cf2a6229e122aab3e75d352e8fb4ed7f4113cec3bebb5344d15cc5",
+            "cached_boundary": "sha256:4b10c3feb709ebeecf2d137c024cf12d05baed89b29839d512183df63272fa16"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:0d1f0a5c9df50779e793fbd2fef8c3e57d431ca1ca112ac076a9c399c6e14a82",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_EVIDENCE_ONLY"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P12",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P12",
+              "title": "A new request cannot restore a denied basis",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "revoke"
+                },
+                {
+                  "type": "complete",
+                  "id": "a"
+                },
+                {
+                  "type": "issue",
+                  "id": "b",
+                  "ttl_ms": 30000
+                },
+                {
+                  "type": "complete",
+                  "id": "b"
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P12",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:85d1e96f247c573055e89bc912395f56ee5b9b5e9d25c9f2d2e7d5e1e0f095c7",
+              "retained_request_count": 2,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ADMISSION_DENIED",
+                  "source_hash_observed": "sha256:6c55fe4f5bc7ebd7c3f1a8a993dc10c4fb2cdea393d6c77647d8c0a2a62c5dda",
+                  "source_status_observed": "denied",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:7f50fc88c513613c3e4dac7f1b4672947aa4d4d2a30814b1097e4a14910468ec"
+                },
+                {
+                  "request_id": "b",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:18a11f5b3a779494df0e622e0fdca40166d663f904b310456546968d62af8da9",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ADMISSION_DENIED",
+                  "source_hash_observed": "sha256:6c55fe4f5bc7ebd7c3f1a8a993dc10c4fb2cdea393d6c77647d8c0a2a62c5dda",
+                  "source_status_observed": "denied",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:38376cf42617bc0ba6cb7de87c6384cc8ade5e2bce24b2a5ec2aa69f49039da7"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P12",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:85d1e96f247c573055e89bc912395f56ee5b9b5e9d25c9f2d2e7d5e1e0f095c7",
+              "retained_request_count": 2,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:88801c06d7981957cef30f143f621933d8420109f865f1054c94e6a775d83647",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:6f80c2ee98294cc74b96cca0d07db45d1592eeb1275c2ebaac946e8c398682a5"
+                },
+                {
+                  "request_id": "b",
+                  "actual_model_clock_ms": 0,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:18a11f5b3a779494df0e622e0fdca40166d663f904b310456546968d62af8da9",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "CURRENT_ADMISSION_DENIED",
+                  "source_hash_observed": "sha256:6c55fe4f5bc7ebd7c3f1a8a993dc10c4fb2cdea393d6c77647d8c0a2a62c5dda",
+                  "source_status_observed": "denied",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:38376cf42617bc0ba6cb7de87c6384cc8ade5e2bce24b2a5ec2aa69f49039da7"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "contract_reason": "CURRENT_ADMISSION_DENIED"
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:373de3eaeccb68520a64cf5e72ef0bdf87edef2c876c566493affa90cf795308"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:373de3eaeccb68520a64cf5e72ef0bdf87edef2c876c566493affa90cf795308",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:53e5f665edbe96c722485fb0ffe5eb3dd227cdeaf6db0251a04eac2f996c213c",
+            "cached_boundary": "sha256:0e0f9b98f0341bef4857ec7b14be4159e7c479dd422f56c68630490ab0183a6d"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:373de3eaeccb68520a64cf5e72ef0bdf87edef2c876c566493affa90cf795308",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:373de3eaeccb68520a64cf5e72ef0bdf87edef2c876c566493affa90cf795308",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:53e5f665edbe96c722485fb0ffe5eb3dd227cdeaf6db0251a04eac2f996c213c",
+            "cached_boundary": "sha256:0e0f9b98f0341bef4857ec7b14be4159e7c479dd422f56c68630490ab0183a6d"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:373de3eaeccb68520a64cf5e72ef0bdf87edef2c876c566493affa90cf795308",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:373de3eaeccb68520a64cf5e72ef0bdf87edef2c876c566493affa90cf795308",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:53e5f665edbe96c722485fb0ffe5eb3dd227cdeaf6db0251a04eac2f996c213c",
+            "cached_boundary": "sha256:0e0f9b98f0341bef4857ec7b14be4159e7c479dd422f56c68630490ab0183a6d"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:373de3eaeccb68520a64cf5e72ef0bdf87edef2c876c566493affa90cf795308",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "fresh_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "b",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    },
+    {
+      "case_id": "P13",
+      "receipt": {
+        "receipt_type": "PersonalAnchorAgentExperimentReceipt",
+        "interface_version": "0.1",
+        "scope": "OFFLINE_SYNTHETIC_LIFECYCLE",
+        "assurance": "LOCAL_REPRODUCTION_ONLY",
+        "payload": {
+          "operation": "experiment.compare",
+          "source": {
+            "experiment_frontier": "0e0f8924c6df4cc9b8b4a0055a1ea3c275ef4a0b",
+            "experiment_source_hash": "sha256:0fe27b930d8c9304a2f8e6c14edaf96893c7d078e65d483d8ef8a0a078750ee9",
+            "interface_source_hash": "sha256:2cddaa28f09e5df47efd2729adfec9497d496cbce1ed5e5e1d914b34b4a01c66",
+            "canonicalization": "COMPONENT_LOCAL_SORTED_JSON_V0_1"
+          },
+          "input": {
+            "scenario": {
+              "id": "P13",
+              "title": "A client timestamp cannot revive an expired authority",
+              "events": [
+                {
+                  "type": "issue",
+                  "id": "a",
+                  "ttl_ms": 120000
+                },
+                {
+                  "type": "advance",
+                  "ms": 60001
+                },
+                {
+                  "type": "complete",
+                  "id": "a",
+                  "response": {
+                    "claimed_at": "2026-11-16T12:00:00.000Z"
+                  }
+                }
+              ]
+            }
+          },
+          "hypothesis": null,
+          "hypothesis_authority": "UNASSESSED_CALLER_STATEMENT",
+          "arms": [
+            "fresh_boundary",
+            "cached_boundary"
+          ],
+          "observations": [
+            {
+              "scenario_id": "P13",
+              "arm": "fresh_boundary",
+              "scenario_hash": "sha256:517a58d64955e6dce06a78024028562cd094a4ec3e257a66607229ca8c923908",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 60001,
+                  "boundary_clock_ms": 60001,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:38cbde60b05cf97d527a640e25b147f326f30518a83217871c27ce52c57a59df",
+                  "contract_status": "REJECTED",
+                  "contract_reason": "EXPIRED_SOURCE_BOUND",
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:a4304fd2bff3d24223e3044ced1eaa9bdd27794b79e97e4d7da07957f50a957d"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            },
+            {
+              "scenario_id": "P13",
+              "arm": "cached_boundary",
+              "scenario_hash": "sha256:517a58d64955e6dce06a78024028562cd094a4ec3e257a66607229ca8c923908",
+              "retained_request_count": 1,
+              "receipts": [
+                {
+                  "request_id": "a",
+                  "actual_model_clock_ms": 60001,
+                  "boundary_clock_ms": 0,
+                  "response_status": "RECORDED_EVIDENCE_ONLY",
+                  "response_assessment": "consistent",
+                  "evidence_commitment": "sha256:38cbde60b05cf97d527a640e25b147f326f30518a83217871c27ce52c57a59df",
+                  "contract_status": "READY",
+                  "contract_reason": null,
+                  "source_hash_observed": "sha256:5ce8c2fc75425e68aff7f2c9570dc03ad9cc1d06568342a28d2e8e34cc8ebabd",
+                  "source_status_observed": "admissible",
+                  "input_time_ignored": true,
+                  "identity_established": false,
+                  "causal_continuity_proven": false,
+                  "guilt_established": false,
+                  "authority_created": false,
+                  "live_permit_consumed": false,
+                  "action_performed": false,
+                  "biometric_model_executed": false,
+                  "receipt_hash": "sha256:79abb32ec3f75abd5d4525fa312b3cd11fecc8852e87bbb817559efbeaa94d28"
+                }
+              ],
+              "identity_established": false,
+              "causal_continuity_proven": false,
+              "guilt_established": false,
+              "authority_created": false,
+              "live_permit_consumed": false,
+              "action_performed": false,
+              "biometric_model_executed": false
+            }
+          ],
+          "reference_expectations": [
+            {
+              "arm": "fresh_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            },
+            {
+              "arm": "cached_boundary",
+              "status": "NO_TRUSTED_EXPECTATION"
+            }
+          ],
+          "comparison": [
+            {
+              "index": 0,
+              "fresh_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "contract_reason": "EXPIRED_SOURCE_BOUND"
+              },
+              "cached_boundary": {
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "contract_reason": null
+              }
+            }
+          ]
+        },
+        "identity_established": false,
+        "causal_continuity_proven": false,
+        "guilt_established": false,
+        "authority_created": false,
+        "live_permit_consumed": false,
+        "action_performed": false,
+        "biometric_model_executed": false,
+        "receipt_hash": "sha256:1c2f20bf14dc37c8e2797f0c741562f191a7784819c7df32eeda8e88c3257c46"
+      },
+      "routes": [
+        {
+          "route": "json-cli",
+          "comparison_receipt_hash": "sha256:1c2f20bf14dc37c8e2797f0c741562f191a7784819c7df32eeda8e88c3257c46",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:ddf02c3ce1710311bf7b51c2d73dcb2024fe4881515efdf5eb793b364ce6411e",
+            "cached_boundary": "sha256:ab24c47a3f4045f8425816aa818cf4b47dc6a9f1bcb369f4df52d10a83e58f31"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1c2f20bf14dc37c8e2797f0c741562f191a7784819c7df32eeda8e88c3257c46",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-modern",
+          "comparison_receipt_hash": "sha256:1c2f20bf14dc37c8e2797f0c741562f191a7784819c7df32eeda8e88c3257c46",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:ddf02c3ce1710311bf7b51c2d73dcb2024fe4881515efdf5eb793b364ce6411e",
+            "cached_boundary": "sha256:ab24c47a3f4045f8425816aa818cf4b47dc6a9f1bcb369f4df52d10a83e58f31"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1c2f20bf14dc37c8e2797f0c741562f191a7784819c7df32eeda8e88c3257c46",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        },
+        {
+          "route": "mcp-legacy",
+          "comparison_receipt_hash": "sha256:1c2f20bf14dc37c8e2797f0c741562f191a7784819c7df32eeda8e88c3257c46",
+          "single_receipt_hashes": {
+            "fresh_boundary": "sha256:ddf02c3ce1710311bf7b51c2d73dcb2024fe4881515efdf5eb793b364ce6411e",
+            "cached_boundary": "sha256:ab24c47a3f4045f8425816aa818cf4b47dc6a9f1bcb369f4df52d10a83e58f31"
+          },
+          "own_replays_matched": 3,
+          "conclusion": {
+            "receipt_hash": "sha256:1c2f20bf14dc37c8e2797f0c741562f191a7784819c7df32eeda8e88c3257c46",
+            "statements": [
+              {
+                "arm": "fresh_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "REJECTED",
+                "response_assessment": "consistent",
+                "disposition": "MODEL_HOLD"
+              },
+              {
+                "arm": "cached_boundary",
+                "request_id": "a",
+                "response_status": "RECORDED_EVIDENCE_ONLY",
+                "contract_status": "READY",
+                "response_assessment": "consistent",
+                "disposition": "NEGATIVE_CONTROL_ONLY"
+              }
+            ],
+            "identity_established": false,
+            "authority_created": false,
+            "action_authorized": false,
+            "guilt_established": false,
+            "safe_to_act": false,
+            "independent_review_performed": false,
+            "end_to_end_status": "NOT_EXECUTED"
+          }
+        }
+      ],
+      "cross_route_replays": [
+        {
+          "from": "json-cli",
+          "to": "mcp-modern",
+          "replay_matched": true
+        },
+        {
+          "from": "json-cli",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-modern",
+          "to": "mcp-legacy",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "json-cli",
+          "replay_matched": true
+        },
+        {
+          "from": "mcp-legacy",
+          "to": "mcp-modern",
+          "replay_matched": true
+        }
+      ]
+    }
+  ]
+}
