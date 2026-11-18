@@ -54,6 +54,23 @@ jobs:
         run: node schemas/ip/v0.1/check-registration-outcome.js
       - name: Exercise negative evidence and disclosure controls
         run: node --test schemas/ip/v0.1/tests/test-registration-outcome.js
+      - name: Independently validate the supplemental primary-document JSON Schema
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          from jsonschema import Draft202012Validator
+          root = Path('schemas/ip/v0.1')
+          schema = json.loads((root / 'registration-primary-document-review.schema.json').read_text())
+          record = json.loads((root / 'examples/registration-primary-document-review.json').read_text())
+          Draft202012Validator.check_schema(schema)
+          Draft202012Validator(schema).validate(record)
+          print('PASS Draft 2020-12 primary-document review contract')
+          PY
+      - name: Validate supplemental primary-document provenance and bounded public disclosure
+        run: node schemas/ip/v0.1/check-registration-primary-document-review.js
+      - name: Exercise supplemental negative evidence controls
+        run: node --test schemas/ip/v0.1/tests/test-registration-primary-document-review.js
       - name: Preserve original fail-closed registration-plan semantics
         run: |
           python schemas/ip/v0.1/ip_registration_validator.py schemas/ip/v0.1/examples/uu-aap-core-registration-plan.json
