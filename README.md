@@ -63,6 +63,8 @@ The first public draft remains anchored by tag `v0.1`. Later repository-scoped p
 [registration evidence and limits](docs/legal/ROSPATENT-REGISTRATION-2026691650.md)
 and [machine-readable receipt](schemas/ip/v0.1/examples/registration-outcome.json).
 Exact deposited-byte identity remains unverified; the existing licenses apply.
+**Follow-up primary-document review (18 November 2026):** The applicant-supplied Rospatent certificate and notification copies show registration date **14 October 2026**, filing date **26 August 2026**, and application references **2026691663** / **2026691663/69**. See the [append-only document review](docs/legal/ROSPATENT-PRIMARY-DOCUMENT-REVIEW-2026691650.md) and [machine-readable supplement](schemas/ip/v0.1/examples/registration-primary-document-review.json). Source PDF copies remain private; independent registry retrieval and exact deposit comparison are not claimed.
+
 
 ## Why this exists
 
