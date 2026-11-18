@@ -1,0 +1,18 @@
+'use strict';
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const ROOT = path.resolve(__dirname, '../../../..');
+const { validate, RECEIPT } = require('../check-registration-primary-document-review.js');
+const source = JSON.parse(fs.readFileSync(path.join(ROOT, RECEIPT), 'utf8'));
+const mutate = f => { const r = structuredClone(source); f(r); return r; };
+test('document review baseline passes', () => assert.equal(validate(), true));
+test('invented independent registry confirmation rejected', () => assert.throws(() => validate(mutate(r => { r.assessment.independent_public_registry_retrieval = 'CONFIRMED'; }))));
+test('invented decision date rejected', () => assert.throws(() => validate(mutate(r => { r.registration.decision_date = '2026-10-14'; }))));
+test('altered application number rejected', () => assert.throws(() => validate(mutate(r => { r.registration.notification_application_number = '2026691663'; }))));
+test('certificate hash tamper rejected', () => assert.throws(() => validate(mutate(r => { r.document_sha256.certificate_pdf = '0'.repeat(64); }))));
+test('predecessor digest tamper rejected', () => assert.throws(() => validate(mutate(r => { r.predecessor.receipt_digest = 'sha256:' + 'f'.repeat(64); }))));
+test('extra personal identity field rejected', () => assert.throws(() => validate(mutate(r => { r.registration.author_legal_name = 'REDACTED'; }))));
+test('claiming exact submitted bytes rejected', () => assert.throws(() => validate(mutate(r => { r.assessment.exact_submitted_bytes_match = 'VERIFIED'; }))));
+test('publishing pseudonym issue as resolved rejected', () => assert.throws(() => validate(mutate(r => { r.assessment.author_pseudonym_publication_discrepancy = 'CLOSED'; }))));
