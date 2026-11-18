@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Matawaka/uu-aap/schemas/ip/v0.1/registration-primary-document-review.schema.json",
+  "title": "Supplemental review of applicant-supplied Rospatent document copies",
+  "description": "Append-only primary-document observation, not independently verified or a replacement for the original receipt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "receipt_type",
+    "receipt_id",
+    "object_id",
+    "predecessor",
+    "reviewed_on",
+    "evidence_source",
+    "document_sha256",
+    "registration",
+    "assessment",
+    "remaining_gaps",
+    "non_effects",
+    "canonicalization",
+    "receipt_digest"
+  ],
+  "properties": {
+    "receipt_version": {
+      "const": "0.1"
+    },
+    "receipt_type": {
+      "const": "REGISTRATION_PRIMARY_DOCUMENT_REVIEW"
+    },
+    "receipt_id": {
+      "const": "urn:uu-aap:ip:registration-primary-document-review:2026691650:2026-11-18"
+    },
+    "object_id": {
+      "const": "urn:uu-aap:software:core-receipt-chain-validator:v0.1"
+    },
+    "predecessor": {
+      "const": {
+        "ref": "schemas/ip/v0.1/examples/registration-outcome.json",
+        "receipt_id": "urn:uu-aap:ip:registration-outcome:2026691650",
+        "receipt_digest": "sha256:487fc21286e13b0975cacc1678f1b77da8f93391d846c031e16deb780c9050bb"
+      }
+    },
+    "reviewed_on": {
+      "const": "2026-11-18"
+    },
+    "evidence_source": {
+      "const": "APPLICANT_SUPPLIED_OFFICIAL_DOCUMENT_COPIES"
+    },
+    "document_sha256": {
+      "const": {
+        "certificate_pdf": "bf16ef27882c907f76cfd9e70da3e81dc137df8d7bd24c5ded1b35f095e00865",
+        "notice_and_conclusion_pdf": "b53f42ba7e9251e6d3ca6e5891f157f4fe3c815af98f16cd41a14bb0c78d30f5"
+      }
+    },
+    "registration": {
+      "const": {
+        "authority": "ROSPATENT",
+        "jurisdiction": "RU",
+        "registration_number": "2026691650",
+        "program_title_ru": "Валидатор цепочек квитанций UU-AAP Core v0.1",
+        "certificate_application_number": "2026691663",
+        "notification_application_number": "2026691663/69",
+        "application_received_date": "2026-08-26",
+        "registration_date": "2026-10-14",
+        "decision_date": null
+      }
+    },
+    "assessment": {
+      "const": {
+        "two_documents_essential_fields_match": true,
+        "pdf_cryptographic_signature_verification": "NOT_PERFORMED",
+        "independent_public_registry_retrieval": "NOT_CONFIRMED",
+        "exact_submitted_bytes_match": "NOT_VERIFIED",
+        "author_pseudonym_publication_discrepancy": "OPEN",
+        "state": "REGISTERED_EVIDENCE_SUPPLEMENT"
+      }
+    },
+    "remaining_gaps": {
+      "const": [
+        "INDEPENDENT_PUBLIC_REGISTRY_RETRIEVAL",
+        "PRIVATE_SUBMISSION_RECEIPT_AND_PACKET_DIGEST",
+        "EXACT_DEPOSIT_BYTE_COMPARISON",
+        "AUTHOR_PUBLICATION_DISCREPANCY",
+        "CRYPTOGRAPHIC_AUTHENTICITY_OF_PDF_COPIES"
+      ]
+    },
+    "non_effects": {
+      "const": [
+        "NO_REWRITE_OF_ORIGINAL_OUTCOME_RECEIPT",
+        "NO_INFERRED_DECISION_DATE",
+        "NO_RETROACTIVE_READY_TO_FILE_OR_FILED_CLAIM",
+        "NO_INDEPENDENT_REGISTRY_AUTHENTICITY_CLAIM",
+        "NO_PRIVATE_PDF_PUBLICATION",
+        "NO_PATENT_OR_LICENSE_CHANGE"
+      ]
+    },
+    "canonicalization": {
+      "const": "UU-AAP-REGISTRATION-PRIMARY-DOCUMENT-REVIEW-SORTED-JSON-v0.1"
+    },
+    "receipt_digest": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}
