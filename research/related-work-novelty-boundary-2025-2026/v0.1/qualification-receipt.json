@@ -1,0 +1,37 @@
+{
+  "schema": "matawaka.related-work-novelty-boundary-qualification/2025-2026/v0.1",
+  "exact_predecessor": "0e74f89695bbcb02c759000752696c322d908f7a",
+  "first_failed_run": {
+    "head": "686a5083f4c2f1860cc60588561fdbbf68c85b79",
+    "run_id": 34120022581,
+    "job_id": 101735701547,
+    "result": "FAIL_CLOSED",
+    "failure_stage": "AUDIT_ONLY_DIFF_GUARD_BASE_OBJECT_NOT_FETCHED",
+    "content_validator_passed": true,
+    "hostile_tests_passed": true
+  },
+  "first_green_qualification": {
+    "head": "0c2c17ae81a82c19c16f4655d351b69a1ab9681a",
+    "run_id": 34120116526,
+    "job_id": 101735999036,
+    "result": "SUCCESS",
+    "hostile_checks": "16/16",
+    "gates": {
+      "ledger_and_matrix": "SUCCESS",
+      "hostile_suite": "SUCCESS",
+      "exact_predecessor": "SUCCESS",
+      "audit_only_diff": "SUCCESS",
+      "normative_runtime_guard": "SUCCESS"
+    }
+  },
+  "claims": {
+    "research_package_qualified_bounded": true,
+    "novelty_established": false,
+    "patentability_established": false,
+    "freedom_to_operate_established": false,
+    "world_first_established": false,
+    "semantic_influence_established": false,
+    "merge_authority_created": false
+  },
+  "verdict": "BOUNDED_RESEARCH_LANDSCAPE_PACKAGE_FIRST_INDEPENDENT_QUALIFICATION_PASS_NOVELTY_NOT_ESTABLISHED"
+}

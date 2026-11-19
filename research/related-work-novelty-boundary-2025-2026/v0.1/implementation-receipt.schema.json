@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:matawaka:research:related-work-novelty-boundary-implementation-receipt:2025-2026:v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "status", "predecessor_main", "branch", "audit_as_of", "claims", "qualification"],
+  "properties": {
+    "schema": {"const": "matawaka.related-work-novelty-boundary-implementation-receipt/2025-2026/v0.1"},
+    "status": {"enum": ["CANDIDATE_UNQUALIFIED", "QUALIFIED_BOUNDED"]},
+    "predecessor_main": {"const": "0e74f89695bbcb02c759000752696c322d908f7a"},
+    "branch": {"const": "research/related-work-novelty-boundary-2025-2026-v0.1"},
+    "audit_as_of": {"const": "2026-09-07"},
+    "claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "stable_core_mutated",
+        "poai_genesis_mutated",
+        "c2pa_interop_reclassified",
+        "patent_novelty_established",
+        "patentability_established",
+        "freedom_to_operate_established",
+        "world_first_established",
+        "influence_or_derivation_established",
+        "release_or_publication_authority_created"
+      ],
+      "properties": {
+        "stable_core_mutated": {"const": false},
+        "poai_genesis_mutated": {"const": false},
+        "c2pa_interop_reclassified": {"const": false},
+        "patent_novelty_established": {"const": false},
+        "patentability_established": {"const": false},
+        "freedom_to_operate_established": {"const": false},
+        "world_first_established": {"const": false},
+        "influence_or_derivation_established": {"const": false},
+        "release_or_publication_authority_created": {"const": false}
+      }
+    },
+    "qualification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["local_or_ci_validation_observed", "hostile_tests_observed", "pull_request_created", "review_or_merge_authority_created"],
+      "properties": {
+        "local_or_ci_validation_observed": {"type": "boolean"},
+        "hostile_tests_observed": {"type": "boolean"},
+        "pull_request_created": {"type": "boolean"},
+        "review_or_merge_authority_created": {"const": false}
+      }
+    }
+  }
+}
