@@ -1,0 +1,91 @@
+{
+  "schema": "matawaka.intermediary.workshop-case/v0.1",
+  "tenant": "local-workshop",
+  "order_id": "replace-order-id",
+  "revision": 1,
+  "currency": "RUB",
+  "requirements": {
+    "product": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "quantity": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "dimensions_mm": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "material": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "finish": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "drawing_revision": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "installation": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "requested_date": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    },
+    "acceptance": {
+      "state": "missing",
+      "value": null,
+      "source_refs": []
+    }
+  },
+  "costs": {
+    "materials": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "outside_services": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "labor": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "machine": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "delivery_installation": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "overhead": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    },
+    "contingency": {
+      "state": "missing",
+      "amount_minor": null,
+      "basis_ref": null
+    }
+  }
+}
