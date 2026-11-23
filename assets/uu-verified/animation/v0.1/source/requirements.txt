@@ -1,0 +1,6 @@
+# Versions used for the successful local byte-identical reproduction.
+# Native libraries are recorded separately; these pins alone are not a full environment lock.
+Pillow==12.3.0
+numpy==2.3.5
+opencv-python-headless==4.13.0.92
+pycairo==1.29.0

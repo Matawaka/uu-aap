@@ -1,0 +1,123 @@
+{
+  "type": "UU_VERIFIED_VISUAL_ASSET_MANIFEST",
+  "version": "0.1",
+  "date": "2026-09-16",
+  "scope": "DESIGN_AND_ANIMATION_ONLY_NOT_ATTESTATION",
+  "origin_repository": "Matawaka/uu-aap",
+  "base_commit": "0e74f89695bbcb02c759000752696c322d908f7a",
+  "concept_issue": 1000,
+  "concept_pr": 1001,
+  "animation_source": "Portable adaptation of the prior executed generation script, recovered from the conversation execution record; motion formulas and encoding retained.",
+  "verification": "Local reproduction: both GIFs and MP4 matched delivered SHA-256. This is not independent review or UU VERIFIED issuance.",
+  "github_binary_publication": "PENDING_TOOL_TRANSFER_NOT_COMPLETED",
+  "environment": {
+    "python": "3.13.5",
+    "Pillow": "12.3.0",
+    "numpy": "2.3.5",
+    "opencv-python-headless": "4.13.0.92",
+    "pycairo": "1.29.0",
+    "cairo": "1.18.4",
+    "pixman": "0.44.0",
+    "ffmpeg": "7.1.5-0+deb13u1",
+    "os": "Debian 13 trixie"
+  },
+  "files": [
+    {
+      "path": "UU_verified.gif",
+      "bytes": 3467299,
+      "sha256": "b278999c4de856365acc65472087bc339b7d4c19675f2b057afaa0e6ef0af2f6",
+      "width": 768,
+      "height": 768,
+      "encoded_frames": 530,
+      "loop": 0,
+      "duration_ms": 16500
+    },
+    {
+      "path": "UU_verified.mp4",
+      "bytes": 435004,
+      "sha256": "bf6f51832a732ba3243b4ab96e26d5c4cc684b27d640791053324d5078e3d9ff"
+    },
+    {
+      "path": "UU_verified_final.png",
+      "bytes": 76680,
+      "sha256": "747cce3bceb07b1663eb684038e4eff9d02787352d2f259b104424d29d2c407d"
+    },
+    {
+      "path": "UU_verified_once.gif",
+      "bytes": 3137659,
+      "sha256": "f3fb47e091eb4ebe96b890a0099a427f50e9f5210d24ece215597b169374b4ee",
+      "width": 768,
+      "height": 768,
+      "encoded_frames": 481,
+      "loop": null,
+      "duration_ms": 15500
+    },
+    {
+      "path": "local-build-report.json",
+      "bytes": 1074,
+      "sha256": "df73b87f805358d4f0837b1139abeecf834bad77a5c53a2709f17694a884a9d7"
+    },
+    {
+      "path": "previews/decoded_gif_review.png",
+      "bytes": 218850,
+      "sha256": "12a768da6e4b03d2c5d7d97bbf8101e138b2260e95a47d94aa5c7a0d80bc2a49"
+    },
+    {
+      "path": "previews/final_frame.png",
+      "bytes": 96713,
+      "sha256": "7f63586ed4b40c73c9ca8ab40582147131ceaf04e5c400db39b42ee768f377cf"
+    },
+    {
+      "path": "previews/motion_review.png",
+      "bytes": 311178,
+      "sha256": "4875a6dbc3491377e54bc8cba0a9490b1569f6ed49c4e082cb520c64017e9362"
+    },
+    {
+      "path": "source/artwork-masks.json",
+      "bytes": 28477,
+      "sha256": "4745703dff58c723344c4fa37106e181a63fc7b09e45e5aa894e3afc6decdcdf"
+    },
+    {
+      "path": "source/build_animation.py",
+      "bytes": 17220,
+      "sha256": "b65bdfb2ff7b1c808543f179298e3373a0aa045f911dab9a33543c462f965e8d"
+    },
+    {
+      "path": "source/extract_masks.py",
+      "bytes": 2463,
+      "sha256": "cf8c47f1cafa67b4de9343d48b2b926c13c552dc68110e44b6ce7d4d3dc5861e"
+    },
+    {
+      "path": "source/eye-mask.png",
+      "bytes": 3817,
+      "sha256": "d93e7e430cfc039b7dbd11e66c3efcfef4a54362b50d48baca21d36235380ec6"
+    },
+    {
+      "path": "source/letters-mask.png",
+      "bytes": 17825,
+      "sha256": "c3d31030b4e09605365bd74dad4b9cdd0814166ac15ae96e41ac2fc8c29a5e28"
+    },
+    {
+      "path": "source/reference.png",
+      "bytes": 893921,
+      "sha256": "90ed6871efde5f5348c4985a5d7ef3c77c219664cd3eeba8548e5cc10255d8aa"
+    },
+    {
+      "path": "source/requirements.txt",
+      "bytes": 242,
+      "sha256": "3a217babbc7ee99bd638a544e170be8cdc71b034a56385a21782773f7a661f36"
+    },
+    {
+      "path": "timeline.json",
+      "bytes": 2427,
+      "sha256": "d69d417acfa320dc46c6c3871519227d92e2197b027de89551f3e2e2fd765c7a"
+    }
+  ],
+  "non_effects": {
+    "attestation_issued": false,
+    "issuer_authority_established": false,
+    "runtime_activation": false,
+    "copyright_adjudication": false,
+    "release_or_tag_created": false
+  }
+}

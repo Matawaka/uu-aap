@@ -1,0 +1,122 @@
+{
+  "type": "UU_VERIFIED_ANIMATION_TIMELINE",
+  "version": "0.1",
+  "scope": "ARTWORK_ONLY_NOT_ISSUANCE",
+  "sampling_fps": 50,
+  "loop_duration_seconds": 16.5,
+  "one_shot_seconds": 15.5,
+  "stages": [
+    {
+      "name": "initial circle and UU eyes",
+      "start": 0,
+      "end": 0.5
+    },
+    {
+      "name": "look left, look right, settle to UU",
+      "start": 0.5,
+      "end": 3.04
+    },
+    {
+      "name": "mouth dot",
+      "start": 3.15,
+      "end": 3.42
+    },
+    {
+      "name": "dot to line",
+      "start": 3.42,
+      "end": 3.87
+    },
+    {
+      "name": "line to capsule",
+      "start": 3.87,
+      "end": 4.26
+    },
+    {
+      "name": "letters drop, bounce, damp neighbouring letters",
+      "start": 4.4,
+      "end": 7.88
+    },
+    {
+      "name": "completed lower word hold",
+      "start": 7.88,
+      "end": 9.9
+    },
+    {
+      "name": "capsule moves above UU while UU descend",
+      "start": 9.9,
+      "end": 12.3
+    },
+    {
+      "name": "elastic settling",
+      "start": 12.3,
+      "end": 13.1
+    },
+    {
+      "name": "final pose hold",
+      "start": 13.1,
+      "end": 15.5
+    },
+    {
+      "name": "loop return, omitted in single-play GIF",
+      "start": 15.5,
+      "end": 16.5
+    }
+  ],
+  "letters": [
+    {
+      "index": 0,
+      "letter": "v",
+      "appear_seconds": 4.4,
+      "land_seconds": 4.6
+    },
+    {
+      "index": 1,
+      "letter": "e",
+      "appear_seconds": 4.78,
+      "land_seconds": 4.98
+    },
+    {
+      "index": 2,
+      "letter": "r",
+      "appear_seconds": 5.16,
+      "land_seconds": 5.36
+    },
+    {
+      "index": 3,
+      "letter": "i",
+      "appear_seconds": 5.54,
+      "land_seconds": 5.74
+    },
+    {
+      "index": 4,
+      "letter": "f",
+      "appear_seconds": 5.92,
+      "land_seconds": 6.12
+    },
+    {
+      "index": 5,
+      "letter": "i",
+      "appear_seconds": 6.3,
+      "land_seconds": 6.5
+    },
+    {
+      "index": 6,
+      "letter": "e",
+      "appear_seconds": 6.68,
+      "land_seconds": 6.88
+    },
+    {
+      "index": 7,
+      "letter": "d",
+      "appear_seconds": 7.06,
+      "land_seconds": 7.26
+    }
+  ],
+  "constraints": {
+    "letters_clipped_to_capsule": true,
+    "content_clipped_to_inner_circle": true,
+    "two_U_share_one_mask": true,
+    "no_font_files": true
+  },
+  "swap_note": "The capsule shrinks temporarily and the elastic U shapes yield sideways; no layer passes through another."
+}
